@@ -7,6 +7,7 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "biome lint .",
+		"format": "biome format .",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
 		"chromatic": "npx chromatic --project-token=chpt_54c660bea4cd6be"
@@ -24,6 +25,7 @@
 		"@storybook/addon-interactions": "^8.0.0-rc.2",
 		"@storybook/addon-links": "^8.0.0-rc.2",
 		"@storybook/addon-onboarding": "^8.0.0-rc.2",
+		"@storybook/addon-themes": "^8.0.0-rc.2",
 		"@storybook/blocks": "^8.0.0-rc.2",
 		"@storybook/nextjs": "^8.0.0-rc.2",
 		"@storybook/react": "^8.0.0-rc.2",

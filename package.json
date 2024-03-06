@@ -7,10 +7,10 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "biome lint .",
-		"format": "biome format .",
+		"format": "biome format . --write",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
-		"chromatic": "npx chromatic --project-token=chpt_54c660bea4cd6be"
+		"chromatic": "npx chromatic"
 	},
 	"dependencies": {
 		"next": "14.1.3",

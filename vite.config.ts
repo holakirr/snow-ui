@@ -26,5 +26,6 @@ export default defineConfig({
 		rollupOptions: {
 			external: ["react", "react-dom"],
 		},
+		chunkSizeWarningLimit: 1000,
 	},
 });

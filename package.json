@@ -9,31 +9,23 @@
 	"version": "0.1.0",
 	"private": false,
 	"files": ["dist"],
-	"sideEffects": ["**/*.css"],
-	"main": "./dist/index.js",
+	"main": "dist/kage-ui-umd.cjs",
+	"module": "dist/kage-ui.js",
 	"exports": {
 		".": {
-			"import": {
-				"default": "./dist/index.js"
-			},
-			"require": {
-				"default": "./dist/index.js"
-			}
-		},
-		"./css": "./dist/style.css"
+			"import": "./dist/kage-ui.js",
+			"require": "./dist/kage-ui-umd.cjs"
+		}
 	},
 	"scripts": {
-		"build:lib": "tsc && vite build",
+		"build": "vite build",
 		"build-storybook": "storybook build",
 		"chromatic": "npx chromatic",
 		"dev": "storybook dev -p 6006",
 		"format": "biome format . --write",
 		"lint": "biome lint .",
 		"preview": "vite preview",
-		"test-storybook": "test-storybook --watch",
-		"test:coverage": "vitest run --coverage",
-		"test:ui": "vitest --ui",
-		"test": "vitest"
+		"test-storybook": "test-storybook --watch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.5.3",
@@ -75,7 +67,6 @@
 		"ts-node": "^10.9.2",
 		"typescript": "^5.4.2",
 		"vite": "^5.1.5",
-		"vite-plugin-checker": "^0.6.4",
 		"vite-plugin-dts": "^3.7.3",
 		"vite-tsconfig-paths": "^4.3.1"
 	},

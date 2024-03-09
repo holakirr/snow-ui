@@ -1,10 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-	content: [
-		"./components/**/*.{js,ts,jsx,tsx,mdx}",
-		"./app/**/*.{js,ts,jsx,tsx,mdx}",
-	],
+	content: ["./src/components/**/*.{js,ts,jsx,tsx}"],
 	// Toggle dark-mode based on .dark class or data-mode="dark"
 	darkMode: ["class", '[data-mode="dark"]'],
 	theme: {

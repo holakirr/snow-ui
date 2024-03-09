@@ -1,5 +1,4 @@
 import { ButtonHTMLAttributes } from "react";
-import { twMerge } from "tailwind-merge";
 
 type ButtonVariants = "borderless" | "gray" | "outline" | "filled";
 type ButtonSizes = "sm" | "md" | "lg";
@@ -16,13 +15,7 @@ export const Button = ({
 	<button
 		type="button"
 		onClick={onClick}
-		className={twMerge(
-			"py-4 px-8 rounded-lg transition-all hover:bg-opacity-70 active:bg-opacity-100 active:underline",
-			variant === "borderless" && "bg-primary text-white",
-			variant === "gray" && "bg-white text-primary",
-			variant === "outline" && "p-0 text-primary hover:underline",
-			variant === "filled" && "bg-primary text-white",
-		)}
+		className={"py-4 px-8 rounded-lg transition-all dark:text-white"}
 	>
 		Button
 	</button>

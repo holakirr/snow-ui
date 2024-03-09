@@ -1,26 +1,28 @@
 import type { Preview } from "@storybook/react";
-import "../app/globals.css";
 
-import { withThemeByClassName } from "@storybook/addon-themes";
+import "../src/globals.css";
+
+import { withThemeByDataAttribute } from "@storybook/addon-themes";
 
 const preview: Preview = {
 	parameters: {
+		backgrounds: {
+			disable: true,
+		},
 		layout: "centered",
 		controls: {
 			matchers: {
-				color: /(background|color)$/i,
-				date: /Date$/i,
+				withThemeByDataAttribute: true,
 			},
 		},
 	},
-
 	decorators: [
-		withThemeByClassName({
+		withThemeByDataAttribute({
 			themes: {
-				// nameOfTheme: 'classNameForTheme',
-				light: "",
+				light: "light",
 				dark: "dark",
 			},
+			attributeName: "data-mode",
 			defaultTheme: "light",
 		}),
 	],

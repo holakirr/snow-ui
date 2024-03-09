@@ -1,11 +1,11 @@
-import { ButtonHTMLAttributes } from "react";
+import { ComponentProps } from "react";
 
 type ButtonVariants = "borderless" | "gray" | "outline" | "filled";
 type ButtonSizes = "sm" | "md" | "lg";
 type ButtonProps = {
 	variant?: ButtonVariants;
 	size?: ButtonSizes;
-} & ButtonHTMLAttributes<HTMLButtonElement>;
+} & ComponentProps<"button">;
 
 export const Button = ({
 	variant = "filled",

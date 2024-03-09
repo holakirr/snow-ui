@@ -1,85 +1,85 @@
 {
-	"name": "kage-ui",
-	"description": "KageUI is a React component library for creating beautiful and interactive user interfaces.",
-	"author": {
-		"name": "Kirill Petunin",
-		"url": "https://holakirr.com"
-	},
-	"version": "0.1.0",
-	"private": false,
-	"files": ["dist"],
-	"sideEffects": ["**/*.css"],
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			},
-			"require": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			}
-		},
-		"./css": "./dist/style.css"
-	},
-	"scripts": {
-		"build:lib": "tsc && vite build",
-		"build": "storybook build",
-		"chromatic": "npx chromatic",
-		"dev": "storybook dev -p 6006",
-		"format": "biome format . --write",
-		"lint": "biome lint .",
-		"preview": "vite preview",
-		"test-storybook": "test-storybook --watch",
-		"test:coverage": "vitest run --coverage",
-		"test:ui": "vitest --ui",
-		"test": "vitest"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^1.5.3",
-		"@chromatic-com/storybook": "^1.2.7",
-		"@storybook/addon-a11y": "^8.0.0-rc.2",
-		"@storybook/addon-essentials": "^8.0.0-rc.2",
-		"@storybook/addon-interactions": "^8.0.0-rc.2",
-		"@storybook/addon-links": "^8.0.0-rc.2",
-		"@storybook/addon-onboarding": "^8.0.0-rc.2",
-		"@storybook/addon-themes": "^8.0.0-rc.2",
-		"@storybook/blocks": "^8.0.0-rc.2",
-		"@storybook/builder-vite": "next",
-		"@storybook/react": "^8.0.0-rc.2",
-		"@storybook/react-vite": "^8.0.0-rc.3",
-		"@storybook/test": "^8.0.0-rc.2",
-		"@storybook/test-runner": "next",
-		"@storybook/theming": "next",
-		"@tsconfig/recommended": "^1.0.3",
-		"@types/node": "^20.11.25",
-		"@types/react": "^18.2.64",
-		"@types/react-dom": "^18.2.21",
-		"@vitejs/plugin-react": "^4.2.1",
-		"@vitest/coverage-v8": "^1.3.1",
-		"@vitest/ui": "^1.3.1",
-		"autoprefixer": "^10.4.18",
-		"chromatic": "^11.0.4",
-		"eslint": "^8.57.0",
-		"eslint-plugin-storybook": "^0.8.0",
-		"postcss": "^8.4.35",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"storybook": "^8.0.0-rc.2",
-		"tailwind-merge": "^2.2.1",
-		"tailwindcss": "^3.4.1",
-		"ts-node": "^10.9.2",
-		"typescript": "^5.4.2",
-		"vite": "^5.1.5",
-		"vite-plugin-checker": "^0.6.4",
-		"vite-plugin-dts": "^3.7.3",
-		"vite-tsconfig-paths": "^4.3.1"
-	},
-	"peerDependencies": {
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
-	},
-	"license": "MIT"
+  "name": "kage-ui",
+  "description": "KageUI is a React component library for creating beautiful and interactive user interfaces.",
+  "author": {
+    "name": "Kirill Petunin",
+    "url": "https://holakirr.com"
+  },
+  "type": "module",
+  "version": "0.1.0",
+  "private": false,
+  "files": ["dist"],
+  "sideEffects": ["**/*.css"],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./css": "./dist/style.css"
+  },
+  "scripts": {
+    "build:lib": "tsc && vite build",
+    "build": "storybook build",
+    "chromatic": "npx chromatic",
+    "dev": "storybook dev -p 6006",
+    "format": "biome format . --write",
+    "lint": "biome lint .",
+    "preview": "vite preview",
+    "test-storybook": "test-storybook --watch",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.5.3",
+    "@chromatic-com/storybook": "^1.2.7",
+    "@storybook/addon-a11y": "^8.0.0-rc.2",
+    "@storybook/addon-essentials": "^8.0.0-rc.2",
+    "@storybook/addon-interactions": "^8.0.0-rc.2",
+    "@storybook/addon-links": "^8.0.0-rc.2",
+    "@storybook/addon-themes": "^8.0.0-rc.2",
+    "@storybook/blocks": "^8.0.0-rc.2",
+    "@storybook/builder-vite": "next",
+    "@storybook/react": "^8.0.0-rc.2",
+    "@storybook/react-vite": "^8.0.0-rc.3",
+    "@storybook/test": "^8.0.0-rc.2",
+    "@storybook/test-runner": "next",
+    "@storybook/theming": "next",
+    "@tsconfig/recommended": "^1.0.3",
+    "@types/node": "^20.11.25",
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/coverage-v8": "^1.3.1",
+    "@vitest/ui": "^1.3.1",
+    "autoprefixer": "^10.4.18",
+    "chromatic": "^11.0.4",
+    "eslint": "^8.57.0",
+    "eslint-plugin-storybook": "^0.8.0",
+    "postcss": "^8.4.35",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "storybook": "^8.0.0-rc.2",
+    "tailwind-merge": "^2.2.1",
+    "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.5",
+    "vite-plugin-checker": "^0.6.4",
+    "vite-plugin-dts": "^3.7.3",
+    "vite-tsconfig-paths": "^4.3.1"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "license": "MIT"
 }

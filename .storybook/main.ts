@@ -1,9 +1,10 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import path from "path";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 const config: StorybookConfig = {
 	stories: ["../src/**/*.story.@(js|jsx|ts|tsx)"],
 	addons: [
-		"@storybook/addon-onboarding",
 		"@storybook/addon-links",
 		"@storybook/addon-essentials",
 		"@chromatic-com/storybook",
@@ -21,5 +22,18 @@ const config: StorybookConfig = {
 	core: {
 		builder: "@storybook/builder-vite",
 	},
+	viteFinal: (config) => {
+		// modify the Vite config here
+		if (config.plugins) {
+			config.plugins.push(
+				tsconfigPaths({
+					projects: [path.resolve(path.dirname(__dirname), "tsconfig.json")],
+				}),
+			);
+		}
+
+		return config;
+	},
 };
+
 export default config;

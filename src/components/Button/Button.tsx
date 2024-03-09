@@ -1,29 +1,39 @@
-import { ButtonHTMLAttributes } from "react";
+import { VariantProps, cva } from "class-variance-authority";
+import { ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-type ButtonVariants = "borderless" | "gray" | "outline" | "filled";
-type ButtonSizes = "sm" | "md" | "lg";
-type ButtonProps = {
-	variant?: ButtonVariants;
-	size?: ButtonSizes;
-} & ButtonHTMLAttributes<HTMLButtonElement>;
+export type ButtonVariants = VariantProps<typeof buttonStyles>;
+type ButtonProps = ButtonVariants & ComponentProps<"button">;
 
-export const Button = ({
-	variant = "filled",
-	size = "md",
-	onClick,
-}: ButtonProps) => (
-	<button
-		type="button"
-		onClick={onClick}
-		className={twMerge(
-			"py-4 px-8 rounded-lg transition-all hover:bg-opacity-70 active:bg-opacity-100 active:underline",
-			variant === "borderless" && "bg-primary text-white",
-			variant === "gray" && "bg-white text-primary",
-			variant === "outline" && "p-0 text-primary hover:underline",
-			variant === "filled" && "bg-primary text-white",
-		)}
-	>
-		Button
-	</button>
+const buttonStyles = cva(
+	["py-4 px-8 rounded-lg transition-all disabled:cursor-not-allowed"],
+	{
+		variants: {
+			variant: {
+				filled: ["your", "filled", "classes"],
+				borderless: ["your", "borderless", "classes"],
+				outlined: ["your", "outlined", "classes"],
+			},
+			size: {
+				sm: ["your", "small", "classes"],
+				md: ["your", "medium", "classes"],
+				lg: ["your", "large", "classes"],
+			},
+		},
+		defaultVariants: {
+			variant: "filled",
+			size: "md",
+		},
+	},
+);
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+	({ variant, size, className, ...props }, ref) => (
+		<button
+			ref={ref}
+			type="button"
+			className={twMerge(buttonStyles({ variant, size, className }))}
+			{...props}
+		/>
+	),
 );

@@ -1,0 +1,25 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-color: 245, 245, 245;
+  --foreground-rgb-black: 255, 255, 255;
+  --background-color-black: 125, 125, 125;
+}
+
+body, .docs-story {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-color));
+}
+
+[data-mode="dark"] body {
+  color: rgb(var(--foreground-rgb-black));
+  background: rgb(var(--background-color-black));
+}
+
+[data-mode="dark"] .docs-story {
+  color: rgb(var(--foreground-rgb-black));
+  background: rgb(var(--background-color-black));
+}

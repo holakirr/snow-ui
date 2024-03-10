@@ -8,9 +8,7 @@
 	"license": "MIT",
 	"type": "module",
 	"version": "0.1.0",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"main": "dist/kage-ui-umd.cjs",
 	"module": "dist/kage-ui.js",
 	"types": "dist/kage-ui.d.ts",

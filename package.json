@@ -33,7 +33,7 @@
 		"lint": "biome lint .",
 		"format": "biome format . --write",
 		"preview": "vite preview",
-		"prepare": "husky install"
+		"prepare": "husky"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.6.0",

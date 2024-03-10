@@ -6,6 +6,7 @@ import { withThemeByDataAttribute } from "@storybook/addon-themes";
 
 const preview: Preview = {
 	parameters: {
+		actions: { argTypesRegex: "^on[A-Z].*" },
 		backgrounds: {
 			disable: true,
 		},

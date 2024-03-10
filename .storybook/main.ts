@@ -1,6 +1,5 @@
+import { withoutVitePlugins } from "@storybook/builder-vite";
 import type { StorybookConfig } from "@storybook/react-vite";
-import path from "path";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 const config: StorybookConfig = {
 	stories: ["../src/**/*.stories.@(js|jsx|ts|tsx)"],
@@ -22,18 +21,10 @@ const config: StorybookConfig = {
 	core: {
 		builder: "@storybook/builder-vite",
 	},
-	viteFinal: (config) => {
-		// modify the Vite config here
-		if (config.plugins) {
-			config.plugins.push(
-				tsconfigPaths({
-					projects: [path.resolve(path.dirname(__dirname), "tsconfig.json")],
-				}),
-			);
-		}
-
-		return config;
-	},
+	viteFinal: async (config) => ({
+		...config,
+		plugins: await withoutVitePlugins(config.plugins, ["vite:dts"]), // skip dts plugin
+	}),
 };
 
 export default config;

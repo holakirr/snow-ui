@@ -1,3 +1,5 @@
 {
-	"projectId": "Project:65e8f172a639b10c0ba065c2"
+	"projectId": "Project:65e8f172a639b10c0ba065c2",
+	"buildScriptName": "build",
+	"zip": true
 }

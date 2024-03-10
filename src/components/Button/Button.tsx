@@ -1,5 +1,5 @@
-import { VariantProps, cva } from "class-variance-authority";
-import { ComponentProps, forwardRef } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { forwardRef, type ComponentProps } from "react";
 import { twMerge } from "tailwind-merge";
 
 export type ButtonVariants = VariantProps<typeof buttonStyles>;

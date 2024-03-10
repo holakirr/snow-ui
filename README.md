@@ -1,6 +1,6 @@
 # KageUI
 
-KageUI is React UI components library that features our vision of Dashboard.
+KageUI is React UI components library that features our vision of Dashboard. Based on TailwindCSS and inspired by Japanese culture.
 
 <!-- TODO: add website about this UI lib and it's documentation -->
 Take a look at my [CV](https://holakirr.com/ui)

@@ -31,20 +31,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
+      - name: Install npm
+        uses: actions/setup-node@v3.6.0
         with:
-          version: 8
-          run_install: true
+          node-version: 18
       - name: Build Storybook
-        run: pnpm run build
+        run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
           path: './storybook-static'
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4

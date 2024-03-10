@@ -52,7 +52,6 @@
 		"@storybook/test-runner": "0.16.0",
 		"@storybook/theming": "7.6.17",
 		"@tsconfig/recommended": "^1.0.3",
-		"@types/bun": "latest",
 		"@types/node": "^20.11.25",
 		"@types/react": "^18.2.64",
 		"@types/react-dom": "^18.2.21",

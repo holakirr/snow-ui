@@ -34,5 +34,5 @@
 		"react/react-in-jsx-scope": "off",
 		"react/display-name": "off"
 	},
-	"ignorePatterns": ["node_modules/", "dist/", "storybook-static/"]
+	"ignorePatterns": ["/node_modules", "./dist", "./storybook-static"]
 }

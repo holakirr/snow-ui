@@ -1,4 +1,6 @@
 {
+	"$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/eslintrc.json",
+	"root": true,
 	"settings": {
 		"react": {
 			"version": "detect"
@@ -11,7 +13,12 @@
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/recommended",
-		"plugin:react/recommended"
+		"plugin:react/recommended",
+		"plugin:react/jsx-runtime", // disable all rules conflict with React 17 JSX transform
+		"plugin:react-hooks/recommended",
+		"plugin:jest-dom/recommended",
+		"plugin:storybook/recommended",
+		"prettier" // disable all rules conflict with Prettier
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {

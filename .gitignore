@@ -17,6 +17,7 @@
 /build
 /dist
 /storybook-static
+/.cache
 
 # misc
 .DS_Store

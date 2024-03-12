@@ -12,8 +12,8 @@ export default defineConfig({
 		minify: false,
 		lib: {
 			entry: resolve(__dirname, "src/components/index.ts"),
-			fileName: "kage-ui",
-			name: "KageUI",
+			fileName: "snow-ui",
+			name: "SnowUI",
 		},
 		rollupOptions: {
 			external: ["react/jsx-runtime", ...Object.keys(peerDependencies)],

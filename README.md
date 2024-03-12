@@ -1,9 +1,11 @@
-# KageUI
+# SnowUI
 
-KageUI is React UI components library that features our vision of Dashboard. Based on TailwindCSS and inspired by Japanese culture.
+SnowUI is a React UI components library implementation of [SnowUI design kit](https://snowui.byewind.com). Based on TailwindCSS.
+Build your design using [it](https://www.figma.com/community/file/1301134685302006646)
 
 <!-- TODO: add website about this UI lib and it's documentation -->
-Take a look at my [CV](https://holakirr.com/ui)
+[Beta](https://snowui.holakirr.com) version now
+Take a look at my [CV](https://holakirr.com)
 
 ## Getting Started
 

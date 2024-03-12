@@ -1,6 +1,6 @@
 {
-	"name": "kage-ui",
-	"description": "KageUI is a React component library for creating beautiful and interactive user interfaces.",
+	"name": "snow-ui",
+	"description": "SnowUI is a React component library for creating beautiful and interactive user interfaces.",
 	"author": {
 		"name": "Kirill Petunin",
 		"url": "https://holakirr.com"
@@ -9,18 +9,18 @@
 	"type": "module",
 	"version": "0.1.0",
 	"files": ["dist"],
-	"main": "dist/kage-ui-umd.cjs",
-	"module": "dist/kage-ui.js",
-	"types": "dist/kage-ui.d.ts",
+	"main": "dist/snow-ui-umd.cjs",
+	"module": "dist/snow-ui.js",
+	"types": "dist/snow-ui.d.ts",
 	"exports": {
 		".": {
 			"import": {
-				"types": "./dist/kage-ui.d.ts",
-				"default": "./dist/kage-ui.js"
+				"types": "./dist/snow-ui.d.ts",
+				"default": "./dist/snow-ui.js"
 			},
 			"require": {
-				"types": "./dist/kage-ui.d.ts",
-				"default": "./dist/kage-ui-umd.cjs"
+				"types": "./dist/snow-ui.d.ts",
+				"default": "./dist/snow-ui-umd.cjs"
 			}
 		}
 	},

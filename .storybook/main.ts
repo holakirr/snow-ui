@@ -18,12 +18,9 @@ const config: StorybookConfig = {
 	docs: {
 		autodocs: "tag",
 	},
-	core: {
-		builder: "@storybook/builder-vite",
-	},
 	viteFinal: async (config) => ({
 		...config,
-		plugins: await withoutVitePlugins(config.plugins, ["vite:dts"]), // skip dts plugin
+		plugins: await withoutVitePlugins(config.plugins, ["vite:dts"]),
 	}),
 };
 

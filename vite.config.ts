@@ -19,9 +19,4 @@ export default defineConfig({
 			external: ["react/jsx-runtime", ...Object.keys(peerDependencies)],
 		},
 	},
-	resolve: {
-		alias: {
-			"@": resolve(__dirname, "src"),
-		},
-	},
 });

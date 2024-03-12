@@ -6,16 +6,19 @@ export type ButtonVariants = VariantProps<typeof buttonStyles>;
 type ButtonProps = ButtonVariants & ComponentProps<"button">;
 
 const buttonStyles = cva(
-	["py-4 px-8 rounded-lg transition-all disabled:cursor-not-allowed"],
+	[
+		"transition-all hover:cursor-pointer disabled:cursor-not-allowed flex justify-center items-center",
+	],
 	{
 		variants: {
 			variant: {
+				borderless: ["hover:bg-black-5"],
+				gray: ["your", "filled", "classes"],
+				outline: ["your", "outlined", "classes"],
 				filled: ["your", "filled", "classes"],
-				borderless: ["your", "borderless", "classes"],
-				outlined: ["your", "outlined", "classes"],
 			},
 			size: {
-				sm: ["your", "small", "classes"],
+				sm: ["py-1 px-2 rounded-lg gap-1"],
 				md: ["your", "medium", "classes"],
 				lg: ["your", "large", "classes"],
 			},

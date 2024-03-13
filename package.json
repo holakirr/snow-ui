@@ -1,6 +1,6 @@
 {
-	"name": "kage-ui",
-	"description": "KageUI is a React component library for creating beautiful and interactive user interfaces.",
+	"name": "snow-ui",
+	"description": "SnowUI is a React component library for creating beautiful and interactive user interfaces.",
 	"author": {
 		"name": "Kirill Petunin",
 		"url": "https://holakirr.com"
@@ -9,18 +9,18 @@
 	"type": "module",
 	"version": "0.1.0",
 	"files": ["dist"],
-	"main": "dist/kage-ui-umd.cjs",
-	"module": "dist/kage-ui.js",
-	"types": "dist/kage-ui.d.ts",
+	"main": "dist/snow-ui-umd.cjs",
+	"module": "dist/snow-ui.js",
+	"types": "dist/snow-ui.d.ts",
 	"exports": {
 		".": {
 			"import": {
-				"types": "./dist/kage-ui.d.ts",
-				"default": "./dist/kage-ui.js"
+				"types": "./dist/snow-ui.d.ts",
+				"default": "./dist/snow-ui.js"
 			},
 			"require": {
-				"types": "./dist/kage-ui.d.ts",
-				"default": "./dist/kage-ui-umd.cjs"
+				"types": "./dist/snow-ui.d.ts",
+				"default": "./dist/snow-ui-umd.cjs"
 			}
 		}
 	},
@@ -39,6 +39,7 @@
 		"@chromatic-com/storybook": "^1.2.18",
 		"@storybook/addon-a11y": "^8.0.0",
 		"@storybook/addon-actions": "^8.0.0",
+		"@storybook/addon-docs": "^8.0.0",
 		"@storybook/addon-essentials": "^8.0.0",
 		"@storybook/addon-interactions": "^8.0.0",
 		"@storybook/addon-links": "^8.0.0",
@@ -66,6 +67,7 @@
 		"eslint-plugin-storybook": "^0.8.0",
 		"husky": "^9.0.11",
 		"postcss": "^8.4.35",
+		"postcss-nesting": "^12.1.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"storybook": "^8.0.0",

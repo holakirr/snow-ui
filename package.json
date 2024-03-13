@@ -29,7 +29,7 @@
 		"test": "test-storybook --watch",
 		"build": "storybook build",
 		"build:lib": "tsc && vite build",
-		"chromatic": "npx chromatic",
+		"test:visual": "npx chromatic",
 		"lint": "biome lint .",
 		"format": "biome format . --write",
 		"prepare": "husky"

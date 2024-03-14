@@ -5,6 +5,7 @@ Build your design using [it](https://www.figma.com/community/file/13011346853020
 
 <!-- TODO: add website about this UI lib and it's documentation -->
 [Beta](https://snowui.holakirr.com) version now
+
 Take a look at my [CV](https://holakirr.com)
 
 ## Getting Started

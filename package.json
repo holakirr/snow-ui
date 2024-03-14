@@ -28,6 +28,10 @@
 				"types": "./dist/snow-ui.d.ts",
 				"default": "./dist/snow-ui-umd.cjs"
 			}
+		},
+		"./dist/build.css": {
+			"import": "./dist/build.css",
+			"require": "./dist/build.css"
 		}
 	},
 	"scripts": {

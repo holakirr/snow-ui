@@ -42,8 +42,8 @@
 		"prepare": "husky"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.6.0",
-		"@chromatic-com/storybook": "^1.2.18",
+		"@biomejs/biome": "^1.6.1",
+		"@chromatic-com/storybook": "^1.2.20",
 		"@storybook/addon-a11y": "^8.0.0",
 		"@storybook/addon-actions": "^8.0.0",
 		"@storybook/addon-docs": "^8.0.0",
@@ -58,9 +58,9 @@
 		"@storybook/test-runner": "^0.17.0",
 		"@storybook/theming": "^8.0.0",
 		"@tsconfig/recommended": "^1.0.3",
-		"@types/node": "^20.11.26",
-		"@types/react": "^18.2.65",
-		"@types/react-dom": "^18.2.21",
+		"@types/node": "^20.11.27",
+		"@types/react": "^18.2.66",
+		"@types/react-dom": "^18.2.22",
 		"@typescript-eslint/eslint-plugin": "latest",
 		"@typescript-eslint/parser": "latest",
 		"@vitejs/plugin-react-swc": "^3.6.0",

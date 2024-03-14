@@ -13,7 +13,7 @@
 	"homepage": "https://github.com/amtrz/snow-ui/tree/main#readme",
 	"license": "MIT",
 	"type": "module",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"files": ["dist"],
 	"main": "dist/snow-ui-umd.cjs",
 	"module": "dist/snow-ui.js",
@@ -29,10 +29,7 @@
 				"default": "./dist/snow-ui-umd.cjs"
 			}
 		},
-		"./dist/build.css": {
-			"import": "./dist/build.css",
-			"require": "./dist/build.css"
-		}
+		"./build.css": "./dist/build.css"
 	},
 	"scripts": {
 		"dev": "storybook dev -p 6006",

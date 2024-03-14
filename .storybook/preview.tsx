@@ -1,8 +1,6 @@
 import type { Preview } from "@storybook/react";
 
 import "../src/globals.css";
-import "../src/variables.css";
-import "../src/font.css";
 
 import { withThemeByDataAttribute } from "@storybook/addon-themes";
 

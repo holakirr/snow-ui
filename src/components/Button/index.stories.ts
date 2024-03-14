@@ -1,4 +1,4 @@
-import { Button } from "./";
+import { Button } from ".";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
@@ -15,7 +15,7 @@ const meta = {
 	argTypes: {
 		variant: {
 			control: "radio",
-			options: ["filled", "borderless", "outlined"],
+			options: ["borderless", "gray", "outlined", "filled"],
 			description: "The style variant of the button",
 		},
 		size: {
@@ -23,20 +23,23 @@ const meta = {
 			options: ["sm", "md", "lg"],
 			description: "The size of the button",
 		},
+		disabled: {
+			control: "boolean",
+			description: "Whether the button is disabled",
+		},
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
-	args: { onClick: fn(), variant: "filled", size: "md", children: "Button" },
+	args: {
+		onClick: fn(),
+		variant: "filled",
+		size: "sm",
+		disabled: false,
+		children: "Button",
+	},
 } satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
-// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-export const Filled: Story = {
-	args: {
-		variant: "filled",
-	},
-};
 
 export const Borderless: Story = {
 	args: {
@@ -44,8 +47,20 @@ export const Borderless: Story = {
 	},
 };
 
+export const Gray: Story = {
+	args: {
+		variant: "gray",
+	},
+};
+
 export const Outline: Story = {
 	args: {
-		variant: "outlined",
+		variant: "outline",
+	},
+};
+
+export const Filled: Story = {
+	args: {
+		variant: "filled",
 	},
 };

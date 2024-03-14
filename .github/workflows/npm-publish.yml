@@ -3,7 +3,10 @@
 
 name: Node.js Package
 
-on: push
+on: 
+  push:
+    branches:
+      - amtrz/main
 
 jobs:
   build:
@@ -14,7 +17,6 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
-      - run: npm run build
       - run: npm run build:lib
 
   publish-npm:
@@ -26,7 +28,14 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
+      - uses: step-security/wait-for-secrets@v1
+        id: wait-for-secrets
+        with:
+          secrets: |
+            OTP: 
+              name: 'OTP to publish package'
+              description: 'OTP from authenticator app'
       - run: npm ci
-      - run: npm publish
+      - run: npm publish --otp ${{ steps.wait-for-secrets.outputs.OTP }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

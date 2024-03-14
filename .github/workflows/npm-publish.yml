@@ -4,23 +4,15 @@
 name: Node.js Package
 
 on: 
-  push:
+  pull_request:
     branches:
-      - amtrz/main
+      - main
+    types: 
+      - closed
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm run build:lib
-
-  publish-npm:
-    needs: build
+  if_merged:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +28,6 @@ jobs:
               name: 'OTP to publish package'
               description: 'OTP from authenticator app'
       - run: npm ci
-      - run: npm publish --otp ${{ steps.wait-for-secrets.outputs.OTP }}
+      - run: npm run build:lib && npm publish --otp ${{ steps.wait-for-secrets.outputs.OTP }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

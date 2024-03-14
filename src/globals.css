@@ -4,7 +4,8 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-.docs-story {
+.docs-story,
+.sb-show-main {
   @apply bg-primary-background text-black-100;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;

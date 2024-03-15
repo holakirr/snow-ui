@@ -15,7 +15,7 @@ const meta = {
 	argTypes: {
 		variant: {
 			control: "radio",
-			options: ["borderless", "gray", "outlined", "filled"],
+			options: ["borderless", "gray", "outline", "filled"],
 			description: "The style variant of the button",
 		},
 		size: {
@@ -34,7 +34,7 @@ const meta = {
 		variant: "filled",
 		size: "sm",
 		disabled: false,
-		children: "Button",
+		label: "Button",
 	},
 } satisfies Meta<typeof Button>;
 

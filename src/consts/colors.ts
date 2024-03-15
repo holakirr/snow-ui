@@ -16,7 +16,10 @@ export const COLOR_SCHEME = {
 		100: "rgba(var(--color-white-100))",
 	},
 	primary: {
-		brand: "rgba(var(--color-primary-brand))",
+		brand: {
+			DEFAULT: "rgba(var(--color-primary-brand))",
+			hover: "rgba(var(--color-primary-brand-hover))",
+		},
 		blue: "rgba(var(--color-primary-blue))",
 		purple: {
 			DEFAULT: "rgba(var(--color-primary-purple))",

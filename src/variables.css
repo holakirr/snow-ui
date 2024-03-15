@@ -10,6 +10,8 @@
 
   /* Base colors */
   --base-color-black: 28, 28, 28;
+  --base-color-gray: 119, 119, 119;
+  --base-color-purple-darker: 130, 131, 160;
   --base-color-white: 255, 255, 255;
   --base-color-blue: 227, 245, 255;
   --base-color-secondary-blue: 177, 227, 255;
@@ -39,6 +41,7 @@
   --color-white-100: var(--base-color-white), var(--100);
 
   --color-primary-brand: var(--base-color-black), var(--100);
+  --color-primary-brand-hover: var(--base-color-gray), var(--100);
   --color-primary-blue: var(--base-color-blue), var(--100);
   --color-primary-purple: var(--base-color-purple), var(--100);
   --color-primary-purple-50: var(--base-color-purple), var(--50);
@@ -73,6 +76,7 @@ html[data-mode="dark"]:root {
   --color-white-100: var(--base-color-black), var(--100);
 
   --color-primary-brand: var(--base-color-secondary-purple), var(--100);
+  --color-primary-brand-hover: var(--base-color-purple-darker), var(--100);
   --color-primary-blue: var(--base-color-blue), var(--100);
   --color-primary-purple: var(--base-color-purple), var(--100);
   --color-primary-purple-50: var(--base-color-white), var(--5);

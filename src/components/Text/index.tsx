@@ -3,7 +3,7 @@ import { forwardRef, type ElementType, type ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 import type { PolimorphicComponentPropsWithRef, PolimorphicRef } from "../../";
 
-const textStyles = cva(["w-full font-normal"], {
+const textStyles = cva(["w-full font-normal transition-all"], {
 	variants: {
 		size: {
 			64: "text-[4rem] leading-[4.875rem]",

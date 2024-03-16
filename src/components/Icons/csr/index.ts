@@ -1,0 +1,1 @@
+export { DefaultIcon } from "./DefaultIcon";

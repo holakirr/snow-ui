@@ -1,6 +1,6 @@
 {
-	"name": "holakirr-snow-ui",
-	"description": "SnowUI is a React component library for creating beautiful and interactive user interfaces.",
+	"name": "amtrz-snow-ui",
+	"description": "SnowUI is a React component library designed by ByeWind, implementated and improved by Amtrz team for creating beautiful and interactive user interfaces.",
 	"author": "Kirill Petunin <kpetunin@icloud.com> (https://holakirr.com)",
 	"repository": {
 		"type": "git",
@@ -44,6 +44,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^1.6.1",
 		"@chromatic-com/storybook": "^1.2.20",
+		"@phosphor-icons/react": "^2.0.15",
 		"@storybook/addon-a11y": "^8.0.0",
 		"@storybook/addon-actions": "^8.0.0",
 		"@storybook/addon-docs": "^8.0.0",

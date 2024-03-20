@@ -1,6 +1,9 @@
 name: "Chromatic"
 
-on: pull_request
+on:
+  pull_request:
+    branches:
+      - main
 
 jobs:
   chromatic:
@@ -17,10 +20,10 @@ jobs:
         run: npm install
       - name: See secrets
         run: echo ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-      - name: Run Chromatic
+      - name: Publish to Chromatic
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           zip: true
           onlyChanged: true
-          buildScriptName: "build-storybook"
+          buildScriptName: "build"

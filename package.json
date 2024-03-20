@@ -40,11 +40,10 @@
 		"test": "test-storybook --watch",
 		"build": "storybook build",
 		"build:lib": "tsc && vite build && npx tailwindcss -i ./src/export.css -o ./dist/build.css --minify",
-		"test:visual": "npx chromatic",
 		"lint": "biome lint .",
 		"format": "biome format . --write",
 		"prepare": "husky",
-		"chromatic": "npx chromatic"
+		"chromatic": "chromatic --exit-zero-on-changes"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.6.1",

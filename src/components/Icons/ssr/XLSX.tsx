@@ -1,6 +1,9 @@
 import { forwardRef } from "react";
-import { CustomIconBase, XLSXWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, XLSXWeights } from "..";
 
-export const XLSXIcon = forwardRef<SVGSVGElement, CustomIconProps>(
-	(props, ref) => <CustomIconBase ref={ref} {...props} weights={XLSXWeights} />,
-);
+const XLSXIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
+	<CustomIconBase ref={ref} {...props} weights={XLSXWeights} />
+));
+
+XLSXIcon.displayName = "XLSXIcon";
+export { XLSXIcon };

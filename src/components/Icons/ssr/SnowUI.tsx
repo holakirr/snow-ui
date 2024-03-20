@@ -1,8 +1,9 @@
 import { forwardRef } from "react";
-import { CustomIconBase, SnowUIWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, SnowUIWeights } from "..";
 
-export const SnowUIIcon = forwardRef<SVGSVGElement, CustomIconProps>(
-	(props, ref) => (
-		<CustomIconBase ref={ref} {...props} weights={SnowUIWeights} />
-	),
-);
+const SnowUIIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
+	<CustomIconBase ref={ref} {...props} weights={SnowUIWeights} />
+));
+
+SnowUIIcon.displayName = "SnowUIIcon";
+export { SnowUIIcon };

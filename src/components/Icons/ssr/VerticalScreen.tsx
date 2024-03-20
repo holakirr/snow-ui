@@ -1,12 +1,15 @@
 import { forwardRef } from "react";
 import {
 	CustomIconBase,
-	VerticalScreenWeights,
 	type CustomIconProps,
+	VerticalScreenWeights,
 } from "..";
 
-export const VerticalScreenIcon = forwardRef<SVGSVGElement, CustomIconProps>(
+const VerticalScreenIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (
 		<CustomIconBase ref={ref} {...props} weights={VerticalScreenWeights} />
 	),
 );
+
+VerticalScreenIcon.displayName = "VerticalScreenIcon";
+export { VerticalScreenIcon };

@@ -1,6 +1,9 @@
 import { forwardRef } from "react";
-import { CustomIconBase, HelpWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, HelpWeights } from "..";
 
-export const HelpIcon = forwardRef<SVGSVGElement, CustomIconProps>(
-	(props, ref) => <CustomIconBase ref={ref} {...props} weights={HelpWeights} />,
-);
+const HelpIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
+	<CustomIconBase ref={ref} {...props} weights={HelpWeights} />
+));
+
+HelpIcon.displayName = "HelpIcon";
+export { HelpIcon };

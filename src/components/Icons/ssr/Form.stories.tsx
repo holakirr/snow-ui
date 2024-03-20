@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { DefaultIcon } from "./ssr";
+import { FormIcon } from "./";
 
 const meta = {
-	title: "Design resources/Icons/DefaultIcon",
-	component: DefaultIcon,
+	title: "Design resources/Icons/Form",
+	component: FormIcon,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
 		layout: "centered",
@@ -21,15 +21,15 @@ const meta = {
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		size: 24,
-		alt: "Default Icon",
+		alt: "Form Icon",
 		weight: "regular",
 		className: "fill-primary-brand",
 	},
-} satisfies Meta<typeof DefaultIcon>;
+} satisfies Meta<typeof FormIcon>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const DefaultIconStory: Story = {
+export const FormIconStory: Story = {
 	args: {},
 };

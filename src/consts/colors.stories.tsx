@@ -1,7 +1,6 @@
-import { COLOR_SCHEME } from "./";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import React from "react";
+import { COLOR_SCHEME } from ".";
 
 const meta = {
 	title: "Foundations/Design System/Color Scheme",

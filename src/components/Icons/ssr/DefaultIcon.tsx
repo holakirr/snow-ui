@@ -1,8 +1,9 @@
 import { forwardRef } from "react";
-import { CustomIconBase, DefaultIconWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, DefaultIconWeights } from "..";
 
-export const DefaultIcon = forwardRef<SVGSVGElement, CustomIconProps>(
-	(props, ref) => (
-		<CustomIconBase ref={ref} {...props} weights={DefaultIconWeights} />
-	),
-);
+const DefaultIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
+	<CustomIconBase ref={ref} {...props} weights={DefaultIconWeights} />
+));
+
+DefaultIcon.displayName = "DefaultIcon";
+export { DefaultIcon };

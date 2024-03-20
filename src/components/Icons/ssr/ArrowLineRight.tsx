@@ -5,8 +5,11 @@ import {
 	type CustomIconProps,
 } from "..";
 
-export const ArrowLineRightIcon = forwardRef<SVGSVGElement, CustomIconProps>(
+const ArrowLineRightIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (
 		<CustomIconBase ref={ref} {...props} weights={ArrowLineRightWeights} />
 	),
 );
+
+ArrowLineRightIcon.displayName = "ArrowLineRightIcon";
+export { ArrowLineRightIcon };

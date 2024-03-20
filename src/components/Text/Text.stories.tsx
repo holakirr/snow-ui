@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Text } from "./index";
+import { Text } from "./";
 
 const meta = {
 	title: "Base Components/Components/Text",
@@ -64,6 +64,7 @@ export const CustomStyle: Story = {
 	args: {
 		as: "h2",
 		children: "Custom styled text",
+		size: 20,
 		style: {
 			color: "red",
 			fontSize: "20px",

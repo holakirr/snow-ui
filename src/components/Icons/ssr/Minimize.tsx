@@ -1,8 +1,11 @@
 import { forwardRef } from "react";
-import { CustomIconBase, MinimizeWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, MinimizeWeights } from "..";
 
-export const MinimizeIcon = forwardRef<SVGSVGElement, CustomIconProps>(
+const MinimizeIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (
 		<CustomIconBase ref={ref} {...props} weights={MinimizeWeights} />
 	),
 );
+
+MinimizeIcon.displayName = "MinimizeIcon";
+export { MinimizeIcon };

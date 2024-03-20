@@ -1,12 +1,15 @@
 import { forwardRef } from "react";
 import {
 	CustomIconBase,
-	FourLeafCloverWeights,
 	type CustomIconProps,
+	FourLeafCloverWeights,
 } from "..";
 
-export const FourLeafCloverIcon = forwardRef<SVGSVGElement, CustomIconProps>(
+const FourLeafCloverIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (
 		<CustomIconBase ref={ref} {...props} weights={FourLeafCloverWeights} />
 	),
 );
+
+FourLeafCloverIcon.displayName = "FourLeafCloverIcon";
+export { FourLeafCloverIcon };

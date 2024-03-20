@@ -1,6 +1,9 @@
 import { forwardRef } from "react";
-import { CustomIconBase, LineWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, LineWeights } from "..";
 
-export const LineIcon = forwardRef<SVGSVGElement, CustomIconProps>(
-	(props, ref) => <CustomIconBase ref={ref} {...props} weights={LineWeights} />,
-);
+const LineIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
+	<CustomIconBase ref={ref} {...props} weights={LineWeights} />
+));
+
+LineIcon.displayName = "LineIcon";
+export { LineIcon };

@@ -1,8 +1,11 @@
 import { forwardRef } from "react";
-import { CustomIconBase, RoundedCornerWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, RoundedCornerWeights } from "..";
 
-export const RoundedCornerIcon = forwardRef<SVGSVGElement, CustomIconProps>(
+const RoundedCornerIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (
 		<CustomIconBase ref={ref} {...props} weights={RoundedCornerWeights} />
 	),
 );
+
+RoundedCornerIcon.displayName = "RoundedCornerIcon";
+export { RoundedCornerIcon };

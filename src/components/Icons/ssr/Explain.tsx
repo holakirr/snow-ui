@@ -1,8 +1,9 @@
 import { forwardRef } from "react";
-import { CustomIconBase, ExplainWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, ExplainWeights } from "..";
 
-export const ExplainIcon = forwardRef<SVGSVGElement, CustomIconProps>(
-	(props, ref) => (
-		<CustomIconBase ref={ref} {...props} weights={ExplainWeights} />
-	),
-);
+const ExplainIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
+	<CustomIconBase ref={ref} {...props} weights={ExplainWeights} />
+));
+
+ExplainIcon.displayName = "ExplainIcon";
+export { ExplainIcon };

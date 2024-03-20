@@ -1,8 +1,9 @@
 import { forwardRef } from "react";
-import { CustomIconBase, TextAWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, TextAWeights } from "..";
 
-export const TextAIcon = forwardRef<SVGSVGElement, CustomIconProps>(
-	(props, ref) => (
-		<CustomIconBase ref={ref} {...props} weights={TextAWeights} />
-	),
-);
+const TextAIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
+	<CustomIconBase ref={ref} {...props} weights={TextAWeights} />
+));
+
+TextAIcon.displayName = "TextAIcon";
+export { TextAIcon };

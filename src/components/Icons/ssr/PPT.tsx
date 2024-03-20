@@ -1,6 +1,9 @@
 import { forwardRef } from "react";
-import { CustomIconBase, PPTWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, PPTWeights } from "..";
 
-export const PPTIcon = forwardRef<SVGSVGElement, CustomIconProps>(
-	(props, ref) => <CustomIconBase ref={ref} {...props} weights={PPTWeights} />,
-);
+const PPTIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
+	<CustomIconBase ref={ref} {...props} weights={PPTWeights} />
+));
+
+PPTIcon.displayName = "PPTIcon";
+export { PPTIcon };

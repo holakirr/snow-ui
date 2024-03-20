@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "..";
 
-export const DotsThreeOutlineVerticalWeights: CustomIconWeights = new Map([
+export const DotsThreeOutlineHorizontalWeights: CustomIconWeights = new Map([
 	[
 		"regular",
 		<>

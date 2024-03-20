@@ -1,6 +1,9 @@
 import { forwardRef } from "react";
-import { CustomIconBase, FormWeights, type CustomIconProps } from "..";
+import { CustomIconBase, type CustomIconProps, FormWeights } from "..";
 
-export const FormIcon = forwardRef<SVGSVGElement, CustomIconProps>(
-	(props, ref) => <CustomIconBase ref={ref} {...props} weights={FormWeights} />,
-);
+const FormIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
+	<CustomIconBase ref={ref} {...props} weights={FormWeights} />
+));
+
+FormIcon.displayName = "FormIcon";
+export { FormIcon };

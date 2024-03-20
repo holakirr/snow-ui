@@ -1,12 +1,15 @@
 import { forwardRef } from "react";
 import {
 	CustomIconBase,
-	HorizontalScreenWeights,
 	type CustomIconProps,
+	HorizontalScreenWeights,
 } from "..";
 
-export const HorizontalScreenIcon = forwardRef<SVGSVGElement, CustomIconProps>(
+const HorizontalScreenIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (
 		<CustomIconBase ref={ref} {...props} weights={HorizontalScreenWeights} />
 	),
 );
+
+HorizontalScreenIcon.displayName = "HorizontalScreenIcon";
+export { HorizontalScreenIcon };

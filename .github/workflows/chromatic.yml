@@ -23,7 +23,7 @@ jobs:
       - name: Publish to Chromatic
         uses: chromaui/action@latest
         with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          projectToken: "chpt_f1208002dbb3d00"
           zip: true
           onlyChanged: true
           buildScriptName: "build"

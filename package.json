@@ -1,6 +1,6 @@
 {
-	"name": "holakirr-snow-ui",
-	"description": "SnowUI is a React component library for creating beautiful and interactive user interfaces.",
+	"name": "amtrz-snow-ui",
+	"description": "SnowUI is a React component library designed by ByeWind, implementated and improved by Amtrz team for creating beautiful and interactive user interfaces.",
 	"author": "Kirill Petunin <kpetunin@icloud.com> (https://holakirr.com)",
 	"repository": {
 		"type": "git",
@@ -13,7 +13,7 @@
 	"homepage": "https://github.com/amtrz/snow-ui/tree/main#readme",
 	"license": "MIT",
 	"type": "module",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"files": ["dist"],
 	"main": "dist/snow-ui-umd.cjs",
 	"module": "dist/snow-ui.js",
@@ -29,10 +29,7 @@
 				"default": "./dist/snow-ui-umd.cjs"
 			}
 		},
-		"./dist/build.css": {
-			"import": "./dist/build.css",
-			"require": "./dist/build.css"
-		}
+		"./build.css": "./dist/build.css"
 	},
 	"scripts": {
 		"dev": "storybook dev -p 6006",
@@ -45,25 +42,25 @@
 		"prepare": "husky"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.6.0",
-		"@chromatic-com/storybook": "^1.2.18",
-		"@storybook/addon-a11y": "^8.0.0",
-		"@storybook/addon-actions": "^8.0.0",
-		"@storybook/addon-docs": "^8.0.0",
-		"@storybook/addon-essentials": "^8.0.0",
-		"@storybook/addon-interactions": "^8.0.0",
-		"@storybook/addon-links": "^8.0.0",
-		"@storybook/addon-themes": "^8.0.0",
-		"@storybook/blocks": "^8.0.0",
-		"@storybook/react": "^8.0.0",
-		"@storybook/react-vite": "^8.0.0",
-		"@storybook/test": "^8.0.0",
+		"@biomejs/biome": "^1.6.1",
+		"@chromatic-com/storybook": "^1.2.24",
+		"@phosphor-icons/react": "^2.0.15",
+		"@storybook/addon-a11y": "^8.0.2",
+		"@storybook/addon-actions": "^8.0.2",
+		"@storybook/addon-docs": "^8.0.2",
+		"@storybook/addon-essentials": "^8.0.2",
+		"@storybook/addon-interactions": "^8.0.2",
+		"@storybook/addon-links": "^8.0.2",
+		"@storybook/addon-themes": "^8.0.2",
+		"@storybook/react": "^8.0.2",
+		"@storybook/react-vite": "^8.0.2",
+		"@storybook/test": "^8.0.2",
 		"@storybook/test-runner": "^0.17.0",
-		"@storybook/theming": "^8.0.0",
+		"@storybook/theming": "^8.0.2",
 		"@tsconfig/recommended": "^1.0.3",
-		"@types/node": "^20.11.26",
-		"@types/react": "^18.2.65",
-		"@types/react-dom": "^18.2.21",
+		"@types/node": "^20.11.27",
+		"@types/react": "^18.2.66",
+		"@types/react-dom": "^18.2.22",
 		"@typescript-eslint/eslint-plugin": "latest",
 		"@typescript-eslint/parser": "latest",
 		"@vitejs/plugin-react-swc": "^3.6.0",
@@ -80,7 +77,7 @@
 		"postcss-nesting": "^12.1.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"storybook": "^8.0.0",
+		"storybook": "^8.0.2",
 		"tailwind-merge": "^2.2.1",
 		"tailwindcss": "^3.4.1",
 		"ts-node": "^10.9.2",

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { DefaultIcon } from "./csr";
+import { DefaultIcon } from "./ssr";
 
 const meta = {
 	title: "Design resources/Icons/DefaultIcon",

@@ -1,1 +1,0 @@
-export { DefaultIcon } from "./DefaultIcon";

@@ -21,7 +21,11 @@ jobs:
           fetch-depth: 0
       - name: Install dependencies
         run: npm install
-      - name: Publish to Chromatic
-        uses: chromaui/action@latest
+
+      - uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          # 👇 Runs Chromatic with the option to compress the build output.
+          zip: true
+          buildScriptName: "build"
+          onlyChanged: true

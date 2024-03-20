@@ -1,7 +1,11 @@
 {
 	"name": "amtrz-snow-ui",
 	"description": "SnowUI is a React component library designed by ByeWind, implementated and improved by Amtrz team for creating beautiful and interactive user interfaces.",
-	"author": "Kirill Petunin <kpetunin@icloud.com> (https://holakirr.com)",
+	"author": {
+		"name": "Kirill Petunin",
+		"email": "kpetunin@icloud.com",
+		"url": "https://holakirr.com"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/amtrz/snow-ui.git#main"
@@ -39,7 +43,8 @@
 		"test:visual": "npx chromatic",
 		"lint": "biome lint .",
 		"format": "biome format . --write",
-		"prepare": "husky"
+		"prepare": "husky",
+		"chromatic": "npx chromatic"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.6.1",

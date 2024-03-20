@@ -60,19 +60,6 @@ export const Default: Story = {
 	},
 };
 
-export const CustomStyle: Story = {
-	args: {
-		as: "h2",
-		children: "Custom styled text",
-		size: 20,
-		style: {
-			color: "red",
-			fontSize: "20px",
-			fontWeight: "bold",
-		},
-	},
-};
-
 export const LongText: Story = {
 	args: {
 		children:

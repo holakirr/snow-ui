@@ -1,11 +1,9 @@
 name: "Chromatic"
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
-    types:
-      - closed
+      - amtrz/snow-ui/main
 
 jobs:
   chromatic:

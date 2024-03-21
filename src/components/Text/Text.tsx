@@ -1,7 +1,7 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ElementType, type ReactNode, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import type { PolimorphicComponentPropsWithRef, PolimorphicRef } from "../../";
+import type { PolimorphicComponentPropsWithRef, PolimorphicRef } from "../..";
 
 const textStyles = cva(["w-full font-normal transition-all"], {
 	variants: {

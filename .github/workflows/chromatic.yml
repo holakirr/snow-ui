@@ -25,3 +25,4 @@ jobs:
           buildScriptName: "build"
           exitZeroOnChanges: true
           zip: true
+          exitOnceUploaded: true

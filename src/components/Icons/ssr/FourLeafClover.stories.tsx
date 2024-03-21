@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { FourLeafCloverIcon } from "./";
+import { FourLeafCloverIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/FourLeafClover",

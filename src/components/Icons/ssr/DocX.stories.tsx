@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { DocXIcon } from "./";
+import { DocXIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/DocX",

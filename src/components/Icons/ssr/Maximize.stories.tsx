@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { MaximizeIcon } from "./";
+import { MaximizeIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/Maximize",

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { HelpIcon } from "./";
+import { HelpIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/Help",

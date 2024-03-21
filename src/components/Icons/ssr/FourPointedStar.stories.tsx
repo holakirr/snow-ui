@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { FourPointedStarIcon } from "./";
+import { FourPointedStarIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/FourPointedStar",

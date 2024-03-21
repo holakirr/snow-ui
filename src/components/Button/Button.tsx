@@ -1,13 +1,16 @@
-import { cva, type VariantProps } from "class-variance-authority";
-import { forwardRef, type ComponentProps } from "react";
+import { type VariantProps, cva } from "class-variance-authority";
+import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Text } from "../";
+import { Text } from "..";
+import type { CustomIcon } from "../Icons";
 
 export type ButtonVariants = "borderless" | "gray" | "outline" | "filled";
 export type ButtonSizes = "sm" | "md" | "lg";
 type ButtonProps = VariantProps<typeof buttonStyles> &
 	ComponentProps<"button"> & {
-		label: string;
+		label?: string;
+		rightIcon?: CustomIcon;
+		leftIcon?: CustomIcon;
 	};
 
 const buttonStyles = cva(
@@ -39,17 +42,55 @@ const buttonStyles = cva(
 	},
 );
 
+const IconSizes = {
+	sm: 16,
+	md: 20,
+	lg: 24,
+} as const;
+
+const Paddings = {
+	sm: "p-1",
+	md: "p-2",
+	lg: "p-4",
+} as const;
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-	({ variant, size, className, label, ...props }, ref) => (
+	(
+		{
+			variant = "borderless",
+			size = "sm",
+			className,
+			label,
+			rightIcon: RightIcon,
+			leftIcon: LeftIcon,
+			...props
+		},
+		ref,
+	) => (
 		<button
 			ref={ref}
 			type="button"
-			className={twMerge(buttonStyles({ variant, size, className }))}
+			className={twMerge(
+				buttonStyles({ variant, size, className }),
+				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
+			)}
 			{...props}
 		>
-			<Text size={size === "sm" ? 14 : 18} className="group-hover:px-1">
-				{label}
-			</Text>
+			{LeftIcon && (
+				<div className="">
+					<LeftIcon size={IconSizes[size || "sm"]} alt="" />
+				</div>
+			)}
+			{label && (
+				<Text size={size === "sm" ? 14 : 18} className="group-hover:px-1">
+					{label}
+				</Text>
+			)}
+			{RightIcon && (
+				<div className="">
+					<RightIcon size={IconSizes[size || "sm"]} alt="" />
+				</div>
+			)}
 		</button>
 	),
 );

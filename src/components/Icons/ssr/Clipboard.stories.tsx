@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ClipboardIcon } from "./";
+import { ClipboardIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/Clipboard",

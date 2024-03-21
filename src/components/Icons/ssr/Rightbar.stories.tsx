@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { RightbarIcon } from "./";
+import { RightbarIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/Rightbar",

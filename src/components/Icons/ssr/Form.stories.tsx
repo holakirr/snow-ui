@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { FormIcon } from "./";
+import { FormIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/Form",

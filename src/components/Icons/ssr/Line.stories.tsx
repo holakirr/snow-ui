@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { LineIcon } from "./";
+import { LineIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/Line",

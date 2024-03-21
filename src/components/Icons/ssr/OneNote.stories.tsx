@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { OneNoteIcon } from "./";
+import { OneNoteIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/OneNote",

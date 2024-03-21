@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { MinimizeIcon } from "./";
+import { MinimizeIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/Minimize",

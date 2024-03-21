@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { SnowUIIcon } from "./";
+import { SnowUIIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/SnowUI",

@@ -23,6 +23,7 @@ export const CustomIconBase = forwardRef<SVGSVGElement, IconBaseProps>(
 			fill={color}
 			viewBox="0 0 32 32"
 			transform={mirrored ? "scale(-1, 1)" : undefined}
+			style={{ transition: "all .15s" }}
 			{...restProps}
 		>
 			<title>{alt}</title>

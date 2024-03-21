@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { HorizontalScreenIcon } from "./";
+import { HorizontalScreenIcon } from ".";
 
 const meta = {
 	title: "Design resources/Icons/HorizontalScreen",

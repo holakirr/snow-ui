@@ -1,9 +1,8 @@
+# .github/workflows/chromatic.yml
+
 name: "Chromatic"
 
-on:
-  push:
-    branches:
-      - amtrz/snow-ui/main
+on: push
 
 jobs:
   chromatic:
@@ -15,9 +14,11 @@ jobs:
           fetch-depth: 0
 
       - name: Install dependencies
+        # ⚠️ Pick one of these, matching the package manager for your project
         run: npm ci
 
       - name: Run Chromatic
         uses: chromaui/action@latest
         with:
+          # ⚠️ Make sure to configure a `CHROMATIC_PROJECT_TOKEN` repository secret
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}

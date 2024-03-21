@@ -33,7 +33,10 @@ const WithTooltip = forwardRef<HTMLDivElement, WithTooltipProps>(
 				{children}
 				{isVisible && (
 					<Tooltip
-						className={twMerge("absolute z-10", tooltipPosStyles({ position }))}
+						className={twMerge(
+							"absolute z-100",
+							tooltipPosStyles({ position }),
+						)}
 						label={label}
 						icon={icon}
 					/>

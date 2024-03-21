@@ -1,6 +1,6 @@
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Text } from "../..";
+import { Text } from "..";
 import type { CustomIcon } from "../Icons";
 
 export type TooltipProps = {
@@ -18,7 +18,7 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 	({ label, icon: Icon, className }) => (
 		<div
 			className={twMerge(
-				"py-1 px-2 flex place-items-center gap-2 bg-black-80 backdrop-blur-[20px] rounded-lg",
+				"py-1 px-2 flex place-items-center gap-2 bg-black-80 backdrop-blur-[20px] rounded-lg transition-all",
 				className,
 			)}
 		>

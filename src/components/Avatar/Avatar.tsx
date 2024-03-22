@@ -14,8 +14,6 @@ const avatarStyles = cva(
 	},
 );
 
-const backgrounds = Object.keys(COLOR_SCHEME.secondary);
-
 export type AvatarProps = ComponentProps<"div"> &
 	VariantProps<typeof avatarStyles> & {
 		username: string;
@@ -24,6 +22,7 @@ export type AvatarProps = ComponentProps<"div"> &
 
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
 	({ small, img, username, className }) => {
+		const backgrounds = Object.keys(COLOR_SCHEME.secondary);
 		const randomColorNumber = Math.floor(Math.random() * backgrounds.length);
 		const bg = `bg-secondary-${backgrounds[randomColorNumber]}`;
 		return (

@@ -10,21 +10,29 @@
 
   /* Base colors */
   --base-color-black: 28, 28, 28;
-  --base-color-gray: 119, 119, 119;
-  --base-color-purple-darker: 130, 131, 160;
-  --base-color-white: 255, 255, 255;
+  --base-color-blue-darker: 89, 168, 212;
+  --base-color-blue-lighter: 226, 245, 255;
   --base-color-blue: 227, 245, 255;
-  --base-color-secondary-blue: 177, 227, 255;
   --base-color-cyan: 168, 197, 218;
-  --base-color-purple: 229, 236, 246;
-  --base-color-secondary-purple: 198, 199, 248;
-  --base-color-light: 247, 249, 251;
-  --base-color-indigo: 149, 164, 252;
+  --base-color-gray: 119, 119, 119;
+  --base-color-green-darker: 74, 167, 133;
+  --base-color-green-lighter: 222, 248, 238;
   --base-color-green: 161, 227, 203;
+  --base-color-indigo-darker: 138, 140, 217;
+  --base-color-indigo-lighter: 237, 237, 255;
+  --base-color-indigo: 149, 164, 252;
+  --base-color-light: 247, 249, 251;
   --base-color-mint: 186, 237, 189;
-  --base-color-yellow: 255, 233, 153;
   --base-color-orange: 255, 203, 131;
+  --base-color-purple-darker: 130, 131, 160;
+  --base-color-purple: 229, 236, 246;
   --base-color-red: 255, 71, 71;
+  --base-color-secondary-blue: 177, 227, 255;
+  --base-color-secondary-purple: 198, 199, 248;
+  --base-color-white: 255, 255, 255;
+  --base-color-yellow-darker: 255, 197, 85;
+  --base-color-yellow-lighter: 255, 251, 212;
+  --base-color-yellow: 255, 233, 153;
 
   --color-black-5: var(--base-color-black), var(--5);
   --color-black-10: var(--base-color-black), var(--10);
@@ -50,12 +58,20 @@
 
   /* Same for both: light and dark */
   --color-secondary-indigo: var(--base-color-indigo), var(--100);
+  --color-secondary-indigo-darker: var(--base-color-indigo-darker), var(--100);
+  --color-secondary-indigo-lighter: var(--base-color-indigo-lighter), var(--100);
   --color-secondary-purple: var(--base-color-secondary-purple), var(--100);
   --color-secondary-cyan: var(--base-color-cyan), var(--100);
-  --color-secondary-blue: var(--base-color-secondary-blue), var(--100);
+  --color-secondary-blue: var(--base-color-blue), var(--100);
+  --color-secondary-blue-darker: var(--base-color-blue-darker), var(--100);
+  --color-secondary-blue-lighter: var(--base-color-blue-lighter), var(--100);
   --color-secondary-green: var(--base-color-green), var(--100);
+  --color-secondary-green-darker: var(--base-color-green-darker), var(--100);
+  --color-secondary-green-lighter: var(--base-color-green-lighter), var(--100);
   --color-secondary-mint: var(--base-color-mint), var(--100);
   --color-secondary-yellow: var(--base-color-yellow), var(--100);
+  --color-secondary-yellow-darker: var(--base-color-yellow-darker), var(--100);
+  --color-secondary-yellow-lighter: var(--base-color-yellow-lighter), var(--100);
   --color-secondary-orange: var(--base-color-orange), var(--100);
   --color-secondary-red: var(--base-color-red), var(--100);
 }

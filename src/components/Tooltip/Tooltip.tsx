@@ -15,12 +15,13 @@ export type TooltipProps = {
 } & ComponentProps<"div">;
 
 const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
-	({ label, icon: Icon, className }) => (
+	({ label, icon: Icon, className }, ref) => (
 		<div
 			className={twMerge(
 				"py-1 px-2 flex place-items-center gap-2 bg-black-80 backdrop-blur-[20px] rounded-lg transition-all",
 				className,
 			)}
+			ref={ref}
 		>
 			<Text as="span" className="text-white-100">
 				{label}

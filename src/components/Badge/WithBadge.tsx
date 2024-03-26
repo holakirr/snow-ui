@@ -3,8 +3,8 @@ import { twMerge } from "tailwind-merge";
 import { Badge, type BadgeProps } from ".";
 
 const WithBadge = forwardRef<HTMLDivElement, BadgeProps>(
-	({ text, children }) => (
-		<div className="relative">
+	({ text, children }, ref) => (
+		<div className="relative" ref={ref}>
 			{children}
 			<Badge
 				text={text}

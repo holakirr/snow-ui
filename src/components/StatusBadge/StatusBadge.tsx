@@ -44,8 +44,11 @@ type StatusBadgeProps = VariantProps<typeof statusBadgeStyles> &
 	};
 
 const StatusBadge = forwardRef<HTMLDivElement, StatusBadgeProps>(
-	({ label, withDot, status, className }) => (
-		<div className={twMerge(statusBadgeStyles({ withDot, status }), className)}>
+	({ label, withDot, status, className }, ref) => (
+		<div
+			className={twMerge(statusBadgeStyles({ withDot, status }), className)}
+			ref={ref}
+		>
 			{withDot && (
 				<DotIcon
 					alt={label}

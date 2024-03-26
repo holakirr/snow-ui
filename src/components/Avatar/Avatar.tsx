@@ -21,12 +21,15 @@ export type AvatarProps = ComponentProps<"div"> &
 	};
 
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
-	({ small, img, username, className }) => {
+	({ small, img, username, className }, ref) => {
 		const backgrounds = Object.keys(COLOR_SCHEME.secondary);
 		const randomColorNumber = Math.floor(Math.random() * backgrounds.length);
 		const bg = `bg-secondary-${backgrounds[randomColorNumber]}`;
 		return (
-			<div className={twMerge(bg, avatarStyles({ small, className }))}>
+			<div
+				className={twMerge(bg, avatarStyles({ small, className }))}
+				ref={ref}
+			>
 				{img && (
 					<img
 						src="https://avatar.iran.liara.run/public"

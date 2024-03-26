@@ -34,6 +34,8 @@ const meta = {
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		placeholder: "",
+		icon: undefined,
+		disabled: false,
 	},
 } satisfies Meta<typeof Input>;
 
@@ -47,5 +49,19 @@ export const BasicInput: Story = {
 export const InputWithPlaceholder: Story = {
 	args: {
 		placeholder: "Type something",
+	},
+};
+
+export const InputWithIconAndPlaceholder: Story = {
+	args: {
+		placeholder: "Type something",
+		icon: FourLeafCloverIcon,
+	},
+};
+
+export const DisabledInput: Story = {
+	args: {
+		placeholder: "Type something",
+		disabled: true,
 	},
 };

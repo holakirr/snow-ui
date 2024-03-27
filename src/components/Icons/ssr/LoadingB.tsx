@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import { twMerge } from "tailwind-merge";
 import { CustomIconBase, type CustomIconProps, LoadingBWeights } from "..";
 
 const LoadingBIcon = forwardRef<SVGSVGElement, CustomIconProps>(
@@ -7,7 +8,7 @@ const LoadingBIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 			ref={ref}
 			{...props}
 			weights={LoadingBWeights}
-			className="animate-loaderB"
+			className={twMerge("animate-loaderB", props.className)}
 		/>
 	),
 );

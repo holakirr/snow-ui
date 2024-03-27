@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
+import { useState } from "react";
 import { Input } from ".";
 import { ArrowLineDownIcon, DefaultIcon, FourLeafCloverIcon } from "..";
 
@@ -30,12 +32,20 @@ const meta = {
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
 		icon: iconControls,
+		status: {
+			control: "radio",
+			options: [null, "progress", "success", "error"],
+		},
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		placeholder: "",
+		placeholder: "Type something",
 		icon: undefined,
 		disabled: false,
+		error: "",
+		value: "",
+		status: null,
+		onChange: fn(),
 	},
 } satisfies Meta<typeof Input>;
 
@@ -43,25 +53,61 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const BasicInput: Story = {
-	args: {},
+	args: {
+		placeholder: "",
+	},
 };
 
 export const InputWithPlaceholder: Story = {
-	args: {
-		placeholder: "Type something",
-	},
+	args: {},
 };
 
 export const InputWithIconAndPlaceholder: Story = {
 	args: {
-		placeholder: "Type something",
 		icon: FourLeafCloverIcon,
 	},
 };
 
 export const DisabledInput: Story = {
 	args: {
-		placeholder: "Type something",
 		disabled: true,
+	},
+};
+
+export const SuccessInput: Story = {
+	args: {
+		status: "success",
+	},
+};
+
+// export const ErrorInput = () => {
+// 	const [value, setValue] = useState("fdsads");
+// 	return (
+// 		<Input
+// 			value={value}
+// 			onChange={(e) => setValue(e.target.value)}
+// 			placeholder="Type something"
+// 			status="error"
+// 			error="Something went wrong"
+// 		/>
+// 	);
+// };
+
+export const ErrorInput: Story = {
+	args: {
+		status: "error",
+		error: "Something went wrong",
+		placeholder: "Type something",
+	},
+	decorators: [(Story) => <div className="w-96">{Story()}</div>],
+	render: (args) => {
+		const [value, setValue] = useState("fdsads");
+		return (
+			<Input
+				{...args}
+				value={value}
+				onChange={(e) => setValue(e.target.value)}
+			/>
+		);
 	},
 };

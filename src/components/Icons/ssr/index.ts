@@ -26,6 +26,7 @@ export { GotoIcon } from "./Goto";
 export { HelpIcon } from "./Help";
 export { HorizontalScreenIcon } from "./HorizontalScreen";
 export { LineIcon } from "./Line";
+export { LoadingBIcon } from "./LoadingB";
 export { MaximizeIcon } from "./Maximize";
 export { MinimizeIcon } from "./Minimize";
 export { NotepadIcon } from "./Notepad";

@@ -26,6 +26,7 @@ export { GotoWeights } from "./Goto";
 export { HelpWeights } from "./Help";
 export { HorizontalScreenWeights } from "./HorizontalScreen";
 export { LineWeights } from "./Line";
+export { LoadingBWeights } from "./LoadingB";
 export { MaximizeWeights } from "./Maximize";
 export { MinimizeWeights } from "./Minimize";
 export { NotepadWeights } from "./Notepad";

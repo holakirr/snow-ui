@@ -1,15 +1,31 @@
+import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 import type { CustomIcon } from "../..";
 
-type InputProps = ComponentProps<"input"> & {
-	icon?: CustomIcon;
-};
+const inputClasses = cva("", {
+	variants: {
+		status: {
+			progress: "",
+			success: "",
+			error: "",
+		},
+	},
+});
+
+type InputProps = ComponentProps<"input"> &
+	VariantProps<typeof inputClasses> & {
+		icon?: CustomIcon;
+		error?: string;
+	};
 
 // TODO: Add content component
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-	({ placeholder, id, className, icon: Icon, ...props }, ref) => (
+	(
+		{ placeholder, id, className, icon: Icon, status, error, ...props },
+		ref,
+	) => (
 		<div className="relative">
 			<input
 				ref={ref}

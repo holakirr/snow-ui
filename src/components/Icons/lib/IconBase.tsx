@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import { twMerge } from "tailwind-merge";
 import type { IconBaseProps } from "../types";
 
 export const CustomIconBase = forwardRef<SVGSVGElement, IconBaseProps>(
@@ -8,9 +9,9 @@ export const CustomIconBase = forwardRef<SVGSVGElement, IconBaseProps>(
 			color = "currentColor",
 			size,
 			weight = "regular",
-			children,
 			weights,
 			mirrored,
+			className,
 			...restProps
 		},
 		ref,
@@ -24,11 +25,11 @@ export const CustomIconBase = forwardRef<SVGSVGElement, IconBaseProps>(
 			viewBox="0 0 32 32"
 			transform={mirrored ? "scale(-1, 1)" : undefined}
 			style={{ transition: "all .15s" }}
+			className={twMerge("aspect-square", className)}
 			{...restProps}
 		>
 			<title>{alt}</title>
-			{children}
-			{weights.get(weight)}
+			{weights.get(weight) || weights.get("regular")}
 		</svg>
 	),
 );

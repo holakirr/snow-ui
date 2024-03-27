@@ -22,13 +22,14 @@ const tooltipPosStyles = cva("", {
 });
 
 const WithTooltip = forwardRef<HTMLDivElement, WithTooltipProps>(
-	({ label, icon, position, children }) => {
+	({ label, icon, position, children }, ref) => {
 		const [isVisible, setIsVisible] = useState(false);
 		return (
 			<div
 				onMouseEnter={() => setIsVisible(true)}
 				onMouseLeave={() => setIsVisible(false)}
 				className="relative"
+				ref={ref}
 			>
 				{children}
 				{isVisible && (

@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { COLOR_SCHEME, Text } from "../..";
 
 const avatarStyles = cva(
-	"group brightness-100 hover:brightness-150 rounded-full transition-all overflow-hidden w-16 h-16 flex place-items-center justify-center",
+	"group brightness-100 hover:brightness-150 rounded-full transition-all overflow-hidden w-16 h-16 aspect-square flex items-center justify-center",
 	{
 		variants: {
 			small: {
@@ -14,20 +14,22 @@ const avatarStyles = cva(
 	},
 );
 
-const backgrounds = Object.keys(COLOR_SCHEME.secondary);
-
-type AvatarProps = ComponentProps<"div"> &
+export type AvatarProps = ComponentProps<"div"> &
 	VariantProps<typeof avatarStyles> & {
 		username: string;
 		img?: string;
 	};
 
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
-	({ small, img, username, className }) => {
+	({ small, img, username, className }, ref) => {
+		const backgrounds = Object.keys(COLOR_SCHEME.secondary);
 		const randomColorNumber = Math.floor(Math.random() * backgrounds.length);
 		const bg = `bg-secondary-${backgrounds[randomColorNumber]}`;
 		return (
-			<div className={twMerge(bg, avatarStyles({ small, className }))}>
+			<div
+				className={twMerge(bg, avatarStyles({ small, className }))}
+				ref={ref}
+			>
 				{img && (
 					<img
 						src="https://avatar.iran.liara.run/public"

@@ -1,12 +1,18 @@
+import MillionLint from "@million/lint";
 import react from "@vitejs/plugin-react-swc";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
-
 import { peerDependencies } from "./package.json";
 
+plugins.unshift(MillionLint.vite());
 export default defineConfig({
-	plugins: [react(), dts({ rollupTypes: true })],
+	plugins: [
+		react(),
+		dts({
+			rollupTypes: true,
+		}),
+	],
 	build: {
 		target: "esnext",
 		minify: false,

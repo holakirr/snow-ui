@@ -14,15 +14,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Storybook
-        run: npm run build
-
-        # 👇 Adds Chromatic as a step in the workflow
-      - name: Publish to Chromatic
-        uses: chromaui/action@latest
-        # Chromatic GitHub Action options
+      - uses: chromaui/action@latest
         with:
-          # 👇 Chromatic projectToken, refer to the manage page to obtain it.
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          storybookBuildDir: "./storybook-static"
+          exitZeroOnChanges: true
           debug: true

@@ -27,23 +27,28 @@ type InputProps = ComponentProps<"input"> &
 		icon?: CustomIcon;
 		error?: string;
 		onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+		title?: string;
 	};
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
 	(
 		{
+			title,
 			placeholder,
 			id,
 			className,
 			icon: Icon,
 			status,
 			error,
+			value,
 			onChange,
 			...props
 		},
 		ref,
 	) => {
-		const [withError, setWithError] = useState<boolean>(!!error);
+		const [withError, setWithError] = useState<boolean>(
+			!!error || status === "error",
+		);
 
 		const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
 			if (error) setWithError(false);
@@ -56,15 +61,33 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 					<input
 						id={id}
 						ref={ref}
-						placeholder={placeholder}
+						placeholder={title ? "" : placeholder}
 						className={twMerge(
-							inputClasses({ status }),
+							inputClasses({ status, className }),
 							Icon && "pl-11",
-							className,
+							title && "peer h-[74px] focus:h-[60px] content-end",
+							title && value && "h-[60px]",
+							title && status && "h-[74px] focus:h-[74px] content-center",
 						)}
 						onChange={onChangeHandler}
+						value={value}
 						{...props}
 					/>
+					{title && (
+						<Text
+							as="label"
+							htmlFor={id}
+							className={twMerge(
+								"absolute cursor-text top-1/2 left-5 transform -translate-y-1/2 text-black-20 peer-focus:top-[9px] peer-focus:translate-y-0 peer-focus:text-xs peer-disabled:text-black-10",
+								value && "text-xs top-[9px] translate-y-0",
+								status && "peer-focus:top-4",
+								status && value && "top-4",
+							)}
+							size={18}
+						>
+							{title}
+						</Text>
+					)}
 					{Icon && (
 						<Icon
 							alt={placeholder || "Input icon"}

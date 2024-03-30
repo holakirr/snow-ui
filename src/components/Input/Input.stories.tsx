@@ -46,6 +46,8 @@ const meta = {
 		value: "",
 		status: null,
 		onChange: fn(),
+		title: "",
+		id: "input",
 	},
 } satisfies Meta<typeof Input>;
 
@@ -80,19 +82,6 @@ export const SuccessInput: Story = {
 	},
 };
 
-// export const ErrorInput = () => {
-// 	const [value, setValue] = useState("fdsads");
-// 	return (
-// 		<Input
-// 			value={value}
-// 			onChange={(e) => setValue(e.target.value)}
-// 			placeholder="Type something"
-// 			status="error"
-// 			error="Something went wrong"
-// 		/>
-// 	);
-// };
-
 export const ErrorInput: Story = {
 	args: {
 		status: "error",
@@ -109,5 +98,26 @@ export const ErrorInput: Story = {
 				onChange={(e) => setValue(e.target.value)}
 			/>
 		);
+	},
+};
+
+export const InputWithTitle: Story = {
+	args: {
+		title: "Title",
+	},
+};
+
+export const InputWithTitleAndValue: Story = {
+	args: {
+		title: "Title",
+		value: "Value",
+	},
+};
+
+export const InputWithTitleAndValueAndStatus: Story = {
+	args: {
+		title: "Title",
+		value: "Value",
+		status: "progress",
 	},
 };

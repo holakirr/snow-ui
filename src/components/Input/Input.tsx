@@ -46,17 +46,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 		},
 		ref,
 	) => {
-		const [withError, setWithError] = useState<boolean>(
-			!!error || status === "error",
-		);
+		const [hideError, setHideError] = useState<boolean>(false);
 
 		const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-			if (error) setWithError(false);
+			if (error) setHideError(true);
 			return onChange(e);
 		};
 
 		return (
-			<div className="flex flex-col gap-2 transition-all">
+			<div className="flex flex-col items-start gap-2 transition-all">
 				<div className="relative">
 					<input
 						id={id}
@@ -68,6 +66,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 							title && "peer h-[74px] focus:h-[60px] content-end",
 							title && value && "h-[60px]",
 							title && status && "h-[74px] focus:h-[74px] content-center",
+							error && "border-secondary-red",
 						)}
 						onChange={onChangeHandler}
 						value={value}
@@ -96,7 +95,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 						/>
 					)}
 					{status === "error" ? (
-						withError && (
+						!hideError && (
 							<StatusIcon
 								status={status}
 								className="absolute right-5 bottom-[calc(50%-10px)]"
@@ -111,7 +110,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 						/>
 					)}
 				</div>
-				{withError && error && (
+				{!hideError && error && (
 					<Text className="text-secondary-red">{error}</Text>
 				)}
 			</div>

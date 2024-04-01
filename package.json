@@ -38,7 +38,7 @@
 	"scripts": {
 		"dev": "storybook dev -p 6006",
 		"test": "test-storybook --watch",
-		"build": "storybook build",
+		"build-storybook": "storybook build",
 		"build:lib": "tsc && vite build && npx tailwindcss -i ./src/export.css -o ./dist/build.css --minify",
 		"lint": "biome lint .",
 		"format": "biome format . --write",

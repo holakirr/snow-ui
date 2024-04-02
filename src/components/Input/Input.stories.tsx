@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import { useState } from "react";
 import { Input } from ".";
 import { ArrowLineDownIcon, DefaultIcon, FourLeafCloverIcon } from "..";
@@ -45,9 +44,19 @@ const meta = {
 		error: "",
 		value: "",
 		status: null,
-		onChange: fn(),
+		onChange: console.log,
 		title: "",
 		id: "input",
+	},
+	render: (args) => {
+		const [value, setValue] = useState<string>("fdsads");
+		return (
+			<Input
+				{...args}
+				value={value}
+				onChange={(e) => setValue(e.target.value)}
+			/>
+		);
 	},
 } satisfies Meta<typeof Input>;
 
@@ -88,17 +97,6 @@ export const ErrorInput: Story = {
 		error: "Something went wrong",
 		placeholder: "Type something",
 	},
-	decorators: [(Story) => <div className="w-96">{Story()}</div>],
-	render: (args) => {
-		const [value, setValue] = useState("fdsads");
-		return (
-			<Input
-				{...args}
-				value={value}
-				onChange={(e) => setValue(e.target.value)}
-			/>
-		);
-	},
 };
 
 export const InputWithTitle: Story = {
@@ -119,5 +117,12 @@ export const InputWithTitleAndValueAndStatus: Story = {
 		title: "Title",
 		value: "Value",
 		status: "progress",
+	},
+};
+
+export const ClearableInput: Story = {
+	args: {
+		title: "Title",
+		clearable: true,
 	},
 };

@@ -44,7 +44,8 @@
 		"format": "biome format . --write",
 		"commit": "better-commits",
 		"millionlint": "npx @million/lint@latest",
-		"chromatic": "chromatic --exit-zero-on-changes"
+		"chromatic": "chromatic --exit-zero-on-changes",
+		"clean": "rm -rf dist/ build-storybook.log storybook-static/ migration-storybook.log"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.6.3",

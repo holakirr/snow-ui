@@ -1,9 +1,7 @@
 import { forwardRef } from "react";
-import {
-	CustomIconBase,
-	type CustomIconProps,
-	DotsThreeOutlineHorizontalWeights,
-} from "..";
+import { DotsThreeOutlineHorizontalWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const DotsThreeOutlineHorizontalIcon = forwardRef<
 	SVGSVGElement,

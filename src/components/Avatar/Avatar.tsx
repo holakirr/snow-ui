@@ -1,7 +1,7 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { COLOR_SCHEME, Text } from "../..";
+import { Text } from "..";
 
 const avatarStyles = cva(
 	"group brightness-100 hover:brightness-150 rounded-full transition-all overflow-hidden w-16 h-16 aspect-square flex items-center justify-center",
@@ -10,6 +10,30 @@ const avatarStyles = cva(
 			small: {
 				true: "w-6 h-6",
 			},
+			color: {
+				secondary: "bg-secondary-brand",
+				blue: "bg-secondary-blue",
+				blueDarker: "bg-secondary-blueDarker",
+				blueLighter: "bg-secondary-blueLighter",
+				cyan: "bg-secondary-cyan",
+				green: "bg-secondary-green",
+				greenDarker: "bg-secondary-greenDarker",
+				greenLighter: "bg-secondary-greenLighter",
+				indigo: "bg-secondary-indigo",
+				indigoDarker: "bg-secondary-indigoDarker",
+				indigoLighter: "bg-secondary-indigoLighter",
+				mint: "bg-secondary-mint",
+				orange: "bg-secondary-orange",
+				purple: "bg-secondary-purple",
+				red: "bg-secondary-red",
+				yellow: "bg-secondary-yellow",
+				yellowDarker: "bg-secondary-yellowDarker",
+				yellowLighter: "bg-secondary-yellowLighter",
+			},
+		},
+		defaultVariants: {
+			color: "orange",
+			small: true,
 		},
 	},
 );
@@ -21,18 +45,15 @@ export type AvatarProps = ComponentProps<"div"> &
 	};
 
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
-	({ small, img, username, className }, ref) => {
-		const backgrounds = Object.keys(COLOR_SCHEME.secondary);
-		const randomColorNumber = Math.floor(Math.random() * backgrounds.length);
-		const bg = `bg-secondary-${backgrounds[randomColorNumber]}`;
+	({ small, img, username, color, className }, ref) => {
 		return (
 			<div
-				className={twMerge(bg, avatarStyles({ small, className }))}
+				className={twMerge(avatarStyles({ small, color, className }))}
 				ref={ref}
 			>
 				{img && (
 					<img
-						src="https://avatar.iran.liara.run/public"
+						src={img}
 						alt={username}
 						className="w-full h-full transition-all group-hover:scale-125"
 					/>

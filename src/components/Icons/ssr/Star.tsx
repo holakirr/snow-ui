@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
-import { CustomIconBase, type CustomIconProps, StarWeights } from "..";
+import { StarWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const StarIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
 	<CustomIconBase ref={ref} {...props} weights={StarWeights} />

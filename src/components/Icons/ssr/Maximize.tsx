@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
-import { CustomIconBase, type CustomIconProps, MaximizeWeights } from "..";
+import { MaximizeWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const MaximizeIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

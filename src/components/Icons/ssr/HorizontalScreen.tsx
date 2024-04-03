@@ -1,9 +1,7 @@
 import { forwardRef } from "react";
-import {
-	CustomIconBase,
-	type CustomIconProps,
-	HorizontalScreenWeights,
-} from "..";
+import { HorizontalScreenWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const HorizontalScreenIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

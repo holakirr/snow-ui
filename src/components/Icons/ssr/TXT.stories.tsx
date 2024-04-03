@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { TXTIcon } from ".";
+import { TXTIcon } from "..";
 
 const meta = {
 	title: "Design resources/Icons/TXT",

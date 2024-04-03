@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
-import { CustomIconBase, type CustomIconProps, RectangleWeights } from "..";
+import { RectangleWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const RectangleIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

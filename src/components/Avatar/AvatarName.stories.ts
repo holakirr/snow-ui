@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AvatarName } from ".";
+import { colorControl, imgControl } from "./Avatar.stories";
 
 const meta = {
 	title: "Base Components/Components/AvatarName",
@@ -12,15 +13,8 @@ const meta = {
 	tags: ["autodocs"],
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
-		img: {
-			control: "radio",
-			options: [
-				"https://avatar.iran.liara.run/public/38",
-				"https://avatar.iran.liara.run/public/61",
-				"https://avatar.iran.liara.run/public/job/chef/female",
-				null,
-			],
-		},
+		img: imgControl,
+		color: colorControl,
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {

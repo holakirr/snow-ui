@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { VerticalScreenIcon } from ".";
+import { VerticalScreenIcon } from "..";
 
 const meta = {
 	title: "Design resources/Icons/VerticalScreen",

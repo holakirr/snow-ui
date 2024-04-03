@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
-import { CustomIconBase, type CustomIconProps, VariablesWeights } from "..";
+import { VariablesWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const VariablesIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import { useState } from "react";
 import { Input } from ".";
 import { ArrowLineDownIcon, DefaultIcon, FourLeafCloverIcon } from "..";
@@ -45,7 +44,20 @@ const meta = {
 		error: "",
 		value: "",
 		status: null,
-		onChange: fn(),
+		onChange: console.log,
+		title: "",
+		id: "input",
+		clearable: false,
+	},
+	render: (args) => {
+		const [value, setValue] = useState<string>("Value");
+		return (
+			<Input
+				{...args}
+				value={value}
+				onChange={(e) => setValue(e.target.value)}
+			/>
+		);
 	},
 } satisfies Meta<typeof Input>;
 
@@ -80,34 +92,38 @@ export const SuccessInput: Story = {
 	},
 };
 
-// export const ErrorInput = () => {
-// 	const [value, setValue] = useState("fdsads");
-// 	return (
-// 		<Input
-// 			value={value}
-// 			onChange={(e) => setValue(e.target.value)}
-// 			placeholder="Type something"
-// 			status="error"
-// 			error="Something went wrong"
-// 		/>
-// 	);
-// };
-
 export const ErrorInput: Story = {
 	args: {
 		status: "error",
 		error: "Something went wrong",
 		placeholder: "Type something",
 	},
-	decorators: [(Story) => <div className="w-96">{Story()}</div>],
-	render: (args) => {
-		const [value, setValue] = useState("fdsads");
-		return (
-			<Input
-				{...args}
-				value={value}
-				onChange={(e) => setValue(e.target.value)}
-			/>
-		);
+};
+
+export const InputWithTitle: Story = {
+	args: {
+		title: "Title",
+	},
+};
+
+export const InputWithTitleAndValue: Story = {
+	args: {
+		title: "Title",
+		value: "Value",
+	},
+};
+
+export const InputWithTitleAndValueAndStatus: Story = {
+	args: {
+		title: "Title",
+		value: "Value",
+		status: "progress",
+	},
+};
+
+export const ClearableInput: Story = {
+	args: {
+		title: "Title",
+		clearable: true,
 	},
 };

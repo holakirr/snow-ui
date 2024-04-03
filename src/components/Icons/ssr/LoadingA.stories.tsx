@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { LoadingBIcon } from ".";
+import { LoadingBIcon } from "..";
 
 const meta = {
 	title: "Design resources/Icons/LoadingB",

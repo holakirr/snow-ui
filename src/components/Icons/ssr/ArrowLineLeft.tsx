@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
-import { ArrowLineLeftWeights, CustomIconBase, type CustomIconProps } from "..";
+import { ArrowLineLeftWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const ArrowLineLeftIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
-import { CustomIconBase, type CustomIconProps, StopWeights } from "..";
+import { StopWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const StopIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
 	<CustomIconBase ref={ref} {...props} weights={StopWeights} />

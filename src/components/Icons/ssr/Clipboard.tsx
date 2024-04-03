@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
-import { ClipboardWeights, CustomIconBase, type CustomIconProps } from "..";
+import { ClipboardWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const ClipboardIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { DotsThreeOutlineHorizontalIcon } from ".";
+import { DotsThreeOutlineHorizontalIcon } from "..";
 
 const meta = {
 	title: "Design resources/Icons/DotsThreeOutlineHorizontal",

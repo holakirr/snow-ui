@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
-import { ArrowsDownWeights, CustomIconBase, type CustomIconProps } from "..";
+import { ArrowsDownWeights } from "../defs";
+import { CustomIconBase } from "../lib";
+import type { CustomIconProps } from "../types";
 
 const ArrowsDownIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

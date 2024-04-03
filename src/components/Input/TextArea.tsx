@@ -14,7 +14,6 @@ import {
 	statusInputClasses,
 } from "..";
 import { InputStatusIcon } from "./InputStatusIcon";
-import "./TextArea.module.css";
 
 type TextAreaProps = ComponentProps<"textarea"> & {
 	status?: "progress" | "success" | "error";

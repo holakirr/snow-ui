@@ -47,9 +47,10 @@ const meta = {
 		onChange: console.log,
 		title: "",
 		id: "input",
+		clearable: false,
 	},
 	render: (args) => {
-		const [value, setValue] = useState<string>("fdsads");
+		const [value, setValue] = useState<string>("Value");
 		return (
 			<Input
 				{...args}

@@ -25,12 +25,11 @@ const meta = {
 		error: "",
 		value: "",
 		status: undefined,
-		onChange: console.log,
 		title: "",
 		id: "TextArea",
 	},
 	render: (args) => {
-		const [value, setValue] = useState<string>("fdsads");
+		const [value, setValue] = useState<string>("Value");
 		return (
 			<TextArea
 				{...args}

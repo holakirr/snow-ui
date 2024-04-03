@@ -1,0 +1,7 @@
+textarea::-webkit-resizer {
+  background-image: url(images/resize.svg);
+  transition: all 0.15s ease;
+}
+textarea:hover::-webkit-resizer {
+  background-image: url(images/resize-hover.svg);
+}

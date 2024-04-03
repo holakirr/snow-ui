@@ -9,18 +9,24 @@ import {
 import { twMerge } from "tailwind-merge";
 import { type CustomIcon, LoadingBIcon, Text, XCircleIcon } from "..";
 
-const inputClasses = cva(
-	"px-5 py-4 transition-all bg-white-80 rounded-2xl border-1 border-black-10 placeholder:text-black-20 hover:border-black-40 disabled:bg-black-5 disabled:text-black-10 disabled:border-none disabled:cursor-not-allowed focus:shadow-black-5 focus:shadow-[0_0_0_4px] focus:outline-none text-black-100",
-	{
-		variants: {
-			status: {
-				progress: "pr-10",
-				success: "pr-10",
-				error: "pr-10 border-secondary-red",
-			},
+export const basicInputClasses =
+	"px-5 transition-all rounded-2xl bg-white-80 border-1 border-black-10 placeholder:text-black-20 hover:border-black-40 text-black-100";
+
+export const disabledInputClasses =
+	"disabled:bg-black-5 disabled:text-black-10 disabled:border-none disabled:cursor-not-allowed";
+
+export const focusInputClasses =
+	"focus:shadow-black-5 focus:shadow-[0_0_0_4px] focus:outline-none active:border-black-40 focus:border-black-40";
+
+const inputClasses = cva("py-4", {
+	variants: {
+		status: {
+			progress: "pr-10",
+			success: "pr-10",
+			error: "pr-10 border-secondary-red",
 		},
 	},
-);
+});
 
 type InputProps = ComponentProps<"input"> &
 	VariantProps<typeof inputClasses> & {
@@ -75,6 +81,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 							title && value && "h-[60px]",
 							title && status && "h-[74px] focus:h-[74px] content-center",
 							error && "border-secondary-red",
+							basicInputClasses,
+							disabledInputClasses,
+							focusInputClasses,
 						)}
 						onChange={onChangeHandler}
 						value={value}

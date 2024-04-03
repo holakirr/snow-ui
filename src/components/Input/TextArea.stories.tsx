@@ -29,7 +29,7 @@ const meta = {
 		id: "TextArea",
 	},
 	render: (args) => {
-		const [value, setValue] = useState<string>("Value");
+		const [value, setValue] = useState<string>("");
 		return (
 			<TextArea
 				{...args}
@@ -70,5 +70,11 @@ export const ErrorTextArea: Story = {
 		status: "error",
 		error: "Something went wrong",
 		placeholder: "Type something",
+	},
+};
+
+export const TextAreaWithLimit: Story = {
+	args: {
+		textLimit: 100,
 	},
 };

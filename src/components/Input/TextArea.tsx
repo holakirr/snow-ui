@@ -19,10 +19,14 @@ import "./TextArea.module.css";
 type TextAreaProps = ComponentProps<"textarea"> & {
 	status?: "progress" | "success" | "error";
 	error?: string;
+	textLimit?: number;
 };
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-	({ className, id, status, error, onChange, ...props }, ref) => {
+	(
+		{ className, id, status, error, textLimit, onChange, value, ...props },
+		ref,
+	) => {
 		const [hideStatus, setHideStatus] = useState<boolean>(false);
 
 		useEffect(() => {
@@ -33,12 +37,14 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 			setHideStatus(true);
 			onChange?.(e);
 		};
+
 		return (
 			<div className="flex flex-col gap-2">
-				<div className="relative">
+				<div className="relative flex">
 					<textarea
 						id={id}
 						ref={ref}
+						maxLength={textLimit}
 						className={twMerge(
 							basicInputClasses,
 							disabledInputClasses,
@@ -56,6 +62,12 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 							className="absolute right-5 top-4"
 							size={20}
 						/>
+					)}
+					{textLimit && (
+						<Text
+							size={12}
+							className="absolute text-black-20 bottom-1 right-6 w-min text-right"
+						>{`${value ? value.toString().length : 0}/${textLimit}`}</Text>
 					)}
 				</div>
 				{!hideStatus && error && (

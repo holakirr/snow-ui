@@ -16,6 +16,6 @@ jobs:
 
       - uses: chromaui/action@latest
         with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          projectToken: chpt_d8c5c59f2c6fd6e
           exitZeroOnChanges: true
           debug: true

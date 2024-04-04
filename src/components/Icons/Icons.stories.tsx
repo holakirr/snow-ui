@@ -49,6 +49,7 @@ import {
 	XCircleIcon,
 	XLSXIcon,
 } from ".";
+import { weightControl } from "../../utils";
 
 const IconWrapper = ({ ...props }: ComponentProps<"div">) => (
 	<div className="grid gap-1 justify-center justify-items-center" {...props} />
@@ -115,11 +116,7 @@ const meta = {
 	tags: ["autodocs"],
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
-		weight: {
-			control: "radio",
-			options: ["thin", "light", "regular", "bold", "fill", "duotone"],
-			description: "The weight of the icon",
-		},
+		weight: weightControl,
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {

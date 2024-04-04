@@ -2,10 +2,8 @@ import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { Text } from "..";
-import type { CustomIcon } from "../Icons";
+import type { CustomIcon } from "../../utils";
 
-export type ButtonVariants = "borderless" | "gray" | "outline" | "filled";
-export type ButtonSizes = "sm" | "md" | "lg";
 type ButtonProps = VariantProps<typeof buttonStyles> &
 	ComponentProps<"button"> & {
 		label?: string;

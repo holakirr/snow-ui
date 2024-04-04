@@ -7,7 +7,8 @@ import {
 	useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
-import { type CustomIcon, Text, XCircleIcon } from "..";
+import { Text, XCircleIcon } from "..";
+import type { CustomIcon } from "../../utils";
 import { InputStatusIcon } from "./InputStatusIcon";
 
 export const basicInputClasses =

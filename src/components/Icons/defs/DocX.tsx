@@ -1,4 +1,4 @@
-import type { CustomIconWeights } from "..";
+import type { CustomIconWeights } from "../../../utils";
 
 export const DocXWeights: CustomIconWeights = new Map([
 	[

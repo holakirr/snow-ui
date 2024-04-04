@@ -1,7 +1,7 @@
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { Text } from "..";
-import type { CustomIcon } from "../Icons";
+import type { CustomIcon } from "../../utils";
 
 export type TooltipProps = {
 	/**

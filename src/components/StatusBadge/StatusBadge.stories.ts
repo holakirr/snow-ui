@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { StatusBadge } from ".";
+import { badgeStatusControl } from "../../utils";
 
 const meta = {
 	title: "Base Components/Components/StatusBadge",
@@ -15,10 +16,7 @@ const meta = {
 		label: {
 			control: "text",
 		},
-		status: {
-			control: "radio",
-			options: ["default", "success", "info", "warning", "error"],
-		},
+		status: badgeStatusControl,
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {

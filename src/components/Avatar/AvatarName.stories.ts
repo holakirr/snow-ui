@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AvatarName } from ".";
-import { colorControl, imgControl } from "./Avatar.stories";
+import { colorControl, imgControl } from "../../utils";
 
 const meta = {
 	title: "Base Components/Components/AvatarName",

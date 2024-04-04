@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { TextArea } from ".";
+import { statusControl } from "../../utils";
 
 const meta = {
 	title: "Base Components/Components/TextArea",
@@ -13,10 +14,7 @@ const meta = {
 	tags: ["autodocs"],
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
-		status: {
-			control: "radio",
-			options: [null, "progress", "success", "error"],
-		},
+		status: statusControl,
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {

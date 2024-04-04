@@ -1,39 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Avatar } from ".";
-
-export const colorControl = {
-	control: "select",
-	options: [
-		"secondary",
-		"blue",
-		"blueDarker",
-		"blueLighter",
-		"cyan",
-		"green",
-		"greenDarker",
-		"greenLighter",
-		"indigo",
-		"indigoDarker",
-		"indigoLighter",
-		"mint",
-		"orange",
-		"purple",
-		"red",
-		"yellow",
-		"yellowDarker",
-		"yellowLighter",
-	],
-};
-
-export const imgControl = {
-	control: "radio",
-	options: [
-		"https://avatar.iran.liara.run/public/38",
-		"https://avatar.iran.liara.run/public/61",
-		"https://avatar.iran.liara.run/public/job/chef/female",
-		null,
-	],
-};
+import { colorControl, imgControl } from "../../utils";
 
 const meta = {
 	title: "Base Components/Components/Avatar",

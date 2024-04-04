@@ -44,7 +44,7 @@
 		"format": "biome format . --write",
 		"commit": "better-commits",
 		"millionlint": "npx @million/lint@latest",
-		"chromatic": "chromatic --exit-zero-on-changes",
+		"chromatic": "chromatic --project-token <CHROMATIC_PROJECT_TOKEN>",
 		"clean": "rm -rf dist/ build-storybook.log storybook-static/ migration-storybook.log"
 	},
 	"devDependencies": {

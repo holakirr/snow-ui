@@ -37,7 +37,11 @@ export const Colors: Story = {
 	render: () => (
 		<div className="grid gap-2">
 			{TextStyles.map((style) => (
-				<Text size={style.size} semibold={style.semibold}>
+				<Text
+					size={style.size}
+					semibold={style.semibold}
+					key={style.semibold.toString() + style.size?.toString()}
+				>
 					{style.size} {style.semibold ? "semibold" : "regular"}
 				</Text>
 			))}

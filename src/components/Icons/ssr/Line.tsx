@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
+import type { CustomIconProps } from "../../../utils";
 import { LineWeights } from "../defs";
 import { CustomIconBase } from "../lib";
-import type { CustomIconProps } from "../types";
 
 const LineIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
 	<CustomIconBase ref={ref} {...props} weights={LineWeights} />

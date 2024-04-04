@@ -1,23 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Input } from ".";
-import { ArrowLineDownIcon, DefaultIcon, FourLeafCloverIcon } from "..";
-
-const iconControls = {
-	control: "radio",
-	options: [
-		FourLeafCloverIcon.displayName,
-		DefaultIcon.displayName,
-		"Nothing",
-		ArrowLineDownIcon.displayName,
-	],
-	mapping: {
-		Nothing: undefined,
-		FourLeafCloverIcon,
-		DefaultIcon,
-		ArrowLineDownIcon,
-	},
-};
+import { FourLeafCloverIcon } from "..";
+import { STATUSES } from "../../consts";
+import { iconControl, statusControl } from "../../utils";
 
 const meta = {
 	title: "Base Components/Components/Input",
@@ -30,11 +16,8 @@ const meta = {
 	tags: ["autodocs"],
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
-		icon: iconControls,
-		status: {
-			control: "radio",
-			options: [null, "progress", "success", "error"],
-		},
+		icon: iconControl,
+		status: statusControl,
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
@@ -88,13 +71,13 @@ export const DisabledInput: Story = {
 
 export const SuccessInput: Story = {
 	args: {
-		status: "success",
+		status: STATUSES.success,
 	},
 };
 
 export const ErrorInput: Story = {
 	args: {
-		status: "error",
+		status: STATUSES.error,
 		error: "Something went wrong",
 		placeholder: "Type something",
 	},
@@ -106,18 +89,11 @@ export const InputWithTitle: Story = {
 	},
 };
 
-export const InputWithTitleAndValue: Story = {
-	args: {
-		title: "Title",
-		value: "Value",
-	},
-};
-
 export const InputWithTitleAndValueAndStatus: Story = {
 	args: {
 		title: "Title",
 		value: "Value",
-		status: "progress",
+		status: STATUSES.progress,
 	},
 };
 

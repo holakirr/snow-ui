@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
+import type { CustomIconProps } from "../../../utils";
 import { OneNoteWeights } from "../defs";
 import { CustomIconBase } from "../lib";
-import type { CustomIconProps } from "../types";
 
 const OneNoteIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
 	<CustomIconBase ref={ref} {...props} weights={OneNoteWeights} />

@@ -1,22 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { WithTooltip } from ".";
-import { ArrowLineDownIcon, Button, DefaultIcon, FourLeafCloverIcon } from "..";
-
-const iconControls = {
-	control: "radio",
-	options: [
-		FourLeafCloverIcon.displayName,
-		DefaultIcon.displayName,
-		"Nothing",
-		ArrowLineDownIcon.displayName,
-	],
-	mapping: {
-		Nothing: undefined,
-		FourLeafCloverIcon,
-		DefaultIcon,
-		ArrowLineDownIcon,
-	},
-};
+import { Button } from "..";
+import { iconControl } from "../../utils";
 
 const meta = {
 	title: "Base Components/Components/With Tooltip",
@@ -32,7 +17,7 @@ const meta = {
 	tags: ["autodocs"],
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
-		icon: iconControls,
+		icon: iconControl,
 		position: {
 			control: "radio",
 			options: ["top", "bottom", "left", "right"],

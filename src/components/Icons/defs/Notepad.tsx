@@ -1,4 +1,4 @@
-import type { CustomIconWeights } from "..";
+import type { CustomIconWeights } from "../../../utils";
 
 export const NotepadWeights: CustomIconWeights = new Map([
 	[
@@ -44,8 +44,8 @@ export const NotepadWeights: CustomIconWeights = new Map([
 					y2="31"
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop stop-color="#F1ECF7" />
-					<stop offset="1" stop-color="#E8DEF2" />
+					<stop stopColor="#F1ECF7" />
+					<stop offset="1" stopColor="#E8DEF2" />
 				</linearGradient>
 				<linearGradient
 					id="paint1_linear_52206_162198"
@@ -55,8 +55,8 @@ export const NotepadWeights: CustomIconWeights = new Map([
 					y2="27.5563"
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop stop-color="#FF6659" />
-					<stop offset="1" stop-color="#FF8749" />
+					<stop stopColor="#FF6659" />
+					<stop offset="1" stopColor="#FF8749" />
 				</linearGradient>
 				<linearGradient
 					id="paint2_linear_52206_162198"
@@ -66,8 +66,8 @@ export const NotepadWeights: CustomIconWeights = new Map([
 					y2="29.6777"
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop stop-color="#FFBA9F" />
-					<stop offset="1" stop-color="#DE8893" />
+					<stop stopColor="#FFBA9F" />
+					<stop offset="1" stopColor="#DE8893" />
 				</linearGradient>
 				<linearGradient
 					id="paint3_linear_52206_162198"
@@ -77,9 +77,9 @@ export const NotepadWeights: CustomIconWeights = new Map([
 					y2="15.0503"
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop stop-color="#E3DBEF" />
-					<stop offset="0.807292" stop-color="#F6F1FE" />
-					<stop offset="1" stop-color="#EADEFC" />
+					<stop stopColor="#E3DBEF" />
+					<stop offset="0.807292" stopColor="#F6F1FE" />
+					<stop offset="1" stopColor="#EADEFC" />
 				</linearGradient>
 			</defs>
 		</>,

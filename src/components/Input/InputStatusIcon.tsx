@@ -1,18 +1,20 @@
 import { Check, Warning } from "@phosphor-icons/react/dist/ssr";
 import { twMerge } from "tailwind-merge";
 import { LoadingBIcon } from "..";
+import { STATUSES } from "../../consts";
+import type { Status } from "../../utils";
 
 const InputStatusIcon = ({
 	status,
 	className,
 	size,
 }: {
-	status: "progress" | "success" | "error";
+	status: Status;
 	className: string;
 	size: number;
 }) => {
 	switch (status) {
-		case "progress":
+		case STATUSES.progress:
 			return (
 				<LoadingBIcon
 					weight="regular"
@@ -21,7 +23,7 @@ const InputStatusIcon = ({
 					className={twMerge("fill-black-100", className)}
 				/>
 			);
-		case "success":
+		case STATUSES.success:
 			return (
 				<Check
 					alt={status}
@@ -29,7 +31,7 @@ const InputStatusIcon = ({
 					className={twMerge("fill-secondary-green", className)}
 				/>
 			);
-		case "error":
+		case STATUSES.error:
 			return (
 				<Warning
 					alt={status}

@@ -1,4 +1,4 @@
-import type { CustomIconWeights } from "..";
+import type { CustomIconWeights } from "../../../utils";
 
 export const OneNoteWeights: CustomIconWeights = new Map([
 	[
@@ -17,8 +17,8 @@ export const OneNoteWeights: CustomIconWeights = new Map([
 				fill="#7719AA"
 			/>
 			<path
-				fill-rule="evenodd"
-				clip-rule="evenodd"
+				fillRule="evenodd"
+				clipRule="evenodd"
 				d="M7.5 29.2064V2.79365C7.5 1.25076 8.73122 0 10.25 0H26.75C28.2688 0 29.5 1.25076 29.5 2.79365V29.2064C29.5 30.7492 28.2688 32 26.75 32H10.25C8.73122 32 7.5 30.7492 7.5 29.2064ZM9.25 2.79365V29.2064C9.25 29.7674 9.69772 30.2222 10.25 30.2222H26.75C27.3023 30.2222 27.75 29.7674 27.75 29.2064V2.79365C27.75 2.2326 27.3023 1.77778 26.75 1.77778H10.25C9.69772 1.77778 9.25 2.2326 9.25 2.79365Z"
 				fill="#9D9C9B"
 			/>

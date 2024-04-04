@@ -26,7 +26,7 @@ export const Colors: Story = {
 							shade === "purple" && color === "primary" ? (
 								<>
 									<div
-										key={shade[50]}
+										key={`${color + shade}50`}
 										className={"rounded-2xl text-center p-5"}
 										style={{
 											backgroundColor: COLOR_SCHEME[color][shade][50],
@@ -35,11 +35,10 @@ export const Colors: Story = {
 										<span className="text-sm text-black-100">{shade} 50</span>
 									</div>
 									<div
-										key={shade}
+										key={`${color + shade}DEFAULT`}
 										className={"rounded-2xl text-center p-5"}
 										style={{
-											// biome-ignore lint/complexity/useLiteralKeys: <explanation>
-											backgroundColor: COLOR_SCHEME[color][shade]["DEFAULT"],
+											backgroundColor: COLOR_SCHEME[color][shade].DEFAULT,
 										}}
 									>
 										<span className="text-sm text-black-100">{shade}</span>
@@ -47,7 +46,7 @@ export const Colors: Story = {
 								</>
 							) : (
 								<div
-									key={shade}
+									key={color + shade}
 									className={"rounded-2xl text-center p-5"}
 									style={{ backgroundColor: COLOR_SCHEME[color][shade] }}
 								>

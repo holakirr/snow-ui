@@ -1,23 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import { Button } from ".";
-import { ArrowLineDownIcon, DefaultIcon, FourLeafCloverIcon } from "..";
-
-const iconControls = {
-	control: "radio",
-	options: [
-		FourLeafCloverIcon.displayName,
-		DefaultIcon.displayName,
-		"Nothing",
-		ArrowLineDownIcon.displayName,
-	],
-	mapping: {
-		Nothing: undefined,
-		FourLeafCloverIcon,
-		DefaultIcon,
-		ArrowLineDownIcon,
-	},
-};
+import { ArrowLineDownIcon, FourLeafCloverIcon } from "..";
+import { SIZES } from "../../consts";
+import { buttonVariantControl, iconControl, sizeControl } from "../../utils";
 
 const meta = {
 	title: "Base Components/Components/Button",
@@ -33,18 +19,10 @@ const meta = {
 	tags: ["autodocs"],
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
-		leftIcon: iconControls,
-		rightIcon: iconControls,
-		variant: {
-			control: "radio",
-			options: ["borderless", "gray", "outline", "filled"],
-			description: "The style variant of the button",
-		},
-		size: {
-			control: "radio",
-			options: ["sm", "md", "lg"],
-			description: "The size of the button",
-		},
+		leftIcon: iconControl,
+		rightIcon: iconControl,
+		variant: buttonVariantControl,
+		size: sizeControl,
 		disabled: {
 			control: "boolean",
 			description: "Whether the button is disabled",
@@ -57,7 +35,7 @@ const meta = {
 		rightIcon: undefined,
 		onClick: fn(),
 		variant: "filled",
-		size: "sm",
+		size: SIZES.sm,
 		disabled: false,
 	},
 } satisfies Meta<typeof Button>;
@@ -121,7 +99,7 @@ export const Disabled: Story = {
 export const IconButton: Story = {
 	args: {
 		variant: "filled",
-		size: "lg",
+		size: SIZES.lg,
 		leftIcon: FourLeafCloverIcon,
 		label: "",
 	},

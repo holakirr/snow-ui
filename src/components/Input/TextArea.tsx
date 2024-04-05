@@ -7,13 +7,13 @@ import {
 } from "react";
 import { twMerge } from "tailwind-merge";
 import {
+	StatusIcon,
 	Text,
 	basicInputClasses,
 	disabledInputClasses,
 	focusInputClasses,
 	statusInputClasses,
 } from "..";
-import { InputStatusIcon } from "./InputStatusIcon";
 
 type TextAreaProps = ComponentProps<"textarea"> & {
 	status?: "progress" | "success" | "error";
@@ -56,7 +56,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 						{...props}
 					/>
 					{status && !hideStatus && (
-						<InputStatusIcon
+						<StatusIcon
 							status={status}
 							className="absolute right-5 top-4"
 							size={20}

@@ -7,9 +7,8 @@ import {
 	useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
-import { Text, XCircleIcon } from "..";
+import { StatusIcon, Text, XCircleIcon } from "..";
 import type { CustomIcon } from "../../utils";
-import { InputStatusIcon } from "./InputStatusIcon";
 
 export const basicInputClasses =
 	"px-5 transition-all rounded-2xl bg-white-80 border-1 border-black-10 placeholder:text-black-20 hover:border-black-40 text-black-100";
@@ -120,7 +119,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 						/>
 					)}
 					{status && !hideStatus && (
-						<InputStatusIcon
+						<StatusIcon
 							status={status}
 							className="absolute right-5 bottom-[calc(50%-10px)]"
 							size={20}

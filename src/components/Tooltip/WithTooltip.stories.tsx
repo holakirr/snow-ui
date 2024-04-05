@@ -4,7 +4,7 @@ import { Button } from "..";
 import { iconControl } from "../../utils";
 
 const meta = {
-	title: "Base Components/Components/With Tooltip",
+	title: "Base Components/With Tooltip",
 	component: WithTooltip,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

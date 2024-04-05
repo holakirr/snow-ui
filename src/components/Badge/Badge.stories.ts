@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Badge } from ".";
 
 const meta = {
-	title: "Base Components/Components/Badge",
+	title: "Base Components/Badge",
 	component: Badge,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

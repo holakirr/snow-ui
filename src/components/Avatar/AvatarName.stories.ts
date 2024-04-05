@@ -3,7 +3,7 @@ import { AvatarName } from ".";
 import { colorControl, imgControl } from "../../utils";
 
 const meta = {
-	title: "Base Components/Components/AvatarName",
+	title: "Base Components/AvatarName",
 	component: AvatarName,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

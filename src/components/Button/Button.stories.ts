@@ -6,7 +6,7 @@ import { SIZES } from "../../consts";
 import { buttonVariantControl, iconControl, sizeControl } from "../../utils";
 
 const meta = {
-	title: "Base Components/Components/Button",
+	title: "Base Components/Button",
 	component: Button,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

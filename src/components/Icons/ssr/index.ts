@@ -38,6 +38,7 @@ export { RoundedCornerIcon } from "./RoundedCorner";
 export { SearchIcon } from "./Search";
 export { SnowUIIcon } from "./SnowUI";
 export { StarIcon } from "./Star";
+export { StatusIcon } from "./StatusIcon";
 export { StopIcon } from "./Stop";
 export { TextAIcon } from "./TextA";
 export { TXTIcon } from "./TXT";

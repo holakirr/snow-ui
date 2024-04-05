@@ -3,6 +3,7 @@ export * from "./Badge";
 export * from "./Button";
 export * from "./Icons";
 export * from "./Input";
+export * from "./Notification";
 export * from "./StatusBadge";
 export * from "./Tag";
 export * from "./Text";

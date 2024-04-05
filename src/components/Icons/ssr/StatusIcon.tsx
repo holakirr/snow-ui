@@ -1,16 +1,16 @@
 import { Check, Warning } from "@phosphor-icons/react/dist/ssr";
 import { twMerge } from "tailwind-merge";
-import { LoadingBIcon } from "..";
-import { STATUSES } from "../../consts";
-import type { Status } from "../../utils";
+import { LoadingBIcon } from "../..";
+import { STATUSES } from "../../../consts";
+import type { Status } from "../../../utils";
 
-const InputStatusIcon = ({
+const StatusIcon = ({
 	status,
 	className,
 	size,
 }: {
 	status: Status;
-	className: string;
+	className?: string;
 	size: number;
 }) => {
 	switch (status) {
@@ -44,5 +44,5 @@ const InputStatusIcon = ({
 	}
 };
 
-InputStatusIcon.displayName = "InputStatusIcon";
-export { InputStatusIcon };
+StatusIcon.displayName = "StatusIcon";
+export { StatusIcon };

@@ -21,7 +21,7 @@ const buttonStyles = cva(
 				outline:
 					"text-black-100 border-1 border-black-10 border-solid hover:bg-black-5 disabled:border-black-10",
 				filled:
-					"text-white-100 bg-primary-brand hover:bg-primary-brand-hover disabled:bg-black-5",
+					"text-white-100 bg-primary-brand hover:bg-primary-brandHover disabled:bg-black-5",
 			},
 			size: {
 				sm: "text-sm py-1 px-2 rounded-lg gap-1",

@@ -17,7 +17,7 @@ export const disabledInputClasses =
 	"disabled:bg-black-5 disabled:text-black-10 disabled:border-none disabled:cursor-not-allowed";
 
 export const focusInputClasses =
-	"focus:shadow-black-5 focus:shadow-[0_0_0_4px] focus:outline-none active:border-black-40 focus:border-black-40";
+	"focus:ring-4 focus:ring-black-5 focus:outline-none active:border-black-40 focus:border-black-40";
 
 export const statusInputClasses = "pr-10";
 

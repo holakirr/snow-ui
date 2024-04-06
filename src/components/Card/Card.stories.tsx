@@ -3,7 +3,7 @@ import { Card } from ".";
 import { Text } from "../..";
 
 const meta = {
-	title: "Base Components/Components/Card",
+	title: "Base Components/Card",
 	component: Card,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

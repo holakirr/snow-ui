@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Tag } from ".";
 
 const meta = {
-	title: "Base Components/Components/Tag",
+	title: "Base Components/Tag",
 	component: Tag,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

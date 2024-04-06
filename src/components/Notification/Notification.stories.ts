@@ -3,7 +3,7 @@ import { Notification } from ".";
 import { statusControl } from "../../utils";
 
 const meta = {
-	title: "Base Components/Components/Notification",
+	title: "Base Components/Notification",
 	component: Notification,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

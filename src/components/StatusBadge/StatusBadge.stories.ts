@@ -3,7 +3,7 @@ import { StatusBadge } from ".";
 import { badgeStatusControl } from "../../utils";
 
 const meta = {
-	title: "Base Components/Components/StatusBadge",
+	title: "Base Components/StatusBadge",
 	component: StatusBadge,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

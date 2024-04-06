@@ -6,7 +6,7 @@ import { STATUSES } from "../../consts";
 import { iconControl, statusControl } from "../../utils";
 
 const meta = {
-	title: "Base Components/Components/Input",
+	title: "Base Components/Inputs/Input",
 	component: Input,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

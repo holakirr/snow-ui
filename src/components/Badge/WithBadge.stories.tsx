@@ -3,7 +3,7 @@ import { WithBadge } from ".";
 import { Button } from "..";
 
 const meta = {
-	title: "Base Components/Components/With Badge",
+	title: "Base Components/With Badge",
 	component: WithBadge,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

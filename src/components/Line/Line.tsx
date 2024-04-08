@@ -4,20 +4,17 @@ import { twMerge } from "tailwind-merge";
 
 type LineProps = ComponentProps<"hr"> & VariantProps<typeof lineClasses>;
 
-const lineClasses = cva(
-	"border-solid border-black-100 border-1/2 rounded-full w-full transition-all",
-	{
-		variants: {
-			direction: {
-				horizontal: "",
-				vertical: "rotate-90",
-			},
-		},
-		defaultVariants: {
-			direction: "horizontal",
+const lineClasses = cva("border-none bg-black-100 rounded-full", {
+	variants: {
+		direction: {
+			horizontal: "w-full h-px",
+			vertical: "h-full w-px",
 		},
 	},
-);
+	defaultVariants: {
+		direction: "horizontal",
+	},
+});
 
 const Line = forwardRef<HTMLHRElement, LineProps>(({ direction }, ref) => (
 	<hr ref={ref} className={twMerge(lineClasses({ direction }))} />

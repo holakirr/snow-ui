@@ -45,33 +45,31 @@ export type AvatarProps = ComponentProps<"div"> &
 	};
 
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
-	({ small, img, username, color, className }, ref) => {
-		return (
-			<div
-				className={twMerge(avatarStyles({ small, color, className }))}
-				ref={ref}
-			>
-				{img && (
-					<img
-						src={img}
-						alt={username}
-						className="w-full h-full transition-all group-hover:scale-125"
-					/>
-				)}
-				{!img && (
-					<Text
-						as="span"
-						className="group-hover:text-sm group-hover:font-semibold w-min cursor-default"
-					>
-						{username
-							.split(" ")
-							.map((word) => word[0])
-							.join("")}
-					</Text>
-				)}
-			</div>
-		);
-	},
+	({ small, img, username, color, className }, ref) => (
+		<div
+			className={twMerge(avatarStyles({ small, color, className }))}
+			ref={ref}
+		>
+			{img && (
+				<img
+					src={img}
+					alt={username}
+					className="w-full h-full transition-all group-hover:scale-125"
+				/>
+			)}
+			{!img && (
+				<Text
+					as="span"
+					className="group-hover:text-sm group-hover:font-semibold w-min cursor-default"
+				>
+					{username
+						.split(" ")
+						.map((word) => word[0])
+						.join("")}
+				</Text>
+			)}
+		</div>
+	),
 );
 
 Avatar.displayName = "Avatar";

@@ -1,6 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { DropDownItem } from ".";
-import { imageControl, imageMocks, keyBindingsControl } from "../../../utils";
+import { imageSrcMocks, keyBindingsControl } from "../../../utils";
+import { Avatar } from "../../Avatar";
+import { FourLeafCloverIcon } from "../../Icons/ssr";
+
+export const imageMocks = {
+	woman: <img alt="woman" width={24} height={24} src={imageSrcMocks.woman} />,
+	flowerIcon: <FourLeafCloverIcon size={16} alt="flower icon" />,
+	avatar: <Avatar img={imageSrcMocks.man} username="" />,
+};
+
+export const imageControl = {
+	control: "radio",
+	options: ["woman", "flowerIcon", "avatar", "Nothing"],
+	mapping: {
+		...imageMocks,
+		Nothing: null,
+	},
+};
 
 const meta = {
 	title: "Base Components/Dropdown/Dropdown Item",

@@ -1,4 +1,3 @@
-import { Avatar } from "../../components";
 import {
 	ArrowLineDownIcon,
 	DefaultIcon,
@@ -16,12 +15,6 @@ export const imageSrcMocks = {
 	man: "https://avatar.iran.liara.run/public/38",
 	woman: "https://avatar.iran.liara.run/public/61",
 	chef: "https://avatar.iran.liara.run/public/job/chef/female",
-};
-
-export const imageMocks = {
-	woman: <img alt="woman" width={24} height={24} src={imageSrcMocks.woman} />,
-	flowerIcon: <FourLeafCloverIcon size={16} alt="flower icon" />,
-	avatar: <Avatar img={imageSrcMocks.man} username="" />,
 };
 
 export const colorControl = {
@@ -47,15 +40,6 @@ export const iconControl = {
 		DefaultIcon,
 		FourLeafCloverIcon,
 		Nothing: undefined,
-	},
-};
-
-export const imageControl = {
-	control: "radio",
-	options: ["woman", "flowerIcon", "avatar", "Nothing"],
-	mapping: {
-		...imageMocks,
-		Nothing: null,
 	},
 };
 

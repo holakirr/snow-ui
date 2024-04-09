@@ -34,6 +34,8 @@ const inputClasses = cva("py-4", {
 type InputProps = ComponentProps<"input"> &
 	VariantProps<typeof inputClasses> & {
 		icon?: CustomIcon;
+		iconSize?: number;
+		iconClassName?: string;
 		error?: string;
 		title?: string;
 		clearable?: boolean;
@@ -47,6 +49,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 			id,
 			className,
 			icon: Icon,
+			iconSize,
+			iconClassName,
 			status,
 			error,
 			value,
@@ -82,15 +86,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 						ref={ref}
 						placeholder={title ? "" : placeholder}
 						className={twMerge(
+							basicInputClasses,
+							disabledInputClasses,
+							focusInputClasses,
 							inputClasses({ status, className }),
 							Icon && "ps-11",
 							title && "peer h-[74px] focus:h-[60px] content-end",
 							title && value && "h-[60px]",
 							title && status && "h-[74px] focus:h-[74px] content-center",
 							error && "border-secondary-red",
-							basicInputClasses,
-							disabledInputClasses,
-							focusInputClasses,
 						)}
 						onChange={onChangeHandler}
 						value={value}
@@ -113,23 +117,26 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 					)}
 					{Icon && (
 						<Icon
-							alt={placeholder || "Input icon"}
-							className="absolute top-1/2 left-5 transform -translate-y-1/2"
-							size={20}
+							alt={id || "Input icon"}
+							className={twMerge(
+								"absolute top-1/2 left-5 transform -translate-y-1/2",
+								iconClassName,
+							)}
+							size={iconSize || 20}
 						/>
 					)}
 					{status && !hideStatus && (
 						<StatusIcon
 							status={status}
 							className="absolute right-5 bottom-[calc(50%-10px)]"
-							size={20}
+							size={iconSize || 20}
 						/>
 					)}
 					{value && hideStatus && clearable && (
 						<XCircleIcon
 							alt="clear input"
 							weight="fill"
-							size={20}
+							size={iconSize || 20}
 							className="absolute right-5 bottom-[calc(50%-10px)] fill-black-20"
 							onClick={clearHandler}
 						/>

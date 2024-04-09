@@ -18,7 +18,7 @@ const meta = {
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		small: true,
+		size: "small",
 		username: "John Doe",
 		color: "orange",
 	},
@@ -31,15 +31,15 @@ export const BasicAvatar: Story = {
 	args: {},
 };
 
-export const BigAvatar: Story = {
+export const LargeAvatar: Story = {
 	args: {
-		small: false,
+		size: "large",
 	},
 };
 
-export const BigAvatarWithImg: Story = {
+export const LargeAvatarWithImg: Story = {
 	args: {
-		small: false,
+		size: "large",
 		img: "https://avatar.iran.liara.run/public/38",
 	},
 };

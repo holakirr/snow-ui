@@ -7,8 +7,9 @@ const avatarStyles = cva(
 	"group brightness-100 hover:brightness-150 rounded-full transition-all overflow-hidden w-16 h-16 aspect-square flex items-center justify-center",
 	{
 		variants: {
-			small: {
-				true: "w-6 h-6",
+			size: {
+				small: "w-8 h-8",
+				large: "w-16 h-16",
 			},
 			color: {
 				secondary: "bg-secondary-brand",
@@ -33,7 +34,7 @@ const avatarStyles = cva(
 		},
 		defaultVariants: {
 			color: "orange",
-			small: true,
+			size: "small",
 		},
 	},
 );
@@ -45,9 +46,9 @@ export type AvatarProps = ComponentProps<"div"> &
 	};
 
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
-	({ small, img, username, color, className }, ref) => (
+	({ size, img, username, color, className }, ref) => (
 		<div
-			className={twMerge(avatarStyles({ small, color, className }))}
+			className={twMerge(avatarStyles({ size, color, className }))}
 			ref={ref}
 		>
 			{img && (

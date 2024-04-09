@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Search } from ".";
+import { keyBindingsControl } from "../../utils";
 
 const meta = {
 	title: "Base Components/Inputs/Search",
@@ -13,10 +14,7 @@ const meta = {
 	tags: ["autodocs"],
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
-		keys: {
-			control: "radio",
-			options: [["a", "b", "c"], ["K", "⌘"], ["⌘", "/"], null],
-		},
+		keyBindings: keyBindingsControl,
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {

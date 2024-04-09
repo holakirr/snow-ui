@@ -16,9 +16,11 @@ const lineClasses = cva("border-none bg-black-100 rounded-full", {
 	},
 });
 
-const Line = forwardRef<HTMLHRElement, LineProps>(({ direction }, ref) => (
-	<hr ref={ref} className={twMerge(lineClasses({ direction }))} />
-));
+const Line = forwardRef<HTMLHRElement, LineProps>(
+	({ direction, className }, ref) => (
+		<hr ref={ref} className={twMerge(lineClasses({ direction, className }))} />
+	),
+);
 
 Line.displayName = "Line";
 export { Line };

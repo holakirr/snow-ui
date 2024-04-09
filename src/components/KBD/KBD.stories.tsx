@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Avatar } from ".";
-import { colorControl, imgSourceControl } from "../../utils";
+import { KBD } from ".";
+import { keyBindingsControl } from "../../utils";
 
 const meta = {
-	title: "Base Components/Avatar",
-	component: Avatar,
+	title: "Base Components/KBD",
+	component: KBD,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
 		layout: "centered",
@@ -13,33 +13,23 @@ const meta = {
 	tags: ["autodocs"],
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
-		color: colorControl,
-		img: imgSourceControl,
+		keyBindings: keyBindingsControl,
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		small: true,
-		username: "John Doe",
-		color: "orange",
+		keyBindings: ["Ctrl", "C"],
 	},
-} satisfies Meta<typeof Avatar>;
+} satisfies Meta<typeof KBD>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicAvatar: Story = {
+export const BasicKBD: Story = {
 	args: {},
 };
 
-export const BigAvatar: Story = {
+export const KBDWithSeparator: Story = {
 	args: {
-		small: false,
-	},
-};
-
-export const BigAvatarWithImg: Story = {
-	args: {
-		small: false,
-		img: "https://avatar.iran.liara.run/public/38",
+		separator: "+",
 	},
 };

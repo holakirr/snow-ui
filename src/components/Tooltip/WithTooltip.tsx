@@ -1,10 +1,12 @@
 import { cva } from "class-variance-authority";
-import { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { Tooltip, type TooltipProps } from ".";
 
 type WithTooltipProps = TooltipProps & {
 	position?: "top" | "bottom" | "left" | "right";
+	visible?: boolean;
+	setVisible?: (visible: boolean) => void;
 };
 
 const tooltipPosStyles = cva("", {
@@ -22,29 +24,23 @@ const tooltipPosStyles = cva("", {
 });
 
 const WithTooltip = forwardRef<HTMLDivElement, WithTooltipProps>(
-	({ label, icon, position, children }, ref) => {
-		const [isVisible, setIsVisible] = useState(false);
-		return (
-			<div
-				onMouseEnter={() => setIsVisible(true)}
-				onMouseLeave={() => setIsVisible(false)}
-				className="relative"
-				ref={ref}
-			>
-				{children}
-				{isVisible && (
-					<Tooltip
-						className={twMerge(
-							"absolute z-100",
-							tooltipPosStyles({ position }),
-						)}
-						label={label}
-						icon={icon}
-					/>
-				)}
-			</div>
-		);
-	},
+	({ label, icon, position, visible, setVisible, children }, ref) => (
+		<div
+			onMouseEnter={() => setVisible?.(true)}
+			onMouseLeave={() => setVisible?.(false)}
+			className="relative"
+			ref={ref}
+		>
+			{children}
+			{visible && (
+				<Tooltip
+					className={twMerge("absolute z-100", tooltipPosStyles({ position }))}
+					label={label}
+					icon={icon}
+				/>
+			)}
+		</div>
+	),
 );
 
 WithTooltip.displayName = "WithTooltip";

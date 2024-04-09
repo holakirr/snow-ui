@@ -60,7 +60,7 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
 			{!img && (
 				<Text
 					as="span"
-					className="group-hover:text-sm group-hover:font-semibold w-min cursor-default"
+					className="group-hover:text-sm group-hover:font-semibold w-min cursor-default text-black-100"
 				>
 					{username
 						.split(" ")

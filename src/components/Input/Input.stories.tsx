@@ -33,12 +33,14 @@ const meta = {
 		clearable: false,
 	},
 	render: (args) => {
-		const [value, setValue] = useState<string>("Value");
+		const [value, setValue] = useState<string>("");
+		const handleClear = () => setValue("");
 		return (
 			<Input
 				{...args}
 				value={value}
 				onChange={(e) => setValue(e.target.value)}
+				onClear={handleClear}
 			/>
 		);
 	},

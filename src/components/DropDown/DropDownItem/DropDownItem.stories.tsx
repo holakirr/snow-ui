@@ -64,7 +64,7 @@ export const DropDownItemBasic: Story = {
 
 export const DropDownItemWithSubtitle: Story = {
 	args: {
-		title: "Title",
+		title: "Title with Subtitle",
 		href: "#",
 		subtitle: "Subtitle",
 	},
@@ -72,7 +72,7 @@ export const DropDownItemWithSubtitle: Story = {
 
 export const DropDownItemWithKeyBindings: Story = {
 	args: {
-		title: "Title",
+		title: "Title with Key Bindings",
 		href: "#",
 		keyBindings: ["Ctrl", "C"],
 	},
@@ -80,7 +80,7 @@ export const DropDownItemWithKeyBindings: Story = {
 
 export const DropDownItemWithImage: Story = {
 	args: {
-		title: "Title",
+		title: "Title with Image",
 		href: "#",
 		img: imageMocks.woman,
 	},

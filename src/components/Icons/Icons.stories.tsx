@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import type { ComponentProps } from "react";
 import {
 	AIIcon,
 	AddIcon,
@@ -50,10 +49,6 @@ import {
 	XLSXIcon,
 } from ".";
 import { weightControl } from "../../utils";
-
-const IconWrapper = ({ ...props }: ComponentProps<"div">) => (
-	<div className="grid gap-1 justify-center justify-items-center" {...props} />
-);
 
 const allIcons = [
 	AIIcon,
@@ -127,10 +122,13 @@ const meta = {
 	render: ({ ...args }) => (
 		<div className="grid w-max grid-cols-4 gap-5 text-sm">
 			{allIcons.map((Icon) => (
-				<IconWrapper key={Icon.displayName}>
+				<div
+					className="grid gap-1 justify-center justify-items-center"
+					key={Icon.displayName}
+				>
 					<Icon {...args} alt="Icon.displayName" />
 					<span className="text-black-100">{Icon.displayName}</span>
-				</IconWrapper>
+				</div>
 			))}
 		</div>
 	),

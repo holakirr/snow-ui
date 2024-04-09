@@ -26,25 +26,10 @@ type SearchProps = ComponentProps<"input"> &
 	};
 
 const Search = forwardRef<HTMLInputElement, SearchProps>(
-	(
-		{
-			variant,
-			className,
-			keyBindings,
-			value,
-			iconSize,
-			onChange,
-			onSubmit,
-			...props
-		},
-		ref,
-	) => (
+	({ variant, className, keyBindings, value, iconSize, ...props }, ref) => (
 		<div className="relative">
 			<input
 				{...props}
-				value={value}
-				onChange={onChange}
-				onSubmit={onSubmit}
 				ref={ref}
 				className={twMerge(searchClassnames({ variant, className }), "peer")}
 				type="search"

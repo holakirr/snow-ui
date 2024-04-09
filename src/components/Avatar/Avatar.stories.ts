@@ -32,7 +32,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicAvatar: Story = {
+export const Basic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -44,7 +44,7 @@ export const BasicAvatar: Story = {
 	},
 };
 
-export const LargeAvatar: Story = {
+export const Large: Story = {
 	args: {
 		size: "large",
 	},
@@ -58,7 +58,7 @@ export const LargeAvatar: Story = {
 	},
 };
 
-export const LargeAvatarWithImg: Story = {
+export const LargeWithImg: Story = {
 	args: {
 		size: "large",
 		img: "https://avatar.iran.liara.run/public/38",

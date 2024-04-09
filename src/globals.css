@@ -7,11 +7,15 @@
 
 .docs-story,
 .sb-show-main {
-  @apply text-black-100;
-  background-color: #e2e7ec;
+  @apply bg-gray-300;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-weight: normal;
   font-style: normal;
   font-variation-settings: "slnt" 0;
+}
+
+html[data-mode="dark"] .docs-story,
+html[data-mode="dark"] .sb-show-main {
+  @apply bg-gray-900;
 }

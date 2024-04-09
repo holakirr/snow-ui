@@ -13,7 +13,7 @@ const AvatarName = forwardRef<HTMLDivElement, AvatarProps>(
 			ref={ref}
 		>
 			<Avatar username={username} img={img} small={small} color={color} />
-			<Text size={14} as="span">
+			<Text size={14} as="span" className="text-black-100">
 				{username}
 			</Text>
 		</div>

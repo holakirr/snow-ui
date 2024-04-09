@@ -129,7 +129,7 @@ const meta = {
 			{allIcons.map((Icon) => (
 				<IconWrapper key={Icon.displayName}>
 					<Icon {...args} alt="Icon.displayName" />
-					<span>{Icon.displayName}</span>
+					<span className="text-black-100">{Icon.displayName}</span>
 				</IconWrapper>
 			))}
 		</div>

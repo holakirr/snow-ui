@@ -36,10 +36,11 @@ const DropDownItem = forwardRef<HTMLAnchorElement, DropDownItemAllProps>(
 						size={16}
 						weight="regular"
 						alt={`search icon for ${title}`}
+						className="fill-black-100"
 					/>
 				)}
 				<div className="flex flex-col">
-					<Text as="p" size={14}>
+					<Text as="p" size={14} className="text-black-100">
 						{title}
 					</Text>
 					<Text as="span" size={14} className="text-black-40">

@@ -42,7 +42,7 @@ const SearchPopup = forwardRef<HTMLInputElement, SearchPopupProps>(
 					className={twMerge(
 						"border-none p-0 ps-[52px] pe-2 text-2xl focus:ring-0 w-full bg-transparent rounded-lg",
 					)}
-					iconClassName="left-2"
+					iconClassName="left-2 fill-black-100"
 					status={progress ? "progress" : undefined}
 					{...props}
 				/>

@@ -8,17 +8,7 @@ on:
     types: [created]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-
   publish-npm:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,8 +16,10 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
+      - run: git config --global user.email "kpetunin@icloud.com"
+      - run: git config --global user.name "git bot"
       - run: npm ci
-      - run: npm version minor
+      - run: npm version --allow-same-version=true ${{ github.event.release.tag_name }}
       - run: git push
       - run: npm run build
       - run: npm publish

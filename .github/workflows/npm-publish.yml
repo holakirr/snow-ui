@@ -20,7 +20,7 @@ jobs:
       - run: git config --global user.name "git bot"
       - run: npm ci
       - run: npm version --allow-same-version=true ${{ github.event.release.tag_name }}
-      - run: git push
+      - run: git push origin HEAD:amtrz/snow-ui
       - run: npm run build
       - run: npm publish
         env:

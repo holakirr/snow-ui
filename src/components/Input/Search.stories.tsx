@@ -21,7 +21,6 @@ const meta = {
 		placeholder: "Search",
 		disabled: false,
 		value: "",
-		onChange: console.log,
 		id: "Search",
 	},
 	render: (args) => {

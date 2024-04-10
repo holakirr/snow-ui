@@ -4,7 +4,7 @@ import { Avatar, type AvatarProps } from ".";
 import { Text } from "..";
 
 const AvatarName = forwardRef<HTMLDivElement, AvatarProps>(
-	({ username, img, className, small = true, color }, ref) => (
+	({ username, img, className, size = "small", color }, ref) => (
 		<div
 			className={twMerge(
 				"grid grid-flow-col-dense items-center gap-2",
@@ -12,7 +12,7 @@ const AvatarName = forwardRef<HTMLDivElement, AvatarProps>(
 			)}
 			ref={ref}
 		>
-			<Avatar username={username} img={img} small={small} color={color} />
+			<Avatar username={username} img={img} size={size} color={color} />
 			<Text size={14} as="span" className="text-black-100">
 				{username}
 			</Text>

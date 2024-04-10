@@ -68,6 +68,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 				buttonStyles({ variant, size, className }),
 				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
 			)}
+			role="button"
+			aria-label={label || "button aria label"}
 			{...props}
 		>
 			{LeftIcon && (

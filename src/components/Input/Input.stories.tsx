@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, userEvent, within } from "@storybook/test";
 import { useState } from "react";
 import { Input } from ".";
 import { FourLeafCloverIcon } from "..";
@@ -27,7 +28,6 @@ const meta = {
 		error: "",
 		value: "",
 		status: null,
-		onChange: console.log,
 		title: "",
 		id: "input",
 		clearable: false,
@@ -52,6 +52,19 @@ type Story = StoryObj<typeof meta>;
 export const BasicInput: Story = {
 	args: {
 		placeholder: "",
+		id: "email",
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const testText = "email@provider.com";
+		const input = canvas.getByRole("textbox");
+
+		// 👇 Simulate interactions with the component
+		await userEvent.type(input, testText);
+
+		// 👇 Assert DOM structure
+		await expect(input.getAttribute("value")).toBe(testText);
+		await expect(input.focus).toBeTruthy();
 	},
 };
 

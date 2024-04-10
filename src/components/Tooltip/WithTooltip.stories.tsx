@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import { WithTooltip } from ".";
 import { Button } from "..";
 import { iconControl } from "../../utils";
@@ -28,6 +29,21 @@ const meta = {
 		position: "bottom",
 		label: "WithTooltip",
 		icon: undefined,
+	},
+	render: (args) => {
+		const [showTooltip, setShowTooltip] = useState(false);
+		return (
+			<WithTooltip {...args} visible={showTooltip}>
+				<Button
+					label="Hover me"
+					variant="filled"
+					onMouseEnter={() => setShowTooltip(true)}
+					onMouseLeave={() => {
+						setShowTooltip(false);
+					}}
+				/>
+			</WithTooltip>
+		);
 	},
 } satisfies Meta<typeof WithTooltip>;
 

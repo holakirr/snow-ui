@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, within } from "@storybook/test";
 import { Avatar } from ".";
 import { colorControl, imgSourceControl } from "../../utils";
+import { getInitials } from "./getInitials";
+
+const testUserName = "John Doe";
+const testInitials = getInitials(testUserName);
 
 const meta = {
 	title: "Base Components/Avatar",
@@ -18,8 +23,8 @@ const meta = {
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		small: true,
-		username: "John Doe",
+		size: "small",
+		username: testUserName,
 		color: "orange",
 	},
 } satisfies Meta<typeof Avatar>;
@@ -27,19 +32,43 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicAvatar: Story = {
+export const Basic: Story = {
 	args: {},
-};
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const avatar = canvas.getByText(testInitials);
 
-export const BigAvatar: Story = {
-	args: {
-		small: false,
+		// 👇 Simulate interactions with the component
+		expect(avatar).toBeInTheDocument();
+		expect(avatar.tagName).toBe("SPAN");
 	},
 };
 
-export const BigAvatarWithImg: Story = {
+export const Large: Story = {
 	args: {
-		small: false,
+		size: "large",
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const avatar = canvas.getByText(testInitials);
+
+		// 👇 Simulate interactions with the component
+		expect(avatar).toBeInTheDocument();
+		expect(avatar.parentElement?.className).toContain("w-16 h-16");
+	},
+};
+
+export const LargeWithImg: Story = {
+	args: {
+		size: "large",
 		img: "https://avatar.iran.liara.run/public/38",
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const avatar = canvas.getByRole("img");
+
+		// 👇 Simulate interactions with the component
+		expect(avatar).toBeInTheDocument();
+		expect(avatar.getAttribute("alt")).toContain(testUserName);
 	},
 };

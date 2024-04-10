@@ -10,15 +10,22 @@
 		"type": "git",
 		"url": "git+https://github.com/amtrz/snow-ui.git#main"
 	},
-	"keywords": ["react", "ui", "snowui", "snow"],
+	"keywords": [
+		"react",
+		"ui",
+		"snowui",
+		"snow"
+	],
 	"bugs": {
 		"url": "https://github.com/amtrz/snow-ui/issues"
 	},
 	"homepage": "https://github.com/amtrz/snow-ui/tree/main#readme",
 	"license": "MIT",
 	"type": "module",
-	"version": "0.1.7",
-	"files": ["dist"],
+	"version": "0.2.0",
+	"files": [
+		"dist"
+	],
 	"main": "dist/snow-ui-umd.cjs",
 	"module": "dist/snow-ui.js",
 	"types": "dist/snow-ui.d.ts",

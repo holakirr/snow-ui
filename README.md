@@ -9,6 +9,28 @@ Build your design using [it](https://www.figma.com/community/file/13011346853020
 
 Take a look at my [CV](https://holakirr.com)
 
+## How to install
+
+### 1. Install our library
+
+```bash
+npm add amtrz-snow-ui
+# or
+yarn add amtrz-snow-ui
+# or
+pnpm add amtrz-snow-ui
+# or
+bun add amtrz-snow-ui
+```
+
+### 2. Add to your global css file
+
+```css
+@import "amtrz-snow-ui/index.css";
+```
+
+### 3. Ready, feel free to use Elements from docs =)
+
 ## Getting Started
 
 First, run the development server:

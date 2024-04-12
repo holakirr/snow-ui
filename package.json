@@ -18,7 +18,7 @@
 	"homepage": "https://github.com/amtrz/snow-ui/tree/main#readme",
 	"license": "MIT",
 	"type": "module",
-	"version": "0.2.5",
+	"version": "0.2.6",
 	"files": ["dist"],
 	"main": "dist/index.cjs",
 	"module": "dist/index.js",
@@ -34,7 +34,7 @@
 				"default": "./dist/index.cjs"
 			}
 		},
-		"./build.css": "./dist/build.css"
+		"./style.css": "./dist/style.css"
 	},
 	"scripts": {
 		"dev": "storybook dev -p 6006",
@@ -95,6 +95,7 @@
 		"@phosphor-icons/react": "^2.1.4",
 		"class-variance-authority": "^0.7.0",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react-dom": "^18.2.0",
+		"tailwindcss": "^3.4.3"
 	}
 }

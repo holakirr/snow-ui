@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
-import { peerDependencies } from "./package.json";
 
 const plugins = [
 	react(),
@@ -12,6 +11,7 @@ const plugins = [
 	}),
 ];
 plugins.unshift(MillionLint.vite());
+
 export default defineConfig({
 	plugins: plugins,
 	build: {
@@ -19,11 +19,18 @@ export default defineConfig({
 		minify: false,
 		lib: {
 			entry: resolve(__dirname, "src/components/index.ts"),
-			fileName: "snow-ui",
+			fileName: "index",
+			formats: ["es", "cjs"],
 			name: "SnowUI",
 		},
 		rollupOptions: {
-			external: ["react/jsx-runtime", ...Object.keys(peerDependencies)],
+			external: ["react", "react-dom"],
+			output: {
+				globals: {
+					react: "React",
+					"react-dom": "ReactDOM",
+				},
+			},
 		},
 	},
 });

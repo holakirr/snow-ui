@@ -1,4 +1,5 @@
 {
+	"packageManager": "bun@1.1.3",
 	"name": "amtrz-snow-ui",
 	"description": "SnowUI is a React component library designed by ByeWind, implementated and improved by Amtrz team for creating beautiful and interactive user interfaces.",
 	"author": {
@@ -10,34 +11,27 @@
 		"type": "git",
 		"url": "git+https://github.com/amtrz/snow-ui.git#main"
 	},
-	"keywords": [
-		"react",
-		"ui",
-		"snowui",
-		"snow"
-	],
+	"keywords": ["react", "ui", "snowui", "snow"],
 	"bugs": {
 		"url": "https://github.com/amtrz/snow-ui/issues"
 	},
 	"homepage": "https://github.com/amtrz/snow-ui/tree/main#readme",
 	"license": "MIT",
 	"type": "module",
-	"version": "0.2.0",
-	"files": [
-		"dist"
-	],
-	"main": "dist/snow-ui-umd.cjs",
-	"module": "dist/snow-ui.js",
-	"types": "dist/snow-ui.d.ts",
+	"version": "0.2.4",
+	"files": ["dist"],
+	"main": "dist/index.cjs",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"exports": {
 		".": {
 			"import": {
-				"types": "./dist/snow-ui.d.ts",
-				"default": "./dist/snow-ui.js"
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
 			},
 			"require": {
-				"types": "./dist/snow-ui.d.ts",
-				"default": "./dist/snow-ui-umd.cjs"
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.cjs"
 			}
 		},
 		"./build.css": "./dist/build.css"
@@ -45,7 +39,7 @@
 	"scripts": {
 		"dev": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
-		"build:lib": "tsc && vite build && npx tailwindcss -i ./src/export.css -o ./dist/build.css --minify",
+		"build:lib": "vite build && tailwindcss -i ./src/export.css -o ./dist/build.css --minify",
 		"test": "test-storybook",
 		"test:dev": "test-storybook --watch",
 		"lint": "biome lint .",
@@ -55,7 +49,7 @@
 		"chromatic": "chromatic --project-token chpt_d8c5c59f2c6fd6e",
 		"clean:build": "rm -rf dist/ build-storybook.log storybook-static/ migration-storybook.log coverage/",
 		"clean:node_modules": "rm -rf node_modules/",
-		"clean:all": "npm run clean:build && npm run clean:node_modules"
+		"clean:all": "bun run clean:build && bun run clean:node_modules"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.6.4",
@@ -98,6 +92,8 @@
 		"vitest": "^1.4.0"
 	},
 	"peerDependencies": {
+		"@phosphor-icons/react": "^2.1.4",
+		"class-variance-authority": "^0.7.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0"
 	}

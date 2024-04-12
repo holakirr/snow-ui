@@ -16,9 +16,9 @@ export default defineConfig({
 	plugins: plugins,
 	build: {
 		target: "esnext",
-		minify: false,
+		minify: true,
 		lib: {
-			entry: resolve(__dirname, "src/components/index.ts"),
+			entry: resolve(__dirname, "src/index.ts"),
 			fileName: "index",
 			formats: ["es", "cjs"],
 			name: "SnowUI",

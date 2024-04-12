@@ -56,6 +56,10 @@ export const Colors: Story = {
 											"rounded-2xl text-center p-5",
 											`bg-${color}-${shade}`,
 										)}
+										style={{
+											// biome-ignore lint/suspicious/noExplicitAny: that's just a story
+											backgroundColor: (COLOR_SCHEME[color] as any)[shade],
+										}}
 									>
 										<span className="text-sm text-black-100">{shade}</span>
 									</div>

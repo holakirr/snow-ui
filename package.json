@@ -18,7 +18,7 @@
 	"homepage": "https://github.com/amtrz/snow-ui/tree/main#readme",
 	"license": "MIT",
 	"type": "module",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"files": ["dist"],
 	"main": "dist/index.cjs",
 	"module": "dist/index.js",
@@ -39,7 +39,7 @@
 	"scripts": {
 		"dev": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
-		"build:lib": "vite build && tailwindcss -i ./src/export.css -o ./dist/build.css --minify",
+		"build:lib": "vite build",
 		"test": "test-storybook",
 		"test:dev": "test-storybook --watch",
 		"lint": "biome lint .",

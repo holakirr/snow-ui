@@ -10,6 +10,6 @@
 		}
 	},
 	"files": {
-		"ignore": ["node_modules", "dist", "storybook-static"]
+		"ignore": ["node_modules", "dist", "storybook-static", "*.locb", "*.lock"]
 	}
 }

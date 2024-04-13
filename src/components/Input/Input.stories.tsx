@@ -1,10 +1,10 @@
+import { FourLeafCloverIcon, Input } from "@components";
+import { STATUSES } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, within } from "@storybook/test";
+import { statusControl, testTitle } from "@utils";
 import { useState } from "react";
-import { Input } from ".";
-import { FourLeafCloverIcon } from "..";
-import { STATUSES } from "../../consts";
-import { iconControl, statusControl } from "../../utils";
+import { iconControl } from "../Icons/Icons.stories";
 
 const meta = {
 	title: "Base Components/Inputs/Input",
@@ -100,13 +100,13 @@ export const ErrorInput: Story = {
 
 export const InputWithTitle: Story = {
 	args: {
-		title: "Title",
+		title: testTitle,
 	},
 };
 
 export const InputWithTitleAndValueAndStatus: Story = {
 	args: {
-		title: "Title",
+		title: testTitle,
 		value: "Value",
 		status: STATUSES.progress,
 	},
@@ -114,7 +114,7 @@ export const InputWithTitleAndValueAndStatus: Story = {
 
 export const ClearableInput: Story = {
 	args: {
-		title: "Title",
+		title: testTitle,
 		clearable: true,
 	},
 };

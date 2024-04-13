@@ -1,21 +1,27 @@
 import {
-	ArrowLineDownIcon,
-	DefaultIcon,
-	FourLeafCloverIcon,
-} from "../../components/Icons/ssr";
-import {
 	BUTTON_VARIANTS,
 	COLOR_SCHEME,
 	ICON_WEIGHTS,
 	SIZES,
 	STATUSES,
-} from "../../consts";
+} from "@consts";
+import { getInitials } from "@utils";
+
+export const testStatus = "12";
+export const testUserName = "John Doe";
+export const testInitials = getInitials(testUserName);
+export const testTitle = "Title";
+export const testSubtitle = "Subtitle";
+export const testKeyBindings = ["⌘", "K"];
+export const testLink = "https://snowui.holakirr.com";
 
 export const imageSrcMocks = {
 	man: "https://avatar.iran.liara.run/public/38",
 	woman: "https://avatar.iran.liara.run/public/61",
 	chef: "https://avatar.iran.liara.run/public/job/chef/female",
 };
+
+export const imgSrcMock = imageSrcMocks.chef;
 
 export const colorControl = {
 	control: "select",
@@ -25,22 +31,6 @@ export const colorControl = {
 export const imgSourceControl = {
 	control: "radio",
 	options: [...Object.values(imageSrcMocks), null],
-};
-
-export const iconControl = {
-	control: "radio",
-	options: [
-		"Nothing",
-		ArrowLineDownIcon.displayName,
-		DefaultIcon.displayName,
-		FourLeafCloverIcon.displayName,
-	],
-	mapping: {
-		ArrowLineDownIcon,
-		DefaultIcon,
-		FourLeafCloverIcon,
-		Nothing: undefined,
-	},
 };
 
 export const sizeControl = {
@@ -73,10 +63,10 @@ export const badgeStatusControl = {
 
 export const keyBindingsControl = {
 	control: "radio",
-	options: ["CTRL+C", "CMD+/", "RETURN", "CMD+SHIFT+C", "Nothing"],
+	options: ["CTRL+C", "CMD+K", "RETURN", "CMD+SHIFT+C", "Nothing"],
 	mapping: {
 		"CTRL+C": ["Ctrl", "C"],
-		"CMD+/": ["⌘", "/"],
+		"CMD+K": testKeyBindings,
 		RETURN: ["↩︎"],
 		"CMD+SHIFT+C": ["Cmd", "Shift", "C"],
 		Nothing: [],

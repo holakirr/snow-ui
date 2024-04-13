@@ -1,12 +1,15 @@
+import { AvatarName } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
-import { colorControl, getInitials, imgSourceControl } from "@utils";
-import { AvatarName } from ".";
-
-const testUserName = "John Doe";
-const testInitials = getInitials(testUserName);
+import { expect, within } from "@storybook/test";
+import { colorControl, imgSourceControl, testUserName } from "@utils";
+import {
+	Basic as BasicAvatar,
+	Large as LargeAvatar,
+	LargeWithImg as LargeAvatarWithImg,
+} from "./Avatar.stories";
 
 const meta = {
-	title: "Base Components/Avatar Name",
+	title: "Base Components/Avatar/Avatar Name",
 	component: AvatarName,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
@@ -31,17 +34,42 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicAvatarName: Story = {
 	args: {},
+	play: (context) => {
+		const canvas = within(context.canvasElement);
+		if (BasicAvatar.play) {
+			BasicAvatar.play(context);
+		}
+
+		const name = canvas.getByText(testUserName);
+		expect(name).toBeInTheDocument();
+	},
+};
+
+export const HoverBasicAvatarName: Story = {
+	args: {},
+	parameters: {
+		pseudo: {
+			hover: "div > div",
+		},
+	},
 };
 
 export const BigAvatarName: Story = {
 	args: {
 		size: "large",
 	},
+	...LargeAvatar,
 };
 
 export const BigAvatarNameWithImg: Story = {
-	args: {
-		size: "large",
-		img: "https://avatar.iran.liara.run/public/38",
+	...LargeAvatarWithImg,
+	play: (context) => {
+		const canvas = within(context.canvasElement);
+		if (LargeAvatarWithImg.play) {
+			LargeAvatarWithImg.play(context);
+		}
+
+		const name = canvas.getByText(testUserName);
+		expect(name).toBeInTheDocument();
 	},
 };

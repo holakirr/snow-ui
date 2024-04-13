@@ -1,10 +1,14 @@
+import { DropDown, type DropDownItemProps } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
-import { DropDown, type DropDownItemProps } from ".";
+import { expect, within } from "@storybook/test";
+import { testLink } from "@utils";
 import {
 	DropDownItemWithImage,
 	DropDownItemWithKeyBindings,
 	DropDownItemWithSubtitle,
-} from "./DropDownItem/DropDownItem.stories";
+} from "./DropDownItem.stories";
+
+const listTitle = "DropDownItems";
 
 const meta = {
 	title: "Base Components/Dropdown/Dropdown",
@@ -21,11 +25,23 @@ const meta = {
 	args: {
 		lists: [
 			{
-				title: "DropDownItems",
+				title: listTitle,
 				items: [
-					DropDownItemWithImage.args,
-					DropDownItemWithKeyBindings.args,
-					DropDownItemWithSubtitle.args,
+					{
+						...DropDownItemWithImage.args,
+						title: "DropDownItemWithImage",
+						href: testLink,
+					},
+					{
+						...DropDownItemWithKeyBindings.args,
+						title: "DropDownItemWithKeyBindings",
+						href: testLink,
+					},
+					{
+						...DropDownItemWithSubtitle.args,
+						title: "DropDownItemWithSubtitle",
+						href: testLink,
+					},
 				] as DropDownItemProps[],
 			},
 		],
@@ -38,4 +54,23 @@ type Story = StoryObj<typeof meta>;
 
 export const DropDownBasic: Story = {
 	args: {},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const dropDown = canvas.getByLabelText("dropdown");
+		const list = canvas.getByRole("list");
+		const items = canvas.getAllByRole("listitem");
+
+		expect(list).toBeInTheDocument();
+		expect(dropDown).toHaveTextContent(listTitle);
+		expect(items).toHaveLength(3);
+	},
+};
+
+export const DropDownHoverFirstItem: Story = {
+	args: {},
+	parameters: {
+		pseudo: {
+			hover: "ul > li:first-child",
+		},
+	},
 };

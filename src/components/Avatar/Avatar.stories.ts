@@ -1,13 +1,16 @@
 import { Avatar } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, screen } from "@storybook/test";
-import { colorControl, getInitials, imgSourceControl } from "@utils";
-
-const testUserName = "John Doe";
-const testInitials = getInitials(testUserName);
+import { expect, within } from "@storybook/test";
+import {
+	colorControl,
+	imgSourceControl,
+	imgSrcMock,
+	testInitials,
+	testUserName,
+} from "@utils";
 
 const meta = {
-	title: "Base Components/Avatar",
+	title: "Base Components/Avatar/Avatar",
 	component: Avatar,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
@@ -33,12 +36,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
 	args: {},
-	play: async () => {
-		const avatar = screen.getByText(testInitials);
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const avatar = canvas.getByRole("figure");
 
 		// 👇 Simulate interactions with the component
 		expect(avatar).toBeInTheDocument();
-		expect(avatar.tagName).toBe("SPAN");
+		expect(avatar.lastChild?.textContent).toBe(testInitials);
 	},
 };
 
@@ -56,30 +60,30 @@ export const Large: Story = {
 	args: {
 		size: "large",
 	},
-	play: () => {
-		const avatar = screen.getByText(testInitials);
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const avatar = canvas.getByRole("figure");
 
 		// 👇 Simulate interactions with the component
 		expect(avatar).toBeInTheDocument();
-		expect(avatar.parentElement?.className).toContain("w-16 h-16");
-
-		expect(avatar.parentElement).toHaveStyle("width: 64px; height: 64px;");
+		expect(avatar.lastChild?.textContent).toBe(testInitials);
+		expect(avatar).toHaveStyle("width: 64px; height: 64px;");
 	},
 };
-
-const imgSrc = "https://avatar.iran.liara.run/public/38";
 
 export const LargeWithImg: Story = {
 	args: {
 		size: "large",
-		img: imgSrc,
+		img: imgSrcMock,
 	},
-	play: () => {
-		const avatar = screen.getByRole("img");
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const avatar = canvas.getByRole("figure");
+		const avatarImg = avatar.lastChild as HTMLImageElement;
 
 		// 👇 Simulate interactions with the component
 		expect(avatar).toBeInTheDocument();
-		expect(avatar.getAttribute("alt")).toContain(testUserName);
-		expect(avatar.getAttribute("src")).toBe(imgSrc);
+		expect(avatarImg.getAttribute("alt")).toContain(testUserName);
+		expect(avatarImg.getAttribute("src")).toBe(imgSrcMock);
 	},
 };

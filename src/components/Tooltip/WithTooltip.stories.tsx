@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { WithTooltip } from ".";
 import { Button } from "..";
-import { iconControl } from "../../utils";
+import { iconControl } from "../Icons/Icons.stories";
 
 const meta = {
 	title: "Base Components/With Tooltip",

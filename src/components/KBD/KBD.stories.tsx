@@ -1,6 +1,6 @@
+import { KBD } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
-import { KBD } from ".";
-import { keyBindingsControl } from "../../utils";
+import { keyBindingsControl, testKeyBindings } from "@utils";
 
 const meta = {
 	title: "Base Components/KBD",
@@ -17,7 +17,7 @@ const meta = {
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		keyBindings: ["Ctrl", "C"],
+		keyBindings: testKeyBindings,
 	},
 } satisfies Meta<typeof KBD>;
 

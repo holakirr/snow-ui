@@ -1,9 +1,6 @@
-@import "./font.css";
-@import "./components.css";
-@import "./variables.css";
+@import "./export.css";
 @import "tailwindcss/base";
 @import "tailwindcss/components";
-@import "tailwindcss/utilities";
 
 .docs-story,
 .sb-show-main {

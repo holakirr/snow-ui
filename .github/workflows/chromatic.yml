@@ -18,6 +18,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Build
+        run: bun build:lib
+
       - uses: chromaui/action@latest
         with:
           projectToken: chpt_d8c5c59f2c6fd6e

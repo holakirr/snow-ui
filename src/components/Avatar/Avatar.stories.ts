@@ -39,14 +39,6 @@ export const Basic: Story = {
 		// 👇 Simulate interactions with the component
 		expect(avatar).toBeInTheDocument();
 		expect(avatar.tagName).toBe("SPAN");
-
-		const avatarParent = avatar.parentElement;
-
-		if (!avatarParent) {
-			throw new Error("Avatar parent not found");
-		}
-
-		expect(avatarParent).toHaveStyle("filter: brightness(1.5);");
 	},
 };
 

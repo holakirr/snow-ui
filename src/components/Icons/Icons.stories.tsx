@@ -48,10 +48,16 @@ import {
 	XCircleIcon,
 	XLSXIcon,
 } from "@components";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta } from "@storybook/react";
 import { imageSrcMocks, weightControl } from "@utils";
 
 export const iconControl = {
+	docs: {
+		disable: true,
+	},
+	sidebar: {
+		disable: true,
+	},
 	control: "radio",
 	options: [
 		"Nothing",
@@ -167,8 +173,3 @@ const meta = {
 } satisfies Meta;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const DefaultIconStory: Story = {
-	args: {},
-};

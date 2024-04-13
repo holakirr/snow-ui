@@ -1,7 +1,6 @@
+import { Avatar, Text, type AvatarProps } from "@components";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Avatar, type AvatarProps } from ".";
-import { Text } from "..";
 
 const AvatarName = forwardRef<HTMLDivElement, AvatarProps>(
 	({ username, img, className, size = "small", color }, ref) => (

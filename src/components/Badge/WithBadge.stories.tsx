@@ -1,9 +1,11 @@
+import { Button, WithBadge } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
-import { WithBadge } from ".";
-import { Button } from "..";
+import { expect, within } from "@storybook/test";
+import { testStatus } from "@utils";
+import { BadgeWithText, BasicBadge } from "./Badge.stories";
 
 const meta = {
-	title: "Base Components/With Badge",
+	title: "Base Components/Badge/With Badge",
 	component: WithBadge,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
@@ -26,10 +28,29 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const ButtonWithBadge: Story = {};
+export const ButtonWithBadge: Story = {
+	play: (context) => {
+		if (BasicBadge.play) {
+			BasicBadge.play(context);
+		}
+
+		const canvas = within(context.canvasElement);
+		const button = canvas.getByRole("button");
+		expect(button).toBeInTheDocument();
+	},
+};
 
 export const ButtonWithBadgeWithText: Story = {
 	args: {
-		text: "12",
+		text: testStatus,
+	},
+	play: (context) => {
+		if (BadgeWithText.play) {
+			BadgeWithText.play(context);
+		}
+
+		const canvas = within(context.canvasElement);
+		const button = canvas.getByRole("button");
+		expect(button).toBeInTheDocument();
 	},
 };

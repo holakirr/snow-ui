@@ -1,6 +1,6 @@
+import { Badge, type BadgeProps } from "@components";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Badge, type BadgeProps } from ".";
 
 const WithBadge = forwardRef<HTMLDivElement, BadgeProps>(
 	({ text, children }, ref) => (

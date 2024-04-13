@@ -1,4 +1,3 @@
-import type { Meta, StoryObj } from "@storybook/react";
 import {
 	AIIcon,
 	AddIcon,
@@ -13,6 +12,7 @@ import {
 	ArrowsDownIcon,
 	ArrowsDownUpIcon,
 	ArrowsUpIcon,
+	Avatar,
 	ClipboardIcon,
 	CloseIcon,
 	CopyIcon,
@@ -47,8 +47,46 @@ import {
 	WindowedIcon,
 	XCircleIcon,
 	XLSXIcon,
-} from ".";
-import { weightControl } from "../../utils";
+} from "@components";
+import type { Meta } from "@storybook/react";
+import { imageSrcMocks, weightControl } from "@utils";
+
+export const iconControl = {
+	docs: {
+		disable: true,
+	},
+	sidebar: {
+		disable: true,
+	},
+	control: "radio",
+	options: [
+		"Nothing",
+		ArrowLineDownIcon.displayName,
+		DefaultIcon.displayName,
+		FourLeafCloverIcon.displayName,
+	],
+	mapping: {
+		ArrowLineDownIcon,
+		DefaultIcon,
+		FourLeafCloverIcon,
+		Nothing: undefined,
+	},
+};
+
+export const imageMocks = {
+	woman: <img alt="woman" width={24} height={24} src={imageSrcMocks.woman} />,
+	flowerIcon: <FourLeafCloverIcon size={16} alt="flower icon" />,
+	avatar: <Avatar img={imageSrcMocks.man} username="" />,
+};
+
+export const imageControl = {
+	control: "radio",
+	options: ["woman", "flowerIcon", "avatar", "Nothing"],
+	mapping: {
+		...imageMocks,
+		Nothing: null,
+	},
+};
 
 const allIcons = [
 	AIIcon,
@@ -135,8 +173,3 @@ const meta = {
 } satisfies Meta;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const DefaultIconStory: Story = {
-	args: {},
-};

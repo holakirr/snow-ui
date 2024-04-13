@@ -49,6 +49,8 @@ export type AvatarProps = ComponentProps<"div"> &
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
 	({ size, img, username, color, className }, ref) => (
 		<div
+			role="figure"
+			aria-label={`avatar for ${username}`}
 			className={twMerge(avatarStyles({ size, color, className }))}
 			ref={ref}
 		>

@@ -20,7 +20,9 @@
       "@components": ["./src/components"],
       "@utils": ["./src/utils"],
       "@consts": ["./src/consts"]
-    }
+    },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": ["./src/**/*"],
   "exclude": ["**/node_modules", "**/dist"],

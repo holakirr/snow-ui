@@ -12,6 +12,7 @@ const KBD = forwardRef<HTMLParagraphElement, KBDProps>(
 		<Text
 			size={14}
 			ref={ref}
+			aria-keyshortcuts={keyBindings.join(separator || "")}
 			className={twMerge("w-min text-black-20", className)}
 			as="p"
 		>

@@ -1,8 +1,8 @@
+import { Text } from "@components";
+import type { CustomIcon } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Text } from "..";
-import type { CustomIcon } from "../../utils";
 
 type ButtonProps = VariantProps<typeof buttonStyles> &
 	ComponentProps<"button"> & {
@@ -12,14 +12,15 @@ type ButtonProps = VariantProps<typeof buttonStyles> &
 	};
 
 const buttonStyles = cva(
-	"group transition-all hover:cursor-pointer disabled:cursor-not-allowed disabled:pointer-events-none disabled:text-black-10 inline-flex justify-center items-center focus:ring-4 focus:ring-black-5",
+	"group transition-all hover:cursor-pointer disabled:cursor-not-allowed disabled:text-black-10 inline-flex justify-center items-center focus:ring-4 focus:ring-black-5",
 	{
 		variants: {
 			variant: {
-				borderless: "text-black-100 font-normal hover:bg-black-5",
+				borderless:
+					"text-black-100 bg-transparent font-normal hover:bg-black-5",
 				gray: "text-black-100 bg-black-5 hover:bg-black-20 disabled:bg-black-5 focus:ring-offset-2",
 				outline:
-					"text-black-100 border-1 border-black-10 border-solid hover:bg-black-5 disabled:border-black-10",
+					"text-black-100 bg-transparent border-1 border-black-10 border-solid hover:bg-black-5 disabled:border-black-10",
 				filled:
 					"text-white-100 bg-primary-brand hover:bg-primary-brandHover disabled:bg-black-5",
 			},
@@ -64,6 +65,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 		<button
 			ref={ref}
 			type="button"
+			title={label || "button title"}
 			className={twMerge(
 				buttonStyles({ variant, size, className }),
 				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
@@ -74,7 +76,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 		>
 			{LeftIcon && (
 				<div className="">
-					<LeftIcon size={IconSizes[size || "sm"]} alt="" />
+					<LeftIcon size={IconSizes[size || "sm"]} alt="left button icon" />
 				</div>
 			)}
 			{label && (
@@ -84,7 +86,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			)}
 			{RightIcon && (
 				<div className="">
-					<RightIcon size={IconSizes[size || "sm"]} alt="" />
+					<RightIcon size={IconSizes[size || "sm"]} alt="right button icon" />
 				</div>
 			)}
 		</button>

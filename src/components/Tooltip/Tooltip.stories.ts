@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Tooltip } from ".";
 import { FourLeafCloverIcon } from "..";
-import { iconControl } from "../../utils";
+import { iconControl } from "../Icons/Icons.stories";
 
 const meta = {
 	title: "Base Components/Tooltip",

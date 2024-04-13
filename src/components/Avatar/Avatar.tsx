@@ -1,8 +1,8 @@
+import { Text } from "@components";
+import { getInitials } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Text } from "..";
-import { getInitials } from "./getInitials";
 
 const avatarStyles = cva(
 	"group brightness-100 hover:brightness-150 rounded-full transition-all overflow-hidden w-16 h-16 aspect-square flex items-center justify-center",

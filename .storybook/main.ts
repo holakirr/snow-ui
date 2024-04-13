@@ -1,29 +1,21 @@
-import { withoutVitePlugins } from "@storybook/builder-vite";
 import type { StorybookConfig } from "@storybook/react-vite";
 
 const config: StorybookConfig = {
 	stories: ["../src/**/*.stories.@(ts|tsx)"],
 	addons: [
 		"@chromatic-com/storybook",
-		"@storybook/addon-coverage",
+		"@storybook/addon-a11y",
 		"@storybook/addon-essentials",
 		"@storybook/addon-interactions",
 		"@storybook/addon-links",
 		"@storybook/addon-themes",
 		"@storybook/theming",
-		"@storybook/addon-a11y",
+		"storybook-addon-pseudo-states",
 	],
-	framework: {
-		name: "@storybook/react-vite",
-		options: {},
-	},
+	framework: "@storybook/react-vite",
 	docs: {
 		autodocs: "tag",
 	},
-	viteFinal: async (config) => ({
-		...config,
-		plugins: await withoutVitePlugins(config.plugins, ["vite:dts"]),
-	}),
 };
 
 export default config;

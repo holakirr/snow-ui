@@ -14,6 +14,13 @@ plugins.unshift(MillionLint.vite());
 
 export default defineConfig({
 	plugins: plugins,
+	resolve: {
+		alias: {
+			"@components": resolve(__dirname, "src/components"),
+			"@utils": resolve(__dirname, "src/utils"),
+			"@consts": resolve(__dirname, "src/consts"),
+		},
+	},
 	build: {
 		target: "esnext",
 		minify: true,

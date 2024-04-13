@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { colorControl, getInitials, imgSourceControl } from "@utils";
 import { AvatarName } from ".";
-import { colorControl, imgSourceControl } from "../../utils";
+
+const testUserName = "John Doe";
+const testInitials = getInitials(testUserName);
 
 const meta = {
 	title: "Base Components/Avatar Name",
@@ -19,7 +22,7 @@ const meta = {
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		size: "small",
-		username: "John Doe",
+		username: testUserName,
 	},
 } satisfies Meta<typeof AvatarName>;
 

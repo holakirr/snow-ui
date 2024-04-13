@@ -1,8 +1,7 @@
+import { Avatar } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, within } from "@storybook/test";
-import { Avatar } from ".";
-import { colorControl, imgSourceControl } from "../../utils";
-import { getInitials } from "./getInitials";
+import { expect, screen } from "@storybook/test";
+import { colorControl, getInitials, imgSourceControl } from "@utils";
 
 const testUserName = "John Doe";
 const testInitials = getInitials(testUserName);
@@ -34,9 +33,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
 	args: {},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const avatar = canvas.getByText(testInitials);
+	play: async () => {
+		const avatar = screen.getByText(testInitials);
 
 		// 👇 Simulate interactions with the component
 		expect(avatar).toBeInTheDocument();
@@ -44,31 +42,44 @@ export const Basic: Story = {
 	},
 };
 
+export const BasicHover: Story = {
+	args: {},
+	parameters: {
+		pseudo: {
+			hover: true,
+		},
+		hover: true,
+	},
+};
+
 export const Large: Story = {
 	args: {
 		size: "large",
 	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const avatar = canvas.getByText(testInitials);
+	play: () => {
+		const avatar = screen.getByText(testInitials);
 
 		// 👇 Simulate interactions with the component
 		expect(avatar).toBeInTheDocument();
 		expect(avatar.parentElement?.className).toContain("w-16 h-16");
+
+		expect(avatar.parentElement).toHaveStyle("width: 64px; height: 64px;");
 	},
 };
+
+const imgSrc = "https://avatar.iran.liara.run/public/38";
 
 export const LargeWithImg: Story = {
 	args: {
 		size: "large",
-		img: "https://avatar.iran.liara.run/public/38",
+		img: imgSrc,
 	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole("img");
+	play: () => {
+		const avatar = screen.getByRole("img");
 
 		// 👇 Simulate interactions with the component
 		expect(avatar).toBeInTheDocument();
 		expect(avatar.getAttribute("alt")).toContain(testUserName);
+		expect(avatar.getAttribute("src")).toBe(imgSrc);
 	},
 };

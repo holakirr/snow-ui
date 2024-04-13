@@ -1,31 +1,36 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig",
-	"compilerOptions": {
-		"target": "esnext",
-		"module": "esnext",
-		"lib": ["dom", "esnext"],
-		"declaration": true,
-		"sourceMap": true,
-		"moduleResolution": "node",
-		"skipLibCheck": true,
-		"strict": true,
-		"isolatedModules": true,
-		"noFallthroughCasesInSwitch": true,
-		"jsx": "react-jsx",
-		"esModuleInterop": true,
-		"resolveJsonModule": true,
-		"allowSyntheticDefaultImports": true,
-		"downlevelIteration": true
-	},
-	"include": ["./src/**/*"],
-	"exclude": ["**/node_modules", "**/dist"],
-	"buildOptions": {
-		"outDir": "./dist",
-		"exclude": [
-			"**/__tests__/**/*",
-			"**/__mocks__/**/*",
-			"**/*.stories.*",
-			"**/*.test.*"
-		]
-	}
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["dom", "esnext"],
+    "declaration": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "strict": true,
+    "isolatedModules": true,
+    "noFallthroughCasesInSwitch": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "paths": {
+      "@components": ["./src/components"],
+      "@utils": ["./src/utils"],
+      "@consts": ["./src/consts"]
+    }
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["**/node_modules", "**/dist"],
+  "buildOptions": {
+    "outDir": "./dist",
+    "exclude": [
+      "**/__tests__/**/*",
+      "**/__mocks__/**/*",
+      "**/*.stories.*",
+      "**/*.test.*"
+    ]
+  }
 }

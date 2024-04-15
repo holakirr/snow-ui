@@ -1,6 +1,6 @@
+import { Text } from "@components";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Text } from "../..";
 
 type KBDProps = ComponentProps<"p"> & {
 	keyBindings: string[];
@@ -12,9 +12,10 @@ const KBD = forwardRef<HTMLParagraphElement, KBDProps>(
 		<Text
 			size={14}
 			ref={ref}
+			as="kbd"
+			role="code"
 			aria-keyshortcuts={keyBindings.join(separator || "")}
 			className={twMerge("w-min text-black-20", className)}
-			as="p"
 		>
 			{keyBindings.join(separator || "")}
 		</Text>

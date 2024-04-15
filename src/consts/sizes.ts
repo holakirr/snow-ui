@@ -1,7 +1,11 @@
-import type { Size } from "../utils";
+import type { SimpleSize, Size } from "@utils";
 
-export const SIZES: { [K in Size]: Size } = {
+export const SIMPLE_SIZES: { [K in SimpleSize]: K } = {
 	sm: "sm",
-	md: "md",
 	lg: "lg",
+} as const;
+
+export const SIZES: { [K in Size]: K } = {
+	...SIMPLE_SIZES,
+	md: "md",
 } as const;

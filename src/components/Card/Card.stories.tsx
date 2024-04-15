@@ -31,7 +31,7 @@ export const BasicCard: Story = {
 		const canvas = within(canvasElement);
 		const card = canvas.getByRole("article");
 
-		expect(card).toHaveTextContent("Text");
+		expect(card).toHaveTextContent(testText);
 	},
 };
 
@@ -39,11 +39,11 @@ export const LargeCard: Story = {
 	args: {
 		children: (
 			<>
-				<Text>Text</Text>
-				<Text>Text</Text>
-				<Text>Text</Text>
-				<Text>Text</Text>
-				<Text>Text</Text>
+				<Text>{testText}</Text>
+				<Text>{testText}</Text>
+				<Text>{testText}</Text>
+				<Text>{testText}</Text>
+				<Text>{testText}</Text>
 			</>
 		),
 	},

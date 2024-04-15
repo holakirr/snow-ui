@@ -1,7 +1,8 @@
 import { Notification } from "@components";
-import { STATUSES_NOTIFY } from "@consts";
+import { SIMPLE_SIZES, STATUSES_NOTIFY } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
-import { statusControl } from "@utils";
+import { expect, within } from "@storybook/test";
+import { statusControl, testErrorText, testSuccessText } from "@utils";
 
 const meta = {
 	title: "Base Components/Notification",
@@ -17,11 +18,13 @@ const meta = {
 		status: statusControl,
 		size: {
 			control: "radio",
-			options: ["sm", "lg"],
+			options: Object.values(SIMPLE_SIZES),
 		},
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
-	args: {},
+	args: {
+		size: SIMPLE_SIZES.sm,
+	},
 } satisfies Meta<typeof Notification>;
 
 export default meta;
@@ -30,14 +33,32 @@ type Story = StoryObj<typeof meta>;
 export const BasicNotification: Story = {
 	args: {
 		status: STATUSES_NOTIFY.success,
-		title: "Success",
+		title: testSuccessText,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const notification = canvas.getByRole("alert");
+		const icon = canvas.getByTitle(STATUSES_NOTIFY.success);
+
+		expect(notification).toBeInTheDocument();
+		expect(notification).toHaveTextContent(testSuccessText);
+		expect(icon).toBeInTheDocument();
 	},
 };
 
 export const LargeNotificationError: Story = {
 	args: {
 		status: STATUSES_NOTIFY.error,
-		title: "Error",
-		size: "lg",
+		title: testErrorText,
+		size: SIMPLE_SIZES.lg,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const notification = canvas.getByRole("alert");
+		const icon = canvas.getByTitle(STATUSES_NOTIFY.error);
+
+		expect(notification).toBeInTheDocument();
+		expect(notification).toHaveTextContent(testErrorText);
+		expect(icon).toBeInTheDocument();
 	},
 };

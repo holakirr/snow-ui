@@ -1,21 +1,21 @@
 import type { Status, StatusExpanded, StatusNotify } from "@utils";
 
 export const STATUSES_NOTIFY: {
-	[K in StatusNotify]: StatusNotify;
+	[K in StatusNotify]: K;
 } = {
 	success: "success",
 	error: "error",
 } as const;
 
 export const STATUSES: {
-	[K in Status]: Status;
+	[K in Status]: K;
 } = {
 	...STATUSES_NOTIFY,
 	progress: "progress",
 } as const;
 
 export const STATUSES_EXPANDED: {
-	[K in StatusExpanded]: StatusExpanded;
+	[K in StatusExpanded]: K;
 } = {
 	...STATUSES_NOTIFY,
 	warning: "warning",

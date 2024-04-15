@@ -2,7 +2,12 @@ import { FourLeafCloverIcon, Input } from "@components";
 import { STATUSES } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
-import { statusControl, testInputPlaceholder, testTitle } from "@utils";
+import {
+	statusControl,
+	testErrorText,
+	testInputPlaceholder,
+	testTitle,
+} from "@utils";
 import { useState } from "react";
 import { iconControl } from "../Icons/Icons.stories";
 
@@ -118,7 +123,7 @@ export const SuccessInput: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle("success");
+		const icon = canvas.getByTitle(STATUSES.success);
 
 		expect(icon).toBeInTheDocument();
 	},
@@ -127,14 +132,14 @@ export const SuccessInput: Story = {
 export const ErrorInput: Story = {
 	args: {
 		status: STATUSES.error,
-		error: "Something went wrong",
+		error: testErrorText,
 		placeholder: testInputPlaceholder,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
-		const icon = canvas.getByTitle("error");
-		const error = canvas.getByText("Something went wrong");
+		const icon = canvas.getByTitle(STATUSES.error);
+		const error = canvas.getByText(testErrorText);
 
 		expect(icon).toBeInTheDocument();
 		expect(error).toBeInTheDocument();
@@ -164,7 +169,7 @@ export const InputWithTitleAndValueAndStatus: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const title = canvas.getByText(testTitle);
-		const icon = canvas.getByTitle("progress");
+		const icon = canvas.getByTitle(STATUSES.progress);
 
 		expect(title).toBeInTheDocument();
 		expect(title).toHaveStyle({ fontSize: "12px" });

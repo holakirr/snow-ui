@@ -1,6 +1,7 @@
+import { Notification } from "@components";
+import { STATUSES_NOTIFY } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Notification } from ".";
-import { statusControl } from "../../utils";
+import { statusControl } from "@utils";
 
 const meta = {
 	title: "Base Components/Notification",
@@ -28,14 +29,14 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicNotification: Story = {
 	args: {
-		status: "success",
+		status: STATUSES_NOTIFY.success,
 		title: "Success",
 	},
 };
 
 export const LargeNotificationError: Story = {
 	args: {
-		status: "error",
+		status: STATUSES_NOTIFY.error,
 		title: "Error",
 		size: "lg",
 	},

@@ -5,7 +5,11 @@ import type {
 	RefAttributes,
 } from "react";
 
-export type Status = "progress" | "success" | "error";
+export type StatusNotify = "success" | "error";
+
+export type Status = StatusNotify | "progress";
+
+export type StatusExpanded = StatusNotify | "warning" | "default" | "info";
 
 export type Size = "sm" | "md" | "lg";
 

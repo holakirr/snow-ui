@@ -1,6 +1,6 @@
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { DropDown, type DropDownProps, Line } from "../..";
+import { DropDown, type DropDownProps, Line, STATUSES } from "../..";
 import { SearchIcon } from "../Icons";
 import { Input } from "../Input";
 
@@ -43,7 +43,7 @@ const SearchPopup = forwardRef<HTMLInputElement, SearchPopupProps>(
 						"border-none p-0 ps-[52px] pe-2 text-2xl focus:ring-0 w-full bg-transparent rounded-lg",
 					)}
 					iconClassName="left-2 fill-black-100"
-					status={progress ? "progress" : undefined}
+					status={progress ? STATUSES.progress : undefined}
 					{...props}
 				/>
 			</div>

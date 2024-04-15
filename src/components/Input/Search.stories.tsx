@@ -1,7 +1,10 @@
+import { Search } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, userEvent, within } from "@storybook/test";
+import { keyBindingsControl } from "@utils";
 import { useState } from "react";
-import { Search } from ".";
-import { keyBindingsControl } from "../../utils";
+
+const testValue = "Test Value";
 
 const meta = {
 	title: "Base Components/Inputs/Search",
@@ -19,12 +22,11 @@ const meta = {
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		placeholder: "Search",
-		disabled: false,
 		value: "",
 		id: "Search",
 	},
 	render: (args) => {
-		const [value, setValue] = useState<string>("");
+		const [value, setValue] = useState<string>(args.value as string);
 		return (
 			<Search
 				{...args}
@@ -32,6 +34,16 @@ const meta = {
 				onChange={(e) => setValue(e.target.value)}
 			/>
 		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const input = canvas.getByRole("searchbox");
+
+		expect(input).toBeInTheDocument();
+
+		await userEvent.type(input, testValue);
+
+		expect(input).toHaveValue(testValue);
 	},
 } satisfies Meta<typeof Search>;
 

@@ -1,5 +1,3 @@
-import { type ComponentProps, forwardRef } from "react";
-import { twMerge } from "tailwind-merge";
 import {
 	StatusIcon,
 	Text,
@@ -7,10 +5,13 @@ import {
 	disabledInputClasses,
 	focusInputClasses,
 	statusInputClasses,
-} from "..";
+} from "@components";
+import type { Status } from "@utils";
+import { type ComponentProps, forwardRef } from "react";
+import { twMerge } from "tailwind-merge";
 
 type TextAreaProps = ComponentProps<"textarea"> & {
-	status?: "progress" | "success" | "error";
+	status?: Status;
 	error?: string;
 	textLimit?: number;
 };

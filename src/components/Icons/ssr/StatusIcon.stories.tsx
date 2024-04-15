@@ -1,6 +1,7 @@
+import { StatusIcon } from "@components";
+import { STATUSES } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
-import { StatusIcon } from "..";
-import { statusControl } from "../../../utils";
+import { statusControl } from "@utils";
 
 const meta = {
 	title: "Design resources/Icons/StatusIcon",
@@ -26,6 +27,6 @@ type Story = StoryObj<typeof meta>;
 
 export const StatusIconStory: Story = {
 	args: {
-		status: "success",
+		status: STATUSES.success,
 	},
 };

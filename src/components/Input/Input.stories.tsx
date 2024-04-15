@@ -1,10 +1,19 @@
 import { FourLeafCloverIcon, Input } from "@components";
 import { STATUSES } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, userEvent, within } from "@storybook/test";
-import { statusControl, testTitle } from "@utils";
+import { expect, fn, userEvent, within } from "@storybook/test";
+import {
+	statusControl,
+	testErrorText,
+	testInputPlaceholder,
+	testTitle,
+} from "@utils";
 import { useState } from "react";
 import { iconControl } from "../Icons/Icons.stories";
+
+const testId = "input";
+const testValue = "email@provider.com";
+const testChangeFunction = fn();
 
 const meta = {
 	title: "Base Components/Inputs/Input",
@@ -22,24 +31,28 @@ const meta = {
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		placeholder: "Type something",
+		placeholder: testInputPlaceholder,
 		icon: undefined,
 		disabled: false,
 		error: "",
 		value: "",
 		status: null,
 		title: "",
-		id: "input",
+		id: testId,
 		clearable: false,
 	},
 	render: (args) => {
-		const [value, setValue] = useState<string>("");
+		const [value, setValue] = useState<string>(args.value as string);
 		const handleClear = () => setValue("");
+		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+			setValue(e.target.value);
+			return testChangeFunction();
+		};
 		return (
 			<Input
 				{...args}
 				value={value}
-				onChange={(e) => setValue(e.target.value)}
+				onChange={handleChange}
 				onClear={handleClear}
 			/>
 		);
@@ -56,25 +69,37 @@ export const BasicInput: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const testText = "email@provider.com";
 		const input = canvas.getByRole("textbox");
 
 		// 👇 Simulate interactions with the component
-		await userEvent.type(input, testText);
+		await userEvent.type(input, testValue);
 
 		// 👇 Assert DOM structure
-		await expect(input.getAttribute("value")).toBe(testText);
-		await expect(input.focus).toBeTruthy();
+		expect(input.getAttribute("value")).toBe(testValue);
+		expect(input.focus).toBeTruthy();
+		expect(testChangeFunction).toHaveBeenCalled();
 	},
 };
 
 export const InputWithPlaceholder: Story = {
 	args: {},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const input = canvas.getByRole("textbox");
+
+		expect(input.getAttribute("placeholder")).toBe(testInputPlaceholder);
+	},
 };
 
 export const InputWithIconAndPlaceholder: Story = {
 	args: {
 		icon: FourLeafCloverIcon,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const icon = canvas.getByTitle(testId);
+
+		expect(icon).toBeInTheDocument();
 	},
 };
 
@@ -82,25 +107,56 @@ export const DisabledInput: Story = {
 	args: {
 		disabled: true,
 	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const input = canvas.getByRole("textbox");
+		await userEvent.type(input, testValue);
+
+		expect(input).toBeDisabled();
+		expect(testChangeFunction).not.toHaveBeenCalled();
+	},
 };
 
 export const SuccessInput: Story = {
 	args: {
 		status: STATUSES.success,
 	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const icon = canvas.getByTitle(STATUSES.success);
+
+		expect(icon).toBeInTheDocument();
+	},
 };
 
 export const ErrorInput: Story = {
 	args: {
 		status: STATUSES.error,
-		error: "Something went wrong",
-		placeholder: "Type something",
+		error: testErrorText,
+		placeholder: testInputPlaceholder,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const input = canvas.getByRole("textbox");
+		const icon = canvas.getByTitle(STATUSES.error);
+		const error = canvas.getByText(testErrorText);
+
+		expect(icon).toBeInTheDocument();
+		expect(error).toBeInTheDocument();
+		expect(input).toHaveClass("border-secondary-red");
 	},
 };
 
 export const InputWithTitle: Story = {
 	args: {
 		title: testTitle,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const title = canvas.getByText(testTitle);
+
+		expect(title).toBeInTheDocument();
+		expect(title).toHaveStyle({ fontSize: "18px" });
 	},
 };
 
@@ -110,11 +166,36 @@ export const InputWithTitleAndValueAndStatus: Story = {
 		value: "Value",
 		status: STATUSES.progress,
 	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const title = canvas.getByText(testTitle);
+		const icon = canvas.getByTitle(STATUSES.progress);
+
+		expect(title).toBeInTheDocument();
+		expect(title).toHaveStyle({ fontSize: "12px" });
+		expect(icon).toBeInTheDocument();
+	},
 };
 
 export const ClearableInput: Story = {
 	args: {
 		title: testTitle,
 		clearable: true,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const input = canvas.getByRole("textbox");
+
+		await userEvent.type(input, testValue);
+
+		const clearButton = canvas.getByTitle("clear input");
+
+		expect(clearButton).toBeInTheDocument();
+
+		await userEvent.click(clearButton);
+
+		expect(input.getAttribute("value")).toBe("");
+
+		await userEvent.type(input, testValue);
 	},
 };

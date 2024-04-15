@@ -2,6 +2,8 @@ import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { Text } from "..";
+import { STATUSES_EXPANDED } from "../../consts/statuses";
+import type { StatusExpanded } from "../../utils/types";
 import { DotIcon } from "../Icons";
 
 const statusBadgeStyles = cva(
@@ -20,7 +22,7 @@ const statusBadgeStyles = cva(
 			},
 		},
 		defaultVariants: {
-			status: "default",
+			status: STATUSES_EXPANDED.default,
 			withDot: false,
 		},
 	},
@@ -41,6 +43,7 @@ const iconStyles = cva("", {
 type StatusBadgeProps = VariantProps<typeof statusBadgeStyles> &
 	ComponentProps<"div"> & {
 		label: string;
+		status: StatusExpanded;
 	};
 
 const StatusBadge = forwardRef<HTMLDivElement, StatusBadgeProps>(

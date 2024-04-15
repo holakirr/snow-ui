@@ -4,6 +4,7 @@ import {
 	ICON_WEIGHTS,
 	SIZES,
 	STATUSES,
+	STATUSES_EXPANDED,
 } from "@consts";
 import { getInitials } from "@utils";
 
@@ -12,6 +13,9 @@ export const testUserName = "John Doe";
 export const testInitials = getInitials(testUserName);
 export const testTitle = "Title";
 export const testSubtitle = "Subtitle";
+export const testText = "Text";
+export const testInputPlaceholder = "Type something";
+export const testErrorText = "Something went wrong";
 export const testKeyBindings = ["⌘", "K"];
 export const testLink = "https://snowui.holakirr.com";
 
@@ -58,7 +62,7 @@ export const statusControl = {
 
 export const badgeStatusControl = {
 	control: "radio",
-	options: ["default", "success", "info", "warning", "error"],
+	options: Object.values(STATUSES_EXPANDED),
 };
 
 export const keyBindingsControl = {

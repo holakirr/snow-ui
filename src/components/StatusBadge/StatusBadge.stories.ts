@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { StatusBadge } from ".";
+import { STATUSES_EXPANDED } from "../../consts/statuses";
 import { badgeStatusControl } from "../../utils";
 
 const meta = {
@@ -22,7 +23,7 @@ const meta = {
 	args: {
 		withDot: false,
 		label: "Status",
-		status: "default",
+		status: STATUSES_EXPANDED.default,
 	},
 } satisfies Meta<typeof StatusBadge>;
 
@@ -36,6 +37,6 @@ export const BasicStatusBadge: Story = {
 export const StatusBadgeWithDot: Story = {
 	args: {
 		withDot: true,
-		status: "success",
+		status: STATUSES_EXPANDED.success,
 	},
 };

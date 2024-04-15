@@ -1,7 +1,9 @@
+import { StatusIcon, Text } from "@components";
+import { STATUSES_NOTIFY } from "@consts";
+import type { StatusNotify } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { StatusIcon, Text } from "../..";
 
 const notificationClasses = cva(
 	"flex items-center bg-black-80 text-white-100 backdrop-blur-[20px]",
@@ -20,12 +22,15 @@ const notificationClasses = cva(
 
 type NotificationProps = VariantProps<typeof notificationClasses> &
 	ComponentProps<"div"> & {
-		status: "error" | "success";
+		status: StatusNotify;
 		title: string;
 	};
 
 const Notification = forwardRef<HTMLDivElement, NotificationProps>(
-	({ size = "sm", className, status = "success", title }, ref) => (
+	(
+		{ size = "sm", className, status = STATUSES_NOTIFY.success, title },
+		ref,
+	) => (
 		<div
 			className={twMerge(notificationClasses({ size, className }))}
 			ref={ref}

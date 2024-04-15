@@ -34,6 +34,7 @@ const Notification = forwardRef<HTMLDivElement, NotificationProps>(
 		<div
 			className={twMerge(notificationClasses({ size, className }))}
 			ref={ref}
+			role="alert"
 		>
 			<StatusIcon
 				status={status}

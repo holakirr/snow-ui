@@ -1,5 +1,9 @@
+import { Line } from "@components";
+import { SEPARATOR_DIRECTIONS } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Line } from ".";
+import { expect, within } from "@storybook/test";
+
+const testWrapperSide = 200;
 
 const meta = {
 	title: "Base Components/Line",
@@ -14,19 +18,19 @@ const meta = {
 	argTypes: {
 		direction: {
 			control: "radio",
-			options: ["horizontal", "vertical"],
+			options: Object.values(SEPARATOR_DIRECTIONS),
 		},
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		direction: "horizontal",
+		direction: SEPARATOR_DIRECTIONS.horizontal,
 	},
 	decorators: [
 		(Story) => (
 			<div
 				style={{
-					width: 400,
-					height: 400,
+					width: testWrapperSide,
+					height: testWrapperSide,
 					display: "flex",
 					justifyContent: "center",
 					alignItems: "center",
@@ -43,4 +47,25 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicLine: Story = {
 	args: {},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const line = canvas.getByRole("separator");
+
+		expect(line).toBeInTheDocument();
+		expect(line).toHaveStyle({ height: "1px" });
+		expect(line).toHaveStyle({ width: `${testWrapperSide}px` });
+	},
+};
+
+export const VerticalLine: Story = {
+	args: {
+		direction: SEPARATOR_DIRECTIONS.vertical,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const line = canvas.getByRole("separator");
+
+		expect(line).toHaveStyle({ width: "1px" });
+		expect(line).toHaveStyle({ height: `${testWrapperSide}px` });
+	},
 };

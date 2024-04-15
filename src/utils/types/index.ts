@@ -11,7 +11,9 @@ export type Status = StatusNotify | "progress";
 
 export type StatusExpanded = StatusNotify | "warning" | "default" | "info";
 
-export type Size = "sm" | "md" | "lg";
+export type SimpleSize = "sm" | "lg";
+
+export type Size = SimpleSize | "md";
 
 export type CustomIconWeights = Map<IconWeight, ReactElement>;
 
@@ -28,3 +30,5 @@ export type CustomIcon = ForwardRefExoticComponent<
 >;
 
 export type ButtonVariant = "borderless" | "gray" | "outline" | "filled";
+
+export type SeparatorDirection = "horizontal" | "vertical";

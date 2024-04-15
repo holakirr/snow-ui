@@ -12,6 +12,7 @@ export const testUserName = "John Doe";
 export const testInitials = getInitials(testUserName);
 export const testTitle = "Title";
 export const testSubtitle = "Subtitle";
+export const testText = "Text";
 export const testKeyBindings = ["⌘", "K"];
 export const testLink = "https://snowui.holakirr.com";
 

@@ -11,6 +11,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 				"flex flex-col gap-2 px-6 py-6 rounded-2xl bg-primary-light",
 				className,
 			)}
+			role="article"
 		>
 			{children}
 		</div>

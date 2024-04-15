@@ -83,11 +83,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 						htmlFor={id}
 						className={twMerge(
 							"absolute cursor-text top-1/2 left-5 transform -translate-y-1/2 text-black-20 peer-focus:top-[9px] peer-focus:translate-y-0 peer-focus:text-xs peer-disabled:text-black-10 w-min",
-							value && "text-xs top-[9px] translate-y-0",
+							value && "top-[9px] translate-y-0",
 							status && "peer-focus:top-4",
 							status && value && "top-4",
 						)}
-						size={18}
+						size={value ? 12 : 18}
 					>
 						{title}
 					</Text>

@@ -1,6 +1,9 @@
 import { KBD } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, within } from "@storybook/test";
 import { keyBindingsControl, testKeyBindings } from "@utils";
+
+const testSeparator = "+";
 
 const meta = {
 	title: "Base Components/KBD",
@@ -18,6 +21,7 @@ const meta = {
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		keyBindings: testKeyBindings,
+		separator: "",
 	},
 } satisfies Meta<typeof KBD>;
 
@@ -26,10 +30,23 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicKBD: Story = {
 	args: {},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const kbd = canvas.getByRole("code");
+
+		expect(kbd).toBeInTheDocument();
+		expect(kbd).toHaveTextContent(testKeyBindings.join(""));
+	},
 };
 
 export const KBDWithSeparator: Story = {
 	args: {
-		separator: "+",
+		separator: testSeparator,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const kbd = canvas.getByRole("code");
+
+		expect(kbd).toHaveTextContent(testKeyBindings.join(testSeparator));
 	},
 };

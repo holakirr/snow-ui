@@ -1,9 +1,10 @@
-import type { CustomIconWeights } from "../../../utils";
+import type { CustomIconWeights } from "@utils";
+import { Fragment } from "react/jsx-runtime";
 
 export const FormWeights: CustomIconWeights = new Map([
 	[
 		"regular",
-		<>
+		<Fragment key="FormRegular">
 			<path
 				fillRule="evenodd"
 				clipRule="evenodd"
@@ -30,6 +31,6 @@ export const FormWeights: CustomIconWeights = new Map([
 				d="M6.5 21.5215V11.5H12V13.5H8.5V15.5H12V17.5H8.5L8.52344 21.5215H6.5Z"
 				fill="white"
 			/>
-		</>,
+		</Fragment>,
 	],
 ]);

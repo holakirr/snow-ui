@@ -1,6 +1,6 @@
+import type { CustomIconProps } from "@utils";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import type { CustomIconProps } from "../../../utils";
 import { LoadingBWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 

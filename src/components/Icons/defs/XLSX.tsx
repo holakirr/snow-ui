@@ -1,9 +1,10 @@
-import type { CustomIconWeights } from "../../../utils";
+import type { CustomIconWeights } from "@utils";
+import { Fragment } from "react/jsx-runtime";
 
 export const XLSXWeights: CustomIconWeights = new Map([
 	[
 		"regular",
-		<>
+		<Fragment key="XLSXRegular">
 			<path
 				fillRule="evenodd"
 				clipRule="evenodd"
@@ -36,6 +37,6 @@ export const XLSXWeights: CustomIconWeights = new Map([
 				d="M5 21.7715L7.80957 16.542L5.25977 11.75H7.20117L8.84863 14.9697L10.4619 11.75H12.3828L9.83301 16.6172L12.6426 21.7715H10.6396L8.81445 18.3057L6.98926 21.7715H5Z"
 				fill="white"
 			/>
-		</>,
+		</Fragment>,
 	],
 ]);

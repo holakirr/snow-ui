@@ -1,6 +1,7 @@
+import { COLOR_SCHEME } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
+import { Fragment } from "react/jsx-runtime";
 import { twMerge } from "tailwind-merge";
-import { COLOR_SCHEME } from ".";
 
 const meta = {
 	title: "Foundations/Design System/Color Scheme",
@@ -15,7 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Colors: Story = {
 	render: () => (
-		<div>
+		<div className="grid gap-2">
 			{(Object.keys(COLOR_SCHEME) as (keyof typeof COLOR_SCHEME)[]).map(
 				(color) => (
 					<div key={color} className="grid gap-8 grid-cols-2">
@@ -29,9 +30,13 @@ export const Colors: Story = {
 								] as (typeof COLOR_SCHEME)[keyof typeof COLOR_SCHEME],
 							).map((shade) =>
 								shade === "purple" && color === "primary" ? (
-									<>
+									<Fragment
+										key={
+											COLOR_SCHEME[color][shade][50] +
+											COLOR_SCHEME[color][shade].DEFAULT
+										}
+									>
 										<div
-											key={`${color + shade}50`}
 											className={"rounded-2xl text-center p-5"}
 											style={{
 												backgroundColor: COLOR_SCHEME[color][shade][50],
@@ -40,7 +45,6 @@ export const Colors: Story = {
 											<span className="text-sm text-black-100">{shade} 50</span>
 										</div>
 										<div
-											key={`${color + shade}DEFAULT`}
 											className={"rounded-2xl text-center p-5"}
 											style={{
 												backgroundColor: COLOR_SCHEME[color][shade].DEFAULT,
@@ -48,7 +52,7 @@ export const Colors: Story = {
 										>
 											<span className="text-sm text-black-100">{shade}</span>
 										</div>
-									</>
+									</Fragment>
 								) : (
 									<div
 										key={color + shade}

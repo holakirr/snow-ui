@@ -1,6 +1,6 @@
+import type { IconBaseProps } from "@utils";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import type { IconBaseProps } from "../../../utils";
 
 export const CustomIconBase = forwardRef<SVGSVGElement, IconBaseProps>(
 	(

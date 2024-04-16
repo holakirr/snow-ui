@@ -1,9 +1,10 @@
-import type { CustomIconWeights } from "../../../utils";
+import type { CustomIconWeights } from "@utils";
+import { Fragment } from "react/jsx-runtime";
 
 export const RightbarWeights: CustomIconWeights = new Map([
 	[
 		"regular",
-		<>
+		<Fragment key="RightbarRegular">
 			<path
 				d="M22 26C21.7347 26 21.4805 25.8947 21.2928 25.7072C21.1053 25.5195 21 25.2653 21 25V7C21 6.73474 21.1053 6.48047 21.2928 6.29285C21.4805 6.10535 21.7347 6 22 6H28V26H22Z"
 				fillOpacity="0.1"
@@ -17,6 +18,6 @@ export const RightbarWeights: CustomIconWeights = new Map([
 			<path d="M25 11H28C28.5523 11 29 10.5523 29 10C29 9.44772 28.5523 9 28 9H25C24.4477 9 24 9.44772 24 10C24 10.5523 24.4477 11 25 11Z" />
 			<path d="M25 15H28C28.5523 15 29 14.5523 29 14C29 13.4477 28.5523 13 28 13H25C24.4477 13 24 13.4477 24 14C24 14.5523 24.4477 15 25 15Z" />
 			<path d="M25 19H28C28.5523 19 29 18.5523 29 18C29 17.4477 28.5523 17 28 17H25C24.4477 17 24 17.4477 24 18C24 18.5523 24.4477 19 25 19Z" />
-		</>,
+		</Fragment>,
 	],
 ]);

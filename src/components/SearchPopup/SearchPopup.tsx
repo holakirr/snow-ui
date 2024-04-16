@@ -1,31 +1,21 @@
+import {
+	DropDown,
+	type DropDownProps,
+	Input,
+	Line,
+	SearchIcon,
+} from "@components";
+import { STATUSES } from "@consts";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { DropDown, type DropDownProps, Line, STATUSES } from "../..";
-import { SearchIcon } from "../Icons";
-import { Input } from "../Input";
 
 type SearchPopupProps = ComponentProps<"input"> & {
 	progress?: boolean;
-	recentSearchItems?: string[];
-	recentlyVisitedItems?: string[];
-	contactItems?: string[];
 	dropdown?: DropDownProps;
 };
 
 const SearchPopup = forwardRef<HTMLInputElement, SearchPopupProps>(
-	(
-		{
-			progress,
-			recentSearchItems,
-			recentlyVisitedItems,
-			contactItems,
-			width,
-			dropdown,
-			className,
-			...props
-		},
-		ref,
-	) => (
+	({ progress, width, dropdown, className, ...props }, ref) => (
 		<div
 			className={twMerge(
 				"flex flex-col p-7 backdrop-blur-[20px] rounded-[32px] bg-white-80 gap-4",

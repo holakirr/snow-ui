@@ -1,7 +1,7 @@
+import { Tooltip, type TooltipProps } from "@components";
 import { cva } from "class-variance-authority";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Tooltip, type TooltipProps } from ".";
 
 type WithTooltipProps = TooltipProps & {
 	position?: "top" | "bottom" | "left" | "right";
@@ -24,7 +24,7 @@ const tooltipPosStyles = cva("", {
 });
 
 const WithTooltip = forwardRef<HTMLDivElement, WithTooltipProps>(
-	({ label, icon, position, visible, setVisible, children }, ref) => (
+	({ label, kbd, position, visible, setVisible, children }, ref) => (
 		<div
 			onMouseEnter={() => setVisible?.(true)}
 			onMouseLeave={() => setVisible?.(false)}
@@ -36,7 +36,7 @@ const WithTooltip = forwardRef<HTMLDivElement, WithTooltipProps>(
 				<Tooltip
 					className={twMerge("absolute z-100", tooltipPosStyles({ position }))}
 					label={label}
-					icon={icon}
+					kbd={kbd}
 				/>
 			)}
 		</div>

@@ -1,7 +1,6 @@
+import { ArrowRiseWeights, CustomIconBase } from "@components";
 import type { CustomIconProps } from "@utils";
 import { forwardRef } from "react";
-import { ArrowRiseWeights } from "../defs";
-import { CustomIconBase } from "../lib";
 
 const ArrowRiseIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

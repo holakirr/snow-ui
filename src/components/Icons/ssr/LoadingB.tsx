@@ -1,8 +1,7 @@
+import { CustomIconBase, LoadingBWeights } from "@components";
 import type { CustomIconProps } from "@utils";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { LoadingBWeights } from "../defs";
-import { CustomIconBase } from "../lib";
 
 const LoadingBIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

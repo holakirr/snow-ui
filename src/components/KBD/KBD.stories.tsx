@@ -32,7 +32,7 @@ export const BasicKBD: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const kbd = canvas.getByRole("code");
+		const kbd = canvas.getByRole("definition");
 
 		expect(kbd).toBeInTheDocument();
 		expect(kbd).toHaveTextContent(testKeyBindings.join(""));
@@ -45,7 +45,7 @@ export const KBDWithSeparator: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const kbd = canvas.getByRole("code");
+		const kbd = canvas.getByRole("definition");
 
 		expect(kbd).toHaveTextContent(testKeyBindings.join(testSeparator));
 	},

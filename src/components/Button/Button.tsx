@@ -12,7 +12,7 @@ type ButtonProps = VariantProps<typeof buttonStyles> &
 	};
 
 const buttonStyles = cva(
-	"group transition-all hover:cursor-pointer disabled:cursor-not-allowed disabled:text-black-10 inline-flex justify-center items-center focus:ring-4 focus:ring-black-5",
+	"group transition-all hover:cursor-pointer disabled:cursor-not-allowed disabled:text-black-10 inline-flex justify-center items-center focus:outline-none focus:ring-4 focus:ring-black-5 active:scale-95",
 	{
 		variants: {
 			variant: {

@@ -1,6 +1,6 @@
+import { CloseIcon, DotIcon, Text } from "@components";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { CloseIcon, DotIcon, Text } from "../..";
 
 type TagProps = ComponentProps<"div"> & {
 	label: string;
@@ -9,7 +9,7 @@ type TagProps = ComponentProps<"div"> & {
 };
 
 const Tag = forwardRef<HTMLDivElement, TagProps>(
-	({ label, withDot, onClose, className }, ref) => (
+	({ label, withDot, onClose, className, ...props }, ref) => (
 		<div
 			className={twMerge(
 				"text-black-100 grid grid-flow-col-dense items-center px-2 py-0.5 bg-black-5 hover:bg-black-10 rounded-lg hover:cursor-default relative",
@@ -18,6 +18,8 @@ const Tag = forwardRef<HTMLDivElement, TagProps>(
 				className,
 			)}
 			ref={ref}
+			role="article"
+			{...props}
 		>
 			{withDot && <DotIcon alt={label} size={16} weight="fill" />}
 			<Text size={12} as="span">

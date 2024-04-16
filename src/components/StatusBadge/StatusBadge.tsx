@@ -1,10 +1,9 @@
+import { DotIcon, Text } from "@components";
+import { STATUSES_EXPANDED } from "@consts";
+import type { StatusExpanded } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Text } from "..";
-import { STATUSES_EXPANDED } from "../../consts/statuses";
-import type { StatusExpanded } from "../../utils/types";
-import { DotIcon } from "../Icons";
 
 const statusBadgeStyles = cva(
 	"flex place-items-center px-2 py-[1px] rounded-[80px] transition-all",
@@ -51,6 +50,7 @@ const StatusBadge = forwardRef<HTMLDivElement, StatusBadgeProps>(
 		<div
 			className={twMerge(statusBadgeStyles({ withDot, status }), className)}
 			ref={ref}
+			role="status"
 		>
 			{withDot && (
 				<DotIcon

@@ -1,7 +1,10 @@
+import { StatusBadge } from "@components";
+import { STATUSES_EXPANDED } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
-import { StatusBadge } from ".";
-import { STATUSES_EXPANDED } from "../../consts/statuses";
-import { badgeStatusControl } from "../../utils";
+import { expect, within } from "@storybook/test";
+import { badgeStatusControl } from "@utils";
+
+const testLabel = "Status";
 
 const meta = {
 	title: "Base Components/Status Badge",
@@ -22,7 +25,7 @@ const meta = {
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		withDot: false,
-		label: "Status",
+		label: testLabel,
 		status: STATUSES_EXPANDED.default,
 	},
 } satisfies Meta<typeof StatusBadge>;
@@ -32,11 +35,32 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicStatusBadge: Story = {
 	args: {},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const badge = canvas.getByRole("status");
+
+		expect(badge).toBeInTheDocument();
+		expect(badge).toHaveTextContent(testLabel);
+		expect(badge).toHaveClass(
+			"bg-secondary-indigoLighter text-secondary-indigoDarker",
+		);
+	},
 };
 
 export const StatusBadgeWithDot: Story = {
 	args: {
 		withDot: true,
 		status: STATUSES_EXPANDED.success,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const badge = canvas.getByRole("status");
+		const icon = canvas.getByTitle(testLabel).parentElement;
+
+		expect(badge).toBeInTheDocument();
+		expect(badge).toHaveTextContent(testLabel);
+		expect(badge).toHaveClass("text-secondary-greenDarker");
+		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveClass("fill-secondary-green");
 	},
 };

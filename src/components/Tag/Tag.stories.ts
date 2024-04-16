@@ -1,5 +1,9 @@
+import { Tag } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Tag } from ".";
+import { expect, fn, userEvent, within } from "@storybook/test";
+
+const testLabel = "Tag";
+const closeHandler = fn();
 
 const meta = {
 	title: "Base Components/Tag",
@@ -14,7 +18,7 @@ const meta = {
 	argTypes: {},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		label: "Tag",
+		label: testLabel,
 		withDot: false,
 	},
 } satisfies Meta<typeof Tag>;
@@ -24,17 +28,40 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicTag: Story = {
 	args: {},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const tag = canvas.getByRole("article");
+
+		expect(tag).toBeInTheDocument();
+		expect(tag).toHaveTextContent(testLabel);
+	},
 };
 
 export const TagWithDot: Story = {
 	args: {
 		withDot: true,
 	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const dot = canvas.getByTitle(testLabel).parentElement;
+
+		expect(dot).toBeInTheDocument();
+	},
 };
 
 export const TagWithClose: Story = {
 	args: {
-		onClose: () => {},
+		onClose: closeHandler,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const close = canvas.getByTitle("Close").parentElement;
+
+		expect(close).toBeInTheDocument();
+
+		await userEvent.click(close as HTMLElement);
+
+		expect(closeHandler).toHaveBeenCalled();
 	},
 };
 
@@ -42,5 +69,13 @@ export const TagWithDotAndClose: Story = {
 	args: {
 		withDot: true,
 		onClose: () => {},
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const dot = canvas.getByTitle(testLabel);
+		const close = canvas.getByTitle("Close");
+
+		expect(dot).toBeInTheDocument();
+		expect(close).toBeInTheDocument();
 	},
 };

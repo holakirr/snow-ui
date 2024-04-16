@@ -46,7 +46,6 @@ const meta = {
 			},
 		],
 	},
-	decorators: [],
 } satisfies Meta<typeof DropDown>;
 
 export default meta;

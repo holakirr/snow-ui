@@ -10,6 +10,14 @@
 		}
 	},
 	"files": {
-		"ignore": ["node_modules", "dist", "storybook-static", "*.locb", "*.lock"]
+		"ignore": [
+			"node_modules",
+			"dist",
+			"storybook-static",
+			"*.locb",
+			"*.lock",
+			"src/consts/colors.stories.tsx",
+			"tsconfig.json"
+		]
 	}
 }

@@ -1,5 +1,5 @@
+import type { CustomIconProps } from "@utils";
 import { forwardRef } from "react";
-import type { CustomIconProps } from "../../../utils";
 import { CloseWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 

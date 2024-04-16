@@ -1,9 +1,10 @@
-import type { CustomIconWeights } from "../../../utils";
+import type { CustomIconWeights } from "@utils";
+import { Fragment } from "react/jsx-runtime";
 
 export const TXTWeights: CustomIconWeights = new Map([
 	[
 		"regular",
-		<>
+		<Fragment key="TXTRegular">
 			<path
 				fillRule="evenodd"
 				clipRule="evenodd"
@@ -34,6 +35,6 @@ export const TXTWeights: CustomIconWeights = new Map([
 				d="M8 25C8 24.25 8.25 24 9 24H23C23.75 24 24 24.25 24 25C24 25.75 23.75 26 23 26H9C8.25 26 8 25.75 8 25Z"
 				fill="#C9C7C5"
 			/>
-		</>,
+		</Fragment>,
 	],
 ]);

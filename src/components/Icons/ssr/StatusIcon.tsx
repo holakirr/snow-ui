@@ -1,8 +1,8 @@
 import { Check, Warning } from "@phosphor-icons/react/dist/ssr";
+import type { Status } from "@utils";
 import { twMerge } from "tailwind-merge";
 import { LoadingBIcon } from "../..";
 import { STATUSES } from "../../../consts";
-import type { Status } from "../../../utils";
 
 const StatusIcon = ({
 	status,

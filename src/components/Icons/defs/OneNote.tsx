@@ -1,9 +1,10 @@
-import type { CustomIconWeights } from "../../../utils";
+import type { CustomIconWeights } from "@utils";
+import { Fragment } from "react/jsx-runtime";
 
 export const OneNoteWeights: CustomIconWeights = new Map([
 	[
 		"regular",
-		<>
+		<Fragment key="OneNoteRegular">
 			<path
 				d="M28 3.5C28 2.67157 28.6716 2 29.5 2H30.5C31.3284 2 32 2.67157 32 3.5V8.5C32 9.32843 31.3284 10 30.5 10H29.5C28.6716 10 28 9.32843 28 8.5V3.5Z"
 				fill="#AE4BD5"
@@ -30,6 +31,6 @@ export const OneNoteWeights: CustomIconWeights = new Map([
 				d="M4 21.5V12H5.75L12.25 18.5V12H14V21.5H12.25L5.75 15V21.5H4Z"
 				fill="white"
 			/>
-		</>,
+		</Fragment>,
 	],
 ]);

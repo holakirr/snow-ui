@@ -1,5 +1,5 @@
+import type { CustomIcon } from "@utils";
 import { forwardRef } from "react";
-import type { CustomIcon } from "../../../utils";
 import { FourLeafCloverWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 

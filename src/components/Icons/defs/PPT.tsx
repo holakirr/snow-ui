@@ -1,9 +1,10 @@
-import type { CustomIconWeights } from "../../../utils";
+import type { CustomIconWeights } from "@utils";
+import { Fragment } from "react/jsx-runtime";
 
 export const PPTWeights: CustomIconWeights = new Map([
 	[
 		"regular",
-		<>
+		<Fragment key="PPTRegular">
 			<path
 				fillRule="evenodd"
 				clipRule="evenodd"
@@ -20,6 +21,6 @@ export const PPTWeights: CustomIconWeights = new Map([
 				d="M6 21.5215V11.5H8.66602C9.65951 11.5 10.3089 11.5479 10.6143 11.6436C11.1019 11.7985 11.5029 12.1289 11.8174 12.6348C12.1364 13.1406 12.2959 13.7923 12.2959 14.5898C12.2959 15.3145 12.1592 15.9229 11.8857 16.415C11.6123 16.9027 11.2705 17.2467 10.8604 17.4473C10.4502 17.6432 9.74381 17.7412 8.74121 17.7412H7.6543V21.5215H6ZM7.6543 13.1953V16.0391H8.57031C9.18555 16.0391 9.60254 15.9958 9.82129 15.9092C10.0446 15.8226 10.2269 15.6676 10.3682 15.4443C10.5094 15.2165 10.5801 14.9385 10.5801 14.6104C10.5801 14.2777 10.5072 13.9974 10.3613 13.7695C10.2155 13.5417 10.0355 13.389 9.82129 13.3115C9.6071 13.234 9.15365 13.1953 8.46094 13.1953H7.6543Z"
 				fill="white"
 			/>
-		</>,
+		</Fragment>,
 	],
 ]);

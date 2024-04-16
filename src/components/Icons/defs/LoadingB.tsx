@@ -1,9 +1,10 @@
-import type { CustomIconWeights } from "../../../utils";
+import type { CustomIconWeights } from "@utils";
+import { Fragment } from "react/jsx-runtime";
 
 export const LoadingBWeights: CustomIconWeights = new Map([
 	[
 		"regular",
-		<>
+		<Fragment key="LoadingBRegular">
 			<path
 				opacity="0.78"
 				d="M16.0023 6C16.5489 6 16.9879 6.44072 16.9879 6.98434V10.0134C16.9879 10.5593 16.5466 10.9978 16.0023 10.9978C15.4557 10.9978 15.0166 10.5571 15.0166 10.0134V6.98658C15.0144 6.44295 15.4557 6 16.0023 6Z"
@@ -52,6 +53,6 @@ export const LoadingBWeights: CustomIconWeights = new Map([
 				opacity="0.7"
 				d="M10.8032 7.48991C11.2737 7.21922 11.8785 7.37806 12.1496 7.85233L13.6661 10.4743C13.9372 10.9441 13.7781 11.5481 13.3055 11.8188C12.835 12.0895 12.2302 11.9306 11.9591 11.4564L10.4426 8.83444C10.1693 8.36464 10.3328 7.76285 10.8032 7.48991Z"
 			/>
-		</>,
+		</Fragment>,
 	],
 ]);

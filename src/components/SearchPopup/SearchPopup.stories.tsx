@@ -1,7 +1,10 @@
+import { SearchPopup } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, userEvent, within } from "@storybook/test";
 import { useState } from "react";
-import { SearchPopup } from ".";
 import { default as DropDown } from "../DropDown/DropDown.stories";
+
+const testValue = "test";
 
 const meta = {
 	title: "Base Components/Search Popup",
@@ -19,11 +22,11 @@ const meta = {
 		progress: false,
 		placeholder: "Search",
 		disabled: false,
-		recentSearchItems: ["Recent search 1", "Recent search 2"],
 		dropdown: DropDown.args,
+		value: "",
 	},
 	render: (args) => {
-		const [value, setValue] = useState<string>("");
+		const [value, setValue] = useState<string>(args.value as string);
 		return (
 			<SearchPopup
 				{...args}
@@ -39,4 +42,14 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicSearchPopup: Story = {
 	args: {},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const input = canvas.getByRole("textbox");
+
+		expect(input).toBeInTheDocument();
+
+		await userEvent.type(input, testValue);
+
+		expect(input).toHaveValue(testValue);
+	},
 };

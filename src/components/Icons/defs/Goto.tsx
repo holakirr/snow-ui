@@ -1,9 +1,10 @@
-import type { CustomIconWeights } from "../../../utils";
+import type { CustomIconWeights } from "@utils";
+import { Fragment } from "react/jsx-runtime";
 
 export const GotoWeights: CustomIconWeights = new Map([
 	[
 		"regular",
-		<>
+		<Fragment key="GotoRegular">
 			<path
 				fillRule="evenodd"
 				clipRule="evenodd"
@@ -14,6 +15,6 @@ export const GotoWeights: CustomIconWeights = new Map([
 				clipRule="evenodd"
 				d="M4.87868 13.9801L14.5658 4.29289C14.9564 3.90237 15.5895 3.90237 15.9801 4.29289C16.3706 4.68342 16.3706 5.31658 15.9801 5.70711L6.29289 15.3943C5.90237 15.7848 5.90237 16.418 6.29289 16.8085L15.6947 26.2103C16.0852 26.6008 16.7184 26.6008 17.1089 26.2103L26.7961 16.5231C27.1866 16.1326 27.8198 16.1326 28.2103 16.5231C28.6008 16.9136 28.6008 17.5468 28.2103 17.9373L18.5231 27.6245C17.3515 28.7961 15.452 28.7961 14.2805 27.6245L4.87868 18.2227C3.70711 17.0511 3.70711 15.1516 4.87868 13.9801Z"
 			/>
-		</>,
+		</Fragment>,
 	],
 ]);

@@ -1,6 +1,7 @@
 import { StatusIcon } from "@components";
 import { STATUSES } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, within } from "@storybook/test";
 import { statusControl } from "@utils";
 
 const meta = {
@@ -25,8 +26,38 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const StatusIconStory: Story = {
+export const SuccessStatusIcon: Story = {
 	args: {
 		status: STATUSES.success,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const icon = canvas.getByTitle(STATUSES.success).parentElement;
+
+		expect(icon).toBeInTheDocument();
+	},
+};
+
+export const ProgressStatusIcon: Story = {
+	args: {
+		status: STATUSES.progress,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const icon = canvas.getByTitle(STATUSES.progress).parentElement;
+
+		expect(icon).toBeInTheDocument();
+	},
+};
+
+export const ErrorStatusIcon: Story = {
+	args: {
+		status: STATUSES.error,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const icon = canvas.getByTitle(STATUSES.error).parentElement;
+
+		expect(icon).toBeInTheDocument();
 	},
 };

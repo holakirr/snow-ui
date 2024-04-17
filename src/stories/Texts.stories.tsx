@@ -1,6 +1,5 @@
+import { Text, type TextSizes } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
-import { Text, type TextSizes } from "../";
 
 type TextStyle = {
 	size: TextSizes;

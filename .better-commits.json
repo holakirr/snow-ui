@@ -79,7 +79,7 @@
 	"commit_scope": {
 		"enable": true,
 		"custom_scope": false,
-		"initial_value": "app",
+		"initial_value": "components",
 		"options": [
 			{
 				"value": "app",
@@ -116,8 +116,7 @@
 		"max_size": 70
 	},
 	"commit_body": {
-		"enable": true,
-		"required": true
+		"enable": true
 	},
 	"commit_footer": {
 		"enable": true,

@@ -9,7 +9,7 @@ import {
 	testTitle,
 } from "@utils";
 import { useState } from "react";
-import { iconControl } from "../Icons/Icons.stories";
+import { iconControl } from "../Icons.stories";
 
 const testId = "input";
 const testValue = "email@provider.com";

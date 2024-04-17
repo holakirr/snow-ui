@@ -3,7 +3,7 @@ import { SIZES } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, within } from "@storybook/test";
 import { buttonVariantControl, sizeControl } from "@utils";
-import { iconControl } from "../Icons/Icons.stories";
+import { iconControl } from "./Icons.stories";
 
 const clickHandler = fn();
 

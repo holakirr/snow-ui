@@ -16,7 +16,7 @@
 			"storybook-static",
 			"*.locb",
 			"*.lock",
-			"src/consts/colors.stories.tsx",
+			"src/stories/colors.stories.tsx",
 			"tsconfig.json"
 		]
 	}

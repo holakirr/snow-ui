@@ -8,7 +8,7 @@ import {
 	testSubtitle,
 	testTitle,
 } from "@utils";
-import { imageControl, imageMocks } from "../Icons/Icons.stories";
+import { imageControl, imageMocks } from "../Icons.stories";
 
 const meta = {
 	title: "Base Components/Dropdown/Dropdown Item",

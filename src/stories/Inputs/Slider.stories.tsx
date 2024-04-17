@@ -54,6 +54,9 @@ export const BasicSlider: Story = {
 
 		expect(slider).toHaveFocus();
 		expect(testChangeFunction).toHaveBeenCalled();
+
+		await userEvent.click(canvasElement);
+		expect(slider).not.toHaveFocus();
 	},
 };
 

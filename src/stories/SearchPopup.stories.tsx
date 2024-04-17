@@ -2,7 +2,7 @@ import { SearchPopup } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, within } from "@storybook/test";
 import { useState } from "react";
-import { default as DropDown } from "../DropDown/DropDown.stories";
+import { default as DropDown } from "./DropDown/DropDown.stories";
 
 const testValue = "test";
 

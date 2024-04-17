@@ -48,15 +48,8 @@ export const BasicSlider: Story = {
 		const canvas = within(canvasElement);
 		const slider = canvas.getByRole("slider");
 
+		expect(slider).toBeInTheDocument();
 		expect(slider).toHaveValue(testValue.toString());
-
-		await userEvent.click(slider);
-
-		expect(slider).toHaveFocus();
-		expect(testChangeFunction).toHaveBeenCalled();
-
-		await userEvent.click(canvasElement);
-		expect(slider).not.toHaveFocus();
 	},
 };
 

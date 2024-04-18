@@ -2,7 +2,7 @@ import { StatusBadge } from "@components";
 import { STATUSES_EXPANDED } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { badgeStatusControl } from "@utils";
+import { badgeStatusControl } from "./mocks";
 
 const testLabel = "Status";
 

@@ -6,6 +6,7 @@ export const SIMPLE_SIZES: { [K in SimpleSize]: K } = {
 } as const;
 
 export const SIZES: { [K in Size]: K } = {
-	...SIMPLE_SIZES,
+	sm: "sm",
 	md: "md",
+	lg: "lg",
 } as const;

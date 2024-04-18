@@ -1,8 +1,8 @@
 import { Search } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, within } from "@storybook/test";
-import { keyBindingsControl } from "@utils";
 import { useState } from "react";
+import { keyBindingsControl } from "../mocks";
 
 const testValue = "Test Value";
 

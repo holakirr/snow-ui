@@ -1,7 +1,7 @@
 import { Badge } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { testStatus } from "@utils";
+import { testStatus } from "../mocks";
 
 const meta = {
 	title: "Base Components/Badge/Badge",

@@ -7,7 +7,7 @@ import {
 	imgSrcMock,
 	testInitials,
 	testUserName,
-} from "@utils";
+} from "../mocks";
 
 const meta = {
 	title: "Base Components/Avatar/Avatar",

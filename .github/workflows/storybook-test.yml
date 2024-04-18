@@ -1,0 +1,28 @@
+name: "Storybook Tests"
+on: push
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: "latest"
+      - name: Install dependencies
+        run: bun install
+
+      - name: Install Playwright
+        run: bunx playwright install --with-deps
+
+      - name: Build Lib
+        run: bun build-lib
+
+      - name: Build Storybook
+        run: bun build-storybook --quiet
+
+      - name: Serve Storybook and run tests
+        run: |
+          bunx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
+            "bunx http-server storybook-static --port 6006 --silent" \
+            "bunx wait-on tcp:6006 && bun test-storybook"

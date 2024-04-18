@@ -2,8 +2,8 @@ import { TextArea } from "@components";
 import { STATUSES } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
-import { statusControl, testErrorText, testInputPlaceholder } from "@utils";
 import { type ChangeEvent, useState } from "react";
+import { statusControl, testErrorText, testInputPlaceholder } from "../mocks";
 
 const testValue = "Test Value";
 const testTextLimit = 100;

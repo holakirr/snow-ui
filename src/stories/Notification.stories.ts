@@ -2,7 +2,7 @@ import { Notification } from "@components";
 import { SIMPLE_SIZES, STATUSES_NOTIFY } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { statusControl, testErrorText, testSuccessText } from "@utils";
+import { statusControl, testErrorText, testSuccessText } from "./mocks";
 
 const meta = {
 	title: "Base Components/Notification",

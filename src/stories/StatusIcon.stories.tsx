@@ -2,7 +2,7 @@ import { StatusIcon } from "@components";
 import { STATUSES } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { statusControl } from "@utils";
+import { statusControl } from "./mocks";
 
 const meta = {
 	title: "Design resources/Icons/StatusIcon",

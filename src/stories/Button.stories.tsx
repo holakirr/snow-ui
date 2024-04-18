@@ -2,8 +2,7 @@ import { ArrowLineDownIcon, Button, FourLeafCloverIcon } from "@components";
 import { SIZES } from "@consts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, within } from "@storybook/test";
-import { buttonVariantControl, sizeControl } from "@utils";
-import { iconControl } from "./Icons.stories";
+import { buttonVariantControl, iconControl, sizeControl } from "./mocks";
 
 const clickHandler = fn();
 

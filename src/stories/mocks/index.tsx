@@ -1,4 +1,10 @@
 import {
+	ArrowLineDownIcon,
+	Avatar,
+	DefaultIcon,
+	FourLeafCloverIcon,
+} from "@components";
+import {
 	BUTTON_VARIANTS,
 	COLOR_SCHEME,
 	ICON_WEIGHTS,
@@ -36,6 +42,37 @@ export const colorControl = {
 export const imgSourceControl = {
 	control: "radio",
 	options: [...Object.values(imageSrcMocks), null],
+};
+
+export const iconControl = {
+	control: "radio",
+	options: [
+		"Nothing",
+		ArrowLineDownIcon.displayName,
+		DefaultIcon.displayName,
+		FourLeafCloverIcon.displayName,
+	],
+	mapping: {
+		ArrowLineDownIcon,
+		DefaultIcon,
+		FourLeafCloverIcon,
+		Nothing: undefined,
+	},
+};
+
+export const imageMocks = {
+	woman: <img alt="woman" width={24} height={24} src={imageSrcMocks.woman} />,
+	flowerIcon: <FourLeafCloverIcon size={16} alt="flower icon" />,
+	avatar: <Avatar img={imageSrcMocks.man} username="" />,
+};
+
+export const imageControl = {
+	control: "radio",
+	options: ["woman", "flowerIcon", "avatar", "Nothing"],
+	mapping: {
+		...imageMocks,
+		Nothing: null,
+	},
 };
 
 export const sizeControl = {

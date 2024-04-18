@@ -1,7 +1,7 @@
 import { KBD } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { keyBindingsControl, testKeyBindings } from "@utils";
+import { keyBindingsControl, testKeyBindings } from "./mocks";
 
 const testSeparator = "+";
 

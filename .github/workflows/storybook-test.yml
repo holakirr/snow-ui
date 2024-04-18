@@ -16,7 +16,7 @@ jobs:
         run: bunx playwright install --with-deps
 
       - name: Build Lib
-        run: bun run build
+        run: bun build-lib
 
       - name: Build Storybook
         run: bun build-storybook --quiet

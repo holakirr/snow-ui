@@ -5,9 +5,9 @@ Build your design using [it](https://www.figma.com/community/file/13011346853020
 
 <!-- TODO: add website about this UI lib and it's documentation -->
 
-[Beta](https://snowui.holakirr.com) version now
+[Beta build of storybook](https://snowui.holakirr.com)
 
-Take a look at my [CV](https://holakirr.com)
+Take a look at my [CV](https://holakirr.com) =)
 
 ## How to install
 
@@ -29,9 +29,31 @@ bun add amtrz-snow-ui
 @import "amtrz-snow-ui/index.css";
 ```
 
-### 3. Ready, feel free to use Elements from docs =)
+### 3. Import any component in your project
 
-## Getting Started
+```ts
+import { Button } from "amtrz-snow-ui";
+```
+
+### 3. You're good to go =)
+
+## How to develop
+
+### Clone repo
+
+### Install dependencies
+
+```bash
+npm install
+# or
+yarn
+# or
+pnpm install
+# or
+bun install
+```
+
+### Getting Started
 
 First, run the development server:
 
@@ -43,4 +65,47 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+
+### Test lib in storybook
+
+One of these commands will start tests:
+
+> [!WARNING]
+> Make sure you have storybook running
+
+```bash
+npm run test
+# or
+yarn test
+# or
+pnpm test
+# or
+bun test
+```
+
+### Builds
+
+One of these commands will compile project in 'dist' directory
+
+```bash
+npm run build-lib
+# or
+yarn build-lib
+# or
+pnpm build-lib
+# or
+bun build-lib
+```
+
+One of these commands will compile storybook in 'storybook-static' directory
+
+```bash
+npm run build-storybook
+# or
+yarn build-storybook
+# or
+pnpm build-storybook
+# or
+bun build-storybook
 ```

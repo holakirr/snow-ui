@@ -19,7 +19,7 @@ jobs:
         run: bun install
 
       - name: Build
-        run: bun build:lib
+        run: bun run build
 
       - uses: chromaui/action@latest
         with:

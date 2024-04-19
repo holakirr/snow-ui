@@ -76,7 +76,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			{...props}
 		>
 			{LeftIcon && (
-				<LeftIcon size={IconSizes[size || "sm"]} alt="left button icon" />
+				<LeftIcon
+					size={IconSizes[size || "sm"]}
+					alt={`Left icon in button ${label}`}
+				/>
 			)}
 			{label && (
 				<Text size={size === "sm" ? 14 : 18} className="group-hover:px-1">
@@ -84,7 +87,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 				</Text>
 			)}
 			{RightIcon && (
-				<RightIcon size={IconSizes[size || "sm"]} alt="right button icon" />
+				<RightIcon
+					size={IconSizes[size || "sm"]}
+					alt={`Right icon in button ${label}`}
+				/>
 			)}
 		</button>
 	),

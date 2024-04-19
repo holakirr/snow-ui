@@ -57,7 +57,8 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
 			{img && (
 				<img
 					src={img}
-					alt={username}
+					// biome-ignore lint/a11y/noRedundantAlt: <explanation>
+					alt={`Profile picture of ${username}`}
 					className="w-full h-full transition-all group-hover:scale-125"
 				/>
 			)}

@@ -17,7 +17,9 @@ const DialogTitle = forwardRef<HTMLDivElement, DialogTitleProps>(
 			role="complementary"
 		>
 			<div className="flex gap-4 items-center text-black-100">
-				{Icon && <Icon size={48} alt={title} weight="regular" />}
+				{Icon && (
+					<Icon size={48} alt={`Icon for dialog ${title}`} weight="regular" />
+				)}
 				<Text as="p" size={48} semibold>
 					{title}
 				</Text>

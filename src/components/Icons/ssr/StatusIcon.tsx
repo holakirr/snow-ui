@@ -17,8 +17,7 @@ const StatusIcon = ({
 		case STATUSES.progress:
 			return (
 				<LoadingBIcon
-					weight="regular"
-					alt={status}
+					alt={`Icon for status ${status}`}
 					size={size}
 					className={twMerge("fill-black-100", className)}
 				/>
@@ -26,7 +25,7 @@ const StatusIcon = ({
 		case STATUSES.success:
 			return (
 				<Check
-					alt={status}
+					alt={`Icon for status ${status}`}
 					size={size}
 					className={twMerge("fill-secondary-green", className)}
 				/>
@@ -34,7 +33,7 @@ const StatusIcon = ({
 		case STATUSES.error:
 			return (
 				<Warning
-					alt={status}
+					alt={`Icon for status ${status}`}
 					size={size}
 					className={twMerge("fill-secondary-red", className)}
 				/>

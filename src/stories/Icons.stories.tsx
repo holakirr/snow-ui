@@ -131,7 +131,7 @@ const meta = {
 					className="grid gap-1 justify-center justify-items-center"
 					key={Icon.displayName}
 				>
-					<Icon {...args} alt="Icon.displayName" />
+					<Icon {...args} alt={`Icon ${Icon.displayName}`} />
 					<span className="text-black-100">{Icon.displayName}</span>
 				</div>
 			))}
@@ -162,7 +162,11 @@ const Template: (iconName: keyof typeof allIcons) => Story = (iconName) => ({
 				<div className="flex gap-8">
 					{(Object.keys(ICON_WEIGHTS) as IconWeight[]).map((weight) => (
 						<div className="flex flex-col gap-1 items-center" key={weight}>
-							<Icon {...args} weight={weight} />
+							<Icon
+								{...args}
+								weight={weight}
+								alt={`Icon ${iconName}, weight ${weight}`}
+							/>
 							<Text size={12} className="text-black-100 w-min">
 								{weight}
 							</Text>

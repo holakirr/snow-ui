@@ -2,6 +2,7 @@ export * from "./Avatar";
 export * from "./Badge";
 export * from "./Button";
 export * from "./Card";
+export * from "./Dialog";
 export * from "./DropDown";
 export * from "./Icons";
 export * from "./Input";

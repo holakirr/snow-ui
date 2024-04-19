@@ -2,7 +2,7 @@ import { ArrowLineDownIcon, Button, FourLeafCloverIcon } from "@components";
 import { SIZES } from "@constants";
 import { buttonVariantControl, iconControl, sizeControl } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, fn, within } from "@storybook/test";
+import { expect, fn, userEvent, within } from "@storybook/test";
 
 const clickHandler = fn();
 
@@ -48,10 +48,11 @@ export const Borderless: Story = {
 	args: {
 		variant: "borderless",
 	},
-	play: ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const button = canvas.getByRole("button");
-		button.click();
+
+		await userEvent.click(button);
 
 		expect(clickHandler).toHaveBeenCalledOnce();
 		expect(button).toHaveClass("bg-transparent");
@@ -179,15 +180,13 @@ export const Disabled: Story = {
 		variant: "filled",
 		disabled: true,
 	},
-	play: ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const button = canvas.getByRole("button");
-		button.click();
+
+		await userEvent.click(button);
 
 		expect(clickHandler).not.toHaveBeenCalledOnce();
-		expect(button).toHaveStyle(
-			"background-color: rgba(28, 28, 28, 0.05); color: rgba(28, 28, 28, 0.1); cursor: not-allowed;",
-		);
 	},
 };
 

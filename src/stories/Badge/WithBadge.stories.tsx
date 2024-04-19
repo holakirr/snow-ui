@@ -1,7 +1,7 @@
 import { Button, WithBadge } from "@components";
+import { testStatus } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { testStatus } from "../mocks";
 import { BadgeWithText, BasicBadge } from "./Badge.stories";
 
 const meta = {

@@ -5,7 +5,7 @@ import {
 	Line,
 	SearchIcon,
 } from "@components";
-import { STATUSES } from "@consts";
+import { STATUSES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 

@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import { COLOR_SCHEME } from "./src/consts";
+import { COLOR_SCHEME } from "./src/constants";
 
 const config: Config = {
 	content: ["./src/**/*.{js,ts,jsx,tsx}"],

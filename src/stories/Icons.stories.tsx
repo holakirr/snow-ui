@@ -49,11 +49,11 @@ import {
 	XCircleIcon,
 	XLSXIcon,
 } from "@components";
-import { ICON_WEIGHTS } from "@consts";
+import { ICON_WEIGHTS } from "@constants";
+import { weightControl } from "@mocks";
 import type { IconWeight } from "@phosphor-icons/react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { weightControl } from "./mocks";
 
 const allIcons = {
 	AddIcon,

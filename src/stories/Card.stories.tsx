@@ -1,7 +1,7 @@
 import { Card, Text } from "@components";
+import { testText } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { testText } from "./mocks";
 
 const meta = {
 	title: "Base Components/Card",

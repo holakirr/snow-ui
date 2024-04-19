@@ -1,5 +1,5 @@
 import { Line } from "@components";
-import { SEPARATOR_DIRECTIONS } from "@consts";
+import { SEPARATOR_DIRECTIONS } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
 

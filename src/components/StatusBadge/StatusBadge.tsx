@@ -1,5 +1,5 @@
 import { DotIcon, Text } from "@components";
-import { STATUSES_EXPANDED } from "@consts";
+import { STATUSES_EXPANDED } from "@constants";
 import type { StatusExpanded } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";

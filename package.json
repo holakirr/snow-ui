@@ -38,7 +38,6 @@
 		"postcss-nesting": "^12.1.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"sass": "^1.75.0",
 		"storybook": "^8.0.8",
 		"storybook-addon-pseudo-states": "^3.0.1",
 		"tailwind-merge": "^2.2.2",
@@ -66,7 +65,7 @@
 				"default": "./dist/index.cjs"
 			}
 		},
-		"./index.css": "./dist/style.css"
+		"./index.css": "./dist/index.css"
 	},
 	"bugs": {
 		"url": "https://github.com/amtrz/snow-ui/issues"

@@ -1,6 +1,4 @@
 import { DropDownItem } from "@components";
-import type { Meta, StoryObj } from "@storybook/react";
-import { expect, within } from "@storybook/test";
 import {
 	imageControl,
 	imageMocks,
@@ -9,7 +7,9 @@ import {
 	testLink,
 	testSubtitle,
 	testTitle,
-} from "../mocks";
+} from "@mocks";
+import type { Meta, StoryObj } from "@storybook/react";
+import { expect, within } from "@storybook/test";
 
 const meta = {
 	title: "Base Components/Dropdown/Dropdown Item",

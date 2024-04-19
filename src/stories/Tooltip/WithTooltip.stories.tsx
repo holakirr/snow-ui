@@ -1,8 +1,8 @@
 import { Button, WithTooltip } from "@components";
+import { testKeyBindings } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, within } from "@storybook/test";
 import { useState } from "react";
-import { testKeyBindings } from "../mocks";
 
 const testLabel = "WithTooltip";
 const testButtonLabel = "Hover me";

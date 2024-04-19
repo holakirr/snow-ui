@@ -11,7 +11,7 @@ import {
 	SIZES,
 	STATUSES,
 	STATUSES_EXPANDED,
-} from "@consts";
+} from "@constants";
 import { getInitials } from "@utils";
 
 export const testStatus = "12";

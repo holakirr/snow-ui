@@ -1,5 +1,5 @@
 import { StatusIcon, Text } from "@components";
-import { STATUSES_NOTIFY } from "@consts";
+import { STATUSES_NOTIFY } from "@constants";
 import type { StatusNotify } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";

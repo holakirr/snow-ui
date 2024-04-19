@@ -1,7 +1,7 @@
 import { Tooltip } from "@components";
+import { testKeyBindings } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { testKeyBindings } from "../mocks";
 
 const testLabel = "Tooltip";
 

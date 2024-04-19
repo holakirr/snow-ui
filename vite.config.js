@@ -17,8 +17,10 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@components": resolve(__dirname, "src/components"),
+			"@constants": resolve(__dirname, "src/constants"),
+			"@mocks": resolve(__dirname, "src/stories/mocks"),
+			"@styles": resolve(__dirname, "src/styles"),
 			"@utils": resolve(__dirname, "src/utils"),
-			"@consts": resolve(__dirname, "src/consts"),
 		},
 	},
 	build: {

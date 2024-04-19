@@ -1,7 +1,6 @@
 import { Text } from "@components";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import "./Slider.module.sass";
 
 type SliderProps = ComponentProps<"input">;
 

@@ -1,4 +1,4 @@
-import { COLOR_SCHEME } from "@consts";
+import { COLOR_SCHEME } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Fragment } from "react/jsx-runtime";
 import { twMerge } from "tailwind-merge";

@@ -1,7 +1,7 @@
 import { AvatarName } from "@components";
+import { colorControl, imgSourceControl, testUserName } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { colorControl, imgSourceControl, testUserName } from "../mocks";
 import {
 	Basic as BasicAvatar,
 	Large as LargeAvatar,

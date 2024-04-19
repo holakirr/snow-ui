@@ -1,7 +1,7 @@
 import { DropDown, type DropDownItemProps } from "@components";
+import { testLink } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { testLink } from "../mocks";
 import {
 	DropDownItemWithImage,
 	DropDownItemWithKeyBindings,

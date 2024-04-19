@@ -1,15 +1,15 @@
 import { FourLeafCloverIcon, Input } from "@components";
-import { STATUSES } from "@consts";
-import type { Meta, StoryObj } from "@storybook/react";
-import { expect, fn, userEvent, within } from "@storybook/test";
-import { useState } from "react";
+import { STATUSES } from "@constants";
 import {
 	iconControl,
 	statusControl,
 	testErrorText,
 	testInputPlaceholder,
 	testTitle,
-} from "../mocks";
+} from "@mocks";
+import type { Meta, StoryObj } from "@storybook/react";
+import { expect, fn, userEvent, within } from "@storybook/test";
+import { useState } from "react";
 
 const testId = "input";
 const testValue = "email@provider.com";

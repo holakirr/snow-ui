@@ -1,4 +1,4 @@
 export * from "./components";
-export * from "./consts";
+export * from "./constants";
 export * from "./utils";
-import "./export.css";
+import "@styles/index.css";

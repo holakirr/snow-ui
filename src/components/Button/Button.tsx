@@ -1,4 +1,5 @@
 import { Text } from "@components";
+import type { Icon } from "@phosphor-icons/react";
 import type { CustomIcon } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
@@ -7,8 +8,8 @@ import { twMerge } from "tailwind-merge";
 type ButtonProps = VariantProps<typeof buttonStyles> &
 	ComponentProps<"button"> & {
 		label?: string;
-		rightIcon?: CustomIcon;
-		leftIcon?: CustomIcon;
+		rightIcon?: Icon | CustomIcon;
+		leftIcon?: Icon | CustomIcon;
 	};
 
 const buttonStyles = cva(
@@ -56,8 +57,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			size = "sm",
 			className,
 			label,
-			rightIcon: RightIcon,
 			leftIcon: LeftIcon,
+			rightIcon: RightIcon,
 			...props
 		},
 		ref,
@@ -75,9 +76,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			{...props}
 		>
 			{LeftIcon && (
-				<div className="">
-					<LeftIcon size={IconSizes[size || "sm"]} alt="left button icon" />
-				</div>
+				<LeftIcon size={IconSizes[size || "sm"]} alt="left button icon" />
 			)}
 			{label && (
 				<Text size={size === "sm" ? 14 : 18} className="group-hover:px-1">
@@ -85,9 +84,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 				</Text>
 			)}
 			{RightIcon && (
-				<div className="">
-					<RightIcon size={IconSizes[size || "sm"]} alt="right button icon" />
-				</div>
+				<RightIcon size={IconSizes[size || "sm"]} alt="right button icon" />
 			)}
 		</button>
 	),

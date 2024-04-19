@@ -12,7 +12,8 @@ import {
 	STATUSES,
 	STATUSES_EXPANDED,
 } from "@constants";
-import { getInitials } from "@utils";
+import type { Icon } from "@phosphor-icons/react";
+import { type CustomIcon, getInitials } from "@utils";
 
 export const testStatus = "12";
 export const testUserName = "John Doe";
@@ -44,7 +45,11 @@ export const imgSourceControl = {
 	options: [...Object.values(imageSrcMocks), null],
 };
 
-export const iconControl = {
+export const iconControl: {
+	control: "radio";
+	options: (string | undefined)[];
+	mapping: Record<string, Icon | CustomIcon | undefined>;
+} = {
 	control: "radio",
 	options: [
 		"Nothing",

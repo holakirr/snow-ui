@@ -1,24 +1,25 @@
-import { Text, type TextSizes } from "@components";
+import { Text, type TextSize } from "@components";
+import { TEXT_SIZES } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
 
 type TextStyle = {
-	size: TextSizes;
+	size: TextSize;
 	semibold: boolean;
 };
 
 const TextStyles: TextStyle[] = [
-	{ size: 64, semibold: true },
-	{ size: 64, semibold: false },
-	{ size: 48, semibold: true },
-	{ size: 48, semibold: false },
-	{ size: 24, semibold: true },
-	{ size: 24, semibold: false },
-	{ size: 18, semibold: true },
-	{ size: 18, semibold: false },
-	{ size: 14, semibold: true },
-	{ size: 14, semibold: false },
-	{ size: 12, semibold: true },
-	{ size: 12, semibold: false },
+	{ size: TEXT_SIZES[64], semibold: true },
+	{ size: TEXT_SIZES[64], semibold: false },
+	{ size: TEXT_SIZES[48], semibold: true },
+	{ size: TEXT_SIZES[48], semibold: false },
+	{ size: TEXT_SIZES[24], semibold: true },
+	{ size: TEXT_SIZES[24], semibold: false },
+	{ size: TEXT_SIZES[18], semibold: true },
+	{ size: TEXT_SIZES[18], semibold: false },
+	{ size: TEXT_SIZES[14], semibold: true },
+	{ size: TEXT_SIZES[14], semibold: false },
+	{ size: TEXT_SIZES[12], semibold: true },
+	{ size: TEXT_SIZES[12], semibold: false },
 ];
 
 const meta = {
@@ -32,10 +33,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Colors: Story = {
+export const Texts: Story = {
 	render: () => (
 		<div className="grid gap-2">
-			{TextStyles.map((style) => (
+			{TextStyles.reverse().map((style) => (
 				<Text
 					size={style.size}
 					semibold={style.semibold}

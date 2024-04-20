@@ -3,14 +3,14 @@ import type { Icon } from "@phosphor-icons/react";
 import type { CustomIcon } from "@utils";
 import { type ComponentProps, forwardRef } from "react";
 
-type DialogTitleProps = {
-	icon?: Icon | CustomIcon;
+export type DialogTitleProps = {
+	titleIcon?: Icon | CustomIcon;
 	title: string;
 	onClose?: () => void;
 } & ComponentProps<"div">;
 
 const DialogTitle = forwardRef<HTMLDivElement, DialogTitleProps>(
-	({ icon: Icon, title, onClose }, ref) => (
+	({ titleIcon: Icon, title, onClose }, ref) => (
 		<div
 			className="flex justify-between items-center"
 			ref={ref}

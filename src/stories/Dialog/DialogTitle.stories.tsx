@@ -17,7 +17,7 @@ const meta = {
 	tags: ["autodocs"],
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
-		icon: iconControl,
+		titleIcon: iconControl,
 		onClose: {
 			control: null,
 			description: "Function to close the dialog",
@@ -25,7 +25,7 @@ const meta = {
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		icon: undefined,
+		titleIcon: undefined,
 		title: testTitle,
 	},
 	decorators: [
@@ -52,7 +52,7 @@ export const BasicDialogTitle: Story = {
 
 export const DialogWithIcon: Story = {
 	args: {
-		icon: AddIcon,
+		titleIcon: AddIcon,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);

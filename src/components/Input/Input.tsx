@@ -94,7 +94,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 				)}
 				{Icon && (
 					<Icon
-						alt={id || "Input icon"}
+						alt={`Icon in input ${title} with id ${id}`}
 						className={twMerge(
 							"absolute top-1/2 left-5 transform -translate-y-1/2",
 							iconClassName,
@@ -111,7 +111,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 				)}
 				{value && clearable && (
 					<XCircleIcon
-						alt="clear input"
+						alt={`Clear input ${title} with id ${id}`}
 						weight="fill"
 						size={iconSize || 20}
 						className="absolute right-5 bottom-[calc(50%-10px)] fill-black-20"

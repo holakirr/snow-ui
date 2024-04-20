@@ -4,6 +4,8 @@ import { statusControl } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
 
+const altText = "Icon for status ";
+
 const meta = {
 	title: "Design resources/Icons/StatusIcon",
 	component: StatusIcon,
@@ -32,9 +34,10 @@ export const SuccessStatusIcon: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle(STATUSES.success).parentElement;
+		const icon = canvas.getByRole("img");
 
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(altText + STATUSES.success);
 	},
 };
 
@@ -44,9 +47,10 @@ export const ProgressStatusIcon: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle(STATUSES.progress).parentElement;
+		const icon = canvas.getByRole("img");
 
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(altText + STATUSES.progress);
 	},
 };
 
@@ -56,8 +60,9 @@ export const ErrorStatusIcon: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle(STATUSES.error).parentElement;
+		const icon = canvas.getByRole("img");
 
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(altText + STATUSES.error);
 	},
 };

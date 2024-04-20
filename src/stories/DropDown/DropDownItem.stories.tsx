@@ -55,7 +55,7 @@ export const DropDownItemBasic: Story = {
 		const canvas = within(canvasElement);
 		const item = canvas.getByRole("listitem");
 		const link = canvas.getByRole("link");
-		const img = canvas.getByTitle(`search icon for ${testTitle}`);
+		const img = canvas.getByTitle(`Search icon for ${testTitle}`);
 
 		expect(item).toBeInTheDocument();
 		expect(item).toHaveTextContent(testTitle);

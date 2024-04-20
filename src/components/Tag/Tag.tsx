@@ -21,13 +21,15 @@ const Tag = forwardRef<HTMLDivElement, TagProps>(
 			role="article"
 			{...props}
 		>
-			{withDot && <DotIcon alt={label} size={16} weight="fill" />}
+			{withDot && (
+				<DotIcon alt={`Dot icon for tag ${label}`} size={16} weight="fill" />
+			)}
 			<Text size={12} as="span">
 				{label}
 			</Text>
 			{onClose && (
 				<CloseIcon
-					alt="Close"
+					alt={`Close icon for tag ${label}`}
 					size={16}
 					onClick={onClose}
 					className="fill-black-20"

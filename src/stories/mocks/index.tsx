@@ -66,9 +66,14 @@ export const iconControl: {
 };
 
 export const imageMocks = {
+	avatar: <Avatar img={imageSrcMocks.man} username={testUserName} />,
 	woman: <img alt="woman" width={24} height={24} src={imageSrcMocks.woman} />,
-	flowerIcon: <FourLeafCloverIcon size={16} alt="flower icon" />,
-	avatar: <Avatar img={imageSrcMocks.man} username="" />,
+	flowerIcon: (
+		<FourLeafCloverIcon
+			size={16}
+			alt={`Icon ${FourLeafCloverIcon.displayName}`}
+		/>
+	),
 };
 
 export const imageControl = {

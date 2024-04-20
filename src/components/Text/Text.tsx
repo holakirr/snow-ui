@@ -69,7 +69,7 @@ const textStyles = cva(["w-full font-normal transition-all font-['Inter']"], {
 	},
 });
 
-export type TextSizes = VariantProps<typeof textStyles>["size"];
+export type TextSize = VariantProps<typeof textStyles>["size"];
 
 type TextProps<C extends ElementType> = PolimorphicComponentPropsWithRef<
 	C,

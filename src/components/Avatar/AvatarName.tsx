@@ -1,4 +1,4 @@
-import { Avatar, Text, type AvatarProps } from "@components";
+import { Avatar, type AvatarProps, Text } from "@components";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 

@@ -54,7 +54,7 @@ const StatusBadge = forwardRef<HTMLDivElement, StatusBadgeProps>(
 		>
 			{withDot && (
 				<DotIcon
-					alt={label}
+					alt={`Dot icon for status badge ${label}`}
 					size={16}
 					weight="fill"
 					className={twMerge(iconStyles({ status }))}

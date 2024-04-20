@@ -48,6 +48,7 @@ const meta = {
 			setValue(e.target.value);
 			return testChangeFunction();
 		};
+
 		return (
 			<Input
 				{...args}
@@ -97,9 +98,10 @@ export const InputWithIconAndPlaceholder: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle(testId);
+		const icon = canvas.getByRole("img");
 
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(`Icon in input with id ${testId}`);
 	},
 };
 
@@ -123,9 +125,10 @@ export const SuccessInput: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle(STATUSES.success);
+		const icon = canvas.getByRole("img");
 
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(`Icon for status ${STATUSES.success}`);
 	},
 };
 
@@ -138,10 +141,11 @@ export const ErrorInput: Story = {
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByRole("textbox");
-		const icon = canvas.getByTitle(STATUSES.error);
+		const icon = canvas.getByRole("img");
 		const error = canvas.getByText(testErrorText);
 
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(`Icon for status ${STATUSES.error}`);
 		expect(error).toBeInTheDocument();
 		expect(input).toHaveClass("border-secondary-red");
 	},
@@ -169,11 +173,12 @@ export const InputWithTitleAndValueAndStatus: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const title = canvas.getByText(testTitle);
-		const icon = canvas.getByTitle(STATUSES.progress);
+		const icon = canvas.getByRole("img");
 
 		expect(title).toBeInTheDocument();
 		expect(title).toHaveStyle({ fontSize: "12px" });
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(`Icon for status ${STATUSES.progress}`);
 	},
 };
 
@@ -188,7 +193,9 @@ export const ClearableInput: Story = {
 
 		await userEvent.type(input, testValue);
 
-		const clearButton = canvas.getByTitle("clear input");
+		const clearButton = canvas.getByTitle(
+			`Clear input ${testTitle} with id ${testId}`,
+		);
 
 		expect(clearButton).toBeInTheDocument();
 

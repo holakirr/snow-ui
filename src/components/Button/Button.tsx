@@ -66,17 +66,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 		<button
 			ref={ref}
 			type="button"
-			title={label || "button title"}
+			title={label || "Button title"}
 			className={twMerge(
 				buttonStyles({ variant, size, className }),
 				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
 			)}
 			role="button"
-			aria-label={label || "button aria label"}
+			aria-label={label || "Button aria label"}
 			{...props}
 		>
 			{LeftIcon && (
-				<LeftIcon size={IconSizes[size || "sm"]} alt="left button icon" />
+				<LeftIcon
+					size={IconSizes[size || "sm"]}
+					alt={`Left icon in button ${label}`}
+				/>
 			)}
 			{label && (
 				<Text size={size === "sm" ? 14 : 18} className="group-hover:px-1">
@@ -84,7 +87,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 				</Text>
 			)}
 			{RightIcon && (
-				<RightIcon size={IconSizes[size || "sm"]} alt="right button icon" />
+				<RightIcon
+					size={IconSizes[size || "sm"]}
+					alt={`Right icon in button ${label}`}
+				/>
 			)}
 		</button>
 	),

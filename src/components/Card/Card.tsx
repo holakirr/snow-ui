@@ -8,7 +8,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 		<div
 			ref={ref}
 			className={twMerge(
-				"flex flex-col gap-2 px-6 py-6 rounded-2xl bg-primary-light",
+				"relative flex flex-col gap-2 p-6 rounded-2xl bg-primary-light",
 				className,
 			)}
 			role="article"

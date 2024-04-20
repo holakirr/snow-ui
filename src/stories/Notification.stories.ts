@@ -38,11 +38,14 @@ export const BasicNotification: Story = {
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const notification = canvas.getByRole("alert");
-		const icon = canvas.getByTitle(STATUSES_NOTIFY.success);
+		const icon = canvas.getByRole("img");
 
 		expect(notification).toBeInTheDocument();
 		expect(notification).toHaveTextContent(testSuccessText);
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(
+			`Icon for status ${STATUSES_NOTIFY.success}`,
+		);
 	},
 };
 
@@ -55,10 +58,11 @@ export const LargeNotificationError: Story = {
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const notification = canvas.getByRole("alert");
-		const icon = canvas.getByTitle(STATUSES_NOTIFY.error);
+		const icon = canvas.getByRole("img");
 
 		expect(notification).toBeInTheDocument();
 		expect(notification).toHaveTextContent(testErrorText);
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(`Icon for status ${STATUSES_NOTIFY.error}`);
 	},
 };

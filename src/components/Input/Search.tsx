@@ -25,17 +25,18 @@ type SearchProps = ComponentProps<"input"> &
 	};
 
 const Search = forwardRef<HTMLInputElement, SearchProps>(
-	({ variant, className, keyBindings, value, iconSize, ...props }, ref) => (
+	({ id, variant, className, keyBindings, value, iconSize, ...props }, ref) => (
 		<div className="relative">
 			<input
 				{...props}
 				ref={ref}
 				className={twMerge(searchClassnames({ variant, className }), "peer")}
 				type="search"
+				id={id}
 			/>
 			<SearchIcon
 				weight="regular"
-				alt="search icon"
+				alt={`Icon for search input ${id}`}
 				className="absolute left-2 top-1/2 -translate-y-1/2 fill-black-20 peer-hover:fill-black-40 peer-focus:fill-primary-brand"
 				size={iconSize || 16}
 			/>

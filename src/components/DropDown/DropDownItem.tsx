@@ -36,7 +36,7 @@ const DropDownItem = forwardRef<HTMLAnchorElement, DropDownItemAllProps>(
 						<SearchIcon
 							size={16}
 							weight="regular"
-							alt={`search icon for ${title}`}
+							alt={`Search icon for ${title}`}
 							className="fill-black-100"
 						/>
 					)}

@@ -28,6 +28,7 @@ const StatusIcon = ({
 					alt={`Icon for status ${status}`}
 					size={size}
 					className={twMerge("fill-secondary-green", className)}
+					role="img"
 				/>
 			);
 		case STATUSES.error:
@@ -36,6 +37,7 @@ const StatusIcon = ({
 					alt={`Icon for status ${status}`}
 					size={size}
 					className={twMerge("fill-secondary-red", className)}
+					role="img"
 				/>
 			);
 		default:

@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
 
 const testLabel = "Tag";
+const dotIconTtitle = `Dot icon for tag ${testLabel}`;
+const closeIconTitle = `Close icon for tag ${testLabel}`;
 const closeHandler = fn();
 
 const meta = {
@@ -43,7 +45,7 @@ export const TagWithDot: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const dot = canvas.getByTitle(testLabel).parentElement;
+		const dot = canvas.getByTitle(dotIconTtitle).parentElement;
 
 		expect(dot).toBeInTheDocument();
 	},
@@ -55,7 +57,7 @@ export const TagWithClose: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const close = canvas.getByTitle("Close").parentElement;
+		const close = canvas.getByTitle(closeIconTitle).parentElement;
 
 		expect(close).toBeInTheDocument();
 
@@ -72,8 +74,8 @@ export const TagWithDotAndClose: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const dot = canvas.getByTitle(testLabel);
-		const close = canvas.getByTitle("Close");
+		const dot = canvas.getByTitle(dotIconTtitle);
+		const close = canvas.getByTitle(closeIconTitle);
 
 		expect(dot).toBeInTheDocument();
 		expect(close).toBeInTheDocument();

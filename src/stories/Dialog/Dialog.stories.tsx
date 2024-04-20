@@ -1,10 +1,11 @@
 import { Button, Card, Dialog } from "@components";
 import { iconControl } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, within } from "@storybook/test";
+import { expect, userEvent, within } from "@storybook/test";
 import { useState } from "react";
 
 const testTitle = "Title";
+const openButtonLabel = "Open Dialog";
 
 const meta = {
 	title: "Base Components/Dialog/Dialog",
@@ -49,7 +50,7 @@ const meta = {
 				<Button
 					onClick={() => setShow(true)}
 					variant="filled"
-					label="Open Dialog"
+					label={openButtonLabel}
 				/>
 				<Dialog {...args} onClose={handleClose} show={show} />
 			</div>
@@ -62,10 +63,27 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicDialog: Story = {
 	args: {},
-	play: ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const Dialog = canvas.getByRole("complementary");
+		const dialog = canvas.getByRole("dialog");
+		const dialogTitle = canvas.getByRole("complementary");
+		const closeButton = canvas.getByTitle("Button title");
+		const openButton = canvas.getByRole("button", { name: openButtonLabel });
 
-		expect(Dialog).toHaveTextContent(testTitle);
+		expect(dialog).toBeInTheDocument();
+		expect(dialogTitle).toHaveTextContent(testTitle);
+		expect(closeButton).toBeInTheDocument();
+
+		await userEvent.click(closeButton);
+
+		expect(dialog).toHaveClass(
+			"w-0 h-0 opacity-0 *:text-[0rem] *:w-[0rem] *:h-[0rem] *:opacity-0 *:p-0 *:m-0",
+		);
+
+		await userEvent.click(openButton);
+
+		expect(dialog).toHaveClass(
+			"w-dvw h-dvh backdrop-blur-[20px] bg-[linear-gradient(180deg, rgba(215, 208, 255, 0.20) 0%, rgba(203, 221, 255, 0.50) 100%)] opacity-100",
+		);
 	},
 };

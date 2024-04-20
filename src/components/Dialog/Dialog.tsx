@@ -11,6 +11,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
 	({ show, titleIcon, title, className, onClose, children, ...props }, ref) => (
 		<div
 			ref={ref}
+			role="dialog"
 			className={twMerge(
 				"fixed z-50 bottom-0 left-1/2 -translate-x-1/2 transition-all overflow-hidden grid gap-7 items-center justify-center content-center *:transition-transform",
 				className,

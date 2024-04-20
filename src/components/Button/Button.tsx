@@ -66,13 +66,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 		<button
 			ref={ref}
 			type="button"
-			title={label || "button title"}
+			title={label || "Button title"}
 			className={twMerge(
 				buttonStyles({ variant, size, className }),
 				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
 			)}
 			role="button"
-			aria-label={label || "button aria label"}
+			aria-label={label || "Button aria label"}
 			{...props}
 		>
 			{LeftIcon && (

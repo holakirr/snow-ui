@@ -5,9 +5,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
 
 const testLabel = "Status";
+const altIconText = `Dot icon for status badge ${testLabel}`;
 
 const meta = {
-	title: "Base Components/Status Badge",
+	title: "Base Components/Badge/Status Badge",
 	component: StatusBadge,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
@@ -55,12 +56,12 @@ export const StatusBadgeWithDot: Story = {
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const badge = canvas.getByRole("status");
-		const icon = canvas.getByTitle(testLabel).parentElement;
+		const icon = canvas.getByRole("img");
 
 		expect(badge).toBeInTheDocument();
 		expect(badge).toHaveTextContent(testLabel);
 		expect(badge).toHaveClass("text-secondary-greenDarker");
 		expect(icon).toBeInTheDocument();
-		expect(icon).toHaveClass("fill-secondary-green");
+		expect(icon).toHaveTextContent(altIconText);
 	},
 };

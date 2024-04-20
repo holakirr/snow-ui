@@ -5,6 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
 
 const clickHandler = fn();
+const testLabel = "Button";
 
 const meta = {
 	title: "Base Components/Button",
@@ -32,7 +33,7 @@ const meta = {
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		leftIcon: undefined,
-		label: "Button",
+		label: testLabel,
 		rightIcon: undefined,
 		onClick: clickHandler,
 		variant: "filled",
@@ -140,7 +141,7 @@ export const WithLeftIcon: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle("left button icon");
+		const icon = canvas.getByTitle(`Left icon in button ${testLabel}`);
 
 		expect(icon).toBeInTheDocument();
 	},
@@ -153,7 +154,7 @@ export const WithRightIcon: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle("right button icon");
+		const icon = canvas.getByTitle(`Right icon in button ${testLabel}`);
 
 		expect(icon).toBeInTheDocument();
 	},
@@ -167,8 +168,8 @@ export const WithBothIcons: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const leftIcon = canvas.getByTitle("left button icon");
-		const rightIcon = canvas.getByTitle("right button icon");
+		const leftIcon = canvas.getByTitle(`Left icon in button ${testLabel}`);
+		const rightIcon = canvas.getByTitle(`Right icon in button ${testLabel}`);
 
 		expect(leftIcon).toBeInTheDocument();
 		expect(rightIcon).toBeInTheDocument();
@@ -196,5 +197,11 @@ export const LargeIconButton: Story = {
 		size: SIZES.lg,
 		leftIcon: FourLeafCloverIcon,
 		label: undefined,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const icon = canvas.getByTitle("Left icon in button undefined");
+
+		expect(icon).toBeInTheDocument();
 	},
 };

@@ -96,9 +96,10 @@ export const SuccessTextArea: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle(STATUSES.success);
+		const icon = canvas.getByRole("img");
 
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(`Icon for status ${STATUSES.success}`);
 	},
 };
 
@@ -110,10 +111,11 @@ export const ErrorTextArea: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByTitle(STATUSES.error);
+		const icon = canvas.getByRole("img");
 		const errorMsg = canvas.getByText(testErrorText);
 
 		expect(icon).toBeInTheDocument();
+		expect(icon).toHaveTextContent(`Icon for status ${STATUSES.error}`);
 		expect(errorMsg).toBeInTheDocument();
 	},
 };

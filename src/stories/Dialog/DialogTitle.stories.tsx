@@ -5,6 +5,7 @@ import { expect, fn, userEvent, within } from "@storybook/test";
 
 const testTitle = "Title";
 const testCloseFn = fn();
+const altIconText = `Icon for dialog ${testTitle}`;
 
 const meta = {
 	title: "Base Components/Dialog/Dialog Title",
@@ -56,7 +57,7 @@ export const DialogWithIcon: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const Icon = canvas.getByTitle(testTitle);
+		const Icon = canvas.getByTitle(altIconText);
 
 		expect(Icon).toBeInTheDocument();
 	},

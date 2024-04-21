@@ -32,3 +32,9 @@ export type CustomIcon = ForwardRefExoticComponent<
 export type ButtonVariant = "borderless" | "gray" | "outline" | "filled";
 
 export type SeparatorDirection = "horizontal" | "vertical";
+
+export type Breadcrumb = {
+	label: string;
+	id: string;
+	disabled?: boolean;
+};

@@ -1,6 +1,6 @@
 import { Breadcrumbs } from "@components";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import { expect, fn, userEvent, within } from "@storybook/test";
 import type { Breadcrumb } from "@utils";
 
 const testBreadcrumbs: Breadcrumb[] = [
@@ -34,4 +34,36 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicBreadcrumbs: Story = {};
+export const BasicBreadcrumbs: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const breadcrumbs = canvas.getByRole("navigation");
+		const breadcrumbItems = canvas.getAllByRole("button");
+
+		expect(breadcrumbs).toBeInTheDocument();
+		expect(breadcrumbItems).toHaveLength(testBreadcrumbs.length);
+
+		breadcrumbItems.forEach((breadcrumbItem, index) => {
+			expect(breadcrumbItem).toHaveTextContent(testBreadcrumbs[index].label);
+		});
+
+		await userEvent.click(breadcrumbItems[0]);
+
+		expect(testOnItemSelect).toHaveBeenCalledWith("home");
+	},
+};
+
+export const BreadcrumbsWithCustomSeparator: Story = {
+	args: {
+		separator: " > ",
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const breadcrumbs = canvas.getByRole("navigation");
+		const breadcrumbItems = canvas.getAllByRole("button");
+
+		expect(breadcrumbs).toBeInTheDocument();
+		expect(breadcrumbs).toHaveTextContent("Home > Products > Product 1");
+		expect(breadcrumbItems).toHaveLength(testBreadcrumbs.length);
+	},
+};

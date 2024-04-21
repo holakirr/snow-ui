@@ -1,6 +1,7 @@
 import { BreadcrumbsItem } from "@components";
 import { testText } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, within } from "@storybook/test";
 
 const meta = {
 	title: "Base Components/Breadcrumbs/Breadcrumbs Item",
@@ -27,10 +28,27 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicBreadcrumbsItem: Story = {};
+export const BasicBreadcrumbsItem: Story = {
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const breadcrumbsItem = canvas.getByRole("button");
+
+		expect(breadcrumbsItem).toBeInTheDocument();
+		expect(breadcrumbsItem).toHaveTextContent(testText);
+		expect(breadcrumbsItem).toHaveClass("text-black-40");
+	},
+};
 
 export const ActiveBreadcrumbsItem: Story = {
 	args: {
 		active: true,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const breadcrumbsItem = canvas.getByRole("button");
+
+		expect(breadcrumbsItem).toBeInTheDocument();
+		expect(breadcrumbsItem).toHaveTextContent(testText);
+		expect(breadcrumbsItem).toHaveClass("text-black-100");
 	},
 };

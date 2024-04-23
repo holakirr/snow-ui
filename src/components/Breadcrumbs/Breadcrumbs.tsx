@@ -1,4 +1,5 @@
 import { BreadcrumbsItem, Text } from "@components";
+import { ROLES } from "@constants";
 import type { Breadcrumb } from "@utils";
 import { type ComponentProps, Fragment, forwardRef } from "react";
 
@@ -12,7 +13,7 @@ const Breadcrumbs = forwardRef<
 	HTMLMenuElement,
 	BreadcrumbsProps & ComponentProps<"nav">
 >(({ breadcrumbs, onItemSelect, separator = "/", ...props }, ref) => (
-	<nav ref={ref} {...props}>
+	<nav ref={ref} role={ROLES.breadcrumbs} {...props}>
 		{breadcrumbs.map((item, index) => (
 			<Fragment key={item.id}>
 				<BreadcrumbsItem

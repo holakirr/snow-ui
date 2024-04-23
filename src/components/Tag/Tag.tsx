@@ -1,4 +1,5 @@
 import { CloseIcon, DotIcon, Text } from "@components";
+import { ROLES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -18,7 +19,7 @@ const Tag = forwardRef<HTMLDivElement, TagProps>(
 				className,
 			)}
 			ref={ref}
-			role="article"
+			role={ROLES.tag}
 			{...props}
 		>
 			{withDot && (

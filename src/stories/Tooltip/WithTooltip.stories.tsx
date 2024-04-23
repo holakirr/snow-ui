@@ -1,4 +1,5 @@
 import { Button, WithTooltip } from "@components";
+import { ROLES } from "@constants";
 import { testKeyBindings } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, within } from "@storybook/test";
@@ -61,14 +62,14 @@ export const ButtonWithTooltip: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 
 		expect(button).toBeInTheDocument();
 
 		await userEvent.hover(button);
 
-		const tooltip = canvas.getByRole("tooltip");
-		const kbd = canvas.getByRole("definition");
+		const tooltip = canvas.getByRole(ROLES.tooltip);
+		const kbd = canvas.getByRole(ROLES.kbd);
 
 		expect(tooltip).toBeInTheDocument();
 		expect(tooltip).toHaveTextContent(testLabel);

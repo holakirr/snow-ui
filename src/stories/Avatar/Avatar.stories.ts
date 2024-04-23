@@ -1,4 +1,5 @@
 import { Avatar } from "@components";
+import { ROLES, SIZES } from "@constants";
 import {
 	colorControl,
 	imgSourceControl,
@@ -25,7 +26,7 @@ const meta = {
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		size: "small",
+		size: SIZES.sm,
 		username: testUserName,
 		color: "orange",
 	},
@@ -38,7 +39,7 @@ export const Basic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole("figure");
+		const avatar = canvas.getByRole(ROLES.avatar);
 
 		// 👇 Simulate interactions with the component
 		expect(avatar).toBeInTheDocument();
@@ -46,23 +47,13 @@ export const Basic: Story = {
 	},
 };
 
-export const BasicHover: Story = {
-	args: {},
-	parameters: {
-		pseudo: {
-			hover: true,
-		},
-		hover: true,
-	},
-};
-
 export const Large: Story = {
 	args: {
-		size: "large",
+		size: SIZES.lg,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole("figure");
+		const avatar = canvas.getByRole(ROLES.avatar);
 
 		// 👇 Simulate interactions with the component
 		expect(avatar).toBeInTheDocument();
@@ -73,12 +64,12 @@ export const Large: Story = {
 
 export const LargeWithImg: Story = {
 	args: {
-		size: "large",
+		size: SIZES.lg,
 		img: imgSrcMock,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole("figure");
+		const avatar = canvas.getByRole(ROLES.avatar);
 		const avatarImg = avatar.lastChild as HTMLImageElement;
 
 		// 👇 Simulate interactions with the component

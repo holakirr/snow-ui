@@ -1,4 +1,5 @@
 import { Card, Text } from "@components";
+import { ROLES } from "@constants";
 import { testText } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -29,7 +30,7 @@ type Story = StoryObj<typeof meta>;
 export const BasicCard: Story = {
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const card = canvas.getByRole("article");
+		const card = canvas.getByRole(ROLES.card);
 
 		expect(card).toHaveTextContent(testText);
 	},

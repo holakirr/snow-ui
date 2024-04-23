@@ -1,3 +1,4 @@
+import { ROLES } from "@constants";
 import type { IconBaseProps } from "@utils";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
@@ -26,7 +27,7 @@ export const CustomIconBase = forwardRef<SVGSVGElement, IconBaseProps>(
 			transform={mirrored ? "scale(-1, 1)" : undefined}
 			style={{ transition: "all .15s" }}
 			className={twMerge("aspect-square", className)}
-			role="img"
+			role={ROLES.icon}
 			{...restProps}
 		>
 			<title>{alt}</title>

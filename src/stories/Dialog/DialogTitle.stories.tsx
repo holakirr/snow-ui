@@ -1,4 +1,5 @@
 import { AddIcon, DialogTitle } from "@components";
+import { ROLES } from "@constants";
 import { iconControl } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
@@ -20,7 +21,7 @@ const meta = {
 	argTypes: {
 		titleIcon: iconControl,
 		onClose: {
-			control: null,
+			control: undefined,
 			description: "Function to close the dialog",
 		},
 	},
@@ -45,7 +46,7 @@ export const BasicDialogTitle: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const DialogTitle = canvas.getByRole("complementary");
+		const DialogTitle = canvas.getByRole(ROLES.dialogTitle);
 
 		expect(DialogTitle).toHaveTextContent(testTitle);
 	},
@@ -69,7 +70,7 @@ export const DialogTitleWithCloseButton: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const CloseButton = canvas.getByRole("button");
+		const CloseButton = canvas.getByRole(ROLES.button);
 
 		await userEvent.click(CloseButton);
 

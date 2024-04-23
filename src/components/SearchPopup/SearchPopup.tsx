@@ -5,7 +5,7 @@ import {
 	Line,
 	SearchIcon,
 } from "@components";
-import { STATUSES } from "@constants";
+import { ROLES, STATUSES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -22,6 +22,7 @@ const SearchPopup = forwardRef<HTMLInputElement, SearchPopupProps>(
 				className,
 			)}
 			style={{ width }}
+			role={ROLES.searchPopup}
 		>
 			<div className="mb-2">
 				<Input
@@ -34,6 +35,7 @@ const SearchPopup = forwardRef<HTMLInputElement, SearchPopupProps>(
 					)}
 					iconClassName="left-2 fill-black-100"
 					status={progress ? STATUSES.progress : undefined}
+					role={ROLES.search}
 					{...props}
 				/>
 			</div>

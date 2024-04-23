@@ -1,8 +1,14 @@
 import { Text } from "@components";
+import { ROLES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-type SliderProps = ComponentProps<"input">;
+type SliderProps = ComponentProps<"input"> & {
+	min?: number;
+	max?: number;
+	value?: number;
+	placeholder?: string;
+};
 
 const Slider = forwardRef<HTMLInputElement, SliderProps>(
 	(
@@ -14,13 +20,17 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
 		return (
 			<div className="relative flex justify-center items-center h-[34px] bg-black-5 overflow-hidden rounded-lg">
 				<input
+					role={ROLES.slider}
+					aria-valuemin={min}
+					aria-valuemax={max}
+					aria-valuenow={value}
 					min={min}
 					max={max}
+					value={value}
 					className={twMerge(
 						"peer appearance-none w-full h-full bg-transparent",
 						className,
 					)}
-					value={value}
 					{...props}
 					type="range"
 					ref={ref}

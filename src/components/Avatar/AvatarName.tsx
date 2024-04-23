@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 const AvatarName = forwardRef<HTMLDivElement, AvatarProps>(
-	({ username, img, className, size = "small", color }, ref) => (
+	({ username, img, className, size = "sm", color }, ref) => (
 		<div
 			className={twMerge(
 				"grid grid-flow-col-dense items-center gap-2",

@@ -1,5 +1,5 @@
 import { Line } from "@components";
-import { SEPARATOR_DIRECTIONS } from "@constants";
+import { ROLES, SEPARATOR_DIRECTIONS } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
 
@@ -49,7 +49,7 @@ export const BasicLine: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const line = canvas.getByRole("separator");
+		const line = canvas.getByRole(ROLES.line);
 
 		expect(line).toBeInTheDocument();
 		expect(line).toHaveStyle({ height: "1px" });
@@ -63,7 +63,7 @@ export const VerticalLine: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const line = canvas.getByRole("separator");
+		const line = canvas.getByRole(ROLES.line);
 
 		expect(line).toHaveStyle({ width: "1px" });
 		expect(line).toHaveStyle({ height: `${testWrapperSide}px` });

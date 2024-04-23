@@ -1,4 +1,5 @@
 import { Button, CloseIcon, Text } from "@components";
+import { ROLES } from "@constants";
 import type { Icon } from "@phosphor-icons/react";
 import type { CustomIcon } from "@utils";
 import { type ComponentProps, forwardRef } from "react";
@@ -14,7 +15,7 @@ const DialogTitle = forwardRef<HTMLDivElement, DialogTitleProps>(
 		<div
 			className="flex justify-between items-center"
 			ref={ref}
-			role="complementary"
+			role={ROLES.dialogTitle}
 		>
 			<div className="flex gap-4 items-center text-black-100">
 				{Icon && (
@@ -26,10 +27,12 @@ const DialogTitle = forwardRef<HTMLDivElement, DialogTitleProps>(
 			</div>
 			{onClose && (
 				<Button
+					autoFocus
 					onClick={onClose}
 					size="md"
 					variant="gray"
 					leftIcon={CloseIcon}
+					title="Close dialog icon button"
 				/>
 			)}
 		</div>

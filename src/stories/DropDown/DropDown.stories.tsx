@@ -1,4 +1,5 @@
 import { DropDown, type DropDownItemProps } from "@components";
+import { ROLES } from "@constants";
 import { testLink } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -55,21 +56,12 @@ export const DropDownBasic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const dropDown = canvas.getByLabelText("dropdown");
-		const list = canvas.getByRole("list");
-		const items = canvas.getAllByRole("listitem");
+		const dropDown = canvas.getByRole(ROLES.dropdown);
+		const list = canvas.getByRole(ROLES.dropdownList);
+		const items = canvas.getAllByRole(ROLES.dropdownItem);
 
 		expect(list).toBeInTheDocument();
 		expect(dropDown).toHaveTextContent(listTitle);
 		expect(items).toHaveLength(3);
-	},
-};
-
-export const DropDownHoverFirstItem: Story = {
-	args: {},
-	parameters: {
-		pseudo: {
-			hover: "ul > li:first-child",
-		},
 	},
 };

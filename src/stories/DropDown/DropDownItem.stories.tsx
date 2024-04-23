@@ -1,4 +1,5 @@
 import { DropDownItem } from "@components";
+import { ROLES } from "@constants";
 import {
 	imageControl,
 	imageMocks,
@@ -53,7 +54,7 @@ export const DropDownItemBasic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const item = canvas.getByRole("listitem");
+		const item = canvas.getByRole(ROLES.dropdownItem);
 		const link = canvas.getByRole("link");
 		const img = canvas.getByTitle(`Search icon for ${testTitle}`);
 
@@ -61,15 +62,6 @@ export const DropDownItemBasic: Story = {
 		expect(item).toHaveTextContent(testTitle);
 		expect(link).toHaveAttribute("href", testLink);
 		expect(img).toBeInTheDocument();
-	},
-};
-
-export const DropDownItemHover: Story = {
-	args: {},
-	parameters: {
-		pseudo: {
-			hover: true,
-		},
 	},
 };
 

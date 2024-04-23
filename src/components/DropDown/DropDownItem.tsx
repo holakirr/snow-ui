@@ -1,4 +1,5 @@
 import { KBD, SearchIcon, Text } from "@components";
+import { ROLES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -14,7 +15,10 @@ type DropDownItemAllProps = ComponentProps<"a"> & DropDownItemProps;
 
 const DropDownItem = forwardRef<HTMLAnchorElement, DropDownItemAllProps>(
 	({ href, img: Image, title, subtitle, keyBindings, className }, ref) => (
-		<li className="list-none w-full rounded-2xl hover:bg-black-5 focus:bg-black-5">
+		<li
+			className="list-none w-full rounded-2xl hover:bg-black-5 focus:bg-black-5"
+			role={ROLES.dropdownItem}
+		>
 			<a
 				href={href}
 				tabIndex={0}

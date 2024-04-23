@@ -1,4 +1,5 @@
 import { Text } from "@components";
+import { ROLES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -11,7 +12,7 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
 		<Text
 			as="span"
 			size={12}
-			role="status"
+			role={ROLES.badge}
 			className={twMerge(
 				"bg-secondary-purple rounded-full w-[6px] h-[6px] block text-center transition-all z-10",
 				text && "w-auto h-auto text-black-100 px-[6px] py-[1px]",

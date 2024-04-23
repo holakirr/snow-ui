@@ -1,4 +1,5 @@
 import { KBD, type KBDProps, Text } from "@components";
+import { ROLES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -21,7 +22,7 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 				className,
 			)}
 			ref={ref}
-			role="tooltip"
+			role={ROLES.tooltip}
 		>
 			<Text as="span" className="text-white-100">
 				{label}

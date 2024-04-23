@@ -1,4 +1,5 @@
 import { Text } from "@components";
+import { ROLES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -13,7 +14,7 @@ const KBD = forwardRef<HTMLParagraphElement, KBDProps>(
 			size={14}
 			ref={ref}
 			as="kbd"
-			role="definition"
+			role={ROLES.kbd}
 			aria-keyshortcuts={keyBindings.join(separator || "")}
 			className={twMerge("w-min text-black-20", className)}
 		>

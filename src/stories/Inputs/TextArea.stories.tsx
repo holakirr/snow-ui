@@ -1,5 +1,5 @@
 import { TextArea } from "@components";
-import { STATUSES } from "@constants";
+import { ROLES, STATUSES } from "@constants";
 import { statusControl, testErrorText, testInputPlaceholder } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
@@ -52,7 +52,7 @@ export const BasicTextArea: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole("textbox");
+		const input = canvas.getByRole(ROLES.textarea);
 
 		expect(input).toBeInTheDocument();
 
@@ -67,7 +67,7 @@ export const TextAreaWithPlaceholder: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole("textbox");
+		const input = canvas.getByRole(ROLES.textarea);
 
 		expect(input).toHaveAttribute("placeholder", testInputPlaceholder);
 	},
@@ -79,7 +79,7 @@ export const DisabledTextArea: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole("textbox");
+		const input = canvas.getByRole(ROLES.textarea);
 
 		expect(input).toBeDisabled();
 
@@ -96,7 +96,7 @@ export const SuccessTextArea: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole("img");
+		const icon = canvas.getByRole(ROLES.icon);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(`Icon for status ${STATUSES.success}`);
@@ -111,7 +111,7 @@ export const ErrorTextArea: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole("img");
+		const icon = canvas.getByRole(ROLES.icon);
 		const errorMsg = canvas.getByText(testErrorText);
 
 		expect(icon).toBeInTheDocument();
@@ -128,7 +128,7 @@ export const TextAreaWithLimit: Story = {
 		const longText =
 			"This is a long text that will be used to test the text limit of the TextArea component. Next text is not gonna be shown.";
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole("textbox");
+		const input = canvas.getByRole(ROLES.textarea);
 
 		expect(input).toBeInTheDocument();
 		expect(input).toHaveAttribute("maxlength", testTextLimit.toString());

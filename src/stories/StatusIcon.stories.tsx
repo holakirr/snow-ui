@@ -1,5 +1,5 @@
 import { StatusIcon } from "@components";
-import { STATUSES } from "@constants";
+import { ROLES, STATUSES } from "@constants";
 import { statusControl } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -34,7 +34,7 @@ export const SuccessStatusIcon: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole("img");
+		const icon = canvas.getByRole(ROLES.icon);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(altText + STATUSES.success);
@@ -47,7 +47,7 @@ export const ProgressStatusIcon: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole("img");
+		const icon = canvas.getByRole(ROLES.icon);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(altText + STATUSES.progress);
@@ -60,7 +60,7 @@ export const ErrorStatusIcon: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole("img");
+		const icon = canvas.getByRole(ROLES.icon);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(altText + STATUSES.error);

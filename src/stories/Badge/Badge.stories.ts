@@ -1,4 +1,5 @@
 import { Badge } from "@components";
+import { ROLES } from "@constants";
 import { testStatus } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -29,7 +30,8 @@ export const BasicBadge: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const badge = canvas.getByRole("status");
+		const badge = canvas.getByRole(ROLES.badge);
+
 		expect(badge).toBeInTheDocument();
 	},
 };
@@ -40,7 +42,8 @@ export const BadgeWithText: Story = {
 	},
 	play: (context) => {
 		const canvas = within(context.canvasElement);
-		const badge = canvas.getByRole("status");
+		const badge = canvas.getByRole(ROLES.badge);
+
 		expect(badge).toBeInTheDocument();
 		expect(badge).toHaveTextContent(testStatus);
 	},

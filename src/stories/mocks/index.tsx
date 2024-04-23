@@ -12,8 +12,7 @@ import {
 	STATUSES,
 	STATUSES_EXPANDED,
 } from "@constants";
-import type { Icon } from "@phosphor-icons/react";
-import { type CustomIcon, getInitials } from "@utils";
+import { getInitials } from "@utils";
 
 export const testStatus = "12";
 export const testUserName = "John Doe";
@@ -35,22 +34,32 @@ export const imageSrcMocks = {
 
 export const imgSrcMock = imageSrcMocks.chef;
 
+export const imageMocks = {
+	avatar: <Avatar img={imageSrcMocks.man} username={testUserName} />,
+	woman: <img alt="woman" width={24} height={24} src={imageSrcMocks.woman} />,
+	flowerIcon: (
+		<FourLeafCloverIcon
+			size={16}
+			alt={`Icon ${FourLeafCloverIcon.displayName}`}
+		/>
+	),
+};
+
+const ControlTypeRadio = "radio" as const;
+const ControlTypeSelect = "select" as const;
+
 export const colorControl = {
-	control: "select",
+	control: ControlTypeSelect,
 	options: Object.keys(COLOR_SCHEME.secondary),
 };
 
 export const imgSourceControl = {
-	control: "radio",
+	control: ControlTypeRadio,
 	options: [...Object.values(imageSrcMocks), null],
 };
 
-export const iconControl: {
-	control: "radio";
-	options: (string | undefined)[];
-	mapping: Record<string, Icon | CustomIcon | undefined>;
-} = {
-	control: "radio",
+export const iconControl = {
+	control: ControlTypeRadio,
 	options: [
 		"Nothing",
 		ArrowLineDownIcon.displayName,
@@ -65,19 +74,8 @@ export const iconControl: {
 	},
 };
 
-export const imageMocks = {
-	avatar: <Avatar img={imageSrcMocks.man} username={testUserName} />,
-	woman: <img alt="woman" width={24} height={24} src={imageSrcMocks.woman} />,
-	flowerIcon: (
-		<FourLeafCloverIcon
-			size={16}
-			alt={`Icon ${FourLeafCloverIcon.displayName}`}
-		/>
-	),
-};
-
 export const imageControl = {
-	control: "radio",
+	control: ControlTypeRadio,
 	options: ["woman", "flowerIcon", "avatar", "Nothing"],
 	mapping: {
 		...imageMocks,
@@ -86,35 +84,35 @@ export const imageControl = {
 };
 
 export const sizeControl = {
-	control: "radio",
+	control: ControlTypeRadio,
 	options: Object.values(SIZES),
 	description: "The size of the button",
 };
 
 export const weightControl = {
-	control: "radio",
+	control: ControlTypeRadio,
 	options: Object.values(ICON_WEIGHTS),
 	description: "The weight of the icon",
 };
 
 export const buttonVariantControl = {
-	control: "radio",
+	control: ControlTypeRadio,
 	options: Object.values(BUTTON_VARIANTS),
 	description: "The style variant of the button",
 };
 
 export const statusControl = {
-	control: "radio",
+	control: ControlTypeRadio,
 	options: [null, ...Object.values(STATUSES)],
 };
 
 export const badgeStatusControl = {
-	control: "radio",
+	control: ControlTypeRadio,
 	options: Object.values(STATUSES_EXPANDED),
 };
 
 export const keyBindingsControl = {
-	control: "radio",
+	control: ControlTypeRadio,
 	options: ["CTRL+C", "CMD+K", "RETURN", "CMD+SHIFT+C", "Nothing"],
 	mapping: {
 		"CTRL+C": ["Ctrl", "C"],

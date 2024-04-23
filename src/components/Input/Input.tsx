@@ -1,4 +1,5 @@
 import { StatusIcon, Text, XCircleIcon } from "@components";
+import { ROLES } from "@constants";
 import type { CustomIcon } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
@@ -75,6 +76,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 					)}
 					onChange={onChange}
 					value={value}
+					role={ROLES.input}
 					{...props}
 				/>
 				{title && (

@@ -1,5 +1,5 @@
 import { DotIcon, Text } from "@components";
-import { STATUSES_EXPANDED } from "@constants";
+import { ROLES, STATUSES_EXPANDED } from "@constants";
 import type { StatusExpanded } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
@@ -50,7 +50,7 @@ const StatusBadge = forwardRef<HTMLDivElement, StatusBadgeProps>(
 		<div
 			className={twMerge(statusBadgeStyles({ withDot, status }), className)}
 			ref={ref}
-			role="status"
+			role={ROLES.statusBadge}
 		>
 			{withDot && (
 				<DotIcon

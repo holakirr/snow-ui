@@ -1,4 +1,5 @@
 import { Button } from "@components";
+import { ROLES } from "@constants";
 import type { Breadcrumb } from "@utils";
 import { type ComponentProps, forwardRef } from "react";
 
@@ -12,6 +13,8 @@ const BreadcrumbsItem = forwardRef<HTMLButtonElement, BreadcrumbsItemProps>(
 		<Button
 			ref={ref}
 			aria-label={label}
+			aria-current={active ? "page" : undefined}
+			role={ROLES.breadcrumbsItem}
 			id={id}
 			label={label}
 			size="sm"

@@ -1,4 +1,5 @@
 import { Text } from "@components";
+import { ROLES } from "@constants";
 import type { Icon } from "@phosphor-icons/react";
 import type { CustomIcon } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
@@ -71,7 +72,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 				buttonStyles({ variant, size, className }),
 				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
 			)}
-			role="button"
+			role={ROLES.button}
 			aria-label={label || "Button aria label"}
 			{...props}
 		>

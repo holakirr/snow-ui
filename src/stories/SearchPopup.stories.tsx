@@ -1,4 +1,5 @@
 import { SearchPopup } from "@components";
+import { ROLES } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, within } from "@storybook/test";
 import { useState } from "react";
@@ -44,8 +45,10 @@ export const BasicSearchPopup: Story = {
 	args: {},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole("textbox");
+		const searchPopup = canvas.getByRole(ROLES.searchPopup);
+		const input = canvas.getByRole(ROLES.search);
 
+		expect(searchPopup).toBeInTheDocument();
 		expect(input).toBeInTheDocument();
 
 		await userEvent.type(input, testValue);

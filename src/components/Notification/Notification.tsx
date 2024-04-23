@@ -1,5 +1,5 @@
 import { StatusIcon, Text } from "@components";
-import { STATUSES_NOTIFY } from "@constants";
+import { ROLES, STATUSES_NOTIFY } from "@constants";
 import type { StatusNotify } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
@@ -34,7 +34,7 @@ const Notification = forwardRef<HTMLDivElement, NotificationProps>(
 		<div
 			className={twMerge(notificationClasses({ size, className }))}
 			ref={ref}
-			role="alert"
+			role={ROLES.notification}
 		>
 			<StatusIcon
 				status={status}

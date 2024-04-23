@@ -1,4 +1,5 @@
 import { Search } from "@components";
+import { ROLES } from "@constants";
 import { keyBindingsControl } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, within } from "@storybook/test";
@@ -37,7 +38,7 @@ const meta = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole("searchbox");
+		const input = canvas.getByRole(ROLES.search);
 
 		expect(input).toBeInTheDocument();
 

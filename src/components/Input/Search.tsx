@@ -1,4 +1,5 @@
 import { KBD, SearchIcon } from "@components";
+import { ROLES } from "@constants";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
@@ -33,6 +34,7 @@ const Search = forwardRef<HTMLInputElement, SearchProps>(
 				className={twMerge(searchClassnames({ variant, className }), "peer")}
 				type="search"
 				id={id}
+				role={ROLES.search}
 			/>
 			<SearchIcon
 				weight="regular"

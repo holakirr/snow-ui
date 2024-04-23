@@ -1,4 +1,5 @@
 import { Button, WithBadge } from "@components";
+import { ROLES } from "@constants";
 import { testStatus } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -35,7 +36,7 @@ export const ButtonWithBadge: Story = {
 		}
 
 		const canvas = within(context.canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 		expect(button).toBeInTheDocument();
 	},
 };
@@ -50,7 +51,7 @@ export const ButtonWithBadgeWithText: Story = {
 		}
 
 		const canvas = within(context.canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 		expect(button).toBeInTheDocument();
 	},
 };

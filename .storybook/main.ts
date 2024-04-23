@@ -9,7 +9,6 @@ const config: StorybookConfig = {
 		"@storybook/addon-links",
 		"@storybook/addon-themes",
 		"@storybook/theming",
-		"storybook-addon-pseudo-states",
 	],
 	framework: "@storybook/react-vite",
 	docs: {

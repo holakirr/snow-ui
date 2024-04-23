@@ -1,4 +1,5 @@
 import { Text } from "@components";
+import { ROLES } from "@constants";
 import { getInitials } from "@utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
@@ -9,8 +10,8 @@ const avatarStyles = cva(
 	{
 		variants: {
 			size: {
-				small: "w-8 h-8",
-				large: "w-16 h-16",
+				sm: "w-8 h-8",
+				lg: "w-16 h-16",
 			},
 			color: {
 				secondary: "bg-secondary-brand",
@@ -35,7 +36,7 @@ const avatarStyles = cva(
 		},
 		defaultVariants: {
 			color: "orange",
-			size: "small",
+			size: "sm",
 		},
 	},
 );
@@ -49,8 +50,8 @@ export type AvatarProps = ComponentProps<"div"> &
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
 	({ size, img, username, color, className }, ref) => (
 		<div
-			role="figure"
-			aria-label={`avatar for ${username}`}
+			role={ROLES.avatar}
+			aria-label={`Avatar for ${username}`}
 			className={twMerge(avatarStyles({ size, color, className }))}
 			ref={ref}
 		>

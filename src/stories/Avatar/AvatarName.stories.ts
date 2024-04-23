@@ -1,4 +1,5 @@
 import { AvatarName } from "@components";
+import { SIZES } from "@constants";
 import { colorControl, imgSourceControl, testUserName } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -24,7 +25,7 @@ const meta = {
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		size: "small",
+		size: SIZES.sm,
 		username: testUserName,
 	},
 } satisfies Meta<typeof AvatarName>;
@@ -45,18 +46,9 @@ export const BasicAvatarName: Story = {
 	},
 };
 
-export const HoverBasicAvatarName: Story = {
-	args: {},
-	parameters: {
-		pseudo: {
-			hover: "div > div",
-		},
-	},
-};
-
 export const BigAvatarName: Story = {
 	args: {
-		size: "large",
+		size: SIZES.lg,
 	},
 	...LargeAvatar,
 };

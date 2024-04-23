@@ -1,4 +1,5 @@
 import { KBD } from "@components";
+import { ROLES } from "@constants";
 import { keyBindingsControl, testKeyBindings } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -32,7 +33,7 @@ export const BasicKBD: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const kbd = canvas.getByRole("definition");
+		const kbd = canvas.getByRole(ROLES.kbd);
 
 		expect(kbd).toBeInTheDocument();
 		expect(kbd).toHaveTextContent(testKeyBindings.join(""));
@@ -45,7 +46,7 @@ export const KBDWithSeparator: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const kbd = canvas.getByRole("definition");
+		const kbd = canvas.getByRole(ROLES.kbd);
 
 		expect(kbd).toHaveTextContent(testKeyBindings.join(testSeparator));
 	},

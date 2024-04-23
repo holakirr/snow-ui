@@ -1,4 +1,5 @@
 import { Tag } from "@components";
+import { ROLES } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
 
@@ -32,7 +33,7 @@ export const BasicTag: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const tag = canvas.getByRole("article");
+		const tag = canvas.getByRole(ROLES.tag);
 
 		expect(tag).toBeInTheDocument();
 		expect(tag).toHaveTextContent(testLabel);

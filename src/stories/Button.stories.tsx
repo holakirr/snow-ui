@@ -1,5 +1,5 @@
 import { ArrowLineDownIcon, Button, FourLeafCloverIcon } from "@components";
-import { SIZES } from "@constants";
+import { ROLES, SIZES } from "@constants";
 import { buttonVariantControl, iconControl, sizeControl } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
@@ -51,7 +51,7 @@ export const Borderless: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 
 		await userEvent.click(button);
 
@@ -66,7 +66,7 @@ export const Small: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 
 		expect(button).toHaveClass("py-1 px-2 rounded-lg gap-1");
 	},
@@ -78,7 +78,7 @@ export const Medium: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 
 		expect(button).toHaveClass("py-2 px-4 rounded-xl gap-2");
 	},
@@ -90,7 +90,7 @@ export const Large: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 
 		expect(button).toHaveClass("py-4 px-6 rounded-2xl gap-2");
 	},
@@ -102,7 +102,7 @@ export const Gray: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 
 		expect(button).toHaveClass("bg-black-5");
 	},
@@ -114,7 +114,7 @@ export const Outline: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 
 		expect(button).toHaveClass(
 			"bg-transparent border-1 border-black-10 border-solid",
@@ -128,7 +128,7 @@ export const Filled: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 
 		expect(button).toHaveClass("bg-primary-brand text-white-100");
 	},
@@ -183,7 +183,7 @@ export const Disabled: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const button = canvas.getByRole("button");
+		const button = canvas.getByRole(ROLES.button);
 
 		await userEvent.click(button);
 

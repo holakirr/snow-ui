@@ -6,6 +6,7 @@ import {
 	focusInputClasses,
 	statusInputClasses,
 } from "@components";
+import { ROLES } from "@constants";
 import type { Status } from "@utils";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
@@ -24,6 +25,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 		<div className="flex flex-col gap-2">
 			<div className="relative flex">
 				<textarea
+					role={ROLES.textarea}
 					id={id}
 					ref={ref}
 					maxLength={textLimit}

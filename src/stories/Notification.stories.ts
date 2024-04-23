@@ -1,5 +1,5 @@
 import { Notification } from "@components";
-import { SIMPLE_SIZES, STATUSES_NOTIFY } from "@constants";
+import { ROLES, SIMPLE_SIZES, STATUSES_NOTIFY } from "@constants";
 import { statusControl, testErrorText, testSuccessText } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -37,8 +37,8 @@ export const BasicNotification: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const notification = canvas.getByRole("alert");
-		const icon = canvas.getByRole("img");
+		const notification = canvas.getByRole(ROLES.notification);
+		const icon = canvas.getByRole(ROLES.icon);
 
 		expect(notification).toBeInTheDocument();
 		expect(notification).toHaveTextContent(testSuccessText);
@@ -57,8 +57,8 @@ export const LargeNotificationError: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const notification = canvas.getByRole("alert");
-		const icon = canvas.getByRole("img");
+		const notification = canvas.getByRole(ROLES.notification);
+		const icon = canvas.getByRole(ROLES.icon);
 
 		expect(notification).toBeInTheDocument();
 		expect(notification).toHaveTextContent(testErrorText);

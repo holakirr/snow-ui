@@ -1,4 +1,5 @@
 import { Tooltip } from "@components";
+import { ROLES } from "@constants";
 import { testKeyBindings } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -28,7 +29,7 @@ export const BasicTooltip: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const tooltip = canvas.getByRole("tooltip");
+		const tooltip = canvas.getByRole(ROLES.tooltip);
 
 		expect(tooltip).toBeInTheDocument();
 		expect(tooltip).toHaveTextContent(testLabel);
@@ -46,8 +47,8 @@ export const TooltipWithKeyBindings: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const tooltip = canvas.getByRole("tooltip");
-		const keyBindings = canvas.getByRole("definition");
+		const tooltip = canvas.getByRole(ROLES.tooltip);
+		const keyBindings = canvas.getByRole(ROLES.kbd);
 
 		expect(tooltip).toBeInTheDocument();
 		expect(tooltip).toHaveTextContent(testLabel);

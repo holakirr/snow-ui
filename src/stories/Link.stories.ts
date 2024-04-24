@@ -38,3 +38,31 @@ export const BasicLink: Story = {
 		expect(Link).toHaveTextContent(testLinkLabel);
 	},
 };
+
+export const ExternalLink: Story = {
+	args: {
+		target: "_blank",
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const Link = canvas.getByRole(ROLES.link);
+		expect(Link).toBeInTheDocument();
+		expect(Link).toHaveAttribute("href", testLinkHref);
+		expect(Link).toHaveTextContent(testLinkLabel);
+		expect(Link).toHaveAttribute("target", "_blank");
+	},
+};
+
+export const CustomStyleLink: Story = {
+	args: {
+		style: { color: "red" },
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const Link = canvas.getByRole(ROLES.link);
+		expect(Link).toBeInTheDocument();
+		expect(Link).toHaveAttribute("href", testLinkHref);
+		expect(Link).toHaveTextContent(testLinkLabel);
+		expect(Link).toHaveStyle("color: rgb(255, 0, 0)");
+	},
+};

@@ -9,6 +9,7 @@ export * from "./Icons";
 export * from "./Input";
 export * from "./KBD";
 export * from "./Line";
+export * from "./Link";
 export * from "./Notification";
 export * from "./SearchPopup";
 export * from "./StatusBadge";

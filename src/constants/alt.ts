@@ -12,6 +12,7 @@ export const ROLES = {
 	dropdownList: "list",
 	icon: "img",
 	input: "textbox",
+	link: "link",
 	search: "search",
 	slider: "slider",
 	textarea: "textbox",

@@ -1,5 +1,5 @@
 import type { TextSize } from "@components";
-import type { SimpleSize, Size } from "@utils";
+import type { SimpleSize, Size } from "@types";
 
 export const SIMPLE_SIZES: { [K in SimpleSize]: K } = {
 	sm: "sm",

@@ -1,7 +1,7 @@
 import { Button, CloseIcon, Text } from "@components";
 import { ROLES } from "@constants";
 import type { Icon } from "@phosphor-icons/react";
-import type { CustomIcon } from "@utils";
+import type { CustomIcon } from "@types";
 import { type ComponentProps, forwardRef } from "react";
 
 export type DialogTitleProps = {

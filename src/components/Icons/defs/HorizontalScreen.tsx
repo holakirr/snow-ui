@@ -1,4 +1,4 @@
-import type { CustomIconWeights } from "@utils";
+import type { CustomIconWeights } from "@types";
 
 export const HorizontalScreenWeights: CustomIconWeights = new Map([
 	[

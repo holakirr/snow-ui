@@ -21,7 +21,9 @@
       "@constants": ["./src/constants"],
       "@mocks": ["./src/stories/mocks"],
       "@styles": ["./src/styles"],
-      "@utils": ["./src/utils"]
+      "@helpers": ["./src/helpers"],
+      "@hooks": ["./src/hooks"],
+      "@types": ["./src/types"]
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true

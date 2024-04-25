@@ -1,4 +1,4 @@
-import type { ModifiedNavigationItemType, NavigationItemType } from "@utils";
+import type { ModifiedNavigationItemType, NavigationItemType } from "@types";
 import { type MouseEventHandler, useState } from "react";
 
 const updateItems = (items: ModifiedNavigationItemType[], id: string) => {

@@ -1,4 +1,4 @@
-import type { CustomIconWeights } from "@utils";
+import type { CustomIconWeights } from "@types";
 
 export const CloseWeights: CustomIconWeights = new Map([
 	[

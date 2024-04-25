@@ -1,6 +1,6 @@
 import { StatusIcon, Text } from "@components";
 import { ROLES, STATUSES_NOTIFY } from "@constants";
-import type { StatusNotify } from "@utils";
+import type { StatusNotify } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";

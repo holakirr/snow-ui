@@ -1,5 +1,5 @@
 import { CustomIconBase, SearchWeights } from "@components";
-import type { CustomIconProps } from "@utils";
+import type { CustomIconProps } from "@types";
 import { forwardRef } from "react";
 
 const SearchIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (

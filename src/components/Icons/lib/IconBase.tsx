@@ -1,5 +1,5 @@
 import { ROLES } from "@constants";
-import type { IconBaseProps } from "@utils";
+import type { IconBaseProps } from "@types";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 

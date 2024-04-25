@@ -1,6 +1,6 @@
 import { ArrowLineRightIcon, NavigationSubMenu, Text } from "@components";
 import { ROLES } from "@constants";
-import type { NavigationItemType } from "@utils";
+import type { NavigationItemType } from "@types";
 import { type ComponentProps, type ReactEventHandler, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 

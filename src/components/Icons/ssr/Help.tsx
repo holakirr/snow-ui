@@ -1,5 +1,5 @@
 import { CustomIconBase, HelpWeights } from "@components";
-import type { CustomIconProps } from "@utils";
+import type { CustomIconProps } from "@types";
 import { forwardRef } from "react";
 
 const HelpIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (

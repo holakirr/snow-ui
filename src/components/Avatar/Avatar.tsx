@@ -1,6 +1,6 @@
 import { Text } from "@components";
 import { ROLES } from "@constants";
-import { getInitials } from "@utils";
+import { getInitials } from "@helpers";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";

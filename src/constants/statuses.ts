@@ -1,4 +1,4 @@
-import type { Status, StatusExpanded, StatusNotify } from "@utils";
+import type { Status, StatusExpanded, StatusNotify } from "@types";
 
 export const STATUSES_NOTIFY: {
 	[K in StatusNotify]: K;

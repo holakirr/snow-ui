@@ -1,9 +1,9 @@
 import { FourLeafCloverIcon, NavigationItem } from "@components";
 import { ROLES } from "@constants";
+import { useNavigationItem } from "@hooks";
 import { iconControl } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
-import { useNavigationItem } from "@utils";
 
 const testLabel = "Navigation Item";
 const testClickHandler = fn((e) =>

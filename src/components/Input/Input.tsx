@@ -1,6 +1,6 @@
 import { StatusIcon, Text, XCircleIcon } from "@components";
 import { ROLES } from "@constants";
-import type { CustomIcon } from "@utils";
+import type { CustomIcon } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";

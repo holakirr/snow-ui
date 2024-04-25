@@ -1,6 +1,6 @@
 import { NavigationItem } from "@components";
 import { NAVIGATION_ITEM_HEIGHT, ROLES } from "@constants";
-import type { NavigationItemType } from "@utils";
+import type { NavigationItemType } from "@types";
 import { type ComponentProps, type ReactEventHandler, forwardRef } from "react";
 
 type NavigationSubMenuProps = {

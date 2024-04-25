@@ -1,6 +1,6 @@
 import { DotIcon, Text } from "@components";
 import { ROLES, STATUSES_EXPANDED } from "@constants";
-import type { StatusExpanded } from "@utils";
+import type { StatusExpanded } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";

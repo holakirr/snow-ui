@@ -10,6 +10,7 @@ export * from "./Input";
 export * from "./KBD";
 export * from "./Line";
 export * from "./Link";
+export * from "./Navigation";
 export * from "./Notification";
 export * from "./SearchPopup";
 export * from "./StatusBadge";

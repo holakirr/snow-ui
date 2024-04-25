@@ -53,8 +53,14 @@ const NavigationItem = forwardRef<HTMLLIElement, NavigationItemProps>(
 					/>
 				)}
 				<div className="flex items-center gap-2">
-					{Icon && <Icon size={20} alt={`Icon ${Icon.displayName}`} />}
-					<Text as="p" size={14} className="w-fit">
+					{Icon && (
+						<Icon
+							size={20}
+							alt={`Icon ${Icon.displayName}`}
+							className="fill-black-100"
+						/>
+					)}
+					<Text as="p" size={14} className="w-fit text-black-100">
 						{label}
 					</Text>
 				</div>

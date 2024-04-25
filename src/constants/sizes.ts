@@ -1,5 +1,5 @@
 import type { TextSize } from "@components";
-import type { SimpleSize, Size } from "@utils";
+import type { SimpleSize, Size } from "@types";
 
 export const SIMPLE_SIZES: { [K in SimpleSize]: K } = {
 	sm: "sm",
@@ -20,3 +20,5 @@ export const TEXT_SIZES: { [K in Exclude<TextSize, null | undefined>]: K } = {
 	48: 48,
 	64: 64,
 } as const;
+
+export const NAVIGATION_ITEM_HEIGHT = 40;

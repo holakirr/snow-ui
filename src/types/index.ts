@@ -1,4 +1,4 @@
-import type { IconProps, IconWeight } from "@phosphor-icons/react";
+import type { Icon, IconProps, IconWeight } from "@phosphor-icons/react";
 import type {
 	ForwardRefExoticComponent,
 	ReactElement,
@@ -37,4 +37,16 @@ export type Breadcrumb = {
 	label: string;
 	id: string;
 	disabled?: boolean;
+};
+
+export type NavigationItemType = {
+	label: string;
+	id: string;
+	items?: NavigationItemType[];
+	icon?: Icon | CustomIcon;
+};
+
+export type ModifiedNavigationItemType = NavigationItemType & {
+	expanded?: boolean;
+	active?: boolean;
 };

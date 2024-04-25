@@ -7,7 +7,7 @@ import {
 	statusInputClasses,
 } from "@components";
 import { ROLES } from "@constants";
-import type { Status } from "@utils";
+import type { Status } from "@types";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 

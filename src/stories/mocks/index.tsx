@@ -12,7 +12,7 @@ import {
 	STATUSES,
 	STATUSES_EXPANDED,
 } from "@constants";
-import { getInitials } from "@utils";
+import { getInitials } from "@helpers";
 
 export const testStatus = "12";
 export const testUserName = "John Doe";

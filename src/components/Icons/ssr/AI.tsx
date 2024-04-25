@@ -1,5 +1,5 @@
 import { AIWeights, CustomIconBase } from "@components";
-import type { CustomIconProps } from "@utils";
+import type { CustomIconProps } from "@types";
 import { forwardRef } from "react";
 
 const AIIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (

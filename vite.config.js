@@ -20,7 +20,9 @@ export default defineConfig({
 			"@constants": resolve(__dirname, "src/constants"),
 			"@mocks": resolve(__dirname, "src/stories/mocks"),
 			"@styles": resolve(__dirname, "src/styles"),
-			"@utils": resolve(__dirname, "src/utils"),
+			"@helpers": resolve(__dirname, "src/helpers"),
+			"@hooks": resolve(__dirname, "src/hooks"),
+			"@types": resolve(__dirname, "src/types"),
 		},
 	},
 	build: {

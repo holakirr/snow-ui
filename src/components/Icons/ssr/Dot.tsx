@@ -1,5 +1,5 @@
 import { CustomIconBase, DotWeights } from "@components";
-import type { CustomIconProps } from "@utils";
+import type { CustomIconProps } from "@types";
 import { forwardRef } from "react";
 
 const DotIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (

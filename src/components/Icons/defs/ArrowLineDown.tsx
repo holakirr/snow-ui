@@ -1,4 +1,4 @@
-import type { CustomIconWeights } from "@utils";
+import type { CustomIconWeights } from "@types";
 import { Fragment } from "react/jsx-runtime";
 
 export const ArrowLineDownWeights: CustomIconWeights = new Map([

@@ -23,4 +23,6 @@ export const ROLES = {
 	statusBadge: "status",
 	tag: "listitem",
 	tooltip: "tooltip",
+	navigationItem: "treeitem",
+	navigationSubMenu: "tree",
 };

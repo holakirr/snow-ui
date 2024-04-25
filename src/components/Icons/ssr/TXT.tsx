@@ -1,5 +1,5 @@
 import { CustomIconBase, TXTWeights } from "@components";
-import type { CustomIconProps } from "@utils";
+import type { CustomIconProps } from "@types";
 import { forwardRef } from "react";
 
 const TXTIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (

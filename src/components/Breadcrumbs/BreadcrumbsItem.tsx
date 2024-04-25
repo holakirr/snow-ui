@@ -1,6 +1,6 @@
 import { Button } from "@components";
 import { ROLES } from "@constants";
-import type { Breadcrumb } from "@utils";
+import type { Breadcrumb } from "@types";
 import { type ComponentProps, forwardRef } from "react";
 
 type BreadcrumbsItemProps = Breadcrumb &

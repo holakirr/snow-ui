@@ -1,5 +1,5 @@
 import { ArrowLineUpDownWeights, CustomIconBase } from "@components";
-import type { CustomIconProps } from "@utils";
+import type { CustomIconProps } from "@types";
 import { forwardRef } from "react";
 
 const ArrowLineUpDownIcon = forwardRef<SVGSVGElement, CustomIconProps>(

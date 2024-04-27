@@ -1,6 +1,6 @@
 # SnowUI
 
-SnowUI is a React UI of mostly (!) "stupid" (with no state or effect, you'll have to provide it by yourself) components library implementation of [SnowUI design kit](https://snowui.byewind.com) by [ByeWind](https://byewind.com/). Implemented and improved by [Amtrz team](https://github.com/amtrz). Based on TailwindCSS.
+SnowUI is a React UI of mostly (!) "stupid" (with no state or effect, you'll have to provide it by yourself) components library implementation of [SnowUI design kit](https://snowui.byewind.com) by [ByeWind](https://byewind.com/). Implemented and improved by [holakirr](https://github.com/holakirr). Based on TailwindCSS.
 Build your design using [it](https://www.figma.com/community/file/1301134685302006646)
 
 <!-- TODO: add website about this UI lib and it's documentation -->
@@ -14,25 +14,25 @@ Take a look at my [CV](https://holakirr.com) =)
 ### 1. Install our library
 
 ```bash
-npm add amtrz-snow-ui
+npm add holakirr-snow-ui
 # or
-yarn add amtrz-snow-ui
+yarn add holakirr-snow-ui
 # or
-pnpm add amtrz-snow-ui
+pnpm add holakirr-snow-ui
 # or
-bun add amtrz-snow-ui
+bun add holakirr-snow-ui
 ```
 
 ### 2. Add to your global css file
 
 ```css
-@import "amtrz-snow-ui/index.css";
+@import "holakirr-snow-ui/index.css";
 ```
 
 ### 3. Import any component in your project
 
 ```ts
-import { Button } from "amtrz-snow-ui";
+import { Button } from "holakirr-snow-ui";
 ```
 
 ### 3. You're good to go =)

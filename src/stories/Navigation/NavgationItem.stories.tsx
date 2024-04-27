@@ -1,11 +1,15 @@
-import { FourLeafCloverIcon, NavigationItem } from "@components";
+import { NavigationItem } from "@components";
 import { ROLES } from "@constants";
-import { useNavigationItem } from "@hooks";
-import { iconControl } from "@mocks";
+import { useNavigation } from "@hooks";
+import {
+	iconControl,
+	navigationMenuItems,
+	onNavigationItemClick,
+} from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
+import type { MouseEventHandler } from "react";
 
-const testLabel = "Navigation Item";
 const testClickHandler = fn((e) =>
 	console.log(`clicked on ${e.currentTarget.id}`),
 );
@@ -25,61 +29,21 @@ const meta = {
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
 		icon: iconControl,
+		onClick: onNavigationItemClick,
 	},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		label: testLabel,
-		id: "navigation-item",
-		expanded: false,
 		onClick: testClickHandler,
-		items: [
-			{
-				label: "Sub Item 1",
-				id: "sub-item-1",
-				icon: FourLeafCloverIcon,
-			},
-			{
-				label: "Sub Item 2",
-				id: "sub-item-2",
-			},
-			{
-				label: "Sub Item 3",
-				id: "sub-item-3",
-				items: [
-					{
-						label: "Sub Sub Item 1",
-						id: "sub-sub-item-1",
-					},
-					{
-						label: "Sub Sub Item 2",
-						id: "sub-sub-item-2",
-					},
-					{
-						label: "Sub Sub Item 3",
-						id: "sub-sub-item-3",
-						items: [
-							{
-								label: "Sub Sub Sub Item 1",
-								id: "sub-sub-sub-item-1",
-							},
-							{
-								label: "Sub Sub Sub Item 2",
-								id: "sub-sub-sub-item-2",
-							},
-							{
-								label: "Sub Sub Sub Item 3",
-								id: "sub-sub-sub-item-3",
-							},
-						],
-					},
-				],
-			},
-		],
+		...navigationMenuItems[0],
 	},
 	render: (args) => {
-		const { item, onClickHandler } = useNavigationItem(args);
+		const { items, onClickHandler } = useNavigation([args]);
+		const onItemClickHandler: MouseEventHandler<HTMLLIElement> = (e) => {
+			args.onClick(e);
+			onClickHandler(e);
+		};
 
-		return <NavigationItem {...item} onClick={onClickHandler} />;
+		return <NavigationItem {...items[0]} onClick={onItemClickHandler} />;
 	},
 } satisfies Meta<typeof NavigationItem>;
 
@@ -87,13 +51,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const SimpleNavigationItem: Story = {
-	args: {
-		items: undefined,
-	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const navigationItem = canvas.getByRole(ROLES.navigationItem, {
-			name: testLabel,
+			name: navigationMenuItems[0].label,
 		});
 
 		expect(navigationItem).toBeInTheDocument();
@@ -102,65 +63,73 @@ export const SimpleNavigationItem: Story = {
 		await userEvent.click(navigationItem);
 
 		expect(navigationItem).toHaveClass("bg-black-5");
+		expect(testClickHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				target: expect.objectContaining({ id: navigationItem.id }),
+			}),
+		);
 	},
 };
 
 export const ComplexNavigationItem: Story = {
+	args: {
+		...navigationMenuItems[2],
+	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const navigationItem = canvas.getByRole(ROLES.navigationItem, {
-			name: testLabel,
+			name: navigationMenuItems[2].label,
 		});
-		const subMenu = canvas.getByRole(ROLES.navigationSubMenu, {
-			name: `Submenu for ${testLabel}`,
+		const subMenu = canvas.getByRole(ROLES.navigationMenu, {
+			name: `Navigation Menu ${navigationItem.getAttribute("aria-label")}`,
 		});
 		const subItem = canvas.getByRole(ROLES.navigationItem, {
 			name: "Sub Item 3",
 		});
-		const subSubMenu = canvas.getByRole(ROLES.navigationSubMenu, {
-			name: "Submenu for Sub Item 3",
+		const subSubMenu = canvas.getByRole(ROLES.navigationMenu, {
+			name: `Navigation Menu ${subItem.getAttribute("aria-label")}`,
 		});
 		const subSubItem = canvas.getByRole(ROLES.navigationItem, {
 			name: "Sub Sub Item 3",
 		});
-		const subSubSubMenu = canvas.getByRole(ROLES.navigationSubMenu, {
-			name: "Submenu for Sub Sub Item 3",
-		});
-		const subSubSubItem = canvas.getByRole(ROLES.navigationItem, {
-			name: "Sub Sub Sub Item 1",
-		});
 
 		expect(navigationItem).toBeInTheDocument();
 		expect(subMenu).toBeInTheDocument();
-		expect(subMenu.style.maxHeight).toBe("0px");
+		expect(subMenu).toHaveClass("grid-rows-[0fr]");
 		expect(subItem).toBeInTheDocument();
 		expect(subSubMenu).toBeInTheDocument();
-		expect(subSubMenu.style.maxHeight).toBe("0px");
+		expect(subSubMenu).toHaveClass("grid-rows-[0fr]");
 		expect(subSubItem).toBeInTheDocument();
-		expect(subSubSubMenu).toBeInTheDocument();
-		expect(subSubSubMenu.style.maxHeight).toBe("0px");
-		expect(subSubSubItem).toBeInTheDocument();
 
 		await userEvent.click(navigationItem);
 
-		expect(subMenu.style.maxHeight).not.toBe("0px");
-		expect(subSubMenu.style.maxHeight).toBe("0px");
-		expect(subSubSubMenu.style.maxHeight).toBe("0px");
+		expect(testClickHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				target: expect.objectContaining({ id: navigationItem.id }),
+			}),
+		);
+		expect(subMenu).toHaveClass("grid-rows-[1fr]");
+		expect(subSubMenu).toHaveClass("grid-rows-[0fr]");
 
 		await userEvent.click(subItem);
 
-		expect(subMenu.style.maxHeight).not.toBe("0px");
-		expect(subSubMenu.style.maxHeight).not.toBe("0px");
-		expect(subSubSubMenu.style.maxHeight).toBe("0px");
+		expect(testClickHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				target: expect.objectContaining({ id: subItem.id }),
+			}),
+		);
+		expect(subMenu).toHaveClass("grid-rows-[1fr]");
+		expect(subSubMenu).toHaveClass("grid-rows-[1fr]");
 
 		await userEvent.click(subSubItem);
 
-		expect(subMenu.style.maxHeight).not.toBe("0px");
-		expect(subSubMenu.style.maxHeight).not.toBe("0px");
-		expect(subSubSubMenu.style.maxHeight).not.toBe("0px");
-
-		await userEvent.click(subSubSubItem);
-
-		expect(subSubSubItem).toHaveClass("bg-black-5");
+		expect(testClickHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				target: expect.objectContaining({ id: subSubItem.id }),
+			}),
+		);
+		expect(subMenu).toHaveClass("grid-rows-[1fr]");
+		expect(subSubMenu).toHaveClass("grid-rows-[1fr]");
+		expect(subSubItem).toHaveClass("bg-black-5");
 	},
 };

@@ -20,5 +20,3 @@ export const TEXT_SIZES: { [K in Exclude<TextSize, null | undefined>]: K } = {
 	48: 48,
 	64: 64,
 } as const;
-
-export const NAVIGATION_ITEM_HEIGHT = 40;

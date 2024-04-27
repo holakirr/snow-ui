@@ -1,4 +1,4 @@
-import { ArrowLineRightIcon, NavigationSubMenu, Text } from "@components";
+import { ArrowLineRightIcon, NavigationMenu, Text } from "@components";
 import { ROLES } from "@constants";
 import type { NavigationItemType } from "@types";
 import { type ComponentProps, type ReactEventHandler, forwardRef } from "react";
@@ -8,7 +8,7 @@ type NavigationItemProps = ComponentProps<"li"> &
 	NavigationItemType & {
 		active?: boolean;
 		expanded?: boolean;
-		onExpand?: ReactEventHandler<HTMLLIElement>;
+		onClick: ReactEventHandler<HTMLLIElement>;
 	};
 
 const NavigationItem = forwardRef<HTMLLIElement, NavigationItemProps>(
@@ -66,11 +66,11 @@ const NavigationItem = forwardRef<HTMLLIElement, NavigationItemProps>(
 				</div>
 			</li>
 			{items && (
-				<NavigationSubMenu
+				<NavigationMenu
 					items={items}
 					onItemClick={onClick}
 					opened={!!expanded}
-					aria-label={`Submenu for ${label}`}
+					title={label}
 				/>
 			)}
 		</div>

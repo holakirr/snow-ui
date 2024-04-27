@@ -122,3 +122,67 @@ export const keyBindingsControl = {
 		Nothing: [],
 	},
 };
+
+export const onNavigationItemClick = {
+	control: false,
+	description:
+		"Function to handle item click, you have to provide here at least onClickHandler function from useNavigation hook.",
+} as const;
+
+export const navigationMenuItems = [
+	{
+		label: "Item 1",
+		id: "item-1",
+		icon: FourLeafCloverIcon,
+	},
+	{
+		label: "Item 2",
+		id: "item-2",
+		items: [
+			{
+				label: "Sub 2 Item 1",
+				id: "sub-2-item-1",
+			},
+			{
+				label: "Sub 2 Item 2",
+				id: "sub-2-item-2",
+			},
+			{
+				label: "Sub 2 Item 3",
+				id: "sub-2-item-3",
+			},
+		],
+	},
+	{
+		label: "Item 3",
+		id: "item-3",
+		items: [
+			{
+				label: "Sub Item 1",
+				id: "sub-item-1",
+			},
+			{
+				label: "Sub Item 2",
+				id: "sub-item-2",
+			},
+			{
+				label: "Sub Item 3",
+				id: "sub-item-3",
+				items: [
+					{
+						label: "Sub Sub Item 1",
+						id: "sub-sub-item-1",
+					},
+					{
+						label: "Sub Sub Item 2",
+						id: "sub-sub-item-2",
+					},
+					{
+						label: "Sub Sub Item 3",
+						id: "sub-sub-item-3",
+					},
+				],
+			},
+		],
+	},
+];

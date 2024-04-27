@@ -1,2 +1,3 @@
+export * from "./Navigation";
 export * from "./NavigationItem";
-export * from "./NavigationSubMenu";
+export * from "./NavigationMenu";

@@ -14,25 +14,14 @@ const updateItems = (items: ModifiedNavigationItemType[], id: string) => {
 	});
 };
 
-export const useNavigationItem = (base: NavigationItemType) => {
-	const [item, setItem] = useState<ModifiedNavigationItemType>({
-		...base,
-		expanded: false,
-		active: false,
-	});
+export const useNavigation = (base: NavigationItemType[]) => {
+	const [items, setItems] = useState<ModifiedNavigationItemType[]>(base);
 
 	const onClickHandler: MouseEventHandler<HTMLLIElement> = (e) => {
 		const id = e.currentTarget.id;
-		setItem((prev) => {
-			if (prev?.items) {
-				return {
-					...prev,
-					expanded: prev.id === id ? !prev.expanded : prev.expanded,
-					items: updateItems(prev.items, id),
-				};
-			}
-			return { ...prev, active: prev.id === id ? !prev.active : false };
-		});
+
+		setItems((prev) => updateItems(prev, id));
 	};
-	return { item, setItem, onClickHandler };
+
+	return { items, setItems, onClickHandler };
 };

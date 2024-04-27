@@ -24,5 +24,6 @@ export const ROLES = {
 	tag: "listitem",
 	tooltip: "tooltip",
 	navigationItem: "treeitem",
-	navigationSubMenu: "tree",
-};
+	navigationMenu: "tree",
+	navigation: "navigation",
+} as const;

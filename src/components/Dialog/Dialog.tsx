@@ -1,30 +1,49 @@
 import { DialogTitle, type DialogTitleProps } from "@components";
 import { ROLES } from "@constants";
-import { type ComponentProps, forwardRef } from "react";
+import { type ComponentProps, type MouseEventHandler, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-type DialogProps = ComponentProps<"dialog"> & DialogTitleProps & {};
+type DialogProps = ComponentProps<"dialog"> &
+	DialogTitleProps & {
+		onClose: () => void;
+	};
 
 const Dialog = forwardRef<HTMLDialogElement, DialogProps>(
-	({ open, titleIcon, title, className, onClose, children, ...props }, ref) => (
-		<dialog
-			ref={ref}
-			role={ROLES.dialog}
-			className={twMerge(
-				"fixed z-50 bottom-0 left-1/2 -translate-x-1/2 overflow-hidden grid gap-7 items-center justify-center content-center transition-all duration-300",
-				className,
-				!open &&
-					"h-0 opacity-0 *:text-[0rem] *:w-[0rem] *:h-[0rem] *:opacity-0 *:p-0 *:m-0",
-				open &&
-					"w-dvw h-dvh backdrop-blur-[20px] bg-transparent bg-gradient-to-b  from-[rgba(215_208_255/0.2)_0%] to-[rgba(203_221_255/0.5)_100%] opacity-100",
-			)}
-			open={open}
-			{...props}
-		>
-			<DialogTitle title={title} onClose={onClose} titleIcon={titleIcon} />
-			{children}
-		</dialog>
-	),
+	({ open, titleIcon, title, className, onClose, children, ...props }, ref) => {
+		const handleOutsideClick: MouseEventHandler = (event) => {
+			event.preventDefault();
+			if (event.target === event.currentTarget) {
+				onClose();
+			}
+		};
+
+		return (
+			// biome-ignore lint/a11y/useKeyWithClickEvents: it should be closed by clicking outside
+			<div
+				onClick={handleOutsideClick}
+				className={twMerge(
+					"grid transition-[grid-template-rows_filter] grid-rows-[0fr] fixed top-1/2 left-1/2 z-50 overflow-hidden w-0 h-0 duration-500 content-center",
+					open &&
+						"grid-rows-[1fr] w-dvw h-dvh backdrop-blur-[20px] bg-gradient-to-b  from-[rgba(215_208_255/0.2)_0%] to-[rgba(203_221_255/0.5)_100%] left-0 top-0",
+				)}
+			>
+				<dialog
+					ref={ref}
+					role={ROLES.dialog}
+					className={twMerge(
+						"grid gap-7 content-center justify-center min-h-0 relative bg-transparent",
+						className,
+						!open && "hidden",
+					)}
+					open={open}
+					{...props}
+				>
+					<DialogTitle title={title} onClose={onClose} titleIcon={titleIcon} />
+					{children}
+				</dialog>
+			</div>
+		);
+	},
 );
 
 Dialog.displayName = "Dialog";

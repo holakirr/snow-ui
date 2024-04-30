@@ -2,11 +2,12 @@ import { Button, Card, Dialog } from "@components";
 import { ROLES } from "@constants";
 import { iconControl } from "@mocks";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, userEvent, within } from "@storybook/test";
+import { expect, fn, userEvent, within } from "@storybook/test";
 import { useState } from "react";
 
 const testTitle = "Title";
 const openButtonLabel = "Open Dialog";
+const testCloseFn = fn();
 
 const meta = {
 	title: "Base Components/Dialog/Dialog",
@@ -30,6 +31,7 @@ const meta = {
 		titleIcon: undefined,
 		title: testTitle,
 		open: true,
+		onClose: testCloseFn,
 		children: (
 			<Card className="w-96">
 				<div className="p-4">
@@ -44,6 +46,7 @@ const meta = {
 			console.log("close");
 
 			setShow(false);
+			args.onClose();
 		};
 
 		return (
@@ -79,10 +82,11 @@ export const BasicDialog: Story = {
 
 		await userEvent.click(closeButton);
 
-		expect(dialog).toHaveClass("h-0 opacity-0");
+		expect(dialog).not.toBeVisible();
+		expect(testCloseFn).toHaveBeenCalledOnce();
 
 		await userEvent.click(openButton);
 
-		expect(dialog).toHaveClass("opacity-100");
+		expect(dialog).toBeVisible();
 	},
 };

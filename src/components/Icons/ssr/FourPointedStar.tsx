@@ -1,6 +1,7 @@
-import { CustomIconBase, FourPointedStarWeights } from "@components";
 import type { CustomIconProps } from "@types";
 import { forwardRef } from "react";
+import { FourPointedStarWeights } from "../defs";
+import { CustomIconBase } from "../lib";
 
 const FourPointedStarIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

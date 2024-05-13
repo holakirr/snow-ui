@@ -1,6 +1,7 @@
-import { CustomIconBase, WindowedWeights } from "@components";
 import type { CustomIconProps } from "@types";
 import { forwardRef } from "react";
+import { WindowedWeights } from "../defs";
+import { CustomIconBase } from "../lib";
 
 const WindowedIcon = forwardRef<SVGSVGElement, CustomIconProps>(
 	(props, ref) => (

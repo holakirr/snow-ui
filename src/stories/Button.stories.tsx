@@ -60,42 +60,6 @@ export const Borderless: Story = {
 	},
 };
 
-export const Small: Story = {
-	args: {
-		size: SIZES.sm,
-	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const button = canvas.getByRole(ROLES.button);
-
-		expect(button).toHaveClass("py-1 px-2 rounded-lg gap-1");
-	},
-};
-
-export const Medium: Story = {
-	args: {
-		size: SIZES.md,
-	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const button = canvas.getByRole(ROLES.button);
-
-		expect(button).toHaveClass("py-2 px-4 rounded-xl gap-2");
-	},
-};
-
-export const Large: Story = {
-	args: {
-		size: SIZES.lg,
-	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const button = canvas.getByRole(ROLES.button);
-
-		expect(button).toHaveClass("py-4 px-6 rounded-2xl gap-2");
-	},
-};
-
 export const Gray: Story = {
 	args: {
 		variant: "gray",
@@ -131,6 +95,42 @@ export const Filled: Story = {
 		const button = canvas.getByRole(ROLES.button);
 
 		expect(button).toHaveClass("bg-primary-brand text-white-100");
+	},
+};
+
+export const Small: Story = {
+	args: {
+		size: SIZES.sm,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const button = canvas.getByRole(ROLES.button);
+
+		expect(button).toHaveClass("py-1 px-2 rounded-lg gap-1");
+	},
+};
+
+export const Medium: Story = {
+	args: {
+		size: SIZES.md,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const button = canvas.getByRole(ROLES.button);
+
+		expect(button).toHaveClass("py-2 px-4 rounded-xl gap-2");
+	},
+};
+
+export const Large: Story = {
+	args: {
+		size: SIZES.lg,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const button = canvas.getByRole(ROLES.button);
+
+		expect(button).toHaveClass("py-4 px-6 rounded-2xl gap-2");
 	},
 };
 
@@ -191,12 +191,27 @@ export const Disabled: Story = {
 	},
 };
 
-export const LargeIconButton: Story = {
+export const IconButton: Story = {
 	args: {
 		variant: "filled",
 		size: SIZES.lg,
 		leftIcon: FourLeafCloverIcon,
 		label: undefined,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const icon = canvas.getByTitle("Left icon in button undefined");
+
+		expect(icon).toBeInTheDocument();
+	},
+};
+
+export const DoubleIconButton: Story = {
+	args: {
+		variant: "filled",
+		leftIcon: FourLeafCloverIcon,
+		label: undefined,
+		rightIcon: ArrowLineDownIcon,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);

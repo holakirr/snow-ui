@@ -4,7 +4,7 @@ import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 type TagProps = ComponentProps<"div"> & {
-	label: string;
+	label: string | number;
 	textSize?: TextSize;
 	withDot?: boolean;
 	onClose?: () => void;

@@ -1,4 +1,4 @@
-import { Text } from "@components";
+import { Text, type TextSize } from "@components";
 import { ROLES } from "@constants";
 import type { Icon } from "@phosphor-icons/react";
 import type { CustomIcon } from "@types";
@@ -11,6 +11,7 @@ type ButtonProps = VariantProps<typeof buttonStyles> &
 		label?: string;
 		rightIcon?: Icon | CustomIcon;
 		leftIcon?: Icon | CustomIcon;
+		textSize?: TextSize;
 	};
 
 const buttonStyles = cva(
@@ -58,6 +59,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			size = "sm",
 			className,
 			label,
+			textSize,
 			leftIcon: LeftIcon,
 			rightIcon: RightIcon,
 			...props
@@ -69,8 +71,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			type="button"
 			title={label || "Button title"}
 			className={twMerge(
-				buttonStyles({ variant, size, className }),
+				buttonStyles({ variant, size }),
 				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
+				className,
 			)}
 			role={ROLES.button}
 			aria-label={label || "Button aria label"}
@@ -83,7 +86,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 				/>
 			)}
 			{label && (
-				<Text size={size === "sm" ? 14 : 18} className="group-hover:px-1">
+				<Text
+					size={textSize ? textSize : size === "sm" ? 14 : 18}
+					className="group-hover:px-1"
+				>
 					{label}
 				</Text>
 			)}

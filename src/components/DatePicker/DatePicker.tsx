@@ -1,6 +1,5 @@
-import { getDate } from "@helpers";
-import type { Dayjs } from "dayjs";
-import dayjs from "dayjs";
+import type { DatePickerChangeType } from "@types";
+import dayjs, { type Dayjs } from "dayjs";
 import { twMerge } from "tailwind-merge";
 import { Button } from "../Button";
 import { ArrowLineLeftIcon, ArrowLineRightIcon } from "../Icons";
@@ -9,86 +8,30 @@ import { Text } from "../Text";
 
 type DatePickerProps = React.ComponentProps<"div"> & {
 	dateTime: string;
+	dateTimeTo?: string;
+	changingType?: DatePickerChangeType;
+	changingToOrFrom?: "to" | "from";
+	withRange?: boolean;
+	withTime?: boolean;
+	lastSelection?: string;
+	onSelectDate: (date: string) => string;
+	onTypeChange: (type: DatePickerChangeType) => DatePickerChangeType;
+	onToOrFromChange?: (toOrFrom: "to" | "from") => "to" | "from";
+	onMonthChange: (month: number) => number;
 };
 
-const DateTag = ({ label }: { label: string | number }) => (
-	<Tag label={label} textSize={14} className="py-0.5 px-1 bg-transparent" />
-);
-
-const Head = ({ date }: { date: Dayjs }) => {
-	const dateTime = date.toISOString();
-	const { day, month, year, hour, minute, AMPM } = getDate(date);
-
-	return (
-		<div className="w-full flex gap-2 justify-between border-b border-black-10 p-4">
-			<div className="flex gap-3 items-center">
-				<Text
-					as="time"
-					dateTime={dateTime}
-					className="inline-flex items-center w-min"
-					size={14}
-				>
-					<DateTag label={day} />
-					<Text as="span" size={14} className="text-black-20">
-						/
-					</Text>
-					<DateTag label={month + 1} />
-					<Text as="span" size={14} className="text-black-20">
-						/
-					</Text>
-					<DateTag label={year} />
-				</Text>
-				<Text as="span" size={14} className="text-black-20">
-					-
-				</Text>
-				<Text
-					as="time"
-					dateTime={dateTime}
-					className="inline-flex items-center w-min"
-					size={14}
-				>
-					<DateTag label={day} />
-					<Text as="span" size={14} className="text-black-20">
-						/
-					</Text>
-					<DateTag label={month + 1} />
-					<Text as="span" size={14} className="text-black-20">
-						/
-					</Text>
-					<DateTag label={year} />
-				</Text>
-			</div>
-			<Text
-				as="time"
-				dateTime={dateTime}
-				className="inline-flex items-center w-min"
-				size={14}
-			>
-				<DateTag label={hour.toLocaleString("en-US")} />
-				<Text as="span" size={14} className="text-black-100">
-					:
-				</Text>
-				<DateTag label={minute} />
-				<DateTag label={AMPM} />
-			</Text>
-		</div>
-	);
-};
-
-const SubHead = () => (
-	<div className="flex justify-between px-4 pt-4">
-		<div className="flex gap-2 items-center">
-			<Tag label="Today" />
-			<Tag label="Last selection" />
-		</div>
-		<div className="flex gap-2 items-center">
-			<Button leftIcon={ArrowLineLeftIcon} size="md" />
-			<Text as="span" size={12}>
-				Feb
-			</Text>
-			<Button leftIcon={ArrowLineRightIcon} size="md" />
-		</div>
-	</div>
+const TypeTag = ({
+	label,
+	isChanging,
+}: { label: string | number; isChanging?: boolean }) => (
+	<Tag
+		label={label}
+		textSize={14}
+		className={twMerge(
+			"py-0.5 px-1 bg-transparent",
+			isChanging && "bg-black-10",
+		)}
+	/>
 );
 
 const TH = ({ children }: { children: string }) => (
@@ -182,8 +125,84 @@ const Body = () => (
 	</div>
 );
 
-const DatePicker = ({ className, dateTime, ...props }: DatePickerProps) => {
+const DateSelector = ({
+	date,
+	changingType,
+	isActive,
+}: {
+	date: Dayjs;
+	changingType?: DatePickerChangeType;
+	isActive?: boolean;
+}) => (
+	<Text
+		as="time"
+		dateTime={date.format("DD/MM/YYYY")}
+		className={twMerge(
+			"inline-flex items-center w-min",
+			!isActive && "opacity-20",
+		)}
+		size={14}
+	>
+		<TypeTag
+			label={date.format("DD")}
+			isChanging={changingType === "day" && isActive}
+		/>
+		<Text as="span" size={14} className="text-black-20">
+			/
+		</Text>
+		<TypeTag
+			label={date.format("MM")}
+			isChanging={changingType === "month" && isActive}
+		/>
+		<Text as="span" size={14} className="text-black-20">
+			/
+		</Text>
+		<TypeTag
+			label={date.format("YYYY")}
+			isChanging={changingType === "year" && isActive}
+		/>
+	</Text>
+);
+
+const TimeSelector = ({
+	date,
+	changingType,
+}: {
+	date: Dayjs;
+	changingType?: DatePickerChangeType;
+}) => (
+	<Text
+		as="time"
+		dateTime={date.format("hh:mm A")}
+		className="inline-flex items-center w-min"
+		size={14}
+	>
+		<TypeTag label={date.format("hh")} isChanging={changingType === "hour"} />
+		<Text as="span" size={14} className="text-black-20">
+			:
+		</Text>
+		<TypeTag label={date.format("mm")} isChanging={changingType === "minute"} />
+		<TypeTag label={date.format("A")} isChanging={changingType === "am/pm"} />
+	</Text>
+);
+
+const DatePicker = ({
+	className,
+	dateTime,
+	dateTimeTo,
+	changingType,
+	changingToOrFrom,
+	withRange,
+	withTime,
+	lastSelection,
+	onSelectDate,
+	onTypeChange,
+	onToOrFromChange,
+	onMonthChange,
+	...props
+}: DatePickerProps) => {
 	const date = dayjs(dateTime);
+
 	return (
 		<div
 			className={twMerge(
@@ -192,8 +211,54 @@ const DatePicker = ({ className, dateTime, ...props }: DatePickerProps) => {
 			)}
 			{...props}
 		>
-			<Head date={date} />
-			<SubHead />
+			<div className="w-full flex gap-2 justify-between border-b border-black-10 p-4">
+				<div className="flex gap-3 items-center">
+					<DateSelector
+						date={date}
+						changingType={changingType}
+						isActive={changingToOrFrom === "from"}
+					/>
+					{withRange && (
+						<>
+							<Text as="span" size={14} className="text-black-20">
+								-
+							</Text>
+							<DateSelector
+								date={dayjs(dateTimeTo)}
+								changingType={changingType}
+								isActive={changingToOrFrom === "to"}
+							/>
+						</>
+					)}
+				</div>
+				{withTime && <TimeSelector date={date} changingType={changingType} />}
+			</div>
+			<div className="flex justify-between px-4 pt-4">
+				<div className="flex gap-2 items-center">
+					<Tag label="Today" onClick={() => onSelectDate(dayjs().format())} />
+					{lastSelection && (
+						<Tag
+							label="Last selection"
+							onClick={() => onSelectDate(lastSelection)}
+						/>
+					)}
+				</div>
+				<div className="flex gap-2 items-center">
+					<Button
+						leftIcon={ArrowLineLeftIcon}
+						size="md"
+						onClick={() => onMonthChange(date.month() - 1)}
+					/>
+					<Text as="span" size={12}>
+						{date.format("MMM")}
+					</Text>
+					<Button
+						leftIcon={ArrowLineRightIcon}
+						size="md"
+						onClick={() => onMonthChange(date.month() + 1)}
+					/>
+				</div>
+			</div>
 			<Body />
 		</div>
 	);

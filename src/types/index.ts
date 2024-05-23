@@ -51,10 +51,4 @@ export type ModifiedNavigationItemType = NavigationItemType & {
 	active?: boolean;
 };
 
-export type DatePickerChangeType =
-	| "day"
-	| "month"
-	| "year"
-	| "hour"
-	| "minute"
-	| "am/pm";
+export type DateTypeEnum = "date" | "month" | "year" | "hours" | "minutes";

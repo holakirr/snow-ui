@@ -8,7 +8,7 @@ import { twMerge } from "tailwind-merge";
 
 type ButtonProps = VariantProps<typeof buttonStyles> &
 	ComponentProps<"button"> & {
-		label?: string;
+		label?: string | number;
 		rightIcon?: Icon | CustomIcon;
 		leftIcon?: Icon | CustomIcon;
 		textSize?: TextSize;
@@ -69,14 +69,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 		<button
 			ref={ref}
 			type="button"
-			title={label || "Button title"}
+			title={label?.toString() || "Button title"}
 			className={twMerge(
 				buttonStyles({ variant, size }),
 				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
 				className,
 			)}
 			role={ROLES.button}
-			aria-label={label || "Button aria label"}
+			aria-label={label?.toString() || "Button aria label"}
 			{...props}
 		>
 			{LeftIcon && (
@@ -88,7 +88,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			{label && (
 				<Text
 					size={textSize ? textSize : size === "sm" ? 14 : 18}
-					className="group-hover:px-1"
+					className="group-hover:px-1 text-center"
 				>
 					{label}
 				</Text>

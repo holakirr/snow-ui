@@ -38,7 +38,7 @@ export type PolimorphicComponentPropsWithRef<
 	Props = unknown,
 > = PolimorphicComponentProps<C, Props> & { ref?: PolimorphicRef<C> };
 
-const textStyles = cva(["w-full font-normal transition-all font-['Inter']"], {
+const textStyles = cva(["font-normal transition-all font-['Inter']"], {
 	variants: {
 		size: {
 			64: "text-[4rem] leading-[4.875rem]",

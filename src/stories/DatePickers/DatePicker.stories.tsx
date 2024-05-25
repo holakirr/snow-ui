@@ -9,7 +9,7 @@ const onMonthChangeTest = fn((month) => console.log("New month is: ", month));
 const onYearChangeTest = fn((year) => console.log("New year is: ", year));
 
 const meta: Meta<typeof DatePicker> = {
-	title: "Widgets/DatePicker",
+	title: "Widgets/Date Picker",
 	component: DatePicker,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
@@ -21,7 +21,7 @@ const meta: Meta<typeof DatePicker> = {
 	argTypes: {},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		selected: new Date("2024-05-13T04:13:42.055"),
+		selected: new Date(2024, 4, 13, 14, 32),
 		displayMonth: new Date().getMonth(),
 		onDateSelect: onDateSelectTest,
 		onTypeChange: onTypeChangeTest,
@@ -79,7 +79,7 @@ export const DatePickerWithTime: Story = {
 export const DatePickerWithAllProps: Story = {
 	args: {
 		displayYear: 2024,
-		startOfWeek: 2,
+		startOfWeek: 1,
 		changingType: "date",
 		withTime: true,
 		lastSelection: new Date("2024-05-13T04:13:42.055Z"),

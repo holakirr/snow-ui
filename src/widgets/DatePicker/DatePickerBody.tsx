@@ -39,11 +39,12 @@ export const DatePickerBody = ({
 			return (
 				<DateView
 					current={now}
-					date={date}
+					selected={date}
 					displayMonth={displayMonth}
 					displayYear={displayYear}
 					startOfWeek={startOfWeek}
 					dateLimits={dateLimits}
+					lastSelection={lastSelection}
 					onDateSelect={onDateSelect}
 					onMonthChange={onMonthChange}
 				/>
@@ -55,6 +56,9 @@ export const DatePickerBody = ({
 					selected={date}
 					displayYear={displayYear}
 					dateLimits={dateLimits}
+					lastSelection={lastSelection}
+					onYearChange={onYearChange}
+					onDateSelect={onDateSelect}
 					onTypeChange={onTypeChange}
 					onMonthSelect={(month) => {
 						onMonthChange(month);
@@ -68,9 +72,6 @@ export const DatePickerBody = ({
 							),
 						);
 					}}
-					lastSelection={lastSelection}
-					onYearChange={onYearChange}
-					onDateSelect={onDateSelect}
 				/>
 			);
 

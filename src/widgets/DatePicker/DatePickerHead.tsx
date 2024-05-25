@@ -16,16 +16,17 @@ export const DatePickerHead = ({
 	withTime,
 	onTypeChange,
 }: DatePickerHeadProps) => {
-	const dateTime = new Intl.DateTimeFormat(["ban", "id"], {
-		year: "numeric",
-		month: "2-digit",
+	const dateString = date.toLocaleDateString("en-US", {
 		day: "2-digit",
+		month: "2-digit",
+		year: "numeric",
+	});
+	const timeString = date.toLocaleTimeString("en-US", {
 		hour: "2-digit",
 		minute: "2-digit",
 		hour12: true,
-	}).format(date);
-	const dateString = dateTime.split(", ")[0];
-	const timeString = dateTime.split(", ")[1];
+	});
+	const dateTime = `${dateString}T${timeString}`;
 
 	return (
 		<div className="w-full flex justify-between border-b border-black-10 p-4">
@@ -76,8 +77,7 @@ export const DatePickerHead = ({
 						label={timeString}
 						className={twMerge(
 							"py-0.5 px-1 bg-transparent text-nowrap rounded-[4px]",
-							(changingType === "hours" || changingType === "minutes") &&
-								"bg-black-10",
+							["hours", "minutes"].includes(changingType) && "bg-black-10",
 						)}
 						onClick={() => onTypeChange("hours")}
 					/>

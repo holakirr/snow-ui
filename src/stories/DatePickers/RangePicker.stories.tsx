@@ -11,7 +11,7 @@ const onFromOrToChangeTest = fn((toOrFrom) =>
 const onYearChangeTest = fn((year) => console.log("New year is: ", year));
 
 const meta: Meta<typeof RangePicker> = {
-	title: "Widgets/RangePicker",
+	title: "Widgets/Range Picker",
 	component: RangePicker,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

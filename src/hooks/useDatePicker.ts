@@ -17,56 +17,28 @@ const getNewSelected = (
 	dateLimits?: [Date, Date],
 ) => {
 	if (dateLimits) {
-		if (newDate.valueOf() < dateLimits[0].valueOf()) {
-			return dateLimits[0];
+		const [minDate, maxDate] = dateLimits;
+		if (newDate.valueOf() < minDate.valueOf()) {
+			return minDate;
 		}
-		if (newDate.valueOf() > dateLimits[1].valueOf()) {
-			return dateLimits[1];
+		if (newDate.valueOf() > maxDate.valueOf()) {
+			return maxDate;
 		}
 	}
 
-	switch (changingType) {
-		case "date":
-			return new Date(
-				newDate.getFullYear(),
-				newDate.getMonth(),
-				newDate.getDate(),
-				changingDate.getHours(),
-				changingDate.getMinutes(),
-			);
-		case "month":
-			return new Date(
-				newDate.getFullYear(),
-				newDate.getMonth(),
-				changingDate.getDate(),
-				changingDate.getHours(),
-				changingDate.getMinutes(),
-			);
-		case "year":
-			return new Date(
-				newDate.getFullYear(),
-				changingDate.getMonth(),
-				changingDate.getDate(),
-				changingDate.getHours(),
-				changingDate.getMinutes(),
-			);
-		case "hours":
-			return new Date(
-				changingDate.getFullYear(),
-				changingDate.getMonth(),
-				changingDate.getDate(),
-				newDate.getHours(),
-				changingDate.getMinutes(),
-			);
-		case "minutes":
-			return new Date(
-				changingDate.getFullYear(),
-				changingDate.getMonth(),
-				changingDate.getDate(),
-				changingDate.getHours(),
-				newDate.getMinutes(),
-			);
-	}
+	return new Date(
+		["year", "month", "date"].includes(changingType)
+			? newDate.getFullYear()
+			: changingDate.getFullYear(),
+		["month", "date"].includes(changingType)
+			? newDate.getMonth()
+			: changingDate.getMonth(),
+		changingType === "date" ? newDate.getDate() : changingDate.getDate(),
+		changingType === "hours" ? newDate.getHours() : changingDate.getHours(),
+		changingType === "minutes"
+			? newDate.getMinutes()
+			: changingDate.getMinutes(),
+	);
 };
 
 export const useDatePicker = (
@@ -87,14 +59,10 @@ export const useDatePicker = (
 		...props,
 		displayMonth: props.displayMonth
 			? props.displayMonth
-			: Array.isArray(props.selected)
-				? props.selected[0].getMonth()
-				: props.selected.getMonth(),
+			: props.selected.getMonth(),
 		displayYear: props.displayYear
 			? props.displayYear
-			: Array.isArray(props.selected)
-				? props.selected[0].getFullYear()
-				: props.selected.getFullYear(),
+			: props.selected.getFullYear(),
 	});
 	const {
 		selected,
@@ -108,12 +76,11 @@ export const useDatePicker = (
 	} = datePickerState;
 
 	const setSelected = (date: Date) => {
-		const newDate = getNewSelected(selected, date, changingType, dateLimits);
 		return setDatePickerState((prev) => ({
 			...prev,
-			selected: newDate,
-			displayMonth: newDate.getMonth(),
-			displayYear: newDate.getFullYear(),
+			selected: date,
+			displayMonth: date.getMonth(),
+			displayYear: date.getFullYear(),
 		}));
 	};
 	const setDisplayMonth = (month: number) =>
@@ -138,7 +105,8 @@ export const useDatePicker = (
 			displayYear: year,
 		}));
 
-	const onDateSelect = (newDate: Date) => {
+	const onDateSelect = (date: Date) => {
+		const newDate = getNewSelected(selected, date, changingType, dateLimits);
 		setSelected(newDate);
 
 		if (props.onDateSelect) props.onDateSelect(newDate);

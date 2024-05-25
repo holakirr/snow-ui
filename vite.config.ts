@@ -21,6 +21,7 @@ export default defineConfig({
 			"@helpers": resolve(__dirname, "src/helpers"),
 			"@hooks": resolve(__dirname, "src/hooks"),
 			"@types": resolve(__dirname, "src/types"),
+			"@widgets": resolve(__dirname, "src/widgets"),
 		},
 	},
 	build: {

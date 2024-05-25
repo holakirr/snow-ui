@@ -1,5 +1,5 @@
-import type { DatePickerProps } from "@components";
 import type { DateTypeEnum } from "@types";
+import type { DatePickerProps } from "@widgets";
 import { useState } from "react";
 
 const initialDatePickerState = {

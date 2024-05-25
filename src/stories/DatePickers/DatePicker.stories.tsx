@@ -79,7 +79,7 @@ export const DatePickerWithTime: Story = {
 export const DatePickerWithAllProps: Story = {
 	args: {
 		displayYear: 2024,
-		startOfWeek: 1,
+		startOfWeek: 2,
 		changingType: "date",
 		withTime: true,
 		lastSelection: new Date("2024-05-13T04:13:42.055Z"),

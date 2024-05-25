@@ -1,8 +1,8 @@
+import { twMerge } from "tailwind-merge";
 import { Button } from "../../Button";
 import { ArrowLineLeftIcon, ArrowLineRightIcon } from "../../Icons";
 import { Text } from "../../Text";
 import { DatePickerTag } from "./DatePickerTag";
-import { DayContent } from "./DayContent";
 
 type MonthProps = {
 	current: Date;
@@ -30,8 +30,17 @@ export const DateView = ({
 	const hour = date.getHours();
 	const minute = date.getMinutes();
 	const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
-	const firstDay = new Date(displayYear, displayMonth, 1).getDay();
-	const lastDay = new Date(displayYear, displayMonth, daysInMonth).getDay();
+	const firstDayOfWeek = new Date(displayYear, displayMonth, 1).getDay();
+	const lastDayOfWeek = new Date(
+		displayYear,
+		displayMonth,
+		daysInMonth,
+	).getDay();
+	const currentDay = new Date(
+		current.getFullYear(),
+		current.getMonth(),
+		current.getDate(),
+	);
 
 	const weekDays = Array.from({ length: 7 }, (_, i) =>
 		Intl.DateTimeFormat("en-US", {
@@ -40,17 +49,12 @@ export const DateView = ({
 			.format(new Date(0, 0, i + startOfWeek))
 			.slice(0, 2),
 	);
-	const prevDays = Array.from(
-		{ length: (7 + firstDay - startOfWeek) % 7 },
-		(_, i) => new Date(displayYear, displayMonth, -i, hour, minute),
-	).reverse();
-	const currDays = Array.from(
-		{ length: daysInMonth },
-		(_, i) => new Date(displayYear, displayMonth, i + 1, hour, minute),
-	);
-	const nextDays = Array.from(
-		{ length: (6 - lastDay + startOfWeek) % 7 },
-		(_, i) => new Date(displayYear, displayMonth + 1, i + 1, hour, minute),
+	const days = Array.from(
+		{ length: daysInMonth + firstDayOfWeek + (7 - lastDayOfWeek - 1) },
+		(_, i) => {
+			const day = i - firstDayOfWeek + 1 + startOfWeek;
+			return new Date(displayYear, displayMonth, day);
+		},
 	);
 
 	return (
@@ -98,50 +102,52 @@ export const DateView = ({
 							{weekDay}
 						</Text>
 					))}
-					{prevDays.map((day) => (
-						<DayContent
-							current={current}
-							key={day.toDateString()}
-							day={day}
-							isDisabled={
-								dateLimits &&
-								(day.valueOf() < dateLimits[0].valueOf() ||
-									day.valueOf() > dateLimits[1].valueOf())
-							}
-							date={date}
-							isOutOfMonth
-							onClick={() => onMonthChange(displayMonth - 1)}
-						/>
-					))}
-					{currDays.map((day) => (
-						<DayContent
-							current={current}
-							key={day.toDateString()}
-							day={day}
-							date={date}
-							isDisabled={
-								dateLimits &&
-								(day.valueOf() < dateLimits[0].valueOf() ||
-									day.valueOf() > dateLimits[1].valueOf())
-							}
-							onClick={onDateSelect}
-						/>
-					))}
-					{nextDays.map((day) => (
-						<DayContent
-							current={current}
-							key={day.toDateString()}
-							day={day}
-							date={date}
-							isDisabled={
-								dateLimits &&
-								(day.valueOf() < dateLimits[0].valueOf() ||
-									day.valueOf() > dateLimits[1].valueOf())
-							}
-							isOutOfMonth
-							onClick={() => onMonthChange(displayMonth + 1)}
-						/>
-					))}
+					{days.map((day) => {
+						const isToday = currentDay.valueOf() === day.valueOf();
+						const isSelected =
+							new Date(
+								date.getFullYear(),
+								date.getMonth(),
+								date.getDate(),
+							).valueOf() === day.valueOf();
+						const isOutOfMonth =
+							day.getMonth() !== displayMonth ||
+							day.getFullYear() !== displayYear;
+						const dateTime = day.toDateString();
+						return (
+							<Button
+								key={day.toDateString()}
+								tabIndex={0}
+								label={day.getDate()}
+								textSize={12}
+								variant={isSelected ? "filled" : "borderless"}
+								title={dateTime}
+								aria-label={dateTime}
+								disabled={
+									dateLimits &&
+									(day.valueOf() < dateLimits[0].valueOf() ||
+										day.valueOf() > dateLimits[1].valueOf())
+								}
+								className={twMerge(
+									"rounded-xl hover:bg-black-5 hover:text-black-100",
+									isToday && !isSelected && "bg-secondary-purple",
+									isOutOfMonth && "opacity-40",
+									isSelected && "rounded-xl",
+								)}
+								onClick={() =>
+									onDateSelect(
+										new Date(
+											displayYear,
+											displayMonth,
+											day.getDate(),
+											hour,
+											minute,
+										),
+									)
+								}
+							/>
+						);
+					})}
 				</div>
 			</div>
 		</div>

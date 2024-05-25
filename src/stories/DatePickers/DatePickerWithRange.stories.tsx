@@ -1,7 +1,7 @@
 import { DatePicker } from "@components";
+import { useDatePicker } from "@hooks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-import { useDatePicker } from "../hooks/useDatePicker";
 
 const onDateSelectTest = fn((date) => console.log("Selected date is: ", date));
 const onTypeChangeTest = fn((type) => console.log("Selected type is: ", type));
@@ -12,7 +12,7 @@ const onFromOrToChangeTest = fn((toOrFrom) =>
 const onYearChangeTest = fn((year) => console.log("New year is: ", year));
 
 const meta: Meta<typeof DatePicker> = {
-	title: "Base Components/DatePicker",
+	title: "Base Components/DatePickers/DatePickerWithRange",
 	component: DatePicker,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

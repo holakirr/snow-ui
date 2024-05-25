@@ -1,31 +1,32 @@
 import { twMerge } from "tailwind-merge";
-import { Button } from "../Button";
+import { Button } from "../../Button";
 
 type DayContentProps = {
+	current: Date;
 	day: Date;
 	date: Date;
-	rangeEnd?: Date;
 	isDisabled?: boolean;
 	isOutOfMonth?: boolean;
 	onClick: (day: Date) => void;
 };
 
 export const DayContent = ({
+	current,
 	day,
 	date,
-	rangeEnd,
 	isDisabled,
 	isOutOfMonth,
 	onClick,
 }: DayContentProps) => {
 	const dateTime = day.toDateString();
-	const isToday = new Date().toDateString() === dateTime;
-	const inRange = rangeEnd && day > date && day < rangeEnd;
-	const isRangeStart = day.toDateString() === date.toDateString();
-	const isRangeEnd = rangeEnd
-		? day.toDateString() === rangeEnd.toDateString()
-		: day.toDateString() === date.toDateString();
-	const selected = inRange || isRangeStart || isRangeEnd;
+	const isToday =
+		new Date(
+			current.getFullYear(),
+			current.getMonth(),
+			current.getDate(),
+		).valueOf() ===
+		new Date(day.getFullYear(), day.getMonth(), day.getDate()).valueOf();
+	const selected = day.toDateString() === date.toDateString();
 
 	return (
 		<Button
@@ -41,9 +42,7 @@ export const DayContent = ({
 				"rounded-xl hover:bg-black-5 hover:text-black-100",
 				isToday && !selected && "bg-secondary-purple",
 				isOutOfMonth && "opacity-40",
-				selected && "rounded-none",
-				isRangeStart && "rounded-l-xl",
-				isRangeEnd && "rounded-r-xl",
+				selected && "rounded-xl",
 			)}
 		/>
 	);

@@ -1,4 +1,3 @@
-import MillionLint from "@million/lint";
 import react from "@vitejs/plugin-react";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
@@ -10,7 +9,6 @@ const plugins = [
 		rollupTypes: true,
 	}),
 ];
-plugins.unshift(MillionLint.vite());
 
 export default defineConfig({
 	plugins: plugins,

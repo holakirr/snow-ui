@@ -1,7 +1,7 @@
 import type { DateTypeEnum } from "@types";
 import { twMerge } from "tailwind-merge";
-import { Tag } from "../Tag";
-import { Text } from "../Text";
+import { Tag } from "../../Tag";
+import { Text } from "../../Text";
 
 type DateSelectorProps = {
 	date: Date;

@@ -5,7 +5,6 @@ import { useState } from "react";
 const initialDatePickerState = {
 	startOfWeek: 1,
 	changingType: "date",
-	changingFromOrTo: "from",
 	withTime: false,
 	lastSelection: undefined,
 	dateLimits: undefined,
@@ -103,29 +102,20 @@ export const useDatePicker = (
 		displayYear,
 		startOfWeek,
 		changingType,
-		changingFromOrTo,
 		withTime,
 		lastSelection,
 		dateLimits,
 	} = datePickerState;
 
-	const setSelected = (date: Date, fromOrTo?: "from" | "to") =>
-		setDatePickerState((prev) => ({
+	const setSelected = (date: Date) => {
+		const newDate = getNewSelected(selected, date, changingType, dateLimits);
+		return setDatePickerState((prev) => ({
 			...prev,
-			selected: Array.isArray(prev.selected)
-				? fromOrTo === "from"
-					? [
-							getNewSelected(prev.selected[0], date, changingType, dateLimits),
-							prev.selected[1],
-						]
-					: [
-							prev.selected[0],
-							getNewSelected(prev.selected[1], date, changingType, dateLimits),
-						]
-				: getNewSelected(prev.selected, date, changingType, dateLimits),
-			displayMonth: date.getMonth(),
-			displayYear: date.getFullYear(),
+			selected: newDate,
+			displayMonth: newDate.getMonth(),
+			displayYear: newDate.getFullYear(),
 		}));
+	};
 	const setDisplayMonth = (month: number) =>
 		setDatePickerState((prev) => ({
 			...prev,
@@ -142,19 +132,6 @@ export const useDatePicker = (
 			...prev,
 			changingType: type,
 		}));
-	const setFromOrTo = (fromOrTo: "from" | "to") => {
-		const newDisplayDate = Array.isArray(selected)
-			? fromOrTo === "from"
-				? selected[0]
-				: selected[1]
-			: selected;
-		return setDatePickerState((prev) => ({
-			...prev,
-			changingFromOrTo: fromOrTo,
-			displayMonth: newDisplayDate.getMonth(),
-			displayYear: newDisplayDate.getFullYear(),
-		}));
-	};
 	const setDisplayYear = (year: number) =>
 		setDatePickerState((prev) => ({
 			...prev,
@@ -162,25 +139,7 @@ export const useDatePicker = (
 		}));
 
 	const onDateSelect = (newDate: Date) => {
-		if (Array.isArray(selected)) {
-			const newDateValue = newDate.valueOf();
-			if (changingFromOrTo === "from") {
-				if (newDateValue === selected[0].valueOf()) {
-					setFromOrTo("to");
-				}
-				setSelected(newDate, "from");
-				if (newDateValue >= selected[1].valueOf()) {
-					setSelected(newDate, "to");
-				}
-			} else {
-				setSelected(newDate, "to");
-				if (newDateValue <= selected[0].valueOf()) {
-					setSelected(newDate, "from");
-				}
-			}
-		} else {
-			setSelected(newDate);
-		}
+		setSelected(newDate);
 
 		if (props.onDateSelect) props.onDateSelect(newDate);
 	};
@@ -194,11 +153,6 @@ export const useDatePicker = (
 
 		if (props.onTypeChange) props.onTypeChange(type);
 	};
-	const onFromOrToChange = (changingFromOrTo: "from" | "to") => {
-		setFromOrTo(changingFromOrTo);
-
-		if (props.onFromOrToChange) props.onFromOrToChange(changingFromOrTo);
-	};
 	const onDisplayYearChange = (year: number) => {
 		setDisplayYear(year);
 
@@ -211,7 +165,6 @@ export const useDatePicker = (
 		displayYear,
 		startOfWeek,
 		changingType,
-		changingFromOrTo,
 		withTime,
 		lastSelection,
 		dateLimits,
@@ -219,6 +172,5 @@ export const useDatePicker = (
 		onTypeChange,
 		onDisplayMonthChange,
 		onDisplayYearChange,
-		onFromOrToChange,
 	};
 };

@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
-import { Tag } from "../Tag";
-import { Text } from "../Text";
+import { Tag } from "../../Tag";
+import { Text } from "../../Text";
 
 type TimeSelectorProps = {
 	date: Date;

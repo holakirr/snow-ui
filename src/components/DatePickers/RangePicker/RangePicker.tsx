@@ -1,9 +1,9 @@
 import type { DateTypeEnum } from "@types";
 import { twMerge } from "tailwind-merge";
-import { DatePickerBody } from "./DatePickerBody";
-import { DatePickerHead } from "./DatePickerHead";
+import { DatePickerBody } from "./RangePickerBody";
+import { DatePickerHead } from "./RangePickerHead";
 
-export type DatePickerProps = React.ComponentProps<"div"> & {
+export type RangePickerProps = React.ComponentProps<"div"> & {
 	selected: Date | Date[];
 	displayMonth: number;
 	displayYear: number;
@@ -20,7 +20,7 @@ export type DatePickerProps = React.ComponentProps<"div"> & {
 	onFromOrToChange?: (fromOrTo: "from" | "to") => void;
 };
 
-const DatePicker = ({
+const RangePicker = ({
 	selected,
 	displayMonth,
 	displayYear,
@@ -37,7 +37,7 @@ const DatePicker = ({
 	onDisplayYearChange: onYearChange,
 	className,
 	...props
-}: DatePickerProps) => {
+}: RangePickerProps) => {
 	let date: Date;
 	let rangeEnd: Date | undefined;
 
@@ -84,5 +84,5 @@ const DatePicker = ({
 	);
 };
 
-DatePicker.displayName = "DatePicker";
-export { DatePicker };
+RangePicker.displayName = "RangePicker";
+export { RangePicker };

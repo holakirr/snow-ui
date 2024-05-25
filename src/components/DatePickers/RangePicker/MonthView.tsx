@@ -1,5 +1,5 @@
+import { Text } from "../../Text";
 import { DayContent } from "./DayContent";
-import { WeekDay } from "./WeekDay";
 
 type MonthProps = {
 	date: Date;
@@ -12,7 +12,7 @@ type MonthProps = {
 	onMonthChange: (month: number) => void;
 };
 
-export const MonthView = ({
+export const DateView = ({
 	date,
 	rangeEnd,
 	displayMonth,
@@ -51,11 +51,14 @@ export const MonthView = ({
 	return (
 		<div className="grid grid-cols-7 auto-rows-[38px]">
 			{weekDays.map((weekDay) => (
-				<WeekDay
+				<Text
 					key={weekDay}
-					className="text-center text-black-40 text-xs"
-					label={weekDay}
-				/>
+					as="span"
+					className="px-4 py-2 text-black-40 text-center"
+					size={12}
+				>
+					{weekDay}
+				</Text>
 			))}
 			{prevDays.map((day) => (
 				<DayContent

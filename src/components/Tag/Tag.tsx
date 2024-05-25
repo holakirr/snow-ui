@@ -3,7 +3,7 @@ import { ROLES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-type TagProps = ComponentProps<"div"> & {
+export type TagProps = ComponentProps<"div"> & {
 	label: string | number;
 	textSize?: TextSize;
 	withDot?: boolean;

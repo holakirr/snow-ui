@@ -1,5 +1,5 @@
 import type { DateTypeEnum } from "@types";
-import { Text } from "../Text";
+import { Text } from "../../Text";
 import { DateSelector } from "./DateSelector";
 import { TimeSelector } from "./TimeSelector";
 

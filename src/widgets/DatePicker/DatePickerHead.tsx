@@ -16,7 +16,7 @@ export const DatePickerHead = ({
 	withTime,
 	onTypeChange,
 }: DatePickerHeadProps) => {
-	const dateString = date.toLocaleDateString("en-US", {
+	const dateString = date.toLocaleDateString("en-GB", {
 		day: "2-digit",
 		month: "2-digit",
 		year: "numeric",

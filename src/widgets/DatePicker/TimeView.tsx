@@ -38,8 +38,7 @@ export const TimeView = ({
 			dateTime: i + 1 < 10 ? `0${i + 1}` : i + 1,
 			isSelected: i + 1 === selected.getMinutes(),
 			isDisabled: dateLimits
-				? minuteValue < dateLimits[0].valueOf() ||
-					minuteValue > dateLimits[1].valueOf()
+				? minuteValue < dateLimits[0].valueOf() || minuteValue > dateLimits[1].valueOf()
 				: false,
 		};
 	});
@@ -48,7 +47,7 @@ export const TimeView = ({
 			selected.getFullYear(),
 			selected.getMonth(),
 			selected.getDate(),
-			i + 1,
+			selected.getHours() > 12 ? i + 13 : i + 1,
 			selected.getMinutes(),
 		);
 		const hourValue = timeStamp.valueOf();
@@ -60,10 +59,9 @@ export const TimeView = ({
 		return {
 			hour: timeStamp,
 			dateTime,
-			isSelected: i + 1 === selected.getHours() % 12,
+			isSelected: timeStamp.getHours() === selected.getHours(),
 			isDisabled: dateLimits
-				? hourValue < dateLimits[0].valueOf() ||
-					hourValue > dateLimits[1].valueOf()
+				? hourValue < dateLimits[0].valueOf() || hourValue > dateLimits[1].valueOf()
 				: false,
 		};
 	});
@@ -71,15 +69,9 @@ export const TimeView = ({
 		<div className="flex flex-col h-full">
 			<div className="flex justify-between px-4 pt-4">
 				<div className="flex gap-2 items-center">
-					<DatePickerTag
-						label="System time"
-						onClick={() => onDateSelect(current)}
-					/>
+					<DatePickerTag label="System time" onClick={() => onDateSelect(current)} />
 					{lastSelection && (
-						<DatePickerTag
-							label="Last selection"
-							onClick={() => onDateSelect(lastSelection)}
-						/>
+						<DatePickerTag label="Last selection" onClick={() => onDateSelect(lastSelection)} />
 					)}
 				</div>
 			</div>
@@ -94,9 +86,7 @@ export const TimeView = ({
 							.split(" ")[0],
 					)}
 					changingType={changingType}
-					onChange={(e) =>
-						onDateSelect(new Date(selected.setHours(+e.target.value)))
-					}
+					onChange={(e) => onDateSelect(new Date(selected.setHours(+e.target.value)))}
 					onFocus={() => onTypeChange("hours")}
 				/>
 				<Text size={12} className="flex items-center justify-center">
@@ -105,18 +95,13 @@ export const TimeView = ({
 				<TimeInput
 					value={selected.getMinutes()}
 					changingType={changingType}
-					onChange={(e) =>
-						onDateSelect(new Date(selected.setMinutes(+e.target.value)))
-					}
+					onChange={(e) => onDateSelect(new Date(selected.setMinutes(+e.target.value)))}
 					onFocus={() => onTypeChange("minutes")}
 				/>
 				<Button
 					label="AM"
 					textSize={12}
-					className={twMerge(
-						"rounded-xl",
-						selected.getHours() < 12 && "bg-secondary-purple",
-					)}
+					className={twMerge("rounded-xl", selected.getHours() < 12 && "bg-secondary-purple")}
 					onClick={() => {
 						if (selected.getHours() < 12) return;
 						const newDate = new Date(selected);
@@ -127,12 +112,9 @@ export const TimeView = ({
 				<Button
 					label="PM"
 					textSize={12}
-					className={twMerge(
-						"rounded-xl",
-						selected.getHours() > 12 && "bg-secondary-purple",
-					)}
+					className={twMerge("rounded-xl", selected.getHours() >= 12 && "bg-secondary-purple")}
 					onClick={() => {
-						if (selected.getHours() > 12) return;
+						if (selected.getHours() >= 12) return;
 						const newDate = new Date(selected);
 						newDate.setHours(selected.getHours() + 12);
 						onDateSelect(newDate);
@@ -146,10 +128,14 @@ export const TimeView = ({
 							<Button
 								key={dateTime}
 								tabIndex={0}
-								label={Intl.DateTimeFormat("en-US", {
-									hour: "2-digit",
-									hour12: false,
-								}).format(hour)}
+								label={
+									Intl.DateTimeFormat("en-US", {
+										hour: "2-digit",
+										hour12: true,
+									})
+										.format(hour)
+										.split(" ")[0]
+								}
 								textSize={12}
 								variant={isSelected ? "filled" : "borderless"}
 								title={`${hour.getHours()} hours`}
@@ -189,9 +175,7 @@ export const TimeView = ({
 					leftIcon={ArrowLineLeftIcon}
 					label="Back"
 					className="text-black-40 mt-auto"
-					onClick={() =>
-						onTypeChange(changingType === "minutes" ? "hours" : "year")
-					}
+					onClick={() => onTypeChange(changingType === "minutes" ? "hours" : "year")}
 				/>
 			</div>
 		</div>

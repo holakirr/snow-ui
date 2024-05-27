@@ -136,16 +136,12 @@ export const TextAreaWithLimit: Story = {
 		await userEvent.type(input, testValue);
 
 		expect(input).toHaveValue(testValue);
-		expect(
-			canvas.getByText(`${testValue.length}/${testTextLimit}`),
-		).toBeInTheDocument();
+		expect(canvas.getByText(`${testValue.length}/${testTextLimit}`)).toBeInTheDocument();
 
 		await userEvent.clear(input);
 		await userEvent.type(input, longText);
 
 		expect(input).toHaveValue(longText.slice(0, testTextLimit));
-		expect(
-			canvas.getByText(`${testTextLimit}/${testTextLimit}`),
-		).toBeInTheDocument();
+		expect(canvas.getByText(`${testTextLimit}/${testTextLimit}`)).toBeInTheDocument();
 	},
 };

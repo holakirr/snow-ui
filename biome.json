@@ -19,5 +19,9 @@
 			"src/stories/colors.stories.tsx",
 			"tsconfig.json"
 		]
+	},
+	"formatter": {
+		"enabled": true,
+		"lineWidth": 100
 	}
 }

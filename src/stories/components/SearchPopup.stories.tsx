@@ -28,13 +28,7 @@ const meta = {
 	},
 	render: (args) => {
 		const [value, setValue] = useState<string>(args.value as string);
-		return (
-			<SearchPopup
-				{...args}
-				value={value}
-				onChange={(e) => setValue(e.target.value)}
-			/>
-		);
+		return <SearchPopup {...args} value={value} onChange={(e) => setValue(e.target.value)} />;
 	},
 } satisfies Meta<typeof SearchPopup>;
 

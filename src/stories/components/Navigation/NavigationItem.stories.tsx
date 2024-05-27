@@ -4,15 +4,9 @@ import { useNavigation } from "@hooks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
 import type { MouseEventHandler } from "react";
-import {
-	iconControl,
-	navigationMenuItems,
-	onNavigationItemClick,
-} from "../mocks";
+import { iconControl, navigationMenuItems, onNavigationItemClick } from "../mocks";
 
-const testClickHandler = fn((e) =>
-	console.log(`clicked on ${e.currentTarget.id}`),
-);
+const testClickHandler = fn((e) => console.log(`clicked on ${e.currentTarget.id}`));
 
 const meta = {
 	title: "Base Components/Navigation/Navigation Item",

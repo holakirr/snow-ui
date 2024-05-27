@@ -1,9 +1,4 @@
-import {
-	ArrowLineLeftIcon,
-	ArrowLineRightIcon,
-	Button,
-	Text,
-} from "@components";
+import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, Text } from "@components";
 import { twMerge } from "tailwind-merge";
 import { DatePickerTag } from "./DatePickerTag";
 
@@ -56,11 +51,8 @@ export const DateView = ({
 			const isToday = currDayValue === dayValue;
 			const isSelected = selectedDayValue === dayValue;
 			const isDisabled =
-				dateLimits &&
-				(dayValue < dateLimits[0].valueOf() ||
-					dayValue > dateLimits[1].valueOf());
-			const isOutOfMonth =
-				day.getMonth() !== displayMonth || day.getFullYear() !== displayYear;
+				dateLimits && (dayValue < dateLimits[0].valueOf() || dayValue > dateLimits[1].valueOf());
+			const isOutOfMonth = day.getMonth() !== displayMonth || day.getFullYear() !== displayYear;
 			return {
 				day,
 				dateTime,
@@ -78,10 +70,7 @@ export const DateView = ({
 				<div className="flex gap-2 items-center">
 					<DatePickerTag label="Today" onClick={() => onDateSelect(current)} />
 					{lastSelection && (
-						<DatePickerTag
-							label="Last selection"
-							onClick={() => onDateSelect(lastSelection)}
-						/>
+						<DatePickerTag label="Last selection" onClick={() => onDateSelect(lastSelection)} />
 					)}
 				</div>
 				<div className="flex gap-2 items-center">
@@ -105,43 +94,29 @@ export const DateView = ({
 			<div className="p-4 min-h-[260px]">
 				<div className="grid grid-cols-7 auto-rows-[38px]">
 					{weekDays.map((weekDay) => (
-						<Text
-							key={weekDay}
-							as="span"
-							className="px-4 py-2 text-black-40 text-center"
-							size={12}
-						>
+						<Text key={weekDay} as="span" className="px-4 py-2 text-black-40 text-center" size={12}>
 							{weekDay}
 						</Text>
 					))}
-					{days.map(
-						({
-							day,
-							dateTime,
-							isToday,
-							isSelected,
-							isDisabled,
-							isOutOfMonth,
-						}) => (
-							<Button
-								key={dateTime}
-								tabIndex={0}
-								label={day.getDate()}
-								textSize={12}
-								variant={isSelected ? "filled" : "borderless"}
-								title={dateTime}
-								aria-label={dateTime}
-								disabled={isDisabled}
-								className={twMerge(
-									"rounded-xl hover:bg-black-5 hover:text-black-100",
-									isToday && !isSelected && "bg-secondary-purple",
-									isOutOfMonth && "opacity-40",
-									isSelected && "rounded-xl",
-								)}
-								onClick={() => onDateSelect(day)}
-							/>
-						),
-					)}
+					{days.map(({ day, dateTime, isToday, isSelected, isDisabled, isOutOfMonth }) => (
+						<Button
+							key={dateTime}
+							tabIndex={0}
+							label={day.getDate()}
+							textSize={12}
+							variant={isSelected ? "filled" : "borderless"}
+							title={dateTime}
+							aria-label={dateTime}
+							disabled={isDisabled}
+							className={twMerge(
+								"rounded-xl hover:bg-black-5 hover:text-black-100",
+								isToday && !isSelected && "bg-secondary-purple",
+								isOutOfMonth && "opacity-40",
+								isSelected && "rounded-xl",
+							)}
+							onClick={() => onDateSelect(day)}
+						/>
+					))}
 				</div>
 			</div>
 		</div>

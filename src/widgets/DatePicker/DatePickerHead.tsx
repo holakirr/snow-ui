@@ -30,12 +30,7 @@ export const DatePickerHead = ({
 
 	return (
 		<div className="w-full flex justify-between border-b border-black-10 p-4">
-			<Text
-				as="time"
-				dateTime={dateTime}
-				className={"inline-flex items-center w-min"}
-				size={14}
-			>
+			<Text as="time" dateTime={dateTime} className={"inline-flex items-center w-min"} size={14}>
 				<DatePickerTag
 					label={dateString.split("/")[0]}
 					textSize={14}

@@ -6,11 +6,7 @@ type TimeInputProps = React.ComponentProps<"input"> & {
 	changingType: DateTypeEnum;
 };
 
-export const TimeInput = ({
-	value,
-	changingType,
-	...props
-}: TimeInputProps) => (
+export const TimeInput = ({ value, changingType, ...props }: TimeInputProps) => (
 	<Input
 		type="number"
 		min={0}

@@ -51,11 +51,7 @@ const meta = {
 
 		return (
 			<div className="w-full h-full">
-				<Button
-					onClick={() => setShow(true)}
-					variant="filled"
-					label={openButtonLabel}
-				/>
+				<Button onClick={() => setShow(true)} variant="filled" label={openButtonLabel} />
 				<Dialog {...args} onClose={handleClose} open={show} />
 			</div>
 		);

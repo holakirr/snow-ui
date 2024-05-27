@@ -51,12 +51,7 @@ export const DateView = ({
 	return (
 		<div className="grid grid-cols-7 auto-rows-[38px]">
 			{weekDays.map((weekDay) => (
-				<Text
-					key={weekDay}
-					as="span"
-					className="px-4 py-2 text-black-40 text-center"
-					size={12}
-				>
+				<Text key={weekDay} as="span" className="px-4 py-2 text-black-40 text-center" size={12}>
 					{weekDay}
 				</Text>
 			))}
@@ -66,8 +61,7 @@ export const DateView = ({
 					day={day}
 					isDisabled={
 						dateLimits &&
-						(day.valueOf() < dateLimits[0].valueOf() ||
-							day.valueOf() > dateLimits[1].valueOf())
+						(day.valueOf() < dateLimits[0].valueOf() || day.valueOf() > dateLimits[1].valueOf())
 					}
 					rangeEnd={rangeEnd}
 					date={date}
@@ -83,8 +77,7 @@ export const DateView = ({
 					rangeEnd={rangeEnd}
 					isDisabled={
 						dateLimits &&
-						(day.valueOf() < dateLimits[0].valueOf() ||
-							day.valueOf() > dateLimits[1].valueOf())
+						(day.valueOf() < dateLimits[0].valueOf() || day.valueOf() > dateLimits[1].valueOf())
 					}
 					onClick={onDateSelect}
 				/>
@@ -97,8 +90,7 @@ export const DateView = ({
 					rangeEnd={rangeEnd}
 					isDisabled={
 						dateLimits &&
-						(day.valueOf() < dateLimits[0].valueOf() ||
-							day.valueOf() > dateLimits[1].valueOf())
+						(day.valueOf() < dateLimits[0].valueOf() || day.valueOf() > dateLimits[1].valueOf())
 					}
 					isOutOfMonth
 					onClick={() => onDisplayMonthChange(displayMonth + 1)}

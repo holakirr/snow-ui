@@ -25,23 +25,15 @@ export const QuarterView = ({
 	onDateSelect,
 	onTypeChange,
 }: QuarterViewProps) => {
-	const yearLimits = dateLimits
-		? dateLimits.map((date) => date.getFullYear())
-		: [];
+	const yearLimits = dateLimits ? dateLimits.map((date) => date.getFullYear()) : [];
 
 	return (
 		<div className="flex flex-col h-full">
 			<div className="flex justify-between px-4 pt-4">
 				<div className="flex gap-2 items-center">
-					<DatePickerTag
-						label="This year"
-						onClick={() => onDateSelect(new Date())}
-					/>
+					<DatePickerTag label="This year" onClick={() => onDateSelect(new Date())} />
 					{lastSelection && (
-						<DatePickerTag
-							label="Last selection"
-							onClick={() => onDateSelect(lastSelection)}
-						/>
+						<DatePickerTag label="Last selection" onClick={() => onDateSelect(lastSelection)} />
 					)}
 				</div>
 				<div className="flex gap-2 items-center">
@@ -62,8 +54,7 @@ export const QuarterView = ({
 					{Array.from({ length: 25 }, (_, i) => {
 						const year = displayYear - 12 + i;
 						const isDisabled =
-							yearLimits.length === 2 &&
-							(year < yearLimits[0] || year > yearLimits[1]);
+							yearLimits.length === 2 && (year < yearLimits[0] || year > yearLimits[1]);
 						return (
 							<Button
 								key={year}
@@ -72,11 +63,7 @@ export const QuarterView = ({
 								onClick={() => onYearSelect(year)}
 								disabled={isDisabled}
 								textSize={12}
-								className={
-									year === current && year !== selected
-										? "bg-secondary-purple"
-										: ""
-								}
+								className={year === current && year !== selected ? "bg-secondary-purple" : ""}
 							/>
 						);
 					})}

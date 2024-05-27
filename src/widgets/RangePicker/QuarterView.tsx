@@ -18,9 +18,7 @@ export const QuarterView = ({
 	onYearSelect,
 	onTypeChange,
 }: QuarterViewProps) => {
-	const yearLimits = dateLimits
-		? dateLimits.map((date) => date.getFullYear())
-		: [];
+	const yearLimits = dateLimits ? dateLimits.map((date) => date.getFullYear()) : [];
 
 	return (
 		<div className="p-4 min-h-[260px] flex flex-col justify-between items-end">
@@ -28,8 +26,7 @@ export const QuarterView = ({
 				{Array.from({ length: 25 }, (_, i) => {
 					const year = displayYear - 12 + i;
 					const isDisabled =
-						yearLimits.length === 2 &&
-						(year < yearLimits[0] || year > yearLimits[1]);
+						yearLimits.length === 2 && (year < yearLimits[0] || year > yearLimits[1]);
 					return (
 						<Button
 							key={year}
@@ -38,11 +35,7 @@ export const QuarterView = ({
 							onClick={() => onYearSelect(year)}
 							disabled={isDisabled}
 							textSize={12}
-							className={
-								year === current && year !== selected
-									? "bg-secondary-purple"
-									: ""
-							}
+							className={year === current && year !== selected ? "bg-secondary-purple" : ""}
 						/>
 					);
 				})}

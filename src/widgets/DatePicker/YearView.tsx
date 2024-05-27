@@ -1,9 +1,4 @@
-import {
-	ArrowLineLeftIcon,
-	ArrowLineRightIcon,
-	Button,
-	Text,
-} from "@components";
+import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, Text } from "@components";
 import type { DateTypeEnum } from "@types";
 import { DatePickerTag } from "./DatePickerTag";
 
@@ -30,22 +25,14 @@ export const YearView = ({
 	onDateSelect,
 	onDisplayYearChange,
 }: YearViewProps) => {
-	const limits =
-		dateLimits?.map((date) => new Date(date.getFullYear(), date.getMonth())) ??
-		[];
+	const limits = dateLimits?.map((date) => new Date(date.getFullYear(), date.getMonth())) ?? [];
 	return (
 		<div className="flex flex-col h-full">
 			<div className="flex justify-between px-4 pt-4">
 				<div className="flex gap-2 items-center">
-					<DatePickerTag
-						label="This month"
-						onClick={() => onDateSelect(new Date())}
-					/>
+					<DatePickerTag label="This month" onClick={() => onDateSelect(new Date())} />
 					{lastSelection && (
-						<DatePickerTag
-							label="Last selection"
-							onClick={() => onDateSelect(lastSelection)}
-						/>
+						<DatePickerTag label="Last selection" onClick={() => onDateSelect(lastSelection)} />
 					)}
 				</div>
 				<div className="flex gap-2 items-center">
@@ -73,13 +60,9 @@ export const YearView = ({
 						}).format(date);
 						const isDisabled =
 							limits.length === 2 &&
-							(date.valueOf() < limits[0].valueOf() ||
-								date.valueOf() > limits[1].valueOf());
-						const isSelected =
-							selected.getFullYear() === displayYear &&
-							selected.getMonth() === i;
-						const isCurrent =
-							new Date().getFullYear() === displayYear && current === i;
+							(date.valueOf() < limits[0].valueOf() || date.valueOf() > limits[1].valueOf());
+						const isSelected = selected.getFullYear() === displayYear && selected.getMonth() === i;
+						const isCurrent = new Date().getFullYear() === displayYear && current === i;
 
 						return (
 							<Button
@@ -89,9 +72,7 @@ export const YearView = ({
 								variant={isSelected ? "filled" : "borderless"}
 								disabled={isDisabled}
 								onClick={() => onMonthSelect(i)}
-								className={
-									isCurrent && !isSelected ? " bg-secondary-purple" : ""
-								}
+								className={isCurrent && !isSelected ? " bg-secondary-purple" : ""}
 							/>
 						);
 					})}

@@ -22,9 +22,7 @@ const Tag = forwardRef<HTMLDivElement, TagProps>(
 			role={ROLES.tag}
 			{...props}
 		>
-			{withDot && (
-				<DotIcon alt={`Dot icon for tag ${label}`} size={16} weight="fill" />
-			)}
+			{withDot && <DotIcon alt={`Dot icon for tag ${label}`} size={16} weight="fill" />}
 			<Text size={textSize} as="span">
 				{label}
 			</Text>

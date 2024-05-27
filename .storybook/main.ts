@@ -1,9 +1,9 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 
 const config: StorybookConfig = {
-    stories: ["../src/**/*.stories.@(ts|tsx)"],
+	stories: ["../src/**/*.stories.@(ts|tsx)"],
 
-    addons: [
+	addons: [
 		"@chromatic-com/storybook",
 		"@storybook/addon-essentials",
 		"@storybook/addon-interactions",
@@ -12,15 +12,15 @@ const config: StorybookConfig = {
 		"@storybook/theming",
 	],
 
-    framework: "@storybook/react-vite",
+	framework: "@storybook/react-vite",
 
-    typescript: {
+	typescript: {
 		reactDocgen: "react-docgen-typescript",
 	},
 
-    docs: {
-        autodocs: true
-    }
+	docs: {
+		autodocs: true,
+	},
 };
 
 export default config;

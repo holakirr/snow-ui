@@ -15,9 +15,7 @@ export const YearView = ({
 	dateLimits,
 	onMonthSelect,
 }: YearViewProps) => {
-	const limits =
-		dateLimits?.map((date) => new Date(date.getFullYear(), date.getMonth())) ??
-		[];
+	const limits = dateLimits?.map((date) => new Date(date.getFullYear(), date.getMonth())) ?? [];
 	return (
 		<div className="grid grid-cols-6 auto-rows-[38px] w-full">
 			{Array.from({ length: 12 }, (_, i) => {
@@ -27,11 +25,9 @@ export const YearView = ({
 				}).format(date);
 				const isDisabled =
 					limits.length === 2 &&
-					(date.valueOf() < limits[0].valueOf() ||
-						date.valueOf() > limits[1].valueOf());
+					(date.valueOf() < limits[0].valueOf() || date.valueOf() > limits[1].valueOf());
 				const isSelected =
-					selectedDate.getFullYear() === displayYear &&
-					selectedDate.getMonth() === i;
+					selectedDate.getFullYear() === displayYear && selectedDate.getMonth() === i;
 
 				return (
 					<Button
@@ -41,9 +37,7 @@ export const YearView = ({
 						variant={isSelected ? "filled" : "borderless"}
 						disabled={isDisabled}
 						onClick={() => onMonthSelect(i)}
-						className={
-							i === current && isSelected ? " bg-secondary-purple" : ""
-						}
+						className={i === current && isSelected ? " bg-secondary-purple" : ""}
 					/>
 				);
 			})}

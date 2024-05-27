@@ -1,10 +1,4 @@
-import {
-	ArrowLineLeftIcon,
-	ArrowLineRightIcon,
-	Button,
-	Tag,
-	Text,
-} from "@components";
+import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, Tag, Text } from "@components";
 import type { DateTypeEnum } from "@types";
 import { DateView } from "./MonthView";
 import { QuarterView } from "./QuarterView";
@@ -183,10 +177,7 @@ export const DatePickerBody = ({
 				<div className="flex gap-2 items-center">
 					<Tag label={actualTag} onClick={() => onDateSelect(now)} />
 					{lastSelection && (
-						<Tag
-							label="Last selection"
-							onClick={() => onDateSelect(lastSelection)}
-						/>
+						<Tag label="Last selection" onClick={() => onDateSelect(lastSelection)} />
 					)}
 				</div>
 				{PaginationBtns}

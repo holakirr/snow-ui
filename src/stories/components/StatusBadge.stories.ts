@@ -42,9 +42,7 @@ export const BasicStatusBadge: Story = {
 
 		expect(badge).toBeInTheDocument();
 		expect(badge).toHaveTextContent(testLabel);
-		expect(badge).toHaveClass(
-			"bg-secondary-indigoLighter text-secondary-indigoDarker",
-		);
+		expect(badge).toHaveClass("bg-secondary-indigoLighter text-secondary-indigoDarker");
 	},
 };
 

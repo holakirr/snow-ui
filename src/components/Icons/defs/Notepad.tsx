@@ -24,10 +24,7 @@ export const NotepadWeights: CustomIconWeights = new Map([
 				d="M12.1213 29.6777V25.4351L16.364 29.6777H12.1213Z"
 				fill="url(#paint2_linear_52206_162198)"
 			/>
-			<path
-				d="M12.1213 29.6776V28.2634L13.5356 29.6776H12.1213Z"
-				fill="#1C1C1C"
-			/>
+			<path d="M12.1213 29.6776V28.2634L13.5356 29.6776H12.1213Z" fill="#1C1C1C" />
 			<rect
 				x="23.4351"
 				y="14.1213"

@@ -43,10 +43,7 @@ const Search = forwardRef<HTMLInputElement, SearchProps>(
 				size={iconSize || 16}
 			/>
 			{keyBindings && keyBindings.length > 0 && !value && (
-				<KBD
-					className="absolute right-2 top-1/2 -translate-y-1/2 "
-					keyBindings={keyBindings}
-				/>
+				<KBD className="absolute right-2 top-1/2 -translate-y-1/2 " keyBindings={keyBindings} />
 			)}
 		</div>
 	),

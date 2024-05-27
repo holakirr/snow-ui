@@ -19,13 +19,11 @@ const buttonStyles = cva(
 	{
 		variants: {
 			variant: {
-				borderless:
-					"text-black-100 bg-transparent font-normal hover:bg-black-5",
+				borderless: "text-black-100 bg-transparent font-normal hover:bg-black-5",
 				gray: "text-black-100 bg-black-5 hover:bg-black-20 disabled:bg-black-5 focus:ring-offset-2",
 				outline:
 					"text-black-100 bg-transparent border-1 border-black-10 border-solid hover:bg-black-5 disabled:border-black-10",
-				filled:
-					"text-white-100 bg-primary-brand hover:bg-primary-brandHover disabled:bg-black-5",
+				filled: "text-white-100 bg-primary-brand hover:bg-primary-brandHover disabled:bg-black-5",
 			},
 			size: {
 				sm: "text-sm py-1 px-2 rounded-lg gap-1",
@@ -79,12 +77,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			aria-label={label?.toString() || "Button aria label"}
 			{...props}
 		>
-			{LeftIcon && (
-				<LeftIcon
-					size={IconSizes[size || "sm"]}
-					alt={`Left icon in button ${label}`}
-				/>
-			)}
+			{LeftIcon && <LeftIcon size={IconSizes[size || "sm"]} alt={`Left icon in button ${label}`} />}
 			{label && (
 				<Text
 					size={textSize ? textSize : size === "sm" ? 14 : 18}
@@ -94,10 +87,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 				</Text>
 			)}
 			{RightIcon && (
-				<RightIcon
-					size={IconSizes[size || "sm"]}
-					alt={`Right icon in button ${label}`}
-				/>
+				<RightIcon size={IconSizes[size || "sm"]} alt={`Right icon in button ${label}`} />
 			)}
 		</button>
 	),

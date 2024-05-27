@@ -6,9 +6,7 @@ import { expect, fn, userEvent, within } from "@storybook/test";
 import type { MouseEventHandler } from "react";
 import { navigationMenuItems, onNavigationItemClick } from "../mocks";
 
-const testClickHandler = fn((e) =>
-	console.log(`clicked on ${e.currentTarget.id}`),
-);
+const testClickHandler = fn((e) => console.log(`clicked on ${e.currentTarget.id}`));
 const testTitle = "Test";
 
 const meta = {
@@ -37,13 +35,7 @@ const meta = {
 			onClickHandler(e);
 		};
 
-		return (
-			<NavigationMenu
-				{...args}
-				items={items}
-				onItemClick={onItemClickHandler}
-			/>
-		);
+		return <NavigationMenu {...args} items={items} onItemClick={onItemClickHandler} />;
 	},
 } satisfies Meta<typeof NavigationMenu>;
 
@@ -84,12 +76,8 @@ export const BasicNavigationMenu: Story = {
 		await userEvent.click(item2);
 		await userEvent.click(item3);
 
-		expect(testClickHandler).toHaveBeenCalledWith(
-			expect.objectContaining({ target: item2 }),
-		);
-		expect(testClickHandler).toHaveBeenCalledWith(
-			expect.objectContaining({ target: item3 }),
-		);
+		expect(testClickHandler).toHaveBeenCalledWith(expect.objectContaining({ target: item2 }));
+		expect(testClickHandler).toHaveBeenCalledWith(expect.objectContaining({ target: item3 }));
 		expect(subMenu2).toBeInTheDocument();
 		expect(subMenu3).toBeInTheDocument();
 		expect(subMenu2).toHaveClass("grid-rows-[1fr]");

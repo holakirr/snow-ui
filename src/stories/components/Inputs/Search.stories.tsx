@@ -28,13 +28,7 @@ const meta = {
 	},
 	render: (args) => {
 		const [value, setValue] = useState<string>(args.value as string);
-		return (
-			<Search
-				{...args}
-				value={value}
-				onChange={(e) => setValue(e.target.value)}
-			/>
-		);
+		return <Search {...args} value={value} onChange={(e) => setValue(e.target.value)} />;
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

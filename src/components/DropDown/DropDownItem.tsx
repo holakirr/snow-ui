@@ -23,17 +23,9 @@ const DropDownItem = forwardRef<HTMLAnchorElement, DropDownItemAllProps>(
 				href={href}
 				tabIndex={0}
 				ref={ref}
-				className={twMerge(
-					"flex items-center justify-between p-4 gap-2",
-					className,
-				)}
+				className={twMerge("flex items-center justify-between p-4 gap-2", className)}
 			>
-				<div
-					className={twMerge(
-						"flex gap-2 items-center",
-						subtitle && "items-start",
-					)}
-				>
+				<div className={twMerge("flex gap-2 items-center", subtitle && "items-start")}>
 					{Image ? (
 						Image
 					) : (

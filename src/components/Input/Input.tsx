@@ -85,10 +85,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 				{Icon && (
 					<Icon
 						alt={`Icon in input ${title} with id ${id}`}
-						className={twMerge(
-							"absolute top-1/2 left-5 transform -translate-y-1/2",
-							iconClassName,
-						)}
+						className={twMerge("absolute top-1/2 left-5 transform -translate-y-1/2", iconClassName)}
 						size={iconSize || 20}
 					/>
 				)}

@@ -127,10 +127,7 @@ const meta = {
 	render: (args) => (
 		<div className="grid w-max grid-cols-4 gap-5 text-sm">
 			{Object.values(allIcons).map((Icon) => (
-				<div
-					className="grid gap-1 justify-center justify-items-center"
-					key={Icon.displayName}
-				>
+				<div className="grid gap-1 justify-center justify-items-center" key={Icon.displayName}>
 					<Icon {...args} alt={`Icon ${Icon.displayName}`} />
 					<span className="text-black-100">{Icon.displayName}</span>
 				</div>
@@ -162,11 +159,7 @@ const Template: (iconName: keyof typeof allIcons) => Story = (iconName) => ({
 				<div className="flex gap-8">
 					{(Object.keys(ICON_WEIGHTS) as IconWeight[]).map((weight) => (
 						<div className="flex flex-col gap-1 items-center" key={weight}>
-							<Icon
-								{...args}
-								weight={weight}
-								alt={`Icon ${iconName}, weight ${weight}`}
-							/>
+							<Icon {...args} weight={weight} alt={`Icon ${iconName}, weight ${weight}`} />
 							<Text size={12} className="text-black-100 w-min">
 								{weight}
 							</Text>
@@ -339,9 +332,7 @@ export const DotIconStory: Story = {
 
 export const DotsThreeOutlineHorizontalIconStory: Story = {
 	name: "DotsThreeOutlineHorizontalIcon",
-	...Template(
-		DotsThreeOutlineHorizontalIcon.displayName as keyof typeof allIcons,
-	),
+	...Template(DotsThreeOutlineHorizontalIcon.displayName as keyof typeof allIcons),
 	args: {
 		alt: DotsThreeOutlineHorizontalIcon.displayName as string,
 	},

@@ -2,13 +2,7 @@ import { Avatar } from "@components";
 import { ROLES, SIZES } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import {
-	colorControl,
-	imgSourceControl,
-	imgSrcMock,
-	testInitials,
-	testUserName,
-} from "../mocks";
+import { colorControl, imgSourceControl, imgSrcMock, testInitials, testUserName } from "../mocks";
 
 const meta = {
 	title: "Base Components/Avatar/Avatar",

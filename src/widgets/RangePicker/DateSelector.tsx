@@ -9,12 +9,7 @@ type DateSelectorProps = {
 	onItemClick: (type: DateTypeEnum) => void;
 } & React.ComponentProps<"time">;
 
-export const DateSelector = ({
-	date,
-	changingType,
-	isActive,
-	onItemClick,
-}: DateSelectorProps) => {
+export const DateSelector = ({ date, changingType, isActive, onItemClick }: DateSelectorProps) => {
 	const dateTime = new Intl.DateTimeFormat(["ban", "id"], {
 		year: "numeric",
 		month: "2-digit",
@@ -25,10 +20,7 @@ export const DateSelector = ({
 		<Text
 			as="time"
 			dateTime={dateTime}
-			className={twMerge(
-				"inline-flex items-center w-min",
-				!isActive && "opacity-20",
-			)}
+			className={twMerge("inline-flex items-center w-min", !isActive && "opacity-20")}
 			size={14}
 		>
 			<Tag

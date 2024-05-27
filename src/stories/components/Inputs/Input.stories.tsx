@@ -49,14 +49,7 @@ const meta = {
 			return testChangeFunction();
 		};
 
-		return (
-			<Input
-				{...args}
-				value={value}
-				onChange={handleChange}
-				onClear={handleClear}
-			/>
-		);
+		return <Input {...args} value={value} onChange={handleChange} onClear={handleClear} />;
 	},
 } satisfies Meta<typeof Input>;
 
@@ -193,9 +186,7 @@ export const ClearableInput: Story = {
 
 		await userEvent.type(input, testValue);
 
-		const clearButton = canvas.getByTitle(
-			`Clear input ${testTitle} with id ${testId}`,
-		);
+		const clearButton = canvas.getByTitle(`Clear input ${testTitle} with id ${testId}`);
 
 		expect(clearButton).toBeInTheDocument();
 

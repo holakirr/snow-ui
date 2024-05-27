@@ -7,11 +7,7 @@ type TimeSelectorProps = {
 	onClick: () => void;
 };
 
-export const TimeSelector = ({
-	date,
-	isActive,
-	onClick,
-}: TimeSelectorProps) => {
+export const TimeSelector = ({ date, isActive, onClick }: TimeSelectorProps) => {
 	const time = Intl.DateTimeFormat("en", {
 		hour: "2-digit",
 		minute: "2-digit",

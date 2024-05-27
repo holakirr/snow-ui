@@ -1,9 +1,4 @@
-import {
-	ArrowLineDownIcon,
-	Avatar,
-	DefaultIcon,
-	FourLeafCloverIcon,
-} from "@components";
+import { ArrowLineDownIcon, Avatar, DefaultIcon, FourLeafCloverIcon } from "@components";
 import {
 	BUTTON_VARIANTS,
 	COLOR_SCHEME,
@@ -37,12 +32,7 @@ export const imgSrcMock = imageSrcMocks.chef;
 export const imageMocks = {
 	avatar: <Avatar img={imageSrcMocks.man} username={testUserName} />,
 	woman: <img alt="woman" width={24} height={24} src={imageSrcMocks.woman} />,
-	flowerIcon: (
-		<FourLeafCloverIcon
-			size={16}
-			alt={`Icon ${FourLeafCloverIcon.displayName}`}
-		/>
-	),
+	flowerIcon: <FourLeafCloverIcon size={16} alt={`Icon ${FourLeafCloverIcon.displayName}`} />,
 };
 
 const ControlTypeRadio = "radio" as const;

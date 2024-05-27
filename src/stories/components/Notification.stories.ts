@@ -43,9 +43,7 @@ export const BasicNotification: Story = {
 		expect(notification).toBeInTheDocument();
 		expect(notification).toHaveTextContent(testSuccessText);
 		expect(icon).toBeInTheDocument();
-		expect(icon).toHaveTextContent(
-			`Icon for status ${STATUSES_NOTIFY.success}`,
-		);
+		expect(icon).toHaveTextContent(`Icon for status ${STATUSES_NOTIFY.success}`);
 	},
 };
 

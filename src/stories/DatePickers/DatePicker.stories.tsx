@@ -5,12 +5,8 @@ import { DatePicker } from "@widgets";
 
 const onDateSelectTest = fn((date) => console.log("Selected date is: ", date));
 const onTypeChangeTest = fn((type) => console.log("Selected type is: ", type));
-const onDisplayMonthChangeTest = fn((month) =>
-	console.log("New month is: ", month),
-);
-const onDisplayYearChangeTest = fn((year) =>
-	console.log("New year is: ", year),
-);
+const onDisplayMonthChangeTest = fn((month) => console.log("New month is: ", month));
+const onDisplayYearChangeTest = fn((year) => console.log("New year is: ", year));
 
 const meta: Meta<typeof DatePicker> = {
 	title: "Widgets/Date Picker",
@@ -25,8 +21,8 @@ const meta: Meta<typeof DatePicker> = {
 	argTypes: {},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		selected: new Date(2024, 4, 13, 14, 32),
-		displayMonth: new Date().getMonth(),
+		// selected: new Date(2024, 4, 13, 14, 32),
+		selected: new Date(),
 		onDateSelect: onDateSelectTest,
 		onTypeChange: onTypeChangeTest,
 		onDisplayMonthChange: onDisplayMonthChangeTest,
@@ -87,6 +83,6 @@ export const DatePickerWithAllProps: Story = {
 		changingType: "date",
 		withTime: true,
 		lastSelection: new Date("2024-05-13T04:13:42.055Z"),
-		dateLimits: [new Date("2016-08-15"), new Date("2026-10-20")],
+		dateLimits: [new Date("2016-08-15"), new Date(2024, 4, 28, 15, 30)],
 	},
 };

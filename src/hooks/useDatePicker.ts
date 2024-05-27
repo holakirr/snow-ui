@@ -10,26 +10,25 @@ const initialDatePickerState = {
 	dateLimits: undefined,
 } as const;
 
-const getNewSelected = (
-	changingDate: Date,
-	date: Date,
-	changingType: DateTypeEnum,
-	dateLimits?: [Date, Date],
-) => {
+const getNewSelected = ({
+	changingDate,
+	date,
+	changingType,
+	dateLimits,
+}: {
+	changingDate: Date;
+	date: Date;
+	changingType: DateTypeEnum;
+	dateLimits?: [Date, Date];
+}): Date => {
 	const newDate = new Date(
 		["year", "month", "date"].includes(changingType)
 			? date.getFullYear()
 			: changingDate.getFullYear(),
-		["month", "date"].includes(changingType)
-			? date.getMonth()
-			: changingDate.getMonth(),
+		["month", "date"].includes(changingType) ? date.getMonth() : changingDate.getMonth(),
 		changingType === "date" ? date.getDate() : changingDate.getDate(),
-		["hours", "minutes"].includes(changingType)
-			? date.getHours()
-			: changingDate.getHours(),
-		["hours", "minutes"].includes(changingType)
-			? date.getMinutes()
-			: changingDate.getMinutes(),
+		["hours", "minutes"].includes(changingType) ? date.getHours() : changingDate.getHours(),
+		["hours", "minutes"].includes(changingType) ? date.getMinutes() : changingDate.getMinutes(),
 	);
 
 	if (dateLimits) {
@@ -45,10 +44,9 @@ const getNewSelected = (
 	return newDate;
 };
 
-export const useDatePicker = (
-	props: Pick<DatePickerProps, "selected"> &
-		Partial<Omit<DatePickerProps, "selected">>,
-): DatePickerProps => {
+type PickAndOmit<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>;
+
+export const useDatePicker = (props: PickAndOmit<DatePickerProps, "selected">): DatePickerProps => {
 	const [datePickerState, setDatePickerState] = useState<
 		Omit<
 			DatePickerProps,
@@ -61,12 +59,8 @@ export const useDatePicker = (
 	>({
 		...initialDatePickerState,
 		...props,
-		displayMonth: props.displayMonth
-			? props.displayMonth
-			: props.selected.getMonth(),
-		displayYear: props.displayYear
-			? props.displayYear
-			: props.selected.getFullYear(),
+		displayMonth: props.displayMonth ? props.displayMonth : props.selected.getMonth(),
+		displayYear: props.displayYear ? props.displayYear : props.selected.getFullYear(),
 	});
 	const {
 		selected,
@@ -91,12 +85,7 @@ export const useDatePicker = (
 		setDatePickerState((prev) => ({
 			...prev,
 			displayMonth: (12 + month) % 12,
-			displayYear:
-				month < 0
-					? displayYear - 1
-					: month > 11
-						? displayYear + 1
-						: displayYear,
+			displayYear: month < 0 ? displayYear - 1 : month > 11 ? displayYear + 1 : displayYear,
 		}));
 	const setType = (type: DateTypeEnum) =>
 		setDatePickerState((prev) => ({
@@ -110,7 +99,12 @@ export const useDatePicker = (
 		}));
 
 	const onDateSelect = (date: Date) => {
-		const newDate = getNewSelected(selected, date, changingType, dateLimits);
+		const newDate = getNewSelected({
+			changingDate: selected,
+			date,
+			changingType,
+			dateLimits,
+		});
 		setSelected(newDate);
 
 		if (props.onDateSelect) props.onDateSelect(newDate);

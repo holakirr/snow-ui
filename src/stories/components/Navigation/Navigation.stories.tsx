@@ -5,9 +5,7 @@ import { expect, fn, within } from "@storybook/test";
 import type { MouseEventHandler } from "react";
 import { navigationMenuItems, onNavigationItemClick } from "../mocks";
 
-const testClickHandler = fn((e) =>
-	console.log(`clicked on ${e.currentTarget.id}`),
-);
+const testClickHandler = fn((e) => console.log(`clicked on ${e.currentTarget.id}`));
 const testTitle = "Test";
 
 const meta = {
@@ -34,9 +32,7 @@ const meta = {
 			onClickHandler(e);
 		};
 
-		return (
-			<Navigation {...args} items={items} onItemClick={onItemClickHandler} />
-		);
+		return <Navigation {...args} items={items} onItemClick={onItemClickHandler} />;
 	},
 } satisfies Meta<typeof Navigation>;
 

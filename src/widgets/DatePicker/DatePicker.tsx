@@ -29,8 +29,8 @@ const DatePicker = ({
 	dateLimits,
 	onDateSelect,
 	onTypeChange,
-	onDisplayMonthChange: onMonthChange,
-	onDisplayYearChange: onYearChange,
+	onDisplayMonthChange,
+	onDisplayYearChange,
 	className,
 	...props
 }: DatePickerProps) => (
@@ -48,7 +48,7 @@ const DatePicker = ({
 			onTypeChange={onTypeChange}
 		/>
 		<DatePickerBody
-			date={selected}
+			selected={selected}
 			displayMonth={displayMonth}
 			displayYear={displayYear}
 			startOfWeek={startOfWeek}
@@ -56,8 +56,8 @@ const DatePicker = ({
 			lastSelection={lastSelection}
 			dateLimits={dateLimits}
 			onDateSelect={onDateSelect}
-			onMonthChange={onMonthChange}
-			onYearChange={onYearChange}
+			onDisplayMonthChange={onDisplayMonthChange}
+			onDisplayYearChange={onDisplayYearChange}
 			onTypeChange={onTypeChange}
 		/>
 	</div>

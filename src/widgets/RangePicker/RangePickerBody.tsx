@@ -21,8 +21,8 @@ type DatePickerBodyProps = {
 	lastSelection?: Date;
 	dateLimits?: [Date, Date];
 	onDateSelect: (date: Date) => void;
-	onMonthChange: (month: number) => void;
-	onYearChange: (year: number) => void;
+	onDisplayMonthChange: (month: number) => void;
+	onDisplayYearChange: (year: number) => void;
 	onTypeChange: (type: DateTypeEnum) => void;
 };
 
@@ -37,8 +37,8 @@ export const DatePickerBody = ({
 	lastSelection,
 	dateLimits,
 	onDateSelect,
-	onMonthChange,
-	onYearChange,
+	onDisplayMonthChange,
+	onDisplayYearChange,
 	onTypeChange,
 }: DatePickerBodyProps) => {
 	const now = new Date();
@@ -55,7 +55,7 @@ export const DatePickerBody = ({
 					<Button
 						leftIcon={ArrowLineLeftIcon}
 						size="md"
-						onClick={() => onMonthChange(displayMonth - 1)}
+						onClick={() => onDisplayMonthChange(displayMonth - 1)}
 					/>
 					<Text as="span" size={12}>
 						{Intl.DateTimeFormat("en-US", { month: "long" })
@@ -65,7 +65,7 @@ export const DatePickerBody = ({
 					<Button
 						leftIcon={ArrowLineRightIcon}
 						size="md"
-						onClick={() => onMonthChange(displayMonth + 1)}
+						onClick={() => onDisplayMonthChange(displayMonth + 1)}
 					/>
 				</div>
 			);
@@ -79,7 +79,7 @@ export const DatePickerBody = ({
 						startOfWeek={startOfWeek}
 						dateLimits={dateLimits}
 						onDateSelect={onDateSelect}
-						onMonthChange={onMonthChange}
+						onDisplayMonthChange={onDisplayMonthChange}
 					/>
 				</div>
 			);
@@ -91,7 +91,7 @@ export const DatePickerBody = ({
 					<Button
 						leftIcon={ArrowLineLeftIcon}
 						size="md"
-						onClick={() => onYearChange(displayYear - 1)}
+						onClick={() => onDisplayYearChange(displayYear - 1)}
 					/>
 					<Text as="span" size={12}>
 						{displayYear}
@@ -99,7 +99,7 @@ export const DatePickerBody = ({
 					<Button
 						leftIcon={ArrowLineRightIcon}
 						size="md"
-						onClick={() => onYearChange(displayYear + 1)}
+						onClick={() => onDisplayYearChange(displayYear + 1)}
 					/>
 				</div>
 			);
@@ -111,7 +111,7 @@ export const DatePickerBody = ({
 						displayYear={displayYear}
 						dateLimits={dateLimits}
 						onMonthSelect={(month) => {
-							onMonthChange(month);
+							onDisplayMonthChange(month);
 							onDateSelect(
 								new Date(
 									displayYear,
@@ -139,12 +139,12 @@ export const DatePickerBody = ({
 					<Button
 						leftIcon={ArrowLineLeftIcon}
 						size="md"
-						onClick={() => onYearChange(displayYear - 25)}
+						onClick={() => onDisplayYearChange(displayYear - 25)}
 					/>
 					<Button
 						leftIcon={ArrowLineRightIcon}
 						size="md"
-						onClick={() => onYearChange(displayYear + 25)}
+						onClick={() => onDisplayYearChange(displayYear + 25)}
 					/>
 				</div>
 			);
@@ -156,7 +156,7 @@ export const DatePickerBody = ({
 					dateLimits={dateLimits}
 					onTypeChange={onTypeChange}
 					onYearSelect={(year) => {
-						onYearChange(year);
+						onDisplayYearChange(year);
 						onDateSelect(
 							new Date(
 								year,

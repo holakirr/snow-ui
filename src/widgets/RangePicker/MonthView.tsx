@@ -9,7 +9,7 @@ type MonthProps = {
 	startOfWeek: number;
 	dateLimits?: [Date, Date];
 	onDateSelect: (day: Date) => void;
-	onMonthChange: (month: number) => void;
+	onDisplayMonthChange: (month: number) => void;
 };
 
 export const DateView = ({
@@ -20,7 +20,7 @@ export const DateView = ({
 	startOfWeek = 0,
 	dateLimits,
 	onDateSelect,
-	onMonthChange,
+	onDisplayMonthChange,
 }: MonthProps) => {
 	const hour = date.getHours();
 	const minute = date.getMinutes();
@@ -72,7 +72,7 @@ export const DateView = ({
 					rangeEnd={rangeEnd}
 					date={date}
 					isOutOfMonth
-					onClick={() => onMonthChange(displayMonth - 1)}
+					onClick={() => onDisplayMonthChange(displayMonth - 1)}
 				/>
 			))}
 			{currDays.map((day) => (
@@ -101,7 +101,7 @@ export const DateView = ({
 							day.valueOf() > dateLimits[1].valueOf())
 					}
 					isOutOfMonth
-					onClick={() => onMonthChange(displayMonth + 1)}
+					onClick={() => onDisplayMonthChange(displayMonth + 1)}
 				/>
 			))}
 		</div>

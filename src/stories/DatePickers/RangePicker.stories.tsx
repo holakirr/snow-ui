@@ -4,11 +4,15 @@ import { RangePicker } from "@widgets";
 
 const onDateSelectTest = fn((date) => console.log("Selected date is: ", date));
 const onTypeChangeTest = fn((type) => console.log("Selected type is: ", type));
-const onMonthChangeTest = fn((month) => console.log("New month is: ", month));
+const onDisplayMonthChangeTest = fn((month) =>
+	console.log("New month is: ", month),
+);
 const onFromOrToChangeTest = fn((toOrFrom) =>
 	console.log("New from or to is: ", toOrFrom),
 );
-const onYearChangeTest = fn((year) => console.log("New year is: ", year));
+const onDisplayYearChangeTest = fn((year) =>
+	console.log("New year is: ", year),
+);
 
 const meta: Meta<typeof RangePicker> = {
 	title: "Widgets/Range Picker",
@@ -27,9 +31,9 @@ const meta: Meta<typeof RangePicker> = {
 		displayMonth: new Date().getMonth(),
 		onDateSelect: onDateSelectTest,
 		onTypeChange: onTypeChangeTest,
-		onDisplayMonthChange: onMonthChangeTest,
+		onDisplayMonthChange: onDisplayMonthChangeTest,
 		onFromOrToChange: onFromOrToChangeTest,
-		onDisplayYearChange: onYearChangeTest,
+		onDisplayYearChange: onDisplayYearChangeTest,
 	},
 	// render: (args) => {
 	// 	const {

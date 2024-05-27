@@ -12,10 +12,26 @@ const initialDatePickerState = {
 
 const getNewSelected = (
 	changingDate: Date,
-	newDate: Date,
+	date: Date,
 	changingType: DateTypeEnum,
 	dateLimits?: [Date, Date],
 ) => {
+	const newDate = new Date(
+		["year", "month", "date"].includes(changingType)
+			? date.getFullYear()
+			: changingDate.getFullYear(),
+		["month", "date"].includes(changingType)
+			? date.getMonth()
+			: changingDate.getMonth(),
+		changingType === "date" ? date.getDate() : changingDate.getDate(),
+		["hours", "minutes"].includes(changingType)
+			? date.getHours()
+			: changingDate.getHours(),
+		["hours", "minutes"].includes(changingType)
+			? date.getMinutes()
+			: changingDate.getMinutes(),
+	);
+
 	if (dateLimits) {
 		const [minDate, maxDate] = dateLimits;
 		if (newDate.valueOf() < minDate.valueOf()) {
@@ -26,19 +42,7 @@ const getNewSelected = (
 		}
 	}
 
-	return new Date(
-		["year", "month", "date"].includes(changingType)
-			? newDate.getFullYear()
-			: changingDate.getFullYear(),
-		["month", "date"].includes(changingType)
-			? newDate.getMonth()
-			: changingDate.getMonth(),
-		changingType === "date" ? newDate.getDate() : changingDate.getDate(),
-		changingType === "hours" ? newDate.getHours() : changingDate.getHours(),
-		changingType === "minutes"
-			? newDate.getMinutes()
-			: changingDate.getMinutes(),
-	);
+	return newDate;
 };
 
 export const useDatePicker = (

@@ -33,8 +33,8 @@ const RangePicker = ({
 	onDateSelect,
 	onTypeChange,
 	onFromOrToChange,
-	onDisplayMonthChange: onMonthChange,
-	onDisplayYearChange: onYearChange,
+	onDisplayMonthChange,
+	onDisplayYearChange,
 	className,
 	...props
 }: RangePickerProps) => {
@@ -76,8 +76,8 @@ const RangePicker = ({
 				lastSelection={lastSelection}
 				dateLimits={dateLimits}
 				onDateSelect={onDateSelect}
-				onMonthChange={onMonthChange}
-				onYearChange={onYearChange}
+				onDisplayMonthChange={onDisplayMonthChange}
+				onDisplayYearChange={onDisplayYearChange}
 				onTypeChange={onTypeChange}
 			/>
 		</div>

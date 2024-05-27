@@ -5,8 +5,12 @@ import { DatePicker } from "@widgets";
 
 const onDateSelectTest = fn((date) => console.log("Selected date is: ", date));
 const onTypeChangeTest = fn((type) => console.log("Selected type is: ", type));
-const onMonthChangeTest = fn((month) => console.log("New month is: ", month));
-const onYearChangeTest = fn((year) => console.log("New year is: ", year));
+const onDisplayMonthChangeTest = fn((month) =>
+	console.log("New month is: ", month),
+);
+const onDisplayYearChangeTest = fn((year) =>
+	console.log("New year is: ", year),
+);
 
 const meta: Meta<typeof DatePicker> = {
 	title: "Widgets/Date Picker",
@@ -25,8 +29,8 @@ const meta: Meta<typeof DatePicker> = {
 		displayMonth: new Date().getMonth(),
 		onDateSelect: onDateSelectTest,
 		onTypeChange: onTypeChangeTest,
-		onDisplayMonthChange: onMonthChangeTest,
-		onDisplayYearChange: onYearChangeTest,
+		onDisplayMonthChange: onDisplayMonthChangeTest,
+		onDisplayYearChange: onDisplayYearChangeTest,
 	},
 	render: (args) => {
 		const {

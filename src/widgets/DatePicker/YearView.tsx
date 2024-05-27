@@ -15,7 +15,7 @@ type YearViewProps = {
 	lastSelection?: Date;
 	onMonthSelect: (month: number) => void;
 	onTypeChange: (type: DateTypeEnum) => void;
-	onYearChange: (year: number) => void;
+	onDisplayYearChange: (year: number) => void;
 	onDateSelect: (date: Date) => void;
 };
 
@@ -28,7 +28,7 @@ export const YearView = ({
 	onMonthSelect,
 	onTypeChange,
 	onDateSelect,
-	onYearChange,
+	onDisplayYearChange,
 }: YearViewProps) => {
 	const limits =
 		dateLimits?.map((date) => new Date(date.getFullYear(), date.getMonth())) ??
@@ -52,7 +52,7 @@ export const YearView = ({
 					<Button
 						leftIcon={ArrowLineLeftIcon}
 						size="md"
-						onClick={() => onYearChange(displayYear - 1)}
+						onClick={() => onDisplayYearChange(displayYear - 1)}
 					/>
 					<Text as="span" size={12}>
 						{displayYear}
@@ -60,7 +60,7 @@ export const YearView = ({
 					<Button
 						leftIcon={ArrowLineRightIcon}
 						size="md"
-						onClick={() => onYearChange(displayYear + 1)}
+						onClick={() => onDisplayYearChange(displayYear + 1)}
 					/>
 				</div>
 			</div>

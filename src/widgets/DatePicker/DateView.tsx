@@ -7,7 +7,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import { DatePickerTag } from "./DatePickerTag";
 
-type MonthProps = {
+type DateViewProps = {
 	current: Date;
 	selected: Date;
 	displayMonth: number;
@@ -16,7 +16,7 @@ type MonthProps = {
 	lastSelection?: Date;
 	dateLimits?: [Date, Date];
 	onDateSelect: (day: Date) => void;
-	onMonthChange: (month: number) => void;
+	onDisplayMonthChange: (month: number) => void;
 };
 
 export const DateView = ({
@@ -28,8 +28,8 @@ export const DateView = ({
 	dateLimits,
 	lastSelection,
 	onDateSelect,
-	onMonthChange,
-}: MonthProps) => {
+	onDisplayMonthChange,
+}: DateViewProps) => {
 	const currDayValue = new Date(current).setHours(0, 0, 0, 0);
 	const selectedDayValue = new Date(selected).setHours(0, 0, 0, 0);
 	const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
@@ -88,7 +88,7 @@ export const DateView = ({
 					<Button
 						leftIcon={ArrowLineLeftIcon}
 						size="md"
-						onClick={() => onMonthChange(displayMonth - 1)}
+						onClick={() => onDisplayMonthChange(displayMonth - 1)}
 					/>
 					<Text as="span" size={12}>
 						{Intl.DateTimeFormat("en-US", { month: "short" }).format(
@@ -98,7 +98,7 @@ export const DateView = ({
 					<Button
 						leftIcon={ArrowLineRightIcon}
 						size="md"
-						onClick={() => onMonthChange(displayMonth + 1)}
+						onClick={() => onDisplayMonthChange(displayMonth + 1)}
 					/>
 				</div>
 			</div>

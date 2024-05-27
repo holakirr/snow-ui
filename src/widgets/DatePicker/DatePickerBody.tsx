@@ -1,12 +1,11 @@
 import type { DateTypeEnum } from "@types";
 import { DateView } from "./DateView";
-import { HoursView } from "./HoursView";
-import { MinutesView } from "./MinutesView";
 import { QuarterView } from "./QuarterView";
+import { TimeView } from "./TimeView";
 import { YearView } from "./YearView";
 
 type DatePickerBodyProps = {
-	date: Date;
+	selected: Date;
 	displayMonth: number;
 	displayYear: number;
 	startOfWeek: number;
@@ -14,13 +13,13 @@ type DatePickerBodyProps = {
 	lastSelection?: Date;
 	dateLimits?: [Date, Date];
 	onDateSelect: (date: Date) => void;
-	onMonthChange: (month: number) => void;
-	onYearChange: (year: number) => void;
+	onDisplayMonthChange: (month: number) => void;
+	onDisplayYearChange: (year: number) => void;
 	onTypeChange: (type: DateTypeEnum) => void;
 };
 
 export const DatePickerBody = ({
-	date,
+	selected,
 	displayMonth,
 	displayYear,
 	startOfWeek,
@@ -28,8 +27,8 @@ export const DatePickerBody = ({
 	lastSelection,
 	dateLimits,
 	onDateSelect,
-	onMonthChange,
-	onYearChange,
+	onDisplayMonthChange,
+	onDisplayYearChange,
 	onTypeChange,
 }: DatePickerBodyProps) => {
 	const now = new Date();
@@ -39,38 +38,30 @@ export const DatePickerBody = ({
 			return (
 				<DateView
 					current={now}
-					selected={date}
+					selected={selected}
 					displayMonth={displayMonth}
 					displayYear={displayYear}
 					startOfWeek={startOfWeek}
 					dateLimits={dateLimits}
 					lastSelection={lastSelection}
 					onDateSelect={onDateSelect}
-					onMonthChange={onMonthChange}
+					onDisplayMonthChange={onDisplayMonthChange}
 				/>
 			);
 		case "month":
 			return (
 				<YearView
 					current={now.getMonth()}
-					selected={date}
+					selected={selected}
 					displayYear={displayYear}
 					dateLimits={dateLimits}
 					lastSelection={lastSelection}
-					onYearChange={onYearChange}
+					onDisplayYearChange={onDisplayYearChange}
 					onDateSelect={onDateSelect}
 					onTypeChange={onTypeChange}
 					onMonthSelect={(month) => {
-						onMonthChange(month);
-						onDateSelect(
-							new Date(
-								displayYear,
-								month,
-								date.getDate(),
-								date.getHours(),
-								date.getMinutes(),
-							),
-						);
+						onDisplayMonthChange(month);
+						onDateSelect(new Date(displayYear, month));
 					}}
 				/>
 			);
@@ -80,30 +71,31 @@ export const DatePickerBody = ({
 				<QuarterView
 					current={now.getFullYear()}
 					displayYear={displayYear}
-					selected={date.getFullYear()}
+					selected={selected.getFullYear()}
 					dateLimits={dateLimits}
 					lastSelection={lastSelection}
 					onTypeChange={onTypeChange}
-					onYearChange={onYearChange}
+					onDisplayYearChange={onDisplayYearChange}
 					onDateSelect={onDateSelect}
 					onYearSelect={(year) => {
-						onYearChange(year);
-						onDateSelect(
-							new Date(
-								year,
-								displayMonth,
-								date.getDate(),
-								date.getHours(),
-								date.getMinutes(),
-							),
-						);
+						onDisplayYearChange(year);
+						onDateSelect(new Date(year, displayMonth));
 					}}
 				/>
 			);
 		case "hours":
-			return <HoursView />;
 		case "minutes":
-			return <MinutesView />;
+			return (
+				<TimeView
+					current={now}
+					selected={selected}
+					changingType={changingType}
+					dateLimits={dateLimits}
+					lastSelection={lastSelection}
+					onDateSelect={onDateSelect}
+					onTypeChange={onTypeChange}
+				/>
+			);
 		default:
 			return null;
 	}

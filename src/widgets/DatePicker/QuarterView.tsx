@@ -9,7 +9,7 @@ type QuarterViewProps = {
 	dateLimits?: [Date, Date];
 	lastSelection?: Date;
 	onYearSelect: (year: number) => void;
-	onYearChange: (year: number) => void;
+	onDisplayYearChange: (year: number) => void;
 	onDateSelect: (date: Date) => void;
 	onTypeChange: (type: DateTypeEnum) => void;
 };
@@ -21,7 +21,7 @@ export const QuarterView = ({
 	dateLimits,
 	lastSelection,
 	onYearSelect,
-	onYearChange,
+	onDisplayYearChange,
 	onDateSelect,
 	onTypeChange,
 }: QuarterViewProps) => {
@@ -48,12 +48,12 @@ export const QuarterView = ({
 					<Button
 						leftIcon={ArrowLineLeftIcon}
 						size="md"
-						onClick={() => onYearChange(displayYear - 25)}
+						onClick={() => onDisplayYearChange(displayYear - 25)}
 					/>
 					<Button
 						leftIcon={ArrowLineRightIcon}
 						size="md"
-						onClick={() => onYearChange(displayYear + 25)}
+						onClick={() => onDisplayYearChange(displayYear + 25)}
 					/>
 				</div>
 			</div>

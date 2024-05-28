@@ -76,7 +76,6 @@ export const DatePickerBody = ({
 					lastSelection={lastSelection}
 					onTypeChange={onTypeChange}
 					onDisplayYearChange={onDisplayYearChange}
-					onDateSelect={onDateSelect}
 					onYearSelect={(year) => {
 						onDisplayYearChange(year);
 						onDateSelect(new Date(year, displayMonth));

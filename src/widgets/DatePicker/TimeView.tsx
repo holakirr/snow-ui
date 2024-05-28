@@ -1,4 +1,5 @@
 import { ArrowLineLeftIcon, Button, Text } from "@components";
+import { ROLES } from "@constants";
 import type { DateTypeEnum } from "@types";
 import { twMerge } from "tailwind-merge";
 import { DatePickerTag } from "./DatePickerTag";
@@ -66,12 +67,25 @@ export const TimeView = ({
 		};
 	});
 	return (
-		<div className="flex flex-col h-full">
+		<div
+			className="flex flex-col h-full"
+			role={ROLES.datepickerBody}
+			id="panel-time"
+			aria-labelledby="tab-time"
+		>
 			<div className="flex justify-between px-4 pt-4">
 				<div className="flex gap-2 items-center">
-					<DatePickerTag label="System time" onClick={() => onDateSelect(current)} />
+					<DatePickerTag
+						className="bg-black-5"
+						label="System time"
+						onClick={() => onDateSelect(current)}
+					/>
 					{lastSelection && (
-						<DatePickerTag label="Last selection" onClick={() => onDateSelect(lastSelection)} />
+						<DatePickerTag
+							className="bg-black-5"
+							label="Last selection"
+							onClick={() => onDateSelect(lastSelection)}
+						/>
 					)}
 				</div>
 			</div>

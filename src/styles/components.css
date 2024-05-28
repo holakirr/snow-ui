@@ -40,7 +40,6 @@
   }
 }
 
-/* TODO: fix dark theme */
 textarea {
   &::-webkit-resizer {
     @apply fill-black-10;

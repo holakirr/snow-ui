@@ -1,3 +1,4 @@
+import { ROLES } from "@constants";
 import type { DateTypeEnum } from "@types";
 import { twMerge } from "tailwind-merge";
 import { DatePickerBody } from "./DatePickerBody";
@@ -39,6 +40,7 @@ const DatePicker = ({
 			"w-[360px] rounded-2xl border-1 border-black-10 flex flex-col backdrop-blur-[20px] bg-white-80 text-black-100",
 			className,
 		)}
+		role={ROLES.datepicker}
 		{...props}
 	>
 		<DatePickerHead

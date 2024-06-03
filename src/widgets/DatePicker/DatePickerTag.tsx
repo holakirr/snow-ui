@@ -7,7 +7,7 @@ type DatePickerTagProps = TagProps & {
 
 export const DatePickerTag = ({ className, isActive, ...props }: DatePickerTagProps) => (
 	<Tag
-		className={twMerge("rounded py-0.5 px-1 bg-transparent", isActive && "bg-black-10", className)}
+		className={twMerge("rounded py-0.5 px-1 bg-transparent", isActive && "bg-black-5", className)}
 		aria-selected={isActive}
 		{...props}
 	/>

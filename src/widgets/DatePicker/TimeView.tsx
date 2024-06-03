@@ -78,18 +78,20 @@ export const TimeView = ({
 					<DatePickerTag
 						className="bg-black-5"
 						label="System time"
+						aria-label="System time"
 						onClick={() => onDateSelect(current)}
 					/>
 					{lastSelection && (
 						<DatePickerTag
 							className="bg-black-5"
 							label="Last selection"
+							aria-label="Last selection"
 							onClick={() => onDateSelect(lastSelection)}
 						/>
 					)}
 				</div>
 			</div>
-			<div className="grid grid-cols-5 pt-4 px-4 gap-2">
+			<div className="grid grid-cols-5 pt-4 px-4 gap-2" role={ROLES.datepickerNavigation}>
 				<TimeInput
 					value={Number(
 						Intl.DateTimeFormat("en-US", {
@@ -99,6 +101,8 @@ export const TimeView = ({
 							.format(selected)
 							.split(" ")[0],
 					)}
+					aria-label="Enter hours"
+					autoFocus
 					changingType={changingType}
 					onChange={(e) => onDateSelect(new Date(selected.setHours(+e.target.value)))}
 					onFocus={() => onTypeChange("hours")}
@@ -108,6 +112,7 @@ export const TimeView = ({
 				</Text>
 				<TimeInput
 					value={selected.getMinutes()}
+					aria-label="Enter minutes"
 					changingType={changingType}
 					onChange={(e) => onDateSelect(new Date(selected.setMinutes(+e.target.value)))}
 					onFocus={() => onTypeChange("minutes")}
@@ -115,7 +120,9 @@ export const TimeView = ({
 				<Button
 					label="AM"
 					textSize={12}
+					tabIndex={selected.getHours() >= 12 ? 0 : -1}
 					className={twMerge("rounded-xl", selected.getHours() < 12 && "bg-secondary-purple")}
+					aria-selected={selected.getHours() < 12}
 					onClick={() => {
 						if (selected.getHours() < 12) return;
 						const newDate = new Date(selected);
@@ -126,6 +133,8 @@ export const TimeView = ({
 				<Button
 					label="PM"
 					textSize={12}
+					tabIndex={selected.getHours() < 12 ? 0 : -1}
+					aria-selected={selected.getHours() >= 12}
 					className={twMerge("rounded-xl", selected.getHours() >= 12 && "bg-secondary-purple")}
 					onClick={() => {
 						if (selected.getHours() >= 12) return;
@@ -135,13 +144,15 @@ export const TimeView = ({
 					}}
 				/>
 			</div>
-			<div className="p-4 pt-0 min-h-[180px] flex flex-col justify-between items-end">
+			<div
+				className="p-4 pt-0 min-h-[180px] flex flex-col justify-between items-end"
+				role={ROLES.datepickerBodyTable}
+			>
 				{changingType === "hours" && (
 					<div className="grid grid-cols-6 auto-rows-[38px] w-full">
 						{hours.map(({ hour, dateTime, isSelected, isDisabled }) => (
 							<Button
 								key={dateTime}
-								tabIndex={0}
 								label={
 									Intl.DateTimeFormat("en-US", {
 										hour: "2-digit",
@@ -154,6 +165,9 @@ export const TimeView = ({
 								variant={isSelected ? "filled" : "borderless"}
 								title={`${hour.getHours()} hours`}
 								aria-label={dateTime}
+								aria-current={isSelected ? "time" : undefined}
+								role={ROLES.datepickerBodyTableCell}
+								tabIndex={isDisabled ? -1 : 0}
 								disabled={isDisabled}
 								className={twMerge(
 									"rounded-xl hover:bg-black-5 hover:text-black-100",
@@ -169,12 +183,14 @@ export const TimeView = ({
 						{minutes.map(({ minute, dateTime, isSelected, isDisabled }) => (
 							<Button
 								key={dateTime}
-								tabIndex={0}
 								label={dateTime}
 								textSize={12}
 								variant={isSelected ? "filled" : "borderless"}
 								title={`${minute.getMinutes()} minutes`}
 								aria-label={`${minute.getMinutes()} minutes`}
+								aria-current={isSelected ? "time" : undefined}
+								role={ROLES.datepickerBodyTableCell}
+								tabIndex={isDisabled ? -1 : 0}
 								disabled={isDisabled}
 								className={twMerge(
 									"rounded-xl hover:bg-black-5 hover:text-black-100",
@@ -188,6 +204,8 @@ export const TimeView = ({
 				<Button
 					leftIcon={ArrowLineLeftIcon}
 					label="Back"
+					title={`Back to ${changingType === "minutes" ? "hours" : "year"} selection`}
+					aria-label={`Back to ${changingType === "minutes" ? "hours" : "year"} selection`}
 					className="text-black-40 mt-auto"
 					onClick={() => onTypeChange(changingType === "minutes" ? "hours" : "year")}
 				/>

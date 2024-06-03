@@ -3,8 +3,11 @@ import { useDatePicker } from "@hooks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
 import { DatePicker } from "@widgets";
+import { ResetDatePicker } from "../utils";
 
 const testDate = new Date(2024, 4, 13, 4, 13, 42);
+const testLimits: [Date, Date] = [new Date(2016, 7, 15), new Date(2024, 4, 28, 15, 30)];
+const testLastSelection = new Date(2024, 4, 10, 4, 13, 42);
 const baseStartOfWeek = 1;
 const today = new Date();
 
@@ -32,39 +35,7 @@ const meta: Meta<typeof DatePicker> = {
 		onDisplayMonthChange: onDisplayMonthChangeTest,
 		onDisplayYearChange: onDisplayYearChangeTest,
 	},
-	render: (args) => {
-		const {
-			selected,
-			displayMonth,
-			displayYear,
-			startOfWeek,
-			changingType,
-			withTime,
-			lastSelection,
-			dateLimits,
-			onDateSelect,
-			onDisplayMonthChange,
-			onDisplayYearChange,
-			onTypeChange,
-		} = useDatePicker(args);
-
-		return (
-			<DatePicker
-				selected={selected}
-				displayMonth={displayMonth}
-				displayYear={displayYear}
-				startOfWeek={startOfWeek}
-				changingType={changingType}
-				withTime={withTime}
-				lastSelection={lastSelection}
-				dateLimits={dateLimits}
-				onDateSelect={onDateSelect}
-				onTypeChange={onTypeChange}
-				onDisplayMonthChange={onDisplayMonthChange}
-				onDisplayYearChange={onDisplayYearChange}
-			/>
-		);
-	},
+	render: (args) => <DatePicker {...useDatePicker(args)} />,
 };
 
 export default meta;
@@ -301,31 +272,7 @@ export const BasicDatePicker: Story = {
 
 		// For chromatic testing
 		await step("Reset to 20th of June 2024", async () => {
-			await userEvent.click(
-				within(picker).getByRole(ROLES.datepickerBodyTableCell, {
-					name: "2024",
-				}),
-			);
-			await userEvent.click(
-				within(picker).getByRole(ROLES.button, {
-					name: "Back to month selection",
-				}),
-			);
-			await userEvent.click(
-				within(picker).getByRole(ROLES.datepickerBodyTableCell, {
-					name: "Select Jun 2024",
-				}),
-			);
-			await userEvent.click(
-				within(picker).getByRole(ROLES.button, {
-					name: "Back to day selection",
-				}),
-			);
-			await userEvent.click(
-				within(picker).getByRole(ROLES.datepickerBodyTableCell, {
-					name: "Thu Jun 20 2024",
-				}),
-			);
+			await ResetDatePicker(picker);
 		});
 	},
 };
@@ -333,6 +280,67 @@ export const BasicDatePicker: Story = {
 export const DatePickerWithTime: Story = {
 	args: {
 		withTime: true,
+	},
+	play: async ({ canvasElement, step }) => {
+		const picker = within(canvasElement).getByRole(ROLES.datepicker);
+		const timeTag = within(picker).getByRole(ROLES.datepickerHeadTab, {
+			name: "04:13 AM",
+		});
+
+		expect(timeTag).toBeVisible();
+
+		// For chromatic testing
+		await step("Reset to 20th of June 2024", async () => {
+			await ResetDatePicker(picker);
+		});
+
+		// Switching to time view
+		await userEvent.click(timeTag);
+		const datepickerBody = within(picker).getByRole(ROLES.datepickerBody);
+		const datepickerBodyNavigation = within(datepickerBody).getByRole(ROLES.datepickerNavigation);
+		const datepickerBodyTable = within(datepickerBody).getByRole(ROLES.datepickerBodyTable);
+		const hours = within(datepickerBodyTable).getAllByRole(ROLES.datepickerBodyTableCell);
+		const selectedHour = within(datepickerBodyTable).getByRole(ROLES.datepickerBodyTableCell, {
+			current: "time",
+		});
+		const hoursInput = within(datepickerBodyNavigation).getByRole(ROLES.input, {
+			name: "Enter hours",
+		});
+		const minutesInput = within(datepickerBodyNavigation).getByRole(ROLES.input, {
+			name: "Enter minutes",
+		});
+		const AMPMButtons = within(datepickerBodyNavigation).getAllByRole(ROLES.button);
+
+		await step("Check time table", async () => {
+			expect(hoursInput).toHaveValue(4);
+			expect(hoursInput).toHaveFocus();
+			expect(hours).toHaveLength(12);
+			expect(selectedHour).toHaveTextContent("04");
+			expect(AMPMButtons).toHaveLength(2);
+			expect(AMPMButtons[0]).toHaveAttribute("aria-selected", "true");
+
+			await userEvent.click(hours[0]);
+			expect(onDateSelectTest).toHaveBeenCalled();
+			expect(hours[0]).toHaveAttribute("aria-current", "time");
+
+			await userEvent.click(minutesInput);
+			const minutes = within(datepickerBodyTable).getAllByRole(ROLES.datepickerBodyTableCell);
+			const selectedMinute = within(datepickerBodyTable).getByRole(ROLES.datepickerBodyTableCell, {
+				current: "time",
+			});
+
+			expect(minutes).toHaveLength(60);
+			expect(selectedMinute).toHaveTextContent("13");
+
+			await userEvent.click(minutes[0]);
+			expect(onDateSelectTest).toHaveBeenCalled();
+			expect(minutes[0]).toHaveAttribute("aria-current", "time");
+
+			await userEvent.click(AMPMButtons[1]);
+			expect(onDateSelectTest).toHaveBeenCalled();
+			expect(AMPMButtons[1]).toHaveAttribute("aria-selected", "true");
+			expect(timeTag).toHaveTextContent("01:01 PM");
+		});
 	},
 };
 
@@ -342,7 +350,134 @@ export const DatePickerWithAllProps: Story = {
 		startOfWeek: 0,
 		changingType: "date",
 		withTime: true,
-		lastSelection: new Date("2024-05-13T04:13:42.055Z"),
-		dateLimits: [new Date("2016-08-15"), new Date(2024, 4, 28, 15, 30)],
+		lastSelection: testLastSelection,
+		dateLimits: testLimits,
+	},
+	play: async ({ canvasElement, step }) => {
+		const picker = within(canvasElement).getByRole(ROLES.datepicker);
+		const datepickerHead = within(picker).getByRole(ROLES.datepickerHead);
+		const yearTag = within(datepickerHead).getByRole(ROLES.datepickerHeadTab, {
+			name: "2024",
+		});
+		const datepickerBody = within(picker).getByRole(ROLES.datepickerBody);
+		const datepickerBodyTable = within(datepickerBody).getByRole(ROLES.datepickerBodyTable);
+		const weekDays = within(datepickerBodyTable).getAllByRole(ROLES.datepickerBodyTableHeadCell);
+		const lastSelectionTag = within(datepickerBody).getByRole(ROLES.tag, {
+			name: testLastSelection.toLocaleDateString("en-GB"),
+		});
+
+		await step("Check first day of week", async () => {
+			expect(weekDays[0]).toHaveTextContent("Su");
+		});
+
+		await step("Check last selection", async () => {
+			expect(lastSelectionTag).toBeVisible();
+			await userEvent.click(lastSelectionTag);
+			expect(onDateSelectTest).toHaveBeenCalled();
+			expect(
+				within(datepickerBodyTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: testLastSelection.toDateString(),
+				}),
+			).toHaveTextContent(testLastSelection.getDate().toString());
+		});
+
+		await step("Check date limits", async () => {
+			await step("Select date before limit", async () => {
+				await userEvent.click(yearTag);
+				const yearView = within(picker).getByRole(ROLES.datepickerBody);
+				const yearViewTable = within(yearView).getByRole(ROLES.datepickerBodyTable);
+				const yearBackButton = within(yearView).getByRole(ROLES.button, {
+					name: "Back to month selection",
+				});
+				const disabledYear = within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: "2015",
+				});
+
+				expect(disabledYear).toBeDisabled();
+
+				await userEvent.click(
+					within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+						name: "2016",
+					}),
+				);
+				await userEvent.click(yearBackButton);
+
+				const monthView = within(picker).getByRole(ROLES.datepickerBody);
+				const monthViewTable = within(monthView).getByRole(ROLES.datepickerBodyTable);
+				const disabledMonth = within(monthViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: "Select Jul 2016",
+				});
+				const selectedMonth = within(monthViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: "Select Aug 2016",
+				});
+
+				expect(disabledMonth).toBeDisabled();
+				expect(selectedMonth).toHaveAttribute("aria-selected", "true");
+				const monthBackButton = within(monthView).getByRole(ROLES.button, {
+					name: "Back to day selection",
+				});
+
+				await userEvent.click(monthBackButton);
+
+				const dateView = within(picker).getByRole(ROLES.datepickerBody);
+				const dateViewTable = within(dateView).getByRole(ROLES.datepickerBodyTable);
+				const disabledDay = within(dateViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: "Sun Aug 14 2016",
+				});
+
+				expect(disabledDay).toBeDisabled();
+			});
+
+			await step("Select date after limit", async () => {
+				await userEvent.click(yearTag);
+				const yearView = within(picker).getByRole(ROLES.datepickerBody);
+				const yearViewTable = within(yearView).getByRole(ROLES.datepickerBodyTable);
+				const yearBackButton = within(yearView).getByRole(ROLES.button, {
+					name: "Back to month selection",
+				});
+				const disabledYear = within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: "2025",
+				});
+
+				expect(disabledYear).toBeDisabled();
+
+				await userEvent.click(
+					within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+						name: "2024",
+					}),
+				);
+				await userEvent.click(yearBackButton);
+
+				const monthView = within(picker).getByRole(ROLES.datepickerBody);
+				const monthViewTable = within(monthView).getByRole(ROLES.datepickerBodyTable);
+				const disabledMonth = within(monthViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: "Select Jun 2024",
+				});
+				const selectedMonth = within(monthViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: "Select May 2024",
+				});
+
+				expect(disabledMonth).toBeDisabled();
+				expect(selectedMonth).toHaveAttribute("aria-selected", "true");
+
+				const monthBackButton = within(monthView).getByRole(ROLES.button, {
+					name: "Back to day selection",
+				});
+
+				await userEvent.click(monthBackButton);
+
+				const dateView = within(picker).getByRole(ROLES.datepickerBody);
+				const dateViewTable = within(dateView).getByRole(ROLES.datepickerBodyTable);
+				const lastAbleDay = within(dateViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: testLimits[1].toDateString(),
+				});
+				const disabledDay = within(dateViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					name: new Date(testLimits[1].setDate(29)).toDateString(),
+				});
+
+				expect(disabledDay).toBeDisabled();
+				expect(lastAbleDay).toHaveAttribute("aria-selected", "true");
+			});
+		});
 	},
 };

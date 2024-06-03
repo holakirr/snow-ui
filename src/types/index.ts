@@ -1,5 +1,5 @@
 import type { Icon, IconProps, IconWeight } from "@phosphor-icons/react";
-import type { ForwardRefExoticComponent, ReactElement, RefAttributes } from "react";
+import type { ReactElement } from "react";
 
 export type StatusNotify = "success" | "error";
 
@@ -21,15 +21,17 @@ export interface CustomIconProps extends IconProps {
 	alt: string;
 }
 
-export type CustomIcon = ForwardRefExoticComponent<
-	Omit<CustomIconProps, "ref"> & RefAttributes<SVGSVGElement>
->;
+type CustomIconType = (props: CustomIconProps) => JSX.Element;
+
+export type CustomIcon = CustomIconType & { displayName: string };
+
+export type BaseIcon = (props: IconBaseProps) => JSX.Element;
 
 export type ButtonVariant = "borderless" | "gray" | "outline" | "filled";
 
 export type SeparatorDirection = "horizontal" | "vertical";
 
-export type Breadcrumb = {
+export type BreadcrumbType = {
 	label: string;
 	id: string;
 	disabled?: boolean;

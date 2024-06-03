@@ -1,11 +1,8 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { GotoWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const GotoIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={GotoWeights} />
-));
+const GotoIcon: CustomIcon = (props) => <CustomIconBase {...props} weights={GotoWeights} />;
 
 GotoIcon.displayName = "GotoIcon";
 export { GotoIcon };

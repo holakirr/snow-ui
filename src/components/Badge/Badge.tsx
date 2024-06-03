@@ -1,13 +1,13 @@
 import { Text } from "@components";
 import { ROLES } from "@constants";
-import { type ComponentProps, forwardRef } from "react";
+import type { ComponentProps } from "react";
 import { twMerge } from "tailwind-merge";
 
 export type BadgeProps = ComponentProps<"span"> & {
 	text?: string;
 };
 
-const Badge = forwardRef<HTMLSpanElement, BadgeProps>(({ text, className }, ref) => (
+const Badge = ({ text, className, ref }: BadgeProps) => (
 	<Text
 		as="span"
 		size={12}
@@ -21,7 +21,7 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(({ text, className }, ref)
 	>
 		{text}
 	</Text>
-));
+);
 
 Badge.displayName = "Badge";
 export { Badge };

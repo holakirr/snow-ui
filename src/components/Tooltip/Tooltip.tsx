@@ -1,20 +1,19 @@
 import { KBD, type KBDProps, Text } from "@components";
 import { ROLES } from "@constants";
-import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-export type TooltipProps = {
+export type TooltipProps = React.ComponentProps<"div"> & {
 	/**
 	 * The label of the Tooltip
 	 */
 	label: string;
 	/**
-	 * The icon of the Tooltip
+	 * Keybindings to display
 	 */
 	kbd?: KBDProps;
-} & ComponentProps<"div">;
+};
 
-const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(({ label, kbd, className }, ref) => (
+const Tooltip = ({ label, kbd, className, ref }: TooltipProps) => (
 	<div
 		className={twMerge(
 			"py-1 px-2 flex place-items-center gap-2 bg-black-80 backdrop-blur-[20px] rounded-lg transition-all",
@@ -28,7 +27,7 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(({ label, kbd, classNam
 		</Text>
 		{kbd && <KBD {...kbd} className="text-white-40" />}
 	</div>
-));
+);
 
 Tooltip.displayName = "Tooltip";
 export { Tooltip };

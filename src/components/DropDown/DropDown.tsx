@@ -1,20 +1,19 @@
-import { DropDownItem, type DropDownItemProps, Text } from "@components";
+import { DropDownItem, type DropDownItemType, Text } from "@components";
 import { ROLES } from "@constants";
-import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-type DropDownListProps = {
+type DropDownListType = {
 	title: string;
-	items: DropDownItemProps[];
+	items: DropDownItemType[];
 };
 
-export type DropDownProps = {
-	lists: DropDownListProps[];
+export type DropDownType = {
+	lists: DropDownListType[];
 };
 
-type DropDownAllProps = DropDownProps & ComponentProps<"div">;
+type DropDownProps = DropDownType & React.ComponentProps<"div">;
 
-const DropDown = forwardRef<HTMLDivElement, DropDownAllProps>(({ lists, className }, ref) => (
+const DropDown = ({ lists, className, ref }: DropDownProps) => (
 	<div
 		ref={ref}
 		aria-label="dropdown"
@@ -34,7 +33,7 @@ const DropDown = forwardRef<HTMLDivElement, DropDownAllProps>(({ lists, classNam
 			</div>
 		))}
 	</div>
-));
+);
 
 DropDown.displayName = "DropDown";
 export { DropDown };

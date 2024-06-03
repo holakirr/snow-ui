@@ -1,11 +1,8 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { CopyWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const CopyIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={CopyWeights} />
-));
+const CopyIcon: CustomIcon = (props) => <CustomIconBase {...props} weights={CopyWeights} />;
 
 CopyIcon.displayName = "CopyIcon";
 export { CopyIcon };

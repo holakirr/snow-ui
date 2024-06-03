@@ -1,11 +1,8 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { NotepadWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const NotepadIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={NotepadWeights} />
-));
+const NotepadIcon: CustomIcon = (props) => <CustomIconBase {...props} weights={NotepadWeights} />;
 
 NotepadIcon.displayName = "NotepadIcon";
 export { NotepadIcon };

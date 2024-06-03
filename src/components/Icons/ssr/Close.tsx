@@ -1,11 +1,8 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { CloseWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const CloseIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={CloseWeights} />
-));
+const CloseIcon: CustomIcon = (props) => <CustomIconBase {...props} weights={CloseWeights} />;
 
 CloseIcon.displayName = "CloseIcon";
 export { CloseIcon };

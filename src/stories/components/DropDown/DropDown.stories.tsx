@@ -1,4 +1,4 @@
-import { DropDown, type DropDownItemProps } from "@components";
+import { DropDown, type DropDownItemType } from "@components";
 import { ROLES } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
@@ -43,7 +43,7 @@ const meta = {
 						title: "DropDownItemWithSubtitle",
 						href: testLink,
 					},
-				] as DropDownItemProps[],
+				] as DropDownItemType[],
 			},
 		],
 	},

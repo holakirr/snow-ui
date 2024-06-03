@@ -1,11 +1,8 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { RightbarWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const RightbarIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={RightbarWeights} />
-));
+const RightbarIcon: CustomIcon = (props) => <CustomIconBase {...props} weights={RightbarWeights} />;
 
 RightbarIcon.displayName = "RightbarIcon";
 export { RightbarIcon };

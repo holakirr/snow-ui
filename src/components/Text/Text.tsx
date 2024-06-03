@@ -1,38 +1,6 @@
 import { type VariantProps, cva } from "class-variance-authority";
-import {
-	type ComponentPropsWithRef,
-	type ComponentPropsWithoutRef,
-	type ElementType,
-	type JSXElementConstructor,
-	type ReactNode,
-	forwardRef,
-} from "react";
+import type { ElementType, ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
-
-export type PropsOf<C extends keyof JSX.IntrinsicElements | JSXElementConstructor<unknown>> =
-	JSX.LibraryManagedAttributes<C, ComponentPropsWithoutRef<C>>;
-
-type AsProp<C extends ElementType> = { as?: C };
-
-export type ExtendableProps<ExtendedProps = unknown, OverrideProps = unknown> = OverrideProps &
-	Omit<ExtendedProps, keyof OverrideProps>;
-
-export type InheritableElementProps<C extends ElementType, Props = unknown> = ExtendableProps<
-	PropsOf<C>,
-	Props
->;
-
-export type PolimorphicComponentProps<
-	C extends ElementType,
-	Props = unknown,
-> = InheritableElementProps<C, Props & AsProp<C>>;
-
-export type PolimorphicRef<C extends ElementType> = ComponentPropsWithRef<C>["ref"];
-
-export type PolimorphicComponentPropsWithRef<
-	C extends ElementType,
-	Props = unknown,
-> = PolimorphicComponentProps<C, Props> & { ref?: PolimorphicRef<C> };
 
 const textStyles = cva(["font-normal transition-all font-['Inter']"], {
 	variants: {
@@ -67,27 +35,31 @@ const textStyles = cva(["font-normal transition-all font-['Inter']"], {
 
 export type TextSize = VariantProps<typeof textStyles>["size"];
 
-type TextProps<C extends ElementType> = PolimorphicComponentPropsWithRef<
-	C,
-	VariantProps<typeof textStyles>
->;
+type TextProps<C extends ElementType> = React.ComponentProps<C> &
+	VariantProps<typeof textStyles> & {
+		as?: C;
+	};
 
-type TextComponent = <C extends ElementType = "span">(props: TextProps<C>) => ReactNode;
-
-export const Text: TextComponent = forwardRef(
-	<C extends ElementType = "span">(
-		{ as, size, semibold, align, italic, underline, className, children, ...props }: TextProps<C>,
-		ref?: PolimorphicRef<C>,
-	): ReactNode => {
-		const Component = as || "span";
-		return (
-			<Component
-				ref={ref}
-				className={twMerge(textStyles({ size, semibold, align, italic, underline, className }))}
-				{...props}
-			>
-				{children}
-			</Component>
-		);
-	},
-);
+export const Text = <C extends ElementType = "span">({
+	as,
+	size,
+	semibold,
+	align,
+	italic,
+	underline,
+	className,
+	children,
+	ref,
+	...props
+}: TextProps<C>): ReactNode => {
+	const Component = as || "span";
+	return (
+		<Component
+			ref={ref}
+			className={twMerge(textStyles({ size, semibold, align, italic, underline, className }))}
+			{...props}
+		>
+			{children}
+		</Component>
+	);
+};

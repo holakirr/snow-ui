@@ -3,11 +3,10 @@ import { ROLES } from "@constants";
 import type { Icon } from "@phosphor-icons/react";
 import type { CustomIcon } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
-import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-type ButtonProps = VariantProps<typeof buttonStyles> &
-	ComponentProps<"button"> & {
+type ButtonProps = React.ComponentProps<"button"> &
+	VariantProps<typeof buttonStyles> & {
 		label?: string | number;
 		rightIcon?: Icon | CustomIcon;
 		leftIcon?: Icon | CustomIcon;
@@ -50,45 +49,44 @@ const Paddings = {
 	lg: "p-4",
 } as const;
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-	(
-		{
-			variant = "borderless",
-			size = "sm",
+const Button = ({
+	variant = "borderless",
+	size = "sm",
+	className,
+	label,
+	textSize,
+	leftIcon: LeftIcon,
+	rightIcon: RightIcon,
+	ref,
+	...props
+}: ButtonProps) => (
+	<button
+		ref={ref}
+		type="button"
+		title={label?.toString() || "Button title"}
+		className={twMerge(
+			buttonStyles({ variant, size }),
+			LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
 			className,
-			label,
-			textSize,
-			leftIcon: LeftIcon,
-			rightIcon: RightIcon,
-			...props
-		},
-		ref,
-	) => (
-		<button
-			ref={ref}
-			type="button"
-			title={label?.toString() || "Button title"}
-			className={twMerge(
-				buttonStyles({ variant, size }),
-				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
-				className,
-			)}
-			role={ROLES.button}
-			aria-label={label?.toString() || "Button aria label"}
-			{...props}
-		>
-			{LeftIcon && <LeftIcon size={IconSizes[size || "sm"]} alt={`Left icon in button ${label}`} />}
-			{label && (
-				<Text
-					size={textSize ? textSize : size === "sm" ? 14 : 18}
-					className="group-hover:px-1 text-center"
-				>
-					{label}
-				</Text>
-			)}
-			{RightIcon && (
-				<RightIcon size={IconSizes[size || "sm"]} alt={`Right icon in button ${label}`} />
-			)}
-		</button>
-	),
+		)}
+		role={ROLES.button}
+		aria-label={label?.toString() || "Button aria label"}
+		{...props}
+	>
+		{LeftIcon && <LeftIcon size={IconSizes[size || "sm"]} alt={`Left icon in button ${label}`} />}
+		{label && (
+			<Text
+				size={textSize ? textSize : size === "sm" ? 14 : 18}
+				className="group-hover:px-1 text-center"
+			>
+				{label}
+			</Text>
+		)}
+		{RightIcon && (
+			<RightIcon size={IconSizes[size || "sm"]} alt={`Right icon in button ${label}`} />
+		)}
+	</button>
 );
+
+Button.displayName = "Button";
+export { Button };

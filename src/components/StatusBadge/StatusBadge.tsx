@@ -2,7 +2,6 @@ import { DotIcon, Text } from "@components";
 import { ROLES, STATUSES_EXPANDED } from "@constants";
 import type { StatusExpanded } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
-import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 const statusBadgeStyles = cva(
@@ -39,30 +38,28 @@ const iconStyles = cva("", {
 	},
 });
 
-type StatusBadgeProps = VariantProps<typeof statusBadgeStyles> &
-	ComponentProps<"div"> & {
+type StatusBadgeProps = React.ComponentProps<"div"> &
+	VariantProps<typeof statusBadgeStyles> & {
 		label: string;
 		status: StatusExpanded;
 	};
 
-const StatusBadge = forwardRef<HTMLDivElement, StatusBadgeProps>(
-	({ label, withDot, status, className }, ref) => (
-		<div
-			className={twMerge(statusBadgeStyles({ withDot, status }), className)}
-			ref={ref}
-			role={ROLES.statusBadge}
-		>
-			{withDot && (
-				<DotIcon
-					alt={`Dot icon for status badge ${label}`}
-					size={16}
-					weight="fill"
-					className={twMerge(iconStyles({ status }))}
-				/>
-			)}
-			<Text as="span">{label}</Text>
-		</div>
-	),
+const StatusBadge = ({ label, withDot, status, className, ref }: StatusBadgeProps) => (
+	<div
+		className={twMerge(statusBadgeStyles({ withDot, status }), className)}
+		ref={ref}
+		role={ROLES.statusBadge}
+	>
+		{withDot && (
+			<DotIcon
+				alt={`Dot icon for status badge ${label}`}
+				size={16}
+				weight="fill"
+				className={twMerge(iconStyles({ status }))}
+			/>
+		)}
+		<Text as="span">{label}</Text>
+	</div>
 );
 
 StatusBadge.displayName = "StatusBadge";

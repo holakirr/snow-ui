@@ -4,15 +4,13 @@ import type { Status } from "@types";
 import { twMerge } from "tailwind-merge";
 import { LoadingBIcon } from "./LoadingB";
 
-const StatusIcon = ({
-	status,
-	className,
-	size,
-}: {
+type StatusIconProps = {
 	status: Status;
 	className?: string;
 	size: number;
-}) => {
+};
+
+const StatusIcon = ({ status, className, size }: StatusIconProps) => {
 	switch (status) {
 		case STATUSES.progress:
 			return (

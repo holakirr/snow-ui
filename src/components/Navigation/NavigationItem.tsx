@@ -12,20 +12,7 @@ type NavigationItemProps = ComponentProps<"li"> &
 	};
 
 const NavigationItem = forwardRef<HTMLLIElement, NavigationItemProps>(
-	(
-		{
-			label,
-			id,
-			active,
-			expanded,
-			icon: Icon,
-			items,
-			onClick,
-			className,
-			...props
-		},
-		ref,
-	) => (
+	({ label, id, active, expanded, icon: Icon, items, onClick, className, ...props }, ref) => (
 		<div className="flex flex-col list-none transition-all gap-1">
 			<li
 				ref={ref}
@@ -53,25 +40,14 @@ const NavigationItem = forwardRef<HTMLLIElement, NavigationItemProps>(
 					/>
 				)}
 				<div className="flex items-center gap-2">
-					{Icon && (
-						<Icon
-							size={20}
-							alt={`Icon ${Icon.displayName}`}
-							className="fill-black-100"
-						/>
-					)}
+					{Icon && <Icon size={20} alt={`Icon ${Icon.displayName}`} className="fill-black-100" />}
 					<Text as="p" size={14} className="w-fit text-black-100">
 						{label}
 					</Text>
 				</div>
 			</li>
 			{items && (
-				<NavigationMenu
-					items={items}
-					onItemClick={onClick}
-					opened={!!expanded}
-					title={label}
-				/>
+				<NavigationMenu items={items} onItemClick={onClick} opened={!!expanded} title={label} />
 			)}
 		</div>
 	),

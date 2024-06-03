@@ -12,15 +12,9 @@ export type DialogTitleProps = {
 
 const DialogTitle = forwardRef<HTMLDivElement, DialogTitleProps>(
 	({ titleIcon: Icon, title, onClose }, ref) => (
-		<div
-			className="flex justify-between items-center"
-			ref={ref}
-			role={ROLES.dialogTitle}
-		>
+		<div className="flex justify-between items-center" ref={ref} role={ROLES.dialogTitle}>
 			<div className="flex gap-4 items-center text-black-100">
-				{Icon && (
-					<Icon size={48} alt={`Icon for dialog ${title}`} weight="regular" />
-				)}
+				{Icon && <Icon size={48} alt={`Icon for dialog ${title}`} weight="regular" />}
 				<Text as="p" size={48} semibold>
 					{title}
 				</Text>

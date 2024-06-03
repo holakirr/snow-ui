@@ -24,12 +24,7 @@ const Navigation = forwardRef<HTMLElement, NavigationProps>(
 					{title}
 				</Text>
 			)}
-			<NavigationMenu
-				className="ps-0"
-				items={items}
-				opened
-				onItemClick={onItemClick}
-			/>
+			<NavigationMenu className="ps-0" items={items} opened onItemClick={onItemClick} />
 		</nav>
 	),
 );

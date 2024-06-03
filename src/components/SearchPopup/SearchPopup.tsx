@@ -1,10 +1,4 @@
-import {
-	DropDown,
-	type DropDownProps,
-	Input,
-	Line,
-	SearchIcon,
-} from "@components";
+import { DropDown, type DropDownProps, Input, Line, SearchIcon } from "@components";
 import { ROLES, STATUSES } from "@constants";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";

@@ -11,12 +11,8 @@ type SliderProps = ComponentProps<"input"> & {
 };
 
 const Slider = forwardRef<HTMLInputElement, SliderProps>(
-	(
-		{ className, min = 0, max = 100, value = 50, placeholder, ...props },
-		ref,
-	) => {
-		const percentage =
-			((Number(value) - Number(min)) / (Number(max) - Number(min))) * 100;
+	({ className, min = 0, max = 100, value = 50, placeholder, ...props }, ref) => {
+		const percentage = ((Number(value) - Number(min)) / (Number(max) - Number(min))) * 100;
 		return (
 			<div className="relative flex justify-center items-center h-[34px] bg-black-5 overflow-hidden rounded-lg">
 				<input
@@ -27,10 +23,7 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
 					min={min}
 					max={max}
 					value={value}
-					className={twMerge(
-						"peer appearance-none w-full h-full bg-transparent",
-						className,
-					)}
+					className={twMerge("peer appearance-none w-full h-full bg-transparent", className)}
 					{...props}
 					type="range"
 					ref={ref}

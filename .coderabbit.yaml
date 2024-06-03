@@ -1,5 +1,5 @@
-language: "en"
-early_access: false
+language: "ru"
+early_access: true
 reviews:
   high_level_summary: true
   poem: false

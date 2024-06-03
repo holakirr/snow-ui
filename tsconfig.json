@@ -23,7 +23,8 @@
       "@styles": ["./src/styles"],
       "@helpers": ["./src/helpers"],
       "@hooks": ["./src/hooks"],
-      "@types": ["./src/types"]
+      "@types": ["./src/types"],
+      "@widgets": ["./src/widgets"]
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true

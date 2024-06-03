@@ -18,10 +18,7 @@ type TextAreaProps = ComponentProps<"textarea"> & {
 };
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-	(
-		{ className, id, status, error, textLimit, onChange, value, ...props },
-		ref,
-	) => (
+	({ className, id, status, error, textLimit, onChange, value, ...props }, ref) => (
 		<div className="flex flex-col gap-2">
 			<div className="relative flex">
 				<textarea
@@ -40,18 +37,11 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 					onChange={onChange}
 					{...props}
 				/>
-				{status && (
-					<StatusIcon
-						status={status}
-						className="absolute right-5 top-4"
-						size={20}
-					/>
-				)}
+				{status && <StatusIcon status={status} className="absolute right-5 top-4" size={20} />}
 				{textLimit && (
-					<Text
-						size={12}
-						className="absolute text-black-20 bottom-1 right-6 w-min text-right"
-					>{`${value ? value.toString().length : 0}/${textLimit}`}</Text>
+					<Text size={12} className="absolute text-black-20 bottom-1 right-6 w-min text-right">{`${
+						value ? value.toString().length : 0
+					}/${textLimit}`}</Text>
 				)}
 			</div>
 			{error && <Text className="text-secondary-red">{error}</Text>}

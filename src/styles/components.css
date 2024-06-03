@@ -40,7 +40,6 @@
   }
 }
 
-/* TODO: fix dark theme */
 textarea {
   &::-webkit-resizer {
     @apply fill-black-10;
@@ -81,4 +80,8 @@ input[type="range"]::-webkit-slider-thumb {
 
 input[type="range"]:disabled::-webkit-slider-thumb {
   @apply bg-transparent;
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+  @apply appearance-none;
 }

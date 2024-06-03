@@ -1,4 +1,4 @@
-import { Text } from "@components";
+import { Text, type TextSize } from "@components";
 import { ROLES } from "@constants";
 import type { Icon } from "@phosphor-icons/react";
 import type { CustomIcon } from "@types";
@@ -8,9 +8,10 @@ import { twMerge } from "tailwind-merge";
 
 type ButtonProps = VariantProps<typeof buttonStyles> &
 	ComponentProps<"button"> & {
-		label?: string;
+		label?: string | number;
 		rightIcon?: Icon | CustomIcon;
 		leftIcon?: Icon | CustomIcon;
+		textSize?: TextSize;
 	};
 
 const buttonStyles = cva(
@@ -18,13 +19,11 @@ const buttonStyles = cva(
 	{
 		variants: {
 			variant: {
-				borderless:
-					"text-black-100 bg-transparent font-normal hover:bg-black-5",
+				borderless: "text-black-100 bg-transparent font-normal hover:bg-black-5",
 				gray: "text-black-100 bg-black-5 hover:bg-black-20 disabled:bg-black-5 focus:ring-offset-2",
 				outline:
 					"text-black-100 bg-transparent border-1 border-black-10 border-solid hover:bg-black-5 disabled:border-black-10",
-				filled:
-					"text-white-100 bg-primary-brand hover:bg-primary-brandHover disabled:bg-black-5",
+				filled: "text-white-100 bg-primary-brand hover:bg-primary-brandHover disabled:bg-black-5",
 			},
 			size: {
 				sm: "text-sm py-1 px-2 rounded-lg gap-1",
@@ -58,6 +57,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			size = "sm",
 			className,
 			label,
+			textSize,
 			leftIcon: LeftIcon,
 			rightIcon: RightIcon,
 			...props
@@ -67,31 +67,27 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 		<button
 			ref={ref}
 			type="button"
-			title={label || "Button title"}
+			title={label?.toString() || "Button title"}
 			className={twMerge(
-				buttonStyles({ variant, size, className }),
+				buttonStyles({ variant, size }),
 				LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
+				className,
 			)}
 			role={ROLES.button}
-			aria-label={label || "Button aria label"}
+			aria-label={label?.toString() || "Button aria label"}
 			{...props}
 		>
-			{LeftIcon && (
-				<LeftIcon
-					size={IconSizes[size || "sm"]}
-					alt={`Left icon in button ${label}`}
-				/>
-			)}
+			{LeftIcon && <LeftIcon size={IconSizes[size || "sm"]} alt={`Left icon in button ${label}`} />}
 			{label && (
-				<Text size={size === "sm" ? 14 : 18} className="group-hover:px-1">
+				<Text
+					size={textSize ? textSize : size === "sm" ? 14 : 18}
+					className="group-hover:px-1 text-center"
+				>
 					{label}
 				</Text>
 			)}
 			{RightIcon && (
-				<RightIcon
-					size={IconSizes[size || "sm"]}
-					alt={`Right icon in button ${label}`}
-				/>
+				<RightIcon size={IconSizes[size || "sm"]} alt={`Right icon in button ${label}`} />
 			)}
 		</button>
 	),

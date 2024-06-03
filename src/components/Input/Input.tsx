@@ -4,27 +4,7 @@ import type { CustomIcon } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-
-export const basicInputClasses =
-	"px-5 transition-all rounded-2xl bg-white-80 border-1 border-black-10 placeholder:text-black-20 hover:border-black-40 text-black-100";
-
-export const disabledInputClasses =
-	"disabled:bg-black-5 disabled:text-black-10 disabled:border-none disabled:cursor-not-allowed";
-
-export const focusInputClasses =
-	"focus:ring-4 focus:ring-black-5 focus:outline-none active:border-black-40 focus:border-black-40";
-
-export const statusInputClasses = "pr-10";
-
-const inputClasses = cva("py-4", {
-	variants: {
-		status: {
-			progress: statusInputClasses,
-			success: statusInputClasses,
-			error: `border-secondary-red ${statusInputClasses}`,
-		},
-	},
-});
+import { InputBase } from "./InputBase";
 
 type InputProps = ComponentProps<"input"> &
 	VariantProps<typeof inputClasses> & {
@@ -36,6 +16,18 @@ type InputProps = ComponentProps<"input"> &
 		clearable?: boolean;
 		onClear?: () => void;
 	};
+
+export const statusInputClasses = "pr-10";
+
+const inputClasses = cva("", {
+	variants: {
+		status: {
+			progress: statusInputClasses,
+			success: statusInputClasses,
+			error: `border-secondary-red ${statusInputClasses}`,
+		},
+	},
+});
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
 	(
@@ -59,18 +51,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 	) => (
 		<div className="flex flex-col items-start gap-2 transition-all">
 			<div className="relative">
-				<input
+				<InputBase
 					id={id}
 					ref={ref}
-					placeholder={title ? "" : placeholder}
+					title={title}
+					placeholder={placeholder}
 					className={twMerge(
-						basicInputClasses,
-						disabledInputClasses,
-						focusInputClasses,
 						inputClasses({ status, className }),
 						Icon && "ps-11",
-						title && "peer h-[74px] focus:h-[60px] content-end",
-						title && value && "h-[60px]",
 						title && status && "h-[74px] focus:h-[74px] content-center",
 						error && "border-secondary-red",
 					)}
@@ -97,10 +85,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 				{Icon && (
 					<Icon
 						alt={`Icon in input ${title} with id ${id}`}
-						className={twMerge(
-							"absolute top-1/2 left-5 transform -translate-y-1/2",
-							iconClassName,
-						)}
+						className={twMerge("absolute top-1/2 left-5 transform -translate-y-1/2", iconClassName)}
 						size={iconSize || 20}
 					/>
 				)}

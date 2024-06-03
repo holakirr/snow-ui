@@ -1,9 +1,5 @@
 import type { Icon, IconProps, IconWeight } from "@phosphor-icons/react";
-import type {
-	ForwardRefExoticComponent,
-	ReactElement,
-	RefAttributes,
-} from "react";
+import type { ForwardRefExoticComponent, ReactElement, RefAttributes } from "react";
 
 export type StatusNotify = "success" | "error";
 
@@ -50,3 +46,5 @@ export type ModifiedNavigationItemType = NavigationItemType & {
 	expanded?: boolean;
 	active?: boolean;
 };
+
+export type DateTypeEnum = "date" | "month" | "year" | "hours" | "minutes";

@@ -27,10 +27,7 @@ export const OneNoteWeights: CustomIconWeights = new Map([
 				d="M0 9.25C0 8.42157 0.671573 7.75 1.5 7.75H16.5C17.3284 7.75 18 8.42157 18 9.25V24.25C18 25.0784 17.3284 25.75 16.5 25.75H1.5C0.671573 25.75 0 25.0784 0 24.25V9.25Z"
 				fill="#7719AA"
 			/>
-			<path
-				d="M4 21.5V12H5.75L12.25 18.5V12H14V21.5H12.25L5.75 15V21.5H4Z"
-				fill="white"
-			/>
+			<path d="M4 21.5V12H5.75L12.25 18.5V12H14V21.5H12.25L5.75 15V21.5H4Z" fill="white" />
 		</Fragment>,
 	],
 ]);

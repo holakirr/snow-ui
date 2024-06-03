@@ -27,20 +27,13 @@ type NotificationProps = VariantProps<typeof notificationClasses> &
 	};
 
 const Notification = forwardRef<HTMLDivElement, NotificationProps>(
-	(
-		{ size = "sm", className, status = STATUSES_NOTIFY.success, title },
-		ref,
-	) => (
+	({ size = "sm", className, status = STATUSES_NOTIFY.success, title }, ref) => (
 		<div
 			className={twMerge(notificationClasses({ size, className }))}
 			ref={ref}
 			role={ROLES.notification}
 		>
-			<StatusIcon
-				status={status}
-				size={size === "sm" ? 16 : 24}
-				className="fill-white-100"
-			/>
+			<StatusIcon status={status} size={size === "sm" ? 16 : 24} className="fill-white-100" />
 			<Text size={size === "sm" ? 12 : 14}>{title}</Text>
 		</div>
 	),

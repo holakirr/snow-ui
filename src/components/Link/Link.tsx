@@ -1,8 +1,7 @@
 import { ROLES } from "@constants";
-import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-const Link = forwardRef<HTMLAnchorElement, ComponentProps<"a">>(({ className, ...props }, ref) => (
+const Link = ({ className, ref, ...props }: React.ComponentProps<"a">) => (
 	<a
 		ref={ref}
 		className={twMerge(
@@ -12,7 +11,7 @@ const Link = forwardRef<HTMLAnchorElement, ComponentProps<"a">>(({ className, ..
 		role={ROLES.link}
 		{...props}
 	/>
-));
+);
 
 Link.displayName = "Link";
 export { Link };

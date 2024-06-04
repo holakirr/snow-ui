@@ -1,11 +1,8 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { TXTWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const TXTIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={TXTWeights} />
-));
+const TXTIcon: CustomIcon = (props) => <CustomIconBase {...props} weights={TXTWeights} />;
 
 TXTIcon.displayName = "TXTIcon";
 export { TXTIcon };

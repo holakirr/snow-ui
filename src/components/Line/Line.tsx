@@ -1,9 +1,8 @@
 import { ROLES } from "@constants";
 import { type VariantProps, cva } from "class-variance-authority";
-import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-type LineProps = ComponentProps<"hr"> & VariantProps<typeof lineClasses>;
+type LineProps = React.ComponentProps<"hr"> & VariantProps<typeof lineClasses>;
 
 const lineClasses = cva("border-none bg-black-100 rounded-full", {
 	variants: {
@@ -17,9 +16,9 @@ const lineClasses = cva("border-none bg-black-100 rounded-full", {
 	},
 });
 
-const Line = forwardRef<HTMLHRElement, LineProps>(({ direction, className }, ref) => (
+const Line = ({ direction, className, ref }: LineProps) => (
 	<hr ref={ref} className={twMerge(lineClasses({ direction, className }))} role={ROLES.line} />
-));
+);
 
 Line.displayName = "Line";
 export { Line };

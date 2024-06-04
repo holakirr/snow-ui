@@ -1,11 +1,8 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { OneNoteWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const OneNoteIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={OneNoteWeights} />
-));
+const OneNoteIcon: CustomIcon = (props) => <CustomIconBase {...props} weights={OneNoteWeights} />;
 
 OneNoteIcon.displayName = "OneNoteIcon";
 export { OneNoteIcon };

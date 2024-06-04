@@ -2,9 +2,9 @@ import { Breadcrumbs } from "@components";
 import { ROLES } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
-import type { Breadcrumb } from "@types";
+import type { BreadcrumbType } from "@types";
 
-const testBreadcrumbs: Breadcrumb[] = [
+const testBreadcrumbs: BreadcrumbType[] = [
 	{ label: "Home", id: "home" },
 	{ label: "Products", id: "products" },
 	{ label: "Product 1", id: "product-1" },

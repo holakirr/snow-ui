@@ -17,7 +17,8 @@
 			"*.locb",
 			"*.lock",
 			"src/stories/colors.stories.tsx",
-			"tsconfig.json"
+			"tsconfig.json",
+			"vite.config.ts"
 		]
 	},
 	"formatter": {

@@ -1,11 +1,10 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { VerticalScreenWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const VerticalScreenIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={VerticalScreenWeights} />
-));
+const VerticalScreenIcon: CustomIcon = (props) => (
+	<CustomIconBase {...props} weights={VerticalScreenWeights} />
+);
 
 VerticalScreenIcon.displayName = "VerticalScreenIcon";
 export { VerticalScreenIcon };

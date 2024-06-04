@@ -2,7 +2,6 @@ import { StatusIcon, Text } from "@components";
 import { ROLES, STATUSES_NOTIFY } from "@constants";
 import type { StatusNotify } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
-import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 const notificationClasses = cva(
@@ -20,23 +19,27 @@ const notificationClasses = cva(
 	},
 );
 
-type NotificationProps = VariantProps<typeof notificationClasses> &
-	ComponentProps<"div"> & {
+type NotificationProps = React.ComponentProps<"div"> &
+	VariantProps<typeof notificationClasses> & {
 		status: StatusNotify;
 		title: string;
 	};
 
-const Notification = forwardRef<HTMLDivElement, NotificationProps>(
-	({ size = "sm", className, status = STATUSES_NOTIFY.success, title }, ref) => (
-		<div
-			className={twMerge(notificationClasses({ size, className }))}
-			ref={ref}
-			role={ROLES.notification}
-		>
-			<StatusIcon status={status} size={size === "sm" ? 16 : 24} className="fill-white-100" />
-			<Text size={size === "sm" ? 12 : 14}>{title}</Text>
-		</div>
-	),
+const Notification = ({
+	size = "sm",
+	className,
+	status = STATUSES_NOTIFY.success,
+	title,
+	ref,
+}: NotificationProps) => (
+	<div
+		className={twMerge(notificationClasses({ size, className }))}
+		ref={ref}
+		role={ROLES.notification}
+	>
+		<StatusIcon status={status} size={size === "sm" ? 16 : 24} className="fill-white-100" />
+		<Text size={size === "sm" ? 12 : 14}>{title}</Text>
+	</div>
 );
 
 Notification.displayName = "Notification";

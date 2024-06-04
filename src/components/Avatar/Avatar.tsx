@@ -2,7 +2,6 @@ import { Text } from "@components";
 import { ROLES } from "@constants";
 import { getInitials } from "@helpers";
 import { type VariantProps, cva } from "class-variance-authority";
-import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 const avatarStyles = cva(
@@ -41,38 +40,36 @@ const avatarStyles = cva(
 	},
 );
 
-export type AvatarProps = ComponentProps<"div"> &
+export type AvatarProps = React.ComponentProps<"div"> &
 	VariantProps<typeof avatarStyles> & {
 		username: string;
 		img?: string;
 	};
 
-const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
-	({ size, img, username, color, className }, ref) => (
-		<div
-			role={ROLES.avatar}
-			aria-label={`Avatar for ${username}`}
-			className={twMerge(avatarStyles({ size, color, className }))}
-			ref={ref}
-		>
-			{img && (
-				<img
-					src={img}
-					// biome-ignore lint/a11y/noRedundantAlt: <explanation>
-					alt={`Profile picture of ${username}`}
-					className="w-full h-full transition-all group-hover:scale-125"
-				/>
-			)}
-			{!img && (
-				<Text
-					as="span"
-					className="group-hover:text-sm group-hover:font-semibold w-min cursor-default text-black-100"
-				>
-					{getInitials(username)}
-				</Text>
-			)}
-		</div>
-	),
+const Avatar = ({ size, img, username, color, className, ref }: AvatarProps) => (
+	<div
+		role={ROLES.avatar}
+		aria-label={`Avatar for ${username}`}
+		className={twMerge(avatarStyles({ size, color, className }))}
+		ref={ref}
+	>
+		{img && (
+			<img
+				src={img}
+				// biome-ignore lint/a11y/noRedundantAlt: <explanation>
+				alt={`Profile picture of ${username}`}
+				className="w-full h-full transition-all group-hover:scale-125"
+			/>
+		)}
+		{!img && (
+			<Text
+				as="span"
+				className="group-hover:text-sm group-hover:font-semibold w-min cursor-default text-black-100"
+			>
+				{getInitials(username)}
+			</Text>
+		)}
+	</div>
 );
 
 Avatar.displayName = "Avatar";

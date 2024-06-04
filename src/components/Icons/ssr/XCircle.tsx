@@ -1,11 +1,8 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { XCircleWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const XCircleIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={XCircleWeights} />
-));
+const XCircleIcon: CustomIcon = (props) => <CustomIconBase {...props} weights={XCircleWeights} />;
 
 XCircleIcon.displayName = "XCircleIcon";
 export { XCircleIcon };

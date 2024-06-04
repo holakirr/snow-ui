@@ -1,11 +1,10 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { ArrowLineRightWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const ArrowLineRightIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={ArrowLineRightWeights} />
-));
+const ArrowLineRightIcon: CustomIcon = (props) => (
+	<CustomIconBase {...props} weights={ArrowLineRightWeights} />
+);
 
 ArrowLineRightIcon.displayName = "ArrowLineRightIcon";
 export { ArrowLineRightIcon };

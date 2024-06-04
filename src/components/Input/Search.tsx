@@ -1,7 +1,6 @@
 import { KBD, SearchIcon } from "@components";
 import { ROLES } from "@constants";
 import { type VariantProps, cva } from "class-variance-authority";
-import { type ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 const searchClassnames = cva(
@@ -19,34 +18,41 @@ const searchClassnames = cva(
 	},
 );
 
-type SearchProps = ComponentProps<"input"> &
+type SearchProps = React.ComponentProps<"input"> &
 	VariantProps<typeof searchClassnames> & {
 		keyBindings?: string[];
 		iconSize?: number;
 	};
 
-const Search = forwardRef<HTMLInputElement, SearchProps>(
-	({ id, variant, className, keyBindings, value, iconSize, ...props }, ref) => (
-		<div className="relative">
-			<input
-				{...props}
-				ref={ref}
-				className={twMerge(searchClassnames({ variant, className }), "peer")}
-				type="search"
-				id={id}
-				role={ROLES.search}
-			/>
-			<SearchIcon
-				weight="regular"
-				alt={`Icon for search input ${id}`}
-				className="absolute left-2 top-1/2 -translate-y-1/2 fill-black-20 peer-hover:fill-black-40 peer-focus:fill-primary-brand"
-				size={iconSize || 16}
-			/>
-			{keyBindings && keyBindings.length > 0 && !value && (
-				<KBD className="absolute right-2 top-1/2 -translate-y-1/2 " keyBindings={keyBindings} />
-			)}
-		</div>
-	),
+const Search = ({
+	id,
+	variant,
+	className,
+	keyBindings,
+	value,
+	iconSize,
+	ref,
+	...props
+}: SearchProps) => (
+	<div className="relative">
+		<input
+			{...props}
+			ref={ref}
+			className={twMerge(searchClassnames({ variant, className }), "peer")}
+			type="search"
+			id={id}
+			role={ROLES.search}
+		/>
+		<SearchIcon
+			weight="regular"
+			alt={`Icon for search input ${id}`}
+			className="absolute left-2 top-1/2 -translate-y-1/2 fill-black-20 peer-hover:fill-black-40 peer-focus:fill-primary-brand"
+			size={iconSize || 16}
+		/>
+		{keyBindings && keyBindings.length > 0 && !value && (
+			<KBD className="absolute right-2 top-1/2 -translate-y-1/2 " keyBindings={keyBindings} />
+		)}
+	</div>
 );
 
 Search.displayName = "Search";

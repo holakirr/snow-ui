@@ -1,11 +1,8 @@
-import type { CustomIconProps } from "@types";
-import { forwardRef } from "react";
+import type { CustomIcon } from "@types";
 import { DocXWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 
-const DocXIcon = forwardRef<SVGSVGElement, CustomIconProps>((props, ref) => (
-	<CustomIconBase ref={ref} {...props} weights={DocXWeights} />
-));
+const DocXIcon: CustomIcon = (props) => <CustomIconBase {...props} weights={DocXWeights} />;
 
 DocXIcon.displayName = "DocXIcon";
 export { DocXIcon };

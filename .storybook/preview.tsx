@@ -7,7 +7,6 @@ import { withThemeByDataAttribute } from "@storybook/addon-themes";
 const preview: Preview = {
 	parameters: {
 		chromatic: {
-			//🔶 Test each story for ArticleCard in two modes
 			modes: {
 				light: { theme: "light" },
 				dark: { theme: "dark" },

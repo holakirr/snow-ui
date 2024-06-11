@@ -1,5 +1,5 @@
-import { Tag, type TagProps } from "@components";
 import { twMerge } from "tailwind-merge";
+import { Tag, type TagProps } from "./Tag";
 
 type DatePickerTagProps = TagProps & {
 	isActive?: boolean;

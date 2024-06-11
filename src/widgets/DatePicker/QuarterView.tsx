@@ -1,13 +1,12 @@
-import { ArrowLineLeftIcon, ArrowLineRightIcon, Button } from "@components";
+import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, DatePickerTag } from "@components";
 import { ROLES } from "@constants";
-import type { DateTypeEnum } from "@types";
-import { DatePickerTag } from "./DatePickerTag";
+import type { DateLimitsType, DateTypeEnum } from "@types";
 
 type QuarterViewProps = {
 	displayYear: number;
 	selected: number;
 	current: number;
-	dateLimits?: [Date, Date];
+	dateLimits: DateLimitsType;
 	lastSelection?: Date;
 	onYearSelect: (year: number) => void;
 	onDisplayYearChange: (year: number) => void;
@@ -25,7 +24,7 @@ export const QuarterView = ({
 	onTypeChange,
 }: QuarterViewProps) => {
 	const now = new Date();
-	const limits = dateLimits ? dateLimits.map((date) => date.getFullYear()) : [];
+	const [minLimit, maxLimit] = dateLimits.map((date) => (date ? date.getFullYear() : undefined));
 
 	return (
 		<div
@@ -77,7 +76,9 @@ export const QuarterView = ({
 						const year = displayYear - 12 + i;
 						const isSelected = year === selected;
 						const isCurrent = year === current;
-						const isDisabled = limits.length === 2 && (year < limits[0] || year > limits[1]);
+						const isDisabled = Boolean(
+							(minLimit && year < minLimit) || (maxLimit && year > maxLimit),
+						);
 						return (
 							<Button
 								key={year}

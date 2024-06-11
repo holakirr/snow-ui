@@ -422,7 +422,7 @@ export const DatePickerWithAllProps: Story = {
 				const dateView = within(picker).getByRole(ROLES.datepickerBody);
 				const dateViewTable = within(dateView).getByRole(ROLES.datepickerBodyTable);
 				const disabledDay = within(dateViewTable).getByRole(ROLES.datepickerBodyTableCell, {
-					name: "Sun Aug 14 2016",
+					name: new Date(testLimits[0].setDate(14)).toDateString(),
 				});
 
 				expect(disabledDay).toBeDisabled();

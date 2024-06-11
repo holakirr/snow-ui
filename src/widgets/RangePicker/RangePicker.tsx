@@ -1,27 +1,13 @@
-import type { DateTypeEnum } from "@types";
+import type { RangePickerType } from "@types";
 import { twMerge } from "tailwind-merge";
-import { DatePickerBody } from "./RangePickerBody";
-import { DatePickerHead } from "./RangePickerHead";
+import { RangePickerBody } from "./RangePickerBody";
+import { RangePickerHead } from "./RangePickerHead";
 
-export type RangePickerProps = React.ComponentProps<"div"> & {
-	selected: Date | Date[];
-	displayMonth: number;
-	displayYear: number;
-	startOfWeek: number;
-	changingType: DateTypeEnum;
-	changingFromOrTo: "from" | "to";
-	withTime?: boolean;
-	lastSelection?: Date;
-	dateLimits?: [Date, Date];
-	onDateSelect: (date: Date) => void;
-	onTypeChange: (type: DateTypeEnum) => void;
-	onDisplayMonthChange: (month: number) => void;
-	onDisplayYearChange: (year: number) => void;
-	onFromOrToChange?: (fromOrTo: "from" | "to") => void;
-};
+export type RangePickerProps = React.ComponentProps<"div"> & RangePickerType;
 
 const RangePicker = ({
-	selected,
+	from,
+	to,
 	displayMonth,
 	displayYear,
 	startOfWeek,
@@ -37,52 +23,40 @@ const RangePicker = ({
 	onDisplayYearChange,
 	className,
 	...props
-}: RangePickerProps) => {
-	let date: Date;
-	let rangeEnd: Date | undefined;
-
-	if (Array.isArray(selected)) {
-		date = selected[0];
-		rangeEnd = selected[1];
-	} else {
-		date = selected;
-	}
-
-	return (
-		<div
-			className={twMerge(
-				"w-[360px] rounded-2xl border-1 border-black-10 flex flex-col backdrop-blur-[20px] bg-white-80 text-black-100",
-				className,
-			)}
-			{...props}
-		>
-			<DatePickerHead
-				date={date}
-				rangeEnd={rangeEnd}
-				changingType={changingType}
-				changingFromOrTo={changingFromOrTo}
-				withTime={withTime}
-				onTypeChange={onTypeChange}
-				onFromOrToChange={onFromOrToChange}
-			/>
-			<DatePickerBody
-				date={date}
-				rangeEnd={rangeEnd}
-				displayMonth={displayMonth}
-				displayYear={displayYear}
-				startOfWeek={startOfWeek}
-				changingType={changingType}
-				changingFromOrTo={changingFromOrTo}
-				lastSelection={lastSelection}
-				dateLimits={dateLimits}
-				onDateSelect={onDateSelect}
-				onDisplayMonthChange={onDisplayMonthChange}
-				onDisplayYearChange={onDisplayYearChange}
-				onTypeChange={onTypeChange}
-			/>
-		</div>
-	);
-};
+}: RangePickerProps) => (
+	<div
+		className={twMerge(
+			"w-[360px] rounded-2xl border-1 border-black-10 flex flex-col backdrop-blur-[20px] bg-white-80 text-black-100",
+			className,
+		)}
+		{...props}
+	>
+		<RangePickerHead
+			from={from}
+			to={to}
+			changingType={changingType}
+			changingFromOrTo={changingFromOrTo}
+			withTime={withTime}
+			onTypeChange={onTypeChange}
+			onFromOrToChange={onFromOrToChange}
+		/>
+		<RangePickerBody
+			from={from}
+			to={to}
+			displayMonth={displayMonth}
+			displayYear={displayYear}
+			startOfWeek={startOfWeek}
+			changingType={changingType}
+			changingFromOrTo={changingFromOrTo}
+			dateLimits={dateLimits}
+			lastSelection={lastSelection}
+			onDateSelect={onDateSelect}
+			onDisplayMonthChange={onDisplayMonthChange}
+			onDisplayYearChange={onDisplayYearChange}
+			onTypeChange={onTypeChange}
+		/>
+	</div>
+);
 
 RangePicker.displayName = "RangePicker";
 export { RangePicker };

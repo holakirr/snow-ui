@@ -31,12 +31,16 @@ export const TimeView = ({
 			selected.getHours(),
 			i + 1,
 		);
+		const minuteValue = timeStamp.valueOf();
 
 		return {
 			minute: timeStamp,
 			dateTime: i + 1 < 10 ? `0${i + 1}` : i + 1,
 			isSelected: i + 1 === selected.getMinutes(),
-			isDisabled: Boolean((minLimit && timeStamp < minLimit) || (maxLimit && timeStamp > maxLimit)),
+			isDisabled: Boolean(
+				(minLimit && minuteValue < minLimit.valueOf()) ||
+					(maxLimit && minuteValue > maxLimit.valueOf()),
+			),
 		};
 	});
 	const hours = Array.from({ length: 12 }, (_, i) => {

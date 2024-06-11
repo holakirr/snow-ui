@@ -3,8 +3,9 @@ import { twMerge } from "tailwind-merge";
 
 type DayContentProps = {
 	day: Date;
-	date: Date;
-	rangeEnd?: Date;
+	isInRange: boolean;
+	isRangeStart: boolean;
+	isRangeEnd: boolean;
 	isDisabled?: boolean;
 	isOutOfMonth?: boolean;
 	onClick: (day: Date) => void;
@@ -12,20 +13,15 @@ type DayContentProps = {
 
 export const DayContent = ({
 	day,
-	date,
-	rangeEnd,
+	isInRange,
+	isRangeStart,
+	isRangeEnd,
 	isDisabled,
 	isOutOfMonth,
 	onClick,
 }: DayContentProps) => {
 	const dateTime = day.toDateString();
 	const isToday = new Date().toDateString() === dateTime;
-	const inRange = rangeEnd && day > date && day < rangeEnd;
-	const isRangeStart = day.toDateString() === date.toDateString();
-	const isRangeEnd = rangeEnd
-		? day.toDateString() === rangeEnd.toDateString()
-		: day.toDateString() === date.toDateString();
-	const selected = inRange || isRangeStart || isRangeEnd;
 
 	return (
 		<Button
@@ -33,15 +29,15 @@ export const DayContent = ({
 			tabIndex={0}
 			label={day.getDate()}
 			textSize={12}
-			variant={selected ? "filled" : "borderless"}
+			variant={isInRange ? "filled" : "borderless"}
 			title={dateTime}
 			aria-label={dateTime}
 			disabled={isDisabled}
 			className={twMerge(
 				"rounded-xl hover:bg-black-5 hover:text-black-100",
-				isToday && !selected && "bg-secondary-purple",
+				isToday && !isInRange && "bg-secondary-purple",
 				isOutOfMonth && "opacity-40",
-				selected && "rounded-none",
+				isInRange && "rounded-none",
 				isRangeStart && "rounded-l-xl",
 				isRangeEnd && "rounded-r-xl",
 			)}

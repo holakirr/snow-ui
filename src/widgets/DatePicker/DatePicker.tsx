@@ -1,23 +1,10 @@
 import { ROLES } from "@constants";
-import type { DateTypeEnum } from "@types";
+import type { DatePickerType } from "@types";
 import { twMerge } from "tailwind-merge";
 import { DatePickerBody } from "./DatePickerBody";
 import { DatePickerHead } from "./DatePickerHead";
 
-export type DatePickerProps = React.ComponentProps<"div"> & {
-	selected: Date;
-	displayMonth: number;
-	displayYear: number;
-	startOfWeek: number;
-	changingType: DateTypeEnum;
-	withTime?: boolean;
-	lastSelection?: Date;
-	dateLimits?: [Date, Date];
-	onDateSelect: (date: Date) => void;
-	onTypeChange: (type: DateTypeEnum) => void;
-	onDisplayMonthChange: (month: number) => void;
-	onDisplayYearChange: (year: number) => void;
-};
+export type DatePickerProps = React.ComponentProps<"div"> & DatePickerType;
 
 const DatePicker = ({
 	selected,
@@ -25,9 +12,9 @@ const DatePicker = ({
 	displayYear,
 	startOfWeek,
 	changingType,
+	dateLimits,
 	withTime,
 	lastSelection,
-	dateLimits,
 	onDateSelect,
 	onTypeChange,
 	onDisplayMonthChange,

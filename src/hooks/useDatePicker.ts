@@ -1,55 +1,24 @@
-import type { DateTypeEnum } from "@types";
-import type { DatePickerProps } from "@widgets";
+import { getNewDate } from "@helpers";
+import type { DatePickerType, DateTypeEnum, PickAndPartialOmit } from "@types";
 import { useState } from "react";
 
-const initialDatePickerState = {
+const initialDatePickerState: Pick<
+	DatePickerType,
+	"startOfWeek" | "changingType" | "withTime" | "lastSelection" | "dateLimits"
+> = {
 	startOfWeek: 1,
 	changingType: "date",
 	withTime: false,
 	lastSelection: undefined,
-	dateLimits: undefined,
+	dateLimits: [null, null],
 } as const;
 
-const getNewSelected = ({
-	changingDate,
-	date,
-	changingType,
-	dateLimits,
-}: {
-	changingDate: Date;
-	date: Date;
-	changingType: DateTypeEnum;
-	dateLimits?: [Date, Date];
-}): Date => {
-	const newDate = new Date(
-		["year", "month", "date"].includes(changingType)
-			? date.getFullYear()
-			: changingDate.getFullYear(),
-		["month", "date"].includes(changingType) ? date.getMonth() : changingDate.getMonth(),
-		changingType === "date" ? date.getDate() : changingDate.getDate(),
-		["hours", "minutes"].includes(changingType) ? date.getHours() : changingDate.getHours(),
-		["hours", "minutes"].includes(changingType) ? date.getMinutes() : changingDate.getMinutes(),
-	);
-
-	if (dateLimits) {
-		const [minDate, maxDate] = dateLimits;
-		if (newDate.valueOf() < minDate.valueOf()) {
-			return minDate;
-		}
-		if (newDate.valueOf() > maxDate.valueOf()) {
-			return maxDate;
-		}
-	}
-
-	return newDate;
-};
-
-type PickAndOmit<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>;
-
-export const useDatePicker = (props: PickAndOmit<DatePickerProps, "selected">): DatePickerProps => {
+export const useDatePicker = (
+	props: PickAndPartialOmit<DatePickerType, "selected">,
+): DatePickerType => {
 	const [datePickerState, setDatePickerState] = useState<
 		Omit<
-			DatePickerProps,
+			DatePickerType,
 			| "onDateSelect"
 			| "onTypeChange"
 			| "onDisplayMonthChange"
@@ -99,7 +68,7 @@ export const useDatePicker = (props: PickAndOmit<DatePickerProps, "selected">): 
 		}));
 
 	const onDateSelect = (date: Date) => {
-		const newDate = getNewSelected({
+		const newDate = getNewDate({
 			changingDate: selected,
 			date,
 			changingType,

@@ -15,7 +15,7 @@ const initialDatePickerState: Pick<
 } as const;
 
 export const useRangePicker = (
-	props: PickAndPartialOmit<RangePickerType, "from" | "to"> & {
+	props: PickAndPartialOmit<RangePickerType, "from" | "to" | "onDateSelect"> & {
 		onDateSelect?: ({ from, to }: { from: Date; to: Date }) => void;
 	},
 ): RangePickerType => {

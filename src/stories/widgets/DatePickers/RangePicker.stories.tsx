@@ -35,7 +35,9 @@ const meta: Meta<typeof RangePicker> = {
 		onFromOrToChange: onFromOrToChangeTest,
 		onDisplayYearChange: onDisplayYearChangeTest,
 	},
-	render: (args) => <RangePicker {...useRangePicker(args)} />,
+	render: (args) => (
+		<RangePicker {...useRangePicker({ ...args, onDateSelect: onDateSelectTest })} />
+	),
 };
 
 export default meta;

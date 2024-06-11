@@ -21,7 +21,6 @@ const tooltipPosStyles = cva("", {
 		position: "bottom",
 	},
 });
-// FIXME: fix the tooltip
 
 const WithTooltip = ({
 	label,

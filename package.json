@@ -1,6 +1,6 @@
 {
 	"name": "holakirr-snow-ui",
-	"version": "0.5.0",
+	"version": "0.5.2",
 	"author": {
 		"name": "Kirill Petunin",
 		"email": "kpetunin@icloud.com",
@@ -64,7 +64,7 @@
 				"default": "./dist/index.cjs"
 			}
 		},
-		"./index.css": "./dist/index.css"
+		"./index.css": "./dist/style.css"
 	},
 	"bugs": {
 		"url": "https://github.com/holakirr/snow-ui/issues"

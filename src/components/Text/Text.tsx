@@ -2,7 +2,7 @@ import { type VariantProps, cva } from "class-variance-authority";
 import type { ElementType, ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 
-const textStyles = cva(["font-normal transition-all font-['Inter']"], {
+const textStyles = cva(["font-normal transition-all"], {
 	variants: {
 		size: {
 			64: "text-[4rem] leading-[4.875rem]",

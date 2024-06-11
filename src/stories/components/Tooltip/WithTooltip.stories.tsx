@@ -1,7 +1,7 @@
 import { Button, WithTooltip } from "@components";
 import { ROLES } from "@constants";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, userEvent, within } from "@storybook/test";
+import { expect, userEvent, waitFor, within } from "@storybook/test";
 import { useState } from "react";
 import { testKeyBindings } from "../mocks";
 
@@ -68,12 +68,14 @@ export const ButtonWithTooltip: Story = {
 
 		await userEvent.hover(button);
 
-		const tooltip = canvas.getByRole(ROLES.tooltip);
-		const kbd = canvas.getByRole(ROLES.kbd);
+		await waitFor(() => {
+			const tooltip = canvas.getByRole(ROLES.tooltip);
+			const kbd = canvas.getByRole(ROLES.kbd);
 
-		expect(tooltip).toBeInTheDocument();
-		expect(tooltip).toHaveTextContent(testLabel);
-		expect(kbd).toBeInTheDocument();
-		expect(kbd).toHaveTextContent(testKeyBindings.join(""));
+			expect(tooltip).toBeInTheDocument();
+			expect(tooltip).toHaveTextContent(testLabel);
+			expect(kbd).toBeInTheDocument();
+			expect(kbd).toHaveTextContent(testKeyBindings.join(""));
+		});
 	},
 };

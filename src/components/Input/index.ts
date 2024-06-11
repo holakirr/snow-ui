@@ -3,3 +3,4 @@ export * from "./InputBase";
 export * from "./Search";
 export * from "./Slider";
 export * from "./TextArea";
+export * from "./TimeInput";

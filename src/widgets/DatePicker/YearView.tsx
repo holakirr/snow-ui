@@ -1,13 +1,12 @@
-import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, Text } from "@components";
+import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, DatePickerTag, Text } from "@components";
 import { ROLES } from "@constants";
-import type { DateTypeEnum } from "@types";
-import { DatePickerTag } from "./DatePickerTag";
+import type { DateLimitsType, DateTypeEnum } from "@types";
 
 type YearViewProps = {
 	selected: Date;
 	current: number;
 	displayYear: number;
-	dateLimits?: [Date, Date];
+	dateLimits: DateLimitsType;
 	lastSelection?: Date;
 	onMonthSelect: (month: number) => void;
 	onTypeChange: (type: DateTypeEnum) => void;
@@ -27,7 +26,10 @@ export const YearView = ({
 	onDisplayYearChange,
 }: YearViewProps) => {
 	const now = new Date();
-	const limits = dateLimits?.map((date) => new Date(date.getFullYear(), date.getMonth())) ?? [];
+	const [minLimit, maxLimit] = dateLimits.map(
+		(date) => date && new Date(date.getFullYear(), date.getMonth()),
+	);
+
 	return (
 		<div
 			className="flex flex-col h-full"
@@ -87,9 +89,9 @@ export const YearView = ({
 						const month = Intl.DateTimeFormat("en-US", {
 							month: "short",
 						}).format(date);
-						const isDisabled =
-							limits.length === 2 &&
-							(date.valueOf() < limits[0].valueOf() || date.valueOf() > limits[1].valueOf());
+						const isDisabled = Boolean(
+							(minLimit && date < minLimit) || (maxLimit && date > maxLimit),
+						);
 						const isSelected = selected.getFullYear() === displayYear && selected.getMonth() === i;
 						const isCurrent = now.getFullYear() === displayYear && current === i;
 

@@ -1,6 +1,12 @@
+import { useRangePicker } from "@hooks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
+import type { DateLimitsType } from "@types";
 import { RangePicker } from "@widgets";
+
+const testFromDate = new Date(2024, 4, 13, 4, 13);
+const testToDate = new Date(2024, 4, 15, 14, 27);
+const testDateLimits: DateLimitsType = [new Date(2021, 3, 1), new Date(2025, 5, 31)];
 
 const onDateSelectTest = fn((date) => console.log("Selected date is: ", date));
 const onTypeChangeTest = fn((type) => console.log("Selected type is: ", type));
@@ -21,51 +27,15 @@ const meta: Meta<typeof RangePicker> = {
 	argTypes: {},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		selected: new Date("2024-05-13T04:13:42.055"),
-		displayMonth: new Date().getMonth(),
+		from: testFromDate,
+		to: testToDate,
 		onDateSelect: onDateSelectTest,
 		onTypeChange: onTypeChangeTest,
 		onDisplayMonthChange: onDisplayMonthChangeTest,
 		onFromOrToChange: onFromOrToChangeTest,
 		onDisplayYearChange: onDisplayYearChangeTest,
 	},
-	// render: (args) => {
-	// 	const {
-	// 		selected,
-	// 		displayMonth,
-	// 		displayYear,
-	// 		startOfWeek,
-	// 		changingType,
-	// 		changingFromOrTo,
-	// 		withTime,
-	// 		lastSelection,
-	// 		dateLimits,
-	// 		onDateSelect,
-	// 		onDisplayMonthChange,
-	// 		onDisplayYearChange,
-	// 		onTypeChange,
-	// 		onFromOrToChange,
-	// 	} = useRangePicker(args);
-
-	// 	return (
-	// 		<RangePicker
-	// 			selected={selected}
-	// 			displayMonth={displayMonth}
-	// 			displayYear={displayYear}
-	// 			startOfWeek={startOfWeek}
-	// 			changingType={changingType}
-	// 			changingFromOrTo={changingFromOrTo}
-	// 			withTime={withTime}
-	// 			lastSelection={lastSelection}
-	// 			dateLimits={dateLimits}
-	// 			onDateSelect={onDateSelect}
-	// 			onTypeChange={onTypeChange}
-	// 			onDisplayMonthChange={onDisplayMonthChange}
-	// 			onDisplayYearChange={onDisplayYearChange}
-	// 			onFromOrToChange={onFromOrToChange}
-	// 		/>
-	// 	);
-	// },
+	render: (args) => <RangePicker {...useRangePicker(args)} />,
 };
 
 export default meta;
@@ -75,33 +45,15 @@ export const BasicRangePicker: Story = {
 	args: {},
 };
 
-// export const RangePickerWithTime: Story = {
-// 	args: {
-// 		withTime: true,
-// 	},
-// };
-
-// export const RangePickerWithRange: Story = {
-// 	args: {
-// 		selected: [
-// 			new Date("2024-05-13T04:13:42.055"),
-// 			new Date("2024-05-15T04:13:42.055"),
-// 		],
-// 	},
-// };
-
-// export const RangePickerWithAllProps: Story = {
-// 	args: {
-// 		selected: [
-// 			new Date("2024-04-30T15:13:42.055"),
-// 			new Date("2024-05-04T19:13:42.055"),
-// 		],
-// 		displayYear: 2024,
-// 		startOfWeek: 1,
-// 		changingFromOrTo: "from",
-// 		changingType: "date",
-// 		withTime: true,
-// 		lastSelection: new Date("2024-05-13T04:13:42.055Z"),
-// 		dateLimits: [new Date("2016-08-15"), new Date("2026-10-20")],
-// 	},
-// };
+export const RangePickerWithAllProps: Story = {
+	args: {
+		withTime: true,
+		displayMonth: 4,
+		displayYear: 2024,
+		startOfWeek: 0,
+		changingType: "date",
+		changingFromOrTo: "from",
+		lastSelection: new Date(2024, 4, 13, 4, 13),
+		dateLimits: testDateLimits,
+	},
+};

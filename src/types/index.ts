@@ -1,6 +1,8 @@
 import type { Icon, IconProps, IconWeight } from "@phosphor-icons/react";
 import type { ReactElement } from "react";
 
+export type PickAndPartialOmit<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>;
+
 export type StatusNotify = "success" | "error";
 
 export type Status = StatusNotify | "progress";
@@ -50,3 +52,38 @@ export type ModifiedNavigationItemType = NavigationItemType & {
 };
 
 export type DateTypeEnum = "date" | "month" | "year" | "hours" | "minutes";
+
+export type DateLimitsType = [Date | null, Date | null];
+
+export type DatePickerType = {
+	selected: Date;
+	displayMonth: number;
+	displayYear: number;
+	startOfWeek: number;
+	changingType: DateTypeEnum;
+	dateLimits: DateLimitsType;
+	withTime?: boolean;
+	lastSelection?: Date;
+	onDateSelect: (date: Date) => void;
+	onTypeChange: (type: DateTypeEnum) => void;
+	onDisplayMonthChange: (month: number) => void;
+	onDisplayYearChange: (year: number) => void;
+};
+
+export type RangePickerType = {
+	from: Date;
+	to: Date;
+	displayMonth: number;
+	displayYear: number;
+	startOfWeek: number;
+	changingType: DateTypeEnum;
+	changingFromOrTo: "from" | "to";
+	dateLimits: DateLimitsType;
+	withTime?: boolean;
+	lastSelection?: Date;
+	onDateSelect: (date: Date) => void;
+	onTypeChange: (type: DateTypeEnum) => void;
+	onDisplayMonthChange: (month: number) => void;
+	onDisplayYearChange: (year: number) => void;
+	onFromOrToChange: (fromOrTo: "from" | "to") => void;
+};

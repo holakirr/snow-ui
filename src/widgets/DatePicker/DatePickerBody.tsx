@@ -1,22 +1,23 @@
-import type { DateTypeEnum } from "@types";
+import type { DatePickerType } from "@types";
 import { DateView } from "./DateView";
 import { QuarterView } from "./QuarterView";
 import { TimeView } from "./TimeView";
 import { YearView } from "./YearView";
 
-type DatePickerBodyProps = {
-	selected: Date;
-	displayMonth: number;
-	displayYear: number;
-	startOfWeek: number;
-	changingType: DateTypeEnum;
-	lastSelection?: Date;
-	dateLimits?: [Date, Date];
-	onDateSelect: (date: Date) => void;
-	onDisplayMonthChange: (month: number) => void;
-	onDisplayYearChange: (year: number) => void;
-	onTypeChange: (type: DateTypeEnum) => void;
-};
+type DatePickerBodyProps = Pick<
+	DatePickerType,
+	| "selected"
+	| "displayMonth"
+	| "displayYear"
+	| "startOfWeek"
+	| "changingType"
+	| "dateLimits"
+	| "lastSelection"
+	| "onDateSelect"
+	| "onDisplayMonthChange"
+	| "onDisplayYearChange"
+	| "onTypeChange"
+>;
 
 export const DatePickerBody = ({
 	selected,
@@ -24,8 +25,8 @@ export const DatePickerBody = ({
 	displayYear,
 	startOfWeek,
 	changingType,
-	lastSelection,
 	dateLimits,
+	lastSelection,
 	onDateSelect,
 	onDisplayMonthChange,
 	onDisplayYearChange,

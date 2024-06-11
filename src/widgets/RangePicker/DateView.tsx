@@ -3,9 +3,10 @@ import { ROLES } from "@constants";
 import type { DateLimitsType } from "@types";
 import { twMerge } from "tailwind-merge";
 
-type DateViewProps = {
+type MonthProps = {
 	current: Date;
-	selected: Date;
+	from: Date;
+	to: Date;
 	displayMonth: number;
 	displayYear: number;
 	startOfWeek: number;
@@ -17,17 +18,19 @@ type DateViewProps = {
 
 export const DateView = ({
 	current,
-	selected,
+	from,
+	to,
 	displayMonth,
 	displayYear,
 	startOfWeek,
-	dateLimits,
 	lastSelection,
+	dateLimits,
 	onDateSelect,
 	onDisplayMonthChange,
-}: DateViewProps) => {
+}: MonthProps) => {
 	const currDayValue = new Date(current).setHours(0, 0, 0, 0);
-	const selectedDayValue = new Date(selected).setHours(0, 0, 0, 0);
+	const rangeStart = new Date(from).setHours(0, 0, 0, 0);
+	const rangeEnd = new Date(to).setHours(0, 0, 0, 0);
 	const displayDate = new Date(displayYear, displayMonth);
 	const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
 	const firstDayOfMonth = displayDate.getDay();
@@ -49,7 +52,9 @@ export const DateView = ({
 			const dayValue = day.valueOf();
 			const dateTime = day.toDateString();
 			const isToday = currDayValue === dayValue;
-			const isSelected = selectedDayValue === dayValue;
+			const isSelected = dayValue >= rangeStart && dayValue <= rangeEnd;
+			const isRangeStart = dayValue === rangeStart;
+			const isRangeEnd = dayValue === rangeEnd;
 			const isDisabled = Boolean((minLimit && day < minLimit) || (maxLimit && day > maxLimit));
 			const isOutOfMonth = day.getMonth() !== displayMonth || day.getFullYear() !== displayYear;
 			return {
@@ -57,6 +62,8 @@ export const DateView = ({
 				dateTime,
 				isToday,
 				isSelected,
+				isRangeStart,
+				isRangeEnd,
 				isDisabled,
 				isOutOfMonth,
 			};
@@ -128,33 +135,46 @@ export const DateView = ({
 							{weekDay.slice(0, 2)}
 						</Text>
 					))}
-					{days.map(({ day, dateTime, isToday, isSelected, isDisabled, isOutOfMonth }) => (
-						<Button
-							key={dateTime}
-							label={day.getDate()}
-							textSize={12}
-							variant={isSelected ? "filled" : "borderless"}
-							title={dateTime}
-							aria-label={dateTime}
-							aria-selected={isSelected}
-							aria-current={isToday ? "date" : undefined}
-							role={ROLES.datepickerBodyTableCell}
-							tabIndex={isDisabled ? -1 : 0}
-							disabled={isDisabled}
-							className={twMerge(
-								"rounded-xl hover:bg-black-5 hover:text-black-100",
-								isToday && !isSelected && "bg-secondary-purple",
-								isOutOfMonth && "opacity-40",
-								isSelected && "rounded-xl",
-							)}
-							onClick={() => {
-								if (isOutOfMonth) {
-									return onDisplayMonthChange(day.getMonth());
-								}
-								return onDateSelect(day);
-							}}
-						/>
-					))}
+					{days.map(
+						({
+							day,
+							dateTime,
+							isToday,
+							isSelected,
+							isRangeEnd,
+							isRangeStart,
+							isDisabled,
+							isOutOfMonth,
+						}) => (
+							<Button
+								key={dateTime}
+								label={day.getDate()}
+								textSize={12}
+								variant={isSelected ? "filled" : "borderless"}
+								title={dateTime}
+								aria-label={dateTime}
+								aria-selected={isSelected}
+								aria-current={isToday ? "date" : undefined}
+								role={ROLES.datepickerBodyTableCell}
+								tabIndex={isDisabled ? -1 : 0}
+								disabled={isDisabled}
+								className={twMerge(
+									"rounded-xl hover:bg-black-5 hover:text-black-100",
+									isToday && !isSelected && "bg-secondary-purple",
+									isOutOfMonth && "opacity-40",
+									isSelected && "rounded-none",
+									isRangeStart && "rounded-l-xl",
+									isRangeEnd && "rounded-r-xl",
+								)}
+								onClick={() => {
+									if (isOutOfMonth) {
+										return onDisplayMonthChange(day.getMonth());
+									}
+									return onDateSelect(day);
+								}}
+							/>
+						),
+					)}
 				</div>
 			</div>
 		</div>

@@ -1,4 +1,4 @@
-import type { CustomIcon } from "@types";
+import type { CustomIcon } from "../../../types";
 import { ArrowsUpWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 

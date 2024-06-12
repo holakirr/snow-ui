@@ -1,6 +1,6 @@
-import { getNewRange } from "@helpers";
-import type { DateTypeEnum, PickAndPartialOmit, RangePickerType } from "@types";
 import { useState } from "react";
+import { getNewRange } from "../helpers";
+import type { DateTypeEnum, PickAndPartialOmit, RangePickerType } from "../types";
 
 const initialDatePickerState: Pick<
 	RangePickerType,

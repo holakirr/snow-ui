@@ -1,6 +1,6 @@
 {
 	"name": "holakirr-snow-ui",
-	"version": "0.5.2",
+	"version": "0.5.4",
 	"author": {
 		"name": "Kirill Petunin",
 		"email": "kpetunin@icloud.com",
@@ -35,7 +35,6 @@
 		"chromatic": "^11.5.3",
 		"class-variance-authority": "^0.7.0",
 		"postcss": "^8.4.38",
-		"postcss-nesting": "^12.1.5",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"storybook": "^8.1.6",

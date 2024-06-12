@@ -1,4 +1,4 @@
-import type { CustomIcon } from "@types";
+import type { CustomIcon } from "../../../types";
 import { DefaultIconWeights } from "../defs";
 import { CustomIconBase } from "../lib";
 

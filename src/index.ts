@@ -4,4 +4,4 @@ export * from "./helpers";
 export * from "./hooks";
 export * from "./types";
 export * from "./widgets";
-import "@styles/index.css";
+import "./styles/index.css";

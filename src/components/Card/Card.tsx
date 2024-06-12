@@ -1,5 +1,5 @@
-import { ROLES } from "@constants";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
 
 const Card = ({ className, children, ref }: React.ComponentProps<"div">) => (
 	<div

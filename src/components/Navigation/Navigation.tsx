@@ -1,8 +1,9 @@
-import { NavigationMenu, Text } from "@components";
-import { ROLES } from "@constants";
-import type { NavigationItemType } from "@types";
 import type { ReactEventHandler } from "react";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import type { NavigationItemType } from "../../types";
+import { Text } from "../Text";
+import { NavigationMenu } from "./NavigationMenu";
 
 type NavigationProps = React.ComponentProps<"nav"> & {
 	title?: string;

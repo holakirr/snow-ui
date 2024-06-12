@@ -1,6 +1,7 @@
-import { DropDownItem, type DropDownItemType, Text } from "@components";
-import { ROLES } from "@constants";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import { Text } from "../Text";
+import { DropDownItem, type DropDownItemType } from "./DropDownItem";
 
 type DropDownListType = {
 	title: string;

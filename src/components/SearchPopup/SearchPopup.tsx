@@ -1,6 +1,9 @@
-import { DropDown, type DropDownType, Input, Line, SearchIcon } from "@components";
-import { ROLES, STATUSES } from "@constants";
 import { twMerge } from "tailwind-merge";
+import { ROLES, STATUSES } from "../../constants";
+import { DropDown, type DropDownType } from "../DropDown";
+import { SearchIcon } from "../Icons";
+import { Input } from "../Input";
+import { Line } from "../Line";
 
 type SearchPopupProps = React.ComponentProps<"input"> & {
 	progress?: boolean;

@@ -1,4 +1,4 @@
-import type { CustomIconWeights } from "@types";
+import type { CustomIconWeights } from "../../../types";
 
 export const ArrowsDownWeights: CustomIconWeights = new Map([
 	[

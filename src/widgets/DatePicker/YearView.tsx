@@ -1,6 +1,12 @@
-import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, DatePickerTag, Text } from "@components";
-import { ROLES } from "@constants";
-import type { DateLimitsType, DateTypeEnum } from "@types";
+import {
+	ArrowLineLeftIcon,
+	ArrowLineRightIcon,
+	Button,
+	DatePickerTag,
+	Text,
+} from "../../components";
+import { ROLES } from "../../constants";
+import type { DateLimitsType, DateTypeEnum } from "../../types";
 
 type YearViewProps = {
 	selected: Date;

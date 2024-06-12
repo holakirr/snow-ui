@@ -1,5 +1,5 @@
-import { ROLES } from "@constants";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
 
 export const basicInputClasses =
 	"py-4 px-5 transition-all rounded-2xl bg-white-80 border-1 border-black-10 placeholder:text-black-20 hover:border-black-40 text-black-100";

@@ -1,7 +1,7 @@
-import { ArrowLineLeftIcon, Button, DatePickerTag, Text, TimeInput } from "@components";
-import { ROLES } from "@constants";
-import type { DateLimitsType, DateTypeEnum } from "@types";
 import { twMerge } from "tailwind-merge";
+import { ArrowLineLeftIcon, Button, DatePickerTag, Text, TimeInput } from "../../components";
+import { ROLES } from "../../constants";
+import type { DateLimitsType, DateTypeEnum } from "../../types";
 
 type TimeViewProps = {
 	current: Date;

@@ -1,9 +1,9 @@
-import { Text, type TextSize } from "@components";
-import { ROLES } from "@constants";
 import type { Icon } from "@phosphor-icons/react";
-import type { CustomIcon } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import type { CustomIcon } from "../../types";
+import { Text, type TextSize } from "../Text";
 
 type ButtonProps = React.ComponentProps<"button"> &
 	VariantProps<typeof buttonStyles> & {

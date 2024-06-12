@@ -36,6 +36,7 @@ export type SeparatorDirection = "horizontal" | "vertical";
 export type BreadcrumbType = {
 	label: string;
 	id: string;
+	href?: string;
 	disabled?: boolean;
 };
 

@@ -1,8 +1,9 @@
-import { StatusIcon, Text } from "@components";
-import { ROLES, STATUSES_NOTIFY } from "@constants";
-import type { StatusNotify } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { ROLES, STATUSES_NOTIFY } from "../../constants";
+import type { StatusNotify } from "../../types";
+import { StatusIcon } from "../Icons";
+import { Text } from "../Text";
 
 const notificationClasses = cva(
 	"flex items-center bg-black-80 text-white-100 backdrop-blur-[20px]",

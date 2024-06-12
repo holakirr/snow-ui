@@ -1,6 +1,7 @@
-import { KBD, type KBDProps, Text } from "@components";
-import { ROLES } from "@constants";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import { KBD, type KBDProps } from "../KBD";
+import { Text } from "../Text";
 
 export type TooltipProps = React.ComponentProps<"div"> & {
 	/**

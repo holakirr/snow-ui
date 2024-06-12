@@ -1,6 +1,6 @@
-import { Text } from "@components";
-import { ROLES } from "@constants";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import { Text } from "../Text";
 
 type SliderProps = React.ComponentProps<"input"> & {
 	min?: number;

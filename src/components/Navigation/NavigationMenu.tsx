@@ -1,7 +1,7 @@
-import { NavigationItem } from "@components";
-import { ROLES } from "@constants";
-import type { NavigationItemType } from "@types";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import type { NavigationItemType } from "../../types";
+import { NavigationItem } from "./NavigationItem";
 
 type NavigationMenuProps = React.ComponentProps<"menu"> & {
 	items: NavigationItemType[];

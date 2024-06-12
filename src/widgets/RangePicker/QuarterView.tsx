@@ -1,6 +1,6 @@
-import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, DatePickerTag } from "@components";
-import { ROLES } from "@constants";
-import type { DateLimitsType, DateTypeEnum } from "@types";
+import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, DatePickerTag } from "../../components";
+import { ROLES } from "../../constants";
+import type { DateLimitsType, DateTypeEnum } from "../../types";
 
 type QuarterViewProps = {
 	displayYear: number;

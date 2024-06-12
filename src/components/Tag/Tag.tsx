@@ -1,6 +1,7 @@
-import { CloseIcon, DotIcon, Text, type TextSize } from "@components";
-import { ROLES } from "@constants";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import { CloseIcon, DotIcon } from "../Icons";
+import { Text, type TextSize } from "../Text";
 
 export type TagProps = React.ComponentProps<"div"> & {
 	label: string | number;

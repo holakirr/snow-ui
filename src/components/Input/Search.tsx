@@ -1,7 +1,8 @@
-import { KBD, SearchIcon } from "@components";
-import { ROLES } from "@constants";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import { SearchIcon } from "../Icons";
+import { KBD } from "../KBD";
 
 const searchClassnames = cva(
 	"peer text-black-100 rounded-lg ps-7 pe-1 py-1 min-w-40 w-40 text-sm transition-all focus:ring-4 focus:ring-black-5 focus:outline-none",

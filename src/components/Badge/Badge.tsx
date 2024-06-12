@@ -1,26 +1,21 @@
-import { Text } from "@components";
-import { ROLES } from "@constants";
-import type { ComponentProps } from "react";
 import { twMerge } from "tailwind-merge";
+import { BadgeComponent } from "./BadgeComponent";
 
-export type BadgeProps = ComponentProps<"span"> & {
+type BadgeProps = React.ComponentProps<"div"> & {
 	text?: string;
 };
 
-const Badge = ({ text, className, ref }: BadgeProps) => (
-	<Text
-		as="span"
-		size={12}
-		role={ROLES.badge}
-		className={twMerge(
-			"bg-secondary-purple rounded-full w-[6px] h-[6px] block text-center transition-all z-10",
-			text && "w-auto h-auto text-black-100 px-[6px] py-[1px]",
-			className,
-		)}
-		ref={ref}
-	>
-		{text}
-	</Text>
+const Badge = ({ text, children, ref }: BadgeProps) => (
+	<div className="relative" ref={ref}>
+		{children}
+		<BadgeComponent
+			text={text}
+			className={twMerge(
+				"absolute -top-[1px] left-full -translate-x-2",
+				text && "-top-[6px] -translate-x-1/2",
+			)}
+		/>
+	</div>
 );
 
 Badge.displayName = "Badge";

@@ -1,7 +1,7 @@
-import { Text } from "@components";
-import { ROLES } from "@constants";
-import type { DateTypeEnum } from "@types";
+import { Text } from "../../components";
 import { DatePickerTag } from "../../components/Tag/DatePickerTag";
+import { ROLES } from "../../constants";
+import type { DateTypeEnum } from "../../types";
 
 type DatePickerHeadProps = {
 	date: Date;

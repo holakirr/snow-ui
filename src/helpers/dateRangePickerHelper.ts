@@ -1,4 +1,4 @@
-import type { DateLimitsType, DateTypeEnum } from "@types";
+import type { DateLimitsType, DateTypeEnum } from "../types";
 
 type GetNewDateProps = {
 	changingDate: Date;

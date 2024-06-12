@@ -1,5 +1,5 @@
-import type { RangePickerType } from "@types";
 import { twMerge } from "tailwind-merge";
+import type { RangePickerType } from "../../types";
 import { RangePickerBody } from "./RangePickerBody";
 import { RangePickerHead } from "./RangePickerHead";
 

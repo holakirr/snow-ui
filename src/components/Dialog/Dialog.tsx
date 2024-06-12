@@ -1,7 +1,7 @@
-import { DialogTitle, type DialogTitleProps } from "@components";
-import { ROLES } from "@constants";
 import type { MouseEventHandler } from "react";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import { DialogTitle, type DialogTitleProps } from "./DialogTitle";
 
 type DialogProps = React.ComponentProps<"dialog"> &
 	DialogTitleProps & {

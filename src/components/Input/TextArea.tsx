@@ -1,14 +1,10 @@
-import {
-	StatusIcon,
-	Text,
-	basicInputClasses,
-	disabledInputClasses,
-	focusInputClasses,
-	statusInputClasses,
-} from "@components";
-import { ROLES } from "@constants";
-import type { Status } from "@types";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import type { Status } from "../../types";
+import { StatusIcon } from "../Icons";
+import { Text } from "../Text";
+import { statusInputClasses } from "./Input";
+import { basicInputClasses, disabledInputClasses, focusInputClasses } from "./InputBase";
 
 type TextAreaProps = React.ComponentProps<"textarea"> & {
 	status?: Status;

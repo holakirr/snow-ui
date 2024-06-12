@@ -1,5 +1,5 @@
-import { Input } from "@components";
-import type { DateTypeEnum } from "@types";
+import type { DateTypeEnum } from "../../types";
+import { Input } from "./Input";
 
 type TimeInputProps = React.ComponentProps<"input"> & {
 	value: number;

@@ -1,4 +1,4 @@
-import type { DatePickerType } from "@types";
+import type { DatePickerType } from "../../types";
 import { DateView } from "./DateView";
 import { QuarterView } from "./QuarterView";
 import { TimeView } from "./TimeView";

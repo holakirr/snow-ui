@@ -1,6 +1,6 @@
-import { DatePickerTag, Text } from "@components";
-import { ROLES } from "@constants";
-import type { DateTypeEnum } from "@types";
+import { DatePickerTag, Text } from "../../components";
+import { ROLES } from "../../constants";
+import type { DateTypeEnum } from "../../types";
 
 type RangePickerHeadProps = {
 	from: Date;

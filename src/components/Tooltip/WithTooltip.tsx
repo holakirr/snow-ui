@@ -1,6 +1,6 @@
-import { Tooltip, type TooltipProps } from "@components";
 import { cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { Tooltip, type TooltipProps } from "./Tooltip";
 
 type WithTooltipProps = TooltipProps & {
 	position?: "top" | "bottom" | "left" | "right";

@@ -1,5 +1,5 @@
-import type { CustomIconWeights } from "@types";
 import { Fragment } from "react/jsx-runtime";
+import type { CustomIconWeights } from "../../../types";
 
 export const TXTWeights: CustomIconWeights = new Map([
 	[

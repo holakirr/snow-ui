@@ -1,7 +1,9 @@
-import { Button, CloseIcon, Text } from "@components";
-import { ROLES } from "@constants";
 import type { Icon } from "@phosphor-icons/react";
-import type { CustomIcon } from "@types";
+import { ROLES } from "../../constants";
+import type { CustomIcon } from "../../types";
+import { Button } from "../Button";
+import { CloseIcon } from "../Icons";
+import { Text } from "../Text";
 
 export type DialogTitleProps = React.ComponentProps<"div"> & {
 	titleIcon?: Icon | CustomIcon;

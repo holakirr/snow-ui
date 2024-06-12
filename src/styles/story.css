@@ -16,3 +16,15 @@ html[data-mode="dark"] .docs-story,
 html[data-mode="dark"] .sb-show-main {
   @apply bg-gray-900;
 }
+
+@media (prefers-color-scheme: dark) {
+  .docs-story,
+  .sb-show-main {
+    @apply bg-gray-900;
+  }
+
+  html[data-mode="dark"] .docs-story,
+  html[data-mode="dark"] .sb-show-main {
+    @apply bg-gray-300;
+  }
+}

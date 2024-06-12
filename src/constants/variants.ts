@@ -1,4 +1,4 @@
-import type { ButtonVariant, SeparatorDirection } from "@types";
+import type { ButtonVariant, SeparatorDirection } from "../types";
 
 export const BUTTON_VARIANTS: { [K in ButtonVariant]: K } = {
 	borderless: "borderless",

@@ -1,8 +1,9 @@
-import { StatusIcon, Text, XCircleIcon } from "@components";
-import { ROLES } from "@constants";
-import type { CustomIcon } from "@types";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import type { CustomIcon } from "../../types";
+import { StatusIcon, XCircleIcon } from "../Icons";
+import { Text } from "../Text";
 import { InputBase } from "./InputBase";
 
 type InputProps = React.ComponentProps<"input"> &

@@ -1,6 +1,6 @@
-import { ROLES } from "@constants";
-import type { DatePickerType } from "@types";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import type { DatePickerType } from "../../types";
 import { DatePickerBody } from "./DatePickerBody";
 import { DatePickerHead } from "./DatePickerHead";
 

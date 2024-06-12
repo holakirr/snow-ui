@@ -1,8 +1,9 @@
-import { Text } from "@components";
-import { ROLES } from "@constants";
-import { getInitials } from "@helpers";
+import { User as UserIcon } from "@phosphor-icons/react";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { Text } from "../";
+import { ROLES } from "../../constants";
+import { getInitials } from "../../helpers";
 
 const avatarStyles = cva(
 	"group brightness-100 hover:brightness-150 rounded-full transition-all overflow-hidden w-16 h-16 aspect-square flex items-center justify-center",
@@ -42,31 +43,42 @@ const avatarStyles = cva(
 
 export type AvatarProps = React.ComponentProps<"div"> &
 	VariantProps<typeof avatarStyles> & {
-		username: string;
-		img?: string;
+		name: string;
+		showFallback?: boolean;
+		src?: string;
 	};
 
-const Avatar = ({ size, img, username, color, className, ref }: AvatarProps) => (
+const Avatar = ({ size, src, name, showFallback, color, className, ref }: AvatarProps) => (
 	<div
 		role={ROLES.avatar}
-		aria-label={`Avatar for ${username}`}
-		className={twMerge(avatarStyles({ size, color, className }))}
+		aria-label={`Avatar for ${name}`}
+		className={twMerge(
+			avatarStyles({ size, color, className }),
+			showFallback && "bg-black-5 hover:bg-black-20",
+		)}
 		ref={ref}
 	>
-		{img && (
+		{showFallback && (
+			<UserIcon
+				aria-label="Default user icon"
+				weight="fill"
+				className="w-3 h-3 group-hover:w-[14px] group-hover:h-[14px] transition-all"
+				size={16}
+			/>
+		)}
+		{!showFallback && src && (
 			<img
-				src={img}
-				// biome-ignore lint/a11y/noRedundantAlt: <explanation>
-				alt={`Profile picture of ${username}`}
+				src={src}
+				alt={`Avatar of user ${name}`}
 				className="w-full h-full transition-all group-hover:scale-125"
 			/>
 		)}
-		{!img && (
+		{!showFallback && !src && (
 			<Text
 				as="span"
 				className="group-hover:text-sm group-hover:font-semibold w-min cursor-default text-black-100"
 			>
-				{getInitials(username)}
+				{getInitials(name)}
 			</Text>
 		)}
 	</div>

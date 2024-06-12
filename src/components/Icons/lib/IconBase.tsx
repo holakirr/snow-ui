@@ -1,6 +1,6 @@
-import { ROLES } from "@constants";
-import type { BaseIcon, IconBaseProps } from "@types";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../../constants";
+import type { BaseIcon, IconBaseProps } from "../../../types";
 
 export const CustomIconBase: BaseIcon = ({
 	alt,

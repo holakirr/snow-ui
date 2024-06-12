@@ -1,6 +1,6 @@
-import { getNewDate } from "@helpers";
-import type { DatePickerType, DateTypeEnum, PickAndPartialOmit } from "@types";
 import { useState } from "react";
+import { getNewDate } from "../helpers";
+import type { DatePickerType, DateTypeEnum, PickAndPartialOmit } from "../types";
 
 const initialDatePickerState: Pick<
 	DatePickerType,

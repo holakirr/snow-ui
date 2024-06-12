@@ -1,6 +1,6 @@
-import { ROLES } from "@constants";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
 
 type LineProps = React.ComponentProps<"hr"> & VariantProps<typeof lineClasses>;
 

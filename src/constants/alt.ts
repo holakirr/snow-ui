@@ -31,7 +31,7 @@ export const ROLES = {
 	search: "search",
 	searchPopup: "dialog",
 	slider: "slider",
-	statusBadge: "status",
+	Chip: "status",
 	tag: "listitem",
 	textarea: "textbox",
 	tooltip: "tooltip",

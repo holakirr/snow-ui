@@ -1,7 +1,9 @@
-import { ArrowLineRightIcon, NavigationMenu, Text } from "@components";
-import { ROLES } from "@constants";
-import type { NavigationItemType } from "@types";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import type { NavigationItemType } from "../../types";
+import { ArrowLineRightIcon } from "../Icons";
+import { Text } from "../Text";
+import { NavigationMenu } from "./NavigationMenu";
 
 type NavigationItemProps = React.ComponentProps<"li"> &
 	NavigationItemType & {
@@ -29,7 +31,7 @@ const NavigationItem = ({
 			id={id}
 			aria-label={label}
 			className={twMerge(
-				"p-2 ps-7 has-[svg#arrow-icon]:ps-2 flex items-center gap-1 rounded-xl hover:bg-black-5 cursor-pointer",
+				"p-2 ps-7 has-[svg#arrow-icon]:ps-2 flex items-center gap-1 rounded-xl hover:bg-black-5 cursor-pointer transition-all",
 				active && "bg-black-5",
 				className,
 			)}

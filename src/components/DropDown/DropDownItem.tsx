@@ -1,6 +1,8 @@
-import { KBD, SearchIcon, Text } from "@components";
-import { ROLES } from "@constants";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
+import { SearchIcon } from "../Icons";
+import { KBD } from "../KBD";
+import { Text } from "../Text";
 
 export type DropDownItemType = {
 	img?: JSX.Element;

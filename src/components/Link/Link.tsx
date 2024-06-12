@@ -1,5 +1,5 @@
-import { ROLES } from "@constants";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "../../constants";
 
 const Link = ({ className, ref, ...props }: React.ComponentProps<"a">) => (
 	<a

@@ -19,7 +19,6 @@ export default defineConfig({
 			entry: resolve(__dirname, "src/index.ts"),
 			fileName: "index",
 			formats: ["es", "cjs"],
-			name: "SnowUI",
 		},
 		rollupOptions: {
 			external: ["react", "react-dom"],

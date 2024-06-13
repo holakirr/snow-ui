@@ -1,6 +1,6 @@
 {
 	"name": "holakirr-snow-ui",
-	"version": "0.5.4",
+	"version": "0.5.5",
 	"author": {
 		"name": "Kirill Petunin",
 		"email": "kpetunin@icloud.com",
@@ -75,7 +75,7 @@
 	"license": "MIT",
 	"packageManager": "bun@1.1.12",
 	"scripts": {
-		"dev": "storybook dev -p 6006",
+		"dev": "storybook dev",
 		"build-lib": "vite build",
 		"build-storybook": "vite build && storybook build",
 		"test": "test-storybook --verbose",
@@ -89,6 +89,5 @@
 		"clean:all": "bun run clean:build && bun run clean:node_modules"
 	},
 	"type": "module",
-	"types": "dist/index.d.ts",
 	"trustedDependencies": ["@biomejs/biome"]
 }

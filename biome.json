@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.6.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/1.8.1/schema.json",
 	"organizeImports": {
 		"enabled": true
 	},
@@ -10,16 +10,7 @@
 		}
 	},
 	"files": {
-		"ignore": [
-			"node_modules",
-			"dist",
-			"storybook-static",
-			"*.locb",
-			"*.lock",
-			"src/stories/colors.stories.tsx",
-			"tsconfig.json",
-			"vite.config.ts"
-		]
+		"ignore": ["node_modules", "dist", "storybook-static", "*.locb", "*.lock"]
 	},
 	"formatter": {
 		"enabled": true,

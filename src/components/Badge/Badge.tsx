@@ -5,8 +5,8 @@ type BadgeProps = React.ComponentProps<"div"> & {
 	text?: string;
 };
 
-const Badge = ({ text, children, ref }: BadgeProps) => (
-	<div className="relative" ref={ref}>
+const Badge = ({ text, children, ...props }: BadgeProps) => (
+	<div className="relative" {...props}>
 		{children}
 		<BadgeComponent
 			text={text}

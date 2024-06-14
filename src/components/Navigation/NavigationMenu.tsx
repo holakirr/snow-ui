@@ -6,7 +6,7 @@ import { NavigationItem } from "./NavigationItem";
 type NavigationMenuProps = React.ComponentProps<"menu"> & {
 	items: NavigationItemType[];
 	opened: boolean;
-	onItemClick: React.ReactEventHandler<HTMLLIElement>;
+	onItemClick?: React.MouseEventHandler<HTMLLIElement>;
 };
 
 const NavigationMenu = ({
@@ -31,7 +31,7 @@ const NavigationMenu = ({
 	>
 		<div className="min-h-0">
 			{items.map((item) => (
-				<NavigationItem key={item.id} {...item} onItemClick={onItemClick} />
+				<NavigationItem key={item.id} {...item} onClick={onItemClick} />
 			))}
 		</div>
 	</menu>

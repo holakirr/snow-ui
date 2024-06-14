@@ -22,7 +22,7 @@
     "noUnusedParameters": true
   },
   "include": ["./src/**/*", "stories"],
-  "exclude": ["./node_modules", "./dist", "./stories"],
+  "exclude": ["./node_modules", "./dist"],
   "buildOptions": {
     "outDir": "./dist",
     "exclude": [

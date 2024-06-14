@@ -9,7 +9,6 @@ type NavigationItemProps = React.ComponentProps<"li"> &
 	NavigationItemType & {
 		active?: boolean;
 		expanded?: boolean;
-		onItemClick: React.ReactEventHandler<HTMLLIElement>;
 	};
 
 const NavigationItem = ({
@@ -19,15 +18,15 @@ const NavigationItem = ({
 	expanded,
 	icon: Icon,
 	items,
-	onItemClick,
 	className,
+	onClick,
 	ref,
 	...props
 }: NavigationItemProps) => (
 	<div className="flex flex-col list-none transition-all gap-1">
 		<li
 			ref={ref}
-			onClick={onItemClick}
+			onClick={onClick}
 			id={id}
 			aria-label={label}
 			className={twMerge(
@@ -58,7 +57,7 @@ const NavigationItem = ({
 			</div>
 		</li>
 		{items && (
-			<NavigationMenu items={items} onItemClick={onItemClick} opened={!!expanded} title={label} />
+			<NavigationMenu items={items} onItemClick={onClick} opened={!!expanded} title={label} />
 		)}
 	</div>
 );

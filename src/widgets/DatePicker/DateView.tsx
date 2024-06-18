@@ -71,12 +71,12 @@ export const DateView = ({
 
 	return (
 		<div
-			className="flex flex-col h-full p-4"
+			className="flex flex-col"
 			role={ROLES.datepickerBody}
 			id="panel-date"
 			aria-labelledby="tab-date"
 		>
-			<div className="flex justify-between" role={ROLES.datepickerNavigation}>
+			<div className="flex justify-between px-4 pt-4" role={ROLES.datepickerNavigation}>
 				<div className="flex gap-2 items-center">
 					<DatePickerTag
 						label="Today"
@@ -100,6 +100,7 @@ export const DateView = ({
 						title="Previous month"
 						aria-label="Previous month"
 						onClick={() => onDisplayMonthChange(displayMonth - 1)}
+						className="p-1 rounded-lg"
 					/>
 					<Abbr
 						tooltipProps={{
@@ -113,6 +114,7 @@ export const DateView = ({
 						)}`}
 						size={12}
 						role={ROLES.datepickerNavigationDisplay}
+						className="flex items-center"
 					>
 						{Intl.DateTimeFormat("en-US", { month: "short" }).format(displayDate)}
 					</Abbr>
@@ -122,10 +124,11 @@ export const DateView = ({
 						title="Next month"
 						aria-label="Next month"
 						onClick={() => onDisplayMonthChange(displayMonth + 1)}
+						className="p-1"
 					/>
 				</div>
 			</div>
-			<div className="" role={ROLES.datepickerBodyTable}>
+			<div className="p-4 min-h-[260px]" role={ROLES.datepickerBodyTable}>
 				<div className="grid grid-cols-7 auto-rows-[38px]">
 					{weekDays.map((weekDay) => (
 						<Abbr

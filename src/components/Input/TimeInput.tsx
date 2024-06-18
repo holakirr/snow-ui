@@ -13,7 +13,7 @@ export const TimeInput = ({ value, changingType, ...props }: TimeInputProps) => 
 		max={changingType === "hours" ? 12 : 59}
 		value={value === 0 ? "" : value}
 		placeholder="00"
-		className="text-xs py-[10px] px-[22px] max-w-[60px] text-center"
+		className="text-xs py-[10px] px-[22px] max-w-[60px] text-center rounded-xl"
 		autoComplete="off"
 		{...props}
 	/>

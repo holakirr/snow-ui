@@ -1,9 +1,9 @@
 import {
+	Abbr,
 	ArrowLineLeftIcon,
 	ArrowLineRightIcon,
 	Button,
 	DatePickerTag,
-	Text,
 } from "../../components";
 import { ROLES } from "../../constants";
 import type { DateLimitsType, DateTypeEnum } from "../../types";
@@ -38,7 +38,7 @@ export const YearView = ({
 
 	return (
 		<div
-			className="flex flex-col h-full"
+			className="flex flex-col"
 			role={ROLES.datepickerBody}
 			id="panel-month"
 			aria-labelledby="tab-month"
@@ -67,21 +67,27 @@ export const YearView = ({
 						title="Previous year"
 						aria-label="Previous year"
 						onClick={() => onDisplayYearChange(displayYear - 1)}
+						className="p-1 rounded-lg"
 					/>
-					<Text
-						as="span"
-						role={ROLES.datepickerNavigationDisplay}
+					<Abbr
+						tooltipProps={{
+							label: `Display year is ${displayYear}`,
+							tooltipClassName: "text-nowrap",
+						}}
 						title={`Display year is ${displayYear}`}
 						size={12}
+						role={ROLES.datepickerNavigationDisplay}
+						className="flex items-center"
 					>
 						{displayYear}
-					</Text>
+					</Abbr>
 					<Button
 						leftIcon={ArrowLineRightIcon}
 						size="md"
 						title="Next year"
 						aria-label="Next year"
 						onClick={() => onDisplayYearChange(displayYear + 1)}
+						className="p-1 rounded-lg"
 					/>
 				</div>
 			</div>

@@ -27,7 +27,7 @@ export const QuarterView = ({
 
 	return (
 		<div
-			className="flex flex-col h-full"
+			className="flex flex-col"
 			role={ROLES.datepickerBody}
 			id="panel-year"
 			aria-labelledby="tab-year"
@@ -56,6 +56,7 @@ export const QuarterView = ({
 						title="Previous quarter"
 						aria-label="Previous quarter"
 						onClick={() => onDisplayYearChange(displayYear - 25)}
+						className="p-1 rounded-lg"
 					/>
 					<Button
 						leftIcon={ArrowLineRightIcon}
@@ -63,6 +64,7 @@ export const QuarterView = ({
 						title="Next quarter"
 						aria-label="Next quarter"
 						onClick={() => onDisplayYearChange(displayYear + 25)}
+						className="p-1 rounded-lg"
 					/>
 				</div>
 			</div>

@@ -35,7 +35,7 @@ const textStyles = cva(["font-normal transition-all"], {
 
 export type TextSize = VariantProps<typeof textStyles>["size"];
 
-type TextProps<C extends ElementType> = React.ComponentProps<C> &
+export type TextProps<C extends ElementType> = React.ComponentProps<C> &
 	VariantProps<typeof textStyles> & {
 		as?: C;
 	};

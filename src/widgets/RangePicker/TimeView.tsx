@@ -69,12 +69,12 @@ export const TimeView = ({
 	});
 	return (
 		<div
-			className="flex flex-col h-full"
+			className="flex flex-col"
 			role={ROLES.datepickerBody}
 			id="panel-time"
 			aria-labelledby="tab-time"
 		>
-			<div className="flex justify-between px-4 pt-4">
+			<div className="flex justify-between px-4 pt-4 h-11">
 				<div className="flex gap-2 items-center">
 					<DatePickerTag
 						className="bg-black-5"
@@ -146,7 +146,7 @@ export const TimeView = ({
 				/>
 			</div>
 			<div
-				className="p-4 pt-0 min-h-[180px] flex flex-col justify-between items-end"
+				className="p-4 pt-0 min-h-[206px] flex flex-col justify-between items-end"
 				role={ROLES.datepickerBodyTable}
 			>
 				{changingType === "hours" && (

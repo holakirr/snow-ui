@@ -1,34 +1,48 @@
+import { cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
-import { KBD, type KBDProps } from "../KBD";
-import { Text } from "../Text";
+import { TooltipComponent, type TooltipComponentProps } from "./TooltipComponent";
 
-export type TooltipProps = React.ComponentProps<"div"> & {
-	/**
-	 * The label of the Tooltip
-	 */
-	label: string;
-	/**
-	 * Keybindings to display
-	 */
-	kbd?: KBDProps;
+export type TooltipProps = TooltipComponentProps & {
+	position?: "top" | "bottom" | "left" | "right";
+	visible?: boolean;
+	tooltipClassName?: string;
 };
 
-const Tooltip = ({ label, kbd, className, ref }: TooltipProps) => (
-	<div
-		className={twMerge(
-			"py-1 px-2 flex place-items-center gap-2 bg-black-80 backdrop-blur-[20px] rounded-lg transition-all",
-			className,
+const tooltipPosStyles = cva("", {
+	variants: {
+		position: {
+			top: "bottom-full -translate-y-1 left-1/2 -translate-x-1/2",
+			bottom: "top-full translate-y-1 left-1/2 -translate-x-1/2",
+			left: "right-full translate-x-1 top-1/2 -translate-y-1/2",
+			right: "left-full -translate-x-1 top-1/2 -translate-y-1/2",
+		},
+	},
+	defaultVariants: {
+		position: "bottom",
+	},
+});
+
+const Tooltip = ({
+	label,
+	kbd,
+	position,
+	visible,
+	tooltipClassName,
+	className,
+	children,
+	ref,
+}: TooltipProps) => (
+	<div className={twMerge("relative", className)} ref={ref}>
+		{children}
+		{visible && (
+			<TooltipComponent
+				className={twMerge("absolute z-100", tooltipPosStyles({ position }), tooltipClassName)}
+				label={label}
+				kbd={kbd}
+			/>
 		)}
-		ref={ref}
-		role={ROLES.tooltip}
-	>
-		<Text as="span" className="text-white-100">
-			{label}
-		</Text>
-		{kbd && <KBD {...kbd} className="text-white-40" />}
 	</div>
 );
 
-Tooltip.displayName = "Tooltip";
+Tooltip.displayName = "WithTooltip";
 export { Tooltip };

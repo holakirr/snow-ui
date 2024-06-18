@@ -15,7 +15,7 @@ const onDisplayMonthChangeTest = fn((month) => console.log("New month is: ", mon
 const onDisplayYearChangeTest = fn((year) => console.log("New year is: ", year));
 
 const meta: Meta<typeof DatePicker> = {
-	title: "Widgets/Date Picker",
+	title: "Widgets/Date/Date Picker",
 	component: DatePicker,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

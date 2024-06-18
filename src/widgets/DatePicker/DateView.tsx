@@ -126,7 +126,7 @@ export const DateView = ({
 				</div>
 			</div>
 			<div className="" role={ROLES.datepickerBodyTable}>
-				<div className="grid grid-cols-7 auto-rows-[38px] items-center">
+				<div className="grid grid-cols-7 auto-rows-[38px]">
 					{weekDays.map((weekDay) => (
 						<Abbr
 							key={weekDay}

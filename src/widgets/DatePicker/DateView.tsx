@@ -1,10 +1,10 @@
 import { twMerge } from "tailwind-merge";
 import {
+	Abbr,
 	ArrowLineLeftIcon,
 	ArrowLineRightIcon,
 	Button,
 	DatePickerTag,
-	Text,
 } from "../../components";
 import { ROLES } from "../../constants";
 import type { DateLimitsType } from "../../types";
@@ -71,12 +71,12 @@ export const DateView = ({
 
 	return (
 		<div
-			className="flex flex-col h-full"
+			className="flex flex-col h-full p-4"
 			role={ROLES.datepickerBody}
 			id="panel-date"
 			aria-labelledby="tab-date"
 		>
-			<div className="flex justify-between px-4 pt-4" role={ROLES.datepickerNavigation}>
+			<div className="flex justify-between" role={ROLES.datepickerNavigation}>
 				<div className="flex gap-2 items-center">
 					<DatePickerTag
 						label="Today"
@@ -101,16 +101,20 @@ export const DateView = ({
 						aria-label="Previous month"
 						onClick={() => onDisplayMonthChange(displayMonth - 1)}
 					/>
-					<Text
-						as="abbr"
-						role={ROLES.datepickerNavigationDisplay}
+					<Abbr
+						tooltipProps={{
+							label: `Display month is ${Intl.DateTimeFormat("en-US", { month: "long" }).format(
+								displayDate,
+							)}`,
+						}}
 						title={`Display month is ${Intl.DateTimeFormat("en-US", { month: "long" }).format(
 							displayDate,
 						)}`}
 						size={12}
+						role={ROLES.datepickerNavigationDisplay}
 					>
 						{Intl.DateTimeFormat("en-US", { month: "short" }).format(displayDate)}
-					</Text>
+					</Abbr>
 					<Button
 						leftIcon={ArrowLineRightIcon}
 						size="md"
@@ -120,19 +124,22 @@ export const DateView = ({
 					/>
 				</div>
 			</div>
-			<div className="p-4 min-h-[260px]" role={ROLES.datepickerBodyTable}>
-				<div className="grid grid-cols-7 auto-rows-[38px]">
+			<div className="" role={ROLES.datepickerBodyTable}>
+				<div className="grid grid-cols-7 auto-rows-[38px] items-center">
 					{weekDays.map((weekDay) => (
-						<Text
-							role={ROLES.datepickerBodyTableHeadCell}
+						<Abbr
 							key={weekDay}
-							as="abbr"
+							role={ROLES.datepickerBodyTableHeadCell}
+							tooltipProps={{
+								label: weekDay,
+								position: "top",
+								className: "text-center",
+							}}
 							title={weekDay}
-							className="px-4 py-2 text-black-40 text-center"
 							size={12}
 						>
 							{weekDay.slice(0, 2)}
-						</Text>
+						</Abbr>
 					))}
 					{days.map(({ day, dateTime, isToday, isSelected, isDisabled, isOutOfMonth }) => (
 						<Button

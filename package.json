@@ -78,7 +78,7 @@
 		"url": "https://github.com/holakirr/snow-ui/issues"
 	},
 	"scripts": {
-		"dev": "storybook dev",
+		"dev": "storybook dev --port 6006",
 		"build-lib": "vite build",
 		"build-storybook": "vite build && storybook build",
 		"test": "test-storybook --verbose",

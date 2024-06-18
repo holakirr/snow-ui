@@ -5,6 +5,7 @@ import { TooltipComponent, type TooltipComponentProps } from "./TooltipComponent
 export type TooltipProps = TooltipComponentProps & {
 	position?: "top" | "bottom" | "left" | "right";
 	visible?: boolean;
+	tooltipClassName?: string;
 };
 
 const tooltipPosStyles = cva("", {
@@ -21,12 +22,21 @@ const tooltipPosStyles = cva("", {
 	},
 });
 
-const Tooltip = ({ label, kbd, position, visible, className, children, ref }: TooltipProps) => (
+const Tooltip = ({
+	label,
+	kbd,
+	position,
+	visible,
+	tooltipClassName,
+	className,
+	children,
+	ref,
+}: TooltipProps) => (
 	<div className={twMerge("relative", className)} ref={ref}>
 		{children}
 		{visible && (
 			<TooltipComponent
-				className={twMerge("absolute z-100", tooltipPosStyles({ position }))}
+				className={twMerge("absolute z-100", tooltipPosStyles({ position }), tooltipClassName)}
 				label={label}
 				kbd={kbd}
 			/>

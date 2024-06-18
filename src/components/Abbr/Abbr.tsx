@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, type TextProps } from "../Text";
 import { Tooltip, type TooltipProps } from "../Tooltip";
 
@@ -9,21 +9,33 @@ type AbbrProps = React.ComponentProps<"abbr"> &
 	};
 
 const Abbr = ({ tooltipProps, delay, children, ...props }: AbbrProps) => {
+	let timeout: ReturnType<typeof setTimeout> | undefined = undefined;
 	const [showTooltip, setShowTooltip] = useState(false);
 
 	const handleMouseEnter = () => {
-		const timeout = setTimeout(() => {
+		timeout = setTimeout(() => {
 			setShowTooltip(true);
 		}, delay || 500);
 
 		return () => clearTimeout(timeout);
 	};
 
+	const handleMouseOut = () => {
+		clearTimeout(timeout);
+		setShowTooltip(false);
+	};
+
+	useEffect(() => {
+		return () => {
+			clearTimeout(timeout);
+		};
+	}, [timeout]);
+
 	return (
 		<Tooltip {...tooltipProps} visible={showTooltip}>
 			<Text
 				onMouseEnter={handleMouseEnter}
-				onMouseOut={() => setShowTooltip(false)}
+				onMouseOut={handleMouseOut}
 				as="abbr"
 				{...props}
 				title=""

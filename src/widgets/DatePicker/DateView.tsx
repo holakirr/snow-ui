@@ -106,6 +106,7 @@ export const DateView = ({
 							label: `Display month is ${Intl.DateTimeFormat("en-US", { month: "long" }).format(
 								displayDate,
 							)}`,
+							tooltipClassName: "text-nowrap",
 						}}
 						title={`Display month is ${Intl.DateTimeFormat("en-US", { month: "long" }).format(
 							displayDate,

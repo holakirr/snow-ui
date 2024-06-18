@@ -26,7 +26,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const ButtonWithTooltip: Story = {
+export const BasicAbbr: Story = {
 	args: {},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

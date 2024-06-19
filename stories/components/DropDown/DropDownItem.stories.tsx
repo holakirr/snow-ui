@@ -11,7 +11,7 @@ import {
 	testTitle,
 } from "../../mocks";
 
-const meta = {
+const meta: Meta<typeof DropDownItem> = {
 	title: "Base Components/Dropdown/Dropdown Item",
 	component: DropDownItem,
 	parameters: {
@@ -44,7 +44,7 @@ const meta = {
 			</div>
 		),
 	],
-} satisfies Meta<typeof DropDownItem>;
+};
 
 export default meta;
 type Story = StoryObj<typeof meta>;

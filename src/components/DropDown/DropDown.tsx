@@ -4,10 +4,17 @@ import { Text } from "../Text";
 import { DropDownItem, type DropDownItemType } from "./DropDownItem";
 
 type DropDownListType = {
+	/**
+	 * The title of the dropdown list.
+	 * @example "Account"
+	 **/
 	title: string;
 	items: DropDownItemType[];
 };
 
+/**
+ * Represents the type definition for a DropDown component.
+ */
 export type DropDownType = {
 	lists: DropDownListType[];
 };

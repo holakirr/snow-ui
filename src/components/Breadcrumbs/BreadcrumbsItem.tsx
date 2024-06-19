@@ -2,6 +2,9 @@ import { ROLES } from "../../constants";
 import type { BreadcrumbType } from "../../types";
 import { Button } from "../Button";
 
+/**
+ * Represents a single item in the Breadcrumbs component.
+ */
 type BreadcrumbsItemProps = BreadcrumbType &
 	React.ComponentProps<"button"> & {
 		active?: boolean;

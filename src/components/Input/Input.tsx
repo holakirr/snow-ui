@@ -6,14 +6,38 @@ import { StatusIcon, XCircleIcon } from "../Icons";
 import { Text } from "../Text";
 import { InputBase } from "./InputBase";
 
+/**
+ * Props for the Input component.
+ */
 type InputProps = React.ComponentProps<"input"> &
 	VariantProps<typeof inputClasses> & {
+		/**
+		 * The custom icon to be displayed.
+		 */
 		icon?: CustomIcon;
+		/**
+		 * The size of the custom icon.
+		 */
 		iconSize?: number;
+		/**
+		 * The class name for the custom icon.
+		 */
 		iconClassName?: string;
+		/**
+		 * The error message to be displayed.
+		 */
 		error?: string;
+		/**
+		 * The title of the input.
+		 */
 		title?: string;
+		/**
+		 * Determines if the input is clearable.
+		 */
 		clearable?: boolean;
+		/**
+		 * Callback function to be called when the input is cleared.
+		 */
 		onClear?: () => void;
 	};
 

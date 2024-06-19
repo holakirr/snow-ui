@@ -1,8 +1,18 @@
 import type { DateTypeEnum } from "../../types";
 import { Input } from "./Input";
 
+/**
+ * Props for the TimeInput component.
+ */
 type TimeInputProps = React.ComponentProps<"input"> & {
+	/**
+	 * The value of the time input.
+	 */
 	value: number;
+
+	/**
+	 * The type of date being changed (e.g., hour, minute, second).
+	 */
 	changingType: DateTypeEnum;
 };
 

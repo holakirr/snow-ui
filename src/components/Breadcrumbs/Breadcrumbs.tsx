@@ -4,8 +4,18 @@ import type { BreadcrumbType } from "../../types";
 import { Text } from "../Text";
 import { BreadcrumbsItem } from "./BreadcrumbsItem";
 
+/**
+ * Props for the Breadcrumbs component.
+ */
 type BreadcrumbsProps = React.ComponentProps<"nav"> & {
+	/**
+	 * An array of breadcrumb items.
+	 */
 	breadcrumbs: BreadcrumbType[];
+
+	/**
+	 * The separator string to be displayed between breadcrumbs.
+	 */
 	separator?: string;
 };
 

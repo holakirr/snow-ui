@@ -35,6 +35,12 @@ const textStyles = cva(["font-normal transition-all"], {
 
 export type TextSize = VariantProps<typeof textStyles>["size"];
 
+/**
+ * Props for the Text component.
+ *
+ * @template C - The element type for the Text component.
+ * @example <Text as="h1" size={24} semibold align="center" italic underline>Example</Text>
+ */
 export type TextProps<C extends ElementType> = React.ComponentProps<C> &
 	VariantProps<typeof textStyles> & {
 		as?: C;

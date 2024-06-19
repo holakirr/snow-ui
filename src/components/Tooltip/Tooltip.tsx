@@ -2,9 +2,25 @@ import { cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
 import { TooltipComponent, type TooltipComponentProps } from "./TooltipComponent";
 
+/**
+ * Props for the Tooltip component.
+ */
 export type TooltipProps = TooltipComponentProps & {
+	/**
+	 * The position of the tooltip.
+	 * @default "top"
+	 */
 	position?: "top" | "bottom" | "left" | "right";
+
+	/**
+	 * Determines whether the tooltip is visible.
+	 * @default false
+	 */
 	visible?: boolean;
+
+	/**
+	 * Additional class name for the tooltip.
+	 */
 	tooltipClassName?: string;
 };
 

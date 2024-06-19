@@ -4,7 +4,7 @@ import { Line, ROLES, SEPARATOR_DIRECTIONS } from "../../src";
 
 const testWrapperSide = 200;
 
-const meta = {
+const meta: Meta<typeof Line> = {
 	title: "Base Components/Line",
 	component: Line,
 	parameters: {
@@ -39,7 +39,7 @@ const meta = {
 			</div>
 		),
 	],
-} satisfies Meta<typeof Line>;
+};
 
 export default meta;
 type Story = StoryObj<typeof meta>;

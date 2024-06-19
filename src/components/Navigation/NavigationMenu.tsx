@@ -3,9 +3,23 @@ import { ROLES } from "../../constants";
 import type { NavigationItemType } from "../../types";
 import { NavigationItem } from "./NavigationItem";
 
+/**
+ * Props for the NavigationMenu component.
+ */
 type NavigationMenuProps = React.ComponentProps<"menu"> & {
+	/**
+	 * An array of navigation items.
+	 */
 	items: NavigationItemType[];
+
+	/**
+	 * Indicates whether the menu is opened or closed.
+	 */
 	opened: boolean;
+
+	/**
+	 * Event handler for when an item in the menu is clicked.
+	 */
 	onItemClick?: React.MouseEventHandler<HTMLLIElement>;
 };
 

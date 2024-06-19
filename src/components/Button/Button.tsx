@@ -5,11 +5,29 @@ import { ROLES } from "../../constants";
 import type { CustomIcon } from "../../types";
 import { Text, type TextSize } from "../Text";
 
+/**
+ * Props for the Button component.
+ */
 type ButtonProps = React.ComponentProps<"button"> &
 	VariantProps<typeof buttonStyles> & {
+		/**
+		 * The label text or number displayed on the button.
+		 */
 		label?: string | number;
+
+		/**
+		 * The icon component to be displayed on the right side of the button.
+		 */
 		rightIcon?: Icon | CustomIcon;
+
+		/**
+		 * The icon component to be displayed on the left side of the button.
+		 */
 		leftIcon?: Icon | CustomIcon;
+
+		/**
+		 * The size of the text displayed on the button.
+		 */
 		textSize?: TextSize;
 	};
 

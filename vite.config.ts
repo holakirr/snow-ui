@@ -6,20 +6,23 @@ export default defineConfig({
 	plugins: [
 		react(),
 		dts({
-			// Укажите пути к компонентам или корневую директорию, если нужно
+			include: ["src/**/*.ts", "src/**/*.tsx"], // Adjust as necessary
 		}),
 	],
-	optimizeDeps: {
-		include: ["react", "react-dom"],
-	},
 	build: {
 		lib: {
 			entry: "src/index.ts",
 			name: "holakirr-snow-ui",
 			fileName: (format) => `index.${format}.js`,
+			formats: ["es", "cjs"], // Generate both ESM and CJS modules
+		},
+		terserOptions: {
+			format: {
+				comments: false, // Remove comments
+			},
 		},
 		rollupOptions: {
-			external: ["react", "react-dom"],
+			external: ["react", "react-dom", "react-jsx-runtime"],
 			output: {
 				globals: {
 					react: "React",

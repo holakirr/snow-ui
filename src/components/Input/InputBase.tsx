@@ -10,7 +10,13 @@ export const disabledInputClasses =
 export const focusInputClasses =
 	"focus:ring-4 focus:ring-black-5 focus:outline-none active:border-black-40 focus:border-black-40";
 
+/**
+ * Props for the InputBase component.
+ */
 export type InputBaseProps = React.ComponentProps<"input"> & {
+	/**
+	 * The title of the input.
+	 */
 	title?: string;
 };
 

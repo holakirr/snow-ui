@@ -5,9 +5,21 @@ import type { NavigationItemType } from "../../types";
 import { Text } from "../Text";
 import { NavigationMenu } from "./NavigationMenu";
 
+/**
+ * Props for the Navigation component.
+ */
 type NavigationProps = React.ComponentProps<"nav"> & {
+	/**
+	 * The title of the navigation.
+	 */
 	title?: string;
+	/**
+	 * An array of navigation items.
+	 */
 	items: NavigationItemType[];
+	/**
+	 * Event handler for when a navigation item is clicked.
+	 */
 	onItemClick: ReactEventHandler<HTMLLIElement>;
 };
 

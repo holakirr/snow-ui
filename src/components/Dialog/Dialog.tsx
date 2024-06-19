@@ -1,11 +1,14 @@
-import type { MouseEventHandler } from "react";
+import type { KeyboardEventHandler, MouseEventHandler } from "react";
 import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
 import { DialogTitle, type DialogTitleProps } from "./DialogTitle";
 
 type DialogProps = React.ComponentProps<"dialog"> &
 	DialogTitleProps & {
-		onClose: () => void;
+		/**
+		 * Funciton to be called when the dialog is closed.
+		 **/
+		onClose?: () => void;
 	};
 
 const Dialog = ({
@@ -20,15 +23,20 @@ const Dialog = ({
 }: DialogProps) => {
 	const handleOutsideClick: MouseEventHandler = (event) => {
 		event.preventDefault();
-		if (event.target === event.currentTarget) {
+		if (event.target === event.currentTarget && onClose) {
+			onClose();
+		}
+	};
+	const handleEscapeKey: KeyboardEventHandler<HTMLDivElement> = (event) => {
+		if (event.key === "Escape" && onClose) {
 			onClose();
 		}
 	};
 
 	return (
-		// biome-ignore lint/a11y/useKeyWithClickEvents: it should be closed by clicking outside
 		<div
 			onClick={handleOutsideClick}
+			onKeyUp={handleEscapeKey}
 			className={twMerge(
 				"grid transition-[grid-template-rows_filter] grid-rows-[0fr] fixed top-1/2 left-1/2 z-50 overflow-hidden w-0 h-0 duration-500 content-center",
 				open &&

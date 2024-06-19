@@ -5,9 +5,23 @@ import { Button } from "../Button";
 import { CloseIcon } from "../Icons";
 import { Text } from "../Text";
 
+/**
+ * Props for the DialogTitle component.
+ */
 export type DialogTitleProps = React.ComponentProps<"div"> & {
+	/**
+	 * The icon to be displayed next to the title.
+	 */
 	titleIcon?: Icon | CustomIcon;
+
+	/**
+	 * The title text.
+	 */
 	title: string;
+
+	/**
+	 * Callback function to be called when the dialog is closed.
+	 */
 	onClose?: () => void;
 };
 

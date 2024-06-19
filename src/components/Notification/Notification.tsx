@@ -22,7 +22,15 @@ const notificationClasses = cva(
 
 type NotificationProps = React.ComponentProps<"div"> &
 	VariantProps<typeof notificationClasses> & {
+		/**
+		 * The status of the notification.
+		 * @default "success"
+		 * @see StatusNotify
+		 * */
 		status: StatusNotify;
+		/**
+		 * The title text displayed on the notification.
+		 * */
 		title: string;
 	};
 

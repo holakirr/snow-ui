@@ -6,7 +6,13 @@ import { Input } from "../Input";
 import { Line } from "../Line";
 
 type SearchPopupProps = React.ComponentProps<"input"> & {
+	/**
+	 * Whether the search is in loading state.
+	 * */
 	progress?: boolean;
+	/**
+	 * Dropdown component props
+	 * */
 	dropdown?: DropDownType;
 };
 

@@ -1,7 +1,13 @@
 import { twMerge } from "tailwind-merge";
 import { BadgeComponent } from "./BadgeComponent";
 
+/**
+ * Props for the Badge component.
+ */
 type BadgeProps = React.ComponentProps<"div"> & {
+	/**
+	 * The text to be displayed inside the badge.
+	 */
 	text?: string;
 };
 

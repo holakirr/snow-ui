@@ -3,7 +3,13 @@ import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
 import { Text } from "../Text";
 
+/**
+ * Props for the BadgeComponent.
+ */
 export type BadgeComponentProps = ComponentProps<"span"> & {
+	/**
+	 * The text to be displayed inside the badge.
+	 */
 	text?: string;
 };
 

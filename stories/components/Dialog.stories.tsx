@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
 import { useState } from "react";
-import { Button, Card, Dialog, ROLES } from "../../../src";
-import { iconControl } from "../../mocks";
+import { Button, Card, Dialog, ROLES } from "../../src";
+import { iconControl } from "../mocks";
 
 const testTitle = "Title";
 const openButtonLabel = "Open Dialog";
@@ -45,7 +45,9 @@ const meta = {
 			console.log("close");
 
 			setShow(false);
-			args.onClose();
+			if (args.onClose) {
+				args.onClose();
+			}
 		};
 
 		return (

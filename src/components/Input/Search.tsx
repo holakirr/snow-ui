@@ -19,9 +19,19 @@ const searchClassnames = cva(
 	},
 );
 
+/**
+ * Props for the Search component.
+ */
 type SearchProps = React.ComponentProps<"input"> &
 	VariantProps<typeof searchClassnames> & {
+		/**
+		 * An array of key bindings for the search input.
+		 */
 		keyBindings?: string[];
+
+		/**
+		 * The size of the search icon.
+		 */
 		iconSize?: number;
 	};
 

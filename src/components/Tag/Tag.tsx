@@ -3,10 +3,28 @@ import { ROLES } from "../../constants";
 import { CloseIcon, DotIcon } from "../Icons";
 import { Text, type TextSize } from "../Text";
 
+/**
+ * Props for the Tag component.
+ */
 export type TagProps = React.ComponentProps<"div"> & {
+	/**
+	 * The label of the tag.
+	 */
 	label: string | number;
+
+	/**
+	 * The size of the text in the tag.
+	 */
 	textSize?: TextSize;
+
+	/**
+	 * Determines whether to display a dot in the tag.
+	 */
 	withDot?: boolean;
+
+	/**
+	 * Callback function to be called when the tag is closed.
+	 */
 	onClose?: () => void;
 };
 

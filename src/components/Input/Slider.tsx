@@ -2,10 +2,28 @@ import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
 import { Text } from "../Text";
 
+/**
+ * Props for the Slider component.
+ */
 type SliderProps = React.ComponentProps<"input"> & {
+	/**
+	 * The minimum value of the slider.
+	 */
 	min?: number;
+
+	/**
+	 * The maximum value of the slider.
+	 */
 	max?: number;
+
+	/**
+	 * The current value of the slider.
+	 */
 	value?: number;
+
+	/**
+	 * The placeholder text for the slider.
+	 */
 	placeholder?: string;
 };
 

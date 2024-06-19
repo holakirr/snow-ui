@@ -6,9 +6,23 @@ import { Text } from "../Text";
 import { statusInputClasses } from "./Input";
 import { basicInputClasses, disabledInputClasses, focusInputClasses } from "./InputBase";
 
+/**
+ * Props for the TextArea component.
+ */
 type TextAreaProps = React.ComponentProps<"textarea"> & {
+	/**
+	 * The status of the TextArea.
+	 */
 	status?: Status;
+
+	/**
+	 * The error message to display for the TextArea.
+	 */
 	error?: string;
+
+	/**
+	 * The maximum number of characters allowed in the TextArea.
+	 */
 	textLimit?: number;
 };
 

@@ -6,7 +6,7 @@ import { keyBindingsControl } from "../../mocks";
 
 const testValue = "Test Value";
 
-const meta = {
+const meta: Meta<typeof Search> = {
 	title: "Base Components/Inputs/Search",
 	component: Search,
 	parameters: {
@@ -39,7 +39,7 @@ const meta = {
 
 		expect(input).toHaveValue(testValue);
 	},
-} satisfies Meta<typeof Search>;
+};
 
 export default meta;
 type Story = StoryObj<typeof meta>;

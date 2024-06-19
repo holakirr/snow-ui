@@ -38,7 +38,14 @@ const iconStyles = cva("", {
 
 type ChipProps = React.ComponentProps<"div"> &
 	VariantProps<typeof ChipStyles> & {
+		/**
+		 * The label text or number displayed on the chip.
+		 */
 		label: string;
+
+		/**
+		 * The status of the chip.
+		 */
 		status: StatusExpanded;
 	};
 

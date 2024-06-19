@@ -41,10 +41,22 @@ const avatarStyles = cva(
 	},
 );
 
+/**
+ * Props for the Avatar component.
+ */
 export type AvatarProps = React.ComponentProps<"div"> &
 	VariantProps<typeof avatarStyles> & {
+		/**
+		 * The name of the avatar.
+		 */
 		name: string;
+		/**
+		 * Determines whether to show a fallback avatar when `src` is not provided.
+		 */
 		showFallback?: boolean;
+		/**
+		 * The source URL of the avatar image.
+		 */
 		src?: string;
 	};
 

@@ -7,7 +7,13 @@ import { NavigationMenu } from "./NavigationMenu";
 
 type NavigationItemProps = React.ComponentProps<"li"> &
 	NavigationItemType & {
+		/**
+		 * Is the navigation item active.
+		 */
 		active?: boolean;
+		/**
+		 * Is the navigation item expanded.
+		 */
 		expanded?: boolean;
 	};
 

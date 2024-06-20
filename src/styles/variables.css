@@ -101,27 +101,29 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --color-black-5: var(--base-color-white), var(--5);
-    --color-black-10: var(--base-color-white), var(--10);
-    --color-black-20: var(--base-color-white), var(--20);
-    --color-black-40: var(--base-color-white), var(--40);
-    --color-black-80: var(--base-color-white), var(--80);
-    --color-black-100: var(--base-color-white), var(--100);
+  &:not([data-mode="light"]) {
+    :root {
+      --color-black-5: var(--base-color-white), var(--5);
+      --color-black-10: var(--base-color-white), var(--10);
+      --color-black-20: var(--base-color-white), var(--20);
+      --color-black-40: var(--base-color-white), var(--40);
+      --color-black-80: var(--base-color-white), var(--80);
+      --color-black-100: var(--base-color-white), var(--100);
 
-    --color-white-5: var(--base-color-black), var(--5);
-    --color-white-10: var(--base-color-black), var(--10);
-    --color-white-20: var(--base-color-black), var(--20);
-    --color-white-40: var(--base-color-black), var(--40);
-    --color-white-80: var(--base-color-black), var(--80);
-    --color-white-100: var(--base-color-black), var(--100);
+      --color-white-5: var(--base-color-black), var(--5);
+      --color-white-10: var(--base-color-black), var(--10);
+      --color-white-20: var(--base-color-black), var(--20);
+      --color-white-40: var(--base-color-black), var(--40);
+      --color-white-80: var(--base-color-black), var(--80);
+      --color-white-100: var(--base-color-black), var(--100);
 
-    --color-primary-brand: var(--base-color-secondary-purple), var(--100);
-    --color-primary-brand-hover: var(--base-color-purple-darker), var(--100);
-    --color-primary-blue: var(--base-color-blue), var(--100);
-    --color-primary-purple: var(--base-color-purple), var(--100);
-    --color-primary-purple-50: var(--base-color-white), var(--5);
-    --color-primary-light: var(--base-color-white), var(--5);
-    --color-primary-background: var(--base-color-black), var(--100);
+      --color-primary-brand: var(--base-color-secondary-purple), var(--100);
+      --color-primary-brand-hover: var(--base-color-purple-darker), var(--100);
+      --color-primary-blue: var(--base-color-blue), var(--100);
+      --color-primary-purple: var(--base-color-purple), var(--100);
+      --color-primary-purple-50: var(--base-color-white), var(--5);
+      --color-primary-light: var(--base-color-white), var(--5);
+      --color-primary-background: var(--base-color-black), var(--100);
+    }
   }
 }

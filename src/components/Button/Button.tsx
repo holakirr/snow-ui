@@ -39,7 +39,7 @@ const buttonStyles = cva(
 				borderless: "text-black-100 bg-transparent font-normal hover:bg-black-5",
 				gray: "text-black-100 bg-black-5 hover:bg-black-20 disabled:bg-black-5 focus:ring-offset-2",
 				outline:
-					"text-black-100 bg-transparent border-1 border-black-10 border-solid hover:bg-black-5 disabled:border-black-10",
+					"text-black-100 bg-transparent border border-black-10 border-solid hover:bg-black-5 disabled:border-black-10",
 				filled: "text-white-100 bg-primary-brand hover:bg-primary-brandHover disabled:bg-black-5",
 			},
 			size: {

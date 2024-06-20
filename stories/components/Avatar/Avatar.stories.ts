@@ -1,10 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { Avatar, ROLES, SIZES } from "../../src";
-import { colorControl, imgSourceControl, imgSrcMock, testInitials, testUserName } from "../mocks";
+import { Avatar, ROLES, SIZES } from "../../../src";
+import {
+	colorControl,
+	imgSourceControl,
+	imgSrcMock,
+	testInitials,
+	testUserName,
+} from "../../mocks";
 
 const meta = {
-	title: "Base Components/Avatar",
+	title: "Base Components/Avatar/Avatar",
 	component: Avatar,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout

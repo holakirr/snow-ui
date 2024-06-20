@@ -3,15 +3,13 @@
 SnowUI is a React UI of mostly (!) "stupid" (with no state or effect, you'll have to provide it by yourself) components library implementation of [SnowUI design kit](https://snowui.byewind.com) by [ByeWind](https://byewind.com/). Implemented and improved by [holakirr](https://github.com/holakirr). Based on TailwindCSS.
 Build your design using [it](https://www.figma.com/community/file/1301134685302006646)
 
-<!-- TODO: add website about this UI lib and it's documentation -->
-
 [Beta build of storybook](https://snowui.holakirr.com)
 
 Take a look at my [CV](https://holakirr.com) =)
 
 ## How to install
 
-### 1. Install our library
+### 1. Install my library
 
 ```bash
 npm add holakirr-snow-ui
@@ -28,6 +26,8 @@ bun add holakirr-snow-ui
 ```css
 @import "holakirr-snow-ui/index.css";
 ```
+
+<!-- TODO: Check if it works -->
 
 ### 3. Import any component in your project
 

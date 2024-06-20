@@ -10,7 +10,7 @@ const searchClassnames = cva(
 		variants: {
 			variant: {
 				gray: "bg-black-5 placeholder:text-black-20 hover:bg-black-10",
-				outline: "bg-white-40 border-1 border-black-10 hover:border-black-40",
+				outline: "bg-white-40 border border-black-10 hover:border-black-40",
 			},
 		},
 		defaultVariants: {

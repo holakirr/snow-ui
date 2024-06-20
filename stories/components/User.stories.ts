@@ -7,7 +7,7 @@ import {
 	Default as DefaultAvatar,
 	Large as LargeAvatar,
 	LargeWithImg as LargeAvatarWithImg,
-} from "./Avatar.stories";
+} from "./Avatar/Avatar.stories";
 
 const meta = {
 	title: "Base Components/User",

@@ -6,7 +6,7 @@ import { ROLES } from "../../constants";
 import { getInitials } from "../../helpers";
 
 const avatarStyles = cva(
-	"group brightness-100 hover:brightness-150 rounded-full transition-all overflow-hidden w-16 h-16 aspect-square flex items-center justify-center",
+	"group brightness-100 hover:brightness-105 rounded-full transition-all overflow-hidden w-16 h-16 aspect-square flex items-center justify-center",
 	{
 		variants: {
 			size: {
@@ -74,7 +74,7 @@ const Avatar = ({ size, src, name, showFallback, color, className, ref }: Avatar
 			<UserIcon
 				aria-label="Default user icon"
 				weight="fill"
-				className="w-3 h-3 group-hover:w-[14px] group-hover:h-[14px] transition-all"
+				className="w-3 h-3 group-hover:scale-[1.125] transition-all"
 				size={16}
 			/>
 		)}
@@ -82,7 +82,7 @@ const Avatar = ({ size, src, name, showFallback, color, className, ref }: Avatar
 			<img
 				src={src}
 				alt={`Avatar of user ${name}`}
-				className="w-full h-full transition-all group-hover:scale-125"
+				className="w-full h-full transition-all group-hover:scale-[1.125]"
 			/>
 		)}
 		{!showFallback && !src && (

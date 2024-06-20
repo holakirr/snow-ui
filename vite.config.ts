@@ -6,20 +6,14 @@ export default defineConfig({
 	plugins: [
 		react(),
 		dts({
-			include: ["src/**/*.ts", "src/**/*.tsx"], // Adjust as necessary
+			exclude: ["stories/**/*", "tests/**/*"],
 		}),
 	],
 	build: {
 		lib: {
 			entry: "src/index.ts",
 			name: "holakirr-snow-ui",
-			fileName: (format) => `index.${format}.js`,
-			formats: ["es", "cjs"], // Generate both ESM and CJS modules
-		},
-		terserOptions: {
-			format: {
-				comments: false, // Remove comments
-			},
+			fileName: "index",
 		},
 		rollupOptions: {
 			external: ["react", "react-dom", "react-jsx-runtime"],

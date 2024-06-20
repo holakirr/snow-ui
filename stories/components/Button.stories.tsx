@@ -79,7 +79,7 @@ export const Outline: Story = {
 		const canvas = within(canvasElement);
 		const button = canvas.getByRole(ROLES.button);
 
-		expect(button).toHaveClass("bg-transparent border-1 border-black-10 border-solid");
+		expect(button).toHaveClass("bg-transparent border border-black-10 border-solid");
 	},
 };
 

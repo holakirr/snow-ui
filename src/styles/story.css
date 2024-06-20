@@ -1,5 +1,8 @@
 @import "./font.css";
 @import "./index.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .docs-story,
 .sb-show-main {
@@ -17,8 +20,10 @@ html[data-mode="dark"] .sb-show-main {
 }
 
 @media (prefers-color-scheme: dark) {
-  .docs-story,
-  .sb-show-main {
-    @apply bg-gray-900;
+  &:not([data-mode="light"]) {
+    .docs-story,
+    .sb-show-main {
+      @apply bg-gray-900;
+    }
   }
 }

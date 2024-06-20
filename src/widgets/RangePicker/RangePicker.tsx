@@ -26,7 +26,7 @@ const RangePicker = ({
 }: RangePickerProps) => (
 	<div
 		className={twMerge(
-			"w-[360px] rounded-2xl border-1 border-black-10 flex flex-col backdrop-blur-[20px] bg-white-80 text-black-100",
+			"w-[360px] rounded-2xl border border-black-10 flex flex-col backdrop-blur-[20px] bg-white-80 text-black-100",
 			className,
 		)}
 		{...props}

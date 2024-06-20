@@ -1,5 +1,6 @@
 export const ROLES = {
 	avatar: "figure",
+	avatarGroup: "region",
 	badge: "status",
 	breadcrumbs: "navigation",
 	breadcrumbsItem: "link",

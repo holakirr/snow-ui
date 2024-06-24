@@ -23,6 +23,7 @@ export const TimeView = ({
 	onTypeChange,
 }: TimeViewProps) => {
 	const [minLimit, maxLimit] = dateLimits;
+	const selectedTime = new Date(selected);
 	const minutes = Array.from({ length: 60 }, (_, i) => {
 		const timeStamp = new Date(
 			selected.getFullYear(),
@@ -101,7 +102,7 @@ export const TimeView = ({
 					aria-label="Enter hours"
 					autoFocus
 					changingType={changingType}
-					onChange={(e) => onDateSelect(new Date(selected.setHours(+e.target.value)))}
+					onChange={(e) => onDateSelect(new Date(selectedTime.setHours(+e.target.value)))}
 					onFocus={() => onTypeChange("hours")}
 				/>
 				<Text size={12} className="flex items-center justify-center">
@@ -111,7 +112,7 @@ export const TimeView = ({
 					value={selected.getMinutes()}
 					aria-label="Enter minutes"
 					changingType={changingType}
-					onChange={(e) => onDateSelect(new Date(selected.setMinutes(+e.target.value)))}
+					onChange={(e) => onDateSelect(new Date(selectedTime.setMinutes(+e.target.value)))}
 					onFocus={() => onTypeChange("minutes")}
 				/>
 				<Button

@@ -10,7 +10,8 @@ const avatarStyles = cva(
 	{
 		variants: {
 			size: {
-				sm: "w-8 h-8",
+				sm: "w-6 h-6",
+				md: "w-8 h-8",
 				lg: "w-16 h-16",
 			},
 			color: {

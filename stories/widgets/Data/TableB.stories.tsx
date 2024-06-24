@@ -5,6 +5,7 @@ import {
 	Avatar,
 	AvatarGroup,
 	Chip,
+	ROLES,
 	type StatusExpanded,
 	TableB,
 	type TableBProps,
@@ -134,8 +135,8 @@ const meta: Meta<typeof TableB> = {
 	argTypes: {},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		caption: testCaption,
-		columns: testHeadCols,
+		// caption: testCaption,
+		// columns: testHeadCols,
 		dataSource: testRows,
 	},
 	render: (args) => <TableB {...args} />,
@@ -148,14 +149,58 @@ export const BasicTableB: Story = {
 	args: {},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const table = canvas.getByRole("table");
+		const table = canvas.getByRole(ROLES.table);
+		const tbody = within(table).getByRole(ROLES.tableRowGroup);
+		const rows = within(tbody).getAllByRole(ROLES.tableRow);
+
+		expect(table).toBeInTheDocument();
+		expect(table).toHaveAttribute("aria-label", "Table");
+		expect(tbody).toHaveAttribute("aria-label", "Body of table");
+		expect(rows).toHaveLength(testRows.length);
+	},
+};
+
+export const TableBWithHead: Story = {
+	args: {
+		columns: testHeadCols,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const table = canvas.getByRole(ROLES.table);
+		const thead = canvas.getByRole(ROLES.tableRowGroup, { name: "Head of table" });
+		const headRow = within(thead).getByRole(ROLES.tableRow);
+		const headCols = within(headRow).getAllByRole(ROLES.tableColumnHeader);
+
+		expect(table).toBeInTheDocument();
+		expect(thead).toBeInTheDocument();
+		expect(headRow).toBeInTheDocument();
+		expect(headCols).toHaveLength(testHeadCols.length);
+	},
+};
+
+export const TableBWithAllProps: Story = {
+	args: {
+		caption: testCaption,
+		columns: testHeadCols,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const table = canvas.getByRole(ROLES.table);
 		const caption = canvas.getByText(testCaption);
-		const headCols = canvas.getAllByRole("columnheader");
-		const rows = canvas.getAllByRole("row");
+		const thead = canvas.getByRole(ROLES.tableRowGroup, { name: `Head of table ${testCaption}` });
+		const headRow = within(thead).getByRole(ROLES.tableRow);
+		const headCols = within(headRow).getAllByRole(ROLES.tableColumnHeader);
+		const tbody = within(table).getByRole(ROLES.tableRowGroup, {
+			name: `Body of table ${testCaption}`,
+		});
+		const rows = within(tbody).getAllByRole(ROLES.tableRow);
 
 		expect(table).toBeInTheDocument();
 		expect(caption).toBeInTheDocument();
+		expect(thead).toBeInTheDocument();
+		expect(headRow).toBeInTheDocument();
 		expect(headCols).toHaveLength(testHeadCols.length);
-		expect(rows).toHaveLength(testRows.length + 1);
+		expect(tbody).toBeInTheDocument();
+		expect(rows).toHaveLength(testRows.length);
 	},
 };

@@ -59,6 +59,19 @@ export const Default: Story = {
 	},
 };
 
+export const Medium: Story = {
+	args: {
+		size: SIZES.md,
+		src: imgSrcMock,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const avatar = canvas.getByRole(ROLES.avatar);
+
+		expect(avatar).toBeInTheDocument();
+	},
+};
+
 export const Large: Story = {
 	args: {
 		size: SIZES.lg,

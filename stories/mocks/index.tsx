@@ -28,7 +28,12 @@ export const imageSrcMocks = {
 	man: "https://avatar.iran.liara.run/public/38",
 	woman: "https://avatar.iran.liara.run/public/61",
 	chef: "https://avatar.iran.liara.run/public/job/chef/female",
-};
+	scott: "https://avatar.iran.liara.run/public/boy?username=Scott",
+	john: "https://avatar.iran.liara.run/public/boy?username=John",
+	jane: "https://avatar.iran.liara.run/public/girl?username=Jane",
+	dave: "https://avatar.iran.liara.run/public/boy?username=Dave",
+	alex: "https://avatar.iran.liara.run/public/boy?username=Alex",
+} as const;
 
 export const imgSrcMock = imageSrcMocks.chef;
 

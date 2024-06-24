@@ -1,8 +1,5 @@
-@import "./font.css";
 @import "./index.css";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "./font.css";
 
 .docs-story,
 .sb-show-main {

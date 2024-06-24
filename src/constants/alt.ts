@@ -36,4 +36,9 @@ export const ROLES = {
 	tag: "listitem",
 	textarea: "textbox",
 	tooltip: "tooltip",
+	table: "table",
+	tableCaption: "caption",
+	tableRowGroup: "rowgroup",
+	tableRow: "row",
+	tableColumnHeader: "columnheader",
 } as const;

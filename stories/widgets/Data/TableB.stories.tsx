@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, within } from "@storybook/test";
 import type { ReactElement } from "react";
 import {
 	Avatar,
@@ -17,13 +18,15 @@ import { imageSrcMocks } from "../../mocks";
 const getTestChipLabel = (status: StatusExpanded) => {
 	switch (status) {
 		case "success":
-			return "In Progress";
-		case "error":
-			return "Delayed";
-		case "warning":
-			return "Pending";
-		default:
 			return "Completed";
+		case "error":
+			return "Rejected";
+		case "warning":
+			return "Approved";
+		case "default":
+			return "In Progress";
+		case "info":
+			return "Pending";
 	}
 };
 
@@ -34,7 +37,9 @@ const getTestRow = (
 	status: StatusExpanded,
 ) => [
 	title,
-	<AvatarGroup key={`Assigned to ${title}`}>{assignedTo}</AvatarGroup>,
+	<AvatarGroup key={`Assigned to ${title}`} limit={2}>
+		{assignedTo}
+	</AvatarGroup>,
 	timeSpend,
 	<Chip key={status} color="green" label={getTestChipLabel(status)} status={status} withDot />,
 ];
@@ -44,36 +49,61 @@ const testHeadCols = ["Title", "Assigned to", "Time Spend", "Status"];
 const testRows = [
 	getTestRow(
 		"Coffee detail page",
-		[<Avatar name="ByeWind" key="ByeWind" src={imageSrcMocks.man} />],
+		[<Avatar name="ByeWind" key="Coffee detail page - ByeWind" src={imageSrcMocks.chef} />],
 		"3hr 20min",
-		"success",
+		"default",
 	),
 	getTestRow(
 		"Drinking bottle graphics",
 		[
-			<Avatar name="ByeWind" key="ByeWind" src={imageSrcMocks.chef} />,
-			<Avatar name="John Doe" key="John Doe" src={imageSrcMocks.woman} />,
+			<Avatar name="Scott" key="Drinking bottle graphics - Scott" src={imageSrcMocks.scott} />,
+			<Avatar name="Jane Doe" key="Drinking bottle graphics - Jane Doe" src={imageSrcMocks.jane} />,
 		],
 		"12hr 21min",
-		"error",
+		"success",
 	),
 	getTestRow(
-		"Create a new design for mobile",
-		[<Avatar name="ByeWind" key="ByeWind" src={imageSrcMocks.man} />],
+		"App design and development",
+		[
+			<Avatar name="ByeWind" key="App design and development - ByeWind" src={imageSrcMocks.chef} />,
+			<Avatar
+				name="Jane Doe"
+				key="App design and development - Jane Doe"
+				src={imageSrcMocks.jane}
+			/>,
+			<Avatar
+				name="John Doe"
+				key="App design and development - John Doe"
+				src={imageSrcMocks.john}
+			/>,
+			<Avatar name="Dave Bo" key="App design and development - Dave Bo" src={imageSrcMocks.dave} />,
+			<Avatar
+				name="Alex Catcher"
+				key="App design and development - Alex Catcher"
+				src={imageSrcMocks.alex}
+			/>,
+		],
 		"78hr 5min",
-		"warning",
+		"info",
 	),
 	getTestRow(
 		"Poster illustation design",
-		[<Avatar name="ByeWind" key="ByeWind" src={imageSrcMocks.chef} />],
+		[
+			<Avatar name="Dave Bo" key="App design and development - Dave Bo" src={imageSrcMocks.dave} />,
+			<Avatar
+				name="Alex Catcher"
+				key="App design and development - Alex Catcher"
+				src={imageSrcMocks.alex}
+			/>,
+		],
 		"26hr 58min",
-		"success",
+		"warning",
 	),
 	getTestRow(
 		"App UI design",
 		[<Avatar name="ByeWind" key="ByeWind" src={imageSrcMocks.chef} />],
 		"17hr 22min",
-		"success",
+		"error",
 	),
 ];
 
@@ -124,5 +154,16 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicTableB: Story = {
 	args: {},
-	play: async ({ canvasElement }) => {},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const table = canvas.getByRole("table");
+		const caption = canvas.getByText(testCaption);
+		const headCols = canvas.getAllByRole("columnheader");
+		const rows = canvas.getAllByRole("row");
+
+		expect(table).toBeInTheDocument();
+		expect(caption).toBeInTheDocument();
+		expect(headCols).toHaveLength(testHeadCols.length);
+		expect(rows).toHaveLength(testRows.length + 1);
+	},
 };

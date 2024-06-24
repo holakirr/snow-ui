@@ -4,14 +4,10 @@ import type { ReactElement } from "react";
 import {
 	Avatar,
 	AvatarGroup,
-	Caption,
 	Chip,
 	type StatusExpanded,
-	TBody,
-	TD,
-	TH,
-	TR,
 	TableB,
+	type TableBProps,
 } from "../../../src";
 import { imageSrcMocks } from "../../mocks";
 
@@ -35,18 +31,34 @@ const getTestRow = (
 	assignedTo: ReactElement[],
 	timeSpend: string,
 	status: StatusExpanded,
-) => [
-	title,
-	<AvatarGroup key={`Assigned to ${title}`} limit={2}>
-		{assignedTo}
-	</AvatarGroup>,
-	timeSpend,
-	<Chip key={status} color="green" label={getTestChipLabel(status)} status={status} withDot />,
-];
+) => ({
+	key: title,
+	cells: [
+		{
+			key: title,
+			render: title,
+		},
+		{
+			key: `Assigned to ${title}`,
+			render: (
+				<AvatarGroup key={`Assigned to ${title}`} limit={2}>
+					{assignedTo}
+				</AvatarGroup>
+			),
+		},
+		{ key: timeSpend, render: timeSpend },
+		{
+			key: status,
+			render: (
+				<Chip key={status} color="green" label={getTestChipLabel(status)} status={status} withDot />
+			),
+		},
+	],
+});
 
 const testCaption = "Tasks";
 const testHeadCols = ["Title", "Assigned to", "Time Spend", "Status"];
-const testRows = [
+const testRows: TableBProps["dataSource"] = [
 	getTestRow(
 		"Coffee detail page",
 		[<Avatar name="ByeWind" key="Coffee detail page - ByeWind" src={imageSrcMocks.chef} />],
@@ -121,32 +133,12 @@ const meta: Meta<typeof TableB> = {
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {},
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
-	args: {},
-	render: (args) => (
-		<TableB {...args}>
-			<Caption>{testCaption}</Caption>
-			<TBody>
-				<TR>
-					{testHeadCols.map((col, i) => (
-						<TH key={col} className={i === 0 ? "ps-0 text-left" : ""}>
-							{col}
-						</TH>
-					))}
-				</TR>
-				{testRows.map((row, i) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-					<TR key={i}>
-						{row.map((cell, j) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-							<TD key={i} className={j === 0 ? "ps-0" : ""}>
-								{cell}
-							</TD>
-						))}
-					</TR>
-				))}
-			</TBody>
-		</TableB>
-	),
+	args: {
+		caption: testCaption,
+		columns: testHeadCols,
+		dataSource: testRows,
+	},
+	render: (args) => <TableB {...args} />,
 };
 
 export default meta;

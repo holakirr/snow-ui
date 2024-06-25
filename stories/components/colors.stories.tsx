@@ -5,10 +5,6 @@ import { COLOR_SCHEME, Line } from "../../src";
 
 const meta = {
 	title: "Foundations/Design System/Color Scheme",
-	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-		layout: "centered",
-	},
 } satisfies Meta;
 
 export default meta;

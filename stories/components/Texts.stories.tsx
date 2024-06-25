@@ -23,10 +23,6 @@ const TextStyles: TextStyle[] = [
 
 const meta = {
 	title: "Foundations/Design System/Text styles",
-	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-		layout: "centered",
-	},
 } satisfies Meta;
 
 export default meta;

@@ -17,7 +17,7 @@ type Story = StoryObj<typeof meta>;
 export const Colors: Story = {
 	render: () => (
 		<div className="grid gap-2">
-			{(Object.keys(COLOR_SCHEME) as (keyof typeof COLOR_SCHEME)[]).map((color) => (
+			{(Object.keys(COLOR_SCHEME) as (keyof typeof COLOR_SCHEME)[]).map((color, i) => (
 				<Fragment key={color}>
 					<div className="grid gap-8 grid-cols-2 items-center">
 						<span className="text-4xl font-normal">{color[0].toUpperCase() + color.slice(1)}</span>
@@ -63,7 +63,7 @@ export const Colors: Story = {
 							)}
 						</div>
 					</div>
-					<Line />
+					{i !== Object.keys(COLOR_SCHEME).length - 1 && <Line />}
 				</Fragment>
 			))}
 		</div>

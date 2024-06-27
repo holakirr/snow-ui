@@ -143,7 +143,7 @@ export const DateView = ({
 							tooltipProps={{
 								label: weekDay,
 								position: "top",
-								className: "flex items-center justify-center",
+								wrapperClassname: "flex items-center justify-center",
 							}}
 							title={weekDay}
 							size={12}

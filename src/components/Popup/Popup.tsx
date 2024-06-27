@@ -1,17 +1,17 @@
 import type { KeyboardEventHandler, MouseEventHandler } from "react";
 import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
-import { DialogTitle, type DialogTitleProps } from "./DialogTitle";
+import { PopupHeader, type PopupHeaderProps } from "./PopupHeader";
 
 type DialogProps = React.ComponentProps<"dialog"> &
-	DialogTitleProps & {
+	PopupHeaderProps & {
 		/**
 		 * Funciton to be called when the dialog is closed.
 		 **/
-		onClose?: () => void;
+		onClose: () => void;
 	};
 
-const Dialog = ({
+const Popup = ({
 	open,
 	titleIcon,
 	title,
@@ -23,12 +23,12 @@ const Dialog = ({
 }: DialogProps) => {
 	const handleOutsideClick: MouseEventHandler = (event) => {
 		event.preventDefault();
-		if (event.target === event.currentTarget && onClose) {
+		if (event.target === event.currentTarget) {
 			onClose();
 		}
 	};
 	const handleEscapeKey: KeyboardEventHandler<HTMLDivElement> = (event) => {
-		if (event.key === "Escape" && onClose) {
+		if (event.key === "Escape") {
 			onClose();
 		}
 	};
@@ -45,7 +45,7 @@ const Dialog = ({
 		>
 			<dialog
 				ref={ref}
-				role={ROLES.dialog}
+				role={ROLES.popup}
 				className={twMerge(
 					"grid gap-7 content-center justify-center min-h-0 relative bg-transparent",
 					className,
@@ -54,12 +54,12 @@ const Dialog = ({
 				open={open}
 				{...props}
 			>
-				<DialogTitle title={title} onClose={onClose} titleIcon={titleIcon} />
+				<PopupHeader title={title} onClose={onClose} titleIcon={titleIcon} />
 				{children}
 			</dialog>
 		</div>
 	);
 };
 
-Dialog.displayName = "Dialog";
-export { Dialog };
+Popup.displayName = "Popup";
+export { Popup };

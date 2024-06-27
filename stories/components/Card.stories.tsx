@@ -12,7 +12,7 @@ const meta = {
 		},
 	},
 	args: {
-		children: <Text>{testText}</Text>,
+		children: <Text className="text-black-100">{testText}</Text>,
 	},
 } satisfies Meta<typeof Card>;
 
@@ -32,11 +32,10 @@ export const LargeCard: Story = {
 	args: {
 		children: (
 			<>
-				<Text>{testText}</Text>
-				<Text>{testText}</Text>
-				<Text>{testText}</Text>
-				<Text>{testText}</Text>
-				<Text>{testText}</Text>
+				<Text className="text-black-100">{testText}</Text>
+				<Text className="text-black-100">{testText}</Text>
+				<Text className="text-black-100">{testText}</Text>
+				<Text className="text-black-100">{testText}</Text>
 			</>
 		),
 	},

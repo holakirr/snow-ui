@@ -1,63 +1,32 @@
-import { cva } from "class-variance-authority";
-import { twMerge } from "tailwind-merge";
+import type { PopoverContentType } from "../../types";
+import { Popover } from "../Popover";
 import { TooltipComponent, type TooltipComponentProps } from "./TooltipComponent";
 
 /**
  * Props for the Tooltip component.
  */
-export type TooltipProps = TooltipComponentProps & {
-	/**
-	 * The position of the tooltip.
-	 * @default "top"
-	 */
-	position?: "top" | "bottom" | "left" | "right";
-
-	/**
-	 * Determines whether the tooltip is visible.
-	 * @default false
-	 */
-	visible?: boolean;
-
-	/**
-	 * Additional class name for the tooltip.
-	 */
-	tooltipClassName?: string;
-};
-
-const tooltipPosStyles = cva("", {
-	variants: {
-		position: {
-			top: "bottom-full -translate-y-1 left-1/2 -translate-x-1/2",
-			bottom: "top-full translate-y-1 left-1/2 -translate-x-1/2",
-			left: "right-full translate-x-1 top-1/2 -translate-y-1/2",
-			right: "left-full -translate-x-1 top-1/2 -translate-y-1/2",
-		},
-	},
-	defaultVariants: {
-		position: "bottom",
-	},
-});
+export type TooltipProps = TooltipComponentProps &
+	PopoverContentType & {
+		/**
+		 * Additional class name for the wrapper.
+		 */
+		wrapperClassname?: string;
+	};
 
 const Tooltip = ({
 	label,
 	kbd,
 	position,
 	visible,
-	tooltipClassName,
+	wrapperClassname,
 	className,
 	children,
 	ref,
 }: TooltipProps) => (
-	<div className={twMerge("relative", className)} ref={ref}>
+	<Popover position={position} visible={visible} wrapperClassName={wrapperClassname}>
 		{children}
-		{visible && (
-			<TooltipComponent
-				className={twMerge("absolute z-100", tooltipPosStyles({ position }), tooltipClassName)}
-				label={label}
-				kbd={kbd}
-			/>
-		)}
-	</div>
+		<TooltipComponent ref={ref} className={className} label={label} kbd={kbd} />
+	</Popover>
 );
 
 Tooltip.displayName = "WithTooltip";

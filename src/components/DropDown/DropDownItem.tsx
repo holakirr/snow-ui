@@ -1,60 +1,50 @@
 import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
-import { SearchIcon } from "../Icons";
 import { KBD } from "../KBD";
 import { Text } from "../Text";
 
 export type DropDownItemType = {
-	img?: JSX.Element;
-	title: string;
-	href: string;
-	subtitle?: string;
+	startContent?: JSX.Element;
+	title?: string;
+	description?: string;
 	keyBindings?: string[];
 };
 
-type DropDownItemProps = React.ComponentProps<"a"> & DropDownItemType;
+type DropDownItemProps = React.ComponentProps<"li"> & DropDownItemType;
 
 const DropDownItem = ({
-	href,
-	img: Image,
+	startContent,
 	title,
-	subtitle,
+	description,
 	keyBindings,
 	className,
+	children,
 	ref,
 }: DropDownItemProps) => (
 	<li
-		className="list-none w-full rounded-2xl hover:bg-black-5 focus:bg-black-5"
 		role={ROLES.dropdownItem}
+		ref={ref}
+		className={twMerge(
+			"flex items-center justify-between p-2 gap-4 list-none w-full rounded-lg hover:bg-black-5 focus:bg-black-5 cursor-pointer",
+			className,
+		)}
 	>
-		<a
-			href={href}
-			tabIndex={0}
-			ref={ref}
-			className={twMerge("flex items-center justify-between p-4 gap-2", className)}
-		>
-			<div className={twMerge("flex gap-2 items-center", subtitle && "items-start")}>
-				{Image ? (
-					Image
-				) : (
-					<SearchIcon
-						size={16}
-						weight="regular"
-						alt={`Search icon for ${title}`}
-						className="fill-black-100"
-					/>
-				)}
-				<div className="flex flex-col">
-					<Text as="p" size={14} className="text-black-100">
+		<div className={twMerge("flex gap-2 items-center", description && "items-start")}>
+			{startContent}
+			<div className="flex flex-col text-nowrap text-sm">
+				{children || (
+					<Text as="p" className="text-black-100">
 						{title}
 					</Text>
+				)}
+				{description && (
 					<Text as="span" size={14} className="text-black-40">
-						{subtitle}
+						{description}
 					</Text>
-				</div>
+				)}
 			</div>
-			{keyBindings && <KBD className="" keyBindings={keyBindings} />}
-		</a>
+		</div>
+		{keyBindings && <KBD className="" keyBindings={keyBindings} />}
 	</li>
 );
 

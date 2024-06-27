@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { Chip } from "../../src/components";
+import { StatusBadge } from "../../src/components";
 import { ROLES, STATUSES_EXPANDED } from "../../src/constants";
 import { badgeStatusControl } from "../mocks";
 
@@ -8,8 +8,8 @@ const testLabel = "Status";
 const altIconText = `Dot icon for status badge ${testLabel}`;
 
 const meta = {
-	title: "Base Components/Chip",
-	component: Chip,
+	title: "Base Components/StatusBadge",
+	component: StatusBadge,
 	argTypes: {
 		label: {
 			control: "text",
@@ -21,15 +21,15 @@ const meta = {
 		label: testLabel,
 		status: STATUSES_EXPANDED.default,
 	},
-} satisfies Meta<typeof Chip>;
+} satisfies Meta<typeof StatusBadge>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicChip: Story = {
+export const BasicStatusBadge: Story = {
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const badge = canvas.getByRole(ROLES.Chip);
+		const badge = canvas.getByRole(ROLES.statusBadge);
 
 		expect(badge).toBeInTheDocument();
 		expect(badge).toHaveTextContent(testLabel);
@@ -37,14 +37,14 @@ export const BasicChip: Story = {
 	},
 };
 
-export const ChipWithDot: Story = {
+export const StatusBadgeWithDot: Story = {
 	args: {
 		withDot: true,
 		status: STATUSES_EXPANDED.success,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const badge = canvas.getByRole(ROLES.Chip);
+		const badge = canvas.getByRole(ROLES.statusBadge);
 		const icon = canvas.getByRole(ROLES.icon);
 
 		expect(badge).toBeInTheDocument();

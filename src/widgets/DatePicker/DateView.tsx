@@ -107,7 +107,7 @@ export const DateView = ({
 							label: `Display month is ${Intl.DateTimeFormat("en-US", { month: "long" }).format(
 								displayDate,
 							)}`,
-							tooltipClassName: "text-nowrap",
+							className: "text-nowrap",
 						}}
 						title={`Display month is ${Intl.DateTimeFormat("en-US", { month: "long" }).format(
 							displayDate,
@@ -137,7 +137,7 @@ export const DateView = ({
 							tooltipProps={{
 								label: weekDay,
 								position: "top",
-								className: "flex items-center justify-center",
+								wrapperClassname: "flex items-center justify-center",
 							}}
 							title={weekDay}
 							size={12}

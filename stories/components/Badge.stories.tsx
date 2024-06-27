@@ -13,7 +13,7 @@ const meta = {
 		},
 	},
 	args: {
-		text: "",
+		content: "",
 		children: <Button label="Button" variant="filled" />,
 	},
 } satisfies Meta<typeof Badge>;
@@ -35,7 +35,7 @@ export const BasicBadge: Story = {
 
 export const BadgeWithText: Story = {
 	args: {
-		text: testStatus,
+		content: testStatus,
 		children: null,
 	},
 	play: ({ canvasElement }) => {
@@ -60,7 +60,7 @@ export const ButtonBadge: Story = {
 
 export const ButtonBadgeWithText: Story = {
 	args: {
-		text: testStatus,
+		content: testStatus,
 	},
 	play: (context) => {
 		const canvas = within(context.canvasElement);

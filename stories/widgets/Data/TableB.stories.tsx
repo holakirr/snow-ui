@@ -4,15 +4,15 @@ import type { ReactElement } from "react";
 import {
 	Avatar,
 	AvatarGroup,
-	Chip,
 	ROLES,
+	StatusBadge,
 	type StatusExpanded,
 	TableB,
 	type TableBProps,
 } from "../../../src";
 import { imageSrcMocks } from "../../mocks";
 
-const getTestChipLabel = (status: StatusExpanded) => {
+const getTestStatusBadgeLabel = (status: StatusExpanded) => {
 	switch (status) {
 		case "success":
 			return "Completed";
@@ -51,7 +51,13 @@ const getTestRow = (
 		{
 			key: status,
 			render: (
-				<Chip key={status} color="green" label={getTestChipLabel(status)} status={status} withDot />
+				<StatusBadge
+					key={status}
+					color="green"
+					label={getTestStatusBadgeLabel(status)}
+					status={status}
+					withDot
+				/>
 			),
 		},
 	],

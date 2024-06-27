@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, waitFor, within } from "@storybook/test";
 import { useState } from "react";
-import { Button, ROLES, Tooltip } from "../../src";
+import { Button, ROLES, Text, Tooltip } from "../../src";
 import { testKeyBindings } from "../mocks";
 
 const testSeparator = "+";
+const testText = "Tooltip trigger";
 const testLabel = "Tooltip";
 const testButtonLabel = "Hover me";
 
@@ -27,6 +28,7 @@ const meta = {
 		position: "bottom",
 		label: testLabel,
 		kbd: undefined,
+		children: <Text className="text-black-100">{testText}</Text>,
 	},
 } satisfies Meta<typeof Tooltip>;
 

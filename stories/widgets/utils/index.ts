@@ -3,12 +3,12 @@ import { ROLES } from "../../../src";
 
 export const ResetDatePicker = async (picker: HTMLElement) => {
 	await userEvent.click(
-		within(picker).getByRole(ROLES.datepickerHeadTab, {
+		within(picker).getByRole(ROLES.tab, {
 			name: "2024",
 		}),
 	);
 	await userEvent.click(
-		within(picker).getByRole(ROLES.datepickerBodyTableCell, {
+		within(picker).getByRole(ROLES.cell, {
 			name: "2024",
 		}),
 	);
@@ -18,7 +18,7 @@ export const ResetDatePicker = async (picker: HTMLElement) => {
 		}),
 	);
 	await userEvent.click(
-		within(picker).getByRole(ROLES.datepickerBodyTableCell, {
+		within(picker).getByRole(ROLES.cell, {
 			name: "Select Jun 2024",
 		}),
 	);
@@ -28,7 +28,7 @@ export const ResetDatePicker = async (picker: HTMLElement) => {
 		}),
 	);
 	await userEvent.click(
-		within(picker).getByRole(ROLES.datepickerBodyTableCell, {
+		within(picker).getByRole(ROLES.cell, {
 			name: "Thu Jun 20 2024",
 		}),
 	);

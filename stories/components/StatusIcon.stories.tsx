@@ -19,39 +19,39 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const SuccessStatusIcon: Story = {
+export const SuccessStatus: Story = {
 	args: {
 		status: STATUSES.success,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole(ROLES.icon);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(altText + STATUSES.success);
 	},
 };
 
-export const ProgressStatusIcon: Story = {
+export const ProgressStatus: Story = {
 	args: {
 		status: STATUSES.progress,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole(ROLES.icon);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(altText + STATUSES.progress);
 	},
 };
 
-export const ErrorStatusIcon: Story = {
+export const ErrorStatus: Story = {
 	args: {
 		status: STATUSES.error,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole(ROLES.icon);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(altText + STATUSES.error);

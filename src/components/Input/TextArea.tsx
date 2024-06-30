@@ -40,7 +40,7 @@ const TextArea = ({
 	<div className="flex flex-col gap-2">
 		<div className="relative flex">
 			<textarea
-				role={ROLES.textarea}
+				role={ROLES.textbox}
 				id={id}
 				ref={ref}
 				maxLength={textLimit}

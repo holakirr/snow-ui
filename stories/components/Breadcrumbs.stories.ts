@@ -25,11 +25,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicBreadcrumbs: Story = {
+export const Basic: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const breadcrumbs = canvas.getByRole(ROLES.breadcrumbs);
-		const breadcrumbItems = canvas.getAllByRole(ROLES.breadcrumbsItem);
+		const breadcrumbs = canvas.getByRole(ROLES.navigation);
+		const breadcrumbItems = canvas.getAllByRole(ROLES.link);
 
 		expect(breadcrumbs).toBeInTheDocument();
 		expect(breadcrumbItems).toHaveLength(testBreadcrumbs.length);
@@ -40,14 +40,14 @@ export const BasicBreadcrumbs: Story = {
 	},
 };
 
-export const BreadcrumbsWithCustomSeparator: Story = {
+export const WithCustomSeparator: Story = {
 	args: {
 		separator: ">",
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const breadcrumbs = canvas.getByRole(ROLES.breadcrumbs);
-		const breadcrumbItems = canvas.getAllByRole(ROLES.breadcrumbsItem);
+		const breadcrumbs = canvas.getByRole(ROLES.navigation);
+		const breadcrumbItems = canvas.getAllByRole(ROLES.link);
 
 		expect(breadcrumbs).toBeInTheDocument();
 		expect(breadcrumbs).toHaveTextContent(testBreadcrumbs.map((item) => item.label).join(">"));
@@ -55,7 +55,7 @@ export const BreadcrumbsWithCustomSeparator: Story = {
 	},
 };
 
-export const BreadcrumbsWithActiveItem: Story = {
+export const WithActiveItem: Story = {
 	args: {
 		items: [
 			{ label: "Home", id: "home" },
@@ -66,8 +66,8 @@ export const BreadcrumbsWithActiveItem: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const breadcrumbs = canvas.getByRole(ROLES.breadcrumbs);
-		const breadcrumbItems = canvas.getAllByRole(ROLES.breadcrumbsItem);
+		const breadcrumbs = canvas.getByRole(ROLES.navigation);
+		const breadcrumbItems = canvas.getAllByRole(ROLES.link);
 
 		expect(breadcrumbs).toBeInTheDocument();
 		expect(breadcrumbItems).toHaveLength(testBreadcrumbs.length);
@@ -82,7 +82,7 @@ export const BreadcrumbsWithActiveItem: Story = {
 	},
 };
 
-export const BreadcrumbsWithDisabledItem: Story = {
+export const WithDisabledItem: Story = {
 	args: {
 		items: [
 			{ label: "Home", id: "home" },
@@ -93,7 +93,7 @@ export const BreadcrumbsWithDisabledItem: Story = {
 	},
 };
 
-export const BreadcrumbsWithActiveAndDisabledItem: Story = {
+export const WithActiveAndDisabledItem: Story = {
 	args: {
 		items: [
 			{ label: "Home", id: "home" },

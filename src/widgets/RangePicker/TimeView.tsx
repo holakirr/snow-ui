@@ -69,12 +69,7 @@ export const TimeView = ({
 		};
 	});
 	return (
-		<div
-			className="flex flex-col"
-			role={ROLES.datepickerBody}
-			id="panel-time"
-			aria-labelledby="tab-time"
-		>
+		<div className="flex flex-col" role={ROLES.tabpanel} id="panel-time" aria-labelledby="tab-time">
 			<div className="flex justify-between px-4 pt-4 h-11">
 				<div className="flex gap-2 items-center">
 					<DatePickerTag
@@ -93,7 +88,7 @@ export const TimeView = ({
 					)}
 				</div>
 			</div>
-			<div className="grid grid-cols-5 pt-4 px-4 gap-2" role={ROLES.datepickerNavigation}>
+			<div className="grid grid-cols-5 pt-4 px-4 gap-2" role={ROLES.navigation}>
 				<TimeInput
 					value={Number(
 						Intl.DateTimeFormat("en-US", {
@@ -148,7 +143,7 @@ export const TimeView = ({
 			</div>
 			<div
 				className="p-4 pt-0 min-h-[206px] flex flex-col justify-between items-end"
-				role={ROLES.datepickerBodyTable}
+				role={ROLES.grid}
 			>
 				{changingType === "hours" && (
 					<div className="grid grid-cols-6 auto-rows-[38px] w-full">
@@ -168,7 +163,7 @@ export const TimeView = ({
 								title={`${hour.getHours()} hours`}
 								aria-label={dateTime}
 								aria-current={isSelected ? "time" : undefined}
-								role={ROLES.datepickerBodyTableCell}
+								role={ROLES.cell}
 								tabIndex={isDisabled ? -1 : 0}
 								disabled={isDisabled}
 								className={twMerge(
@@ -191,7 +186,7 @@ export const TimeView = ({
 								title={`${minute.getMinutes()} minutes`}
 								aria-label={`${minute.getMinutes()} minutes`}
 								aria-current={isSelected ? "time" : undefined}
-								role={ROLES.datepickerBodyTableCell}
+								role={ROLES.cell}
 								tabIndex={isDisabled ? -1 : 0}
 								disabled={isDisabled}
 								className={twMerge(

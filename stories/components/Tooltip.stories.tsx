@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, waitFor, within } from "@storybook/test";
-import { useState } from "react";
 import { Button, ROLES, Text, Tooltip } from "../../src";
 import { testKeyBindings } from "../mocks";
 
@@ -24,7 +23,6 @@ const meta = {
 		},
 	},
 	args: {
-		visible: true,
 		position: "bottom",
 		label: testLabel,
 		kbd: undefined,
@@ -37,13 +35,18 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicTooltip: Story = {
 	args: {},
-	render: (args) => <Tooltip visible {...args} />,
-	play: ({ canvasElement }) => {
+	render: (args) => <Tooltip {...args} />,
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const tooltip = canvas.getByRole(ROLES.tooltip);
+		const text = canvas.getByText(testText);
 
-		expect(tooltip).toBeInTheDocument();
-		expect(tooltip).toHaveTextContent(testLabel);
+		await userEvent.hover(text);
+
+		await waitFor(() => {
+			const tooltip = canvas.getByRole(ROLES.tooltip);
+			expect(tooltip).toBeInTheDocument();
+			expect(tooltip).toHaveTextContent(testLabel);
+		});
 	},
 };
 
@@ -54,14 +57,19 @@ export const TooltipWithKeyBindings: Story = {
 			separator: testSeparator,
 		},
 	},
-	play: (context) => {
-		const { canvasElement, step } = context;
+	play: async (context) => {
+		const { canvasElement } = context;
 		const canvas = within(canvasElement);
-		const keyBindings = canvas.getByRole(ROLES.kbd);
+		const text = canvas.getByText(testText);
 
-		if (BasicTooltip.play) BasicTooltip.play(context);
+		await userEvent.hover(text);
 
-		step("Key bindings are visible", () => {
+		await waitFor(() => {
+			const tooltip = canvas.getByRole(ROLES.tooltip);
+			expect(tooltip).toBeInTheDocument();
+			expect(tooltip).toHaveTextContent(testLabel);
+
+			const keyBindings = canvas.getByRole(ROLES.definition);
 			expect(keyBindings).toBeInTheDocument();
 			expect(keyBindings).toHaveTextContent(testKeyBindings.join(testSeparator));
 		});
@@ -70,27 +78,10 @@ export const TooltipWithKeyBindings: Story = {
 
 export const ButtonWithTooltip: Story = {
 	args: {
-		children: <Button label={testButtonLabel} />,
+		children: <Button label={testButtonLabel} variant="filled" />,
 		kbd: {
 			keyBindings: testKeyBindings,
 		},
-		visible: false,
-	},
-	render: (args) => {
-		const [showTooltip, setShowTooltip] = useState(args.visible);
-
-		return (
-			<Tooltip {...args} visible={showTooltip}>
-				<Button
-					label="Hover me"
-					variant="filled"
-					onMouseEnter={() => setShowTooltip(true)}
-					onMouseLeave={() => {
-						setShowTooltip(false);
-					}}
-				/>
-			</Tooltip>
-		);
 	},
 	play: async (context) => {
 		const { canvasElement } = context;
@@ -103,8 +94,7 @@ export const ButtonWithTooltip: Story = {
 
 		await waitFor(async () => {
 			const tooltip = canvas.getByRole(ROLES.tooltip);
-			if (BasicTooltip.play) BasicTooltip.play(context);
-			const kbd = canvas.getByRole(ROLES.kbd);
+			const kbd = canvas.getByRole(ROLES.definition);
 
 			expect(kbd).toBeInTheDocument();
 			expect(kbd).toHaveTextContent(testKeyBindings.join(""));

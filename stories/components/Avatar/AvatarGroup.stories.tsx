@@ -33,8 +33,8 @@ export const Basic: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatarGroup = canvas.getByRole(ROLES.avatarGroup);
-		const avatars = canvas.getAllByRole(ROLES.avatar);
+		const avatarGroup = canvas.getByRole(ROLES.region);
+		const avatars = canvas.getAllByRole(ROLES.figure);
 
 		expect(avatarGroup).toBeInTheDocument();
 		expect(avatars).toHaveLength(3);
@@ -47,8 +47,8 @@ export const WithLimit: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatarGroup = canvas.getByRole(ROLES.avatarGroup);
-		const avatars = canvas.getAllByRole(ROLES.avatar);
+		const avatarGroup = canvas.getByRole(ROLES.region);
+		const avatars = canvas.getAllByRole(ROLES.figure);
 
 		expect(avatarGroup).toBeInTheDocument();
 		expect(avatars).toHaveLength(testLimit + 1);

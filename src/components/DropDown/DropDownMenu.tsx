@@ -9,7 +9,7 @@ const DropDownMenu = ({ className, ...props }: DropDownMenuProps) => (
 			"rounded-2xl bg-white-80 flex flex-col p-2 border border-black-10 text-black-100 min-w-40",
 			className,
 		)}
-		role={ROLES.dropdownMenu}
+		role={ROLES.menu}
 		{...props}
 	/>
 );

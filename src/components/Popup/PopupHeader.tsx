@@ -26,7 +26,7 @@ export type PopupHeaderProps = React.ComponentProps<"div"> & {
 };
 
 const PopupHeader = ({ titleIcon: Icon, title, onClose, ref }: PopupHeaderProps) => (
-	<div className="flex justify-between items-center" ref={ref} role={ROLES.popupHeader}>
+	<div className="flex justify-between items-center" ref={ref} role={ROLES.heading}>
 		<div className="flex gap-4 items-center text-black-100">
 			{Icon && <Icon size={48} alt={`Icon for popup ${title}`} weight="regular" />}
 			<Text as="p" size={48} semibold>

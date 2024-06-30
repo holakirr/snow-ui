@@ -23,7 +23,7 @@ export const CustomIconBase: BaseIcon = ({
 		transform={mirrored ? "scale(-1, 1)" : undefined}
 		style={{ transition: "all .15s" }}
 		className={twMerge("aspect-square", className)}
-		role={ROLES.icon}
+		role={ROLES.img}
 		{...restProps}
 	>
 		<title>{alt}</title>

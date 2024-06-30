@@ -21,13 +21,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicBadge: Story = {
+export const Basic: Story = {
 	args: {
 		children: null,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const badge = canvas.getByRole(ROLES.badge);
+		const badge = canvas.getByRole(ROLES.status);
 
 		expect(badge).toBeInTheDocument();
 	},
@@ -40,32 +40,32 @@ export const BadgeWithText: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const badge = canvas.getByRole(ROLES.badge);
+		const badge = canvas.getByRole(ROLES.status);
 
 		expect(badge).toBeInTheDocument();
 		expect(badge).toHaveTextContent(testStatus);
 	},
 };
 
-export const ButtonBadge: Story = {
+export const WithButton: Story = {
 	play: (context) => {
 		const canvas = within(context.canvasElement);
 		const button = canvas.getByRole(ROLES.button);
-		const badge = canvas.getByRole(ROLES.badge);
+		const badge = canvas.getByRole(ROLES.status);
 
 		expect(button).toBeInTheDocument();
 		expect(badge).toBeInTheDocument();
 	},
 };
 
-export const ButtonBadgeWithText: Story = {
+export const WithButtonAndContent: Story = {
 	args: {
 		content: testStatus,
 	},
 	play: (context) => {
 		const canvas = within(context.canvasElement);
 		const button = canvas.getByRole(ROLES.button);
-		const badge = canvas.getByRole(ROLES.badge);
+		const badge = canvas.getByRole(ROLES.status);
 
 		expect(button).toBeInTheDocument();
 		expect(badge).toBeInTheDocument();

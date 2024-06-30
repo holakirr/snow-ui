@@ -45,7 +45,7 @@ You can pass second child as any element, it will be wrapped in PopoverContent c
 		await userEvent.hover(button);
 
 		await waitFor(async () => {
-			const popover = canvas.getByRole(ROLES.popover);
+			const popover = canvas.getByRole(ROLES.tooltip);
 
 			expect(popover).toBeInTheDocument();
 			expect(popover).toHaveTextContent(testLabel);
@@ -62,7 +62,7 @@ You can pass second child as any element, it will be wrapped in PopoverContent c
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const ButtonWithPopover: Story = {
+export const WithButton: Story = {
 	args: {
 		visible: false,
 	},
@@ -83,7 +83,7 @@ export const ButtonWithPopover: Story = {
 	},
 };
 
-export const PopoverWithoutContentElement: Story = {
+export const WithoutContentElement: Story = {
 	render: (args) => {
 		const [showPopover, setShowPopover] = useState(args.visible);
 

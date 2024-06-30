@@ -57,12 +57,12 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicPopup: Story = {
+export const Basic: Story = {
 	args: {},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const popup = canvas.getByRole(ROLES.popup);
-		const popupHeader = canvas.getByRole(ROLES.popupHeader);
+		const popup = canvas.getByRole(ROLES.dialog);
+		const popupHeader = canvas.getByRole(ROLES.heading);
 		const closeButton = canvas.getByTitle("Close popup icon button");
 		const openButton = canvas.getByRole(ROLES.button, {
 			name: openButtonLabel,

@@ -27,7 +27,7 @@ const DatePicker = ({
 			"w-[360px] rounded-2xl border border-black-10 flex flex-col backdrop-blur-[20px] bg-white-80 text-black-100",
 			className,
 		)}
-		role={ROLES.datepicker}
+		role={ROLES.dialog}
 		{...props}
 	>
 		<DatePickerHead

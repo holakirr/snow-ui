@@ -17,7 +17,7 @@ const lineClasses = cva("border-none bg-black-100 rounded-full", {
 });
 
 const Line = ({ direction, className, ref }: LineProps) => (
-	<hr ref={ref} className={twMerge(lineClasses({ direction, className }))} role={ROLES.line} />
+	<hr ref={ref} className={twMerge(lineClasses({ direction, className }))} role={ROLES.separator} />
 );
 
 Line.displayName = "Line";

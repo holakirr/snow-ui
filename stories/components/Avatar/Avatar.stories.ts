@@ -30,7 +30,7 @@ export const Basic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 
 		expect(avatar).toBeInTheDocument();
 		expect(avatar.lastChild?.textContent).toBe(testInitials);
@@ -43,7 +43,7 @@ export const Default: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 		const userIcon = avatar.lastChild as SVGElement;
 
 		expect(avatar).toBeInTheDocument();
@@ -58,7 +58,7 @@ export const Medium: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 
 		expect(avatar).toBeInTheDocument();
 	},
@@ -70,7 +70,7 @@ export const Large: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 
 		expect(avatar).toBeInTheDocument();
 		expect(avatar.lastChild?.textContent).toBe(testInitials);
@@ -85,7 +85,7 @@ export const LargeWithImg: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 		const avatarImg = avatar.lastChild as HTMLImageElement;
 
 		expect(avatar).toBeInTheDocument();

@@ -20,24 +20,24 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicKBD: Story = {
+export const Basic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const kbd = canvas.getByRole(ROLES.kbd);
+		const kbd = canvas.getByRole(ROLES.definition);
 
 		expect(kbd).toBeInTheDocument();
 		expect(kbd).toHaveTextContent(testKeyBindings.join(""));
 	},
 };
 
-export const KBDWithSeparator: Story = {
+export const WithCustomSeparator: Story = {
 	args: {
 		separator: testSeparator,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const kbd = canvas.getByRole(ROLES.kbd);
+		const kbd = canvas.getByRole(ROLES.definition);
 
 		expect(kbd).toHaveTextContent(testKeyBindings.join(testSeparator));
 	},

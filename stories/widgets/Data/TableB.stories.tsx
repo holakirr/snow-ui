@@ -156,8 +156,8 @@ export const BasicTableB: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const table = canvas.getByRole(ROLES.table);
-		const tbody = within(table).getByRole(ROLES.tableRowGroup);
-		const rows = within(tbody).getAllByRole(ROLES.tableRow);
+		const tbody = within(table).getByRole(ROLES.rowgroup);
+		const rows = within(tbody).getAllByRole(ROLES.row);
 
 		expect(table).toBeInTheDocument();
 		expect(table).toHaveAttribute("aria-label", "Table");
@@ -173,9 +173,9 @@ export const TableBWithHead: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const table = canvas.getByRole(ROLES.table);
-		const thead = canvas.getByRole(ROLES.tableRowGroup, { name: "Head of table" });
-		const headRow = within(thead).getByRole(ROLES.tableRow);
-		const headCols = within(headRow).getAllByRole(ROLES.tableColumnHeader);
+		const thead = canvas.getByRole(ROLES.rowgroup, { name: "Head of table" });
+		const headRow = within(thead).getByRole(ROLES.row);
+		const headCols = within(headRow).getAllByRole(ROLES.columnheader);
 
 		expect(table).toBeInTheDocument();
 		expect(thead).toBeInTheDocument();
@@ -193,13 +193,13 @@ export const TableBWithAllProps: Story = {
 		const canvas = within(canvasElement);
 		const table = canvas.getByRole(ROLES.table);
 		const caption = canvas.getByText(testCaption);
-		const thead = canvas.getByRole(ROLES.tableRowGroup, { name: `Head of table ${testCaption}` });
-		const headRow = within(thead).getByRole(ROLES.tableRow);
-		const headCols = within(headRow).getAllByRole(ROLES.tableColumnHeader);
-		const tbody = within(table).getByRole(ROLES.tableRowGroup, {
+		const thead = canvas.getByRole(ROLES.rowgroup, { name: `Head of table ${testCaption}` });
+		const headRow = within(thead).getByRole(ROLES.row);
+		const headCols = within(headRow).getAllByRole(ROLES.columnheader);
+		const tbody = within(table).getByRole(ROLES.rowgroup, {
 			name: `Body of table ${testCaption}`,
 		});
-		const rows = within(tbody).getAllByRole(ROLES.tableRow);
+		const rows = within(tbody).getAllByRole(ROLES.row);
 
 		expect(table).toBeInTheDocument();
 		expect(caption).toBeInTheDocument();

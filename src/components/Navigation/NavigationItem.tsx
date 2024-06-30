@@ -40,7 +40,7 @@ const NavigationItem = ({
 				active && "bg-black-5",
 				className,
 			)}
-			role={ROLES.navigationItem}
+			role={ROLES.treeitem}
 			{...props}
 		>
 			{items && (

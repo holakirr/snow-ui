@@ -19,16 +19,16 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicCard: Story = {
+export const Basic: Story = {
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const card = canvas.getByRole(ROLES.card);
+		const card = canvas.getByRole(ROLES.article);
 
 		expect(card).toHaveTextContent(testText);
 	},
 };
 
-export const LargeCard: Story = {
+export const Large: Story = {
 	args: {
 		children: (
 			<>

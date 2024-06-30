@@ -30,13 +30,7 @@ const TableB = ({
 		{caption && typeof caption !== "string" && <div className="mb-1">{caption}</div>}
 		<table aria-label={caption || label ? `Table ${caption || label}` : "Table"} {...props}>
 			{caption && typeof caption === "string" && (
-				<Text
-					as="caption"
-					role={ROLES.tableCaption}
-					size={14}
-					semibold
-					className="text-black-100 mb-1"
-				>
+				<Text as="caption" role={ROLES.caption} size={14} semibold className="text-black-100 mb-1">
 					{caption}
 				</Text>
 			)}

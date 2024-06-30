@@ -26,13 +26,8 @@ export const QuarterView = ({
 	const [minLimit, maxLimit] = dateLimits.map((date) => (date ? date.getFullYear() : null));
 
 	return (
-		<div
-			className="flex flex-col"
-			role={ROLES.datepickerBody}
-			id="panel-year"
-			aria-labelledby="tab-year"
-		>
-			<div className="flex justify-between px-4 pt-4" role={ROLES.datepickerNavigation}>
+		<div className="flex flex-col" role={ROLES.tabpanel} id="panel-year" aria-labelledby="tab-year">
+			<div className="flex justify-between px-4 pt-4" role={ROLES.navigation}>
 				<div className="flex gap-2 items-center">
 					<DatePickerTag
 						label="This year"
@@ -68,10 +63,7 @@ export const QuarterView = ({
 					/>
 				</div>
 			</div>
-			<div
-				className="p-4 min-h-[260px] flex flex-col justify-between items-end"
-				role={ROLES.datepickerBodyTable}
-			>
+			<div className="p-4 min-h-[260px] flex flex-col justify-between items-end" role={ROLES.grid}>
 				<div className="grid grid-cols-5 w-full auto-rows-[38px]">
 					{Array.from({ length: 25 }, (_, i) => {
 						const year = displayYear - 12 + i;
@@ -90,7 +82,7 @@ export const QuarterView = ({
 								aria-label={year.toString()}
 								aria-selected={isSelected}
 								aria-current={isCurrent ? "date" : undefined}
-								role={ROLES.datepickerBodyTableCell}
+								role={ROLES.cell}
 								tabIndex={isDisabled ? -1 : 0}
 								disabled={isDisabled}
 								className={isCurrent && !isSelected ? "bg-secondary-purple" : ""}

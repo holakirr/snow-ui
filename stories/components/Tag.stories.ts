@@ -19,18 +19,18 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicTag: Story = {
+export const Basic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const tag = canvas.getByRole(ROLES.tag);
+		const tag = canvas.getByRole(ROLES.listitem);
 
 		expect(tag).toBeInTheDocument();
 		expect(tag).toHaveTextContent(testLabel);
 	},
 };
 
-export const TagWithDot: Story = {
+export const WithDot: Story = {
 	args: {
 		withDot: true,
 	},
@@ -42,7 +42,7 @@ export const TagWithDot: Story = {
 	},
 };
 
-export const TagWithClose: Story = {
+export const WithClose: Story = {
 	args: {
 		onClose: closeHandler,
 	},
@@ -58,7 +58,7 @@ export const TagWithClose: Story = {
 	},
 };
 
-export const TagWithDotAndClose: Story = {
+export const WithDotAndClose: Story = {
 	args: {
 		withDot: true,
 		onClose: () => {},

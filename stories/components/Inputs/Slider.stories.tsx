@@ -31,7 +31,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicSlider: Story = {
+export const Basic: Story = {
 	args: {},
 	render: (args) => {
 		const [value, setValue] = useState<number>(args.value as number);
@@ -52,7 +52,7 @@ export const BasicSlider: Story = {
 	},
 };
 
-export const DisabledSlider: Story = {
+export const Disabled: Story = {
 	args: {
 		disabled: true,
 	},

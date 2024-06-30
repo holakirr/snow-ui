@@ -36,7 +36,7 @@ const Tag = ({ label, textSize, withDot, onClose, className, ref, ...props }: Ta
 			className,
 		)}
 		ref={ref}
-		role={ROLES.tag}
+		role={ROLES.listitem}
 		{...props}
 	>
 		{withDot && <DotIcon alt={`Dot icon for tag ${label}`} size={16} weight="fill" />}

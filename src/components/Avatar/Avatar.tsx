@@ -63,7 +63,7 @@ export type AvatarProps = React.ComponentProps<"div"> &
 
 const Avatar = ({ size, src, name, showFallback, color, className, ref }: AvatarProps) => (
 	<div
-		role={ROLES.avatar}
+		role={ROLES.figure}
 		aria-label={`Avatar for ${name}`}
 		className={twMerge(
 			avatarStyles({ size, color, className }),

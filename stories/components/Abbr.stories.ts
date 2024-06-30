@@ -13,13 +13,17 @@ const meta = {
 			exclude: ["children"],
 		},
 	},
-	args: { className: "text-black-100", tooltipProps: { label: testLabel }, children: testText },
+	args: {
+		className: "text-black-100",
+		tooltipProps: { label: testLabel },
+		children: testText,
+	},
 } satisfies Meta<typeof Abbr>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicAbbr: Story = {
+export const Basic: Story = {
 	args: {},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

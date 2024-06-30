@@ -77,13 +77,8 @@ export const DateView = ({
 	);
 
 	return (
-		<div
-			className="flex flex-col"
-			role={ROLES.datepickerBody}
-			id="panel-date"
-			aria-labelledby="tab-date"
-		>
-			<div className="flex justify-between px-4 pt-4" role={ROLES.datepickerNavigation}>
+		<div className="flex flex-col" role={ROLES.tabpanel} id="panel-date" aria-labelledby="tab-date">
+			<div className="flex justify-between px-4 pt-4" role={ROLES.navigation}>
 				<div className="flex gap-2 items-center">
 					<DatePickerTag
 						label="Today"
@@ -119,7 +114,7 @@ export const DateView = ({
 							displayDate,
 						)}`}
 						size={12}
-						role={ROLES.datepickerNavigationDisplay}
+						role={ROLES.status}
 						className="flex items-center"
 					>
 						{Intl.DateTimeFormat("en-US", { month: "short" }).format(displayDate)}
@@ -134,12 +129,12 @@ export const DateView = ({
 					/>
 				</div>
 			</div>
-			<div className="p-4 min-h-[260px]" role={ROLES.datepickerBodyTable}>
+			<div className="p-4 min-h-[260px]" role={ROLES.grid}>
 				<div className="grid grid-cols-7 auto-rows-[38px]">
 					{weekDays.map((weekDay) => (
 						<Abbr
 							key={weekDay}
-							role={ROLES.datepickerBodyTableHeadCell}
+							role={ROLES.columnheader}
 							tooltipProps={{
 								label: weekDay,
 								position: "top",
@@ -171,7 +166,7 @@ export const DateView = ({
 								aria-label={dateTime}
 								aria-selected={isSelected}
 								aria-current={isToday ? "date" : undefined}
-								role={ROLES.datepickerBodyTableCell}
+								role={ROLES.cell}
 								tabIndex={isDisabled ? -1 : 0}
 								disabled={isDisabled}
 								className={twMerge(

@@ -9,7 +9,7 @@ import {
 	DropDownSection,
 	ROLES,
 	Text,
-} from "../../../src";
+} from "../../src";
 
 const testButtonLabel = "Open/Close";
 const dropdownContent = "Dropdown Content";
@@ -17,7 +17,7 @@ const testList1 = ["Option 1", "Option 2", "Option 3"];
 const testList2 = ["Option 4", "Option 5", "Option 6"];
 
 const meta = {
-	title: "Base Components/Dropdown/Dropdown",
+	title: "Base Components/Dropdown",
 	component: DropDown,
 	args: {
 		position: "bottom",
@@ -59,8 +59,8 @@ export const DropDownBasic: Story = {
 
 		await userEvent.click(button);
 
-		const dropDown = canvas.getByRole(ROLES.dropdown);
-		const items = canvas.getAllByRole(ROLES.dropdownItem);
+		const dropDown = canvas.getByRole(ROLES.listbox);
+		const items = canvas.getAllByRole(ROLES.option);
 
 		expect(dropDown).toBeInTheDocument();
 		expect(items).toHaveLength(3);
@@ -102,9 +102,9 @@ export const WithDivider: Story = {
 
 		await userEvent.click(button);
 
-		const dropDown = canvas.getByRole(ROLES.dropdown);
-		const dropDownMenu = canvas.getByRole(ROLES.dropdownMenu);
-		const sections = canvas.getAllByRole(ROLES.dropdownSection);
+		const dropDown = canvas.getByRole(ROLES.listbox);
+		const dropDownMenu = canvas.getByRole(ROLES.menu);
+		const sections = canvas.getAllByRole(ROLES.list);
 
 		expect(dropDown).toBeInTheDocument();
 		expect(dropDownMenu).toBeInTheDocument();

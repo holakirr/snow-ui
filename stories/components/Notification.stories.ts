@@ -21,15 +21,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicNotification: Story = {
+export const Basic: Story = {
 	args: {
 		status: STATUSES_NOTIFY.success,
 		title: testSuccessText,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const notification = canvas.getByRole(ROLES.notification);
-		const icon = canvas.getByRole(ROLES.icon);
+		const notification = canvas.getByRole(ROLES.alert);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(notification).toBeInTheDocument();
 		expect(notification).toHaveTextContent(testSuccessText);
@@ -38,7 +38,7 @@ export const BasicNotification: Story = {
 	},
 };
 
-export const LargeNotificationError: Story = {
+export const LargeWithError: Story = {
 	args: {
 		status: STATUSES_NOTIFY.error,
 		title: testErrorText,
@@ -46,8 +46,8 @@ export const LargeNotificationError: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const notification = canvas.getByRole(ROLES.notification);
-		const icon = canvas.getByRole(ROLES.icon);
+		const notification = canvas.getByRole(ROLES.alert);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(notification).toBeInTheDocument();
 		expect(notification).toHaveTextContent(testErrorText);

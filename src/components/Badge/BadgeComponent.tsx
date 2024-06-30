@@ -17,7 +17,7 @@ export const BadgeComponent = ({ content, className, ref }: BadgeComponentProps)
 	<Text
 		as="span"
 		size={12}
-		role={ROLES.badge}
+		role={ROLES.status}
 		className={twMerge(
 			"bg-secondary-purple rounded-full w-[6px] h-[6px] block text-center transition-all z-10",
 			content && "w-auto h-auto text-black-100 px-[6px] py-[1px]",

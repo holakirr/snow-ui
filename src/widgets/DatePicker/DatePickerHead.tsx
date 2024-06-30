@@ -29,10 +29,7 @@ export const DatePickerHead = ({
 	const dateTime = `${dateString}T${timeString}`;
 
 	return (
-		<div
-			className="w-full flex justify-between border-b border-black-10 p-4"
-			role={ROLES.datepickerHead}
-		>
+		<div className="w-full flex justify-between border-b border-black-10 p-4" role={ROLES.tablist}>
 			<Text
 				as="time"
 				title={`Selected date is ${withTime ? dateTime : dateString}`}
@@ -43,7 +40,7 @@ export const DatePickerHead = ({
 				<DatePickerTag
 					id="tab-date"
 					aria-controls="panel-date"
-					role={ROLES.datepickerHeadTab}
+					role={ROLES.tab}
 					label={dateString.split("/")[0]}
 					title={`Current day is ${dateString.split("/")[0]}`}
 					textSize={14}
@@ -56,7 +53,7 @@ export const DatePickerHead = ({
 				<DatePickerTag
 					id="tab-month"
 					aria-controls="panel-month"
-					role={ROLES.datepickerHeadTab}
+					role={ROLES.tab}
 					label={dateString.split("/")[1]}
 					title={`Current month is ${dateString.split("/")[1]}`}
 					textSize={14}
@@ -69,7 +66,7 @@ export const DatePickerHead = ({
 				<DatePickerTag
 					id="tab-year"
 					aria-controls="panel-year"
-					role={ROLES.datepickerHeadTab}
+					role={ROLES.tab}
 					label={dateString.split("/")[2]}
 					title={`Current year is ${dateString.split("/")[2]}`}
 					textSize={14}
@@ -82,7 +79,7 @@ export const DatePickerHead = ({
 					<DatePickerTag
 						id="tab-time"
 						aria-controls="panel-time"
-						role={ROLES.datepickerHeadTab}
+						role={ROLES.tab}
 						title={`Current time is ${timeString}`}
 						textSize={14}
 						label={timeString}

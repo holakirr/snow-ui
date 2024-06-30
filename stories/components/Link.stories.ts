@@ -17,7 +17,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicLink: Story = {
+export const Basic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -29,7 +29,7 @@ export const BasicLink: Story = {
 	},
 };
 
-export const ExternalLink: Story = {
+export const External: Story = {
 	args: {
 		target: "_blank",
 	},
@@ -43,7 +43,7 @@ export const ExternalLink: Story = {
 	},
 };
 
-export const CustomStyleLink: Story = {
+export const CustomStyle: Story = {
 	args: {
 		style: { color: "red" },
 	},

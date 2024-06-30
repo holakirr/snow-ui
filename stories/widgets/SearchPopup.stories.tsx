@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { expect, userEvent, within } from "@storybook/test";
 import { useState } from "react";
 import { ROLES, SearchPopup } from "../../src";
-import { default as DropDown } from "./DropDown/DropDown.stories";
+import { default as DropDown } from "../components/DropDown.stories";
 
 const testValue = "test";
 
 const meta = {
-	title: "Base Components/Search Popup",
+	title: "Widgets/Search Popup",
 	component: SearchPopup,
 	args: {
 		progress: false,
@@ -29,7 +29,7 @@ export const BasicSearchPopup: Story = {
 	args: {},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const searchPopup = canvas.getByRole(ROLES.searchPopup);
+		const searchPopup = canvas.getByRole(ROLES.dialog);
 		const input = canvas.getByRole(ROLES.search);
 
 		expect(searchPopup).toBeInTheDocument();

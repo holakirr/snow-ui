@@ -85,7 +85,7 @@ const Input = ({
 				)}
 				onChange={onChange}
 				value={value}
-				role={ROLES.input}
+				role={ROLES.textbox}
 				{...props}
 			/>
 			{title && (

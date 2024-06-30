@@ -56,7 +56,7 @@ const StatusBadge = ({ label, withDot, status, className, ref }: StatusBadgeProp
 	<div
 		className={twMerge(statusBadgeStyles({ withDot, status }), className)}
 		ref={ref}
-		role={ROLES.statusBadge}
+		role={ROLES.status}
 	>
 		{withDot && (
 			<DotIcon

@@ -22,7 +22,7 @@ const popoverContentClasses = cva("transition-all absolute z-100", {
 export const PopoverContent = ({ position, className, ...props }: PopoverProps) => (
 	<div
 		data-popover
-		role={ROLES.popover}
+		role={ROLES.tooltip}
 		className={twMerge(popoverContentClasses({ position }), className)}
 		{...props}
 	/>

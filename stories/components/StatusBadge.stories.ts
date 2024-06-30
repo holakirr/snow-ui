@@ -26,10 +26,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicStatusBadge: Story = {
+export const Basic: Story = {
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const badge = canvas.getByRole(ROLES.statusBadge);
+		const badge = canvas.getByRole(ROLES.status);
 
 		expect(badge).toBeInTheDocument();
 		expect(badge).toHaveTextContent(testLabel);
@@ -37,15 +37,15 @@ export const BasicStatusBadge: Story = {
 	},
 };
 
-export const StatusBadgeWithDot: Story = {
+export const WithDot: Story = {
 	args: {
 		withDot: true,
 		status: STATUSES_EXPANDED.success,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const badge = canvas.getByRole(ROLES.statusBadge);
-		const icon = canvas.getByRole(ROLES.icon);
+		const badge = canvas.getByRole(ROLES.status);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(badge).toBeInTheDocument();
 		expect(badge).toHaveTextContent(testLabel);

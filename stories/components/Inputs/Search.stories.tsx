@@ -36,11 +36,11 @@ const meta: Meta<typeof Search> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicSearch: Story = {
+export const Basic: Story = {
 	args: {},
 };
 
-export const GraySearch: Story = {
+export const Gray: Story = {
 	args: {
 		variant: "gray",
 	},

@@ -45,7 +45,7 @@ const Popup = ({
 		>
 			<dialog
 				ref={ref}
-				role={ROLES.popup}
+				role={ROLES.dialog}
 				className={twMerge(
 					"grid gap-7 content-center justify-center min-h-0 relative bg-transparent",
 					className,

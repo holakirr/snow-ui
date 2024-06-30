@@ -37,28 +37,28 @@ export const BasicDatePicker: Story = {
 		const selectedDate = "13";
 		const selectedMonth = "05";
 		const selectedYear = "2024";
-		const picker = within(canvasElement).getByRole(ROLES.datepicker);
-		const datepickerHead = within(picker).getByRole(ROLES.datepickerHead);
-		const dateTag = within(datepickerHead).getByRole(ROLES.datepickerHeadTab, {
+		const picker = within(canvasElement).getByRole(ROLES.dialog);
+		const datepickerHead = within(picker).getByRole(ROLES.tablist);
+		const dateTag = within(datepickerHead).getByRole(ROLES.tab, {
 			name: selectedDate,
 		});
-		const monthTag = within(datepickerHead).getByRole(ROLES.datepickerHeadTab, {
+		const monthTag = within(datepickerHead).getByRole(ROLES.tab, {
 			name: selectedMonth,
 		});
-		const yearTag = within(datepickerHead).getByRole(ROLES.datepickerHeadTab, {
+		const yearTag = within(datepickerHead).getByRole(ROLES.tab, {
 			name: selectedYear,
 		});
 
-		const datepickerBody = within(picker).getByRole(ROLES.datepickerBody);
-		const datepickerBodyNavigation = within(datepickerBody).getByRole(ROLES.datepickerNavigation);
-		const todayTag = within(datepickerBodyNavigation).getByRole(ROLES.tag);
+		const datepickerBody = within(picker).getByRole(ROLES.tabpanel);
+		const datepickerBodyNavigation = within(datepickerBody).getByRole(ROLES.navigation);
+		const todayTag = within(datepickerBodyNavigation).getByRole(ROLES.listitem);
 		let navButtons = within(datepickerBodyNavigation).getAllByRole(ROLES.button);
-		let navDisplay = within(datepickerBodyNavigation).getByRole(ROLES.datepickerNavigationDisplay);
+		let navDisplay = within(datepickerBodyNavigation).getByRole(ROLES.status);
 
-		const datepickerBodyTable = within(datepickerBody).getByRole(ROLES.datepickerBodyTable);
-		const weekdays = within(datepickerBodyTable).getAllByRole(ROLES.datepickerBodyTableHeadCell);
-		const days = within(datepickerBodyTable).getAllByRole(ROLES.datepickerBodyTableCell);
-		const selectedDay = within(datepickerBodyTable).getByRole(ROLES.datepickerBodyTableCell, {
+		const datepickerBodyTable = within(datepickerBody).getByRole(ROLES.grid);
+		const weekdays = within(datepickerBodyTable).getAllByRole(ROLES.columnheader);
+		const days = within(datepickerBodyTable).getAllByRole(ROLES.cell);
+		const selectedDay = within(datepickerBodyTable).getByRole(ROLES.cell, {
 			name: testDate.toDateString(),
 		});
 
@@ -130,20 +130,20 @@ export const BasicDatePicker: Story = {
 					Intl.DateTimeFormat("en-US", { year: "numeric" }).format(today),
 				);
 				expect(
-					within(datepickerBodyTable).getByRole(ROLES.datepickerBodyTableCell, { current: "date" }),
+					within(datepickerBodyTable).getByRole(ROLES.cell, { current: "date" }),
 				).toHaveAttribute("aria-selected", "true");
 			});
 		});
 
 		await step("YearView", async () => {
 			await userEvent.click(monthTag);
-			const yearView = within(picker).getByRole(ROLES.datepickerBody);
-			const yearViewNavigation = within(yearView).getByRole(ROLES.datepickerNavigation);
-			navDisplay = within(yearViewNavigation).getByRole(ROLES.datepickerNavigationDisplay);
-			const currMonthTag = within(yearViewNavigation).getByRole(ROLES.tag);
-			const yearViewTable = within(yearView).getByRole(ROLES.datepickerBodyTable);
-			const months = within(yearViewTable).getAllByRole(ROLES.datepickerBodyTableCell);
-			const selectedMonth = within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+			const yearView = within(picker).getByRole(ROLES.tabpanel);
+			const yearViewNavigation = within(yearView).getByRole(ROLES.navigation);
+			navDisplay = within(yearViewNavigation).getByRole(ROLES.status);
+			const currMonthTag = within(yearViewNavigation).getByRole(ROLES.listitem);
+			const yearViewTable = within(yearView).getByRole(ROLES.grid);
+			const months = within(yearViewTable).getAllByRole(ROLES.cell);
+			const selectedMonth = within(yearViewTable).getByRole(ROLES.cell, {
 				current: "date",
 			});
 			navButtons = within(yearViewNavigation).getAllByRole(ROLES.button);
@@ -200,20 +200,21 @@ export const BasicDatePicker: Story = {
 				expect(yearTag).toHaveTextContent(
 					Intl.DateTimeFormat("en-US", { year: "numeric" }).format(today),
 				);
-				expect(
-					within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, { current: "date" }),
-				).toHaveAttribute("aria-selected", "true");
+				expect(within(yearViewTable).getByRole(ROLES.cell, { current: "date" })).toHaveAttribute(
+					"aria-selected",
+					"true",
+				);
 			});
 		});
 
 		await step("QuarterView", async () => {
 			await userEvent.click(yearTag);
-			const quarterView = within(picker).getByRole(ROLES.datepickerBody);
-			const quarterViewNavigation = within(quarterView).getByRole(ROLES.datepickerNavigation);
-			const currYearTag = within(quarterViewNavigation).getByRole(ROLES.tag);
-			const quarterViewTable = within(quarterView).getByRole(ROLES.datepickerBodyTable);
-			const years = within(quarterViewTable).getAllByRole(ROLES.datepickerBodyTableCell);
-			const selectedYear = within(quarterViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+			const quarterView = within(picker).getByRole(ROLES.tabpanel);
+			const quarterViewNavigation = within(quarterView).getByRole(ROLES.navigation);
+			const currYearTag = within(quarterViewNavigation).getByRole(ROLES.listitem);
+			const quarterViewTable = within(quarterView).getByRole(ROLES.grid);
+			const years = within(quarterViewTable).getAllByRole(ROLES.cell);
+			const selectedYear = within(quarterViewTable).getByRole(ROLES.cell, {
 				current: "date",
 			});
 			navButtons = within(quarterViewNavigation).getAllByRole(ROLES.button);
@@ -239,23 +240,24 @@ export const BasicDatePicker: Story = {
 
 			await step("Click on a year", async () => {
 				await userEvent.click(
-					within(quarterViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					within(quarterViewTable).getByRole(ROLES.cell, {
 						name: (today.getFullYear() - 5).toString(),
 					}),
 				);
 				expect(onDateSelectTest).toHaveBeenCalled();
 				expect(onDisplayYearChangeTest).toHaveBeenCalledWith(today.getFullYear() - 5);
 				expect(
-					within(quarterViewTable).getByRole(ROLES.datepickerBodyTableCell, { current: "date" }),
+					within(quarterViewTable).getByRole(ROLES.cell, { current: "date" }),
 				).not.toHaveAttribute("aria-selected", "true");
 			});
 
 			await step("Click on 'This year' tag", async () => {
 				await userEvent.click(currYearTag);
 				expect(onDateSelectTest).toHaveBeenCalled();
-				expect(
-					within(quarterViewTable).getByRole(ROLES.datepickerBodyTableCell, { current: "date" }),
-				).toHaveAttribute("aria-selected", "true");
+				expect(within(quarterViewTable).getByRole(ROLES.cell, { current: "date" })).toHaveAttribute(
+					"aria-selected",
+					"true",
+				);
 			});
 		});
 
@@ -271,8 +273,8 @@ export const DatePickerWithTime: Story = {
 		withTime: true,
 	},
 	play: async ({ canvasElement, step }) => {
-		const picker = within(canvasElement).getByRole(ROLES.datepicker);
-		const timeTag = within(picker).getByRole(ROLES.datepickerHeadTab, {
+		const picker = within(canvasElement).getByRole(ROLES.dialog);
+		const timeTag = within(picker).getByRole(ROLES.tab, {
 			name: "04:13 AM",
 		});
 
@@ -285,17 +287,17 @@ export const DatePickerWithTime: Story = {
 
 		// Switching to time view
 		await userEvent.click(timeTag);
-		const datepickerBody = within(picker).getByRole(ROLES.datepickerBody);
-		const datepickerBodyNavigation = within(datepickerBody).getByRole(ROLES.datepickerNavigation);
-		const datepickerBodyTable = within(datepickerBody).getByRole(ROLES.datepickerBodyTable);
-		const hours = within(datepickerBodyTable).getAllByRole(ROLES.datepickerBodyTableCell);
-		const selectedHour = within(datepickerBodyTable).getByRole(ROLES.datepickerBodyTableCell, {
+		const datepickerBody = within(picker).getByRole(ROLES.tabpanel);
+		const datepickerBodyNavigation = within(datepickerBody).getByRole(ROLES.navigation);
+		const datepickerBodyTable = within(datepickerBody).getByRole(ROLES.grid);
+		const hours = within(datepickerBodyTable).getAllByRole(ROLES.cell);
+		const selectedHour = within(datepickerBodyTable).getByRole(ROLES.cell, {
 			current: "time",
 		});
-		const hoursInput = within(datepickerBodyNavigation).getByRole(ROLES.input, {
+		const hoursInput = within(datepickerBodyNavigation).getByRole(ROLES.textbox, {
 			name: "Enter hours",
 		});
-		const minutesInput = within(datepickerBodyNavigation).getByRole(ROLES.input, {
+		const minutesInput = within(datepickerBodyNavigation).getByRole(ROLES.textbox, {
 			name: "Enter minutes",
 		});
 		const AMPMButtons = within(datepickerBodyNavigation).getAllByRole(ROLES.button);
@@ -313,8 +315,8 @@ export const DatePickerWithTime: Story = {
 			expect(hours[0]).toHaveAttribute("aria-current", "time");
 
 			await userEvent.click(minutesInput);
-			const minutes = within(datepickerBodyTable).getAllByRole(ROLES.datepickerBodyTableCell);
-			const selectedMinute = within(datepickerBodyTable).getByRole(ROLES.datepickerBodyTableCell, {
+			const minutes = within(datepickerBodyTable).getAllByRole(ROLES.cell);
+			const selectedMinute = within(datepickerBodyTable).getByRole(ROLES.cell, {
 				current: "time",
 			});
 
@@ -343,15 +345,15 @@ export const DatePickerWithAllProps: Story = {
 		dateLimits: testLimits,
 	},
 	play: async ({ canvasElement, step }) => {
-		const picker = within(canvasElement).getByRole(ROLES.datepicker);
-		const datepickerHead = within(picker).getByRole(ROLES.datepickerHead);
-		const yearTag = within(datepickerHead).getByRole(ROLES.datepickerHeadTab, {
+		const picker = within(canvasElement).getByRole(ROLES.dialog);
+		const datepickerHead = within(picker).getByRole(ROLES.tablist);
+		const yearTag = within(datepickerHead).getByRole(ROLES.tab, {
 			name: "2024",
 		});
-		const datepickerBody = within(picker).getByRole(ROLES.datepickerBody);
-		const datepickerBodyTable = within(datepickerBody).getByRole(ROLES.datepickerBodyTable);
-		const weekDays = within(datepickerBodyTable).getAllByRole(ROLES.datepickerBodyTableHeadCell);
-		const lastSelectionTag = within(datepickerBody).getByRole(ROLES.tag, {
+		const datepickerBody = within(picker).getByRole(ROLES.tabpanel);
+		const datepickerBodyTable = within(datepickerBody).getByRole(ROLES.grid);
+		const weekDays = within(datepickerBodyTable).getAllByRole(ROLES.columnheader);
+		const lastSelectionTag = within(datepickerBody).getByRole(ROLES.listitem, {
 			name: testLastSelection.toLocaleDateString("en-GB"),
 		});
 
@@ -364,7 +366,7 @@ export const DatePickerWithAllProps: Story = {
 			await userEvent.click(lastSelectionTag);
 			expect(onDateSelectTest).toHaveBeenCalled();
 			expect(
-				within(datepickerBodyTable).getByRole(ROLES.datepickerBodyTableCell, {
+				within(datepickerBodyTable).getByRole(ROLES.cell, {
 					name: testLastSelection.toDateString(),
 				}),
 			).toHaveTextContent(testLastSelection.getDate().toString());
@@ -373,30 +375,30 @@ export const DatePickerWithAllProps: Story = {
 		await step("Check date limits", async () => {
 			await step("Select date before limit", async () => {
 				await userEvent.click(yearTag);
-				const yearView = within(picker).getByRole(ROLES.datepickerBody);
-				const yearViewTable = within(yearView).getByRole(ROLES.datepickerBodyTable);
+				const yearView = within(picker).getByRole(ROLES.tabpanel);
+				const yearViewTable = within(yearView).getByRole(ROLES.grid);
 				const yearBackButton = within(yearView).getByRole(ROLES.button, {
 					name: "Back to month selection",
 				});
-				const disabledYear = within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+				const disabledYear = within(yearViewTable).getByRole(ROLES.cell, {
 					name: "2015",
 				});
 
 				expect(disabledYear).toBeDisabled();
 
 				await userEvent.click(
-					within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					within(yearViewTable).getByRole(ROLES.cell, {
 						name: "2016",
 					}),
 				);
 				await userEvent.click(yearBackButton);
 
-				const monthView = within(picker).getByRole(ROLES.datepickerBody);
-				const monthViewTable = within(monthView).getByRole(ROLES.datepickerBodyTable);
-				const disabledMonth = within(monthViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+				const monthView = within(picker).getByRole(ROLES.tabpanel);
+				const monthViewTable = within(monthView).getByRole(ROLES.grid);
+				const disabledMonth = within(monthViewTable).getByRole(ROLES.cell, {
 					name: "Select Jul 2016",
 				});
-				const selectedMonth = within(monthViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+				const selectedMonth = within(monthViewTable).getByRole(ROLES.cell, {
 					name: "Select Aug 2016",
 				});
 
@@ -408,9 +410,9 @@ export const DatePickerWithAllProps: Story = {
 
 				await userEvent.click(monthBackButton);
 
-				const dateView = within(picker).getByRole(ROLES.datepickerBody);
-				const dateViewTable = within(dateView).getByRole(ROLES.datepickerBodyTable);
-				const disabledDay = within(dateViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+				const dateView = within(picker).getByRole(ROLES.tabpanel);
+				const dateViewTable = within(dateView).getByRole(ROLES.grid);
+				const disabledDay = within(dateViewTable).getByRole(ROLES.cell, {
 					name: new Date(testLimits[0].setDate(14)).toDateString(),
 				});
 
@@ -419,30 +421,30 @@ export const DatePickerWithAllProps: Story = {
 
 			await step("Select date after limit", async () => {
 				await userEvent.click(yearTag);
-				const yearView = within(picker).getByRole(ROLES.datepickerBody);
-				const yearViewTable = within(yearView).getByRole(ROLES.datepickerBodyTable);
+				const yearView = within(picker).getByRole(ROLES.tabpanel);
+				const yearViewTable = within(yearView).getByRole(ROLES.grid);
 				const yearBackButton = within(yearView).getByRole(ROLES.button, {
 					name: "Back to month selection",
 				});
-				const disabledYear = within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+				const disabledYear = within(yearViewTable).getByRole(ROLES.cell, {
 					name: "2025",
 				});
 
 				expect(disabledYear).toBeDisabled();
 
 				await userEvent.click(
-					within(yearViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+					within(yearViewTable).getByRole(ROLES.cell, {
 						name: "2024",
 					}),
 				);
 				await userEvent.click(yearBackButton);
 
-				const monthView = within(picker).getByRole(ROLES.datepickerBody);
-				const monthViewTable = within(monthView).getByRole(ROLES.datepickerBodyTable);
-				const disabledMonth = within(monthViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+				const monthView = within(picker).getByRole(ROLES.tabpanel);
+				const monthViewTable = within(monthView).getByRole(ROLES.grid);
+				const disabledMonth = within(monthViewTable).getByRole(ROLES.cell, {
 					name: "Select Jun 2024",
 				});
-				const selectedMonth = within(monthViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+				const selectedMonth = within(monthViewTable).getByRole(ROLES.cell, {
 					name: "Select May 2024",
 				});
 
@@ -455,12 +457,12 @@ export const DatePickerWithAllProps: Story = {
 
 				await userEvent.click(monthBackButton);
 
-				const dateView = within(picker).getByRole(ROLES.datepickerBody);
-				const dateViewTable = within(dateView).getByRole(ROLES.datepickerBodyTable);
-				const lastAbleDay = within(dateViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+				const dateView = within(picker).getByRole(ROLES.tabpanel);
+				const dateViewTable = within(dateView).getByRole(ROLES.grid);
+				const lastAbleDay = within(dateViewTable).getByRole(ROLES.cell, {
 					name: testLimits[1].toDateString(),
 				});
-				const disabledDay = within(dateViewTable).getByRole(ROLES.datepickerBodyTableCell, {
+				const disabledDay = within(dateViewTable).getByRole(ROLES.cell, {
 					name: new Date(testLimits[1].setDate(29)).toDateString(),
 				});
 

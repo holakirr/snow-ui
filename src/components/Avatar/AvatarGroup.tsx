@@ -56,7 +56,7 @@ const AvatarGroup = ({ children, limit = 3, direction, ...props }: AvatarGroupPr
 	const isInGrid = direction === "grid";
 
 	return (
-		<div role={ROLES.avatarGroup} className={AvatarGroupClasses({ direction })} {...props}>
+		<div role={ROLES.region} className={AvatarGroupClasses({ direction })} {...props}>
 			{itemsToShow.map((item) => (
 				<AvatarGroupItem inGrid={isInGrid} key={(item as ReactElement).key}>
 					{item}

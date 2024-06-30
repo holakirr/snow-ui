@@ -44,7 +44,7 @@ export const InputBase = ({
 		)}
 		onChange={onChange}
 		value={value}
-		role={ROLES.input}
+		role={ROLES.textbox}
 		{...props}
 	/>
 );

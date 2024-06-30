@@ -4,9 +4,30 @@ import { KBD } from "../KBD";
 import { Text } from "../Text";
 
 export type DropDownItemType = {
+	/**
+	 * The content to be displayed at the start of the item.
+	 * This can be an icon or any other element.
+	 * @default null
+	 * @example <Icon name="icon-name" />
+	 * */
 	startContent?: JSX.Element;
+
+	/**
+	 * The title of the item.
+	 * @example "Item Title"
+	 * */
 	title?: string;
+
+	/**
+	 * The description of the item.
+	 * @example "Item Description"
+	 * */
 	description?: string;
+
+	/**
+	 * The key bindings for the item.
+	 * @example ["Ctrl", "Alt", "T"]
+	 * */
 	keyBindings?: string[];
 };
 
@@ -22,7 +43,7 @@ const DropDownItem = ({
 	ref,
 }: DropDownItemProps) => (
 	<li
-		role={ROLES.dropdownItem}
+		role={ROLES.option}
 		ref={ref}
 		className={twMerge(
 			"flex items-center justify-between p-2 gap-4 list-none w-full rounded-lg hover:bg-black-5 focus:bg-black-5 cursor-pointer",

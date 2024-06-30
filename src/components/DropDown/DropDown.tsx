@@ -37,7 +37,7 @@ const DropDown = ({ visible, position, children, ...props }: DropDownProps) => {
 	return (
 		<Popover visible={visible}>
 			{trigger}
-			<PopoverContent role={ROLES.dropdown} position={position} {...props}>
+			<PopoverContent role={ROLES.listbox} position={position} {...props}>
 				{content}
 			</PopoverContent>
 		</Popover>

@@ -14,7 +14,6 @@ export * from "./Navigation";
 export * from "./Notification";
 export * from "./Popover";
 export * from "./Popup";
-export * from "./SearchPopup";
 export * from "./StatusBadge";
 export * from "./Tag";
 export * from "./Text";

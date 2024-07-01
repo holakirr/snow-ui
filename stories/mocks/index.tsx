@@ -1,6 +1,5 @@
 import {
 	ArrowLineDownIcon,
-	Avatar,
 	BUTTON_VARIANTS,
 	COLOR_SCHEME,
 	DefaultIcon,
@@ -37,13 +36,7 @@ export const imageSrcMocks = {
 
 export const imgSrcMock = imageSrcMocks.chef;
 
-export const imageMocks = {
-	avatar: <Avatar src={imageSrcMocks.man} name={testUserName} />,
-	woman: <img alt="woman" width={24} height={24} src={imageSrcMocks.woman} />,
-	flowerIcon: <FourLeafCloverIcon size={16} alt={`Icon ${FourLeafCloverIcon.displayName}`} />,
-};
-
-const ControlTypeRadio = "radio" as const;
+export const ControlTypeRadio = "radio" as const;
 const ControlTypeSelect = "select" as const;
 
 export const colorControl = {
@@ -69,15 +62,6 @@ export const iconControl = {
 		DefaultIcon,
 		FourLeafCloverIcon,
 		Nothing: undefined,
-	},
-};
-
-export const imageControl = {
-	control: ControlTypeRadio,
-	options: ["woman", "flowerIcon", "avatar", "Nothing"],
-	mapping: {
-		...imageMocks,
-		Nothing: null,
 	},
 };
 

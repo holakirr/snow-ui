@@ -5,10 +5,6 @@ import { COLOR_SCHEME, Line } from "../../src";
 
 const meta = {
 	title: "Foundations/Design System/Color Scheme",
-	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-		layout: "centered",
-	},
 } satisfies Meta;
 
 export default meta;
@@ -17,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 export const Colors: Story = {
 	render: () => (
 		<div className="grid gap-2">
-			{(Object.keys(COLOR_SCHEME) as (keyof typeof COLOR_SCHEME)[]).map((color) => (
+			{(Object.keys(COLOR_SCHEME) as (keyof typeof COLOR_SCHEME)[]).map((color, i) => (
 				<Fragment key={color}>
 					<div className="grid gap-8 grid-cols-2 items-center">
 						<span className="text-4xl font-normal">{color[0].toUpperCase() + color.slice(1)}</span>
@@ -63,7 +59,7 @@ export const Colors: Story = {
 							)}
 						</div>
 					</div>
-					<Line />
+					{i !== Object.keys(COLOR_SCHEME).length - 1 && <Line />}
 				</Fragment>
 			))}
 		</div>

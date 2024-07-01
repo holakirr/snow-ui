@@ -1,64 +1,82 @@
-import { cva } from "class-variance-authority";
-import { twMerge } from "tailwind-merge";
+import React, { type MouseEventHandler, useEffect, useState } from "react";
+import type { PopoverContentType } from "../../types";
+import { Popover } from "../Popover";
 import { TooltipComponent, type TooltipComponentProps } from "./TooltipComponent";
 
 /**
  * Props for the Tooltip component.
  */
-export type TooltipProps = TooltipComponentProps & {
-	/**
-	 * The position of the tooltip.
-	 * @default "top"
-	 */
-	position?: "top" | "bottom" | "left" | "right";
+export type TooltipProps = TooltipComponentProps &
+	PopoverContentType & {
+		/**
+		 * Additional class name for the wrapper.
+		 */
+		wrapperClassname?: string;
 
-	/**
-	 * Determines whether the tooltip is visible.
-	 * @default false
-	 */
-	visible?: boolean;
-
-	/**
-	 * Additional class name for the tooltip.
-	 */
-	tooltipClassName?: string;
-};
-
-const tooltipPosStyles = cva("", {
-	variants: {
-		position: {
-			top: "bottom-full -translate-y-1 left-1/2 -translate-x-1/2",
-			bottom: "top-full translate-y-1 left-1/2 -translate-x-1/2",
-			left: "right-full translate-x-1 top-1/2 -translate-y-1/2",
-			right: "left-full -translate-x-1 top-1/2 -translate-y-1/2",
-		},
-	},
-	defaultVariants: {
-		position: "bottom",
-	},
-});
+		/**
+		 * Delay in milliseconds before showing the tooltip.
+		 * Default value is 500 milliseconds.
+		 */
+		delay?: number;
+	};
 
 const Tooltip = ({
 	label,
 	kbd,
 	position,
-	visible,
-	tooltipClassName,
+	wrapperClassname,
+	delay = 500,
 	className,
 	children,
 	ref,
-}: TooltipProps) => (
-	<div className={twMerge("relative", className)} ref={ref}>
-		{children}
-		{visible && (
-			<TooltipComponent
-				className={twMerge("absolute z-100", tooltipPosStyles({ position }), tooltipClassName)}
-				label={label}
-				kbd={kbd}
-			/>
-		)}
-	</div>
-);
+}: TooltipProps) => {
+	let timeout: ReturnType<typeof setTimeout> | undefined = undefined;
+	const [showTooltip, setShowTooltip] = useState(false);
+
+	/**
+	 * Handles the mouse enter event.
+	 * Starts a timeout to show the tooltip after the specified delay.
+	 */
+	const handleMouseEnter = () => {
+		timeout = setTimeout(() => {
+			setShowTooltip(true);
+		}, delay);
+
+		return () => clearTimeout(timeout);
+	};
+
+	/**
+	 * Handles the mouse out event.
+	 * Clears the timeout and hides the tooltip.
+	 */
+	const handleMouseLeave: MouseEventHandler<HTMLDivElement> = () => {
+		setShowTooltip(false);
+		clearTimeout(timeout);
+	};
+
+	const handleOnBlur = () => {
+		setShowTooltip(false);
+		clearTimeout(timeout);
+	};
+
+	useEffect(() => {
+		return () => {
+			clearTimeout(timeout);
+		};
+	}, [timeout]);
+
+	return (
+		<Popover position={position} visible={showTooltip} wrapperClassName={wrapperClassname}>
+			{React.cloneElement(children as React.ReactElement, {
+				"data-trigger": true,
+				onMouseEnter: handleMouseEnter,
+				onMouseLeave: handleMouseLeave,
+				onBlur: handleOnBlur,
+			})}
+			<TooltipComponent ref={ref} className={className} label={label} kbd={kbd} />
+		</Popover>
+	);
+};
 
 Tooltip.displayName = "WithTooltip";
 export { Tooltip };

@@ -51,7 +51,7 @@ const meta: Meta<typeof Text> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Basic: Story = {
 	args: {
 		as: "h1",
 	},

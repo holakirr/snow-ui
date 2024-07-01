@@ -62,7 +62,7 @@ export const RangePickerHead = ({
 					<DatePickerTag
 						id="tab-date"
 						aria-controls="panel-date"
-						role={ROLES.datepickerHeadTab}
+						role={ROLES.tab}
 						label={fromStrings.date.split("/")[0]}
 						title={`Range starts with day ${fromStrings.date.split("/")[0]}`}
 						textSize={14}
@@ -80,7 +80,7 @@ export const RangePickerHead = ({
 					<DatePickerTag
 						id="tab-month"
 						aria-controls="panel-month"
-						role={ROLES.datepickerHeadTab}
+						role={ROLES.tab}
 						label={fromStrings.date.split("/")[1]}
 						title={`Range starts with month ${fromStrings.date.split("/")[1]}`}
 						textSize={14}
@@ -98,7 +98,7 @@ export const RangePickerHead = ({
 					<DatePickerTag
 						id="tab-year"
 						aria-controls="panel-year"
-						role={ROLES.datepickerHeadTab}
+						role={ROLES.tab}
 						label={fromStrings.date.split("/")[2]}
 						title={`Range starts with year ${fromStrings.date.split("/")[2]}`}
 						textSize={14}
@@ -126,7 +126,7 @@ export const RangePickerHead = ({
 					<DatePickerTag
 						id="tab-date"
 						aria-controls="panel-date"
-						role={ROLES.datepickerHeadTab}
+						role={ROLES.tab}
 						label={toStrings.date.split("/")[0]}
 						title={`Range ends with day ${toStrings.date.split("/")[0]}`}
 						textSize={14}
@@ -144,7 +144,7 @@ export const RangePickerHead = ({
 					<DatePickerTag
 						id="tab-month"
 						aria-controls="panel-month"
-						role={ROLES.datepickerHeadTab}
+						role={ROLES.tab}
 						label={toStrings.date.split("/")[1]}
 						title={`Range ends with month ${toStrings.date.split("/")[1]}`}
 						textSize={14}
@@ -162,7 +162,7 @@ export const RangePickerHead = ({
 					<DatePickerTag
 						id="tab-year"
 						aria-controls="panel-year"
-						role={ROLES.datepickerHeadTab}
+						role={ROLES.tab}
 						label={toStrings.date.split("/")[2]}
 						title={`Range ends with year ${toStrings.date.split("/")[2]}`}
 						textSize={14}
@@ -181,7 +181,7 @@ export const RangePickerHead = ({
 					<DatePickerTag
 						id="tab-time"
 						aria-controls="panel-time"
-						role={ROLES.datepickerHeadTab}
+						role={ROLES.tab}
 						title={`Current time is ${currentTimeString}`}
 						textSize={14}
 						label={currentTimeString}

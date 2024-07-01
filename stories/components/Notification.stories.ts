@@ -6,13 +6,6 @@ import { statusControl, testErrorText, testSuccessText } from "../mocks";
 const meta = {
 	title: "Base Components/Notification",
 	component: Notification,
-	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-		layout: "centered",
-	},
-	// This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-	tags: ["autodocs"],
-	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
 		status: statusControl,
 		size: {
@@ -20,7 +13,6 @@ const meta = {
 			options: Object.values(SIMPLE_SIZES),
 		},
 	},
-	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		size: SIMPLE_SIZES.sm,
 	},
@@ -29,15 +21,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicNotification: Story = {
+export const Basic: Story = {
 	args: {
 		status: STATUSES_NOTIFY.success,
 		title: testSuccessText,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const notification = canvas.getByRole(ROLES.notification);
-		const icon = canvas.getByRole(ROLES.icon);
+		const notification = canvas.getByRole(ROLES.alert);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(notification).toBeInTheDocument();
 		expect(notification).toHaveTextContent(testSuccessText);
@@ -46,7 +38,7 @@ export const BasicNotification: Story = {
 	},
 };
 
-export const LargeNotificationError: Story = {
+export const LargeWithError: Story = {
 	args: {
 		status: STATUSES_NOTIFY.error,
 		title: testErrorText,
@@ -54,8 +46,8 @@ export const LargeNotificationError: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const notification = canvas.getByRole(ROLES.notification);
-		const icon = canvas.getByRole(ROLES.icon);
+		const notification = canvas.getByRole(ROLES.alert);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(notification).toBeInTheDocument();
 		expect(notification).toHaveTextContent(testErrorText);

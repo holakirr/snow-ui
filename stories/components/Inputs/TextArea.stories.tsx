@@ -11,17 +11,9 @@ const testInputHandler = fn();
 const meta = {
 	title: "Base Components/Inputs/TextArea",
 	component: TextArea,
-	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-		layout: "centered",
-	},
-	// This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-	tags: ["autodocs"],
-	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
 		status: statusControl,
 	},
-	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		placeholder: testInputPlaceholder,
 		disabled: false,
@@ -45,13 +37,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicTextArea: Story = {
+export const Basic: Story = {
 	args: {
 		placeholder: "",
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole(ROLES.textarea);
+		const input = canvas.getByRole(ROLES.textbox);
 
 		expect(input).toBeInTheDocument();
 
@@ -62,23 +54,23 @@ export const BasicTextArea: Story = {
 	},
 };
 
-export const TextAreaWithPlaceholder: Story = {
+export const WithPlaceholder: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole(ROLES.textarea);
+		const input = canvas.getByRole(ROLES.textbox);
 
 		expect(input).toHaveAttribute("placeholder", testInputPlaceholder);
 	},
 };
 
-export const DisabledTextArea: Story = {
+export const Disabled: Story = {
 	args: {
 		disabled: true,
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole(ROLES.textarea);
+		const input = canvas.getByRole(ROLES.textbox);
 
 		expect(input).toBeDisabled();
 
@@ -89,20 +81,20 @@ export const DisabledTextArea: Story = {
 	},
 };
 
-export const SuccessTextArea: Story = {
+export const SuccessStatus: Story = {
 	args: {
 		status: STATUSES.success,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole(ROLES.icon);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(`Icon for status ${STATUSES.success}`);
 	},
 };
 
-export const ErrorTextArea: Story = {
+export const ErrorStatus: Story = {
 	args: {
 		status: STATUSES.error,
 		error: testErrorText,
@@ -110,7 +102,7 @@ export const ErrorTextArea: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole(ROLES.icon);
+		const icon = canvas.getByRole(ROLES.img);
 		const errorMsg = canvas.getByText(testErrorText);
 
 		expect(icon).toBeInTheDocument();
@@ -119,7 +111,7 @@ export const ErrorTextArea: Story = {
 	},
 };
 
-export const TextAreaWithLimit: Story = {
+export const WithLimit: Story = {
 	args: {
 		textLimit: testTextLimit,
 	},
@@ -127,7 +119,7 @@ export const TextAreaWithLimit: Story = {
 		const longText =
 			"This is a long text that will be used to test the text limit of the TextArea component. Next text is not gonna be shown.";
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole(ROLES.textarea);
+		const input = canvas.getByRole(ROLES.textbox);
 
 		expect(input).toBeInTheDocument();
 		expect(input).toHaveAttribute("maxlength", testTextLimit.toString());

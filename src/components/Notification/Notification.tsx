@@ -41,11 +41,7 @@ const Notification = ({
 	title,
 	ref,
 }: NotificationProps) => (
-	<div
-		className={twMerge(notificationClasses({ size, className }))}
-		ref={ref}
-		role={ROLES.notification}
-	>
+	<div className={twMerge(notificationClasses({ size, className }))} ref={ref} role={ROLES.alert}>
 		<StatusIcon status={status} size={size === "sm" ? 16 : 24} className="fill-white-100" />
 		<Text size={size === "sm" ? 12 : 14}>{title}</Text>
 	</div>

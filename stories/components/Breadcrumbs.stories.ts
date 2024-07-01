@@ -4,38 +4,32 @@ import { type BreadcrumbType, Breadcrumbs, ROLES } from "../../src";
 
 const testBreadcrumbs: BreadcrumbType[] = [
 	{ label: "Home", id: "home" },
-	{ label: "Products", id: "products" },
-	{ label: "Product 1", id: "product-1" },
+	{ label: "Catalog", id: "catalog" },
+	{ label: "Category", id: "category" },
+	{ label: "Product", id: "product" },
 ];
 
 const meta = {
 	title: "Base Components/Breadcrumbs",
 	component: Breadcrumbs,
 	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-		layout: "centered",
 		controls: {
 			exclude: ["children"],
 		},
 	},
-	// This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-	tags: ["autodocs"],
-	// More on argTypes: https://storybook.js.org/docs/api/argtypes
-	argTypes: {},
-	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
-		breadcrumbs: testBreadcrumbs,
+		items: testBreadcrumbs,
 	},
 } satisfies Meta<typeof Breadcrumbs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicBreadcrumbs: Story = {
+export const Basic: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const breadcrumbs = canvas.getByRole(ROLES.breadcrumbs);
-		const breadcrumbItems = canvas.getAllByRole(ROLES.breadcrumbsItem);
+		const breadcrumbs = canvas.getByRole(ROLES.navigation);
+		const breadcrumbItems = canvas.getAllByRole(ROLES.link);
 
 		expect(breadcrumbs).toBeInTheDocument();
 		expect(breadcrumbItems).toHaveLength(testBreadcrumbs.length);
@@ -46,17 +40,66 @@ export const BasicBreadcrumbs: Story = {
 	},
 };
 
-export const BreadcrumbsWithCustomSeparator: Story = {
+export const WithCustomSeparator: Story = {
 	args: {
-		separator: " > ",
+		separator: ">",
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const breadcrumbs = canvas.getByRole(ROLES.breadcrumbs);
-		const breadcrumbItems = canvas.getAllByRole(ROLES.breadcrumbsItem);
+		const breadcrumbs = canvas.getByRole(ROLES.navigation);
+		const breadcrumbItems = canvas.getAllByRole(ROLES.link);
 
 		expect(breadcrumbs).toBeInTheDocument();
-		expect(breadcrumbs).toHaveTextContent("Home > Products > Product 1");
+		expect(breadcrumbs).toHaveTextContent(testBreadcrumbs.map((item) => item.label).join(">"));
 		expect(breadcrumbItems).toHaveLength(testBreadcrumbs.length);
+	},
+};
+
+export const WithActiveItem: Story = {
+	args: {
+		items: [
+			{ label: "Home", id: "home" },
+			{ label: "Catalog", id: "catalog", active: true },
+			{ label: "Category", id: "category" },
+			{ label: "Product", id: "product" },
+		],
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const breadcrumbs = canvas.getByRole(ROLES.navigation);
+		const breadcrumbItems = canvas.getAllByRole(ROLES.link);
+
+		expect(breadcrumbs).toBeInTheDocument();
+		expect(breadcrumbItems).toHaveLength(testBreadcrumbs.length);
+
+		breadcrumbItems.forEach((breadcrumbItem, index) => {
+			if (index === 1) {
+				expect(breadcrumbItem).toHaveAttribute("aria-current", "page");
+			} else {
+				expect(breadcrumbItem).not.toHaveAttribute("aria-current");
+			}
+		});
+	},
+};
+
+export const WithDisabledItem: Story = {
+	args: {
+		items: [
+			{ label: "Home", id: "home" },
+			{ label: "Catalog", id: "catalog", disabled: true },
+			{ label: "Category", id: "category" },
+			{ label: "Product", id: "product" },
+		],
+	},
+};
+
+export const WithActiveAndDisabledItem: Story = {
+	args: {
+		items: [
+			{ label: "Home", id: "home" },
+			{ label: "Catalog", id: "catalog", active: true, disabled: true },
+			{ label: "Category", id: "category" },
+			{ label: "Product", id: "product" },
+		],
 	},
 };

@@ -1,3 +1,4 @@
+import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
 import type { BreadcrumbType } from "../../types";
 import { Button } from "../Button";
@@ -5,22 +6,20 @@ import { Button } from "../Button";
 /**
  * Represents a single item in the Breadcrumbs component.
  */
-type BreadcrumbsItemProps = BreadcrumbType &
-	React.ComponentProps<"button"> & {
-		active?: boolean;
-	};
+type BreadcrumbsItemProps = BreadcrumbType & React.ComponentProps<"button">;
 
-const BreadcrumbsItem = ({ active, id, label, ref, ...props }: BreadcrumbsItemProps) => (
+const BreadcrumbsItem = ({ id, label, disabled, active, ref, ...props }: BreadcrumbsItemProps) => (
 	<Button
 		ref={ref}
 		aria-label={label}
 		aria-current={active ? "page" : undefined}
-		role={ROLES.breadcrumbsItem}
+		role={ROLES.link}
 		id={id}
 		label={label}
 		size="sm"
-		className={!active ? "text-black-40" : ""}
+		className={twMerge("", !active ? "text-black-40" : "")}
 		variant="borderless"
+		disabled={disabled}
 		{...props}
 	/>
 );

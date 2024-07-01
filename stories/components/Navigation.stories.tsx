@@ -38,7 +38,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const SimpleNavigation: Story = {
+export const Basic: Story = {
 	play: async (context) => {
 		const canvas = within(context.canvasElement);
 		const navigation = canvas.getByRole("navigation", {
@@ -49,7 +49,7 @@ export const SimpleNavigation: Story = {
 	},
 };
 
-export const NavigationWithTitle: Story = {
+export const WithTitle: Story = {
 	args: {
 		title: testTitle,
 	},

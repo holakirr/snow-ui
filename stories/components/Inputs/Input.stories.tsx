@@ -17,18 +17,10 @@ const testChangeFunction = fn();
 const meta = {
 	title: "Base Components/Inputs/Input",
 	component: Input,
-	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-		layout: "centered",
-	},
-	// This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-	tags: ["autodocs"],
-	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
 		icon: iconControl,
 		status: statusControl,
 	},
-	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		placeholder: testInputPlaceholder,
 		icon: undefined,
@@ -55,14 +47,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicInput: Story = {
+export const Basic: Story = {
 	args: {
 		placeholder: "",
 		id: "email",
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole(ROLES.input);
+		const input = canvas.getByRole(ROLES.textbox);
 
 		// 👇 Simulate interactions with the component
 		await userEvent.type(input, testValue);
@@ -74,36 +66,36 @@ export const BasicInput: Story = {
 	},
 };
 
-export const InputWithPlaceholder: Story = {
+export const WithPlaceholder: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole(ROLES.input);
+		const input = canvas.getByRole(ROLES.textbox);
 
 		expect(input.getAttribute("placeholder")).toBe(testInputPlaceholder);
 	},
 };
 
-export const InputWithIconAndPlaceholder: Story = {
+export const WithIconAndPlaceholder: Story = {
 	args: {
 		icon: FourLeafCloverIcon,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole(ROLES.icon);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(`Icon in input with id ${testId}`);
 	},
 };
 
-export const DisabledInput: Story = {
+export const Disabled: Story = {
 	args: {
 		disabled: true,
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole(ROLES.input);
+		const input = canvas.getByRole(ROLES.textbox);
 		await userEvent.type(input, testValue);
 
 		expect(input).toBeDisabled();
@@ -111,20 +103,20 @@ export const DisabledInput: Story = {
 	},
 };
 
-export const SuccessInput: Story = {
+export const SuccessStatus: Story = {
 	args: {
 		status: STATUSES.success,
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const icon = canvas.getByRole(ROLES.icon);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(`Icon for status ${STATUSES.success}`);
 	},
 };
 
-export const ErrorInput: Story = {
+export const ErrorStatus: Story = {
 	args: {
 		status: STATUSES.error,
 		error: testErrorText,
@@ -132,8 +124,8 @@ export const ErrorInput: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole(ROLES.input);
-		const icon = canvas.getByRole(ROLES.icon);
+		const input = canvas.getByRole(ROLES.textbox);
+		const icon = canvas.getByRole(ROLES.img);
 		const error = canvas.getByText(testErrorText);
 
 		expect(icon).toBeInTheDocument();
@@ -143,7 +135,7 @@ export const ErrorInput: Story = {
 	},
 };
 
-export const InputWithTitle: Story = {
+export const WithTitle: Story = {
 	args: {
 		title: testTitle,
 	},
@@ -156,7 +148,7 @@ export const InputWithTitle: Story = {
 	},
 };
 
-export const InputWithTitleAndValueAndStatus: Story = {
+export const WithTitleAndValueAndStatus: Story = {
 	args: {
 		title: testTitle,
 		value: "Value",
@@ -165,7 +157,7 @@ export const InputWithTitleAndValueAndStatus: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const title = canvas.getByText(testTitle);
-		const icon = canvas.getByRole(ROLES.icon);
+		const icon = canvas.getByRole(ROLES.img);
 
 		expect(title).toBeInTheDocument();
 		expect(title).toHaveStyle({ fontSize: "12px" });
@@ -174,14 +166,14 @@ export const InputWithTitleAndValueAndStatus: Story = {
 	},
 };
 
-export const ClearableInput: Story = {
+export const Clearable: Story = {
 	args: {
 		title: testTitle,
 		clearable: true,
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const input = canvas.getByRole(ROLES.input);
+		const input = canvas.getByRole(ROLES.textbox);
 
 		await userEvent.type(input, testValue);
 

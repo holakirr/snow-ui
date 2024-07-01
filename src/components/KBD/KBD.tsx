@@ -21,7 +21,7 @@ const KBD = ({ keyBindings, separator = "", className, ref }: KBDProps) => (
 		size={14}
 		ref={ref}
 		as="kbd"
-		role={ROLES.kbd}
+		role={ROLES.definition}
 		aria-keyshortcuts={keyBindings.join(separator)}
 		className={twMerge("w-min text-black-20", className)}
 	>

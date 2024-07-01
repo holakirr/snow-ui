@@ -1,9 +1,11 @@
 import { twMerge } from "tailwind-merge";
 import { ROLES, STATUSES } from "../../constants";
-import { DropDown, type DropDownType } from "../DropDown";
+import { DropDown } from "../DropDown";
 import { SearchIcon } from "../Icons";
 import { Input } from "../Input";
 import { Line } from "../Line";
+
+// FIXME: Fix dtopdown with new dropdown
 
 type SearchPopupProps = React.ComponentProps<"input"> & {
 	/**
@@ -23,7 +25,7 @@ const SearchPopup = ({ progress, width, dropdown, className, ref, ...props }: Se
 			className,
 		)}
 		style={{ width }}
-		role={ROLES.searchPopup}
+		role={ROLES.dialog}
 	>
 		<div className="mb-2">
 			<Input

@@ -42,6 +42,7 @@ export type SeparatorDirection = "horizontal" | "vertical";
 export type BreadcrumbType = {
 	label: string;
 	id: string;
+	active?: boolean;
 	href?: string;
 	disabled?: boolean;
 };
@@ -199,4 +200,30 @@ export type RangePickerType = {
 	 * @param fromOrTo The new date type.
 	 */
 	onFromOrToChange: (fromOrTo: "from" | "to") => void;
+};
+
+export type PopoverContentType = {
+	/**
+	 * The position of the popover.
+	 * @default "bottom"
+	 */
+	position?: "top" | "bottom" | "left" | "right";
+
+	/**
+	 * Additional class name for the popover content.
+	 */
+	className?: string;
+};
+
+export type PopoverType = PopoverContentType & {
+	/**
+	 * Whether the popover is visible or not.
+	 */
+	visible: boolean;
+
+	/**
+	 * Additional class names to apply to the wrapper element.
+	 * @default ""
+	 **/
+	wrapperClassName?: string;
 };

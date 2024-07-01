@@ -8,17 +8,18 @@ type BadgeProps = React.ComponentProps<"div"> & {
 	/**
 	 * The text to be displayed inside the badge.
 	 */
-	text?: string;
+	content?: string;
 };
 
-const Badge = ({ text, children, ...props }: BadgeProps) => (
+const Badge = ({ content, children, className, ...props }: BadgeProps) => (
 	<div className="relative" {...props}>
 		{children}
 		<BadgeComponent
-			text={text}
+			content={content}
 			className={twMerge(
 				"absolute -top-[1px] left-full -translate-x-2",
-				text && "-top-[6px] -translate-x-1/2",
+				content && "-top-[6px] -translate-x-1/2",
+				className,
 			)}
 		/>
 	</div>

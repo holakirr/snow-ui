@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import { COLOR_SCHEME } from "./src/constants";
 
 const config: Config = {
-	content: ["./src/**/*.{js,ts,jsx,tsx}"],
+	content: ["./src/**/*.{js,ts,jsx,tsx}", "./stories/**/*.{js,ts,jsx,tsx}"],
 	darkMode: [
 		"variant",
 		[

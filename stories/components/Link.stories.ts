@@ -8,15 +8,6 @@ const testLinkHref = "#";
 const meta = {
 	title: "Base Components/Link",
 	component: Link,
-	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-		layout: "centered",
-	},
-	// This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-	tags: ["autodocs"],
-	// More on argTypes: https://storybook.js.org/docs/api/argtypes
-	argTypes: {},
-	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		children: testLinkLabel,
 		href: testLinkHref,
@@ -26,7 +17,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BasicLink: Story = {
+export const Basic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -38,7 +29,7 @@ export const BasicLink: Story = {
 	},
 };
 
-export const ExternalLink: Story = {
+export const External: Story = {
 	args: {
 		target: "_blank",
 	},
@@ -52,7 +43,7 @@ export const ExternalLink: Story = {
 	},
 };
 
-export const CustomStyleLink: Story = {
+export const CustomStyle: Story = {
 	args: {
 		style: { color: "red" },
 	},

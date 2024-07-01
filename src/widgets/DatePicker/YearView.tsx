@@ -39,11 +39,11 @@ export const YearView = ({
 	return (
 		<div
 			className="flex flex-col"
-			role={ROLES.datepickerBody}
+			role={ROLES.tabpanel}
 			id="panel-month"
 			aria-labelledby="tab-month"
 		>
-			<div className="flex justify-between px-4 pt-4" role={ROLES.datepickerNavigation}>
+			<div className="flex justify-between px-4 pt-4" role={ROLES.navigation}>
 				<div className="flex gap-2 items-center">
 					<DatePickerTag
 						label="This month"
@@ -76,7 +76,7 @@ export const YearView = ({
 						}}
 						title={`Display year is ${displayYear}`}
 						size={12}
-						role={ROLES.datepickerNavigationDisplay}
+						role={ROLES.status}
 						className="flex items-center"
 					>
 						{displayYear}
@@ -91,10 +91,7 @@ export const YearView = ({
 					/>
 				</div>
 			</div>
-			<div
-				className="p-4 min-h-[260px] flex flex-col justify-between items-end"
-				role={ROLES.datepickerBodyTable}
-			>
+			<div className="p-4 min-h-[260px] flex flex-col justify-between items-end" role={ROLES.grid}>
 				<div className="grid grid-cols-6 auto-rows-[38px] w-full">
 					{Array.from({ length: 12 }, (_, i) => {
 						const date = new Date(displayYear, i);
@@ -117,7 +114,7 @@ export const YearView = ({
 								aria-label={`Select ${month} ${displayYear}`}
 								aria-selected={isSelected}
 								aria-current={isCurrent ? "date" : undefined}
-								role={ROLES.datepickerBodyTableCell}
+								role={ROLES.cell}
 								tabIndex={isDisabled ? -1 : 0}
 								disabled={isDisabled}
 								onClick={() => onMonthSelect(i)}

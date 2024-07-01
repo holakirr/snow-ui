@@ -1,5 +1,4 @@
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
 import { KBD, type KBDProps } from "../KBD";
 import { Text } from "../Text";
 
@@ -21,7 +20,6 @@ const TooltipComponent = ({ label, kbd, className, ref }: TooltipComponentProps)
 			className,
 		)}
 		ref={ref}
-		role={ROLES.tooltip}
 	>
 		<Text as="span" className="text-white-100">
 			{label}

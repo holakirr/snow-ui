@@ -39,7 +39,7 @@ const NavigationMenu = ({
 			opened && "grid-rows-[1fr]",
 			className,
 		)}
-		role={ROLES.navigationMenu}
+		role={ROLES.tree}
 		aria-label={`Navigation Menu ${title}`}
 		{...props}
 	>

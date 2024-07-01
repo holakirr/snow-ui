@@ -12,18 +12,10 @@ import {
 const meta = {
 	title: "Base Components/Avatar/Avatar",
 	component: Avatar,
-	parameters: {
-		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-		layout: "centered",
-	},
-	// This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-	tags: ["autodocs"],
-	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	argTypes: {
 		color: colorControl,
 		src: imgSourceControl,
 	},
-	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {
 		size: SIZES.sm,
 		name: testUserName,
@@ -38,7 +30,7 @@ export const Basic: Story = {
 	args: {},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 
 		expect(avatar).toBeInTheDocument();
 		expect(avatar.lastChild?.textContent).toBe(testInitials);
@@ -51,7 +43,7 @@ export const Default: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 		const userIcon = avatar.lastChild as SVGElement;
 
 		expect(avatar).toBeInTheDocument();
@@ -66,7 +58,7 @@ export const Medium: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 
 		expect(avatar).toBeInTheDocument();
 	},
@@ -78,7 +70,7 @@ export const Large: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 
 		expect(avatar).toBeInTheDocument();
 		expect(avatar.lastChild?.textContent).toBe(testInitials);
@@ -93,7 +85,7 @@ export const LargeWithImg: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const avatar = canvas.getByRole(ROLES.avatar);
+		const avatar = canvas.getByRole(ROLES.figure);
 		const avatarImg = avatar.lastChild as HTMLImageElement;
 
 		expect(avatar).toBeInTheDocument();

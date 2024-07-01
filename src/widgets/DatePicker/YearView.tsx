@@ -72,7 +72,7 @@ export const YearView = ({
 					<Abbr
 						tooltipProps={{
 							label: `Display year is ${displayYear}`,
-							tooltipClassName: "text-nowrap",
+							className: "text-nowrap",
 						}}
 						title={`Display year is ${displayYear}`}
 						size={12}

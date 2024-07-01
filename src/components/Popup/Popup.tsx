@@ -1,20 +1,33 @@
+import { type VariantProps, cva } from "class-variance-authority";
 import type { KeyboardEventHandler, MouseEventHandler } from "react";
 import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
 import { PopupHeader, type PopupHeaderProps } from "./PopupHeader";
 
 type DialogProps = React.ComponentProps<"dialog"> &
-	PopupHeaderProps & {
-		/**
-		 * Funciton to be called when the dialog is closed.
-		 **/
-		onClose: () => void;
-	};
+	PopupHeaderProps &
+	VariantProps<typeof popupClasses>;
+
+const popupClasses = cva(
+	"fixed w-[0%] h-[0%] bottom-0 left-1/2 -translate-x-1/2 z-50 overflow-hidden flex items-center transition-all",
+	{
+		variants: {
+			open: {
+				true: "w-[100%] h-[100%]",
+			},
+			withBlur: {
+				true: "backdrop-blur-md bg-gradient-to-b from-[rgba(215_208_255/0.2)_0%] to-[rgba(203_221_255/0.5)_100%]",
+			},
+		},
+	},
+);
 
 const Popup = ({
 	open,
-	titleIcon,
+	withBlur,
+	startContent,
 	title,
+	withCloseIcon,
 	className,
 	onClose,
 	children,
@@ -23,12 +36,13 @@ const Popup = ({
 }: DialogProps) => {
 	const handleOutsideClick: MouseEventHandler = (event) => {
 		event.preventDefault();
-		if (event.target === event.currentTarget) {
+		if (event.target === event.currentTarget && onClose) {
 			onClose();
 		}
 	};
 	const handleEscapeKey: KeyboardEventHandler<HTMLDivElement> = (event) => {
-		if (event.key === "Escape") {
+		event.preventDefault();
+		if (event.key === "Escape" && onClose) {
 			onClose();
 		}
 	};
@@ -37,24 +51,21 @@ const Popup = ({
 		<div
 			onClick={handleOutsideClick}
 			onKeyUp={handleEscapeKey}
-			className={twMerge(
-				"grid transition-[grid-template-rows_filter] grid-rows-[0fr] fixed top-1/2 left-1/2 z-50 overflow-hidden w-0 h-0 duration-500 content-center",
-				open &&
-					"grid-rows-[1fr] w-dvw h-dvh backdrop-blur-[20px] bg-gradient-to-b  from-[rgba(215_208_255/0.2)_0%] to-[rgba(203_221_255/0.5)_100%] left-0 top-0",
-			)}
+			className={twMerge(popupClasses({ open, withBlur }))}
 		>
 			<dialog
 				ref={ref}
 				role={ROLES.dialog}
-				className={twMerge(
-					"grid gap-7 content-center justify-center min-h-0 relative bg-transparent",
-					className,
-					!open && "hidden",
-				)}
+				className={twMerge("min-h-0 bg-transparent", className)}
 				open={open}
 				{...props}
 			>
-				<PopupHeader title={title} onClose={onClose} titleIcon={titleIcon} />
+				<PopupHeader
+					title={title}
+					onClose={onClose}
+					startContent={startContent}
+					withCloseIcon={withCloseIcon}
+				/>
 				{children}
 			</dialog>
 		</div>

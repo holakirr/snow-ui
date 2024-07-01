@@ -1,23 +1,24 @@
-import type { Icon } from "@phosphor-icons/react";
+import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
-import type { CustomIcon } from "../../types";
 import { Button } from "../Button";
 import { CloseIcon } from "../Icons";
 import { Text } from "../Text";
 
-/**
- * Props for the PopupHeader component.
- */
 export type PopupHeaderProps = React.ComponentProps<"div"> & {
 	/**
 	 * The icon to be displayed next to the title.
 	 */
-	titleIcon?: Icon | CustomIcon;
+	startContent?: JSX.Element;
 
 	/**
 	 * The title text.
 	 */
-	title: string;
+	title?: string;
+
+	/**
+	 * Whether to display the close icon button.
+	 */
+	withCloseIcon?: boolean;
 
 	/**
 	 * Callback function to be called when the popup is closed.
@@ -25,24 +26,45 @@ export type PopupHeaderProps = React.ComponentProps<"div"> & {
 	onClose: () => void;
 };
 
-const PopupHeader = ({ titleIcon: Icon, title, onClose, ref }: PopupHeaderProps) => (
-	<div className="flex justify-between items-center" ref={ref} role={ROLES.heading}>
-		<div className="flex gap-4 items-center text-black-100">
-			{Icon && <Icon size={48} alt={`Icon for popup ${title}`} weight="regular" />}
-			<Text as="p" size={48} semibold>
-				{title}
-			</Text>
+const PopupHeader = ({
+	startContent,
+	title,
+	withCloseIcon,
+	onClose,
+	className,
+	ref,
+}: PopupHeaderProps) =>
+	startContent || title || withCloseIcon ? (
+		<div
+			className={twMerge("grid grid-flow-col justify-between items-center min-h-0 mb-7", className)}
+			ref={ref}
+			role={ROLES.heading}
+		>
+			<div className="flex gap-4 items-center text-black-100">
+				{startContent}
+				{title && (
+					<Text as="p" size={48} semibold>
+						{title}
+					</Text>
+				)}
+			</div>
+			{withCloseIcon && (
+				<Button
+					autoFocus
+					onClick={onClose}
+					onKeyUp={(e) => {
+						if (e.key === "Enter") {
+							onClose();
+						}
+					}}
+					size="md"
+					variant="gray"
+					leftIcon={CloseIcon}
+					title="Close popup icon button"
+				/>
+			)}
 		</div>
-		<Button
-			autoFocus
-			onClick={onClose}
-			size="md"
-			variant="gray"
-			leftIcon={CloseIcon}
-			title="Close popup icon button"
-		/>
-	</div>
-);
+	) : null;
 
 PopupHeader.displayName = "PopupHeader";
 export { PopupHeader };

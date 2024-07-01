@@ -27,8 +27,6 @@ bun add holakirr-snow-ui
 @import "holakirr-snow-ui/index.css";
 ```
 
-<!-- TODO: Check if it works -->
-
 ### 3. Import any component in your project
 
 ```ts

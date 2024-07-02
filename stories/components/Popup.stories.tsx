@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, fn, userEvent, within } from "@storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 import { useState } from "react";
 import { Avatar, Button, Card, FourLeafCloverIcon, Popup, ROLES } from "../../src";
 import { ControlTypeRadio, imageSrcMocks, testUserName } from "../mocks";
@@ -156,11 +156,14 @@ export const WithAllProps: Story = {
 
 		await userEvent.click(closeButton);
 
-		expect(popup).not.toBeVisible();
+		await waitFor(() => expect(popup.parentElement?.clientHeight, "popup parent height").toBe(0));
+
 		expect(testCloseFn).toHaveBeenCalledOnce();
 
 		await userEvent.click(openButton);
 
-		expect(popup).toBeVisible();
+		await waitFor(() =>
+			expect(popup.parentElement?.clientHeight, "popup parent height").not.toBe(0),
+		);
 	},
 };

@@ -102,7 +102,7 @@ export const ButtonWithTooltip: Story = {
 			await userEvent.unhover(button);
 
 			await waitFor(() => {
-				expect(tooltip).not.toBeInTheDocument();
+				expect(tooltip.clientHeight).toBe(0);
 			});
 		});
 	},

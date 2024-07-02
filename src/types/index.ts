@@ -220,10 +220,4 @@ export type PopoverType = PopoverContentType & {
 	 * Whether the popover is visible or not.
 	 */
 	visible: boolean;
-
-	/**
-	 * Additional class names to apply to the wrapper element.
-	 * @default ""
-	 **/
-	wrapperClassName?: string;
 };

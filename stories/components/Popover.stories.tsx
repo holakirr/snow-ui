@@ -27,7 +27,7 @@ You can pass second child as any element, it will be wrapped in PopoverContent c
 		},
 	},
 	args: {
-		visible: true,
+		visible: false,
 		position: "bottom",
 		children: [
 			<Text className="text-black-100 text-nowrap" key={testLabel}>
@@ -53,9 +53,26 @@ You can pass second child as any element, it will be wrapped in PopoverContent c
 			await userEvent.unhover(button);
 
 			await waitFor(() => {
-				expect(popover).not.toBeInTheDocument();
+				expect(popover.clientHeight, "Popover content height").toBe(0);
 			});
 		});
+	},
+	render: (args) => {
+		const [showPopover, setShowPopover] = useState(args.visible);
+
+		return (
+			<Popover {...args}>
+				<Button
+					label={testButtonLabel}
+					variant="filled"
+					onMouseEnter={() => setShowPopover(true)}
+					onMouseLeave={() => setShowPopover(false)}
+				/>
+				<PopoverContent visible={showPopover} position={args.position}>
+					{args.children}
+				</PopoverContent>
+			</Popover>
+		);
 	},
 } satisfies Meta<typeof Popover>;
 
@@ -63,40 +80,5 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const WithButton: Story = {
-	args: {
-		visible: false,
-	},
-	render: (args) => {
-		const [showPopover, setShowPopover] = useState(args.visible);
-
-		return (
-			<Popover {...args} visible={showPopover}>
-				<Button
-					label={testButtonLabel}
-					variant="filled"
-					onMouseEnter={() => setShowPopover(true)}
-					onMouseLeave={() => setShowPopover(false)}
-				/>
-				<PopoverContent position={args.position}>{args.children}</PopoverContent>
-			</Popover>
-		);
-	},
-};
-
-export const WithoutContentElement: Story = {
-	render: (args) => {
-		const [showPopover, setShowPopover] = useState(args.visible);
-
-		return (
-			<Popover {...args} visible={showPopover}>
-				<Button
-					label={testButtonLabel}
-					variant="filled"
-					onMouseEnter={() => setShowPopover(true)}
-					onMouseLeave={() => setShowPopover(false)}
-				/>
-				{args.children}
-			</Popover>
-		);
-	},
+	args: {},
 };

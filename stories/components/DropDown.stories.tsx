@@ -42,7 +42,6 @@ const meta = {
 						))}
 					</DropDownSection>
 				</DropDownMenu>
-				{args.children}
 			</DropDown>
 		);
 	},

@@ -1,12 +1,13 @@
 import React, { type MouseEventHandler, useEffect, useState } from "react";
 import type { PopoverContentType } from "../../types";
 import { Popover } from "../Popover";
-import { TooltipComponent, type TooltipComponentProps } from "./TooltipComponent";
+import { TooltipComponent, type TooltipComponentType } from "./TooltipComponent";
 
 /**
  * Props for the Tooltip component.
  */
-export type TooltipProps = TooltipComponentProps &
+export type TooltipProps = React.ComponentProps<"div"> &
+	TooltipComponentType &
 	PopoverContentType & {
 		/**
 		 * Additional class name for the wrapper.
@@ -66,14 +67,20 @@ const Tooltip = ({
 	}, [timeout]);
 
 	return (
-		<Popover position={position} visible={showTooltip} wrapperClassName={wrapperClassname}>
+		<Popover position={position} visible={showTooltip} className={wrapperClassname}>
 			{React.cloneElement(children as React.ReactElement, {
 				"data-trigger": true,
 				onMouseEnter: handleMouseEnter,
 				onMouseLeave: handleMouseLeave,
 				onBlur: handleOnBlur,
 			})}
-			<TooltipComponent ref={ref} className={className} label={label} kbd={kbd} />
+			<TooltipComponent
+				visible={showTooltip}
+				ref={ref}
+				className={className}
+				label={label}
+				kbd={kbd}
+			/>
 		</Popover>
 	);
 };

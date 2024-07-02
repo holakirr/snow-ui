@@ -1,10 +1,9 @@
-import React, { Children } from "react";
+import type React from "react";
 import { twMerge } from "tailwind-merge";
-import type { PopoverType } from "../../types";
-import { PopoverContent } from "./PopoverContent";
+import type { PopoverContentType } from "../../types";
 
 type PopoverProps = React.ComponentProps<"div"> &
-	PopoverType & {
+	PopoverContentType & {
 		/**
 		 * Should contain 2 children :
 		 * 1. The trigger element for the popover.
@@ -13,21 +12,9 @@ type PopoverProps = React.ComponentProps<"div"> &
 		children: React.ReactNode[];
 	};
 
-const Popover = ({ visible, wrapperClassName, children, ...props }: PopoverProps) => {
-	const [trigger, content] = Children.toArray(children);
-	return (
-		<div className={twMerge("relative", wrapperClassName)}>
-			{trigger}
-			{visible ? (
-				React.isValidElement(content) && content.props.position ? (
-					content
-				) : (
-					<PopoverContent {...props}>{content}</PopoverContent>
-				)
-			) : null}
-		</div>
-	);
-};
+const Popover = ({ className, ...props }: PopoverProps) => (
+	<div className={twMerge("relative", className)} {...props} />
+);
 
 Popover.displayName = "Popover";
 export { Popover };

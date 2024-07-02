@@ -9,7 +9,7 @@ type DialogProps = React.ComponentProps<"dialog"> &
 	VariantProps<typeof popupClasses>;
 
 const popupClasses = cva(
-	"fixed w-[0%] h-[0%] bottom-0 left-1/2 -translate-x-1/2 z-50 overflow-hidden flex items-center transition-all",
+	"fixed w-[0%] h-[0%] bottom-0 left-1/2 -translate-x-1/2 z-50 overflow-hidden flex items-center transition-all duration-500",
 	{
 		variants: {
 			open: {
@@ -56,8 +56,7 @@ const Popup = ({
 			<dialog
 				ref={ref}
 				role={ROLES.dialog}
-				className={twMerge("min-h-0 bg-transparent", className)}
-				open={open}
+				className={twMerge("bg-transparent block", className)}
 				{...props}
 			>
 				<PopupHeader
@@ -66,7 +65,14 @@ const Popup = ({
 					startContent={startContent}
 					withCloseIcon={withCloseIcon}
 				/>
-				{children}
+				<div
+					className={twMerge(
+						"grid transition-[grid-template-rows] duration-300",
+						open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+					)}
+				>
+					<div className="min-h-0 overflow-hidden">{children}</div>
+				</div>
 			</dialog>
 		</div>
 	);

@@ -35,9 +35,9 @@ const DropDown = ({ visible, position, children, ...props }: DropDownProps) => {
 	const [trigger, content] = Children.toArray(children);
 
 	return (
-		<Popover visible={visible}>
+		<Popover>
 			{trigger}
-			<PopoverContent role={ROLES.listbox} position={position} {...props}>
+			<PopoverContent visible={visible} role={ROLES.listbox} position={position} {...props}>
 				{content}
 			</PopoverContent>
 		</Popover>

@@ -10,6 +10,7 @@ const meta: Meta<typeof Radio> = {
 	component: Radio,
 	args: {
 		name: testName,
+		disabled: false,
 	},
 };
 

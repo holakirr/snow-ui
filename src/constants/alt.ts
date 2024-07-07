@@ -18,6 +18,7 @@ export const ROLES = {
 	menu: "menu",
 	navigation: "navigation",
 	option: "option",
+	checkbox: "checkbox",
 	radio: "radio",
 	region: "region",
 	row: "row",

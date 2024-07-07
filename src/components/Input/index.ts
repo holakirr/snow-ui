@@ -1,3 +1,4 @@
+export * from "./Checkbox";
 export * from "./Input";
 export * from "./InputBase";
 export * from "./Radio";

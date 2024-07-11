@@ -29,6 +29,7 @@ import {
 	GotoIcon,
 	HelpIcon,
 	HorizontalScreenIcon,
+	ICON_SIZES,
 	ICON_WEIGHTS,
 	LineIcon,
 	LoadingBIcon,
@@ -111,9 +112,13 @@ const meta = {
 	title: "Design resources/Icons/All Icons",
 	argTypes: {
 		weight: weightControl,
+		size: {
+			control: "select",
+			options: Object.keys(ICON_SIZES),
+		},
 	},
 	args: {
-		size: 24,
+		size: ICON_SIZES[24],
 		weight: "regular",
 		className: "fill-primary-brand",
 	},

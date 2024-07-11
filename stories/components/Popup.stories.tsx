@@ -18,6 +18,12 @@ const meta = {
 		},
 	},
 	argTypes: {
+		withBlur: {
+			control: "boolean",
+		},
+		withCloseIcon: {
+			control: "boolean",
+		},
 		startContent: {
 			control: ControlTypeRadio,
 			options: ["woman", "flowerIcon", "avatar", "Nothing"],
@@ -42,6 +48,8 @@ const meta = {
 				<p className="text-lg text-black-100">This could be any content</p>
 			</Card>
 		),
+		withBlur: false,
+		withCloseIcon: false,
 	},
 	decorators: [
 		(Story) => (

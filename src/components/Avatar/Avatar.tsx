@@ -89,7 +89,7 @@ const Avatar = ({ size, src, name, showFallback, color, className, ref }: Avatar
 		{!showFallback && !src && (
 			<Text
 				as="span"
-				className="group-hover:text-sm group-hover:font-semibold w-min cursor-default text-black-100"
+				className="text-xs group-hover:text-sm group-hover:font-semibold w-min cursor-default text-black-100"
 			>
 				{getInitials(name)}
 			</Text>

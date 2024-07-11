@@ -2,8 +2,8 @@ import type { Icon } from "@phosphor-icons/react";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
 import { ICON_SIZES, ROLES } from "../../constants";
-import type { CustomIcon } from "../../types";
-import { Text, type TextSize } from "../Text";
+import type { CustomIcon, TextSize } from "../../types";
+import { Text } from "../Text";
 
 /**
  * Props for the Button component.

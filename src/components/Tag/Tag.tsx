@@ -1,7 +1,8 @@
 import { twMerge } from "tailwind-merge";
 import { ICON_SIZES, ROLES } from "../../constants";
+import type { TextSize } from "../../types";
 import { CloseIcon, DotIcon } from "../Icons";
-import { Text, type TextSize } from "../Text";
+import { Text } from "../Text";
 
 /**
  * Props for the Tag component.

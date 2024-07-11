@@ -1,5 +1,4 @@
-import type { TextSize } from "../components";
-import type { IconSize, SimpleSize, Size } from "../types";
+import type { IconSize, SimpleSize, Size, TextSize } from "../types";
 
 export const SIMPLE_SIZES: { [K in SimpleSize]: K } = {
 	sm: "sm",
@@ -12,8 +11,7 @@ export const SIZES: { [K in Size]: K } = {
 	lg: "lg",
 } as const;
 
-export const TEXT_SIZES: { [K in Exclude<TextSize, null | undefined>]: K } = {
-	default: "default",
+export const TEXT_SIZES: { [K in TextSize]: K } = {
 	12: 12,
 	14: 14,
 	16: 16,

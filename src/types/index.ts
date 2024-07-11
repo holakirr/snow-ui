@@ -13,6 +13,8 @@ export type SimpleSize = "sm" | "lg";
 
 export type Size = SimpleSize | "md";
 
+export type TextSize = 12 | 14 | 16 | 18 | 24 | 32 | 48 | 64;
+
 export type IconSize = 16 | 20 | 24 | 28 | 32 | 40 | 48 | 80;
 
 export type CustomIconWeights = Map<IconWeight, ReactElement>;

@@ -127,7 +127,11 @@ const Input = ({
 				/>
 			)}
 		</div>
-		{error && <Text className="text-secondary-red">{error}</Text>}
+		{error && (
+			<Text className="text-secondary-red" size={12}>
+				{error}
+			</Text>
+		)}
 	</div>
 );
 

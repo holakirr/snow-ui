@@ -63,7 +63,11 @@ const TextArea = ({
 				>{`${value ? value.toString().length : 0}/${textLimit}`}</Text>
 			)}
 		</div>
-		{error && <Text className="text-secondary-red">{error}</Text>}
+		{error && (
+			<Text className="text-secondary-red" size={TEXT_SIZES[12]}>
+				{error}
+			</Text>
+		)}
 	</div>
 );
 

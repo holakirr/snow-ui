@@ -5,27 +5,29 @@ import type { StatusExpanded } from "../../types";
 import { DotIcon } from "../Icons";
 import { Text } from "../Text";
 
-const statusBadgeStyles = cva(
-	"flex place-items-center px-2 py-[1px] rounded-[80px] transition-all",
-	{
-		variants: {
-			status: {
-				default: "bg-secondary-indigoLighter text-secondary-indigoDarker",
-				success: "bg-secondary-greenLighter text-secondary-greenDarker",
-				info: "bg-secondary-blueLighter text-secondary-blueDarker",
-				warning: "bg-secondary-yellowLighter text-secondary-yellowDarker",
-				error: "bg-black-5 text-black-40",
-			},
-			withDot: {
-				true: "bg-transparent p-0",
-			},
+const statusBadgeStyles = cva("flex justify-start place-items-center transition-all", {
+	variants: {
+		status: {
+			default: "bg-secondary-indigoLighter text-secondary-indigoDarker",
+			success: "bg-secondary-greenLighter text-secondary-greenDarker",
+			info: "bg-secondary-blueLighter text-secondary-blueDarker",
+			warning: "bg-secondary-yellowLighter text-secondary-yellowDarker",
+			error: "bg-black-5 text-black-40",
 		},
-		defaultVariants: {
-			status: STATUSES_EXPANDED.default,
-			withDot: false,
+		size: {
+			sm: "text-xs px-2 py-[1px] rounded-full",
+			md: "text-sm px-3 py-1 rounded-xl",
+		},
+		withDot: {
+			true: "bg-transparent p-0",
 		},
 	},
-);
+	defaultVariants: {
+		status: STATUSES_EXPANDED.default,
+		withDot: false,
+		size: "sm",
+	},
+});
 
 const iconStyles = cva("", {
 	variants: {
@@ -52,17 +54,25 @@ type StatusBadgeProps = React.ComponentProps<"div"> &
 		status: StatusExpanded;
 	};
 
-const StatusBadge = ({ label, withDot, status, className, ref }: StatusBadgeProps) => (
+const StatusBadge = ({ label, withDot, size = "sm", status, className, ref }: StatusBadgeProps) => (
 	<div
-		className={twMerge(statusBadgeStyles({ withDot, status }), className)}
+		className={twMerge(statusBadgeStyles({ withDot, status, size }), className)}
 		ref={ref}
 		role={ROLES.status}
 	>
-		{withDot && (
+		{withDot && size === "sm" && (
 			<DotIcon
 				alt={`Dot icon for status badge ${label}`}
 				size={ICON_SIZES[16]}
 				weight="fill"
+				className={twMerge(iconStyles({ status }))}
+			/>
+		)}
+		{withDot && size === "md" && (
+			<DotIcon
+				alt={`Dot icon for status badge ${label}`}
+				size={ICON_SIZES[20]}
+				weight="regular"
 				className={twMerge(iconStyles({ status }))}
 			/>
 		)}

@@ -1,6 +1,7 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import type { ElementType, ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
+import type { TextSize } from "../../types";
 
 const textStyles = cva(["font-normal transition-all"], {
 	variants: {
@@ -43,7 +44,15 @@ const textStyles = cva(["font-normal transition-all"], {
  */
 export type TextProps<C extends ElementType> = React.ComponentProps<C> &
 	VariantProps<typeof textStyles> & {
+		/**
+		 * The element type for the Text component.
+		 */
 		as?: C;
+
+		/**
+		 * The size of the text.
+		 */
+		size?: TextSize;
 	};
 
 export const Text = <C extends ElementType = "span">({

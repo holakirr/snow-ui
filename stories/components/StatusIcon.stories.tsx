@@ -13,6 +13,7 @@ const meta = {
 	},
 	args: {
 		size: 24,
+		status: STATUSES.progress,
 	},
 } satisfies Meta<typeof StatusIcon>;
 

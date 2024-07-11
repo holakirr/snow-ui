@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 import { useState } from "react";
-import { Avatar, Button, Card, FourLeafCloverIcon, Popup, ROLES } from "../../src";
+import { Avatar, Button, Card, FourLeafCloverIcon, ICON_SIZES, Popup, ROLES } from "../../src";
 import { ControlTypeRadio, imageSrcMocks, testUserName } from "../mocks";
 
 const testTitle = "Title";
@@ -24,7 +24,12 @@ const meta = {
 			mapping: {
 				avatar: <Avatar size="md" src={imageSrcMocks.man} name={testUserName} />,
 				woman: <img alt="woman" width={48} height={48} src={imageSrcMocks.woman} />,
-				flowerIcon: <FourLeafCloverIcon size={48} alt={`Icon ${FourLeafCloverIcon.displayName}`} />,
+				flowerIcon: (
+					<FourLeafCloverIcon
+						size={ICON_SIZES[48]}
+						alt={`Icon ${FourLeafCloverIcon.displayName}`}
+					/>
+				),
 				Nothing: undefined,
 			},
 		},
@@ -87,7 +92,9 @@ export const Basic: Story = {
 
 export const WithStartContent: Story = {
 	args: {
-		startContent: <FourLeafCloverIcon size={48} alt={`Icon ${FourLeafCloverIcon.displayName}`} />,
+		startContent: (
+			<FourLeafCloverIcon size={ICON_SIZES[48]} alt={`Icon ${FourLeafCloverIcon.displayName}`} />
+		),
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

@@ -1,13 +1,13 @@
 import { Check, Warning } from "@phosphor-icons/react/dist/ssr";
 import { twMerge } from "tailwind-merge";
-import { STATUSES } from "../../../constants";
-import type { Status } from "../../../types";
+import { ROLES, STATUSES } from "../../../constants";
+import type { IconSize, Status } from "../../../types";
 import { LoadingBIcon } from "./LoadingB";
 
 type StatusIconProps = {
 	status: Status;
 	className?: string;
-	size: number;
+	size: IconSize;
 };
 
 const StatusIcon = ({ status, className, size }: StatusIconProps) => {
@@ -26,7 +26,7 @@ const StatusIcon = ({ status, className, size }: StatusIconProps) => {
 					alt={`Icon for status ${status}`}
 					size={size}
 					className={twMerge("fill-secondary-green", className)}
-					role="img"
+					role={ROLES.img}
 				/>
 			);
 		case STATUSES.error:
@@ -35,7 +35,7 @@ const StatusIcon = ({ status, className, size }: StatusIconProps) => {
 					alt={`Icon for status ${status}`}
 					size={size}
 					className={twMerge("fill-secondary-red", className)}
-					role="img"
+					role={ROLES.img}
 				/>
 			);
 		default:

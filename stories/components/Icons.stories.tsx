@@ -44,6 +44,7 @@ import {
 	SnowUIIcon,
 	StarIcon,
 	StopIcon,
+	TEXT_SIZES,
 	TXTIcon,
 	Text,
 	TextAIcon,
@@ -152,7 +153,7 @@ const Template: (iconName: keyof typeof allIcons) => Story = (iconName) => ({
 					{(Object.keys(ICON_WEIGHTS) as IconWeight[]).map((weight) => (
 						<div className="flex flex-col gap-1 items-center" key={weight}>
 							<Icon {...args} weight={weight} alt={`Icon ${iconName}, weight ${weight}`} />
-							<Text size={12} className="text-black-100 w-min">
+							<Text size={TEXT_SIZES[12]} className="text-black-100 w-min">
 								{weight}
 							</Text>
 						</div>

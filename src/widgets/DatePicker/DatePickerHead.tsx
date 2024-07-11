@@ -1,6 +1,6 @@
 import { Text } from "../../components";
 import { DatePickerTag } from "../../components/Tag/DatePickerTag";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import type { DateTypeEnum } from "../../types";
 
 type DatePickerHeadProps = {
@@ -35,7 +35,7 @@ export const DatePickerHead = ({
 				title={`Selected date is ${withTime ? dateTime : dateString}`}
 				dateTime={withTime ? dateTime : dateString}
 				className={"inline-flex items-center w-min"}
-				size={14}
+				size={TEXT_SIZES[14]}
 			>
 				<DatePickerTag
 					id="tab-date"
@@ -43,11 +43,11 @@ export const DatePickerHead = ({
 					role={ROLES.tab}
 					label={dateString.split("/")[0]}
 					title={`Current day is ${dateString.split("/")[0]}`}
-					textSize={14}
+					textSize={TEXT_SIZES[14]}
 					isActive={changingType === "date"}
 					onClick={() => onTypeChange("date")}
 				/>
-				<Text as="span" size={14} className="text-black-20">
+				<Text as="span" size={TEXT_SIZES[14]} className="text-black-20">
 					/
 				</Text>
 				<DatePickerTag
@@ -56,11 +56,11 @@ export const DatePickerHead = ({
 					role={ROLES.tab}
 					label={dateString.split("/")[1]}
 					title={`Current month is ${dateString.split("/")[1]}`}
-					textSize={14}
+					textSize={TEXT_SIZES[14]}
 					isActive={changingType === "month"}
 					onClick={() => onTypeChange("month")}
 				/>
-				<Text as="span" size={14} className="text-black-20">
+				<Text as="span" size={TEXT_SIZES[14]} className="text-black-20">
 					/
 				</Text>
 				<DatePickerTag
@@ -69,7 +69,7 @@ export const DatePickerHead = ({
 					role={ROLES.tab}
 					label={dateString.split("/")[2]}
 					title={`Current year is ${dateString.split("/")[2]}`}
-					textSize={14}
+					textSize={TEXT_SIZES[14]}
 					isActive={changingType === "year"}
 					onClick={() => onTypeChange("year")}
 				/>
@@ -81,7 +81,7 @@ export const DatePickerHead = ({
 						aria-controls="panel-time"
 						role={ROLES.tab}
 						title={`Current time is ${timeString}`}
-						textSize={14}
+						textSize={TEXT_SIZES[14]}
 						label={timeString}
 						isActive={["hours", "minutes"].includes(changingType)}
 						onClick={() => onTypeChange("hours")}

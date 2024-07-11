@@ -1,6 +1,7 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ICON_SIZES, ROLES } from "../../constants";
+import type { IconSize } from "../../types";
 import { SearchIcon } from "../Icons";
 import { KBD } from "../KBD";
 
@@ -32,7 +33,7 @@ type SearchProps = React.ComponentProps<"input"> &
 		/**
 		 * The size of the search icon.
 		 */
-		iconSize?: number;
+		iconSize?: IconSize;
 	};
 
 const Search = ({
@@ -41,7 +42,7 @@ const Search = ({
 	className,
 	keyBindings,
 	value,
-	iconSize,
+	iconSize = ICON_SIZES[16],
 	ref,
 	...props
 }: SearchProps) => (
@@ -58,7 +59,7 @@ const Search = ({
 			weight="regular"
 			alt={`Icon for search input ${id}`}
 			className="absolute left-2 top-1/2 -translate-y-1/2 fill-black-20 peer-hover:fill-black-40 peer-focus:fill-primary-brand"
-			size={iconSize || 16}
+			size={iconSize}
 		/>
 		{keyBindings && keyBindings.length > 0 && !value && (
 			<KBD className="absolute right-2 top-1/2 -translate-y-1/2 " keyBindings={keyBindings} />

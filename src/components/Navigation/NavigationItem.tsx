@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ICON_SIZES, ROLES, TEXT_SIZES } from "../../constants";
 import type { NavigationItemType } from "../../types";
 import { ArrowLineRightIcon } from "../Icons";
 import { Text } from "../Text";
@@ -47,7 +47,7 @@ const NavigationItem = ({
 				<ArrowLineRightIcon
 					alt={`Arrow icon for navigation item ${label}`}
 					weight="regular"
-					size={16}
+					size={ICON_SIZES[16]}
 					className={twMerge(
 						"fill-black-20 transition-all transform rotate-0",
 						expanded && "rotate-90",
@@ -56,8 +56,10 @@ const NavigationItem = ({
 				/>
 			)}
 			<div className="flex items-center gap-2">
-				{Icon && <Icon size={20} alt={`Icon ${Icon.displayName}`} className="fill-black-100" />}
-				<Text as="p" size={14} className="w-fit text-black-100">
+				{Icon && (
+					<Icon size={ICON_SIZES[20]} alt={`Icon ${Icon.displayName}`} className="fill-black-100" />
+				)}
+				<Text as="p" size={TEXT_SIZES[14]} className="w-fit text-black-100">
 					{label}
 				</Text>
 			</div>

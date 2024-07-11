@@ -6,7 +6,7 @@ import {
 	Button,
 	DatePickerTag,
 } from "../../components";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import type { DateLimitsType } from "../../types";
 
 type DateViewProps = {
@@ -107,7 +107,7 @@ export const DateView = ({
 						title={`Display month is ${Intl.DateTimeFormat("en-US", { month: "long" }).format(
 							displayDate,
 						)}`}
-						size={12}
+						size={TEXT_SIZES[12]}
 						role={ROLES.status}
 						className="flex items-center"
 					>
@@ -135,7 +135,7 @@ export const DateView = ({
 								wrapperClassname: "flex items-center justify-center",
 							}}
 							title={weekDay}
-							size={12}
+							size={TEXT_SIZES[12]}
 						>
 							{weekDay.slice(0, 2)}
 						</Abbr>
@@ -144,7 +144,7 @@ export const DateView = ({
 						<Button
 							key={dateTime}
 							label={day.getDate()}
-							textSize={12}
+							textSize={TEXT_SIZES[12]}
 							variant={isSelected ? "filled" : "borderless"}
 							title={dateTime}
 							aria-label={dateTime}

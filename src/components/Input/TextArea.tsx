@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import type { Status } from "../../types";
 import { StatusIcon } from "../Icons";
 import { Text } from "../Text";
@@ -57,9 +57,10 @@ const TextArea = ({
 			/>
 			{status && <StatusIcon status={status} className="absolute right-5 top-4" size={20} />}
 			{textLimit && (
-				<Text size={12} className="absolute text-black-20 bottom-1 right-6 w-min text-right">{`${
-					value ? value.toString().length : 0
-				}/${textLimit}`}</Text>
+				<Text
+					size={TEXT_SIZES[12]}
+					className="absolute text-black-20 bottom-1 right-6 w-min text-right"
+				>{`${value ? value.toString().length : 0}/${textLimit}`}</Text>
 			)}
 		</div>
 		{error && <Text className="text-secondary-red">{error}</Text>}

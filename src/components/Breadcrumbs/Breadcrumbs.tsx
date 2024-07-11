@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import type { BreadcrumbType } from "../../types";
 import { Text } from "../Text";
 import { BreadcrumbsItem } from "./BreadcrumbsItem";
@@ -36,7 +36,7 @@ const Breadcrumbs = ({ items, separator = "/", className, ref, ...props }: Bread
 						{...item}
 					/>
 					{i < items.length - 1 && separator && (
-						<Text as="span" size={14} className="text-black-40" aria-hidden="true">
+						<Text as="span" size={TEXT_SIZES[14]} className="text-black-40" aria-hidden="true">
 							{separator}
 						</Text>
 					)}

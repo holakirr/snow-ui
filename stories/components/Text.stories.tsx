@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
-import { Text } from "../../src";
+import { TEXT_SIZES, Text } from "../../src";
 import { testText } from "../mocks";
 
 const testLongText =
@@ -16,7 +16,7 @@ const meta: Meta<typeof Text> = {
 	argTypes: {
 		size: {
 			control: "radio",
-			options: [64, 48, 24, 18, 14, 12],
+			options: Object.keys(TEXT_SIZES),
 			description: "The size of the text",
 		},
 		semibold: {

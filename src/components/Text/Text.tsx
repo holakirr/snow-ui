@@ -7,10 +7,13 @@ const textStyles = cva(["font-normal transition-all"], {
 		size: {
 			64: "text-[4rem] leading-[4.875rem]",
 			48: "text-[3rem] leading-[3.625rem]",
-			24: "text-[1.5rem] leading-[2.25rem]",
-			18: "text-[1.125rem] leading-[1.5rem]",
-			14: "text-[0.875rem] leading-[1.25rem]",
-			12: "text-[0.75rem] leading-[1.125rem]",
+			32: "text-[2rem] leading-[2.5rem]",
+			24: "text-2xl",
+			18: "text-lg",
+			16: "text-base",
+			14: "text-sm",
+			12: "text-xs",
+			default: "text-inherit",
 		},
 		semibold: {
 			true: "font-semibold",
@@ -28,7 +31,6 @@ const textStyles = cva(["font-normal transition-all"], {
 		},
 	},
 	defaultVariants: {
-		size: 12,
 		align: "left",
 	},
 });
@@ -39,7 +41,7 @@ export type TextSize = VariantProps<typeof textStyles>["size"];
  * Props for the Text component.
  *
  * @template C - The element type for the Text component.
- * @example <Text as="h1" size={24} semibold align="center" italic underline>Example</Text>
+ * @example <Text as="h1" size={TEXT_SIZES[24]} semibold align="center" italic underline>Example</Text>
  */
 export type TextProps<C extends ElementType> = React.ComponentProps<C> &
 	VariantProps<typeof textStyles> & {
@@ -47,7 +49,7 @@ export type TextProps<C extends ElementType> = React.ComponentProps<C> &
 	};
 
 export const Text = <C extends ElementType = "span">({
-	as,
+	as: Component = "span",
 	size,
 	semibold,
 	align,
@@ -57,15 +59,12 @@ export const Text = <C extends ElementType = "span">({
 	children,
 	ref,
 	...props
-}: TextProps<C>): ReactNode => {
-	const Component = as || "span";
-	return (
-		<Component
-			ref={ref}
-			className={twMerge(textStyles({ size, semibold, align, italic, underline, className }))}
-			{...props}
-		>
-			{children}
-		</Component>
-	);
-};
+}: TextProps<C>): ReactNode => (
+	<Component
+		ref={ref}
+		className={twMerge(textStyles({ size, semibold, align, italic, underline, className }))}
+		{...props}
+	>
+		{children}
+	</Component>
+);

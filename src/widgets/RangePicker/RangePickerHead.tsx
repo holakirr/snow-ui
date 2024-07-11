@@ -1,5 +1,5 @@
 import { DatePickerTag, Text } from "../../components";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import type { DateTypeEnum } from "../../types";
 
 type RangePickerHeadProps = {
@@ -57,7 +57,7 @@ export const RangePickerHead = ({
 					}`}
 					dateTime={withTime ? `${fromStrings.date}T${fromStrings.time}` : fromStrings.date}
 					className={"inline-flex items-center w-min"}
-					size={14}
+					size={TEXT_SIZES[14]}
 				>
 					<DatePickerTag
 						id="tab-date"
@@ -65,7 +65,7 @@ export const RangePickerHead = ({
 						role={ROLES.tab}
 						label={fromStrings.date.split("/")[0]}
 						title={`Range starts with day ${fromStrings.date.split("/")[0]}`}
-						textSize={14}
+						textSize={TEXT_SIZES[14]}
 						isActive={
 							["date", "hours", "minutes"].includes(changingType) && changingFromOrTo === "from"
 						}
@@ -74,7 +74,7 @@ export const RangePickerHead = ({
 							onTypeChange("date");
 						}}
 					/>
-					<Text as="span" size={14} className="text-black-20">
+					<Text as="span" size={TEXT_SIZES[14]} className="text-black-20">
 						/
 					</Text>
 					<DatePickerTag
@@ -83,7 +83,7 @@ export const RangePickerHead = ({
 						role={ROLES.tab}
 						label={fromStrings.date.split("/")[1]}
 						title={`Range starts with month ${fromStrings.date.split("/")[1]}`}
-						textSize={14}
+						textSize={TEXT_SIZES[14]}
 						isActive={
 							["month", "hours", "minutes"].includes(changingType) && changingFromOrTo === "from"
 						}
@@ -92,7 +92,7 @@ export const RangePickerHead = ({
 							onTypeChange("month");
 						}}
 					/>
-					<Text as="span" size={14} className="text-black-20">
+					<Text as="span" size={TEXT_SIZES[14]} className="text-black-20">
 						/
 					</Text>
 					<DatePickerTag
@@ -101,7 +101,7 @@ export const RangePickerHead = ({
 						role={ROLES.tab}
 						label={fromStrings.date.split("/")[2]}
 						title={`Range starts with year ${fromStrings.date.split("/")[2]}`}
-						textSize={14}
+						textSize={TEXT_SIZES[14]}
 						isActive={
 							["year", "hours", "minutes"].includes(changingType) && changingFromOrTo === "from"
 						}
@@ -111,7 +111,7 @@ export const RangePickerHead = ({
 						}}
 					/>
 				</Text>
-				<Text as="span" size={14} className="text-black-20">
+				<Text as="span" size={TEXT_SIZES[14]} className="text-black-20">
 					-
 				</Text>
 				<Text
@@ -121,7 +121,7 @@ export const RangePickerHead = ({
 					}`}
 					dateTime={withTime ? `${toStrings.date}T${toStrings.time}` : toStrings.date}
 					className={"inline-flex items-center w-min"}
-					size={14}
+					size={TEXT_SIZES[14]}
 				>
 					<DatePickerTag
 						id="tab-date"
@@ -129,7 +129,7 @@ export const RangePickerHead = ({
 						role={ROLES.tab}
 						label={toStrings.date.split("/")[0]}
 						title={`Range ends with day ${toStrings.date.split("/")[0]}`}
-						textSize={14}
+						textSize={TEXT_SIZES[14]}
 						isActive={
 							["date", "hours", "minutes"].includes(changingType) && changingFromOrTo === "to"
 						}
@@ -138,7 +138,7 @@ export const RangePickerHead = ({
 							onTypeChange("date");
 						}}
 					/>
-					<Text as="span" size={14} className="text-black-20">
+					<Text as="span" size={TEXT_SIZES[14]} className="text-black-20">
 						/
 					</Text>
 					<DatePickerTag
@@ -147,7 +147,7 @@ export const RangePickerHead = ({
 						role={ROLES.tab}
 						label={toStrings.date.split("/")[1]}
 						title={`Range ends with month ${toStrings.date.split("/")[1]}`}
-						textSize={14}
+						textSize={TEXT_SIZES[14]}
 						isActive={
 							["month", "hours", "minutes"].includes(changingType) && changingFromOrTo === "to"
 						}
@@ -156,7 +156,7 @@ export const RangePickerHead = ({
 							onTypeChange("month");
 						}}
 					/>
-					<Text as="span" size={14} className="text-black-20">
+					<Text as="span" size={TEXT_SIZES[14]} className="text-black-20">
 						/
 					</Text>
 					<DatePickerTag
@@ -165,7 +165,7 @@ export const RangePickerHead = ({
 						role={ROLES.tab}
 						label={toStrings.date.split("/")[2]}
 						title={`Range ends with year ${toStrings.date.split("/")[2]}`}
-						textSize={14}
+						textSize={TEXT_SIZES[14]}
 						isActive={
 							["year", "hours", "minutes"].includes(changingType) && changingFromOrTo === "to"
 						}
@@ -183,7 +183,7 @@ export const RangePickerHead = ({
 						aria-controls="panel-time"
 						role={ROLES.tab}
 						title={`Current time is ${currentTimeString}`}
-						textSize={14}
+						textSize={TEXT_SIZES[14]}
 						label={currentTimeString}
 						isActive={["hours", "minutes"].includes(changingType)}
 						onClick={() => onTypeChange("hours")}

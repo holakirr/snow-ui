@@ -1,6 +1,6 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
-import { ROLES, STATUSES_EXPANDED } from "../../constants";
+import { ICON_SIZES, ROLES, STATUSES_EXPANDED } from "../../constants";
 import type { StatusExpanded } from "../../types";
 import { DotIcon } from "../Icons";
 import { Text } from "../Text";
@@ -61,7 +61,7 @@ const StatusBadge = ({ label, withDot, status, className, ref }: StatusBadgeProp
 		{withDot && (
 			<DotIcon
 				alt={`Dot icon for status badge ${label}`}
-				size={16}
+				size={ICON_SIZES[16]}
 				weight="fill"
 				className={twMerge(iconStyles({ status }))}
 			/>

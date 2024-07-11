@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import { Text } from "../Text";
 
 /**
@@ -18,7 +18,7 @@ export type KBDProps = React.ComponentProps<"p"> & {
 
 const KBD = ({ keyBindings, separator = "", className, ref }: KBDProps) => (
 	<Text
-		size={14}
+		size={TEXT_SIZES[14]}
 		ref={ref}
 		as="kbd"
 		role={ROLES.definition}

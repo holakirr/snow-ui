@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import { Text } from "../Text";
 
 /**
@@ -62,7 +62,7 @@ const Slider = ({
 						"absolute text-white-100 left-2 top-1/2 w-min -translate-y-1/2 pointer-events-none",
 						percentage < 5 && "text-black-100",
 					)}
-					size={12}
+					size={TEXT_SIZES[12]}
 				>
 					{placeholder}
 				</Text>
@@ -72,7 +72,7 @@ const Slider = ({
 					"absolute text-black-40 right-2 top-1/2 w-min -translate-y-1/2 pointer-events-none peer-disabled:text-black-10",
 					percentage > 80 && "text-white-40 peer-disabled:text-white-10",
 				)}
-				size={12}
+				size={TEXT_SIZES[12]}
 			>
 				{Math.round(percentage)}%
 			</Text>

@@ -13,7 +13,15 @@ const meta = {
 			exclude: ["children"],
 		},
 	},
+	argTypes: {
+		semibold: { control: "boolean" },
+		italic: { control: "boolean" },
+		underline: { control: "boolean" },
+	},
 	args: {
+		semibold: false,
+		italic: false,
+		underline: false,
 		className: "text-black-100",
 		tooltipProps: { label: testLabel },
 		children: testText,

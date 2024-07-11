@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import { KBD } from "../KBD";
 import { Text } from "../Text";
 
@@ -59,7 +59,7 @@ const DropDownItem = ({
 					</Text>
 				)}
 				{description && (
-					<Text as="span" size={14} className="text-black-40">
+					<Text as="span" size={TEXT_SIZES[14]} className="text-black-40">
 						{description}
 					</Text>
 				)}

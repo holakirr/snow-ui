@@ -1,7 +1,8 @@
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ICON_SIZES, ROLES } from "../../constants";
+import type { TextSize } from "../../types";
 import { CloseIcon, DotIcon } from "../Icons";
-import { Text, type TextSize } from "../Text";
+import { Text } from "../Text";
 
 /**
  * Props for the Tag component.
@@ -39,14 +40,14 @@ const Tag = ({ label, textSize, withDot, onClose, className, ref, ...props }: Ta
 		role={ROLES.listitem}
 		{...props}
 	>
-		{withDot && <DotIcon alt={`Dot icon for tag ${label}`} size={16} weight="fill" />}
+		{withDot && <DotIcon alt={`Dot icon for tag ${label}`} size={ICON_SIZES[16]} weight="fill" />}
 		<Text size={textSize} as="span">
 			{label}
 		</Text>
 		{onClose && (
 			<CloseIcon
 				alt={`Close icon for tag ${label}`}
-				size={16}
+				size={ICON_SIZES[16]}
 				onClick={onClose}
 				className="fill-black-20"
 			/>

@@ -1,6 +1,6 @@
 import type { ReactEventHandler } from "react";
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import type { NavigationItemType } from "../../types";
 import { Text } from "../Text";
 import { NavigationMenu } from "./NavigationMenu";
@@ -32,7 +32,7 @@ const Navigation = ({ title, items, onItemClick, className, ref, ...props }: Nav
 		{...props}
 	>
 		{title && (
-			<Text size={14} className="py-1 px-3 text-black-40">
+			<Text size={TEXT_SIZES[14]} className="py-1 px-3 text-black-40">
 				{title}
 			</Text>
 		)}

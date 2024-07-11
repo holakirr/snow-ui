@@ -1,5 +1,5 @@
 import { ArrowLineLeftIcon, ArrowLineRightIcon, Button, DatePickerTag } from "../../components";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import type { DateLimitsType, DateTypeEnum } from "../../types";
 
 type QuarterViewProps = {
@@ -77,7 +77,7 @@ export const QuarterView = ({
 							<Button
 								key={year}
 								label={year}
-								textSize={12}
+								textSize={TEXT_SIZES[12]}
 								variant={isSelected ? "filled" : "borderless"}
 								title={year.toString()}
 								aria-label={year.toString()}

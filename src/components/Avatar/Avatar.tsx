@@ -2,7 +2,7 @@ import { User as UserIcon } from "@phosphor-icons/react";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
 import { Text } from "../";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import { getInitials } from "../../helpers";
 
 const avatarStyles = cva(
@@ -76,7 +76,7 @@ const Avatar = ({ size, src, name, showFallback, color, className, ref }: Avatar
 				aria-label="Default user icon"
 				weight="fill"
 				className="w-3 h-3 group-hover:scale-[1.125] transition-all"
-				size={16}
+				size={TEXT_SIZES[16]}
 			/>
 		)}
 		{!showFallback && src && (
@@ -89,7 +89,7 @@ const Avatar = ({ size, src, name, showFallback, color, className, ref }: Avatar
 		{!showFallback && !src && (
 			<Text
 				as="span"
-				className="group-hover:text-sm group-hover:font-semibold w-min cursor-default text-black-100"
+				className="text-xs group-hover:text-sm group-hover:font-semibold w-min cursor-default text-black-100"
 			>
 				{getInitials(name)}
 			</Text>

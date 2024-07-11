@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { Button } from "../../components";
+import { TEXT_SIZES } from "../../constants";
 
 type DayContentProps = {
 	day: Date;
@@ -28,7 +29,7 @@ export const DayContent = ({
 			onClick={() => onClick(day)}
 			tabIndex={0}
 			label={day.getDate()}
-			textSize={12}
+			textSize={TEXT_SIZES[12]}
 			variant={isInRange ? "filled" : "borderless"}
 			title={dateTime}
 			aria-label={dateTime}

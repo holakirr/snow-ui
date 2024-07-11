@@ -5,7 +5,7 @@ import {
 	Button,
 	DatePickerTag,
 } from "../../components";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import type { DateLimitsType, DateTypeEnum } from "../../types";
 
 type YearViewProps = {
@@ -75,7 +75,7 @@ export const YearView = ({
 							className: "text-nowrap",
 						}}
 						title={`Display year is ${displayYear}`}
-						size={12}
+						size={TEXT_SIZES[12]}
 						role={ROLES.status}
 						className="flex items-center"
 					>
@@ -108,7 +108,7 @@ export const YearView = ({
 							<Button
 								key={month}
 								label={month}
-								textSize={12}
+								textSize={TEXT_SIZES[12]}
 								variant={isSelected ? "filled" : "borderless"}
 								title={`Select ${month} ${displayYear}`}
 								aria-label={`Select ${month} ${displayYear}`}

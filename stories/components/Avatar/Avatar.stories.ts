@@ -15,11 +15,13 @@ const meta = {
 	argTypes: {
 		color: colorControl,
 		src: imgSourceControl,
+		showFallback: { control: "boolean" },
 	},
 	args: {
 		size: SIZES.sm,
 		name: testUserName,
 		color: "orange",
+		showFallback: false,
 	},
 } satisfies Meta<typeof Avatar>;
 

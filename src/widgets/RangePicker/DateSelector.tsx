@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { Tag, Text } from "../../components";
+import { TEXT_SIZES } from "../../constants";
 import type { DateTypeEnum } from "../../types";
 
 type DateSelectorProps = {
@@ -21,35 +22,35 @@ export const DateSelector = ({ date, changingType, isActive, onItemClick }: Date
 			as="time"
 			dateTime={dateTime}
 			className={twMerge("inline-flex items-center w-min", !isActive && "opacity-20")}
-			size={14}
+			size={TEXT_SIZES[14]}
 		>
 			<Tag
 				label={dateTime.split("/")[0]}
-				textSize={14}
+				textSize={TEXT_SIZES[14]}
 				className={twMerge(
 					"py-0.5 px-1 bg-transparent",
 					changingType === "date" && isActive && "bg-black-10",
 				)}
 				onClick={() => onItemClick("date")}
 			/>
-			<Text as="span" size={14} className="text-black-20">
+			<Text as="span" size={TEXT_SIZES[14]} className="text-black-20">
 				/
 			</Text>
 			<Tag
 				label={dateTime.split("/")[1]}
-				textSize={14}
+				textSize={TEXT_SIZES[14]}
 				className={twMerge(
 					"py-0.5 px-1 bg-transparent",
 					changingType === "month" && isActive && "bg-black-10",
 				)}
 				onClick={() => onItemClick("month")}
 			/>
-			<Text as="span" size={14} className="text-black-20">
+			<Text as="span" size={TEXT_SIZES[14]} className="text-black-20">
 				/
 			</Text>
 			<Tag
 				label={dateTime.split("/")[2]}
-				textSize={14}
+				textSize={TEXT_SIZES[14]}
 				className={twMerge(
 					"py-0.5 px-1 bg-transparent",
 					changingType === "year" && isActive && "bg-black-10",

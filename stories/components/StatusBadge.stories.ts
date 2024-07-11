@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within } from "@storybook/test";
 import { StatusBadge } from "../../src/components";
-import { ROLES, STATUSES_EXPANDED } from "../../src/constants";
+import { ROLES, SIZES, STATUSES_EXPANDED } from "../../src/constants";
 import { badgeStatusControl } from "../mocks";
 
 const testLabel = "Status";
@@ -15,11 +15,16 @@ const meta = {
 			control: "text",
 		},
 		status: badgeStatusControl,
+		size: {
+			control: "select",
+			options: [SIZES.sm, SIZES.md],
+		},
 	},
 	args: {
 		withDot: false,
 		label: testLabel,
 		status: STATUSES_EXPANDED.default,
+		size: SIZES.sm,
 	},
 } satisfies Meta<typeof StatusBadge>;
 
@@ -52,5 +57,19 @@ export const WithDot: Story = {
 		expect(badge).toHaveClass("text-secondary-greenDarker");
 		expect(icon).toBeInTheDocument();
 		expect(icon).toHaveTextContent(altIconText);
+	},
+};
+
+export const MediumSize: Story = {
+	args: {
+		size: SIZES.md,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const badge = canvas.getByRole(ROLES.status);
+
+		expect(badge).toBeInTheDocument();
+		expect(badge).toHaveTextContent(testLabel);
+		expect(badge).toHaveClass("text-sm");
 	},
 };

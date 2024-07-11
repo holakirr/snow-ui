@@ -26,7 +26,7 @@ const TooltipComponent = ({ label, kbd, visible, className, ref }: TooltipCompon
 	<PopoverContent visible={visible} ref={ref}>
 		<div
 			className={twMerge(
-				"py-1 px-2 flex place-items-center gap-2 bg-black-80 backdrop-blur-[20px] rounded-lg transition-all",
+				"py-1 px-2 flex place-items-center gap-2 bg-black-80 backdrop-blur-[20px] rounded-lg transition-all text-xs",
 				className,
 			)}
 		>

@@ -1,6 +1,6 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
-import { ROLES, STATUSES_NOTIFY } from "../../constants";
+import { ICON_SIZES, ROLES, STATUSES_NOTIFY, TEXT_SIZES } from "../../constants";
 import type { StatusNotify } from "../../types";
 import { StatusIcon } from "../Icons";
 import { Text } from "../Text";
@@ -42,8 +42,12 @@ const Notification = ({
 	ref,
 }: NotificationProps) => (
 	<div className={twMerge(notificationClasses({ size, className }))} ref={ref} role={ROLES.alert}>
-		<StatusIcon status={status} size={size === "sm" ? 16 : 24} className="fill-white-100" />
-		<Text size={size === "sm" ? 12 : 14}>{title}</Text>
+		<StatusIcon
+			status={status}
+			size={size === "sm" ? ICON_SIZES[16] : ICON_SIZES[24]}
+			className="fill-white-100"
+		/>
+		<Text size={size === "sm" ? TEXT_SIZES[12] : TEXT_SIZES[14]}>{title}</Text>
 	</div>
 );
 

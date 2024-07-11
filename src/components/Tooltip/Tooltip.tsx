@@ -67,7 +67,7 @@ const Tooltip = ({
 	}, [timeout]);
 
 	return (
-		<Popover position={position} visible={showTooltip} className={wrapperClassname}>
+		<Popover position={position} className={wrapperClassname}>
 			{React.cloneElement(children as React.ReactElement, {
 				"data-trigger": true,
 				onMouseEnter: handleMouseEnter,

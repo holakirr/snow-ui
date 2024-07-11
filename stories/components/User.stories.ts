@@ -15,10 +15,12 @@ const meta = {
 	argTypes: {
 		src: imgSourceControl,
 		color: colorControl,
+		showFallback: { control: "boolean" },
 	},
 	args: {
 		size: SIZES.sm,
 		name: testUserName,
+		showFallback: false,
 	},
 } satisfies Meta<typeof User>;
 
@@ -26,7 +28,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const BasicUser: Story = {
-	args: {},
+	...BasicAvatar,
 	play: (context) => {
 		const canvas = within(context.canvasElement);
 		if (BasicAvatar.play) {
@@ -39,9 +41,7 @@ export const BasicUser: Story = {
 };
 
 export const DefaultUser: Story = {
-	args: {
-		showFallback: true,
-	},
+	...DefaultAvatar,
 	play: (context) => {
 		const canvas = within(context.canvasElement);
 		if (DefaultAvatar.play) {
@@ -53,12 +53,7 @@ export const DefaultUser: Story = {
 	},
 };
 
-export const BigUser: Story = {
-	args: {
-		size: SIZES.lg,
-	},
-	...LargeAvatar,
-};
+export const BigUser: Story = LargeAvatar;
 
 export const BigUserWithImg: Story = {
 	...LargeAvatarWithImg,

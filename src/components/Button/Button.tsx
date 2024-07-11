@@ -1,9 +1,9 @@
 import type { Icon } from "@phosphor-icons/react";
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
-import type { CustomIcon } from "../../types";
-import { Text, type TextSize } from "../Text";
+import { ICON_SIZES, ROLES } from "../../constants";
+import type { CustomIcon, TextSize } from "../../types";
+import { Text } from "../Text";
 
 /**
  * Props for the Button component.
@@ -44,7 +44,7 @@ const buttonStyles = cva(
 			},
 			size: {
 				sm: "text-sm py-1 px-2 rounded-lg gap-1",
-				md: "text-lg py-2 px-4 rounded-xl gap-2",
+				md: "text-base py-2 px-4 rounded-xl gap-2",
 				lg: "text-lg py-4 px-6 rounded-2xl gap-2",
 			},
 		},
@@ -56,9 +56,9 @@ const buttonStyles = cva(
 );
 
 const IconSizes = {
-	sm: 16,
-	md: 20,
-	lg: 24,
+	sm: ICON_SIZES[16],
+	md: ICON_SIZES[20],
+	lg: ICON_SIZES[24],
 } as const;
 
 const Paddings = {
@@ -92,14 +92,7 @@ const Button = ({
 		{...props}
 	>
 		{LeftIcon && <LeftIcon size={IconSizes[size || "sm"]} alt={`Left icon in button ${label}`} />}
-		{label && (
-			<Text
-				size={textSize ? textSize : size === "sm" ? 14 : 18}
-				className="group-hover:px-1 text-center"
-			>
-				{label}
-			</Text>
-		)}
+		{label && <Text className="group-hover:px-1 text-center text-inherit">{label}</Text>}
 		{RightIcon && (
 			<RightIcon size={IconSizes[size || "sm"]} alt={`Right icon in button ${label}`} />
 		)}

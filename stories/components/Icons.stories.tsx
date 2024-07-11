@@ -29,6 +29,7 @@ import {
 	GotoIcon,
 	HelpIcon,
 	HorizontalScreenIcon,
+	ICON_SIZES,
 	ICON_WEIGHTS,
 	LineIcon,
 	LoadingBIcon,
@@ -44,6 +45,7 @@ import {
 	SnowUIIcon,
 	StarIcon,
 	StopIcon,
+	TEXT_SIZES,
 	TXTIcon,
 	Text,
 	TextAIcon,
@@ -110,9 +112,13 @@ const meta = {
 	title: "Design resources/Icons/All Icons",
 	argTypes: {
 		weight: weightControl,
+		size: {
+			control: "select",
+			options: Object.keys(ICON_SIZES),
+		},
 	},
 	args: {
-		size: 24,
+		size: ICON_SIZES[24],
 		weight: "regular",
 		className: "fill-primary-brand",
 	},
@@ -152,7 +158,7 @@ const Template: (iconName: keyof typeof allIcons) => Story = (iconName) => ({
 					{(Object.keys(ICON_WEIGHTS) as IconWeight[]).map((weight) => (
 						<div className="flex flex-col gap-1 items-center" key={weight}>
 							<Icon {...args} weight={weight} alt={`Icon ${iconName}, weight ${weight}`} />
-							<Text size={12} className="text-black-100 w-min">
+							<Text size={TEXT_SIZES[12]} className="text-black-100 w-min">
 								{weight}
 							</Text>
 						</div>

@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { Text } from "../../components";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 
 type CellData = {
 	key: string;
@@ -30,7 +30,13 @@ const TableB = ({
 		{caption && typeof caption !== "string" && <div className="mb-1">{caption}</div>}
 		<table aria-label={caption || label ? `Table ${caption || label}` : "Table"} {...props}>
 			{caption && typeof caption === "string" && (
-				<Text as="caption" role={ROLES.caption} size={14} semibold className="text-black-100 mb-1">
+				<Text
+					as="caption"
+					role={ROLES.caption}
+					size={TEXT_SIZES[14]}
+					semibold
+					className="text-black-100 mb-1"
+				>
 					{caption}
 				</Text>
 			)}

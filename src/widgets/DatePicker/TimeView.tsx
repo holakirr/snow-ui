@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { ArrowLineLeftIcon, Button, DatePickerTag, Text, TimeInput } from "../../components";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import type { DateLimitsType, DateTypeEnum } from "../../types";
 
 type TimeViewProps = {
@@ -100,7 +100,7 @@ export const TimeView = ({
 					onChange={(e) => onDateSelect(new Date(selectedTime.setHours(+e.target.value)))}
 					onFocus={() => onTypeChange("hours")}
 				/>
-				<Text size={12} className="flex items-center justify-center">
+				<Text size={TEXT_SIZES[12]} className="flex items-center justify-center">
 					:
 				</Text>
 				<TimeInput
@@ -112,7 +112,7 @@ export const TimeView = ({
 				/>
 				<Button
 					label="AM"
-					textSize={12}
+					textSize={TEXT_SIZES[12]}
 					tabIndex={selected.getHours() >= 12 ? 0 : -1}
 					className={twMerge("rounded-xl", selected.getHours() < 12 && "bg-secondary-purple")}
 					aria-selected={selected.getHours() < 12}
@@ -125,7 +125,7 @@ export const TimeView = ({
 				/>
 				<Button
 					label="PM"
-					textSize={12}
+					textSize={TEXT_SIZES[12]}
 					tabIndex={selected.getHours() < 12 ? 0 : -1}
 					aria-selected={selected.getHours() >= 12}
 					className={twMerge("rounded-xl", selected.getHours() >= 12 && "bg-secondary-purple")}
@@ -154,7 +154,7 @@ export const TimeView = ({
 										.format(hour)
 										.split(" ")[0]
 								}
-								textSize={12}
+								textSize={TEXT_SIZES[12]}
 								variant={isSelected ? "filled" : "borderless"}
 								title={`${hour.getHours()} hours`}
 								aria-label={dateTime}
@@ -177,7 +177,7 @@ export const TimeView = ({
 							<Button
 								key={dateTime}
 								label={dateTime}
-								textSize={12}
+								textSize={TEXT_SIZES[12]}
 								variant={isSelected ? "filled" : "borderless"}
 								title={`${minute.getMinutes()} minutes`}
 								aria-label={`${minute.getMinutes()} minutes`}

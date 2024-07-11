@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import { Text } from "../Text";
 
 /**
@@ -16,7 +16,7 @@ export type BadgeComponentProps = ComponentProps<"span"> & {
 export const BadgeComponent = ({ content, className, ref }: BadgeComponentProps) => (
 	<Text
 		as="span"
-		size={12}
+		size={TEXT_SIZES[12]}
 		role={ROLES.status}
 		className={twMerge(
 			"bg-secondary-purple rounded-full w-[6px] h-[6px] block text-center transition-all z-10",

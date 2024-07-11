@@ -1,7 +1,7 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
-import type { CustomIcon } from "../../types";
+import { ICON_SIZES, ROLES, TEXT_SIZES } from "../../constants";
+import type { CustomIcon, IconSize } from "../../types";
 import { StatusIcon, XCircleIcon } from "../Icons";
 import { Text } from "../Text";
 import { InputBase } from "./InputBase";
@@ -18,7 +18,7 @@ type InputProps = React.ComponentProps<"input"> &
 		/**
 		 * The size of the custom icon.
 		 */
-		iconSize?: number;
+		iconSize?: IconSize;
 		/**
 		 * The class name for the custom icon.
 		 */
@@ -59,7 +59,7 @@ const Input = ({
 	id,
 	className,
 	icon: Icon,
-	iconSize,
+	iconSize = ICON_SIZES[20],
 	iconClassName,
 	status,
 	error,
@@ -98,7 +98,7 @@ const Input = ({
 						status && "peer-focus:top-4",
 						status && value && "top-4",
 					)}
-					size={value ? 12 : 18}
+					size={value ? TEXT_SIZES[12] : TEXT_SIZES[18]}
 				>
 					{title}
 				</Text>
@@ -107,27 +107,31 @@ const Input = ({
 				<Icon
 					alt={`Icon in input ${title} with id ${id}`}
 					className={twMerge("absolute top-1/2 left-5 transform -translate-y-1/2", iconClassName)}
-					size={iconSize || 20}
+					size={iconSize}
 				/>
 			)}
 			{status && (
 				<StatusIcon
 					status={status}
 					className="absolute right-5 bottom-[calc(50%-10px)]"
-					size={iconSize || 20}
+					size={iconSize}
 				/>
 			)}
 			{value && clearable && (
 				<XCircleIcon
 					alt={`Clear input ${title} with id ${id}`}
 					weight="fill"
-					size={iconSize || 20}
+					size={iconSize}
 					className="absolute right-5 bottom-[calc(50%-10px)] fill-black-20"
 					onClick={onClear}
 				/>
 			)}
 		</div>
-		{error && <Text className="text-secondary-red">{error}</Text>}
+		{error && (
+			<Text className="text-secondary-red" size={12}>
+				{error}
+			</Text>
+		)}
 	</div>
 );
 

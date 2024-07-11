@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge";
-import { ROLES } from "../../constants";
+import { ROLES, TEXT_SIZES } from "../../constants";
 import { Button } from "../Button";
 import { CloseIcon } from "../Icons";
 import { Text } from "../Text";
@@ -43,7 +43,7 @@ const PopupHeader = ({
 			<div className="flex gap-4 items-center text-black-100">
 				{startContent}
 				{title && (
-					<Text as="p" size={48} semibold>
+					<Text as="p" size={TEXT_SIZES[48]} semibold>
 						{title}
 					</Text>
 				)}

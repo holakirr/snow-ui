@@ -26,6 +26,9 @@ export type PopupHeaderProps = React.ComponentProps<"div"> & {
 	onClose: () => void;
 };
 
+/**
+ * PopupHeader component displays the header of a popup.
+ */
 const PopupHeader = ({
 	startContent,
 	title,

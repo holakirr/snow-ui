@@ -23,6 +23,9 @@ type NavigationMenuProps = React.ComponentProps<"menu"> & {
 	onItemClick?: React.MouseEventHandler<HTMLLIElement>;
 };
 
+/**
+ * NavigationMenu component displays a menu with a list of navigation items.
+ */
 const NavigationMenu = ({
 	items,
 	opened,

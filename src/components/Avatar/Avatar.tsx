@@ -61,6 +61,14 @@ export type AvatarProps = React.ComponentProps<"div"> &
 		src?: string;
 	};
 
+/**
+ * Avatar component displays an image or initials of a user.
+ * @example
+ * <Avatar name="John Doe" />
+ * <Avatar name="John Doe" src="https://example.com/avatar.jpg" />
+ * <Avatar name="John Doe" showFallback />
+ * <Avatar name="John Doe" showFallback color="blue" />
+ */
 const Avatar = ({ size, src, name, showFallback, color, className, ref }: AvatarProps) => (
 	<div
 		role={ROLES.figure}

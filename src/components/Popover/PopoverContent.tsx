@@ -26,6 +26,9 @@ const popoverContentClasses = cva("absolute z-100", {
 	},
 });
 
+/**
+ * PopoverContent component displays the content of the popover.
+ */
 export const PopoverContent = ({
 	position,
 	visible,

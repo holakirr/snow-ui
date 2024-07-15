@@ -8,6 +8,9 @@ type DropDownSectionProps = React.ComponentProps<"ul"> & {
 	showDivider?: boolean;
 };
 
+/**
+ * DropDownSection component displays a section in a drop-down menu.
+ */
 const DropDownSection = ({ showDivider, className, children, ...props }: DropDownSectionProps) => (
 	<ul className={dropdownSectionClasses({ className })} role={ROLES.list} {...props}>
 		{children}

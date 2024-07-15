@@ -12,6 +12,9 @@ type PopoverProps = React.ComponentProps<"div"> &
 		children: React.ReactNode[];
 	};
 
+/**
+ * Popover component is a wrapper around PopoverContent component.
+ */
 const Popover = ({ className, ...props }: PopoverProps) => (
 	<div className={twMerge("relative", className)} {...props} />
 );

@@ -23,6 +23,9 @@ type NavigationProps = React.ComponentProps<"nav"> & {
 	onItemClick: ReactEventHandler<HTMLLIElement>;
 };
 
+/**
+ * Navigation component displays a list of navigation items.
+ */
 const Navigation = ({ title, items, onItemClick, className, ref, ...props }: NavigationProps) => (
 	<nav
 		ref={ref}

@@ -3,6 +3,9 @@ import { ROLES } from "../../constants";
 
 type DropDownMenuProps = React.ComponentProps<"menu">;
 
+/**
+ * DropDownMenu component displays a menu with a white background.
+ */
 const DropDownMenu = ({ className, ...props }: DropDownMenuProps) => (
 	<menu
 		className={twMerge(

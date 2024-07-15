@@ -22,6 +22,9 @@ const popupClasses = cva(
 	},
 );
 
+/**
+ * Popup component displays a dialog with a title and content.
+ */
 const Popup = ({
 	open,
 	withBlur,

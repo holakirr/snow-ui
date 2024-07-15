@@ -11,6 +11,9 @@ type BadgeProps = React.ComponentProps<"div"> & {
 	content?: string;
 };
 
+/**
+ * Badge component displays a badge with a text inside.
+ */
 const Badge = ({ content, children, className, ...props }: BadgeProps) => (
 	<div className="relative" {...props}>
 		{children}

@@ -3,6 +3,9 @@ import { Text } from "../Text";
 
 type RadioProps = React.ComponentProps<"input">;
 
+/**
+ * Radio component displays a radio button.
+ */
 const Radio = ({ className, id, ...props }: RadioProps) => (
 	<Text
 		as="label"

@@ -36,6 +36,9 @@ type SearchProps = React.ComponentProps<"input"> &
 		iconSize?: IconSize;
 	};
 
+/**
+ * Search component displays a search input field.
+ */
 const Search = ({
 	id,
 	variant,

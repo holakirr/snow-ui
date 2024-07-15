@@ -1,6 +1,9 @@
 import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
 
+/**
+ * Card component displays a card with a shadow.
+ */
 const Card = ({ className, children, ref, ...props }: React.ComponentProps<"div">) => (
 	<div
 		ref={ref}

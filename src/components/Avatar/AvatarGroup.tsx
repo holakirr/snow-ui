@@ -49,6 +49,9 @@ const AvatarGroupItem = ({
 	</div>
 );
 
+/**
+ * AvatarGroup component displays a group of avatars.
+ */
 const AvatarGroup = ({ children, limit = 3, direction, ...props }: AvatarGroupProps) => {
 	const items = Children.toArray(children);
 	const itemsToShow = items.slice(0, limit);

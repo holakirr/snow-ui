@@ -29,6 +29,9 @@ export type TagProps = React.ComponentProps<"div"> & {
 	onClose?: () => void;
 };
 
+/**
+ * Tag component displays a tag with a label and optional dot and close icon.
+ */
 const Tag = ({ label, textSize, withDot, onClose, className, ref, ...props }: TagProps) => (
 	<div
 		className={twMerge(

@@ -55,6 +55,9 @@ export type TextProps<C extends ElementType> = React.ComponentProps<C> &
 		size?: TextSize;
 	};
 
+/**
+ * Text component displays text with various styles.
+ */
 export const Text = <C extends ElementType = "span">({
 	as: Component = "span",
 	size,

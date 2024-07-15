@@ -67,6 +67,9 @@ const Paddings = {
 	lg: "p-4",
 } as const;
 
+/**
+ * Button component displays a button element.
+ */
 const Button = ({
 	variant = "borderless",
 	size = "sm",

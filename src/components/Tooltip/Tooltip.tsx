@@ -21,6 +21,9 @@ export type TooltipProps = React.ComponentProps<"div"> &
 		delay?: number;
 	};
 
+/**
+ * Tooltip component displays a tooltip on hover.
+ */
 const Tooltip = ({
 	label,
 	kbd,

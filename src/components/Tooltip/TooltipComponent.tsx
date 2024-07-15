@@ -22,6 +22,9 @@ type TooltipComponentProps = React.ComponentProps<"div"> &
 		visible: boolean;
 	};
 
+/**
+ * TooltipComponent displays a tooltip.
+ */
 const TooltipComponent = ({ label, kbd, visible, className, ref }: TooltipComponentProps) => (
 	<PopoverContent visible={visible} ref={ref}>
 		<div

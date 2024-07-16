@@ -53,6 +53,9 @@ const inputClasses = cva("", {
 	},
 });
 
+/**
+ * Input component displays an input field.
+ */
 const Input = ({
 	title,
 	placeholder,

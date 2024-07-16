@@ -4,5 +4,6 @@ export * from "./InputBase";
 export * from "./Radio";
 export * from "./Search";
 export * from "./Slider";
+export * from "./Switch";
 export * from "./TextArea";
 export * from "./TimeInput";

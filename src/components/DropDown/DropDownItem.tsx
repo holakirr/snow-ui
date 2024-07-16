@@ -33,6 +33,9 @@ export type DropDownItemType = {
 
 type DropDownItemProps = React.ComponentProps<"li"> & DropDownItemType;
 
+/**
+ * DropDownItem component displays an item in a dropdown.
+ */
 const DropDownItem = ({
 	startContent,
 	title,

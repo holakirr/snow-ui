@@ -6,6 +6,9 @@ type CheckboxProps = React.ComponentProps<"input"> & {
 	indeterminate?: boolean;
 };
 
+/**
+ * Checkbox component displays a checkbox with a label.
+ */
 const Checkbox = ({
 	id,
 	checked,

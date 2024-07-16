@@ -31,6 +31,10 @@ type DropDownProps = PopoverType &
 		children: React.ReactNode[];
 	};
 
+/**
+ * DropDown component is a wrapper around Popover component.
+ * It is used to create a dropdown menu.
+ */
 const DropDown = ({ visible, position, children, ...props }: DropDownProps) => {
 	const [trigger, content] = Children.toArray(children);
 

@@ -27,6 +27,9 @@ type SliderProps = React.ComponentProps<"input"> & {
 	placeholder?: string;
 };
 
+/**
+ * Slider component displays a slider input field.
+ */
 const Slider = ({
 	className,
 	min = 0,

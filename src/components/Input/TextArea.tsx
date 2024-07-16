@@ -26,6 +26,9 @@ type TextAreaProps = React.ComponentProps<"textarea"> & {
 	textLimit?: number;
 };
 
+/**
+ * TextArea component displays a text area input field.
+ */
 const TextArea = ({
 	className,
 	id,

@@ -34,6 +34,9 @@ type NotificationProps = React.ComponentProps<"div"> &
 		title: string;
 	};
 
+/**
+ * Notification component displays a notification with a status icon.
+ */
 const Notification = ({
 	size = "sm",
 	className,

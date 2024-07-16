@@ -1,6 +1,9 @@
 import { twMerge } from "tailwind-merge";
 import { ROLES } from "../../constants";
 
+/**
+ * Link component displays a link with a hover underline effect.
+ */
 const Link = ({ className, ref, ...props }: React.ComponentProps<"a">) => (
 	<a
 		ref={ref}

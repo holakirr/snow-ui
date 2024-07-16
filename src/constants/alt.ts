@@ -27,6 +27,7 @@ export const ROLES = {
 	separator: "separator",
 	slider: "slider",
 	status: "status",
+	switch: "switch",
 	tab: "tab",
 	table: "table",
 	tablist: "tablist",

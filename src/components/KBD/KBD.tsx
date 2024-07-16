@@ -16,6 +16,9 @@ export type KBDProps = React.ComponentProps<"p"> & {
 	separator?: string;
 };
 
+/**
+ * KBD component displays key bindings.
+ */
 const KBD = ({ keyBindings, separator = "", className, ref }: KBDProps) => (
 	<Text
 		size={TEXT_SIZES[14]}

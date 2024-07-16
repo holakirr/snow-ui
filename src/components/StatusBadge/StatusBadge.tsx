@@ -54,6 +54,9 @@ type StatusBadgeProps = React.ComponentProps<"div"> &
 		status: StatusExpanded;
 	};
 
+/**
+ * StatusBadge component displays a badge with a status icon.
+ */
 const StatusBadge = ({ label, withDot, size = "sm", status, className, ref }: StatusBadgeProps) => (
 	<div
 		className={twMerge(statusBadgeStyles({ withDot, status, size }), className)}

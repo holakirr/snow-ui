@@ -16,6 +16,9 @@ const lineClasses = cva("border-none bg-black-100 rounded-full", {
 	},
 });
 
+/**
+ * Line component displays a horizontal or vertical line.
+ */
 const Line = ({ direction, className, ref }: LineProps) => (
 	<hr ref={ref} className={twMerge(lineClasses({ direction, className }))} role={ROLES.separator} />
 );

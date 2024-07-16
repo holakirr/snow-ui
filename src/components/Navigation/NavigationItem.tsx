@@ -17,6 +17,9 @@ type NavigationItemProps = React.ComponentProps<"li"> &
 		expanded?: boolean;
 	};
 
+/**
+ * NavigationItem component displays a navigation item.
+ */
 const NavigationItem = ({
 	label,
 	id,

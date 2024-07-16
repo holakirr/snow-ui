@@ -20,6 +20,9 @@ export type InputBaseProps = React.ComponentProps<"input"> & {
 	title?: string;
 };
 
+/**
+ * InputBase component displays a basic input field.
+ */
 export const InputBase = ({
 	id,
 	ref,

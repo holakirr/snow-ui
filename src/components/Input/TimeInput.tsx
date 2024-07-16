@@ -16,6 +16,9 @@ type TimeInputProps = React.ComponentProps<"input"> & {
 	changingType: DateTypeEnum;
 };
 
+/**
+ * TimeInput component displays a time input field.
+ */
 export const TimeInput = ({ changingType, value, ...props }: TimeInputProps) => (
 	<Input
 		type="number"

@@ -20,6 +20,9 @@ type BreadcrumbsProps = React.ComponentProps<"nav"> & {
 	separator?: string;
 };
 
+/**
+ * Breadcrumbs component displays a list of breadcrumbs.
+ */
 const Breadcrumbs = ({ items, separator = "/", className, ref, ...props }: BreadcrumbsProps) => {
 	const hasActiveItems = items.some((item) => item.active);
 	return (

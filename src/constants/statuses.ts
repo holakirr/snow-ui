@@ -1,24 +1,24 @@
-import type { Status, StatusExpanded, StatusNotify } from "../types";
+import type { Status, StatusExpanded, StatusNotify } from '../types'
 
 export const STATUSES_NOTIFY: {
-	[K in StatusNotify]: K;
+  [K in StatusNotify]: K
 } = {
-	success: "success",
-	error: "error",
-} as const;
+  success: 'success',
+  error: 'error',
+}
 
 export const STATUSES: {
-	[K in Status]: K;
+  [K in Status]: K
 } = {
-	...STATUSES_NOTIFY,
-	progress: "progress",
-} as const;
+  ...STATUSES_NOTIFY,
+  progress: 'progress',
+}
 
 export const STATUSES_EXPANDED: {
-	[K in StatusExpanded]: K;
+  [K in StatusExpanded]: K
 } = {
-	...STATUSES_NOTIFY,
-	warning: "warning",
-	default: "default",
-	info: "info",
-} as const;
+  ...STATUSES_NOTIFY,
+  warning: 'warning',
+  default: 'default',
+  info: 'info',
+}

@@ -1,13 +1,13 @@
-import type { ButtonVariant, SeparatorDirection } from "../types";
+import type { ButtonVariant, Direction } from '../types'
 
 export const BUTTON_VARIANTS: { [K in ButtonVariant]: K } = {
-	borderless: "borderless",
-	gray: "gray",
-	outline: "outline",
-	filled: "filled",
-} as const;
+  borderless: 'borderless',
+  gray: 'gray',
+  outline: 'outline',
+  filled: 'filled',
+}
 
-export const SEPARATOR_DIRECTIONS: { [K in SeparatorDirection]: K } = {
-	horizontal: "horizontal",
-	vertical: "vertical",
-} as const;
+export const SEPARATOR_DIRECTIONS: { [K in Direction]: K } = {
+  horizontal: 'horizontal',
+  vertical: 'vertical',
+}

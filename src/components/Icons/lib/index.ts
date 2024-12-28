@@ -1,1 +1,0 @@
-export { CustomIconBase } from "./IconBase";

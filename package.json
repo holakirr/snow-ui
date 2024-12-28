@@ -1,93 +1,105 @@
 {
-	"name": "holakirr-snow-ui",
-	"version": "0.8.0",
+	"name": "@holakirr/snow-ui",
+	"private": false,
+	"version": "0.1.0",
+	"type": "module",
+	"main": "dist/main.js",
+	"types": "dist/main.d.ts",
+	"files": ["dist"],
 	"author": {
 		"name": "Kirill Petunin",
 		"email": "kpetunin@icloud.com",
 		"url": "https://holakirr.com"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/holakirr/snow-ui.git#main"
-	},
-	"description": "SnowUI is a React component library designed by ByeWind, implementated and improved by holakirr team for creating beautiful and interactive user interfaces.",
-	"files": ["dist"],
-	"homepage": "https://snowui.holakirr.com",
-	"keywords": ["react", "ui", "snowui", "snow"],
-	"license": "MIT",
-	"packageManager": "bun@1.1.18",
-	"main": "dist/index.umd.cjs",
-	"module": "dist/index.js",
-	"type": "module",
-	"trustedDependencies": ["@biomejs/biome", "@swc/core", "esbuild"],
-	"devDependencies": {
-		"@biomejs/biome": "^1.8.3",
-		"@chromatic-com/storybook": "^1.6.1",
-		"@phosphor-icons/react": "^2.1.7",
-		"@storybook/addon-essentials": "^8.2.3",
-		"@storybook/addon-interactions": "^8.2.3",
-		"@storybook/addon-links": "^8.2.3",
-		"@storybook/addon-themes": "^8.2.3",
-		"@storybook/blocks": "^8.2.3",
-		"@storybook/react-vite": "^8.2.3",
-		"@storybook/test": "^8.2.3",
-		"@storybook/test-runner": "^0.19.1",
-		"@storybook/theming": "^8.2.3",
-		"@tsconfig/recommended": "^1.0.7",
-		"@types/node": "^20.14.10",
-		"@types/react": "^18.3.3",
-		"@types/react-dom": "^18.3.0",
-		"@vitejs/plugin-react": "^4.3.1",
-		"autoprefixer": "^10.4.19",
-		"better-commits": "^1.15.7",
-		"chromatic": "^11.5.5",
-		"class-variance-authority": "^0.7.0",
-		"postcss": "^8.4.39",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
-		"rollup-plugin-terser": "^7.0.2",
-		"storybook": "^8.2.3",
-		"tailwind-merge": "^2.4.0",
-		"tailwindcss": "^3.4.5",
-		"ts-node": "^10.9.2",
-		"tsup": "^8.1.0",
-		"typescript": "^5.5.3",
-		"vite": "^5.3.3",
-		"vite-plugin-dts": "^3.9.1"
-	},
-	"peerDependencies": {
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
-		"tailwindcss": "^3.4.5"
-	},
 	"exports": {
 		".": {
 			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
+				"types": "./dist/main.d.ts",
+				"default": "./dist/main.js"
 			},
 			"require": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.umd.cjs"
+				"types": "./dist/main.d.ts",
+				"default": "./dist/main.umd.cjs"
 			}
 		},
 		"./index.css": "./dist/style.css"
 	},
-	"bugs": {
-		"url": "https://github.com/holakirr/snow-ui/issues"
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/holakirr/snow-ui.git#main"
 	},
+	"description": "SnowUI is a React component library designed by ByeWind, implemented and improved by holakirr for creating beautiful and interactive user interfaces.",
+	"homepage": "https://snow-ui.holakirr.com",
+	"keywords": ["react", "ui", "snow-ui", "snow"],
+	"license": "MIT",
+	"packageManager": "bun@1.1.42",
 	"scripts": {
-		"dev": "storybook dev --port 6006",
-		"build-lib": "vite build",
-		"build-storybook": "vite build && storybook build",
-		"test": "test-storybook --verbose",
-		"test:dev": "test-storybook --watch",
+		"build": "tsc -b && vite build",
 		"lint": "biome check .",
-		"format": "biome format . --write",
+		"lint:fix": "biome check --write .",
+		"format": "biome format .",
+		"format:fix": "biome format --write .",
+		"storybook": "storybook dev -p 53741",
+		"build-storybook": "storybook build",
+		"test": "vitest --exclude e2e",
+		"test:ui": "vitest --ui --exclude e2e",
+		"test:coverage": "vitest run --coverage --exclude e2e",
+		"e2e": "playwright test",
+		"e2e:update": "playwright test --update-snapshots",
+		"e2e:ui": "playwright test --ui",
 		"commit": "better-commits",
-		"chromatic": "chromatic --project-token chpt_d8c5c59f2c6fd6e",
 		"clean:build": "rm -rf dist/ build-storybook.log storybook-static/ migration-storybook.log coverage/",
 		"clean:node_modules": "rm -rf node_modules/",
 		"clean:all": "bun run clean:build && bun run clean:node_modules"
+	},
+	"bugs": {
+		"url": "https://github.com/holakirr/snow-ui/issues"
+	},
+	"peerDependencies": {
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"tailwindcss": "^4.0.0-beta.8"
+	},
+	"dependencies": {
+		"@radix-ui/react-accordion": "^1.2.2",
+		"class-variance-authority": "^0.7.1",
+		"tailwind-merge": "^2.6.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@holakirr/snow-ui-icons": "^1.1.0",
+		"@playwright/test": "^1.49.1",
+		"@storybook/addon-a11y": "^8.4.7",
+		"@storybook/addon-essentials": "^8.4.7",
+		"@storybook/addon-interactions": "^8.4.7",
+		"@storybook/addon-links": "^8.4.7",
+		"@storybook/addon-themes": "^8.4.7",
+		"@storybook/blocks": "^8.4.7",
+		"@storybook/react": "^8.4.7",
+		"@storybook/react-vite": "^8.4.7",
+		"@storybook/test": "^8.4.7",
+		"@storybook/theming": "^8.4.7",
+		"@tailwindcss/vite": "^4.0.0-beta.8",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.1.0",
+		"@types/node": "^22.10.2",
+		"@types/react": "^19.0.2",
+		"@types/react-dom": "^19.0.2",
+		"@vitejs/plugin-react": "^4.3.4",
+		"@vitest/coverage-v8": "^2.1.8",
+		"@vitest/ui": "^2.1.8",
+		"better-commits": "^1.15.7",
+		"jsdom": "^25.0.1",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"storybook": "^8.4.7",
+		"tailwindcss": "^4.0.0-beta.8",
+		"typescript": "^5.7.2",
+		"vite": "^6.0.6",
+		"vite-plugin-dts": "^4.4.0",
+		"vitest": "^2.1.8"
+	},
+	"engines": {
+		"bun": ">=1.0.0"
 	}
 }

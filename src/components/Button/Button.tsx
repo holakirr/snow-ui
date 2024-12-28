@@ -1,106 +1,123 @@
-import type { Icon } from "@phosphor-icons/react";
-import { type VariantProps, cva } from "class-variance-authority";
-import { twMerge } from "tailwind-merge";
-import { ICON_SIZES, ROLES } from "../../constants";
-import type { CustomIcon, TextSize } from "../../types";
-import { Text } from "../Text";
+import { type VariantProps, cva } from 'class-variance-authority'
+import type { ElementType, JSX } from 'react'
+import { twMerge } from 'tailwind-merge'
+
+import { ROLES, SIZES, TEXT_SIZES } from '../../constants'
+import type { PolymorphicProps, Size, TextSize } from '../../types'
+import { Text } from '../Text/Text'
+
+const defaultTag = 'button'
 
 /**
  * Props for the Button component.
  */
-type ButtonProps = React.ComponentProps<"button"> &
-	VariantProps<typeof buttonStyles> & {
-		/**
-		 * The label text or number displayed on the button.
-		 */
-		label?: string | number;
+export type ButtonProps<C extends ElementType = typeof defaultTag> =
+  PolymorphicProps<C> &
+    VariantProps<typeof buttonStyles> & {
+      /**
+       * The element type for the Text component.
+       */
+      as?: C
 
-		/**
-		 * The icon component to be displayed on the right side of the button.
-		 */
-		rightIcon?: Icon | CustomIcon;
+      /**
+       * The label text or number displayed on the button.
+       */
+      label?: string
 
-		/**
-		 * The icon component to be displayed on the left side of the button.
-		 */
-		leftIcon?: Icon | CustomIcon;
+      /**
+       * The icon component to be displayed on the right side of the button.
+       */
+      leftContent?: JSX.Element
 
-		/**
-		 * The size of the text displayed on the button.
-		 */
-		textSize?: TextSize;
-	};
+      /**
+       * The icon component to be displayed on the left side of the button.
+       */
+      rightContent?: JSX.Element
+
+      /**
+       * The size of the text displayed on the button.
+       */
+      textSize?: TextSize
+    }
 
 const buttonStyles = cva(
-	"group transition-all hover:cursor-pointer disabled:cursor-not-allowed disabled:text-black-10 inline-flex justify-center items-center focus:outline-none focus:ring-4 focus:ring-black-5 active:scale-95",
-	{
-		variants: {
-			variant: {
-				borderless: "text-black-100 bg-transparent font-normal hover:bg-black-5",
-				gray: "text-black-100 bg-black-5 hover:bg-black-20 disabled:bg-black-5 focus:ring-offset-2",
-				outline:
-					"text-black-100 bg-transparent border border-black-10 border-solid hover:bg-black-5 disabled:border-black-10",
-				filled: "text-white-100 bg-primary-brand hover:bg-primary-brandHover disabled:bg-black-5",
-			},
-			size: {
-				sm: "text-sm py-1 px-2 rounded-lg gap-1",
-				md: "text-base py-2 px-4 rounded-xl gap-2",
-				lg: "text-lg py-4 px-6 rounded-2xl gap-2",
-			},
-		},
-		defaultVariants: {
-			variant: "borderless",
-			size: "sm",
-		},
-	},
-);
+  'group transition-all hover:cursor-pointer disabled:cursor-not-allowed text-black disabled:text-black/10 inline-flex justify-center items-center focus:outline-hidden focus:ring-4 focus:ring-black/5 active:scale-95',
+  {
+    variants: {
+      variant: {
+        borderless: 'bg-transparent font-normal hover:bg-black/5',
+        gray: 'bg-black/5 hover:bg-black/20 disabled:bg-black/5 focus:ring-offset-2',
+        outline:
+          'bg-transparent border border-black/10 border-solid hover:bg-black/5 disabled:border-black/10',
+        filled:
+          'text-white bg-brand hover:bg-brand-hover disabled:bg-black/4 dark:text-black',
+      },
+      size: {
+        sm: 'text-sm py-1 px-2 rounded-lg gap-1',
+        md: 'text-base py-2 px-4 rounded-xl gap-2',
+        lg: 'text-lg py-3 px-6 rounded-2xl gap-2',
+      },
+    },
+    defaultVariants: {
+      variant: 'borderless',
+      size: 'sm',
+    },
+  },
+)
 
-const IconSizes = {
-	sm: ICON_SIZES[16],
-	md: ICON_SIZES[20],
-	lg: ICON_SIZES[24],
-} as const;
-
-const Paddings = {
-	sm: "p-1",
-	md: "p-2",
-	lg: "p-4",
-} as const;
+const IconButtonPaddings: { [K in Size]: string } = {
+  sm: 'p-1',
+  md: 'p-2',
+  lg: 'p-4',
+}
 
 /**
  * Button component displays a button element.
  */
-const Button = ({
-	variant = "borderless",
-	size = "sm",
-	className,
-	label,
-	textSize,
-	leftIcon: LeftIcon,
-	rightIcon: RightIcon,
-	ref,
-	...props
-}: ButtonProps) => (
-	<button
-		ref={ref}
-		type="button"
-		title={label?.toString() || "Button title"}
-		className={twMerge(
-			buttonStyles({ variant, size }),
-			LeftIcon && !RightIcon && !label ? Paddings[size || "sm"] : "",
-			className,
-		)}
-		role={ROLES.button}
-		aria-label={label?.toString() || "Button aria label"}
-		{...props}
-	>
-		{LeftIcon && <LeftIcon size={IconSizes[size || "sm"]} alt={`Left icon in button ${label}`} />}
-		{label && <Text className="group-hover:px-1 text-center text-inherit">{label}</Text>}
-		{RightIcon && (
-			<RightIcon size={IconSizes[size || "sm"]} alt={`Right icon in button ${label}`} />
-		)}
-	</button>
-);
+const Button = <C extends ElementType = typeof defaultTag>({
+  as,
+  className,
+  label,
+  leftContent,
+  rightContent,
+  size,
+  textSize = TEXT_SIZES[16],
+  variant,
+  children,
+  ...props
+}: ButtonProps<C>): JSX.Element => {
+  const Component = as ?? defaultTag
 
-Button.displayName = "Button";
-export { Button };
+  return (
+    <Component
+      type="button"
+      title={label?.toString() || 'Button title'}
+      className={twMerge(
+        buttonStyles({ variant, size, className }),
+        !!leftContent &&
+          !rightContent &&
+          !label && [IconButtonPaddings[size || SIZES.sm]],
+      )}
+      role={ROLES.button}
+      tabIndex={0}
+      aria-label={label?.toString() || 'Button aria label'}
+      {...props}
+    >
+      {leftContent}
+      {label && (
+        <Text
+          className="group-hover:px-1 text-center text-inherit"
+          size={textSize}
+        >
+          {label}
+        </Text>
+      )}
+      {children}
+      {rightContent}
+    </Component>
+  )
+}
+
+Button.displayName = 'Button'
+
+export { Button }

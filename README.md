@@ -1,109 +1,76 @@
-# SnowUI
+# Holakirr Snow UI
 
 SnowUI is a React UI of mostly (!) "stupid" (with no state or effect, you'll have to provide it by yourself) components library implementation of [SnowUI design kit](https://snowui.byewind.com) by [ByeWind](https://byewind.com/). Implemented and improved by [holakirr](https://github.com/holakirr). Based on TailwindCSS.
 Build your design using [it](https://www.figma.com/community/file/1301134685302006646)
 
-[Beta build of storybook](https://snowui.holakirr.com)
+[Beta build of storybook](https://snow-ui.holakirr.com)
 
 Take a look at my [CV](https://holakirr.com) =)
 
-## How to install
+## Features
 
-### 1. Install my library
+- 🎨 Built with Tailwind CSS for utility-first styling
+- 📚 Storybook for component documentation and development
+- 🔍 TypeScript for type safety
+- ✅ Comprehensive testing setup:
+  - Unit testing with Vitest
+  - E2E testing with Playwright
+- 🚀 Vite for fast development and building
+- ⚡️ Powered by Bun for fast package management and running scripts
 
-```bash
-npm add holakirr-snow-ui
-# or
-yarn add holakirr-snow-ui
-# or
-pnpm add holakirr-snow-ui
-# or
-bun add holakirr-snow-ui
-```
+## Getting Started
 
-### 2. Add to your global css file
+### Installation
 
-```css
-@import "holakirr-snow-ui/index.css";
-```
-
-### 3. Import any component in your project
-
-```ts
-import { Button } from "holakirr-snow-ui";
-```
-
-### 3. You're good to go =)
-
-## How to develop
-
-### Clone repo
-
-### Install dependencies
+To get started, install Holakirrr Snow UI and via package manager of your choice:
 
 ```bash
-npm install
-# or
-yarn
-# or
-pnpm install
-# or
-bun install
+bun add @holakirr/snow-ui
 ```
 
-### Getting Started
+### Basic example
 
-First, run the development server:
+Buttons are build using the Button component:
+
+```jsx
+import { Button } from '@holakirr/snow-ui';
+
+function App() {
+  return (
+    <Button variant="filled" size="md">
+      Click me
+    </Button>
+  );
+```
+
+## Component Documentation
+
+Components are documented in Storybook with examples and props documentation. Visit the [Storybook](https://snow-ui.holakirr.com) to explore the components and their usage.
+
+## Testing
+
+- Unit tests are written using Vitest and React Testing Library
+- E2E tests are written using Playwright
+- All components have corresponding test files
+
+## Usage
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun add @holakirr/snow-ui
 ```
 
-### Test lib in storybook
+```jsx
+import { Button } from '@holakirr/snow-ui'
 
-One of these commands will start tests:
-
-> [!WARNING]
-> Make sure you have storybook running
-
-```bash
-npm run test
-# or
-yarn test
-# or
-pnpm test
-# or
-bun test
+function App() {
+	return (
+		<Button variant="primary" size="md">
+			Click me
+		</Button>
+	)
+}
 ```
 
-### Builds
+## License
 
-One of these commands will compile project in 'dist' directory
-
-```bash
-npm run build-lib
-# or
-yarn build-lib
-# or
-pnpm build-lib
-# or
-bun build-lib
-```
-
-One of these commands will compile storybook in 'storybook-static' directory
-
-```bash
-npm run build-storybook
-# or
-yarn build-storybook
-# or
-pnpm build-storybook
-# or
-bun build-storybook
-```
+MIT

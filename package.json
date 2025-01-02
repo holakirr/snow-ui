@@ -1,10 +1,11 @@
 {
   "name": "@holakirr/snow-ui",
   "private": false,
-  "version": "0.1.1",
+  "version": "0.1.5",
   "type": "module",
-  "main": "dist/main.js",
+  "main": "dist/cjs/main.js",
   "types": "dist/main.d.ts",
+  "module": "dist/esm/main.js",
   "files": ["dist"],
   "author": {
     "name": "Kirill Petunin",
@@ -13,16 +14,16 @@
   },
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/main.d.ts",
-        "default": "./dist/main.js"
-      },
       "require": {
         "types": "./dist/main.d.ts",
-        "default": "./dist/main.umd.cjs"
+        "default": "./dist/cjs/main.js"
+      },
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/esm/main.js"
       }
     },
-    "./index.css": "./dist/style.css"
+    "./index.css": "./dist/index.css"
   },
   "repository": {
     "type": "git",
@@ -34,7 +35,7 @@
   "license": "MIT",
   "packageManager": "bun@1.1.42",
   "scripts": {
-    "build": "tsc -b && vite build && bun build.ts",
+    "build": "rm -rf dist && tsc -b && vite build && bun build.ts",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format .",
@@ -83,7 +84,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/bun": "^1.1.14",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.3",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",

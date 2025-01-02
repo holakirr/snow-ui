@@ -3,19 +3,20 @@ import { readdirSync, statSync } from 'node:fs'
 
 async function build(path) {
   const paths = readdirSync(path)
-  const dist = `dist/${path}`.replace('src', '')
+  const dist = `dist/${path}`
 
   const cjsConfig: esbuild.BuildOptions = {
     bundle: false,
     format: 'cjs',
-    target: 'es2022',
-    outdir: dist,
+    target: 'es2020',
+    outdir: dist.replace('src', 'cjs'),
+    minify: true,
   }
 
   const esmConfig: esbuild.BuildOptions = {
     ...cjsConfig,
+    outdir: dist.replace('src', 'esm'),
     format: 'esm',
-    outExtension: { '.js': '.mjs' },
   }
 
   for (const fileName of paths) {
@@ -30,8 +31,7 @@ async function build(path) {
       if (
         fileName.includes('test') ||
         fileName.includes('stories') ||
-        fileName.includes('.d.') ||
-        fileName.endsWith('.css')
+        fileName.includes('.d.')
       )
         continue
       await esbuild.build({

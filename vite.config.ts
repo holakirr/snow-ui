@@ -26,7 +26,7 @@ export default defineConfig({
       name: '@holakirr/snow-ui',
       formats: ['es'],
       fileName: 'main',
-      cssFileName: 'style',
+      cssFileName: 'index',
     },
     rollupOptions: {
       external: [

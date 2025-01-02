@@ -24,8 +24,9 @@ dist-ssr
 *.sw?
 
 # Generated files
-vite.config.js
-vite.config.d.ts
 playwright-report
 coverage
 test-results
+vite.config.js
+.tmp
+storybook-static

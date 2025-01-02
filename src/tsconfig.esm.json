@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "module": "ES2022",
+    "tsBuildInfoFile": ".tmp/tsconfig.esm.tsbuildinfo",
+    "module": "ESNext",
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "lib": ["DOM", "ESNext", "DOM.Iterable"],
     "jsx": "react-jsx",
     "strict": true,
@@ -10,8 +11,9 @@
     "noUnusedParameters": true,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "dist",
+    "outDir": "../dist/esm",
     "esModuleInterop": true,
     "verbatimModuleSyntax": true
-  }
+  },
+  "exclude": [".storybook", "test", "**/*.test.*","**/*.stories.*", "tsconfig.*"]
 }

@@ -1,13 +1,16 @@
 'use client'
 
 import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
+import type {
+  AccordionContentProps,
+  AccordionItemProps,
+  AccordionTriggerProps,
+} from '@radix-ui/react-accordion'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import type { FC, HTMLProps } from 'react'
+import type { FC } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { Text } from '../Text/Text'
-
-export type AccordionContentProps = HTMLProps<HTMLDivElement> & {}
+import { Text } from '../Text'
 
 const AccordionContent: FC<AccordionContentProps> = ({ ...props }) => (
   <AccordionPrimitive.Content
@@ -15,8 +18,6 @@ const AccordionContent: FC<AccordionContentProps> = ({ ...props }) => (
     {...props}
   />
 )
-
-type AccordionTriggerProps = AccordionPrimitive.AccordionTriggerProps & {}
 
 const AccordionTrigger: FC<AccordionTriggerProps> = ({
   children,
@@ -33,8 +34,6 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 )
-
-type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {}
 
 const AccordionItem: FC<AccordionItemProps> = (props) => (
   <AccordionPrimitive.Item {...props} />

@@ -14,8 +14,34 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  argTypes: {},
+  argTypes: {
+    type: {
+      options: ['single', 'multiple'],
+      control: { type: 'radio' },
+    },
+  },
   args: {},
+  render: (args) => (
+    <Accordion className="w-xs" {...args}>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>Is it accessible?</AccordionTrigger>
+        <AccordionContent>
+          Yes. It adheres to the WAI-ARIA design pattern.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-2">
+        <AccordionTrigger>Is it styled?</AccordionTrigger>
+        <AccordionContent>
+          Yes. It comes with default styles that matches the other
+          components&apos; aesthetic.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-3">
+        <AccordionTrigger>Is it animated?</AccordionTrigger>
+        <AccordionContent>Yes. It&apos;s animated by default.</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  ),
 } satisfies Meta<typeof Accordion>
 
 export default meta
@@ -26,52 +52,10 @@ export const Single: Story = {
     type: 'single',
     collapsible: true,
   },
-  render: (args) => (
-    <Accordion className="w-xs" {...args}>
-      <AccordionItem value="item-1">
-        <AccordionTrigger>Is it accessible?</AccordionTrigger>
-        <AccordionContent>
-          Yes. It adheres to the WAI-ARIA design pattern.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2">
-        <AccordionTrigger>Is it styled?</AccordionTrigger>
-        <AccordionContent>
-          Yes. It comes with default styles that matches the other
-          components&apos; aesthetic.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3">
-        <AccordionTrigger>Is it animated?</AccordionTrigger>
-        <AccordionContent>Yes. It&apos;s animated by default.</AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  ),
 }
 
 export const Multiple: Story = {
   args: {
     type: 'multiple',
   },
-  render: (args) => (
-    <Accordion className="w-xs" {...args}>
-      <AccordionItem value="item-1">
-        <AccordionTrigger>Is it accessible?</AccordionTrigger>
-        <AccordionContent>
-          Yes. It adheres to the WAI-ARIA design pattern.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2">
-        <AccordionTrigger>Is it styled?</AccordionTrigger>
-        <AccordionContent>
-          Yes. It comes with default styles that matches the other
-          components&apos; aesthetic.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3">
-        <AccordionTrigger>Is it animated?</AccordionTrigger>
-        <AccordionContent>Yes. It&apos;s animated by default.</AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  ),
 }

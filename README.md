@@ -22,17 +22,23 @@ Take a look at my [CV](https://holakirr.com) =)
 
 ### Installation
 
-To get started, install Holakirrr Snow UI and via package manager of your choice:
+To get started, install Holakirr Snow UI package via package manager of your choice:
 
 ```bash
 bun add @holakirr/snow-ui
+```
+
+Then just import styles:
+
+```tsx
+import '@holakirr/snow-ui/styles.css'
 ```
 
 ### Basic example
 
 Buttons are build using the Button component:
 
-```jsx
+```tsx
 import { Button } from '@holakirr/snow-ui';
 
 function App() {
@@ -59,16 +65,15 @@ Components are documented in Storybook with examples and props documentation. Vi
 bun add @holakirr/snow-ui
 ```
 
-```jsx
-import { Button } from '@holakirr/snow-ui'
+```tsx
+import { Button } from '@holakirr/snow-ui';
 
 function App() {
-	return (
-		<Button variant="primary" size="md">
-			Click me
-		</Button>
-	)
-}
+  return (
+    <Button variant="filled" size="md">
+      Click me
+    </Button>
+  );
 ```
 
 ## License

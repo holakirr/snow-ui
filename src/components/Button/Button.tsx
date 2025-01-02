@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { ROLES, SIZES, TEXT_SIZES } from '../../constants'
 import type { PolymorphicProps, Size, TextSize } from '../../types'
-import { Text } from '../Text/Text'
+import { Text } from '../Text'
 
 const defaultTag = 'button'
 

@@ -1,7 +1,7 @@
 import * as esbuild from 'esbuild'
 import { readdirSync, statSync } from 'node:fs'
 
-async function build(path) {
+async function build(path: string) {
   const paths = readdirSync(path)
   const dist = `dist/${path}`
 
@@ -31,7 +31,9 @@ async function build(path) {
       if (
         fileName.includes('test') ||
         fileName.includes('stories') ||
-        fileName.includes('.d.')
+        fileName.includes('.d.') ||
+        fileName.includes('tsconfig.') ||
+        fileName.includes('.css')
       )
         continue
       await esbuild.build({

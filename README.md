@@ -22,10 +22,16 @@ Take a look at my [CV](https://holakirr.com) =)
 
 ### Installation
 
-To get started, install Holakirrr Snow UI and via package manager of your choice:
+To get started, install Holakirr Snow UI package via package manager of your choice:
 
 ```bash
 bun add @holakirr/snow-ui
+```
+
+Then just import styles:
+
+```jsx
+import '@holakirr/snow-ui/styles.css'
 ```
 
 ### Basic example

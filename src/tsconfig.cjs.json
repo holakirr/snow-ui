@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "tsBuildInfoFile": ".tmp/tsconfig.cjs.tsbuildinfo",
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "Node",
@@ -10,8 +11,9 @@
     "noUnusedParameters": true,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "dist",
+    "outDir": "../dist/cjs",
     "esModuleInterop": true,
     "verbatimModuleSyntax": true
-  }
+  },
+  "exclude": [".storybook", "test", "**/*.test.*","**/*.stories.*", "tsconfig.*"]
 }

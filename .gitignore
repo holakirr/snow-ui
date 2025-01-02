@@ -28,3 +28,4 @@ playwright-report
 coverage
 test-results
 vite.config.js
+.tmp

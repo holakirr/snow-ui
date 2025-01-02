@@ -1,12 +1,13 @@
 {
   "name": "@holakirr/snow-ui",
   "private": false,
-  "version": "0.1.5",
+  "version": "0.1.9",
   "type": "module",
-  "main": "dist/cjs/main.js",
-  "types": "dist/main.d.ts",
-  "module": "dist/esm/main.js",
-  "files": ["dist"],
+  "main": "dist/cjs/index.js",
+  "types": "dist/cjs/index.d.ts",
+  "module": "dist/esm/index.js",
+  "style": "dist/index.css",
+  "files": ["dist/**"],
   "author": {
     "name": "Kirill Petunin",
     "email": "kpetunin@icloud.com",
@@ -15,12 +16,12 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/main.d.ts",
-        "default": "./dist/cjs/main.js"
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
       },
       "import": {
-        "types": "./dist/main.d.ts",
-        "default": "./dist/esm/main.js"
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
       }
     },
     "./index.css": "./dist/index.css"
@@ -35,7 +36,11 @@
   "license": "MIT",
   "packageManager": "bun@1.1.42",
   "scripts": {
-    "build": "tsc -b && vite build",
+    "build": "rm -rf dist && bun run build:ts && bun run build:types:cjs && bun run build:types:esm && bun run build:css",
+    "build:ts": "bun build.ts",
+    "build:types:cjs": "tsc -b ./src/tsconfig.cjs.json",
+    "build:types:esm": "tsc -b ./src/tsconfig.esm.json",
+    "build:css": "bunx @tailwindcss/cli@next -i ./src/index.css -o ./dist/index.css --minify",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format .",
@@ -80,6 +85,7 @@
     "@storybook/react-vite": "^8.4.7",
     "@storybook/test": "^8.4.7",
     "@storybook/theming": "^8.4.7",
+    "@tailwindcss/cli": "^4.0.0-beta.8",
     "@tailwindcss/vite": "^4.0.0-beta.8",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",

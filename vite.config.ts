@@ -24,8 +24,8 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/main.ts'),
       name: '@holakirr/snow-ui',
-      formats: ['es', 'umd'],
-      fileName: (format) => `main.${format === 'umd' ? 'umd.cjs' : 'js'}`,
+      formats: ['es'],
+      fileName: 'main',
       cssFileName: 'style',
     },
     rollupOptions: {

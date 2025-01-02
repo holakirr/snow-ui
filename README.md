@@ -30,7 +30,7 @@ bun add @holakirr/snow-ui
 
 Then just import styles:
 
-```jsx
+```tsx
 import '@holakirr/snow-ui/styles.css'
 ```
 
@@ -38,7 +38,7 @@ import '@holakirr/snow-ui/styles.css'
 
 Buttons are build using the Button component:
 
-```jsx
+```tsx
 import { Button } from '@holakirr/snow-ui';
 
 function App() {
@@ -65,16 +65,15 @@ Components are documented in Storybook with examples and props documentation. Vi
 bun add @holakirr/snow-ui
 ```
 
-```jsx
-import { Button } from '@holakirr/snow-ui'
+```tsx
+import { Button } from '@holakirr/snow-ui';
 
 function App() {
-	return (
-		<Button variant="primary" size="md">
-			Click me
-		</Button>
-	)
-}
+  return (
+    <Button variant="filled" size="md">
+      Click me
+    </Button>
+  );
 ```
 
 ## License

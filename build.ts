@@ -1,5 +1,5 @@
-import * as esbuild from 'esbuild'
 import { readdirSync, statSync } from 'node:fs'
+import * as esbuild from 'esbuild'
 
 async function build(path: string) {
   const paths = readdirSync(path)

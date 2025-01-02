@@ -27,3 +27,4 @@ dist-ssr
 playwright-report
 coverage
 test-results
+vite.config.ts

@@ -25,7 +25,8 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
 }) => (
   <AccordionPrimitive.Header className="flex w-full">
     <AccordionPrimitive.Trigger
-      className="flex w-full rounded-xl px-4 py-2 items-center justify-between transition-all hover:bg-black/10 cursor-pointer [&[data-state=open]>svg]:rotate-90 gap-2"
+      className="flex w-full rounded-xl px-4 py-2 items-center justify-between transition-all hover:bg-black/10 focus:bg-black/10 cursor-pointer [&[data-state=open]>svg]:rotate-90 gap-2"
+      tabIndex={0}
       {...props}
     >
       <Text size={16}>{children}</Text>

@@ -39,14 +39,15 @@ import '@holakirr/snow-ui/styles.css'
 Buttons are build using the Button component:
 
 ```tsx
-import { Button } from '@holakirr/snow-ui';
+import { Button } from '@holakirr/snow-ui'
 
 function App() {
-  return (
-    <Button variant="filled" size="md">
-      Click me
-    </Button>
-  );
+ return (
+  <Button variant="filled" size="md">
+   Click me
+  </Button>
+ )
+}
 ```
 
 ## Component Documentation
@@ -66,14 +67,15 @@ bun add @holakirr/snow-ui
 ```
 
 ```tsx
-import { Button } from '@holakirr/snow-ui';
+import { Button } from '@holakirr/snow-ui'
 
 function App() {
-  return (
-    <Button variant="filled" size="md">
-      Click me
-    </Button>
-  );
+ return (
+  <Button variant="filled" size="md">
+   Click me
+  </Button>
+ )
+}
 ```
 
 ## License

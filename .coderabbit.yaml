@@ -1,6 +1,9 @@
-language: "ru"
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: 'ru-RU'
 early_access: true
 reviews:
+  profile: 'chill'
+  request_changes_workflow: false
   high_level_summary: true
   poem: false
   review_status: true
@@ -8,15 +11,15 @@ reviews:
   auto_review:
     enabled: true
     ignore_title_keywords:
-      - "WIP"
-      - "DO NOT MERGE"
-      - "ci(changesets)"
+      - 'WIP'
+      - 'DO NOT MERGE'
+      - 'ci(changesets)'
     drafts: false
     base_branches:
-      - "main"
-      - "develop"
-      - "fix/.*"
-      - "chore/.*"
-      - "feat/.*"
+      - 'main'
+      - 'develop'
+      - 'fix/.*'
+      - 'chore/.*'
+      - 'feat/.*'
 chat:
   auto_reply: true

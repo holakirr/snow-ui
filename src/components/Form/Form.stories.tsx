@@ -20,6 +20,44 @@ const formSchema = z.object({
   }),
 })
 
+const FormExample = () => {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: 'Username',
+    },
+  })
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values)
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="snow-ui" title="Username" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button variant="filled" type="submit">
+          Submit
+        </Button>
+      </form>
+    </Form>
+  )
+}
+
 const meta = {
   title: 'Components/Form',
   component: () => <form />,
@@ -31,43 +69,7 @@ const meta = {
   args: {
     children: 'Label',
   },
-  render: () => {
-    const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-        username: 'Username',
-      },
-    })
-
-    function onSubmit(values: z.infer<typeof formSchema>) {
-      console.log(values)
-    }
-
-    return (
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="snow-ui" title="Username" {...field} />
-                </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button variant="filled" type="submit">
-            Submit
-          </Button>
-        </form>
-      </Form>
-    )
-  },
+  render: () => <FormExample />,
 } satisfies Meta<typeof Form>
 
 export default meta

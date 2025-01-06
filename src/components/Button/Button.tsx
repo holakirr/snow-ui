@@ -3,7 +3,12 @@ import type { ElementType, JSX } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { ROLES, SIZES, TEXT_SIZES } from '../../constants'
-import type { PolymorphicProps, Size, TextSize } from '../../types'
+import type {
+  ButtonVariant,
+  PolymorphicProps,
+  Size,
+  TextSize,
+} from '../../types'
 import { Text } from '../Text'
 
 const defaultTag = 'button'
@@ -11,7 +16,7 @@ const defaultTag = 'button'
 /**
  * Props for the Button component.
  */
-export type ButtonProps<C extends ElementType = typeof defaultTag> =
+type ButtonProps<C extends ElementType = typeof defaultTag> =
   PolymorphicProps<C> &
     VariantProps<typeof buttonStyles> & {
       /**
@@ -38,6 +43,11 @@ export type ButtonProps<C extends ElementType = typeof defaultTag> =
        * The size of the text displayed on the button.
        */
       textSize?: TextSize
+
+      /**
+       * The variant of the button.
+       */
+      variant?: ButtonVariant
     }
 
 const buttonStyles = cva(
@@ -49,8 +59,7 @@ const buttonStyles = cva(
         gray: 'bg-black/5 hover:bg-black/20 disabled:bg-black/5 focus:ring-offset-2',
         outline:
           'bg-transparent border border-black/10 border-solid hover:bg-black/5 disabled:border-black/10',
-        filled:
-          'text-white bg-brand hover:bg-brand-hover disabled:bg-black/4 dark:text-black',
+        filled: 'text-white bg-brand hover:bg-brand-hover disabled:bg-black/4',
       },
       size: {
         sm: 'text-sm py-1 px-2 rounded-lg gap-1',
@@ -117,7 +126,6 @@ const Button = <C extends ElementType = typeof defaultTag>({
     </Component>
   )
 }
-
 Button.displayName = 'Button'
 
-export { Button }
+export { Button, buttonStyles, type ButtonProps }

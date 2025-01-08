@@ -2,10 +2,11 @@ name: Release to NPM
 
 on:
   release:
-    types: [published]
+    types: [created]
 
 jobs:
   build-and-publish:
+    if: github.event.release.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

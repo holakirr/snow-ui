@@ -94,7 +94,7 @@ const BreadcrumbEllipsis: FC<ComponentProps<'span'>> = ({
   >
     <Text>...</Text>
 
-    <span className="sr-only">More</span>
+    <span className="sr-only">Additional navigation elements</span>
   </span>
 )
 BreadcrumbEllipsis.displayName = 'BreadcrumbEllipsis'

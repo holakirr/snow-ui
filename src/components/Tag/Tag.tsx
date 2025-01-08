@@ -10,6 +10,9 @@ import { Text } from '../Text'
  * Props for the Tag component.
  */
 export type TagProps = ComponentProps<'div'> & {
+  /**
+   * The content to be displayed on the left side of the tag.
+   */
   leftContent?: ReactNode
 
   /**

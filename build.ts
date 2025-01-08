@@ -1,11 +1,11 @@
+import { type BuildOptions, build } from 'esbuild'
 import { readdirSync, statSync } from 'node:fs'
-import * as esbuild from 'esbuild'
 
-async function build(path: string) {
+async function buildLib(path: string) {
   const paths = readdirSync(path)
   const dist = `dist/${path}`
 
-  const cjsConfig: esbuild.BuildOptions = {
+  const cjsConfig: BuildOptions = {
     bundle: false,
     format: 'cjs',
     target: 'es2020',
@@ -13,7 +13,7 @@ async function build(path: string) {
     minify: true,
   }
 
-  const esmConfig: esbuild.BuildOptions = {
+  const esmConfig: BuildOptions = {
     ...cjsConfig,
     outdir: dist.replace('src', 'esm'),
     format: 'esm',
@@ -25,8 +25,11 @@ async function build(path: string) {
     const pathStat = statSync(pathName)
 
     if (pathStat.isDirectory()) {
-      if (fileName.includes('test')) continue
-      await build(pathName)
+      if (fileName.includes('test')) {
+        continue
+      }
+
+      await buildLib(pathName)
     } else if (pathStat.isFile()) {
       if (
         fileName.includes('test') ||
@@ -34,13 +37,15 @@ async function build(path: string) {
         fileName.includes('.d.') ||
         fileName.includes('tsconfig.') ||
         fileName.includes('.css')
-      )
+      ) {
         continue
-      await esbuild.build({
+      }
+
+      await build({
         ...cjsConfig,
         entryPoints: [pathName],
       })
-      await esbuild.build({
+      await build({
         ...esmConfig,
         entryPoints: [pathName],
       })
@@ -50,4 +55,4 @@ async function build(path: string) {
   }
 }
 
-build('src')
+buildLib('src')

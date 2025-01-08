@@ -89,7 +89,7 @@ const BreadcrumbEllipsis: FC<ComponentProps<'span'>> = ({
   <span
     role="presentation"
     aria-hidden="true"
-    className={twMerge('flex h-9 w-9 items-center justify-center', className)}
+    className={twMerge('flex items-center justify-center', className)}
     {...props}
   >
     <Text>...</Text>

@@ -1,13 +1,14 @@
 import type { ComponentProps, FC } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import { ROLES } from '../../constants'
 import { Button } from '../Button'
 import { Text } from '../Text'
 
 export type BreadcrumbProps = ComponentProps<'nav'>
 
 const Breadcrumb: FC<BreadcrumbProps> = ({ ...props }) => (
-  <nav aria-label="Breadcrumb" {...props} />
+  <nav aria-label="Breadcrumb" role={ROLES.navigation} {...props} />
 )
 Breadcrumb.displayName = 'Breadcrumb'
 
@@ -29,7 +30,7 @@ export type BreadcrumbItemProps = ComponentProps<'li'>
 const BreadcrumbItem: FC<BreadcrumbItemProps> = ({ className, ...props }) => (
   <li
     className={twMerge(
-      'inline-flex items-center transition-colors text-black/40 last-of-type:text-black [&>a:disabled]:text-black/10',
+      'inline-flex items-center transition-colors text-black/40 last-of-type:text-black',
       className,
     )}
     {...props}
@@ -48,6 +49,8 @@ const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
 }) => (
   <Button
     as="a"
+    aria-disabled={disabled}
+    tabIndex={disabled ? -1 : undefined}
     className={twMerge(
       'transition-colors text-inherit',
       disabled && 'text-black/10 pointer-events-none',

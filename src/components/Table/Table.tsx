@@ -1,11 +1,13 @@
 import type { ComponentProps, FC } from 'react'
 import { twMerge } from 'tailwind-merge'
+import { ROLES } from '../../constants'
 
 type TableProps = ComponentProps<'table'>
 
 const Table: FC<TableProps> = ({ className, ...props }) => (
   <div className="relative w-full overflow-auto">
     <table
+      aria-label="Data Table"
       className={twMerge('w-full caption-top text-xs', className)}
       {...props}
     />
@@ -60,6 +62,7 @@ type TableCellProps = ComponentProps<'td'>
 
 const TableCell: FC<TableCellProps> = ({ className, ...props }) => (
   <td
+    role={ROLES.cell}
     className={twMerge(
       'py-2 px-3 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] first-of-type:ps-0 text-black font-light',
       className,

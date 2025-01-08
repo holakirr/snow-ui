@@ -37,4 +37,4 @@ export const ROLES = {
   tooltip: 'tooltip',
   tree: 'tree',
   treeitem: 'treeitem',
-}
+} as const

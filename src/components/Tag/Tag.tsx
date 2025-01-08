@@ -47,6 +47,7 @@ const Tag: FC<TagProps> = ({
     tabIndex={0}
     ref={ref}
     role={ROLES.listitem}
+    aria-label={`Tag: ${label}`}
     {...props}
   >
     {leftContent}

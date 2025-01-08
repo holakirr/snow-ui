@@ -3,6 +3,7 @@ import type { ComponentProps, FC, ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { ROLES } from '../../constants'
+import { Button } from '../Button'
 import { Text } from '../Text'
 
 /**
@@ -40,6 +41,7 @@ const Tag: FC<TagProps> = ({
       !leftContent && 'pl-2',
       className,
     )}
+    tabIndex={0}
     ref={ref}
     role={ROLES.listitem}
     {...props}
@@ -49,11 +51,17 @@ const Tag: FC<TagProps> = ({
     <Text as="span">{label}</Text>
 
     {onClose && (
-      <CloseIcon
-        alt={`Close icon for tag ${label}`}
-        size={16}
+      <Button
         onClick={onClose}
-        className="fill-black/20 hover:fill-black/40"
+        onKeyDown={(e) => e.key === 'Enter' && onClose()}
+        className="p-0"
+        leftContent={
+          <CloseIcon
+            alt={`Close icon for tag ${label}`}
+            size={16}
+            className="fill-black/20 hover:fill-black/40"
+          />
+        }
       />
     )}
   </div>

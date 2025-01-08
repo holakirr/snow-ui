@@ -23,6 +23,7 @@ export const BadgeComponent = ({
     as="span"
     size={TEXT_SIZES[12]}
     role={ROLES.status}
+    aria-label={content || 'Notification badge'}
     className={twMerge(
       'bg-purple rounded-full w-[6px] h-[6px] block text-center transition-all z-10',
       content && 'w-auto h-auto text-black-100 px-[6px] py-[1px]',

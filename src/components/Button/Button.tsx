@@ -102,10 +102,11 @@ const Button = <C extends ElementType = typeof defaultTag>({
       type="button"
       title={label?.toString() || 'Button title'}
       className={twMerge(
-        buttonStyles({ variant, size, className }),
+        buttonStyles({ variant, size }),
         !!leftContent &&
           !rightContent &&
           !label && [IconButtonPaddings[size || SIZES.sm]],
+        className,
       )}
       role={ROLES.button}
       tabIndex={0}

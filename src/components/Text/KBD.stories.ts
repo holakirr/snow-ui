@@ -1,20 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Text } from './Text'
+import { KBD } from './KBD'
 
 const meta = {
-  title: 'Components/Text/Text',
-  component: Text,
+  title: 'Components/Text/KBD',
+  component: KBD,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
   argTypes: {},
   args: {
-    children: 'Text',
-    className: 'text-black',
+    keys: ['⌘', 'K'],
   },
-} satisfies Meta<typeof Text>
+} satisfies Meta<typeof KBD>
 
 export default meta
 type Story = StoryObj<typeof meta>

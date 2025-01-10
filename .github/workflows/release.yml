@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org/
 
       - run: git config --global user.email "kpetunin@icloud.com"
@@ -32,7 +32,12 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Bump lib version
-        run: npm version --allow-same-version=true ${{ github.event.release.tag_name }}
+        run: |
+          npm version --allow-same-version=true ${{ github.event.release.tag_name }}
+          if ! git push; then
+            echo "Ошибка при выполнении git push"
+            exit 1
+          fi
 
       - name: Build
         run: bun run build

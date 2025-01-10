@@ -7,7 +7,7 @@ import { ROLES } from '../../constants'
 const Link = ({ className, ...props }: React.ComponentProps<'a'>) => (
   <a
     className={twMerge(
-      'cursor-pointer text-black hover:underline underline-offset-4 hover:text-indigo focus:underline focus:text-indigo transition-all relative',
+      'cursor-pointer text-black/40 hover:text-black  focus:underline focus:text-black transition-all relative text-xs',
       className,
     )}
     role={ROLES.link}

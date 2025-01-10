@@ -19,6 +19,7 @@ export const ROLES = {
   menu: 'menu',
   navigation: 'navigation',
   option: 'option',
+  progressbar: 'progressbar',
   radio: 'radio',
   region: 'region',
   row: 'row',

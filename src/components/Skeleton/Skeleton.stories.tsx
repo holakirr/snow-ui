@@ -6,8 +6,20 @@ const meta: Meta<typeof Skeleton> = {
   title: 'Components/Skeleton',
   component: Skeleton,
   tags: ['autodocs', 'a11y'],
-  argTypes: {},
-  args: {},
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Компонент Skeleton используется для отображения состояния загрузки контента.',
+      },
+    },
+  },
+  argTypes: {
+    className: {
+      description: 'Дополнительные CSS классы',
+      control: 'text',
+    },
+  },
 }
 
 export default meta

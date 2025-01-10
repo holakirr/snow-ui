@@ -32,7 +32,12 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Bump lib version
-        run: npm version --allow-same-version=true ${{ github.event.release.tag_name }} && git push
+        run: |
+          npm version --allow-same-version=true ${{ github.event.release.tag_name }}
+          if ! git push; then
+            echo "Ошибка при выполнении git push"
+            exit 1
+          fi
 
       - name: Build
         run: bun run build

@@ -40,7 +40,7 @@ jobs:
           npm version --allow-same-version=true -m "chore: bump version to %s" ${{ github.event.release.tag_name }}
 
       - name: Push new version
-        run: git push origin HEAD:main
+        run: git push origin HEAD:release
 
       - name: Build
         run: bun run build

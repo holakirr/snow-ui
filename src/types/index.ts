@@ -30,6 +30,8 @@ export type TextSize = 12 | 14 | 16 | 18 | 24 | 32 | 48 | 64
 
 export type ButtonVariant = 'borderless' | 'gray' | 'outline' | 'filled'
 
+export type ToggleVariant = 'borderless' | 'outline'
+
 export type Direction = 'horizontal' | 'vertical'
 
 export type BreadcrumbType = {

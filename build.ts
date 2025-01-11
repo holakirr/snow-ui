@@ -1,5 +1,5 @@
-import { type BuildOptions, build } from 'esbuild'
 import { readdirSync, statSync } from 'node:fs'
+import { type BuildOptions, build } from 'esbuild'
 
 async function buildLib(path: string) {
   const paths = readdirSync(path)

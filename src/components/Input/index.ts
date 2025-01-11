@@ -1,4 +1,5 @@
 export * from './Input'
+export * from './InputSmall'
 export * from './RadioGroup'
 export * from './Select'
 export * from './Slider'

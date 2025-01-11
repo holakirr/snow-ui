@@ -63,7 +63,7 @@ const SheetContent: FC<SheetContentProps> = ({
       {...props}
     >
       <SheetPrimitive.Close asChild className="absolute right-4 top-4">
-        <Button leftContent={<CloseIcon />}>
+        <Button aria-label="CLose" leftContent={<CloseIcon />}>
           <span className="sr-only">Close</span>
         </Button>
       </SheetPrimitive.Close>

@@ -10,7 +10,7 @@ import { TEXT_SIZES } from '../../constants'
 import { KBD, type KBDProps } from '../Text'
 
 const dropdownMenuContentStyles =
-  'z-50 min-w-[8rem] overflow-hidden rounded-2xl border border-black/10 bg-white/80 p-4 backdrop-blur-2xl text-black text-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top data-[side=left]:slide-in-from-right data-[side=right]:slide-in-from-left data-[side=top]:slide-in-from-bottom'
+  'z-50 min-w-[8rem] overflow-hidden rounded-2xl border border-black/10 bg-white/80 p-4 backdrop-blur-2xl text-black text-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom'
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 

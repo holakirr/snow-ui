@@ -1,24 +1,24 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Switch } from './Switch'
+import { Textarea } from './Textarea'
 
-const meta: Meta<typeof Switch> = {
-  title: 'Components/Input/Switch',
-  component: Switch,
+const meta: Meta<typeof Textarea> = {
+  title: 'Components/Input/Textarea',
+  component: Textarea,
   tags: ['autodocs', 'a11y'],
   args: {},
   argTypes: {},
   parameters: {
     docs: {
       description: {
-        component: 'Switch component',
+        component: 'Textarea component',
       },
     },
   },
 }
 
 export default meta
-type Story = StoryObj<typeof Switch>
+type Story = StoryObj<typeof Textarea>
 
 export const Default: Story = {
   args: {},
@@ -27,6 +27,5 @@ export const Default: Story = {
 export const Disabled: Story = {
   args: {
     disabled: true,
-    checked: true,
   },
 }

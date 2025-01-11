@@ -11,7 +11,7 @@ import {
 } from './Select'
 
 const meta: Meta<typeof Select> = {
-  title: 'Components/Select',
+  title: 'Components/Input/Select',
   component: Select,
   tags: ['autodocs', 'a11y'],
   argTypes: {},

@@ -1,7 +1,8 @@
 'use client'
 
 import { StatusIcon } from '@holakirr/snow-ui-icons'
-import { useToast } from '../../hooks/use-toast'
+
+import { useToast } from '../../hooks'
 import {
   Toast,
   ToastClose,

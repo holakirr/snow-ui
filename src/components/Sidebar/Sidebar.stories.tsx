@@ -1,3 +1,4 @@
+import { ArrowLineUpIcon } from '@holakirr/snow-ui-icons'
 import {
   ChartPieSlice,
   ChatsTeardrop,
@@ -6,18 +7,19 @@ import {
   IdentificationCard,
   Notebook,
   ShoppingBagOpen,
+  User,
   UsersThree,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { ArrowLineDownIcon } from '@holakirr/snow-ui-icons'
+import { Avatar, AvatarFallback, AvatarImage } from '../Avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../DropdownMenu'
-import { Link } from '../Link'
+import { Text } from '../Text'
 import {
   Sidebar,
   SidebarContent,
@@ -84,57 +86,96 @@ const meta: Meta<typeof Sidebar> = {
   component: Sidebar,
   parameters: {
     layout: 'fullscreen',
+    docs: {
+      description: {
+        component:
+          'A composable, themeable and customizable sidebar component.',
+      },
+    },
   },
 }
 
 export default meta
 type Story = StoryObj<typeof Sidebar>
 
+const Header = () => (
+  <SidebarHeader>
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton>
+          <picture>
+            <Avatar size="sm" className="group-data-[collapsible=icon]:size-4">
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </picture>
+          <Text>Profile</Text>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  </SidebarHeader>
+)
+
+const Content = () => (
+  <SidebarContent>
+    <SidebarGroup>
+      <SidebarGroupLabel>Application</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton
+                variant="outline"
+                asChild
+                isActive={item.isActive}
+              >
+                <a href={item.url}>
+                  <item.icon />
+                  <span>{item.title}</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  </SidebarContent>
+)
+
 const AppSidebar = () => (
   <Sidebar collapsible="icon">
-    <SidebarHeader>
+    <Header />
+    <SidebarSeparator />
+    <Content />
+    <SidebarSeparator />
+    <SidebarFooter>
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton>
-                Select Workspace
-                <ArrowLineDownIcon className="ml-auto" />
+                <User /> Username
+                <ArrowLineUpIcon className="ml-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
+            <DropdownMenuContent
+              side="top"
+              className="w-[--radix-popper-anchor-width]"
+            >
               <DropdownMenuItem>
-                <span>Acme Inc</span>
+                <span>Account</span>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <span>Acme Corp.</span>
+                <span>Billing</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <span>Sign out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarMenuItem>
       </SidebarMenu>
-    </SidebarHeader>
-    <SidebarSeparator />
-    <SidebarContent>
-      <SidebarGroup>
-        <SidebarGroupLabel>Application</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {items.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild isActive={item.isActive}>
-                  <Link href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    </SidebarContent>
-    <SidebarFooter />
+    </SidebarFooter>
   </Sidebar>
 )
 
@@ -143,92 +184,36 @@ export const Default: Story = {
     <SidebarProvider>
       <main className="w-full h-full flex justify-center items-center">
         <AppSidebar />
-        <SidebarTrigger />
+        <SidebarTrigger size="lg" />
       </main>
     </SidebarProvider>
   ),
 }
 
-// export const Floating: Story = {
-//   render: () => (
-//     <div className="h-[400px] flex">
-//       <Sidebar variant="floating">
-//         <SidebarHeader>
-//           <SidebarTrigger />
-//         </SidebarHeader>
-//         <SidebarContent>
-//           <SidebarMenu>
-//             <SidebarMenuItem>
-//               <SidebarMenuButton tooltip="Home">
-//                 <Home />
-//                 <span>Home</span>
-//               </SidebarMenuButton>
-//             </SidebarMenuItem>
-//             <SidebarMenuItem>
-//               <SidebarMenuButton tooltip="Users">
-//                 <Users />
-//                 <span>Users</span>
-//               </SidebarMenuButton>
-//             </SidebarMenuItem>
-//           </SidebarMenu>
-//         </SidebarContent>
-//       </Sidebar>
-//     </div>
-//   ),
-// }
+export const Floating: Story = {
+  render: () => (
+    <SidebarProvider>
+      <main className="w-full h-full flex justify-center items-center">
+        <Sidebar variant="floating">
+          <Header />
+          <Content />
+        </Sidebar>
+        <SidebarTrigger size="lg" />
+      </main>
+    </SidebarProvider>
+  ),
+}
 
-// export const Inset: Story = {
-//   render: () => (
-//     <div className="h-[400px] flex">
-//       <Sidebar variant="inset">
-//         <SidebarHeader>
-//           <SidebarTrigger />
-//         </SidebarHeader>
-//         <SidebarContent>
-//           <SidebarMenu>
-//             <SidebarMenuItem>
-//               <SidebarMenuButton tooltip="Home" isActive>
-//                 <Home />
-//                 <span>Home</span>
-//               </SidebarMenuButton>
-//             </SidebarMenuItem>
-//             <SidebarMenuItem>
-//               <SidebarMenuButton tooltip="Settings">
-//                 <Settings />
-//                 <span>Settings</span>
-//               </SidebarMenuButton>
-//             </SidebarMenuItem>
-//           </SidebarMenu>
-//         </SidebarContent>
-//       </Sidebar>
-//     </div>
-//   ),
-// }
-
-// export const IconCollapsible: Story = {
-//   render: () => (
-//     <div className="h-[400px] flex">
-//       <Sidebar collapsible="icon">
-//         <SidebarHeader>
-//           <SidebarTrigger />
-//         </SidebarHeader>
-//         <SidebarContent>
-//           <SidebarMenu>
-//             <SidebarMenuItem>
-//               <SidebarMenuButton tooltip="Home">
-//                 <Home />
-//                 <span>Home</span>
-//               </SidebarMenuButton>
-//             </SidebarMenuItem>
-//             <SidebarMenuItem>
-//               <SidebarMenuButton tooltip="Users">
-//                 <Users />
-//                 <span>Users</span>
-//               </SidebarMenuButton>
-//             </SidebarMenuItem>
-//           </SidebarMenu>
-//         </SidebarContent>
-//       </Sidebar>
-//     </div>
-//   ),
-// }
+export const Inset: Story = {
+  render: () => (
+    <SidebarProvider>
+      <main className="w-full h-full flex justify-center items-center">
+        <Sidebar variant="inset">
+          <Header />
+          <Content />
+        </Sidebar>
+        <SidebarTrigger size="lg" />
+      </main>
+    </SidebarProvider>
+  ),
+}

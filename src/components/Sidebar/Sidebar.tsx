@@ -244,7 +244,7 @@ const Sidebar: FC<SidebarProps> = ({
       >
         <div
           data-sidebar="sidebar"
-          className="flex h-full w-full flex-col bg-white group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+          className="flex h-full w-full flex-col bg-white group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border"
         >
           {children}
         </div>
@@ -313,7 +313,7 @@ const SidebarInset: FC<SidebarInsetProps> = ({ className, ...props }) => (
   <main
     className={twMerge(
       'relative flex min-h-svh flex-1 flex-col bg-background',
-      'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow',
+      'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl',
       className,
     )}
     {...props}
@@ -327,10 +327,7 @@ type SidebarInputProps = InputProps
 const SidebarInput: FC<SidebarInputProps> = ({ className, ...props }) => (
   <Input
     data-sidebar="input"
-    className={twMerge(
-      'h-8 w-full bg-background shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring',
-      className,
-    )}
+    className={twMerge('h-8 w-full focus-visible:ring-2', className)}
     {...props}
   />
 )
@@ -367,7 +364,7 @@ const SidebarSeparator: FC<SidebarSeparatorProps> = ({
 }) => (
   <Separator
     data-sidebar="separator"
-    className={twMerge('mx-2 w-auto bg-white-border', className)}
+    className={twMerge('mx-2 w-auto bg-black/10', className)}
     {...props}
   />
 )
@@ -411,7 +408,7 @@ const SidebarGroupLabel: FC<SidebarGroupLabelProps> = ({
     <Comp
       data-sidebar="group-label"
       className={twMerge(
-        'duration-200 flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-black/70 outline-none ring-sidebar-ring transition-[margin,opa] ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
+        'duration-200 flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-black/70 outline-none transition-[margin,opa] ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
         'group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0',
         className,
       )}
@@ -434,7 +431,7 @@ const SidebarGroupAction: FC<SidebarGroupActionProps> = ({
     <Comp
       data-sidebar="group-action"
       className={twMerge(
-        'absolute right-3 top-3.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-black outline-none ring-sidebar-ring transition-transform hover:bg-white-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
+        'absolute right-3 top-3.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-black outline-none transition-transform hover:bg-black/4 hover:text-black focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'group-data-[collapsible=icon]:hidden',
@@ -483,13 +480,12 @@ const SidebarMenuItem: FC<SidebarMenuItemProps> = ({ className, ...props }) => (
 SidebarMenuItem.displayName = 'SidebarMenuItem'
 
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-white-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-white-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-white-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-white-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
+  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-md p-2 text-left text-black text-sm outline-none transition-[width,height,padding] hover:bg-black/4 focus-visible:ring-2 active:bg-black/4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black/10 data-[active=true]:font-medium data-[state=open]:hover:bg-black/4 group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'hover:bg-white-accent hover:text-sidebar-accent-foreground',
-        outline:
-          'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-white-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
+        default: 'hover:bg-black/10',
+        outline: 'bg-background hover:bg-black/4',
       },
       size: {
         default: 'h-8 text-sm',
@@ -576,7 +572,7 @@ const SidebarMenuAction: FC<SidebarMenuActionProps> = ({
     <Comp
       data-sidebar="menu-action"
       className={twMerge(
-        'absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-black outline-none ring-sidebar-ring transition-transform hover:bg-white-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0',
+        'absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-black outline-none transition-transform hover:bg-black/4 hover:text-black focus-visible:ring-2 peer-hover/menu-button:text-black [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'peer-data-[size=sm]/menu-button:top-1',
@@ -584,7 +580,7 @@ const SidebarMenuAction: FC<SidebarMenuActionProps> = ({
         'peer-data-[size=lg]/menu-button:top-2.5',
         'group-data-[collapsible=icon]:hidden',
         showOnHover &&
-          'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0',
+          'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-black md:opacity-0',
         className,
       )}
       {...props}
@@ -603,7 +599,7 @@ const SidebarMenuBadge: FC<SidebarMenuBadgeProps> = ({
     data-sidebar="menu-badge"
     className={twMerge(
       'absolute right-1 flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium tabular-nums text-black select-none pointer-events-none',
-      'peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[active=true]/menu-button:text-sidebar-accent-foreground',
+      'peer-hover/menu-button:text-black peer-data-[active=true]/menu-button:text-black',
       'peer-data-[size=sm]/menu-button:top-1',
       'peer-data-[size=default]/menu-button:top-1.5',
       'peer-data-[size=lg]/menu-button:top-2.5',
@@ -701,8 +697,8 @@ const SidebarMenuSubButton: FC<SidebarMenuSubButtonProps> = ({
       data-size={size}
       data-active={isActive}
       className={twMerge(
-        'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-black outline-none ring-sidebar-ring hover:bg-white-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-white-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground',
-        'data-[active=true]:bg-white-accent data-[active=true]:text-sidebar-accent-foreground',
+        'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-black outline-none hover:bg-black/4 hover:text-black focus-visible:ring-2 active:bg-black/4 active:text-black disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-black',
+        'data-[active=true]:bg-black/4 data-[active=true]:text-black',
         size === 'sm' && 'text-xs',
         size === 'md' && 'text-sm',
         'group-data-[collapsible=icon]:hidden',
@@ -739,4 +735,26 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
+  type SidebarContentProps,
+  type SidebarGroupActionProps,
+  type SidebarGroupContentProps,
+  type SidebarGroupLabelProps,
+  type SidebarGroupProps,
+  type SidebarHeaderProps,
+  type SidebarInputProps,
+  type SidebarInsetProps,
+  type SidebarMenuActionProps,
+  type SidebarMenuBadgeProps,
+  type SidebarMenuButtonProps,
+  type SidebarMenuItemProps,
+  type SidebarMenuProps,
+  type SidebarMenuSkeletonProps,
+  type SidebarMenuSubButtonProps,
+  type SidebarMenuSubItemProps,
+  type SidebarMenuSubProps,
+  type SidebarProps,
+  type SidebarProviderProps,
+  type SidebarRailProps,
+  type SidebarSeparatorProps,
+  type SidebarTriggerProps,
 }

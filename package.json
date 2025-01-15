@@ -7,9 +7,7 @@
   "types": "dist/cjs/index.d.ts",
   "module": "dist/esm/index.js",
   "style": "dist/index.css",
-  "files": [
-    "dist/**"
-  ],
+  "files": ["dist/**"],
   "author": {
     "name": "Kirill Petunin",
     "email": "kpetunin@icloud.com",
@@ -34,12 +32,7 @@
   },
   "description": "SnowUI is a React component library designed by ByeWind, implemented and improved by holakirr for creating beautiful and interactive user interfaces.",
   "homepage": "https://snow-ui.holakirr.com",
-  "keywords": [
-    "react",
-    "ui",
-    "snow-ui",
-    "snow"
-  ],
+  "keywords": ["react", "ui", "snow-ui", "snow"],
   "license": "MIT",
   "packageManager": "bun@1.1.43",
   "scripts": {
@@ -114,9 +107,9 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/bun": "^1.1.16",
-    "@types/node": "^22.10.5",
-    "@types/react": "^19.0.4",
-    "@types/react-dom": "^19.0.2",
+    "@types/node": "^22.10.6",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^2.1.8",
     "@vitest/ui": "^2.1.8",
@@ -126,7 +119,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
     "storybook": "^8.4.7",
-    "tailwindcss": "^4.0.0-beta.8",
+    "tailwindcss": "^4.0.0-beta.9",
     "typescript": "^5.7.3",
     "vite": "^6.0.7",
     "vite-plugin-dts": "^4.5.0",

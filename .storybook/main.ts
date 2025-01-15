@@ -12,7 +12,7 @@ const config: StorybookConfig = {
   ],
   framework: '@storybook/react-vite',
   typescript: {
-    reactDocgen: 'react-docgen-typescript',
+    reactDocgen: 'react-docgen',
   },
   docs: {
     autodocs: true,

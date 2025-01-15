@@ -16,7 +16,7 @@ import {
 } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { useIsMobile } from '../../hooks/use-mobile'
+import { useIsMobile } from '../../hooks'
 import { Button, type ButtonProps } from '../Button'
 import { Input, type InputProps } from '../Input'
 import { Separator, type SeparatorProps } from '../Separator'

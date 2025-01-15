@@ -1,2 +1,2 @@
-export * from './use-mobile'
+export * from './use-is-mobile'
 export * from './use-toast'

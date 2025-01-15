@@ -48,7 +48,7 @@
     "build:types:cjs": "tsc -b ./src/tsconfig.cjs.json",
     "build:types:esm": "tsc -b ./src/tsconfig.esm.json",
     "build:css": "bunx @tailwindcss/cli@next -i ./src/index.css -o ./dist/index.css --minify",
-    "build:storybook": "storybook build",
+    "build:storybook": "storybook build --disable-telemetry",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format .",

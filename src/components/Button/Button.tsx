@@ -18,7 +18,7 @@ const defaultTag = 'button'
  */
 type ButtonProps<C extends ElementType = typeof defaultTag> =
   PolymorphicProps<C> &
-    VariantProps<typeof buttonStyles> & {
+    VariantProps<typeof buttonVariants> & {
       /**
        * The element type for the Text component.
        */
@@ -50,7 +50,7 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
       variant?: ButtonVariant
     }
 
-const buttonStyles = cva(
+const buttonVariants = cva(
   'group transition-all hover:cursor-pointer disabled:cursor-not-allowed text-black disabled:text-black/10 inline-flex justify-center items-center focus:outline-hidden focus:ring-4 focus:ring-black/5 active:scale-95',
   {
     variants: {
@@ -102,7 +102,7 @@ const Button = <C extends ElementType = typeof defaultTag>({
       type="button"
       title={label?.toString() || 'Button title'}
       className={twMerge(
-        buttonStyles({ variant, size }),
+        buttonVariants({ variant, size }),
         !!leftContent &&
           !rightContent &&
           !label && [IconButtonPaddings[size || SIZES.sm]],
@@ -129,4 +129,4 @@ const Button = <C extends ElementType = typeof defaultTag>({
 }
 Button.displayName = 'Button'
 
-export { Button, buttonStyles, type ButtonProps }
+export { Button, buttonVariants, type ButtonProps }

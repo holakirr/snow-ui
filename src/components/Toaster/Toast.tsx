@@ -8,7 +8,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { SIMPLE_SIZES } from '../../constants'
 import type { SimpleSize, StatusNotify } from '../../types'
-import { buttonStyles } from '../Button'
+import { buttonVariants } from '../Button'
 
 const ToastProvider = ToastPrimitives.Provider
 
@@ -61,7 +61,7 @@ type ToastActionProps = ComponentProps<typeof ToastPrimitives.Action> & {
 
 const ToastAction: FC<ToastActionProps> = ({ className, size, ...props }) => (
   <ToastPrimitives.Action
-    className={twMerge(buttonStyles({ variant: 'filled', size }), className)}
+    className={twMerge(buttonVariants({ variant: 'filled', size }), className)}
     {...props}
   />
 )

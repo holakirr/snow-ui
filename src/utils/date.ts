@@ -7,10 +7,13 @@ export const getWeekDates = (
   const week = []
   const current = new Date(date)
   current.setDate(current.getDate() - current.getDay() + startOfWeek)
+
   for (let i = 0; i < 7; i++) {
-    week.push(new Date(current))
-    current.setDate(current.getDate() + 1)
+    const dayDate = new Date(current)
+    dayDate.setDate(current.getDate() + i)
+    week.push(dayDate)
   }
+
   return week
 }
 
@@ -31,6 +34,7 @@ export const getEarliestScheduleHour = (events: CalendarEvent[]): number => {
   if (earliestEventHour > minimalScheduleHour || !earliestEventHour) {
     return minimalScheduleHour
   }
+
   return earliestEventHour
 }
 

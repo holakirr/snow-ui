@@ -228,7 +228,7 @@ export type CalendarEvent = {
   date: Date
   endsAt: Date
   participants?: CalendarEventParticipant[]
-  DropDownContentRender?: (event: CalendarEvent) => JSX.Element
+  dropdownContentRenderer?: (event: CalendarEvent) => JSX.Element
 }
 
 export type StartOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6

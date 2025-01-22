@@ -60,7 +60,7 @@ export const MultipleEventsPerHour: Story = {
         title: 'Quick Sync',
         date: new Date(2025, 0, 24, 10, 0),
         endsAt: new Date(2025, 0, 24, 10, 50),
-        DropDownContentRender: ({ title, date, id, endsAt }) => (
+        dropdownContentRenderer: ({ title, date, id, endsAt }) => (
           <div className="flex flex-col items-start gap-2">
             <div className="flex flex-col">
               <Text>

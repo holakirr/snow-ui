@@ -39,7 +39,6 @@ const Scheduler: FC<SchedulerProps> = ({
   const latestHour = getLatestScheduleHour(events)
   const latestTime = new Date(new Date().setHours(latestHour))
   const now = new Date()
-  const currHour = new Date(new Date().setHours(10))
 
   if (events) {
     hours = Array.from(
@@ -136,17 +135,17 @@ const Scheduler: FC<SchedulerProps> = ({
           ))}
         </Fragment>
       ))}
-      {events && currHour < latestTime && currHour > earliestTime && (
+      {events && now < latestTime && now > earliestTime && (
         <div
           className={twMerge(
             'absolute left-0 w-full px-4 flex justify-center items-center z-10',
           )}
           style={{
-            top: `calc(20px + ${((currHour.getTime() - earliestTime.getTime()) / 1000 / 60 / 60 / hours.length) * 100}%)`,
+            top: `calc(20px + ${((now.getTime() - earliestTime.getTime()) / 1000 / 60 / 60 / hours.length) * 100}%)`,
           }}
         >
           <Tag
-            label={currHour
+            label={now
               .toLocaleTimeString('en-US', {
                 hour: 'numeric',
                 minute: 'numeric',

@@ -16,11 +16,10 @@ export type EventItemProps = ComponentProps<'div'> & {
 }
 
 export const EventItem: FC<EventItemProps> = ({ event, onEventClick }) => {
-  const { endsAt, date, title, DropDownContentRender } = event
+  const { endsAt, date, title, dropdownContentRenderer } = event
 
   const duration = endsAt.getTime() - date.getTime()
   const durationInHours = duration / 1000 / 60 / 60
-  console.log(duration)
   const eventHeight = Math.max(durationInHours, 1)
 
   return (
@@ -66,8 +65,8 @@ export const EventItem: FC<EventItemProps> = ({ event, onEventClick }) => {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {DropDownContentRender ? (
-          DropDownContentRender(event)
+        {dropdownContentRenderer ? (
+          dropdownContentRenderer(event)
         ) : (
           <div className="flex flex-col gap-2 p-2">
             <Text size={TEXT_SIZES[12]}>{title}</Text>

@@ -1,7 +1,8 @@
 import { withThemeByDataAttribute } from '@storybook/addon-themes'
 import type { Preview } from '@storybook/react'
-import './index.css'
 import { StoryWrapper } from './StoryWrapper'
+
+import './index.css'
 
 const preview: Preview = {
   parameters: {

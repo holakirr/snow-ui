@@ -20,7 +20,7 @@ type SheetOverlayProps = SheetPrimitive.DialogOverlayProps
 const SheetOverlay: FC<SheetOverlayProps> = ({ className, ...props }) => (
   <SheetPrimitive.Overlay
     className={twMerge(
-      'fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out',
+      'fixed inset-0 z-50 bg-[#000]/40  data-[state=open]:animate-in data-[state=closed]:animate-out',
       className,
     )}
     {...props}
@@ -29,16 +29,16 @@ const SheetOverlay: FC<SheetOverlayProps> = ({ className, ...props }) => (
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  'fixed z-50 gap-4 bg-bg5 p-4 transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out',
+  'fixed z-50 gap-4 bg-bg1 p-4 transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out',
   {
     variants: {
       side: {
-        top: 'inset-x-0 top-0 border-b data-[state=closed]:animate-slide-out-to-top data-[state=open]:animate-slide-in-from-top',
+        top: 'inset-x-0 top-0 data-[state=closed]:animate-slide-out-to-top data-[state=open]:animate-slide-in-from-top',
         bottom:
-          'inset-x-0 bottom-0 border-t data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom',
-        left: 'inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:animate-slide-out-to-left data-[state=open]:animate-slide-in-from-left sm:max-w-sm',
+          'inset-x-0 bottom-0 data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom',
+        left: 'inset-y-0 left-0 h-full w-3/4 data-[state=closed]:animate-slide-out-to-left data-[state=open]:animate-slide-in-from-left sm:max-w-sm',
         right:
-          'inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:animate-slide-out-to-right data-[state=open]:animate-slide-in-from-right sm:max-w-sm',
+          'inset-y-0 right-0 h-full w-3/4 data-[state=closed]:animate-slide-out-to-right data-[state=open]:animate-slide-in-from-right sm:max-w-sm',
       },
     },
     defaultVariants: {
@@ -62,8 +62,11 @@ const SheetContent: FC<SheetContentProps> = ({
       className={twMerge(sheetVariants({ side }), className)}
       {...props}
     >
-      <SheetPrimitive.Close asChild className="absolute right-4 top-4">
-        <Button aria-label="CLose" leftContent={<CloseIcon />}>
+      <SheetPrimitive.Close
+        asChild
+        className="absolute right-4 top-4 text-black"
+      >
+        <Button aria-label="Close" leftContent={<CloseIcon />}>
           <span className="sr-only">Close</span>
         </Button>
       </SheetPrimitive.Close>

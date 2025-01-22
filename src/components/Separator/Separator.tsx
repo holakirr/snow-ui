@@ -10,7 +10,6 @@ const Separator: FC<SeparatorProps> = ({
   className,
   orientation = 'horizontal',
   decorative = true,
-  style,
   ...props
 }) => (
   <SeparatorPrimitive.Root
@@ -21,7 +20,6 @@ const Separator: FC<SeparatorProps> = ({
       orientation === 'horizontal' ? 'h-[1px] w-full' : 'h-full w-[1px]',
       className,
     )}
-    style={style}
     {...props}
   />
 )

@@ -1,6 +1,6 @@
 'use client'
 
-import { type FC, Fragment } from 'react'
+import { type ComponentProps, type FC, Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { TEXT_SIZES } from '../../constants'
@@ -16,11 +16,19 @@ import { Text } from '../Text'
 import { EventItem } from './EventItem'
 import { HOUR_HEIGHT } from './constants'
 
-type SchedulerProps = {
+/**
+ * Props для компонента Scheduler
+ */
+type SchedulerProps = ComponentProps<'div'> & {
+  /** Текущая дата */
   currentDate: Date
+  /** Массив событий календаря */
   events?: CalendarEvent[]
+  /** Начало недели (0-6, где 0 - воскресенье) */
   startOfWeek?: StartOfWeek
+  /** Обработчик клика по событию */
   onEventClick: (event: CalendarEvent) => void
+  /** Обработчик клика по дате */
   onDateClick: (date: Date) => void
 }
 
@@ -30,6 +38,7 @@ const Scheduler: FC<SchedulerProps> = ({
   startOfWeek = 1,
   onEventClick,
   onDateClick,
+  ...props
 }) => {
   const weekDates = getWeekDates(currentDate, startOfWeek)
   let hours: number[] = []
@@ -53,6 +62,7 @@ const Scheduler: FC<SchedulerProps> = ({
         gridAutoRows: `${HOUR_HEIGHT}px`,
       }}
       className="grid grid-cols-[59px_repeat(7,100px)] gap-x-4 relative"
+      {...props}
     >
       <div className="col-span-1" />
       {weekDates.map((date, i) => (

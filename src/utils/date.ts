@@ -1,3 +1,4 @@
+import { SCHEDULE_CONFIG } from '../constants'
 import type { CalendarEvent, StartOfWeek } from '../types'
 
 export const getWeekDates = (
@@ -17,41 +18,37 @@ export const getWeekDates = (
   return week
 }
 
-const minimalScheduleHour = 7
-const maximalScheduleHour = 20
+type ComparisonFn = (a: Date, b: Date) => boolean
 
-export const getEarliestScheduleHour = (events: CalendarEvent[]): number => {
+const getScheduleHour = (
+  events: CalendarEvent[],
+  defaultHour: number,
+  compareDate: ComparisonFn,
+): number => {
   if (!events.length) {
-    return minimalScheduleHour
+    return defaultHour
   }
 
-  const earliestEventHour = events
+  const eventHour = events
     .reduce((prev, current) => {
-      return prev.date < current.date ? prev : current
+      return compareDate(prev.date, current.date) ? prev : current
     })
     .date.getHours()
 
-  if (earliestEventHour > minimalScheduleHour || !earliestEventHour) {
-    return minimalScheduleHour
+  if (
+    !eventHour ||
+    (defaultHour === SCHEDULE_CONFIG.MIN_HOUR
+      ? eventHour > defaultHour
+      : eventHour < defaultHour)
+  ) {
+    return defaultHour
   }
 
-  return earliestEventHour
+  return eventHour
 }
 
-export const getLatestScheduleHour = (events: CalendarEvent[]): number => {
-  if (!events.length) {
-    return maximalScheduleHour
-  }
+export const getEarliestScheduleHour = (events: CalendarEvent[]): number =>
+  getScheduleHour(events, SCHEDULE_CONFIG.MIN_HOUR, (a, b) => a < b)
 
-  const latestEventHour = events
-    .reduce((prev, current) => {
-      return prev.date > current.date ? prev : current
-    })
-    .date.getHours()
-
-  if (latestEventHour < maximalScheduleHour || !latestEventHour) {
-    return maximalScheduleHour
-  }
-
-  return latestEventHour
-}
+export const getLatestScheduleHour = (events: CalendarEvent[]): number =>
+  getScheduleHour(events, SCHEDULE_CONFIG.MAX_HOUR, (a, b) => a > b)

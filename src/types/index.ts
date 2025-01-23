@@ -216,3 +216,30 @@ export type PopoverType = PopoverContentType & {
    */
   visible: boolean
 }
+
+export type CalendarEventParticipant = {
+  id: string
+  name: string
+  email?: string
+  avatar?: string
+  status?: 'accepted' | 'declined' | 'tentative' | 'needsAction'
+}
+
+export type CalendarEvent = {
+  id: string
+  title: string
+  date: Date
+  endsAt: Date
+  description?: string
+  participants?: CalendarEventParticipant[]
+  dropdownContentRenderer?: (event: CalendarEvent) => JSX.Element
+  timeZone?: string
+  location?: string
+  call?: string
+  organizer?: string
+  url?: string
+  trigger?: [number] | [number, number]
+  cancelRepeat?: boolean
+}
+
+export type StartOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6

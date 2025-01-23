@@ -1,1 +1,1 @@
-export const HOUR_HEIGHT = 44
+export const HOUR_HEIGHT = 48

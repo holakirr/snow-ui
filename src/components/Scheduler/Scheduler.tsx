@@ -38,30 +38,32 @@ const Scheduler: FC<SchedulerProps> = ({
   startOfWeek = 1,
   onEventClick,
   onDateClick,
+  style,
+  className,
   ...props
 }) => {
   const weekDates = getWeekDates(currentDate, startOfWeek)
-  let hours: number[] = []
 
   const earliestHour = getEarliestScheduleHour(events)
   const earliestTime = new Date(new Date().setHours(earliestHour))
   const latestHour = getLatestScheduleHour(events)
   const latestTime = new Date(new Date().setHours(latestHour))
   const now = new Date()
-
-  if (events) {
-    hours = Array.from(
-      { length: latestHour - earliestHour },
-      (_, i) => i + earliestHour,
-    )
-  }
+  const hours = Array.from(
+    { length: latestHour - earliestHour },
+    (_, i) => i + earliestHour,
+  )
 
   return (
     <div
       style={{
         gridAutoRows: `${HOUR_HEIGHT}px`,
+        ...style,
       }}
-      className="grid grid-cols-[59px_repeat(7,100px)] gap-x-4 relative"
+      className={twMerge(
+        'grid grid-cols-[59px_repeat(7,100px)] gap-x-4 relative',
+        className,
+      )}
       {...props}
     >
       <div className="col-span-1" />
@@ -100,15 +102,14 @@ const Scheduler: FC<SchedulerProps> = ({
           )}
         </Fragment>
       ))}
+
       {hours.map((hour) => (
         <Fragment key={hour}>
-          <div className="text-left w-fit">
-            <Text size={TEXT_SIZES[12]} className="text-black/40">
-              {new Date(new Date().setHours(hour)).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-              })}
-            </Text>
-          </div>
+          <Text size={TEXT_SIZES[12]} className="text-black/40">
+            {new Date(new Date().setHours(hour)).toLocaleTimeString('en-US', {
+              hour: 'numeric',
+            })}
+          </Text>
           {weekDates.map((date) => (
             // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
             <div
@@ -133,10 +134,7 @@ const Scheduler: FC<SchedulerProps> = ({
                 .map((event) => (
                   <EventItem
                     key={event.title}
-                    className={twMerge(
-                      'bg-bg4 text-blue-800 p-1 text-sm rounded cursor-pointer',
-                      `mt-[${event.date.getMinutes() / 60}%]`,
-                    )}
+                    className="bg-bg4 text-blue-800 p-1 text-sm rounded cursor-pointer"
                     onEventClick={onEventClick}
                     event={event}
                   />
@@ -145,18 +143,18 @@ const Scheduler: FC<SchedulerProps> = ({
           ))}
         </Fragment>
       ))}
-      {events && now < latestTime && now > earliestTime && (
+
+      {/* Current time indicator */}
+      {now < latestTime && now > earliestTime && (
         <div
-          className={twMerge(
-            'absolute left-0 w-full px-4 flex justify-center items-center z-10',
-          )}
+          className="absolute left-0 w-full px-4 flex justify-center items-center z-10"
           style={{
-            top: `calc(20px + ${((now.getTime() - earliestTime.getTime()) / 1000 / 60 / 60 / hours.length) * 100}%)`,
+            top: `${(1 + (now.getHours() - earliestHour) + now.getMinutes() / 60) * HOUR_HEIGHT}px`,
           }}
         >
           <Tag
             label={now
-              .toLocaleTimeString('en-US', {
+              .toLocaleTimeString('ru-RU', {
                 hour: 'numeric',
                 minute: 'numeric',
               })

@@ -9,6 +9,12 @@ import { Scheduler } from './Scheduler'
 
 const sampleEvents: CalendarEvent[] = [
   {
+    id: '0',
+    title: 'Standup Very Long Title',
+    date: new Date(2025, 0, 26, 9, 30), // Jan 23, 2025, 9:00
+    endsAt: new Date(2025, 0, 23, 10, 30), // Jan 23, 2025, 9:30
+  },
+  {
     id: '1',
     title: 'Team Meeting',
     date: new Date(2025, 0, 24, 10), // Jan 24, 2025, 10:00

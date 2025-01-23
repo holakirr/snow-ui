@@ -20,7 +20,6 @@ export const EventItem: FC<EventItemProps> = ({ event, onEventClick }) => {
 
   const duration = endsAt.getTime() - date.getTime()
   const durationInHours = duration / 1000 / 60 / 60
-  const eventHeight = Math.max(durationInHours, 1)
 
   return (
     <DropdownMenu>
@@ -33,12 +32,15 @@ export const EventItem: FC<EventItemProps> = ({ event, onEventClick }) => {
             onEventClick(event)
           }}
           style={{
-            height: `${eventHeight * HOUR_HEIGHT}px`,
+            height: `${durationInHours * HOUR_HEIGHT}px`,
             top: `${(date.getMinutes() / 60) * 100}%`,
+            minHeight: `${HOUR_HEIGHT}px`,
           }}
         >
           <div className="flex flex-col text-nowrap text-[#000]">
-            <Text size={TEXT_SIZES[12]}>{title}</Text>
+            <Text size={TEXT_SIZES[12]} className="truncate">
+              {title}
+            </Text>
 
             <div className="flex gap-0.5 text-nowrap opacity-40">
               <Text size={TEXT_SIZES[12]}>

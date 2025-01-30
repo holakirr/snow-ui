@@ -91,20 +91,32 @@ const PaginationNext = ({
 )
 PaginationNext.displayName = 'PaginationNext'
 
+type PaginationEllipsisProps = {
+  size?: ButtonProps['size']
+} & Omit<React.ComponentProps<'span'>, 'size'>
+
 const PaginationEllipsis = ({
   className,
+  size = 'md',
   ...props
-}: React.ComponentProps<'span'>) => (
-  <span
-    role="presentation"
-    aria-hidden
-    className={twMerge('flex h-9 w-9 items-center justify-center', className)}
-    {...props}
-  >
-    <Text>...</Text>
-    <span className="sr-only">More pages</span>
-  </span>
-)
+}: PaginationEllipsisProps) => {
+  const sizes = {
+    sm: 'h-8 w-8',
+    md: 'h-9 w-9',
+    lg: 'h-10 w-10',
+  }
+  return (
+    <span
+      role="presentation"
+      aria-hidden
+      className={twMerge(`flex ${sizes[size]} items-center justify-center`, className)}
+      {...props}
+    >
+      <Text>...</Text>
+      <span className="sr-only">More pages</span>
+    </span>
+  )
+}
 PaginationEllipsis.displayName = 'PaginationEllipsis'
 
 export {

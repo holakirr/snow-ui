@@ -25,7 +25,7 @@ const meta: Meta<typeof ContextMenu> = {
     docs: {
       description: {
         component:
-          'A control that allows the user to toggle between checked and not checked.',
+          'Displays a menu to the user — such as a set of actions or functions — triggered by a button.',
       },
     },
   },

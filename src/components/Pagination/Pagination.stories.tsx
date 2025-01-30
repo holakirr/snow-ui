@@ -32,7 +32,9 @@ const Template = (size: Size) => (
   <Pagination>
     <PaginationContent>
       <PaginationItem>
-        <PaginationPrevious size={size} href="#" />
+        <PaginationPrevious size={size} href="#">
+          Prev
+        </PaginationPrevious>
       </PaginationItem>
       <PaginationItem>
         <PaginationLink size={size} href="#">
@@ -53,7 +55,9 @@ const Template = (size: Size) => (
         <PaginationEllipsis />
       </PaginationItem>
       <PaginationItem>
-        <PaginationNext size={size} href="#" />
+        <PaginationNext size={size} href="#">
+          Next
+        </PaginationNext>
       </PaginationItem>
     </PaginationContent>
   </Pagination>

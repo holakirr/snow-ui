@@ -1,13 +1,15 @@
 {
   "name": "@holakirr/snow-ui",
   "private": false,
-  "version": "0.12.0",
+  "version": "0.13.0",
   "type": "module",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
   "module": "dist/esm/index.js",
   "style": "dist/index.css",
-  "files": ["dist/**"],
+  "files": [
+    "dist/**"
+  ],
   "author": {
     "name": "Kirill Petunin",
     "email": "kpetunin@icloud.com",
@@ -32,7 +34,12 @@
   },
   "description": "SnowUI is a React component library designed by ByeWind, implemented and improved by holakirr for creating beautiful and interactive user interfaces.",
   "homepage": "https://snow-ui.holakirr.com",
-  "keywords": ["react", "ui", "snow-ui", "snow"],
+  "keywords": [
+    "react",
+    "ui",
+    "snow-ui",
+    "snow"
+  ],
   "license": "MIT",
   "packageManager": "bun@1.1.43",
   "scripts": {

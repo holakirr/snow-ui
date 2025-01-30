@@ -1,3 +1,4 @@
+export * from './Checkbox'
 export * from './Input'
 export * from './InputSmall'
 export * from './RadioGroup'

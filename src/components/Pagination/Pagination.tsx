@@ -36,7 +36,7 @@ PaginationItem.displayName = 'PaginationItem'
 type PaginationLinkProps = {
   isActive?: boolean
   size?: Size
-} & React.ComponentProps<'a'>
+} & ComponentProps<'a'>
 
 const PaginationLink: FC<PaginationLinkProps> = ({
   className,
@@ -64,12 +64,12 @@ const PAGINATION_ICON_SIZES = {
   lg: 'h-6 w-6',
 }
 
-const PaginationPrevious = ({
+const PaginationPrevious: FC<ComponentProps<typeof PaginationLink>> = ({
   className,
   size = 'md',
   children,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
+}) => (
   <PaginationLink
     aria-label="Go to previous page"
     size={size}
@@ -82,12 +82,12 @@ const PaginationPrevious = ({
 )
 PaginationPrevious.displayName = 'PaginationPrevious'
 
-const PaginationNext = ({
+const PaginationNext: FC<ComponentProps<typeof PaginationLink>> = ({
   className,
   size = 'md',
   children,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
+}) => (
   <PaginationLink
     aria-label="Go to next page"
     size={size}
@@ -102,7 +102,7 @@ PaginationNext.displayName = 'PaginationNext'
 
 type PaginationEllipsisProps = {
   size?: Size
-} & Omit<React.ComponentProps<'span'>, 'size'>
+} & Omit<ComponentProps<'span'>, 'size'>
 
 const ELLIPSIS_SIZES = {
   sm: 'h-8 w-8',

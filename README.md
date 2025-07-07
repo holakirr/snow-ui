@@ -1,9 +1,9 @@
 # Holakirr Snow UI
 
-SnowUI is a React UI of mostly (!) "stupid" (with no state or effect, you'll have to provide it by yourself) components library implementation of [SnowUI design kit](https://snowui.byewind.com) by [ByeWind](https://byewind.com/). Implemented and improved by [holakirr](https://github.com/holakirr). Based on TailwindCSS.
+SnowUI is a React UI components library implementation of [SnowUI design kit](https://snowui.byewind.com) by [ByeWind](https://byewind.com/). Implemented and improved by [holakirr](https://github.com/holakirr). Based on TailwindCSS.
 Build your design using [it](https://www.figma.com/community/file/1301134685302006646)
 
-[Beta build of storybook](https://snow-ui.holakirr.com)
+[Storybook](https://snow-ui.holakirr.com)
 
 Take a look at my [CV](https://holakirr.com) =)
 
@@ -31,7 +31,7 @@ bun add @holakirr/snow-ui
 Then just import styles:
 
 ```tsx
-import '@holakirr/snow-ui/styles.css'
+import '@holakirr/snow-ui/index.css'
 ```
 
 ### Basic example

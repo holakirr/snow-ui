@@ -7,9 +7,7 @@
   "types": "dist/cjs/index.d.ts",
   "module": "dist/esm/index.js",
   "style": "dist/index.css",
-  "files": [
-    "dist/**"
-  ],
+  "files": ["dist/**"],
   "author": {
     "name": "Kirill Petunin",
     "email": "kpetunin@icloud.com",
@@ -34,20 +32,15 @@
   },
   "description": "SnowUI is a React component library designed by ByeWind, implemented and improved by holakirr for creating beautiful and interactive user interfaces.",
   "homepage": "https://snow-ui.holakirr.com",
-  "keywords": [
-    "react",
-    "ui",
-    "snow-ui",
-    "snow"
-  ],
+  "keywords": ["react", "ui", "snow-ui", "snow"],
   "license": "MIT",
   "packageManager": "bun@1.1.43",
   "scripts": {
     "build": "rm -rf dist && bun run build:ts && bun run build:types:cjs && bun run build:types:esm && bun run build:css",
     "build:ts": "bun build.ts",
-    "build:types:cjs": "tsc -b ./src/tsconfig.cjs.json",
-    "build:types:esm": "tsc -b ./src/tsconfig.esm.json",
-    "build:css": "bunx @tailwindcss/cli@next -i ./src/index.css -o ./dist/index.css --minify",
+    "build:types:cjs": "bunx tsc -b ./src/tsconfig.cjs.json",
+    "build:types:esm": "bunx tsc -b ./src/tsconfig.esm.json",
+    "build:css": "bunx @tailwindcss/cli -i ./src/index.css -o ./dist/index.css --minify",
     "build:storybook": "storybook build --disable-telemetry",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",

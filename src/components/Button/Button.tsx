@@ -1,4 +1,4 @@
-import { type VariantProps, cva } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 import type { ElementType, JSX } from 'react'
 import { twMerge } from 'tailwind-merge'
 

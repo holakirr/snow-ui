@@ -2,9 +2,9 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
+import type { DateRange } from 'react-day-picker'
 import { ru } from 'react-day-picker/locale'
 
-import type { DateRange } from 'react-day-picker'
 import { Calendar } from './Calendar'
 
 const meta: Meta<typeof Calendar> = {

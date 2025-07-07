@@ -1,19 +1,15 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": ".tmp/tsconfig.cjs.tsbuildinfo",
-    "module": "ESNext",
-    "skipLibCheck": true,
+    "module": "CommonJS",
     "moduleResolution": "Node",
-    "lib": ["DOM", "ESNext", "DOM.Iterable"],
-    "jsx": "react-jsx",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "../dist/cjs",
-    "esModuleInterop": true,
-    "verbatimModuleSyntax": true
+    "target": "ES2020",
+    "allowSyntheticDefaultImports": true
   },
-  "exclude": [".storybook", "test", "**/*.test.*","**/*.stories.*", "tsconfig.*"]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["test", "**/*.test.*", "**/*.stories.*", "tsconfig.*"]
 }

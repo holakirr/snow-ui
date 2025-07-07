@@ -13,8 +13,8 @@ import {
 import { Separator } from '../Separator'
 import { Tag } from '../Tag'
 import { Text } from '../Text'
-import { EventItem } from './EventItem'
 import { HOUR_HEIGHT } from './constants'
+import { EventItem } from './EventItem'
 
 /**
  * Props для компонента Scheduler

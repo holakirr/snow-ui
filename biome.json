@@ -1,8 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
+  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
   "linter": {
     "enabled": true,
     "rules": {
@@ -19,14 +16,7 @@
     }
   },
   "files": {
-    "ignore": [
-      "node_modules",
-      "dist",
-      "storybook-static",
-      "*.locb",
-      "*.lock",
-      "tsconfig.*.json"
-    ]
+    "ignoreUnknown": false
   },
   "formatter": {
     "enabled": true,

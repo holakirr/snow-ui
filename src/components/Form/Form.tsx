@@ -3,9 +3,9 @@
 import { Slot } from '@radix-ui/react-slot'
 import {
   type ComponentPropsWithoutRef,
+  createContext,
   type FC,
   type HTMLAttributes,
-  createContext,
   useContext,
   useId,
 } from 'react'

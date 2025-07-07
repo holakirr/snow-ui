@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@variant dark (@media (prefers-color-scheme: dark) &:not(.[data-theme="light"] *), &:where([data-theme="dark"] *));
-
 @layer base {
   :root {
     --black: 0, 0, 0;
@@ -44,42 +42,44 @@
   }
 }
 
-@theme {
-  --font-normal: Inter, sans-serif;
+@layer base {
+  :root {
+    --font-normal: Inter, sans-serif;
 
-  --color-black: rgba(var(--black));
-  --color-white: rgba(var(--white));
-  --color-brand: rgba(var(--brand));
-  --color-brand-hover: rgba(var(--brand-hover));
-  --color-purple: rgba(201, 179, 237);
-  --color-indigo: rgba(159, 159, 248);
-  --color-blue: rgba(146, 191, 255);
-  --color-cyan: rgba(174, 199, 237);
-  --color-mint: rgba(150, 226, 214);
-  --color-green: rgba(148, 233, 184);
-  --color-yellow: rgba(255, 219, 86);
-  --color-orange: rgba(255, 181, 91);
-  --color-red: rgba(255, 71, 71);
-  --color-bg1: rgba(var(--bg1));
-  --color-bg2: rgba(var(--bg2));
-  --color-bg3: rgba(230, 241, 253);
-  --color-bg4: rgba(237, 238, 252);
-  --color-bg5: rgba(var(--bg5));
+    --color-black: rgba(var(--black));
+    --color-white: rgba(var(--white));
+    --color-brand: rgba(var(--brand));
+    --color-brand-hover: rgba(var(--brand-hover));
+    --color-purple: rgba(201, 179, 237);
+    --color-indigo: rgba(159, 159, 248);
+    --color-blue: rgba(146, 191, 255);
+    --color-cyan: rgba(174, 199, 237);
+    --color-mint: rgba(150, 226, 214);
+    --color-green: rgba(148, 233, 184);
+    --color-yellow: rgba(255, 219, 86);
+    --color-orange: rgba(255, 181, 91);
+    --color-red: rgba(255, 71, 71);
+    --color-bg1: rgba(var(--bg1));
+    --color-bg2: rgba(var(--bg2));
+    --color-bg3: rgba(230, 241, 253);
+    --color-bg4: rgba(237, 238, 252);
+    --color-bg5: rgba(var(--bg5));
 
-  --animate-accordion-down: accordion-down 0.3s ease-out;
-  --animate-accordion-up: accordion-up 0.3s ease-out;
-  --animate-in: animate-in 0.3s ease-out;
-  --animate-out: animate-out 0.3s ease-out;
-  --animate-slide-in-from-top: slide-in-from-top 0.3s ease-out;
-  --animate-slide-in-from-right: slide-in-from-right 0.3s ease-out;
-  --animate-slide-in-from-left: slide-in-from-left 0.3s ease-out;
-  --animate-slide-in-from-bottom: slide-in-from-bottom 0.3s ease-out;
-  --animate-slide-out-to-top: slide-out-to-top 0.3s ease-out;
-  --animate-slide-out-to-right: slide-out-to-right 0.3s ease-out;
-  --animate-slide-out-to-left: slide-out-to-left 0.3s ease-out;
-  --animate-slide-out-to-bottom: slide-out-to-bottom 0.3s ease-out;
-  --animate-zoom-in-95: zoom-in-95 0.3s ease-out;
-  --animate-zoom-out-95: zoom-out-95 0.3s ease-out;
+    --animate-accordion-down: accordion-down 0.3s ease-out;
+    --animate-accordion-up: accordion-up 0.3s ease-out;
+    --animate-in: animate-in 0.3s ease-out;
+    --animate-out: animate-out 0.3s ease-out;
+    --animate-slide-in-from-top: slide-in-from-top 0.3s ease-out;
+    --animate-slide-in-from-right: slide-in-from-right 0.3s ease-out;
+    --animate-slide-in-from-left: slide-in-from-left 0.3s ease-out;
+    --animate-slide-in-from-bottom: slide-in-from-bottom 0.3s ease-out;
+    --animate-slide-out-to-top: slide-out-to-top 0.3s ease-out;
+    --animate-slide-out-to-right: slide-out-to-right 0.3s ease-out;
+    --animate-slide-out-to-left: slide-out-to-left 0.3s ease-out;
+    --animate-slide-out-to-bottom: slide-out-to-bottom 0.3s ease-out;
+    --animate-zoom-in-95: zoom-in-95 0.3s ease-out;
+    --animate-zoom-out-95: zoom-out-95 0.3s ease-out;
+  }
 
   @keyframes accordion-down {
     from {
@@ -195,8 +195,10 @@
   }
 }
 
-@utility opacity-4 {
-  opacity: 0.04;
+@layer utilities {
+  .opacity-4 {
+    opacity: 0.04;
+  }
 }
 
 @layer components {

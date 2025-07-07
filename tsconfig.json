@@ -20,5 +20,5 @@
     "types": ["node"]
   },
   "include": ["src/**/*", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist", "**/*.test.*", "**/*.stories.*"]
+  "exclude": ["node_modules", "dist", "**/*.test.*"]
 }

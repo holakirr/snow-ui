@@ -1,9 +1,8 @@
 'use client'
 
+import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
 import { twMerge } from 'tailwind-merge'
-
-import { type VariantProps, cva } from 'class-variance-authority'
 import { ROLES } from '../../constants'
 
 const inputVariants = cva(

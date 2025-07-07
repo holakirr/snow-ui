@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
-
 import { DefaultIcon } from '@holakirr/snow-ui-icons'
+import type { Meta, StoryObj } from '@storybook/react'
 import { SIZES, TOGGLE_VARIANTS } from '../../constants'
 import { Text } from '../Text'
 import { Toggle } from './Toggle'

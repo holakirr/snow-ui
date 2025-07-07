@@ -1,10 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react'
-
 import {
   ArrowsDownIcon,
   ArrowsDownUpIcon,
   ArrowsUpIcon,
 } from '@holakirr/snow-ui-icons'
+import type { Meta, StoryObj } from '@storybook/react'
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup'
 
 const meta: Meta<typeof ToggleGroup> = {

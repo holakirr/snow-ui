@@ -1,5 +1,5 @@
 import { ArrowLineUpDownIcon } from '@holakirr/snow-ui-icons'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   type ColumnDef,
   type ColumnFiltersState,

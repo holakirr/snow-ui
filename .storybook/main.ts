@@ -8,7 +8,6 @@ const config: StorybookConfig = {
 		reactDocgen: 'react-docgen',
 	},
 	viteFinal: async config => {
-		// Убираем потенциально проблемные плагины
 		config.plugins = config.plugins?.filter(plugin => {
 			if (typeof plugin === 'object' && plugin !== null && 'name' in plugin) {
 				return !plugin.name?.includes('tailwind')

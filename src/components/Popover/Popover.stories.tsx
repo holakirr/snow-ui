@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '../Button'
 import { Text } from '../Text'
 import { Popover, PopoverContent, PopoverTrigger } from './Popover'

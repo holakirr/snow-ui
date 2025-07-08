@@ -3,7 +3,7 @@ import {
   ArrowsDownUpIcon,
   ArrowsUpIcon,
 } from '@holakirr/snow-ui-icons'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup'
 
 const meta: Meta<typeof ToggleGroup> = {

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -58,23 +58,17 @@ const FormExample = () => {
   )
 }
 
-const meta = {
+const meta: Meta = {
   title: 'Components/Form',
-  component: () => <form />,
+  component: FormExample,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
   argTypes: {},
-  args: {
-    children: 'Label',
-  },
-  render: () => <FormExample />,
-} satisfies Meta<typeof Form>
+}
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  args: {},
-}
+export const Default: Story = {}

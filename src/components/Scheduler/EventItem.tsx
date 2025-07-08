@@ -24,7 +24,8 @@ export const EventItem: FC<EventItemProps> = ({ event, onEventClick }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: since we are using onClick */}
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: since we are using onClick */}
         <div
           className="w-full bg-bg4 flex flex-col gap-2 p-2 rounded-lg cursor-pointer absolute z-[1]"
           onClick={(e) => {

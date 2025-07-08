@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { BUTTON_VARIANTS, ROLES, SIZES } from '../../constants'
 import { Text } from '../Text/Text'
 import { Button } from './Button'

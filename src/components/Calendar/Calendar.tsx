@@ -353,21 +353,21 @@ function Calendar({
                     const isBefore =
                       differenceInCalendarDays(
                         new Date(displayYears.from + i, 11, 31),
-                        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+                        // biome-ignore lint/style/noNonNullAssertion: it's necessary to use the startMonth
                         startMonth!,
                       ) < 0
 
                     const isAfter =
                       differenceInCalendarDays(
                         new Date(displayYears.from + i, 0, 0),
-                        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+                        // biome-ignore lint/style/noNonNullAssertion: it's necessary to use the endMonth
                         endMonth!,
                       ) > 0
 
                     const isDisabled = isBefore || isAfter
                     return (
                       <Button
-                        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                        // biome-ignore lint/suspicious/noArrayIndexKey: it's necessary to use the index as a key
                         key={i}
                         className={twMerge(
                           'h-7 w-full text-sm font-normal text-foreground',

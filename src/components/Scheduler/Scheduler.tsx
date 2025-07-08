@@ -111,10 +111,12 @@ const Scheduler: FC<SchedulerProps> = ({
             })}
           </Text>
           {weekDates.map((date) => (
-            // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+            // biome-ignore lint/a11y/noStaticElementInteractions: since we are using onClick
+            // biome-ignore lint/a11y/useKeyWithClickEvents: since we are using onClick
             <div
               key={date.toLocaleDateString() + hour}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault()
                 const clickedDate = new Date(date)
                 clickedDate.setHours(hour)
                 onDateClick(clickedDate)
@@ -149,7 +151,10 @@ const Scheduler: FC<SchedulerProps> = ({
         <div
           className="absolute left-0 w-full px-4 flex justify-center items-center z-10"
           style={{
-            top: `${(1 + (now.getHours() - earliestHour) + now.getMinutes() / 60) * HOUR_HEIGHT}px`,
+            top: `${
+              (1 + (now.getHours() - earliestHour) + now.getMinutes() / 60) *
+              HOUR_HEIGHT
+            }px`,
           }}
         >
           <Tag

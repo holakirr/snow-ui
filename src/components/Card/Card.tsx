@@ -20,7 +20,6 @@ type CardProps = ComponentProps<'div'> & VariantProps<typeof cardStyles>
 const Card: FC<CardProps> = ({ bordered, className, ...props }) => (
   <div
     role={ROLES.region}
-    aria-label="card"
     className={twMerge(cardStyles({ bordered, className }))}
     {...props}
   />

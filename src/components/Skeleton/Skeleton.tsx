@@ -9,7 +9,6 @@ const Skeleton: FC<SkeletonProps> = ({ className, ...props }) => (
   <div
     role={ROLES.progressbar}
     aria-busy="true"
-    aria-label="Loading content..."
     className={twMerge(
       'animate-pulse rounded-md bg-linear-to-t from-white to-black/10',
       className,

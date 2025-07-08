@@ -3,7 +3,7 @@ import {
   type ComponentProps,
   type FC,
   isValidElement,
-  useId,
+  useMemo,
 } from 'react'
 import { SIMPLE_SIZES } from '../../constants'
 import { Avatar, AvatarFallback, type AvatarProps } from './Avatar'
@@ -28,6 +28,15 @@ const AvatarGroup: FC<AvatarGroupProps> = ({
   const rest = kids.length - items
   let size: AvatarProps['size'] = SIMPLE_SIZES.lg
 
+  // Generate unique IDs at the top level
+  const itemIds = useMemo(
+    () =>
+      kids
+        .slice(0, items)
+        .map(() => `avatar-${Math.random().toString(36).slice(2)}`),
+    [kids, items],
+  )
+
   if (
     kids[0] &&
     isValidElement<AvatarProps>(kids[0]) &&
@@ -38,8 +47,8 @@ const AvatarGroup: FC<AvatarGroupProps> = ({
 
   return (
     <div className="flex -space-x-2" {...props}>
-      {kids.slice(0, items).map((child) => (
-        <AvatarWrapper key={useId()}>{child}</AvatarWrapper>
+      {kids.slice(0, items).map((child, index) => (
+        <AvatarWrapper key={itemIds[index]}>{child}</AvatarWrapper>
       ))}
       {rest > 0 && (
         <AvatarWrapper>

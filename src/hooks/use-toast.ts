@@ -175,7 +175,7 @@ function toast({ ...props }: Toast) {
 function useToast() {
   const [state, setState] = useState<State>(memoryState)
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: it's necessary to use state in the effect
   useEffect(() => {
     listeners.push(setState)
     return () => {

@@ -41,7 +41,7 @@
     "snow"
   ],
   "license": "MIT",
-  "packageManager": "bun@1.1.43",
+  "packageManager": "bun@1.2.19",
   "scripts": {
     "build": "rm -rf dist && bun run build:ts && bun run build:types:cjs && bun run build:types:esm && bun run build:css",
     "build:ts": "bun build.ts",

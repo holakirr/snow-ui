@@ -131,10 +131,10 @@
     "tailwindcss": "^4.0.1",
     "typescript": "^5.8.3",
     "util": "^0.12.5",
-    "vite": "^6.0.0",
+    "vite": "^7.0.6",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.4",
-    "zod": "^3.25.75"
+    "zod": "^4.0.14"
   },
   "engines": {
     "bun": ">=1.0.0"

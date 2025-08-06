@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
-import { Text } from './Text'
+import { Typography } from './Text'
 
 const meta = {
   title: 'Components/Text/Text',
-  component: Text,
+  component: Typography,
   parameters: {
     layout: 'centered',
   },
@@ -14,7 +14,7 @@ const meta = {
     children: 'Text',
     className: 'text-black',
   },
-} satisfies Meta<typeof Text>
+} satisfies Meta<typeof Typography>
 
 export default meta
 type Story = StoryObj<typeof meta>

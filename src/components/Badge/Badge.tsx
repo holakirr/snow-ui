@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { ROLES, TEXT_SIZES } from '../../constants'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 
 /**
  * Props for the BadgeComponent.
@@ -19,7 +19,7 @@ export const BadgeComponent = ({
   className,
   ...props
 }: BadgeComponentProps) => (
-  <Text
+  <Typography
     as="span"
     size={TEXT_SIZES[12]}
     role={ROLES.status}
@@ -32,7 +32,7 @@ export const BadgeComponent = ({
     {...props}
   >
     {content}
-  </Text>
+  </Typography>
 )
 
 /**

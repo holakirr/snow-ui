@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { ROLES } from '../../constants'
 import { Button } from '../Button'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 
 /**
  * Props for the Tag component.
@@ -51,7 +51,7 @@ const Tag: FC<TagProps> = ({
   >
     {leftContent}
 
-    <Text as="span">{label}</Text>
+    <Typography as="span">{label}</Typography>
 
     {onClose && (
       <Button

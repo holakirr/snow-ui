@@ -9,7 +9,7 @@ import type {
   Size,
   TextSize,
 } from '../../types'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 
 const defaultTag = 'button'
 
@@ -115,12 +115,12 @@ const Button = <C extends ElementType = typeof defaultTag>({
     >
       {leftContent}
       {label && (
-        <Text
+        <Typography
           className="group-hover:px-1 text-center text-inherit"
           size={textSize}
         >
           {label}
-        </Text>
+        </Typography>
       )}
       {children}
       {rightContent}

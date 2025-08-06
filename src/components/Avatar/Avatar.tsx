@@ -6,7 +6,7 @@ import type { ComponentProps, FC } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { SIZES } from '../../constants'
 import type { Size } from '../../types'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 
 const avatarStyles = cva(
   'brightness-100 hover:brightness-105 rounded-full transition-all overflow-hidden aspect-square flex items-center justify-center',
@@ -63,7 +63,7 @@ const AvatarFallback: FC<AvatarFallbackProps> = ({
     )}
     {...props}
   >
-    <Text size={12}>{children}</Text>
+    <Typography size={12}>{children}</Typography>
   </AvatarPrimitive.Fallback>
 )
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName

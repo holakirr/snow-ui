@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
-import { Text } from '../Text'
+import { Typography } from '../Text'
 import { Separator } from './Separator'
 
 const meta: Meta<typeof Separator> = {
@@ -38,9 +38,9 @@ export const Default: Story = {
   args: {},
   render: (args) => (
     <div className="flex flex-col gap-2">
-      <Text>Content above</Text>
+      <Typography>Content above</Typography>
       <Separator {...args} />
-      <Text>Content below</Text>
+      <Typography>Content below</Typography>
     </div>
   ),
 }
@@ -51,9 +51,9 @@ export const Vertical: Story = {
   },
   render: (args) => (
     <div className="flex h-[100px] items-center gap-4">
-      <Text>Left content</Text>
+      <Typography>Left content</Typography>
       <Separator {...args} />
-      <Text>Right content</Text>
+      <Typography>Right content</Typography>
     </div>
   ),
 }
@@ -64,9 +64,9 @@ export const CustomStyles: Story = {
   },
   render: (args) => (
     <div className="flex flex-col gap-2">
-      <Text>Custom styled separator</Text>
+      <Typography>Custom styled separator</Typography>
       <Separator {...args} />
-      <Text>Below content</Text>
+      <Typography>Below content</Typography>
     </div>
   ),
 }

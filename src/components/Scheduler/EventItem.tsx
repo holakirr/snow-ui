@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '../DropdownMenu'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 import { HOUR_HEIGHT } from './constants'
 
 export type EventItemProps = ComponentProps<'div'> & {
@@ -39,30 +39,30 @@ export const EventItem: FC<EventItemProps> = ({ event, onEventClick }) => {
           }}
         >
           <div className="flex flex-col text-nowrap text-[#000]">
-            <Text size={TEXT_SIZES[12]} className="truncate">
+            <Typography size={TEXT_SIZES[12]} className="truncate">
               {title}
-            </Text>
+            </Typography>
 
             <div className="flex gap-0.5 text-nowrap opacity-40">
-              <Text size={TEXT_SIZES[12]}>
+              <Typography size={TEXT_SIZES[12]}>
                 {date
                   .toLocaleTimeString('ru-RU', {
                     hour: '2-digit',
                     minute: 'numeric',
                   })
                   .substring(0, 5)}
-              </Text>
+              </Typography>
 
-              <Text size={TEXT_SIZES[12]}>-</Text>
+              <Typography size={TEXT_SIZES[12]}>-</Typography>
 
-              <Text size={TEXT_SIZES[12]}>
+              <Typography size={TEXT_SIZES[12]}>
                 {endsAt
                   .toLocaleTimeString('ru-RU', {
                     hour: '2-digit',
                     minute: 'numeric',
                   })
                   .substring(0, 5)}
-              </Text>
+              </Typography>
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@ export const EventItem: FC<EventItemProps> = ({ event, onEventClick }) => {
           dropdownContentRenderer(event)
         ) : (
           <div className="flex flex-col gap-2 p-2">
-            <Text size={TEXT_SIZES[12]}>{title}</Text>
+            <Typography size={TEXT_SIZES[12]}>{title}</Typography>
           </div>
         )}
       </DropdownMenuContent>

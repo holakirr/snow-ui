@@ -10,7 +10,7 @@ import * as AccordionPrimitive from '@radix-ui/react-accordion'
 import type { FC } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { Text } from '../Text'
+import { Typography } from '../Text'
 
 const AccordionContent: FC<AccordionContentProps> = ({ ...props }) => (
   <AccordionPrimitive.Content
@@ -29,7 +29,9 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
       tabIndex={0}
       {...props}
     >
-      <Text size={16}>{children}</Text>
+      <Typography as="span" size={16}>
+        {children}
+      </Typography>
 
       <ArrowLineRightIcon className="data-[state=open]:rotate-90" />
     </AccordionPrimitive.Trigger>

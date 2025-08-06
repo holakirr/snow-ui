@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../DropdownMenu'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 import {
   Sidebar,
   SidebarContent,
@@ -109,7 +109,7 @@ const Header = () => (
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </picture>
-          <Text>Profile</Text>
+          <Typography as="span">Profile</Typography>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

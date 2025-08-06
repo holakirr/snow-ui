@@ -56,7 +56,7 @@ export type TextProps<C extends ElementType = typeof defaultTag> =
 /**
  * Text component displays text with various styles.
  */
-function Text<C extends ElementType = typeof defaultTag>({
+function Typography<C extends ElementType = typeof defaultTag>({
   as,
   size,
   semibold,
@@ -83,5 +83,5 @@ function Text<C extends ElementType = typeof defaultTag>({
   )
 }
 
-Text.displayName = 'Text'
-export { Text }
+Typography.displayName = 'Typography'
+export { Typography }

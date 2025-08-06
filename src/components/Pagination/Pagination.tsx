@@ -3,7 +3,7 @@ import type { ComponentProps, FC } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { Size } from '../../types'
 import { buttonVariants } from '../Button'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 
 const Pagination: FC<ComponentProps<'nav'>> = ({
   className,
@@ -125,7 +125,7 @@ const PaginationEllipsis = ({
       )}
       {...props}
     >
-      <Text>...</Text>
+      <Typography>...</Typography>
       <span className="sr-only">More pages</span>
     </span>
   )

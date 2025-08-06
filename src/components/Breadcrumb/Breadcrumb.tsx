@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { ROLES } from '../../constants'
 import { Button } from '../Button'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 
 export type BreadcrumbProps = ComponentProps<'nav'>
 
@@ -92,7 +92,7 @@ const BreadcrumbEllipsis: FC<ComponentProps<'span'>> = ({
     className={twMerge('flex items-center justify-center', className)}
     {...props}
   >
-    <Text>...</Text>
+    <Typography>...</Typography>
 
     <span className="sr-only">Additional navigation elements</span>
   </span>

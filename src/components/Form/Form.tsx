@@ -20,7 +20,7 @@ import {
 import { twMerge } from 'tailwind-merge'
 
 import { Label, type LabelProps } from '../Label'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 
 const Form = FormProvider
 
@@ -132,7 +132,7 @@ const FormDescription: FC<FormDescriptionProps> = ({ className, ...props }) => {
   const { formDescriptionId } = useFormField()
 
   return (
-    <Text
+    <Typography
       as="p"
       id={formDescriptionId}
       className={twMerge('text-base text-black/40', className)}
@@ -158,14 +158,14 @@ const FormMessage: FC<FormMessageProps> = ({
   }
 
   return (
-    <Text
+    <Typography
       as="p"
       id={formMessageId}
       className={twMerge('text-sm font-medium text-destructive', className)}
       {...props}
     >
       {body}
-    </Text>
+    </Typography>
   )
 }
 

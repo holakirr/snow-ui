@@ -12,7 +12,7 @@ import {
 } from '../../utils'
 import { Separator } from '../Separator'
 import { Tag } from '../Tag'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 import { HOUR_HEIGHT } from './constants'
 import { EventItem } from './EventItem'
 
@@ -73,7 +73,7 @@ const Scheduler: FC<SchedulerProps> = ({
             key={date.toLocaleDateString()}
             className="flex justify-center items-center"
           >
-            <Text
+            <Typography
               size={TEXT_SIZES[12]}
               className={twMerge(
                 'text-black/40 px-1 py-0.5 rounded',
@@ -88,7 +88,7 @@ const Scheduler: FC<SchedulerProps> = ({
                 weekday: 'short',
                 day: 'numeric',
               })}
-            </Text>
+            </Typography>
           </div>
           {i > 0 && (
             <Separator
@@ -105,11 +105,11 @@ const Scheduler: FC<SchedulerProps> = ({
 
       {hours.map((hour) => (
         <Fragment key={hour}>
-          <Text size={TEXT_SIZES[12]} className="text-black/40">
+          <Typography size={TEXT_SIZES[12]} className="text-black/40">
             {new Date(new Date().setHours(hour)).toLocaleTimeString('en-US', {
               hour: 'numeric',
             })}
-          </Text>
+          </Typography>
           {weekDates.map((date) => (
             // biome-ignore lint/a11y/noStaticElementInteractions: since we are using onClick
             // biome-ignore lint/a11y/useKeyWithClickEvents: since we are using onClick

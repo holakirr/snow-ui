@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { BUTTON_VARIANTS, ROLES, SIZES } from '../../constants'
-import { Text } from '../Text/Text'
+import { Typography } from '../Text/Text'
 import { Button } from './Button'
 
 const leftIcon = (
@@ -101,7 +101,7 @@ export const AllVariants: Story = {
     >
       {Object.values(BUTTON_VARIANTS).map((variant) => (
         <>
-          <Text key={`${variant}-text`}>{variant}</Text>
+          <Typography key={`${variant}-text`}>{variant}</Typography>
           <Button key={variant} {...args} variant={variant} />
         </>
       ))}
@@ -135,7 +135,7 @@ export const AllSizes: Story = {
     >
       {Object.values(SIZES).map((size) => (
         <>
-          <Text key={`${size}-text`}>{size}</Text>
+          <Typography key={`${size}-text`}>{size}</Typography>
           <Button key={size} {...args} size={size} />
         </>
       ))}

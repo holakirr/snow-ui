@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Button } from '../Button'
 import { Input } from '../Input'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 import {
   Dialog,
   DialogBody,
@@ -33,9 +33,9 @@ const meta = {
           <DialogTitle>Edit profile</DialogTitle>
         </DialogHeader>
         <DialogBody className="flex flex-col items-center gap-4">
-          <Text>
+          <Typography>
             Make changes to your profile here. Click save when you're done.
-          </Text>
+          </Typography>
           <div className="flex justify-between gap-2">
             <Input id="name" title="Name" defaultValue="Pedro Duarte" />
             <Input id="username" title="Username" defaultValue="@peduarte" />

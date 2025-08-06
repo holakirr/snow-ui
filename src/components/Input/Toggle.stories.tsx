@@ -1,7 +1,7 @@
 import { DefaultIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SIZES, TOGGLE_VARIANTS } from '../../constants'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 import { Toggle } from './Toggle'
 
 const meta: Meta<typeof Toggle> = {
@@ -68,7 +68,7 @@ export const WithText: Story = {
     <Toggle variant="outline" {...args}>
       <DefaultIcon />
 
-      <Text>Toggle</Text>
+      <Typography>Toggle</Typography>
     </Toggle>
   ),
 }

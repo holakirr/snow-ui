@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '../Button'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 import { Popover, PopoverContent, PopoverTrigger } from './Popover'
 
 const meta: Meta<typeof Popover> = {
@@ -30,7 +30,7 @@ export const Default: Story = {
         </PopoverTrigger>
         <PopoverContent>
           <div className="flex flex-col gap-2">
-            <Text>Popover content</Text>
+            <Typography>Popover content</Typography>
           </div>
         </PopoverContent>
       </>

@@ -4,7 +4,7 @@ import type { CalendarEvent } from '../../types'
 import { Button } from '../Button'
 import { Input } from '../Input'
 import { Sheet, SheetContent, SheetTrigger } from '../Sheet'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 import { Scheduler } from './Scheduler'
 
 const sampleEvents: CalendarEvent[] = [
@@ -69,11 +69,11 @@ export const MultipleEventsPerHour: Story = {
         dropdownContentRenderer: ({ title, date, id, endsAt }) => (
           <div className="flex flex-col items-start gap-2">
             <div className="flex flex-col">
-              <Text>
+              <Typography>
                 {id}-{title}
-              </Text>
+              </Typography>
 
-              <Text>
+              <Typography>
                 {date.toLocaleTimeString('ru-RU', {
                   hour: '2-digit',
                   minute: 'numeric',
@@ -83,7 +83,7 @@ export const MultipleEventsPerHour: Story = {
                   hour: '2-digit',
                   minute: 'numeric',
                 })}
-              </Text>
+              </Typography>
             </div>
             <div className="flex gap-2">
               <Sheet>
@@ -92,20 +92,20 @@ export const MultipleEventsPerHour: Story = {
                 </SheetTrigger>
                 <SheetContent>
                   <div className="flex flex-col text-black text-2xl gap-6 pt-8">
-                    <Text>#{id}</Text>
+                    <Typography>#{id}</Typography>
                     <div className="flex flex-col gap-4">
                       <div className="flex flex-col">
-                        <Text>Title: {title}</Text>
+                        <Typography>Title: {title}</Typography>
                         <Input defaultValue={title} />
                       </div>
                       <div className="flex flex-col">
-                        <Text>
+                        <Typography>
                           Starts at:{' '}
                           {date.toLocaleTimeString('ru-RU', {
                             hour: '2-digit',
                             minute: 'numeric',
                           })}
-                        </Text>
+                        </Typography>
                         <Input
                           defaultValue={date.toLocaleTimeString('ru-RU', {
                             hour: '2-digit',
@@ -114,13 +114,13 @@ export const MultipleEventsPerHour: Story = {
                         />
                       </div>
                       <div className="flex flex-col">
-                        <Text>
+                        <Typography>
                           Ends at:{' '}
                           {endsAt.toLocaleTimeString('ru-RU', {
                             hour: '2-digit',
                             minute: 'numeric',
                           })}
-                        </Text>
+                        </Typography>
                         <Input
                           defaultValue={endsAt.toLocaleTimeString('ru-RU', {
                             hour: '2-digit',

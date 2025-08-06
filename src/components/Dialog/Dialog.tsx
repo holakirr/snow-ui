@@ -6,7 +6,7 @@ import type { ComponentProps, ComponentPropsWithoutRef, FC, JSX } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { Button } from '../Button'
-import { Text } from '../Text'
+import { Typography } from '../Text'
 
 const animationClasses =
   'data-[state=open]:scale-100 starting:data-[state=open]:scale-0 data-[state=closed]:scale-0 starting:data-[state=closed]:scale-100 data-[state=closed]:opacity-0 starting:data-[state=closed]:opacity-100 data-[state=open]:opacity-100 starting:data-[state=open]:opacity-0'
@@ -72,7 +72,7 @@ const DialogHeader: FC<DialogHeaderProps> = ({
     {children}
     <DialogPrimitive.Close asChild>
       <Button variant="gray" size="md" leftContent={<CloseIcon size={24} />}>
-        <Text className="sr-only">Close</Text>
+        <Typography className="sr-only">Close</Typography>
       </Button>
     </DialogPrimitive.Close>
   </div>

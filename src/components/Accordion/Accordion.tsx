@@ -29,7 +29,9 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
       tabIndex={0}
       {...props}
     >
-      <Typography size={16}>{children}</Typography>
+      <Typography as="span" size={16}>
+        {children}
+      </Typography>
 
       <ArrowLineRightIcon className="data-[state=open]:rotate-90" />
     </AccordionPrimitive.Trigger>

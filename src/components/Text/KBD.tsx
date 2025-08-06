@@ -9,17 +9,21 @@ type KBDProps = TextProps<'kbd'> & {
   separator?: string
 }
 
-const KBD: FC<KBDProps> = ({ keys, separator = '', className, ...props }) => (
-  <Typography
-    as="kbd"
-    role={ROLES.definition}
-    aria-keyshortcuts={keys.join(separator)}
-    className={twMerge('w-min text-black/20', className)}
-    {...props}
-  >
-    {keys.join(separator)}
-  </Typography>
-)
+const KBD: FC<KBDProps> = ({ keys, separator = '+', className, ...props }) => {
+  const shortcut = keys.join(separator)
+
+  return (
+    <Typography
+      as="kbd"
+      role={ROLES.definition}
+      aria-keyshortcuts={shortcut}
+      className={twMerge('w-min text-black/20', className)}
+      {...props}
+    >
+      {shortcut}
+    </Typography>
+  )
+}
 KBD.displayName = 'KBD'
 
 export { KBD, type KBDProps }

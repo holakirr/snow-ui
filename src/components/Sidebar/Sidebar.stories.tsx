@@ -109,7 +109,7 @@ const Header = () => (
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </picture>
-          <Typography>Profile</Typography>
+          <Typography as="span">Profile</Typography>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

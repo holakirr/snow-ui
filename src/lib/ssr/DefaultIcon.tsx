@@ -1,10 +1,8 @@
-import { IconBase } from '../IconBase'
-import { DefaultIconWeights } from '../defs'
-import type { Icon } from '../types'
+import { DefaultIconWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const DefaultIcon: Icon = (props) => (
-  <IconBase {...props} weights={DefaultIconWeights} />
-)
+const DefaultIcon: Icon = (props) => <IconBase {...props} weights={DefaultIconWeights} />;
 
-DefaultIcon.displayName = 'DefaultIcon'
-export { DefaultIcon }
+DefaultIcon.displayName = "DefaultIcon";
+export { DefaultIcon };

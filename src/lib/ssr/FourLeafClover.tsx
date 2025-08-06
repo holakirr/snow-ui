@@ -1,10 +1,8 @@
-import { IconBase } from '../IconBase'
-import { FourLeafCloverWeights } from '../defs'
-import type { Icon } from '../types'
+import { FourLeafCloverWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const FourLeafCloverIcon: Icon = (props) => (
-  <IconBase {...props} weights={FourLeafCloverWeights} />
-)
+const FourLeafCloverIcon: Icon = (props) => <IconBase {...props} weights={FourLeafCloverWeights} />;
 
-FourLeafCloverIcon.displayName = 'FourLeafCloverIcon'
-export { FourLeafCloverIcon }
+FourLeafCloverIcon.displayName = "FourLeafCloverIcon";
+export { FourLeafCloverIcon };

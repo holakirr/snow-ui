@@ -1,10 +1,8 @@
-import { IconBase } from '../IconBase'
-import { ClipboardWeights } from '../defs'
-import type { Icon } from '../types'
+import { ClipboardWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const ClipboardIcon: Icon = (props) => (
-  <IconBase {...props} weights={ClipboardWeights} />
-)
+const ClipboardIcon: Icon = (props) => <IconBase {...props} weights={ClipboardWeights} />;
 
-ClipboardIcon.displayName = 'ClipboardIcon'
-export { ClipboardIcon }
+ClipboardIcon.displayName = "ClipboardIcon";
+export { ClipboardIcon };

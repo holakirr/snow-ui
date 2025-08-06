@@ -1,10 +1,8 @@
-import { IconBase } from '../IconBase'
-import { NotepadWeights } from '../defs'
-import type { Icon } from '../types'
+import { NotepadWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const NotepadIcon: Icon = (props) => (
-  <IconBase {...props} weights={NotepadWeights} />
-)
+const NotepadIcon: Icon = (props) => <IconBase {...props} weights={NotepadWeights} />;
 
-NotepadIcon.displayName = 'NotepadIcon'
-export { NotepadIcon }
+NotepadIcon.displayName = "NotepadIcon";
+export { NotepadIcon };

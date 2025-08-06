@@ -1,10 +1,8 @@
-import { IconBase } from '../IconBase'
-import { ExplainWeights } from '../defs'
-import type { Icon } from '../types'
+import { ExplainWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const ExplainIcon: Icon = (props) => (
-  <IconBase {...props} weights={ExplainWeights} />
-)
+const ExplainIcon: Icon = (props) => <IconBase {...props} weights={ExplainWeights} />;
 
-ExplainIcon.displayName = 'ExplainIcon'
-export { ExplainIcon }
+ExplainIcon.displayName = "ExplainIcon";
+export { ExplainIcon };

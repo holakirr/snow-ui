@@ -1,589 +1,440 @@
-import { Text } from '@holakirr/snow-ui'
-import type { Meta, StoryObj } from '@storybook/react'
-import { expect, within } from '@storybook/test'
+import { Typography } from "@holakirr/snow-ui";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, within } from "storybook/test";
 
-import { ICON_SIZES, ICON_WEIGHTS } from './constants'
+import { ICON_SIZES, ICON_WEIGHTS } from "./constants";
 import {
-  AIIcon,
-  AddIcon,
-  ArrowFallIcon,
-  ArrowLineDownIcon,
-  ArrowLineLeftIcon,
-  ArrowLineRightIcon,
-  ArrowLineUpDownIcon,
-  ArrowLineUpIcon,
-  ArrowRightIcon,
-  ArrowRiseIcon,
-  ArrowsDownIcon,
-  ArrowsDownUpIcon,
-  ArrowsUpIcon,
-  ClipboardIcon,
-  CloseIcon,
-  CopyIcon,
-  DefaultIcon,
-  DocXIcon,
-  DotIcon,
-  DotsThreeOutlineHorizontalIcon,
-  ExplainIcon,
-  FormIcon,
-  FourLeafCloverIcon,
-  FourPointedStarIcon,
-  GotoIcon,
-  HelpIcon,
-  HorizontalScreenIcon,
-  LineIcon,
-  LoadingAIcon,
-  LoadingBIcon,
-  MaximizeIcon,
-  MinimizeIcon,
-  NotepadIcon,
-  OneNoteIcon,
-  PPTIcon,
-  RectangleIcon,
-  RightBarIcon,
-  RoundedCornerIcon,
-  SearchIcon,
-  SnowUIIcon,
-  StarIcon,
-  StopIcon,
-  TXTIcon,
-  TextAIcon,
-  VariablesIcon,
-  VerticalScreenIcon,
-  WindowedIcon,
-  XCircleIcon,
-  XLSXIcon,
-} from './ssr'
+	AddIcon,
+	AIIcon,
+	ArrowFallIcon,
+	ArrowLineDownIcon,
+	ArrowLineLeftIcon,
+	ArrowLineRightIcon,
+	ArrowLineUpDownIcon,
+	ArrowLineUpIcon,
+	ArrowRightIcon,
+	ArrowRiseIcon,
+	ArrowsDownIcon,
+	ArrowsDownUpIcon,
+	ArrowsUpIcon,
+	ClipboardIcon,
+	CloseIcon,
+	CopyIcon,
+	DefaultIcon,
+	DocXIcon,
+	DotIcon,
+	DotsThreeOutlineHorizontalIcon,
+	ExplainIcon,
+	FormIcon,
+	FourLeafCloverIcon,
+	FourPointedStarIcon,
+	GotoIcon,
+	HelpIcon,
+	HorizontalScreenIcon,
+	LineIcon,
+	LoadingAIcon,
+	LoadingBIcon,
+	MaximizeIcon,
+	MinimizeIcon,
+	NotepadIcon,
+	OneNoteIcon,
+	PPTIcon,
+	RectangleIcon,
+	RightBarIcon,
+	RoundedCornerIcon,
+	SearchIcon,
+	SnowUIIcon,
+	StarIcon,
+	StopIcon,
+	TextAIcon,
+	TXTIcon,
+	VariablesIcon,
+	VerticalScreenIcon,
+	WindowedIcon,
+	XCircleIcon,
+	XLSXIcon,
+} from "./ssr";
 
 const allIcons = {
-  AddIcon,
-  AIIcon,
-  ArrowFallIcon,
-  ArrowLineDownIcon,
-  ArrowLineLeftIcon,
-  ArrowLineRightIcon,
-  ArrowLineUpDownIcon,
-  ArrowLineUpIcon,
-  ArrowRightIcon,
-  ArrowRiseIcon,
-  ArrowsDownIcon,
-  ArrowsDownUpIcon,
-  ArrowsUpIcon,
-  ClipboardIcon,
-  CloseIcon,
-  CopyIcon,
-  DefaultIcon,
-  DocXIcon,
-  DotIcon,
-  DotsThreeOutlineHorizontalIcon,
-  ExplainIcon,
-  FormIcon,
-  FourLeafCloverIcon,
-  FourPointedStarIcon,
-  GotoIcon,
-  HelpIcon,
-  HorizontalScreenIcon,
-  LineIcon,
-  LoadingAIcon,
-  LoadingBIcon,
-  MaximizeIcon,
-  MinimizeIcon,
-  NotepadIcon,
-  OneNoteIcon,
-  PPTIcon,
-  RectangleIcon,
-  RightBarIcon,
-  RoundedCornerIcon,
-  SearchIcon,
-  SnowUIIcon,
-  StarIcon,
-  StopIcon,
-  TextAIcon,
-  TXTIcon,
-  VariablesIcon,
-  VerticalScreenIcon,
-  WindowedIcon,
-  XCircleIcon,
-  XLSXIcon,
-}
+	AddIcon,
+	AIIcon,
+	ArrowFallIcon,
+	ArrowLineDownIcon,
+	ArrowLineLeftIcon,
+	ArrowLineRightIcon,
+	ArrowLineUpDownIcon,
+	ArrowLineUpIcon,
+	ArrowRightIcon,
+	ArrowRiseIcon,
+	ArrowsDownIcon,
+	ArrowsDownUpIcon,
+	ArrowsUpIcon,
+	ClipboardIcon,
+	CloseIcon,
+	CopyIcon,
+	DefaultIcon,
+	DocXIcon,
+	DotIcon,
+	DotsThreeOutlineHorizontalIcon,
+	ExplainIcon,
+	FormIcon,
+	FourLeafCloverIcon,
+	FourPointedStarIcon,
+	GotoIcon,
+	HelpIcon,
+	HorizontalScreenIcon,
+	LineIcon,
+	LoadingAIcon,
+	LoadingBIcon,
+	MaximizeIcon,
+	MinimizeIcon,
+	NotepadIcon,
+	OneNoteIcon,
+	PPTIcon,
+	RectangleIcon,
+	RightBarIcon,
+	RoundedCornerIcon,
+	SearchIcon,
+	SnowUIIcon,
+	StarIcon,
+	StopIcon,
+	TextAIcon,
+	TXTIcon,
+	VariablesIcon,
+	VerticalScreenIcon,
+	WindowedIcon,
+	XCircleIcon,
+	XLSXIcon,
+};
 
 const meta = {
-  title: 'Icons',
-  argTypes: {
-    weight: {
-      control: 'radio',
-      options: Object.values(ICON_WEIGHTS),
-      description: 'The weight of the icon',
-    },
-    size: {
-      control: 'select',
-      options: Object.keys(ICON_SIZES),
-    },
-  },
-  args: {},
-  render: (args) => (
-    <div
-      style={{
-        width: '100%',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        rowGap: '2.5rem',
-      }}
-    >
-      {Object.values(allIcons).map((Icon) => (
-        <div
-          key={Icon.displayName}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <Icon {...args} alt={`Icon ${Icon.displayName}`} />
-          <Text className="text-black-100">{Icon.displayName}</Text>
-        </div>
-      ))}
-    </div>
-  ),
-} satisfies Meta<typeof AddIcon>
+	title: "Icons",
+	argTypes: {
+		weight: {
+			control: "radio",
+			options: Object.values(ICON_WEIGHTS),
+			description: "The weight of the icon",
+		},
+		size: {
+			control: "select",
+			options: Object.keys(ICON_SIZES),
+		},
+	},
+	args: {},
+	render: (args) => (
+		<div
+			style={{
+				width: "100%",
+				display: "grid",
+				gridTemplateColumns: "repeat(4, 1fr)",
+				rowGap: "2.5rem",
+			}}
+		>
+			{Object.values(allIcons).map((Icon) => (
+				<div
+					key={Icon.displayName}
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						gap: "1rem",
+					}}
+				>
+					<Icon {...args} alt={`Icon ${Icon.displayName}`} />
+					<Typography className="text-black-100">{Icon.displayName}</Typography>
+				</div>
+			))}
+		</div>
+	),
+} satisfies Meta<typeof AddIcon>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const AllIcons: Story = {
-  args: {
-    alt: 'Icons',
-  },
-}
+	args: {
+		alt: "Icons",
+	},
+};
 
 const Template: (iconName: keyof typeof allIcons) => Story = (iconName) => ({
-  render: (args) => {
-    const Icon = allIcons[iconName]
+	args: {
+		alt: iconName,
+	},
+	render: (args) => {
+		const Icon = allIcons[iconName];
 
-    return (
-      Icon && (
-        <div className="flex gap-8">
-          {Object.values(ICON_WEIGHTS).map((weight) => (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                flexDirection: 'column',
-              }}
-              key={weight}
-            >
-              <Icon
-                {...args}
-                weight={weight}
-                alt={`Icon ${iconName}, weight ${weight}`}
-              />
-              <Text className="text-black-100 w-min">{weight}</Text>
-            </div>
-          ))}
-        </div>
-      )
-    )
-  },
-  play: ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const icons = canvas.getAllByRole('img')
+		return (
+			Icon && (
+				<div className="flex gap-8">
+					{Object.values(ICON_WEIGHTS).map((weight) => (
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								flexDirection: "column",
+							}}
+							key={weight}
+						>
+							<Icon {...args} weight={weight} alt={`Icon ${iconName}, weight ${weight}`} />
+							<Typography className="text-black-100 w-min">{weight}</Typography>
+						</div>
+					))}
+				</div>
+			)
+		);
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const icons = canvas.getAllByRole("img");
 
-    expect(icons[0]).toHaveTextContent(`Icon ${iconName}, weight bold`)
-    expect(icons).toHaveLength(Object.keys(ICON_WEIGHTS).length)
-  },
-})
+		expect(icons[0]).toHaveTextContent(`Icon ${iconName}, weight bold`);
+		expect(icons).toHaveLength(Object.keys(ICON_WEIGHTS).length);
+	},
+});
 
 export const AddIconStory: Story = {
-  name: 'AddIcon',
-  ...Template(AddIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: AddIcon.displayName as string,
-  },
-}
+	name: "AddIcon",
+	...Template(AddIcon.displayName as keyof typeof allIcons),
+	args: {},
+};
 
 export const AIIconStory: Story = {
-  name: 'AIIcon',
-  ...Template(AIIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: AIIcon.displayName as string,
-  },
-}
+	name: "AIIcon",
+	...Template(AIIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowFallIconStory: Story = {
-  name: 'ArrowFallIcon',
-  ...Template(ArrowFallIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowFallIcon.displayName as string,
-  },
-}
+	name: "ArrowFallIcon",
+	...Template(ArrowFallIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowLineDownIconStory: Story = {
-  name: 'ArrowLineDownIcon',
-  ...Template(ArrowLineDownIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowLineDownIcon.displayName as string,
-  },
-}
+	name: "ArrowLineDownIcon",
+	...Template(ArrowLineDownIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowLineLeftIconStory: Story = {
-  name: 'ArrowLineLeftIcon',
-  ...Template(ArrowLineLeftIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowLineLeftIcon.displayName as string,
-  },
-}
+	name: "ArrowLineLeftIcon",
+	...Template(ArrowLineLeftIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowLineRightIconStory: Story = {
-  name: 'ArrowLineRightIcon',
-  ...Template(ArrowLineRightIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowLineRightIcon.displayName as string,
-  },
-}
+	name: "ArrowLineRightIcon",
+	...Template(ArrowLineRightIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowLineUpDownIconStory: Story = {
-  name: 'ArrowLineUpDownIcon',
-  ...Template(ArrowLineUpDownIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowLineUpDownIcon.displayName as string,
-  },
-}
+	name: "ArrowLineUpDownIcon",
+	...Template(ArrowLineUpDownIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowLineUpIconStory: Story = {
-  name: 'ArrowLineUpIcon',
-  ...Template(ArrowLineUpIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowLineUpIcon.displayName as string,
-  },
-}
+	name: "ArrowLineUpIcon",
+	...Template(ArrowLineUpIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowRightIconStory: Story = {
-  name: 'ArrowRightIcon',
-  ...Template(ArrowRightIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowRightIcon.displayName as string,
-  },
-}
+	name: "ArrowRightIcon",
+	...Template(ArrowRightIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowRiseIconStory: Story = {
-  name: 'ArrowRiseIcon',
-  ...Template(ArrowRiseIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowRiseIcon.displayName as string,
-  },
-}
+	name: "ArrowRiseIcon",
+	...Template(ArrowRiseIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowsDownIconStory: Story = {
-  name: 'ArrowsDownIcon',
-  ...Template(ArrowsDownIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowsDownIcon.displayName as string,
-  },
-}
+	name: "ArrowsDownIcon",
+	...Template(ArrowsDownIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowsDownUpIconStory: Story = {
-  name: 'ArrowsDownUpIcon',
-  ...Template(ArrowsDownUpIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowsDownUpIcon.displayName as string,
-  },
-}
+	name: "ArrowsDownUpIcon",
+	...Template(ArrowsDownUpIcon.displayName as keyof typeof allIcons),
+};
 
 export const ArrowsUpIconStory: Story = {
-  name: 'ArrowsUpIcon',
-  ...Template(ArrowsUpIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ArrowsUpIcon.displayName as string,
-  },
-}
+	name: "ArrowsUpIcon",
+	...Template(ArrowsUpIcon.displayName as keyof typeof allIcons),
+};
 
 export const ClipboardIconStory: Story = {
-  name: 'ClipboardIcon',
-  ...Template(ClipboardIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ClipboardIcon.displayName as string,
-  },
-}
+	name: "ClipboardIcon",
+	...Template(ClipboardIcon.displayName as keyof typeof allIcons),
+};
 
 export const CloseIconStory: Story = {
-  name: 'CloseIcon',
-  ...Template(CloseIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: CloseIcon.displayName as string,
-  },
-}
+	name: "CloseIcon",
+	...Template(CloseIcon.displayName as keyof typeof allIcons),
+};
 
 export const CopyIconStory: Story = {
-  name: 'CopyIcon',
-  ...Template(CopyIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: CopyIcon.displayName as string,
-  },
-}
+	name: "CopyIcon",
+	...Template(CopyIcon.displayName as keyof typeof allIcons),
+};
 
 export const DefaultIconStory: Story = {
-  name: 'DefaultIcon',
-  ...Template(DefaultIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: DefaultIcon.displayName as string,
-  },
-}
+	name: "DefaultIcon",
+	...Template(DefaultIcon.displayName as keyof typeof allIcons),
+};
 
 export const DocXIconStory: Story = {
-  name: 'DocXIcon',
-  ...Template(DocXIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: DocXIcon.displayName as string,
-  },
-}
+	name: "DocXIcon",
+	...Template(DocXIcon.displayName as keyof typeof allIcons),
+};
 
 export const DotIconStory: Story = {
-  name: 'DotIcon',
-  ...Template(DotIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: DotIcon.displayName as string,
-  },
-}
+	name: "DotIcon",
+	...Template(DotIcon.displayName as keyof typeof allIcons),
+};
 
 export const DotsThreeOutlineHorizontalIconStory: Story = {
-  name: 'DotsThreeOutlineHorizontalIcon',
-  ...Template(
-    DotsThreeOutlineHorizontalIcon.displayName as keyof typeof allIcons,
-  ),
-  args: {
-    alt: DotsThreeOutlineHorizontalIcon.displayName as string,
-  },
-}
+	name: "DotsThreeOutlineHorizontalIcon",
+	...Template(DotsThreeOutlineHorizontalIcon.displayName as keyof typeof allIcons),
+};
 
 export const ExplainIconStory: Story = {
-  name: 'ExplainIcon',
-  ...Template(ExplainIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: ExplainIcon.displayName as string,
-  },
-}
+	name: "ExplainIcon",
+	...Template(ExplainIcon.displayName as keyof typeof allIcons),
+};
 
 export const FormIconStory: Story = {
-  name: 'FormIcon',
-  ...Template(FormIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: FormIcon.displayName as string,
-  },
-}
+	name: "FormIcon",
+	...Template(FormIcon.displayName as keyof typeof allIcons),
+};
 
 export const FourLeafCloverIconStory: Story = {
-  name: 'FourLeafCloverIcon',
-  ...Template(FourLeafCloverIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: FourLeafCloverIcon.displayName as string,
-  },
-}
+	name: "FourLeafCloverIcon",
+	...Template(FourLeafCloverIcon.displayName as keyof typeof allIcons),
+};
 
 export const FourPointedStarIconStory: Story = {
-  name: 'FourPointedStarIcon',
-  ...Template(FourPointedStarIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: FourPointedStarIcon.displayName as string,
-  },
-}
+	name: "FourPointedStarIcon",
+	...Template(FourPointedStarIcon.displayName as keyof typeof allIcons),
+};
 
 export const GotoIconStory: Story = {
-  name: 'GotoIcon',
-  ...Template(GotoIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: GotoIcon.displayName as string,
-  },
-}
+	name: "GotoIcon",
+	...Template(GotoIcon.displayName as keyof typeof allIcons),
+};
 
 export const HelpIconStory: Story = {
-  name: 'HelpIcon',
-  ...Template(HelpIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: HelpIcon.displayName as string,
-  },
-}
+	name: "HelpIcon",
+	...Template(HelpIcon.displayName as keyof typeof allIcons),
+};
 
 export const HorizontalScreenIconStory: Story = {
-  name: 'HorizontalScreenIcon',
-  ...Template(HorizontalScreenIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: HorizontalScreenIcon.displayName as string,
-  },
-}
+	name: "HorizontalScreenIcon",
+	...Template(HorizontalScreenIcon.displayName as keyof typeof allIcons),
+};
 
 export const LineIconStory: Story = {
-  name: 'LineIcon',
-  ...Template(LineIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: LineIcon.displayName as string,
-  },
-}
+	name: "LineIcon",
+	...Template(LineIcon.displayName as keyof typeof allIcons),
+};
 
 export const LoadingAIconStory: Story = {
-  name: 'LoadingAIcon',
-  ...Template(LoadingAIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: LoadingAIcon.displayName as string,
-  },
-}
+	name: "LoadingAIcon",
+	...Template(LoadingAIcon.displayName as keyof typeof allIcons),
+};
 
 export const LoadingBIconStory: Story = {
-  name: 'LoadingBIcon',
-  ...Template(LoadingBIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: LoadingBIcon.displayName as string,
-  },
-}
+	name: "LoadingBIcon",
+	...Template(LoadingBIcon.displayName as keyof typeof allIcons),
+};
 
 export const MaximizeIconStory: Story = {
-  name: 'MaximizeIcon',
-  ...Template(MaximizeIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: MaximizeIcon.displayName as string,
-  },
-}
+	name: "MaximizeIcon",
+	...Template(MaximizeIcon.displayName as keyof typeof allIcons),
+};
 
 export const MinimizeIconStory: Story = {
-  name: 'MinimizeIcon',
-  ...Template(MinimizeIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: MinimizeIcon.displayName as string,
-  },
-}
+	name: "MinimizeIcon",
+	...Template(MinimizeIcon.displayName as keyof typeof allIcons),
+};
 
 export const NotepadIconStory: Story = {
-  name: 'NotepadIcon',
-  ...Template(NotepadIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: NotepadIcon.displayName as string,
-  },
-}
+	name: "NotepadIcon",
+	...Template(NotepadIcon.displayName as keyof typeof allIcons),
+};
 
 export const OneNoteIconStory: Story = {
-  name: 'OneNoteIcon',
-  ...Template(OneNoteIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: OneNoteIcon.displayName as string,
-  },
-}
+	name: "OneNoteIcon",
+	...Template(OneNoteIcon.displayName as keyof typeof allIcons),
+};
 
 export const PPTIconStory: Story = {
-  name: 'PPTIcon',
-  ...Template(PPTIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: PPTIcon.displayName as string,
-  },
-}
+	name: "PPTIcon",
+	...Template(PPTIcon.displayName as keyof typeof allIcons),
+};
 
 export const RectangleIconStory: Story = {
-  name: 'RectangleIcon',
-  ...Template(RectangleIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: RectangleIcon.displayName as string,
-  },
-}
+	name: "RectangleIcon",
+	...Template(RectangleIcon.displayName as keyof typeof allIcons),
+};
 
 export const RightbarIconStory: Story = {
-  name: 'RightbarIcon',
-  ...Template(RightBarIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: RightBarIcon.displayName as string,
-  },
-}
+	name: "RightbarIcon",
+	...Template(RightBarIcon.displayName as keyof typeof allIcons),
+};
 
 export const RoundedCornerIconStory: Story = {
-  name: 'RoundedCornerIcon',
-  ...Template(RoundedCornerIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: RoundedCornerIcon.displayName as string,
-  },
-}
+	name: "RoundedCornerIcon",
+	...Template(RoundedCornerIcon.displayName as keyof typeof allIcons),
+};
 
 export const SearchIconStory: Story = {
-  name: 'SearchIcon',
-  ...Template(SearchIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: SearchIcon.displayName as string,
-  },
-}
+	name: "SearchIcon",
+	...Template(SearchIcon.displayName as keyof typeof allIcons),
+};
 
 export const SnowUIIconStory: Story = {
-  name: 'SnowUIIcon',
-  ...Template(SnowUIIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: SnowUIIcon.displayName as string,
-  },
-}
+	name: "SnowUIIcon",
+	...Template(SnowUIIcon.displayName as keyof typeof allIcons),
+};
 
 export const StarIconStory: Story = {
-  name: 'StarIcon',
-  ...Template(StarIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: StarIcon.displayName as string,
-  },
-}
+	name: "StarIcon",
+	...Template(StarIcon.displayName as keyof typeof allIcons),
+};
 
 export const StopIconStory: Story = {
-  name: 'StopIcon',
-  ...Template(StopIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: StopIcon.displayName as string,
-  },
-}
+	name: "StopIcon",
+	...Template(StopIcon.displayName as keyof typeof allIcons),
+};
 
 export const TextAIconStory: Story = {
-  name: 'TextAIcon',
-  ...Template(TextAIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: TextAIcon.displayName as string,
-  },
-}
+	name: "TextAIcon",
+	...Template(TextAIcon.displayName as keyof typeof allIcons),
+};
 
 export const TXTIconStory: Story = {
-  name: 'TXTIcon',
-  ...Template(TXTIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: TXTIcon.displayName as string,
-  },
-}
+	name: "TXTIcon",
+	...Template(TXTIcon.displayName as keyof typeof allIcons),
+};
 
 export const VariablesIconStory: Story = {
-  name: 'VariablesIcon',
-  ...Template(VariablesIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: VariablesIcon.displayName as string,
-  },
-}
+	name: "VariablesIcon",
+	...Template(VariablesIcon.displayName as keyof typeof allIcons),
+};
 
 export const VerticalScreenIconStory: Story = {
-  name: 'VerticalScreenIcon',
-  ...Template(VerticalScreenIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: VerticalScreenIcon.displayName as string,
-  },
-}
+	name: "VerticalScreenIcon",
+	...Template(VerticalScreenIcon.displayName as keyof typeof allIcons),
+};
 
 export const WindowedIconStory: Story = {
-  name: 'WindowedIcon',
-  ...Template(WindowedIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: WindowedIcon.displayName as string,
-  },
-}
+	name: "WindowedIcon",
+	...Template(WindowedIcon.displayName as keyof typeof allIcons),
+};
 
 export const XCircleIconStory: Story = {
-  name: 'XCircleIcon',
-  ...Template(XCircleIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: XCircleIcon.displayName as string,
-  },
-}
+	name: "XCircleIcon",
+	...Template(XCircleIcon.displayName as keyof typeof allIcons),
+};
 
 export const XLSXIconStory: Story = {
-  name: 'XLSXIcon',
-  ...Template(XLSXIcon.displayName as keyof typeof allIcons),
-  args: {
-    alt: XLSXIcon.displayName as string,
-  },
-}
+	name: "XLSXIcon",
+	...Template(XLSXIcon.displayName as keyof typeof allIcons),
+};

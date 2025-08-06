@@ -1,10 +1,8 @@
-import { IconBase } from '../IconBase'
-import { ArrowsUpWeights } from '../defs'
-import type { Icon } from '../types'
+import { ArrowsUpWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const ArrowsUpIcon: Icon = (props) => (
-  <IconBase {...props} weights={ArrowsUpWeights} />
-)
+const ArrowsUpIcon: Icon = (props) => <IconBase {...props} weights={ArrowsUpWeights} />;
 
-ArrowsUpIcon.displayName = 'ArrowsUpIcon'
-export { ArrowsUpIcon }
+ArrowsUpIcon.displayName = "ArrowsUpIcon";
+export { ArrowsUpIcon };

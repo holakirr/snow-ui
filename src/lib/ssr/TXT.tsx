@@ -1,8 +1,8 @@
-import { IconBase } from '../IconBase'
-import { TXTWeights } from '../defs'
-import type { Icon } from '../types'
+import { TXTWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const TXTIcon: Icon = (props) => <IconBase {...props} weights={TXTWeights} />
+const TXTIcon: Icon = (props) => <IconBase {...props} weights={TXTWeights} />;
 
-TXTIcon.displayName = 'TXTIcon'
-export { TXTIcon }
+TXTIcon.displayName = "TXTIcon";
+export { TXTIcon };

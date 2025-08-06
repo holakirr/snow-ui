@@ -1,8 +1,8 @@
-import { IconBase } from '../IconBase'
-import { CopyWeights } from '../defs'
-import type { Icon } from '../types'
+import { CopyWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const CopyIcon: Icon = (props) => <IconBase {...props} weights={CopyWeights} />
+const CopyIcon: Icon = (props) => <IconBase {...props} weights={CopyWeights} />;
 
-CopyIcon.displayName = 'CopyIcon'
-export { CopyIcon }
+CopyIcon.displayName = "CopyIcon";
+export { CopyIcon };

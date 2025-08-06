@@ -1,8 +1,8 @@
-import { IconBase } from '../IconBase'
-import { DocXWeights } from '../defs'
-import type { Icon } from '../types'
+import { DocXWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const DocXIcon: Icon = (props) => <IconBase {...props} weights={DocXWeights} />
+const DocXIcon: Icon = (props) => <IconBase {...props} weights={DocXWeights} />;
 
-DocXIcon.displayName = 'DocXIcon'
-export { DocXIcon }
+DocXIcon.displayName = "DocXIcon";
+export { DocXIcon };

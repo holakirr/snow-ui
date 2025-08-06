@@ -1,10 +1,8 @@
-import { IconBase } from '../IconBase'
-import { RightBarWeights } from '../defs'
-import type { Icon } from '../types'
+import { RightBarWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const RightBarIcon: Icon = (props) => (
-  <IconBase {...props} weights={RightBarWeights} />
-)
+const RightBarIcon: Icon = (props) => <IconBase {...props} weights={RightBarWeights} />;
 
-RightBarIcon.displayName = 'RightBarIcon'
-export { RightBarIcon }
+RightBarIcon.displayName = "RightBarIcon";
+export { RightBarIcon };

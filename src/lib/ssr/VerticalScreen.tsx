@@ -1,10 +1,8 @@
-import { IconBase } from '../IconBase'
-import { VerticalScreenWeights } from '../defs'
-import type { Icon } from '../types'
+import { VerticalScreenWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const VerticalScreenIcon: Icon = (props) => (
-  <IconBase {...props} weights={VerticalScreenWeights} />
-)
+const VerticalScreenIcon: Icon = (props) => <IconBase {...props} weights={VerticalScreenWeights} />;
 
-VerticalScreenIcon.displayName = 'VerticalScreenIcon'
-export { VerticalScreenIcon }
+VerticalScreenIcon.displayName = "VerticalScreenIcon";
+export { VerticalScreenIcon };

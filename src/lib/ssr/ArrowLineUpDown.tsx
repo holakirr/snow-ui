@@ -1,10 +1,10 @@
-import { IconBase } from '../IconBase'
-import { ArrowLineUpDownWeights } from '../defs'
-import type { Icon } from '../types'
+import { ArrowLineUpDownWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
 const ArrowLineUpDownIcon: Icon = (props) => (
-  <IconBase {...props} weights={ArrowLineUpDownWeights} />
-)
+	<IconBase {...props} weights={ArrowLineUpDownWeights} />
+);
 
-ArrowLineUpDownIcon.displayName = 'ArrowLineUpDownIcon'
-export { ArrowLineUpDownIcon }
+ArrowLineUpDownIcon.displayName = "ArrowLineUpDownIcon";
+export { ArrowLineUpDownIcon };

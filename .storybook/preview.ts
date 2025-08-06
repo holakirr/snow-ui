@@ -1,17 +1,19 @@
-import type { Preview } from '@storybook/react'
+import type { Preview } from "@storybook/react-vite";
 
-import '@holakirr/snow-ui/index.css'
+import "@holakirr/snow-ui/index.css";
 
 const preview: Preview = {
-  parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
-    layout: 'centered',
-  },
-}
+	parameters: {
+		controls: {
+			matchers: {
+				color: /(background|color)$/i,
+				date: /Date$/i,
+			},
+		},
+		layout: "centered",
+	},
 
-export default preview
+	tags: ["autodocs"],
+};
+
+export default preview;

@@ -1,10 +1,8 @@
-import { IconBase } from '../IconBase'
-import { ArrowFallWeights } from '../defs'
-import type { Icon } from '../types'
+import { ArrowFallWeights } from "../defs";
+import { IconBase } from "../IconBase";
+import type { Icon } from "../types";
 
-const ArrowFallIcon: Icon = (props) => (
-  <IconBase {...props} weights={ArrowFallWeights} />
-)
+const ArrowFallIcon: Icon = (props) => <IconBase {...props} weights={ArrowFallWeights} />;
 
-ArrowFallIcon.displayName = 'ArrowFallIcon'
-export { ArrowFallIcon }
+ArrowFallIcon.displayName = "ArrowFallIcon";
+export { ArrowFallIcon };

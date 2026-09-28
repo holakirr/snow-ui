@@ -91,6 +91,7 @@ const ToastClose: FC<ToastCloseProps> = ({ className, size, ...props }) => (
   <ToastPrimitives.Close
     className={twMerge(toastCloseStyles({ size }), className)}
     toast-close
+    aria-label="Close"
     {...props}
   >
     <CloseIcon size={16} />
@@ -166,4 +167,8 @@ export {
   ToastViewport,
   type ToastActionElement,
   type ToastProps,
+  type ToastActionProps,
+  type ToastCloseProps,
+  type ToastTitleProps,
+  type ToastDescriptionProps,
 }

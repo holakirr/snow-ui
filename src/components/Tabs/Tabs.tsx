@@ -57,4 +57,12 @@ const TabsContent: FC<TabsContentProps> = ({ className, ...props }) => (
 )
 TabsContent.displayName = TabsPrimitive.Content.displayName
 
-export { Tabs, TabsContent, TabsList, TabsTrigger }
+export {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  type TabsListProps,
+  type TabsTriggerProps,
+  type TabsContentProps,
+}

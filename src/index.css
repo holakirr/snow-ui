@@ -2,7 +2,7 @@
 @import "react-day-picker/style.css";
 
 @theme {
-  --font-normal: Inter, sans-serif;
+  --font-sans: Inter, sans-serif;
 
   --color-black: rgba(var(--black));
   --color-brand: rgb(var(--brand));
@@ -22,6 +22,19 @@
   --color-bg3: rgba(230, 241, 253);
   --color-bg4: rgba(237, 238, 252);
   --color-bg5: rgba(var(--bg5));
+
+  /* Semantic aliases (shadcn-style names used by components) */
+  --color-background: rgba(var(--bg1));
+  --color-foreground: rgba(var(--black));
+  --color-muted: rgba(var(--black), 0.05);
+  --color-muted-foreground: rgba(var(--black), 0.4);
+  --color-accent: rgba(var(--brand), 0.1);
+  --color-accent-foreground: rgba(var(--black));
+  --color-destructive: var(--color-red);
+  --color-input: rgba(var(--black), 0.1);
+  --color-ring: rgb(var(--brand));
+  --color-sidebar-border: rgba(var(--black), 0.1);
+  --color-white-border: rgba(var(--black), 0.1);
 
   --animate-accordion-down: accordion-down 0.3s ease-out;
   --animate-accordion-up: accordion-up 0.3s ease-out;

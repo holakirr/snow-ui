@@ -101,14 +101,27 @@ const DialogTitle: FC<ComponentProps<typeof DialogPrimitive.Title>> = ({
 
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 
+const DialogDescription: FC<
+  ComponentProps<typeof DialogPrimitive.Description>
+> = ({ className, ...props }) => (
+  <DialogPrimitive.Description
+    className={twMerge('text-sm text-black/40 text-center', className)}
+    {...props}
+  />
+)
+
+DialogDescription.displayName = DialogPrimitive.Description.displayName
+
 export {
   Dialog,
   DialogBody,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogOverlay,
   DialogPortal,
   DialogTitle,
   DialogTrigger,
+  type DialogHeaderProps,
 }

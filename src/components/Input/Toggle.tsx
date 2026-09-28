@@ -39,4 +39,4 @@ const Toggle: FC<ToggleProps> = ({ className, variant, size, ...props }) => (
 
 Toggle.displayName = TogglePrimitive.Root.displayName
 
-export { Toggle, toggleVariants }
+export { Toggle, toggleVariants, type ToggleProps }

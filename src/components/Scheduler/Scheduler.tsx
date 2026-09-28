@@ -33,6 +33,12 @@ type SchedulerProps = ComponentProps<'div'> & {
   onDateClick: (date: Date) => void
 }
 
+const getCellDate = (date: Date, hour: number): Date => {
+  const cellDate = new Date(date)
+  cellDate.setHours(hour)
+  return cellDate
+}
+
 const Scheduler: FC<SchedulerProps> = ({
   currentDate,
   events = [],
@@ -110,17 +116,24 @@ const Scheduler: FC<SchedulerProps> = ({
             })}
           </Typography>
           {weekDates.map((date) => (
-            // biome-ignore lint/a11y/noStaticElementInteractions: since we are using onClick
-            // biome-ignore lint/a11y/useKeyWithClickEvents: since we are using onClick
+            // biome-ignore lint/a11y/useSemanticElements: the cell hosts nested interactive events, so it can't be a <button>
             <div
               key={date.toLocaleDateString() + hour}
+              role="button"
+              tabIndex={0}
+              aria-label={getCellDate(date, hour).toLocaleString()}
               onClick={(e) => {
                 e.preventDefault()
-                const clickedDate = new Date(date)
-                clickedDate.setHours(hour)
-                onDateClick(clickedDate)
+                onDateClick(getCellDate(date, hour))
               }}
-              className="relative"
+              onKeyDown={(e) => {
+                if (e.target !== e.currentTarget) return
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onDateClick(getCellDate(date, hour))
+                }
+              }}
+              className="relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black/20"
             >
               {events
                 ?.filter((event) => {
@@ -172,4 +185,4 @@ const Scheduler: FC<SchedulerProps> = ({
   )
 }
 
-export { Scheduler }
+export { Scheduler, type SchedulerProps }

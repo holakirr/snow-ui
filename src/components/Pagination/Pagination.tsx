@@ -140,4 +140,6 @@ export {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  type PaginationLinkProps,
+  type PaginationEllipsisProps,
 }

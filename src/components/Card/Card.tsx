@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge'
 const cardStyles = cva('rounded-2xl bg-bg5 text-black p-6', {
   variants: {
     bordered: {
-      true: 'border-[0.5px] inset-0.5 border-black/40',
+      true: 'border-[0.5px] border-black/40',
       false: '',
     },
   },
@@ -21,4 +21,4 @@ const Card: FC<CardProps> = ({ bordered, className, ...props }) => (
 )
 Card.displayName = 'Card'
 
-export { Card }
+export { Card, type CardProps }

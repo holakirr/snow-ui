@@ -15,4 +15,4 @@ const Skeleton: FC<SkeletonProps> = ({ className, ...props }) => (
 )
 Skeleton.displayName = 'Skeleton'
 
-export { Skeleton }
+export { Skeleton, type SkeletonProps }

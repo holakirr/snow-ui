@@ -31,4 +31,9 @@ const RadioGroupItem: FC<RadioGroupItemProps> = ({ className, ...props }) => (
 )
 RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName
 
-export { RadioGroup, RadioGroupItem }
+export {
+  RadioGroup,
+  RadioGroupItem,
+  type RadioGroupProps,
+  type RadioGroupItemProps,
+}

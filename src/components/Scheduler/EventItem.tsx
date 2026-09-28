@@ -29,16 +29,23 @@ export const EventItem: FC<EventItemProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        {/* biome-ignore lint/a11y/useKeyWithClickEvents: since we are using onClick */}
-        {/* biome-ignore lint/a11y/noStaticElementInteractions: since we are using onClick */}
+        {/* biome-ignore lint/a11y/useSemanticElements: a <button> can't contain the block layout used here */}
         <div
+          role="button"
+          tabIndex={0}
           className={twMerge(
-            'w-full bg-bg4 flex flex-col gap-2 p-2 rounded-lg cursor-pointer absolute z-[1]',
+            'w-full bg-bg4 flex flex-col gap-2 p-2 rounded-lg cursor-pointer absolute z-[1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20',
             className,
           )}
           onClick={(e) => {
             e.stopPropagation()
             onEventClick(event)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.stopPropagation()
+              onEventClick(event)
+            }
           }}
           style={{
             height: `${durationInHours * HOUR_HEIGHT}px`,

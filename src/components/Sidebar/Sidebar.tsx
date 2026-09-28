@@ -20,7 +20,7 @@ import { useIsMobile } from '../../hooks'
 import { Button, type ButtonProps } from '../Button'
 import { Input, type InputProps } from '../Input'
 import { Separator, type SeparatorProps } from '../Separator'
-import { Sheet, SheetContent } from '../Sheet'
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '../Sheet'
 import { Skeleton } from '../Skeleton'
 import {
   Tooltip,
@@ -57,6 +57,20 @@ function useSidebar() {
   return context
 }
 
+/**
+ * Reads the persisted sidebar state from the cookie (client only).
+ */
+const readSidebarCookie = (): boolean | undefined => {
+  if (typeof document === 'undefined') return undefined
+  const value = document.cookie
+    .split('; ')
+    .find((cookie) => cookie.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
+    ?.split('=')[1]
+  if (value === 'true') return true
+  if (value === 'false') return false
+  return undefined
+}
+
 type SidebarProviderProps = ComponentProps<'div'> & {
   defaultOpen?: boolean
   open?: boolean
@@ -77,7 +91,7 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = useState(defaultOpen)
+  const [_open, _setOpen] = useState(() => readSidebarCookie() ?? defaultOpen)
   const open = openProp ?? _open
   const setOpen = useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
@@ -204,6 +218,10 @@ const Sidebar: FC<SidebarProps> = ({
           }
           side={side}
         >
+          <SheetTitle className="sr-only">Sidebar</SheetTitle>
+          <SheetDescription className="sr-only">
+            Displays the mobile sidebar.
+          </SheetDescription>
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
       </Sheet>
@@ -758,4 +776,5 @@ export {
   type SidebarRailProps,
   type SidebarSeparatorProps,
   type SidebarTriggerProps,
+  type SidebarFooterProps,
 }

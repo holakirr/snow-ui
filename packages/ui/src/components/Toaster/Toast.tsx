@@ -78,7 +78,7 @@ const ToastAction: FC<ToastActionProps> = ({ className, size, ...props }) => (
 ToastAction.displayName = ToastPrimitives.Action.displayName
 
 const toastCloseStyles = cva(
-  'shrink-0 cursor-pointer rounded-8 text-static-white/80 transition-colors hover:text-static-white focus:outline-hidden focus-visible:ring-4 focus-visible:ring-focus',
+  'shrink-0 rounded-8 text-static-white/80 transition-colors hover:text-static-white focus-ring',
   {
     variants: {
       size: {

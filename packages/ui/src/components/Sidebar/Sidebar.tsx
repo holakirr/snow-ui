@@ -442,7 +442,7 @@ const SidebarGroupLabel: FC<SidebarGroupLabelProps> = ({
       className={twMerge(
         // Figma section heading: 14 Regular, padding 4/12, radius 12. Black/80%
         // instead of Figma's Black/40% (2.85:1) for a 4.5:1 text contrast.
-        'duration-200 flex h-7 shrink-0 items-center rounded-12 px-3 text-14 font-normal text-black-80 outline-none transition-[margin,opacity] ease-linear focus-visible:ring-4 focus-visible:ring-focus [&>svg]:size-4 [&>svg]:shrink-0',
+        'duration-200 flex h-7 shrink-0 items-center rounded-12 px-3 text-14 font-normal text-black-80 transition-[margin,opacity] ease-linear focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
         'group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:-mt-7 group-data-[collapsible=icon]:opacity-0',
         className,
       )}
@@ -465,7 +465,7 @@ const SidebarGroupAction: FC<SidebarGroupActionProps> = ({
     <Comp
       data-sidebar="group-action"
       className={twMerge(
-        'absolute right-5 top-3 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black outline-none transition-transform hover:bg-black-4 hover:text-black focus-visible:ring-4 focus-visible:ring-focus [&>svg]:size-4 [&>svg]:shrink-0',
+        'absolute right-5 top-3 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'group-data-[collapsible=icon]:hidden',
@@ -518,7 +518,7 @@ SidebarMenuItem.displayName = 'SidebarMenuItem'
  * a Black/4% fill on hover and on the active item.
  */
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-12 p-2 text-left text-black text-14 font-normal outline-none transition-[width,height,padding] hover:bg-black-4 focus-visible:ring-4 focus-visible:ring-focus active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
+  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-12 p-2 text-left text-black text-14 font-normal transition-[width,height,padding] hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -611,7 +611,7 @@ const SidebarMenuAction: FC<SidebarMenuActionProps> = ({
     <Comp
       data-sidebar="menu-action"
       className={twMerge(
-        'absolute right-2 top-2 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black outline-none transition-transform hover:bg-black-4 hover:text-black focus-visible:ring-4 focus-visible:ring-focus peer-hover/menu-button:text-black [&>svg]:size-4 [&>svg]:shrink-0',
+        'absolute right-2 top-2 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring peer-hover/menu-button:text-black [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'peer-data-[size=sm]/menu-button:top-1',
@@ -736,7 +736,7 @@ const SidebarMenuSubButton: FC<SidebarMenuSubButtonProps> = ({
       data-size={size}
       data-active={isActive}
       className={twMerge(
-        'flex h-9 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-12 px-2 font-normal text-black outline-none hover:bg-black-4 hover:text-black focus-visible:ring-4 focus-visible:ring-focus active:bg-black-4 active:text-black disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-black',
+        'flex h-9 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-12 px-2 font-normal text-black hover:bg-black-4 hover:text-black focus-ring active:bg-black-4 active:text-black disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-black',
         'data-[active=true]:bg-black-4 data-[active=true]:text-black',
         size === 'sm' && 'h-7 text-12',
         size === 'md' && 'text-14',

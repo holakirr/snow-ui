@@ -39,7 +39,7 @@ PaginationItem.displayName = 'PaginationItem'
  * Black/4% fill. `sm` is the Figma size.
  */
 const paginationLinkVariants = cva(
-  'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1 border-[0.5px] border-black-10 font-normal text-black transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus aria-disabled:pointer-events-none aria-disabled:text-black-20',
+  'inline-flex shrink-0 items-center justify-center gap-1 border-[0.5px] border-black-10 font-normal text-black transition-colors hover:bg-black-4 focus-ring aria-disabled:pointer-events-none aria-disabled:text-black-20',
   {
     variants: {
       size: {

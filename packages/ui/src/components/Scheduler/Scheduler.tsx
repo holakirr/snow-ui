@@ -132,7 +132,7 @@ const Scheduler: FC<SchedulerProps> = ({
                   onDateClick(getCellDate(date, hour))
                 }
               }}
-              className="relative focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black-20"
+              className="relative focus-ring"
             >
               {events
                 ?.filter((event) => {
@@ -147,7 +147,7 @@ const Scheduler: FC<SchedulerProps> = ({
                 .map((event) => (
                   <EventItem
                     key={event.id}
-                    className="bg-color-2 text-static-black p-1 text-14 rounded-4 cursor-pointer"
+                    className="bg-color-2 text-static-black p-1 text-14 rounded-4"
                     onEventClick={onEventClick}
                     event={event}
                   />

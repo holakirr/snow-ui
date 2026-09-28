@@ -16,7 +16,7 @@ const cardStyles = cva('text-black transition-shadow', {
     },
     interactive: {
       // Figma State "Default" → "Hover": a 0.5px Black/40% stroke on hover.
-      true: 'cursor-pointer hover:inset-ring-[0.5px] hover:inset-ring-black-40 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus',
+      true: 'cursor-pointer hover:inset-ring-[0.5px] hover:inset-ring-black-40 focus-ring',
       false: '',
     },
     bordered: {

@@ -49,7 +49,7 @@ const meta = {
             <Input id="name" title="Name" defaultValue="Pedro Duarte" />
             <Input id="username" title="Username" defaultValue="@peduarte" />
           </div>
-          <Button type="submit" variant="filled">
+          <Button type="submit" variant="filled" size="md">
             Save changes
           </Button>
         </DialogBody>

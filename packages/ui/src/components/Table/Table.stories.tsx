@@ -138,7 +138,8 @@ const features = tableFeatures({
 })
 
 const checkboxClassName =
-  'size-4 rounded-4 border-[1.5px] [&_svg]:size-3 translate-y-0'
+  // The Figma table checkbox is 16px (the Checkbox component is 28px).
+  'size-4 rounded-4 inset-ring-[1.5px] translate-y-0'
 
 const columns: ColumnDef<typeof features, Order>[] = [
   {

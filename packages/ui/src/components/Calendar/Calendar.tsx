@@ -26,6 +26,7 @@ import {
   useDayPicker,
 } from 'react-day-picker'
 import { twMerge } from '../../utils/tw-merge'
+import { Button } from '../Button'
 
 export type CalendarProps = DayPickerProps & {
   /**
@@ -200,13 +201,9 @@ const CalendarChevron = ({ orientation = 'left', className }: ChevronProps) => {
  */
 const rdpClassNames = getDefaultClassNames()
 
-// Figma: Button Small "Borderless" icon buttons, 28×28, radius 8.
-const navButtonClassName =
-  'inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-8 text-black transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus disabled:cursor-not-allowed disabled:text-black-20 disabled:hover:bg-transparent'
-
 // Figma: "Today" / "Last selection" tags, Black/4%, padding 2/4, radius 8.
 const actionClassName =
-  'inline-flex h-5 cursor-pointer items-center rounded-8 bg-black-4 px-1 text-12 text-black transition-colors hover:bg-black-10 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus'
+  'inline-flex h-5 items-center rounded-8 bg-black-4 px-1 text-12 text-black transition-colors hover:bg-black-10 focus-ring'
 
 /** Previous / next buttons; in the year view they page through the years. */
 const useCalendarNav = () => {
@@ -400,28 +397,29 @@ const CalendarMonthCaption: CustomComponents['MonthCaption'] = ({
         aria-label={showPrevious ? navLabel : undefined}
         className={twMerge('ml-auto flex items-center gap-2', navClassName)}
       >
+        {/* Figma: Button Small "Borderless" icon buttons. */}
         {showPrevious && (
-          <button
-            type="button"
-            className={twMerge(navButtonClassName, buttonPreviousClassName)}
+          <Button
+            variant="borderless"
+            size="sm"
+            className={buttonPreviousClassName}
             disabled={previous.disabled}
             aria-label={previous.label}
             onClick={previous.onClick}
-          >
-            <ArrowLineLeftIcon size={20} />
-          </button>
+            leftContent={<ArrowLineLeftIcon size={16} />}
+          />
         )}
         {children}
         {showNext && (
-          <button
-            type="button"
-            className={twMerge(navButtonClassName, buttonNextClassName)}
+          <Button
+            variant="borderless"
+            size="sm"
+            className={buttonNextClassName}
             disabled={next.disabled}
             aria-label={next.label}
             onClick={next.onClick}
-          >
-            <ArrowLineRightIcon size={20} />
-          </button>
+            leftContent={<ArrowLineRightIcon size={16} />}
+          />
         )}
       </Group>
     </div>
@@ -448,7 +446,7 @@ const CalendarCaptionLabel: CustomComponents['CaptionLabel'] = ({
     <button
       type="button"
       className={twMerge(
-        'h-7 cursor-pointer rounded-8 px-1 transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus',
+        'h-7 rounded-8 px-1 transition-colors hover:bg-black-4 focus-ring',
         className,
       )}
       onClick={() => setNavView((prev) => (prev === 'days' ? 'years' : 'days'))}
@@ -499,7 +497,7 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
               type="button"
               key={year}
               className={twMerge(
-                'h-10 w-full cursor-pointer rounded-12 text-12 text-black transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus disabled:cursor-not-allowed disabled:text-black-20 disabled:hover:bg-transparent',
+                'h-10 w-full rounded-12 text-12 text-black transition-colors hover:bg-black-4 focus-ring disabled:text-black-20 disabled:hover:bg-transparent',
                 year === currentYear && 'bg-black-4',
               )}
               onClick={() => {
@@ -688,7 +686,9 @@ function Calendar({
             dropdowns: twMerge(rdpClassNames.dropdowns, 'gap-1'),
             dropdown_root: twMerge(
               rdpClassNames.dropdown_root,
-              'h-7 cursor-pointer rounded-8 px-1 transition-colors hover:bg-black-4 has-focus-visible:ring-4 has-focus-visible:ring-focus',
+              // The select is transparent, so the chip draws the
+              // focus-ring look (ring plus outline) for it.
+              'h-7 cursor-pointer rounded-8 px-1 transition-colors hover:bg-black-4 has-focus-visible:ring-4 has-focus-visible:ring-focus has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-black-80',
             ),
             dropdown: twMerge(rdpClassNames.dropdown, 'cursor-pointer'),
             // Replaces rdp-chevron, whose accent fill would make it blue.
@@ -710,7 +710,7 @@ function Calendar({
             // Figma: Button Medium "Borderless" days, 38px high, radius 12,
             // 12 Regular, Black/4% on hover.
             day_button: twMerge(
-              'h-[38px] w-full cursor-pointer rounded-12 p-0 font-normal text-inherit transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus disabled:cursor-not-allowed disabled:hover:bg-transparent',
+              'h-[38px] w-full rounded-12 p-0 font-normal text-inherit transition-colors hover:bg-black-4 focus-ring focus-visible:relative focus-visible:z-10 disabled:hover:bg-transparent',
               dayButtonClassName,
             ),
             selected: twMerge(selectedButton, selectedClassName),

@@ -146,7 +146,7 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Focus indicator (all controls except text fields) | "Focus" effect: 4px ring, black 4% (1.1:1); no focus state on Button or Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline, offset 2px — 12.6:1 light, 8.7:1 dark | 2.4.7, 1.4.11 |
 | Secondary text: Breadcrumb parents, Table headers, Calendar weekdays and outside days, Dialog / Sheet / Form descriptions, `Label` (and the Input title), ListItem descriptions, menu group labels (DropdownMenu, ContextMenu, Select), CommandPalette headings and empty message, Scheduler day and hour labels, the Pagination ellipsis | Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`, at least 5.5:1 on `background-2`, the Black/4% hover and the Color 1/2 tints), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
 | Inactive tabs (every `TabsList` variant), off `Toggle` / `ToggleGroup` items, Bare buttons | 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus (`primary` for the active Underline tab); disabled items keep Black/20% | 1.4.3, 1.4.11 |
-| The Tag close icon | 40% layer opacity | 100% while keyboard-focused, so the focus ring isn't dimmed | 1.4.11 |
+| The Tag close icon | 40% layer opacity: 2.85:1 | 80%: at least 3.46:1 on every tag, the active indigo one included (60% would be 2.43:1 there); 100% on hover and keyboard focus | 1.4.11 |
 | Select placeholder, the Search shortcut hint, the CommandPalette Enter hint | Black/20%: 1.6:1 | `text-secondary`. The Select placeholder is the trigger's visible text, not a native placeholder; the Search hint has no fill of its own (a second Black/4% layer on the hovered dark field took it under 4.5:1) | 1.4.3 |
 | Error text: `FormMessage`, an invalid `FormLabel` | Secondary/Red `#FF4747`: 3.36:1 on white, 3.76:1 on #333 | `red-text`: `#D42020` in light mode, `#FF8080` in dark mode (5.21:1 on `background-1` in both) | 1.4.3 |
 | `TooltipShortcut` | 40% opacity: 2.8:1 | 70%: at least 5.5:1 on both tooltip variants in both modes | 1.4.3 |
@@ -159,6 +159,8 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Tag close button | a 12px icon | the same icon with a 24×24px hit area | 2.5.8 |
 | Icon-only tabs | — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
 | Dark Tooltip in dark mode | Black/80% flips to white/80% but the text stays `#FFF` | the text flips with it (black on white/80%) | 1.4.3 |
+
+The colour of those inactive items and Bare buttons is a custom property (`--segment-fg` for segmented items and `Toggle`, `--tab-fg` for Underline tabs, `--button-fg` for Bare buttons) that hover, focus and the selected state change. A `text-*` class passed as `className` sets the colour in every state; to change only the rest colour, set the property: `className="[--button-fg:var(--color-red-text)]"`. The state colours don't depend on `:enabled`, so a `TabsTrigger` or `Toggle` rendered as a link (`asChild`) gets them too.
 
 Text fields (`Input`, `InputSmall`, `Textarea`, `Search`) keep the Figma "Focus" state exactly: a Black/40% stroke and the 4px Focus ring on any focus (mouse or keyboard); the caret and the stroke mark focus, so they don't get the `focus-ring` outline.
 

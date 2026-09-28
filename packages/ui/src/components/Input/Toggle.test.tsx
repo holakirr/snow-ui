@@ -119,12 +119,12 @@ describe('ToggleGroup', () => {
     const toggle = screen.getByRole('button', { name: 'bold' })
 
     expect(toggle).toBeDisabled()
-    // Full opacity with Black/20% content and a Black/10% outline, instead of
+    // Full opacity with Black/20% content on a Black/4% tile, instead of
     // 20% opacity on top of the 40% "off" opacity.
     expect(toggle).toHaveClass(
       'disabled:opacity-100',
       'disabled:text-black-20',
-      'disabled:inset-ring-black-10',
+      'disabled:bg-black-4',
       'disabled:cursor-not-allowed',
     )
     expect(toggle).not.toHaveClass('disabled:opacity-20')

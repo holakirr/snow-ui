@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 import { ru } from 'react-day-picker/locale'
+import { expect } from 'storybook/test'
 
 import { Calendar } from './Calendar'
 
@@ -69,6 +70,61 @@ export const Default: Story = {
         defaultMonth={new Date(2025, 0, 1)}
       />
     )
+  },
+  play: async ({ canvas, userEvent, step }) => {
+    const grid = () => canvas.getByRole('grid')
+    const cell = (label: RegExp) =>
+      canvas.getByRole('button', { name: label }).closest('[role="gridcell"]')
+
+    await expect(grid()).toHaveAccessibleName(/January 2025/)
+    await expect(cell(/January 20th, 2025/)).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+
+    await step('Next and Previous change the month', async () => {
+      await userEvent.click(canvas.getByRole('button', { name: /next month/i }))
+      await expect(grid()).toHaveAccessibleName(/February 2025/)
+      await userEvent.click(
+        canvas.getByRole('button', { name: /previous month/i }),
+      )
+      await userEvent.click(
+        canvas.getByRole('button', { name: /previous month/i }),
+      )
+      await expect(grid()).toHaveAccessibleName(/December 2024/)
+      await userEvent.click(canvas.getByRole('button', { name: /next month/i }))
+      await expect(grid()).toHaveAccessibleName(/January 2025/)
+    })
+
+    await step('a click selects a day', async () => {
+      await userEvent.click(
+        canvas.getByRole('button', { name: /January 14th, 2025/ }),
+      )
+      await expect(cell(/January 14th, 2025/)).toHaveAttribute(
+        'aria-selected',
+        'true',
+      )
+      await expect(cell(/January 20th, 2025/)).not.toHaveAttribute(
+        'aria-selected',
+        'true',
+      )
+    })
+
+    await step('arrow keys move between days, Enter selects', async () => {
+      await userEvent.keyboard('{ArrowRight}')
+      await expect(
+        canvas.getByRole('button', { name: /January 15th, 2025/ }),
+      ).toHaveFocus()
+      await userEvent.keyboard('{ArrowDown}')
+      await expect(
+        canvas.getByRole('button', { name: /January 22nd, 2025/ }),
+      ).toHaveFocus()
+      await userEvent.keyboard('{Enter}')
+      await expect(cell(/January 22nd, 2025/)).toHaveAttribute(
+        'aria-selected',
+        'true',
+      )
+    })
   },
 }
 

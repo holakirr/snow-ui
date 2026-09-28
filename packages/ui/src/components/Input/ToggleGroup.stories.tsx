@@ -5,6 +5,7 @@ import {
 } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment } from 'react'
+import { expect } from 'storybook/test'
 import { SIZES, TOGGLE_VARIANTS } from '../../constants'
 import { Typography } from '../Text'
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup'
@@ -44,6 +45,19 @@ type Story = StoryObj<typeof ToggleGroup>
 
 export const Default: Story = {
   args: {},
+  play: async ({ canvas, userEvent }) => {
+    const down = canvas.getByRole('button', { name: 'Toggle down' })
+    const up = canvas.getByRole('button', { name: 'Toggle up' })
+
+    // type="multiple": items are independent toggle buttons.
+    await userEvent.click(down)
+    await userEvent.click(up)
+    await expect(down).toHaveAttribute('aria-pressed', 'true')
+    await expect(up).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(down)
+    await expect(down).toHaveAttribute('aria-pressed', 'false')
+    await expect(up).toHaveAttribute('aria-pressed', 'true')
+  },
 }
 
 export const Disabled: Story = {
@@ -55,6 +69,34 @@ export const Disabled: Story = {
 export const Single: Story = {
   args: {
     type: 'single',
+  },
+  play: async ({ canvas, userEvent, step }) => {
+    // type="single": a radio group, one item on at a time.
+    const down = canvas.getByRole('radio', { name: 'Toggle down' })
+    const up = canvas.getByRole('radio', { name: 'Toggle up' })
+    const downUp = canvas.getByRole('radio', { name: 'Toggle down-up' })
+
+    await step('a click turns one item on', async () => {
+      await userEvent.click(down)
+      await expect(down).toHaveAttribute('aria-checked', 'true')
+      await userEvent.click(up)
+      await expect(up).toHaveAttribute('aria-checked', 'true')
+      await expect(down).toHaveAttribute('aria-checked', 'false')
+    })
+
+    await step(
+      'arrow keys move focus (roving tabindex), Space presses',
+      async () => {
+        await expect(up).toHaveFocus()
+        await userEvent.keyboard('{ArrowRight}')
+        await expect(downUp).toHaveFocus()
+        await userEvent.keyboard(' ')
+        await expect(downUp).toHaveAttribute('aria-checked', 'true')
+        await expect(up).toHaveAttribute('aria-checked', 'false')
+        await userEvent.keyboard('{ArrowRight}')
+        await expect(down).toHaveFocus()
+      },
+    )
   },
 }
 

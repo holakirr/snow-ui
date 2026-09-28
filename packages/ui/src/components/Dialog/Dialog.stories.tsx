@@ -1,5 +1,6 @@
 import { AddIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, waitFor, within } from 'storybook/test'
 
 import { Button } from '../Button'
 import { Input } from '../Input'
@@ -63,6 +64,54 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {},
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    // The dialog is portalled to <body>, outside the story's canvas.
+    const page = within(canvasElement.ownerDocument.body)
+    const trigger = canvas.getByRole('button', { name: 'Edit Profile' })
+
+    await step('opens and moves focus into the dialog', async () => {
+      await userEvent.click(trigger)
+      const dialog = await page.findByRole('dialog', { name: 'Edit profile' })
+      await waitFor(() =>
+        expect(dialog).toContainElement(
+          canvasElement.ownerDocument.activeElement as HTMLElement,
+        ),
+      )
+      await expect(dialog).toHaveAccessibleDescription(
+        "Make changes to your profile here. Click save when you're done.",
+      )
+    })
+
+    await step('traps Tab inside the dialog', async () => {
+      const dialog = page.getByRole('dialog')
+      for (let i = 0; i < 6; i++) {
+        await userEvent.tab()
+        await expect(dialog).toContainElement(
+          canvasElement.ownerDocument.activeElement as HTMLElement,
+        )
+      }
+    })
+
+    await step(
+      'closes with Escape and returns focus to the trigger',
+      async () => {
+        await userEvent.keyboard('{Escape}')
+        await waitFor(() =>
+          expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
+        )
+        await expect(trigger).toHaveFocus()
+      },
+    )
+
+    await step('closes with the close button too', async () => {
+      await userEvent.click(trigger)
+      await userEvent.click(await page.findByRole('button', { name: 'Close' }))
+      await waitFor(() =>
+        expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
+      )
+      await expect(trigger).toHaveFocus()
+    })
+  },
 }
 
 /** The Figma "Add data" screen, open. */

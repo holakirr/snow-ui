@@ -1,5 +1,6 @@
 import { StatusIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, waitFor } from 'storybook/test'
 
 import { toast } from '../../hooks'
 import type { SimpleSize, StatusNotify } from '../../types'
@@ -169,4 +170,27 @@ const ClosableExample = () => (
  */
 export const Closable: Story = {
   render: () => <ClosableExample />,
+  play: async ({ canvas, userEvent, step }) => {
+    await step(
+      'the button shows a toast in the notifications region',
+      async () => {
+        await userEvent.click(
+          canvas.getByRole('button', { name: 'Show closable toast' }),
+        )
+        const toast = await canvas.findByText('Stays until closed')
+        await expect(
+          canvas.getByRole('region', { name: /notifications/i }),
+        ).toContainElement(toast)
+      },
+    )
+
+    await step('its close button dismisses it', async () => {
+      await userEvent.click(canvas.getByRole('button', { name: 'Close' }))
+      await waitFor(() =>
+        expect(
+          canvas.queryByText('Stays until closed'),
+        ).not.toBeInTheDocument(),
+      )
+    })
+  },
 }

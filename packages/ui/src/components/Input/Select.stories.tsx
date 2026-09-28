@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, waitFor, within } from 'storybook/test'
 
 import {
   Select,
@@ -29,6 +30,39 @@ export default meta
 type Story = StoryObj<typeof Select>
 
 export const Default: Story = {
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const trigger = canvas.getByRole('combobox', { name: 'Fruit' })
+    await expect(trigger).toHaveTextContent('Select a fruit')
+
+    await step('selects an option with the pointer', async () => {
+      await userEvent.click(trigger)
+      const listbox = await page.findByRole('listbox')
+      await expect(listbox).toBeVisible()
+      await userEvent.click(page.getByRole('option', { name: 'Banana' }))
+      await waitFor(() =>
+        expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
+      )
+      await expect(trigger).toHaveTextContent('Banana')
+      await expect(trigger).toHaveFocus()
+    })
+
+    await step('selects an option with the keyboard', async () => {
+      await userEvent.keyboard('{Enter}')
+      await waitFor(() =>
+        expect(page.getByRole('option', { name: 'Banana' })).toHaveFocus(),
+      )
+      await userEvent.keyboard('{ArrowDown}')
+      await expect(
+        page.getByRole('option', { name: 'Blueberry' }),
+      ).toHaveFocus()
+      await userEvent.keyboard('{Enter}')
+      await waitFor(() =>
+        expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
+      )
+      await expect(trigger).toHaveTextContent('Blueberry')
+    })
+  },
   render: () => (
     <Select>
       <SelectTrigger className="w-[200px]" aria-label="Fruit">

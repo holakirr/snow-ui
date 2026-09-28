@@ -1,6 +1,7 @@
 import { CopyIcon, StarIcon, TextAIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment } from 'react'
+import { expect } from 'storybook/test'
 import { SIZES } from '../../constants'
 import { Typography } from '../Text'
 import {
@@ -46,6 +47,48 @@ const Panels = ({ values }: { values: string[] }) => (
 )
 
 export const Default: Story = {
+  play: async ({ canvas, userEvent, step }) => {
+    const account = canvas.getByRole('tab', { name: 'Account' })
+    const password = canvas.getByRole('tab', { name: 'Password' })
+
+    await step('Tab moves into the list, onto the selected tab', async () => {
+      await userEvent.tab()
+      await expect(account).toHaveFocus()
+      await expect(account).toHaveAttribute('aria-selected', 'true')
+      await expect(canvas.getByRole('tabpanel')).toHaveTextContent(
+        'Make changes to your account here.',
+      )
+    })
+
+    await step(
+      'ArrowRight selects the next tab and shows its panel',
+      async () => {
+        await userEvent.keyboard('{ArrowRight}')
+        await expect(password).toHaveFocus()
+        await expect(password).toHaveAttribute('aria-selected', 'true')
+        await expect(account).toHaveAttribute('aria-selected', 'false')
+        await expect(canvas.getByRole('tabpanel')).toHaveTextContent(
+          'Change your password here.',
+        )
+      },
+    )
+
+    await step('the disabled tab is skipped and focus wraps', async () => {
+      await userEvent.keyboard('{ArrowRight}')
+      await expect(account).toHaveFocus()
+      await userEvent.keyboard('{ArrowLeft}')
+      await expect(password).toHaveFocus()
+      await userEvent.keyboard('{End}')
+      await expect(password).toHaveFocus()
+      await userEvent.keyboard('{Home}')
+      await expect(account).toHaveFocus()
+    })
+
+    await step('Tab leaves the list for the panel', async () => {
+      await userEvent.tab()
+      await expect(canvas.getByRole('tabpanel')).toHaveFocus()
+    })
+  },
   render: () => (
     <Tabs defaultValue="account" className="w-[400px]">
       <TabsList>

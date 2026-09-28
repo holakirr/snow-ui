@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, waitFor, within } from 'storybook/test'
 
 import { Button } from '../Button'
 import {
@@ -29,6 +30,41 @@ type Story = StoryObj<typeof Tooltip>
 
 export const Default: Story = {
   args: {},
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const trigger = canvas.getByRole('button', { name: 'Hover' })
+
+    await step(
+      'keyboard focus shows it as the trigger description',
+      async () => {
+        await userEvent.tab()
+        await expect(trigger).toHaveFocus()
+        const tooltip = await page.findByRole('tooltip')
+        await expect(tooltip).toHaveTextContent('Add to library')
+        await expect(trigger).toHaveAccessibleDescription('Add to library')
+      },
+    )
+
+    await step('Escape hides it and keeps the focus', async () => {
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() =>
+        expect(page.queryByRole('tooltip')).not.toBeInTheDocument(),
+      )
+      await expect(trigger).toHaveFocus()
+    })
+
+    await step('it shows again on the next focus', async () => {
+      await userEvent.tab({ shift: true })
+      await userEvent.tab()
+      await expect(await page.findByRole('tooltip')).toHaveTextContent(
+        'Add to library',
+      )
+      await userEvent.tab()
+      await waitFor(() =>
+        expect(page.queryByRole('tooltip')).not.toBeInTheDocument(),
+      )
+    })
+  },
   render: () => (
     <TooltipProvider>
       <Tooltip>

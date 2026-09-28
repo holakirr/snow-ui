@@ -19,7 +19,7 @@ import {
   labelPrevious,
   useDayPicker,
 } from 'react-day-picker'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 import { Button, buttonVariants } from '../Button'
 
 export type CalendarProps = DayPickerProps & {
@@ -303,9 +303,8 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
             <Button
               key={year}
               className={twMerge(
-                'h-7 w-full text-sm font-normal text-foreground',
-                year === currentYear &&
-                  'bg-accent font-medium text-accent-foreground',
+                'h-7 w-full text-sm font-normal text-black',
+                year === currentYear && 'bg-black-10 font-medium text-black',
               )}
               variant="outline"
               onClick={() => {
@@ -374,7 +373,7 @@ function Calendar({
     props.weekdaysClassName,
   )
   const _weekdayClassName = twMerge(
-    'w-full text-sm font-normal text-muted-foreground',
+    'w-full text-sm font-normal text-black-40',
     props.weekdayClassName,
   )
   const _monthClassName = twMerge('w-full', props.monthClassName)
@@ -413,7 +412,7 @@ function Calendar({
     props.dayButtonClassName,
   )
   const buttonRangeClassName =
-    'bg-accent [&>button]:bg-black [&>button]:text-white [&>button]:hover:bg-black/80 [&>button]:hover:text-white'
+    'bg-black-10 [&>button]:bg-black [&>button]:text-white [&>button]:hover:bg-black/80 [&>button]:hover:text-white'
   const _rangeStartClassName = twMerge(
     buttonRangeClassName,
     'day-range-start [&>button]:rounded-r-none',
@@ -437,7 +436,7 @@ function Calendar({
     props.todayClassName,
   )
   const _outsideClassName = twMerge(
-    'day-outside text-black/80 opacity-50 aria-selected:bg-accent/50 aria-selected:text-black/80 aria-selected:opacity-30',
+    'day-outside text-black/80 opacity-50 aria-selected:bg-black-10/50 aria-selected:text-black/80 aria-selected:opacity-30',
     props.outsideClassName,
   )
   const _disabledClassName = twMerge(

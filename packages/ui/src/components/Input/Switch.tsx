@@ -2,13 +2,13 @@
 
 import * as SwitchPrimitives from '@radix-ui/react-switch'
 import type { FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 
 const Switch: FC<SwitchPrimitives.SwitchProps> = ({ className, ...props }) => (
   <SwitchPrimitives.Root
     className={twMerge(
-      'peer inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors data-[state=checked]:bg-brand data-[state=unchecked]:bg-black/20',
-      'hover:data-[state=unchecked]:bg-black/40 hover:data-[state=checked]:bg-brand/80',
+      'peer inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-black/20',
+      'hover:data-[state=unchecked]:bg-black/40 hover:data-[state=checked]:bg-primary/80',
       'focus-visible:outline-none ring-black/20 focus-visible:ring-2 focus-visible:ring-offset-2',
       'disabled:cursor-not-allowed disabled:data-[state=unchecked]:bg-black/10 disabled:data-[state=checked]:bg-black/10',
       className,

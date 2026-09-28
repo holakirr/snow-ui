@@ -1,41 +1,190 @@
 @import "tailwindcss";
 @import "react-day-picker/style.css";
 
-@theme {
+/*
+ * SnowUI design tokens.
+ *
+ * Source: the SnowUI Figma kit (variables, text styles and effect styles),
+ * modes "SnowUI-Light" and "SnowUI-Dark". The iOS-Light / iOS-Dark colour
+ * modes and the density modes (Expanded / Condensed) are not implemented.
+ *
+ * Light values live in `@theme static` below (always emitted as CSS
+ * variables, so `var(--color-surface-1)` works even when no utility uses it);
+ * dark values override them in `@layer base` with the `dark` variant.
+ *
+ * The token list is mirrored in `src/foundations/tokens.ts`, which renders the
+ * Storybook "Foundations" pages; `src/foundations/tokens.test.ts` fails when
+ * the two drift apart.
+ */
+
+/*
+ * Theme switch: dark when <html data-theme="dark">, or when the OS prefers
+ * dark and <html> is not data-theme="light". Also drives `dark:` utilities.
+ */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(
+        :root:not([data-theme="light"]),
+        :root:not([data-theme="light"]) *
+      ) {
+      @slot;
+    }
+  }
+}
+
+@theme static {
+  /* Typography: Figma text styles (Inter; Regular 400 / Semibold 600). */
   --font-sans: Inter, sans-serif;
+  --font-sans--font-feature-settings: "ss01" 1, "cv01" 1;
 
-  --color-black: rgba(var(--black));
-  --color-brand: rgb(var(--brand));
-  --color-brand-hover: rgb(var(--brand-hover));
-  --color-white: rgba(var(--white));
-  --color-purple: rgba(201, 179, 237);
-  --color-indigo: rgba(159, 159, 248);
-  --color-blue: rgba(146, 191, 255);
-  --color-cyan: rgba(174, 199, 237);
-  --color-mint: rgba(150, 226, 214);
-  --color-green: rgba(148, 233, 184);
-  --color-yellow: rgba(255, 219, 86);
-  --color-orange: rgba(255, 181, 91);
-  --color-red: rgba(255, 71, 71);
-  --color-bg1: rgba(var(--bg1));
-  --color-bg2: rgba(var(--bg2));
-  --color-bg3: rgba(230, 241, 253);
-  --color-bg4: rgba(237, 238, 252);
-  --color-bg5: rgba(var(--bg5));
+  --text-12: 0.75rem;
+  --text-12--line-height: 1rem;
+  --text-14: 0.875rem;
+  --text-14--line-height: 1.25rem;
+  --text-16: 1rem;
+  --text-16--line-height: 1.5rem;
+  --text-18: 1.125rem;
+  --text-18--line-height: 1.75rem;
+  --text-24: 1.5rem;
+  --text-24--line-height: 2rem;
+  --text-32: 2rem;
+  --text-32--line-height: 2.5rem;
+  --text-48: 3rem;
+  --text-48--line-height: 3.5rem;
+  --text-64: 4rem;
+  --text-64--line-height: 4.5rem;
 
-  /* Semantic aliases (shadcn-style names used by components) */
-  --color-background: rgba(var(--bg1));
-  --color-foreground: rgba(var(--black));
-  --color-muted: rgba(var(--black), 0.05);
-  --color-muted-foreground: rgba(var(--black), 0.4);
-  --color-accent: rgba(var(--brand), 0.1);
-  --color-accent-foreground: rgba(var(--black));
+  /* Colors: Figma "Colors" collection, SnowUI-Light mode. */
+  /* Primary → Black/100% (light) / Secondary/Indigo (dark). */
+  --color-primary: #000;
+  /* Primary under a White/20% overlay: Figma's Filled Button hover. */
+  --color-primary-hover: color-mix(
+    in srgb,
+    var(--color-primary),
+    var(--color-white) 20%
+  );
+  /* Primary under a White/40% overlay: checked Checkbox/Radio/Switch hover. */
+  --color-primary-hover-strong: color-mix(
+    in srgb,
+    var(--color-primary),
+    var(--color-white) 40%
+  );
+
+  /* Black/N% and White/N%: flip in dark mode (Black/10% and Black/4% also change alpha). */
+  --color-black: #000;
+  --color-black-80: rgb(0 0 0 / 0.8);
+  --color-black-40: rgb(0 0 0 / 0.4);
+  --color-black-20: rgb(0 0 0 / 0.2);
+  --color-black-10: rgb(0 0 0 / 0.1);
+  --color-black-4: rgb(0 0 0 / 0.04);
+  --color-white: #fff;
+  --color-white-80: rgb(255 255 255 / 0.8);
+  --color-white-40: rgb(255 255 255 / 0.4);
+  --color-white-20: rgb(255 255 255 / 0.2);
+  --color-white-10: rgb(255 255 255 / 0.1);
+  --color-white-4: rgb(255 255 255 / 0.04);
+
+  --color-background-1: #fff;
+  --color-background-2: #f9f9fa;
+  --color-background-3: rgb(255 255 255 / 0.9);
+  --color-surface-1: rgb(255 255 255 / 0.8);
+  --color-surface-2: rgb(0 0 0 / 0.03);
+  --color-surface-3: rgb(0 0 0 / 0.02);
+
+  /* Figma "Color 1" / "Color 2": tinted fills, the same in both modes. */
+  --color-color-1: #e6f1fd;
+  --color-color-2: #edeefc;
+
+  /* Figma "Static White/100%" / "Static Black/100%": never flip. */
+  --color-static-white: #fff;
+  --color-static-black: #000;
+
+  /* Figma "Secondary/*": the same in both modes. */
+  --color-purple: #b899eb;
+  --color-indigo: #adadfb;
+  --color-blue: #7dbbff;
+  --color-cyan: #a0bce8;
+  --color-mint: #6be6d3;
+  --color-green: #71dd8c;
+  --color-yellow: #fc0;
+  --color-orange: #ffb55b;
+  --color-red: #ff4747;
+
+  /* Deprecated colour names, kept as aliases of the Figma tokens. */
+  /* @deprecated → use primary, removed in next major */
+  --color-brand: var(--color-primary);
+  /* @deprecated → use primary-hover-strong, removed in next major */
+  --color-brand-hover: var(--color-primary-hover-strong);
+  /* @deprecated → use background-1, removed in next major */
+  --color-bg1: var(--color-background-1);
+  /* @deprecated → use background-2, removed in next major */
+  --color-bg2: var(--color-background-2);
+  /* @deprecated → use color-1, removed in next major */
+  --color-bg3: var(--color-color-1);
+  /* @deprecated → use color-2, removed in next major */
+  --color-bg4: var(--color-color-2);
+  /* @deprecated → use surface-1, removed in next major */
+  --color-bg5: var(--color-surface-1);
+  /* @deprecated → use background-1, removed in next major */
+  --color-background: var(--color-background-1);
+  /* @deprecated → use black, removed in next major */
+  --color-foreground: var(--color-black);
+  /* @deprecated → use black-4, removed in next major */
+  --color-muted: var(--color-black-4);
+  /* @deprecated → use black-40, removed in next major */
+  --color-muted-foreground: var(--color-black-40);
+  /* @deprecated → use black-10, removed in next major */
+  --color-accent: var(--color-black-10);
+  /* @deprecated → use black, removed in next major */
+  --color-accent-foreground: var(--color-black);
+  /* @deprecated → use red, removed in next major */
   --color-destructive: var(--color-red);
-  --color-input: rgba(var(--black), 0.1);
-  --color-ring: rgb(var(--brand));
-  --color-sidebar-border: rgba(var(--black), 0.1);
-  --color-white-border: rgba(var(--black), 0.1);
+  /* @deprecated → use black-10, removed in next major */
+  --color-input: var(--color-black-10);
+  /* @deprecated → use primary, removed in next major */
+  --color-ring: var(--color-primary);
+  /* @deprecated → use black-10, removed in next major */
+  --color-sidebar-border: var(--color-black-10);
+  /* @deprecated → use black-10, removed in next major */
+  --color-white-border: var(--color-black-10);
 
+  /* Corner radius: Figma "Corner Radius" (Standard mode). */
+  --radius-4: 0.25rem;
+  --radius-8: 0.5rem;
+  --radius-12: 0.75rem;
+  --radius-16: 1rem;
+  --radius-20: 1.25rem;
+  --radius-24: 1.5rem;
+  --radius-28: 1.75rem;
+  --radius-32: 2rem;
+  --radius-40: 2.5rem;
+  --radius-48: 3rem;
+  --radius-80: 5rem;
+
+  /* Effects: Figma effect styles. Their colours are raw values: they do not flip in dark mode. */
+  --shadow-1: 0 0.5px 0.5px 0 rgb(0 0 0 / 0.1);
+  --shadow-2: 0 2px 4px 0 rgb(0 0 0 / 0.1);
+  --shadow-focus: 0 0 0 4px rgb(0 0 0 / 0.04);
+  --shadow-glow:
+    0 0 12px 8px rgb(255 255 255 / 0.2), 0 0 12px 8px rgb(0 0 0 / 0.2);
+  --shadow-glass-1: 0 4px 16px 0 rgb(0 0 0 / 0.04);
+  --shadow-glass-2: 0 8px 28px 0 rgb(0 0 0 / 0.1);
+  --inset-shadow-inner:
+    inset 1px 1.5px 4px 0 rgb(0 0 0 / 0.1),
+    inset 1px 1.5px 4px 0 rgb(0 0 0 / 0.08),
+    inset 0 -0.5px 1px 0 rgb(255 255 255 / 0.25),
+    inset 0 -0.5px 1px 0 rgb(255 255 255 / 0.3);
+  /* Figma "Focus" as a ring colour: `ring-4 ring-focus`. */
+  --ring-color-focus: rgb(0 0 0 / 0.04);
+  /* Figma "Background blur 40" / "100" (Figma blur ÷ 2 = CSS blur). */
+  --blur-bg-40: 20px;
+  --blur-bg-100: 50px;
+}
+
+@theme {
   --animate-accordion-down: accordion-down 0.3s ease-out;
   --animate-accordion-up: accordion-up 0.3s ease-out;
   --animate-in: animate-in 0.3s ease-out;
@@ -54,34 +203,55 @@
 
 @layer base {
   :root {
+    /* Colors: SnowUI-Dark mode (only the tokens that differ from light). */
+    @variant dark {
+      --color-primary: #adadfb;
+
+      --color-black: #fff;
+      --color-black-80: rgb(255 255 255 / 0.8);
+      --color-black-40: rgb(255 255 255 / 0.4);
+      --color-black-20: rgb(255 255 255 / 0.2);
+      --color-black-10: rgb(255 255 255 / 0.15);
+      --color-black-4: rgb(255 255 255 / 0.1);
+      --color-white: #000;
+      --color-white-80: rgb(0 0 0 / 0.8);
+      --color-white-40: rgb(0 0 0 / 0.4);
+      --color-white-20: rgb(0 0 0 / 0.2);
+      --color-white-10: rgb(0 0 0 / 0.1);
+      --color-white-4: rgb(0 0 0 / 0.04);
+
+      --color-background-1: #333;
+      --color-background-2: rgb(255 255 255 / 0.04);
+      --color-background-3: rgb(64 64 64 / 0.9);
+      --color-surface-1: rgb(255 255 255 / 0.04);
+      --color-surface-2: rgb(0 0 0 / 0.1);
+      --color-surface-3: rgb(255 255 255 / 0.04);
+    }
+  }
+
+  /*
+   * @deprecated → use the `--color-*` tokens, removed in next major.
+   * Comma-separated channels of the old token system (`rgba(var(--black), 0.5)`).
+   */
+  :root {
     --black: 0, 0, 0;
     --white: 255, 255, 255;
     --brand: 0, 0, 0;
     --brand-hover: 102, 102, 102;
     --bg1: 255, 255, 255;
     --bg2: 249, 249, 250;
-    --bg5: 255, 255, 255;
+    --bg5: 255, 255, 255, 0.8;
   }
 
-  [data-theme="dark"]:root {
-    --black: 255, 255, 255;
-    --white: 0, 0, 0;
-    --brand: 159, 159, 248;
-    --brand-hover: 95, 95, 149;
-    --bg1: 42, 42, 42;
-    --bg2: 255, 255, 255;
-    --bg5: 229, 229, 229;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:not([data-theme="light"]):root {
-      --white: 0, 0, 0;
+  :root {
+    @variant dark {
       --black: 255, 255, 255;
-      --brand: 159, 159, 248;
-      --brand-hover: 95, 95, 149;
-      --bg1: 42, 42, 42;
-      --bg2: 255, 255, 255;
-      --bg5: 229, 229, 229;
+      --white: 0, 0, 0;
+      --brand: 173, 173, 251;
+      --brand-hover: 104, 104, 151;
+      --bg1: 51, 51, 51;
+      --bg2: 255, 255, 255, 0.04;
+      --bg5: 255, 255, 255, 0.04;
     }
   }
 
@@ -90,8 +260,25 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
+    border-color: var(--color-black-10);
   }
+}
+
+/*
+ * Glass: an approximation of Figma's "Glass 1" / "Glass 2" effects. CSS has no
+ * refraction, so these combine a fill, a background blur and the effect's drop
+ * shadow. `glass` = `glass-2`, the surface used by popovers and dialogs.
+ */
+@utility glass-1 {
+  @apply bg-white-20 backdrop-blur-[8px] shadow-glass-1;
+}
+
+@utility glass-2 {
+  @apply bg-background-3 backdrop-blur-bg-40 shadow-glass-2;
+}
+
+@utility glass {
+  @apply bg-background-3 backdrop-blur-bg-40 shadow-glass-2;
 }
 
 @layer base {
@@ -218,18 +405,18 @@
 @layer components {
   textarea {
     &::-webkit-resizer {
-      @apply fill-black/10;
+      @apply fill-black-10;
       background-image: url('data:image/svg+xml,<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><g id="RoundedCorner"><path id="Vector" fill-rule="evenodd" fill-opacity="0.1" clip-rule="evenodd" d="M9.375 0C9.72018 0 10 0.279822 10 0.625V3.125C10 6.92196 6.92196 10 3.125 10H0.625C0.279822 10 0 9.72018 0 9.375C0 9.02982 0.279822 8.75 0.625 8.75H3.125C6.2316 8.75 8.75 6.2316 8.75 3.125V0.625C8.75 0.279822 9.02982 0 9.375 0Z"/></g></svg>');
       transition: all 0.15s ease;
     }
     &:hover::-webkit-resizer {
-      @apply fill-black/40;
+      @apply fill-black-40;
       background-image: url('data:image/svg+xml,<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><g id="RoundedCorner"><path id="Vector" fill-rule="evenodd" fill-opacity="0.4" clip-rule="evenodd" d="M9.375 0C9.72018 0 10 0.279822 10 0.625V3.125C10 6.92196 6.92196 10 3.125 10H0.625C0.279822 10 0 9.72018 0 9.375C0 9.02982 0.279822 8.75 0.625 8.75H3.125C6.2316 8.75 8.75 6.2316 8.75 3.125V0.625C8.75 0.279822 9.02982 0 9.375 0Z"/></g></svg>');
     }
   }
 
   input[type="search"]::-webkit-search-cancel-button {
-    @apply fill-black/20;
+    @apply fill-black-20;
     -webkit-appearance: none;
     height: 16px;
     width: 16px;
@@ -251,7 +438,7 @@
     width: 2px;
     height: 10px;
     border-radius: 2px;
-    @apply bg-white/100;
+    @apply bg-white;
   }
 
   input[type="range"]:disabled::-webkit-slider-thumb {

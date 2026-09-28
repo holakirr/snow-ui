@@ -1,5 +1,5 @@
-import { twMerge } from 'tailwind-merge'
 import { ROLES } from '../../constants'
+import { twMerge } from '../../utils/tw-merge'
 
 /**
  * Link component displays a link with a hover underline effect.

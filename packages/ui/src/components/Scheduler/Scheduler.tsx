@@ -1,8 +1,6 @@
 'use client'
 
 import { type ComponentProps, type FC, Fragment } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import { TEXT_SIZES } from '../../constants'
 import type { CalendarEvent, StartOfWeek } from '../../types'
 import {
@@ -11,6 +9,7 @@ import {
   getScheduleHours,
   getWeekDates,
 } from '../../utils'
+import { twMerge } from '../../utils/tw-merge'
 import { Separator } from '../Separator'
 import { Tag } from '../Tag'
 import { Typography } from '../Text'
@@ -85,7 +84,7 @@ const Scheduler: FC<SchedulerProps> = ({
                 date.getDate() === now.getDate() &&
                   date.getMonth() === now.getMonth() &&
                   date.getFullYear() === now.getFullYear()
-                  ? 'bg-indigo text-[#fff]'
+                  ? 'bg-indigo text-static-white'
                   : '',
               )}
             >
@@ -148,7 +147,7 @@ const Scheduler: FC<SchedulerProps> = ({
                 .map((event) => (
                   <EventItem
                     key={event.id}
-                    className="bg-bg4 text-blue-800 p-1 text-sm rounded cursor-pointer"
+                    className="bg-color-2 text-blue-800 p-1 text-sm rounded cursor-pointer"
                     onEventClick={onEventClick}
                     event={event}
                   />
@@ -176,9 +175,9 @@ const Scheduler: FC<SchedulerProps> = ({
                 minute: 'numeric',
               })
               .substring(0, 5)}
-            className="bg-brand text-white font-normal text-xs text-nowrap"
+            className="bg-primary text-white font-normal text-xs text-nowrap"
           />
-          <Separator className="bg-brand" />
+          <Separator className="bg-primary" />
         </div>
       )}
     </div>

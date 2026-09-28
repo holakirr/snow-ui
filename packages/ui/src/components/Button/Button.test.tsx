@@ -45,9 +45,9 @@ describe('Button', () => {
     const button = screen.getByRole(ROLES.button)
 
     expect(button).toBeInTheDocument()
-    expect(button).toHaveClass('bg-brand')
+    expect(button).toHaveClass('bg-primary')
     expect(button).toHaveClass('text-white')
-    expect(button).toHaveClass('hover:bg-brand-hover')
+    expect(button).toHaveClass('hover:bg-primary-hover-strong')
   })
 
   it('renders with outline variant', async () => {

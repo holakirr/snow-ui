@@ -1,7 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ElementType, JSX } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import { SIZES, TEXT_SIZES } from '../../constants'
 import type {
   ButtonVariant,
@@ -9,6 +7,7 @@ import type {
   Size,
   TextSize,
 } from '../../types'
+import { twMerge } from '../../utils/tw-merge'
 import { Typography } from '../Text'
 
 const defaultTag = 'button'
@@ -51,7 +50,7 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
     }
 
 const buttonVariants = cva(
-  'group transition-all hover:cursor-pointer disabled:cursor-not-allowed text-black disabled:text-black/10 inline-flex justify-center items-center focus:outline-hidden focus:ring-4 focus:ring-black/5 active:scale-95',
+  'group transition-all hover:cursor-pointer disabled:cursor-not-allowed text-black disabled:text-black/10 inline-flex justify-center items-center focus:outline-hidden focus:ring-4 focus:ring-focus active:scale-95',
   {
     variants: {
       variant: {
@@ -59,7 +58,8 @@ const buttonVariants = cva(
         gray: 'bg-black/5 hover:bg-black/20 disabled:bg-black/5 focus:ring-offset-2',
         outline:
           'bg-transparent border border-black/10 border-solid hover:bg-black/5 disabled:border-black/10',
-        filled: 'text-white bg-brand hover:bg-brand-hover disabled:bg-black/4',
+        filled:
+          'text-white bg-primary hover:bg-primary-hover-strong disabled:bg-black/4',
       },
       size: {
         sm: 'text-sm py-1 px-2 rounded-lg gap-1',

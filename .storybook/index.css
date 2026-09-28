@@ -8,7 +8,7 @@
 
 .docs-story,
 .sb-show-main {
-  background-color: var(--color-bg1);
+  background-color: var(--color-background-1);
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-weight: normal;

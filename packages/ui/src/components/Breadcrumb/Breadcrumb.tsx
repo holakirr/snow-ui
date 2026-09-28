@@ -1,7 +1,6 @@
 import type { ComponentProps, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import { ROLES } from '../../constants'
+import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
 import { Typography } from '../Text'
 

@@ -1,8 +1,7 @@
 import type { ComponentProps, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import { TEXT_SIZES } from '../../constants'
 import type { CalendarEvent } from '../../types'
+import { twMerge } from '../../utils/tw-merge'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,7 +33,7 @@ export const EventItem: FC<EventItemProps> = ({
           role="button"
           tabIndex={0}
           className={twMerge(
-            'w-full bg-bg4 flex flex-col gap-2 p-2 rounded-lg cursor-pointer absolute z-[1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20',
+            'w-full bg-color-2 flex flex-col gap-2 p-2 rounded-lg cursor-pointer absolute z-[1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20',
             className,
           )}
           onClick={(e) => {
@@ -53,7 +52,7 @@ export const EventItem: FC<EventItemProps> = ({
             minHeight: `${HOUR_HEIGHT}px`,
           }}
         >
-          <div className="flex flex-col text-nowrap text-[#000]">
+          <div className="flex flex-col text-nowrap text-static-black">
             <Typography size={TEXT_SIZES[12]} className="truncate">
               {title}
             </Typography>

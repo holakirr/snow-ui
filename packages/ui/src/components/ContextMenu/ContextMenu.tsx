@@ -4,7 +4,7 @@ import { ArrowRightIcon } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as CtxMenuPrimitive from '@radix-ui/react-context-menu'
 import type { FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 import { KBD, type KBDProps } from '../Text'
 
 const ContextMenu = CtxMenuPrimitive.Root
@@ -45,7 +45,7 @@ const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
 ContextMenuSubTrigger.displayName = CtxMenuPrimitive.SubTrigger.displayName
 
 const contentClasses =
-  'z-50 min-w-60 rounded-2xl border-[0.5px] border-black/10 bg-white/80 p-4 text-black backdrop-blur-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom'
+  'z-50 min-w-60 rounded-2xl border-[0.5px] border-black/10 bg-white/80 p-4 text-black backdrop-blur-bg-40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom'
 
 type ContextMenuSubContentProps = CtxMenuPrimitive.ContextMenuSubContentProps
 
@@ -131,7 +131,7 @@ const ContextMenuRadioItem: FC<ContextMenuRadioItemProps> = ({
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <CtxMenuPrimitive.ItemIndicator>
-        <span className="block w-[14px] h-[14px] aspect-square rounded-full bg-brand group-hover:bg-brand-hover group-disabled:bg-black/10" />
+        <span className="block w-[14px] h-[14px] aspect-square rounded-full bg-primary group-hover:bg-primary-hover-strong group-disabled:bg-black/10" />
       </CtxMenuPrimitive.ItemIndicator>
     </span>
     {children}

@@ -1,8 +1,8 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 
-const cardStyles = cva('rounded-2xl bg-bg5 text-black p-6', {
+const cardStyles = cva('rounded-2xl bg-surface-1 text-black p-6', {
   variants: {
     bordered: {
       true: 'border-[0.5px] border-black/40',

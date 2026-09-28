@@ -1,5 +1,5 @@
 import type { ComponentProps, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 import {
   basicInputClasses,
   disabledInputClasses,

@@ -8,7 +8,7 @@ import {
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import type { FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 
 const Select = SelectPrimitive.Root
 
@@ -25,9 +25,9 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
 }) => (
   <SelectPrimitive.Trigger
     className={twMerge(
-      'group flex w-full items-center justify-between whitespace-nowrap rounded-2xl border-[.5px] border-black/10 bg-bg5 dark:bg-white/80 px-5 py-[13.5px] text-lg text-black data-[placeholder]:text-black/20 dark:data-[placeholder]:text-black/60 [&>span]:line-clamp-1 transition-all',
+      'group flex w-full items-center justify-between whitespace-nowrap rounded-2xl border-[.5px] border-black/10 bg-surface-1 px-5 py-[13.5px] text-lg text-black data-[placeholder]:text-black/20 dark:data-[placeholder]:text-black/60 [&>span]:line-clamp-1 transition-all',
       'hover:border-black/40',
-      'focus:outline-none focus:ring-4 focus:ring-black/5 data-[state=open]:ring-4 data-[state=open]:ring-black/5',
+      'focus:outline-none focus:ring-4 focus:ring-focus data-[state=open]:ring-4 data-[state=open]:ring-focus',
       'disabled:border-black/4 disabled:bg-black/4 disabled:text-black/10 disabled:cursor-not-allowed',
       className,
     )}
@@ -92,7 +92,7 @@ const SelectContent: FC<SelectContentProps> = ({
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       className={twMerge(
-        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-2xl border border-black/10 bg-white/80 backdrop-blur-2xl text-black data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:animate-zoom-out-95 data-[state=open]:animate-zoom-in-95 data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom touch-manipulation sm:touch-auto',
+        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-2xl border border-black/10 bg-white/80 backdrop-blur-bg-40 text-black data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:animate-zoom-out-95 data-[state=open]:animate-zoom-in-95 data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom touch-manipulation sm:touch-auto',
         position === 'popper' &&
           'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
         className,
@@ -150,7 +150,7 @@ type SelectSeparatorProps = SelectPrimitive.SelectSeparatorProps
 
 const SelectSeparator: FC<SelectSeparatorProps> = ({ className, ...props }) => (
   <SelectPrimitive.Separator
-    className={twMerge('-mx-1 my-1 h-px bg-muted', className)}
+    className={twMerge('-mx-1 my-1 h-px bg-black-4', className)}
     {...props}
   />
 )

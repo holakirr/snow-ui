@@ -1,6 +1,6 @@
-import { withThemeByDataAttribute } from '@storybook/addon-themes'
 import type { Preview } from '@storybook/react'
 import { StoryWrapper } from './StoryWrapper'
+import { withTheme } from './withTheme'
 
 import './index.css'
 
@@ -33,15 +33,8 @@ const preview: Preview = {
     },
   },
 
+  // The last decorator is the outermost: the theme scope wraps the frame.
   decorators: [
-    withThemeByDataAttribute({
-      themes: {
-        light: 'light',
-        dark: 'dark',
-      },
-      attributeName: 'data-theme',
-      defaultTheme: 'light',
-    }),
     (Story, { parameters }) =>
       // `storyWrapper: false` opts a story out of the dashed component frame.
       parameters.storyWrapper === false ? (
@@ -51,6 +44,7 @@ const preview: Preview = {
           <Story />
         </StoryWrapper>
       ),
+    withTheme,
   ],
 
   tags: ['autodocs'],

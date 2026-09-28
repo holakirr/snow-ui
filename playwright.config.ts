@@ -11,6 +11,11 @@ export default defineConfig({
     baseURL: 'http://localhost:53741',
     trace: 'on-first-retry',
   },
+  webServer: {
+    command: 'bun run storybook --ci',
+    port: 53741,
+    reuseExistingServer: !process.env.CI,
+  },
   projects: [
     {
       name: 'chromium',

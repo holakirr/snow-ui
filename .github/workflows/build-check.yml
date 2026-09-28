@@ -29,5 +29,8 @@ jobs:
       - name: Unit tests
         run: bunx vitest run --exclude e2e
 
+      - name: Typecheck
+        run: bunx tsc -p . --noEmit
+
       - name: Build
         run: bun run build

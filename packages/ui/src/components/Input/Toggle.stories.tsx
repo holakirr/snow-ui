@@ -72,3 +72,9 @@ export const WithText: Story = {
     </Toggle>
   ),
 }
+
+export const Pressed: Story = {
+  args: {
+    defaultPressed: true,
+  },
+}

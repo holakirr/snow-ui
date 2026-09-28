@@ -1,20 +1,22 @@
 'use client'
 
 import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group'
-import type { VariantProps } from 'class-variance-authority'
-
 import { type ComponentProps, createContext, type FC, useContext } from 'react'
 import { twMerge } from '../../utils/tw-merge'
-import { toggleVariants } from './Toggle'
+import { segmentedListVariants } from '../Tabs/segmented'
+import { type ToggleVariantProps, toggleVariants } from './Toggle'
 
-const ToggleGroupContext = createContext<VariantProps<typeof toggleVariants>>({
-  size: 'md',
-  variant: 'borderless',
-})
+const ToggleGroupContext = createContext<ToggleVariantProps>({})
 
 type ToggleGroupProps = ComponentProps<typeof ToggleGroupPrimitive.Root> &
-  VariantProps<typeof toggleVariants>
+  ToggleVariantProps
 
+/**
+ * A group of toggles, styled like the Figma Tab segmented controls:
+ * `variant="pill"` puts the items on a blurred Black/4% track (Figma "Pill"),
+ * the other variants have no track (Figma "Solid"). The gap is 2px for `sm`
+ * and 4px for `md` / `lg`.
+ */
 const ToggleGroup: FC<ToggleGroupProps> = ({
   className,
   variant,
@@ -23,7 +25,14 @@ const ToggleGroup: FC<ToggleGroupProps> = ({
   ...props
 }) => (
   <ToggleGroupPrimitive.Root
-    className={twMerge('flex items-center justify-center gap-1', className)}
+    data-variant={variant ?? 'borderless'}
+    className={twMerge(
+      segmentedListVariants({
+        variant: variant === 'pill' ? 'pill' : 'solid',
+        size: size ?? 'md',
+      }),
+      className,
+    )}
     {...props}
   >
     <ToggleGroupContext.Provider value={{ variant, size }}>
@@ -35,7 +44,7 @@ const ToggleGroup: FC<ToggleGroupProps> = ({
 ToggleGroup.displayName = ToggleGroupPrimitive.Root.displayName
 
 type ToggleGroupItemProps = ComponentProps<typeof ToggleGroupPrimitive.Item> &
-  VariantProps<typeof toggleVariants>
+  ToggleVariantProps
 
 const ToggleGroupItem: FC<ToggleGroupItemProps> = ({
   className,
@@ -48,13 +57,11 @@ const ToggleGroupItem: FC<ToggleGroupItemProps> = ({
 
   return (
     <ToggleGroupPrimitive.Item
-      className={twMerge(
-        toggleVariants({
-          variant: context.variant || variant,
-          size: context.size || size,
-        }),
+      className={toggleVariants({
+        variant: variant ?? context.variant,
+        size: size ?? context.size,
         className,
-      )}
+      })}
       {...props}
     >
       {children}

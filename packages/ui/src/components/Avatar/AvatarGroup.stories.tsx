@@ -108,3 +108,8 @@ export const WithMediumAvatars: Story = {
     ],
   },
 }
+
+export const Dark: Story = {
+  ...WithMoreItems,
+  globals: { theme: 'dark' },
+}

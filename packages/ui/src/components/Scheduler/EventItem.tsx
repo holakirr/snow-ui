@@ -33,7 +33,7 @@ export const EventItem: FC<EventItemProps> = ({
           role="button"
           tabIndex={0}
           className={twMerge(
-            'w-full bg-color-2 flex flex-col gap-2 p-2 rounded-lg cursor-pointer absolute z-[1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20',
+            'w-full bg-color-2 flex flex-col gap-2 p-2 rounded-8 cursor-pointer absolute z-[1] focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus',
             className,
           )}
           onClick={(e) => {

@@ -58,7 +58,8 @@ const AvatarFallback: FC<AvatarFallbackProps> = ({
 }) => (
   <AvatarPrimitive.Fallback
     className={twMerge(
-      'flex h-full w-full items-center justify-center rounded-full bg-color-2 text-black',
+      // `color-2` doesn't flip in dark mode, so the text stays static black.
+      'flex h-full w-full items-center justify-center rounded-full bg-color-2 text-static-black',
       className,
     )}
     {...props}

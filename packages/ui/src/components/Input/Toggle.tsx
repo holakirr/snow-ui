@@ -35,8 +35,9 @@ const itemVariant = {
 
 /**
  * Toggle styles: the Figma segmented-control items (see `Tabs`). Off, a
- * toggle is a Borderless button at 40% opacity (100% on hover and keyboard
- * focus); on, it is a Gray button, or a white, shadowed one for `pill`.
+ * toggle is a Borderless button with a `text-secondary` label (Figma: 40%
+ * opacity, 2.85:1), black on hover and keyboard focus; on, it is a Gray
+ * button, or a white, shadowed one for `pill`.
  */
 const toggleVariants = ({
   variant,

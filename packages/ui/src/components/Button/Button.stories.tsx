@@ -95,7 +95,7 @@ export const Outline: Story = {
   },
 }
 
-/** Figma "Bare": no box, 40% opacity, 100% on hover. */
+/** Figma "Bare": no box, a secondary label (Figma: 40% opacity), black on hover. */
 export const Bare: Story = {
   args: {
     variant: 'bare',

@@ -20,7 +20,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  // Icons take the text colour; the story frame is Black/40%.
+  // Icons take the text colour; the story frame is text-secondary.
   decorators: [
     (Story) => (
       <div className="text-black">

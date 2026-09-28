@@ -15,7 +15,7 @@ export const popoverSurfaceClasses =
 export const popoverItemClasses =
   'relative flex cursor-pointer select-none items-center gap-2 rounded-12 p-2 text-14 text-black outline-none transition-colors focus:bg-black-4 data-[highlighted]:bg-black-4 data-[state=open]:bg-black-4 data-[disabled]:cursor-not-allowed data-[disabled]:text-black-20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
 
-/** A group title in a popover: 12/16 Black/40%, 28px high. */
+/** A group title in a popover: 12/16 `text-secondary` (Figma: Black/40%), 28px high. */
 export const popoverLabelClasses = 'px-2 py-1.5 text-12 text-secondary'
 
 /** A divider in a popover: 0.5px Black/10%. */

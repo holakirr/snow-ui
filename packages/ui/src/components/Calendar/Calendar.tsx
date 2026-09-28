@@ -568,7 +568,8 @@ const mergeClassNames = (
 /**
  * A calendar built on react-day-picker, styled like the Figma DatePicker:
  * the week starts on Monday, the selected day is Primary, today is
- * Secondary/Indigo and days outside the month are Black/40%.
+ * Secondary/Indigo and days outside the month are `text-secondary` (Figma:
+ * Black/40%, 2.85:1).
  *
  * The previous / next buttons sit in one navigation landmark labelled
  * "Month navigation"; translate it with `labels={{ labelNav: () => '…' }}`.

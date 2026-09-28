@@ -18,7 +18,7 @@ const meta: Meta<typeof Calendar> = {
     docs: {
       description: {
         component:
-          'The Figma DatePicker: a glass surface (Background/3, "Glass 2", 1px Surface/1 stroke, radius 16), weeks starting on Monday, 12 Regular days, the selected day in Primary, today in Secondary/Indigo and outside days in Black/40%. `header` adds the top row (e.g. a date input); `showTodayButton` and `lastSelection` add the "Today" and "Last selection" actions.',
+          'The Figma DatePicker: a glass surface (Background/3, "Glass 2", 1px Surface/1 stroke, radius 16), weeks starting on Monday, 12 Regular days, the selected day in Primary, today in Secondary/Indigo and outside days in `text-secondary` (Figma: Black/40%, 2.85:1). `header` adds the top row (e.g. a date input); `showTodayButton` and `lastSelection` add the "Today" and "Last selection" actions.',
       },
     },
   },
@@ -32,7 +32,7 @@ type Story = StoryObj<typeof Calendar>
 const FIGMA_TODAY = new Date(2023, 1, 10)
 const FIGMA_MONTH = new Date(2023, 1, 1)
 
-/** The Figma top row: month / day / year segments, "/" in Black/20%. */
+/** The Figma top row: month / day / year segments and "/" (Figma: Black/20%; `text-secondary` here). */
 const DateDisplay = ({ date }: { date?: Date }) => {
   const parts = date
     ? [

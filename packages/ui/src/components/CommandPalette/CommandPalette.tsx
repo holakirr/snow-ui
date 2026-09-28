@@ -53,7 +53,7 @@ export type CommandPaletteItem = {
  */
 export type CommandPaletteGroup = {
   id: string
-  /** The section title (14 Regular, Black/40%). */
+  /** The section title (14 Regular, `text-secondary`; Figma: Black/40%). */
   heading?: ReactNode
   items: CommandPaletteItem[]
 }

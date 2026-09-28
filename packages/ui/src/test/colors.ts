@@ -1,0 +1,20 @@
+/**
+ * Helpers for Storybook play functions that check real computed colours
+ * (Chromium, with the compiled Tailwind CSS). Not part of the package.
+ */
+
+/** The computed `color` of an element with `className`, inside `container`. */
+export const colorOf = (className: string, container: HTMLElement): string => {
+  const probe = container.ownerDocument.createElement('span')
+  probe.className = className
+  container.appendChild(probe)
+  const { color } = getComputedStyle(probe)
+  probe.remove()
+  return color
+}
+
+/** The computed `color` of `element` once its CSS transitions have ended. */
+export const settledColor = async (element: HTMLElement): Promise<string> => {
+  await Promise.all(element.getAnimations().map(({ finished }) => finished))
+  return getComputedStyle(element).color
+}

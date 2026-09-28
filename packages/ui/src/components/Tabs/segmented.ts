@@ -34,15 +34,24 @@ export const segmentedListVariants = cva('inline-flex items-center', {
  * button (`solid`) or a white, shadowed one (`pill`); the others are
  * Borderless buttons. Figma dims them to 40% opacity (2.85:1); here their
  * label and icon use `text-secondary` (5.74:1 light, 7.08:1 dark) and turn
- * black on hover and keyboard focus.
+ * black on hover, keyboard focus and when selected.
+ *
+ * The colour is `var(--segment-fg)` and the states only change that
+ * property, so a `text-*` class passed as `className` sets the colour in
+ * every state (tailwind-merge drops `text-(--segment-fg)`); set
+ * `[--segment-fg:…]` instead to change the rest colour and keep the states.
+ * Disabled sets `color` itself and wins by specificity, whatever the element
+ * (a <button>, or a link with `asChild`).
+ *
  * Icons are sized unless they have a `size-*` class. Shared by
  * `TabsTrigger` and `Toggle`.
  */
 export const segmentedItemVariants = cva(
   [
-    'inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal text-secondary transition-all',
+    'inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal transition-all',
     'cursor-pointer focus-ring',
-    'hover:text-black focus-visible:text-black enabled:data-[state=active]:text-black enabled:data-[state=on]:text-black',
+    'text-(--segment-fg) [--segment-fg:var(--color-text-secondary)]',
+    'hover:[--segment-fg:var(--color-black)] focus-visible:[--segment-fg:var(--color-black)] data-[state=active]:[--segment-fg:var(--color-black)] data-[state=on]:[--segment-fg:var(--color-black)]',
     // Disabled items stay visible: Black/20% content and a 0.5px Black/10%
     // outline so the item's shape shows even when it's off.
     'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20',

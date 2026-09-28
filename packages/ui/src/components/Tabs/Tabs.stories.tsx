@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment } from 'react'
 import { expect } from 'storybook/test'
 import { SIZES } from '../../constants'
+import { colorOf, settledColor } from '../../test/colors'
 import { Typography } from '../Text'
 import {
   Tabs,
@@ -164,6 +165,67 @@ export const IconOnly: Story = {
       <Panels values={['text', 'notes', 'star']} />
     </Tabs>
   ),
+}
+
+/**
+ * Triggers rendered as links with `asChild` (a router's `<Link>`, say): the
+ * link is the tab, and gets the tab's colours in every state (they don't
+ * depend on `:enabled`, which a link never matches).
+ */
+export const Links: Story = {
+  render: () => (
+    <div className="flex flex-col gap-6">
+      {(['line', 'pill'] as const).map((variant) => (
+        <Tabs key={variant} defaultValue="overview">
+          <TabsList variant={variant} aria-label={`Sections (${variant})`}>
+            <TabsTrigger value="overview" asChild>
+              <a href="#overview">Overview</a>
+            </TabsTrigger>
+            <TabsTrigger value="projects" asChild>
+              <a href="#projects">Projects</a>
+            </TabsTrigger>
+          </TabsList>
+          <Panels values={['overview', 'projects']} />
+        </Tabs>
+      ))}
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const [lineActive, pillActive] = canvas.getAllByRole('tab', {
+      name: 'Overview',
+    })
+    const [lineIdle, pillIdle] = canvas.getAllByRole('tab', {
+      name: 'Projects',
+    })
+    const secondary = colorOf('text-secondary', canvasElement)
+
+    await step('the links are the tabs', async () => {
+      await expect(lineActive.tagName).toBe('A')
+      await expect(lineActive).toHaveAttribute('aria-selected', 'true')
+    })
+
+    await step('the active link has the active colour', async () => {
+      await expect(await settledColor(lineActive)).toBe(
+        colorOf('text-primary', canvasElement),
+      )
+      await expect(await settledColor(pillActive)).toBe(
+        colorOf('text-black', canvasElement),
+      )
+      await expect(await settledColor(lineIdle)).toBe(secondary)
+      await expect(await settledColor(pillIdle)).toBe(secondary)
+    })
+
+    await step('selecting another link moves the colour', async () => {
+      pillActive.focus()
+      await userEvent.keyboard('{ArrowRight}')
+      await expect(pillIdle).toHaveAttribute('aria-selected', 'true')
+      await expect(await settledColor(pillIdle)).toBe(
+        colorOf('text-black', canvasElement),
+      )
+      pillIdle.blur()
+      await expect(await settledColor(pillActive)).toBe(secondary)
+    })
+  },
 }
 
 const variants: TabsVariant[] = ['line', 'pill', 'icon-toggle', 'solid']

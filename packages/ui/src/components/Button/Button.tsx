@@ -45,7 +45,10 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
       textSize?: TextSize
 
       /**
-       * The variant of the button.
+       * The variant of the button. `bare` has no box and a `text-secondary`
+       * label that turns black on hover and keyboard focus; its colour is the
+       * `--button-fg` custom property, so a `text-*` className sets it in
+       * every state, and `[--button-fg:…]` sets only the rest colour.
        * @default "borderless"
        */
       variant?: ButtonVariant
@@ -74,8 +77,11 @@ const buttonVariants = cva(
         filled:
           'bg-primary text-white hover:bg-primary-hover disabled:bg-black-4',
         // No box. Figma dims it to 40% opacity (2.85:1); the label uses
-        // `text-secondary` instead (5.74:1), black on hover and keyboard focus.
-        bare: 'bg-transparent text-secondary hover:text-black focus-visible:text-black',
+        // `text-secondary` instead (5.74:1), black on hover and keyboard
+        // focus. The colour is `var(--button-fg)` and the states only change
+        // that property, so a `text-*` className sets the colour in every
+        // state; set `[--button-fg:…]` to change only the rest colour.
+        bare: 'bg-transparent text-(--button-fg) [--button-fg:var(--color-text-secondary)] hover:[--button-fg:var(--color-black)] focus-visible:[--button-fg:var(--color-black)]',
       },
       size: {
         sm: 'min-h-6 min-w-6 gap-1 rounded-12 px-3 py-1 text-12',

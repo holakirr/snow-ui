@@ -38,8 +38,9 @@ describe('Tabs', () => {
     expect(list).toHaveAttribute('data-variant', 'line')
     expect(tab).toHaveClass(
       'text-14',
-      'text-secondary',
-      'enabled:data-[state=active]:text-primary',
+      'text-(--tab-fg)',
+      '[--tab-fg:var(--color-text-secondary)]',
+      'data-[state=active]:[--tab-fg:var(--color-primary)]',
     )
     expect(line).toHaveClass('h-0.5', 'group-data-[state=active]:bg-primary')
   })
@@ -62,8 +63,8 @@ describe('Tabs', () => {
     expect(active).toHaveClass(
       'data-[state=active]:bg-white-80',
       'data-[state=active]:shadow-2',
-      'text-secondary',
-      'enabled:data-[state=active]:text-black',
+      'text-(--segment-fg)',
+      'data-[state=active]:[--segment-fg:var(--color-black)]',
       'rounded-16',
     )
     // No underline in the segmented variants.
@@ -147,6 +148,57 @@ describe('Tabs', () => {
 
     await waitFor(() => expect(two).toHaveFocus())
     // Inactive items are text-secondary; keyboard focus turns them black.
-    expect(two).toHaveClass('focus-ring', 'focus-visible:text-black')
+    expect(two).toHaveClass(
+      'focus-ring',
+      'focus-visible:[--segment-fg:var(--color-black)]',
+    )
   })
+
+  it.each([
+    ['line', '--tab-fg:var(--color-primary)'],
+    ['pill', '--segment-fg:var(--color-black)'],
+  ] as const)(
+    'renders asChild links as tabs, the active one coloured (%s)',
+    (variant, activeColour) => {
+      render(
+        <Tabs defaultValue="one">
+          <TabsList aria-label="tabs" variant={variant}>
+            <TabsTrigger value="one" asChild icon={<svg data-testid="icon" />}>
+              <a href="#one">One</a>
+            </TabsTrigger>
+            <TabsTrigger value="two" asChild>
+              <a href="#two">Two</a>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>,
+      )
+
+      const one = screen.getByRole('tab', { name: 'One' })
+
+      // The link is the tab: no wrapping <button>, the icon and label inside.
+      expect(one.tagName).toBe('A')
+      expect(one).toHaveAttribute('href', '#one')
+      expect(one).toHaveAttribute('data-state', 'active')
+      expect(one).toContainElement(screen.getByTestId('icon'))
+      expect(document.querySelector('button')).toBeNull()
+      // `:enabled` never matches a link, so the active colour doesn't use it.
+      expect(one.matches(':enabled')).toBe(false)
+      expect(one).toHaveClass(`data-[state=active]:[${activeColour}]`)
+      expect(one.className).not.toMatch(/enabled:/)
+      if (variant === 'line') {
+        expect(one.lastElementChild).toHaveClass(
+          'group-data-[state=active]:bg-primary',
+        )
+      }
+
+      fireEvent.mouseDown(screen.getByRole('tab', { name: 'Two' }), {
+        button: 0,
+        ctrlKey: false,
+      })
+      expect(screen.getByRole('tab', { name: 'Two' })).toHaveAttribute(
+        'data-state',
+        'active',
+      )
+    },
+  )
 })

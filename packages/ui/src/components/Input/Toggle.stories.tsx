@@ -9,6 +9,7 @@ const meta: Meta<typeof Toggle> = {
   component: Toggle,
   tags: ['autodocs', 'a11y'],
   args: {
+    'aria-label': 'Toggle',
     children: <DefaultIcon />,
   },
   argTypes: {},
@@ -71,4 +72,17 @@ export const WithText: Story = {
       <Typography>Toggle</Typography>
     </Toggle>
   ),
+}
+
+export const Pressed: Story = {
+  args: {
+    defaultPressed: true,
+  },
+}
+
+export const DisabledPressed: Story = {
+  args: {
+    disabled: true,
+    defaultPressed: true,
+  },
 }

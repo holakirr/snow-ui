@@ -303,6 +303,21 @@ export const colorGroups: ColorGroup[] = [
       },
     ],
   },
+  {
+    title: 'Accessibility',
+    description:
+      'Library additions, not in the Figma kit, for text that must meet WCAG contrast. Secondary/Indigo text is 2.07:1 on white, so indigo text uses a darker indigo in light mode.',
+    tokens: [
+      {
+        name: 'indigo-text',
+        figma: '— (Secondary/Indigo, darkened in light mode)',
+        light: '#5b5bd6',
+        dark: '#adadfb',
+        swatch: 'bg-indigo-text',
+        note: 'Indigo text: 5.37:1 on background-1 (light), 6.11:1 (dark). Link, active Tag',
+      },
+    ],
+  },
 ]
 
 export const colorTokens: ColorToken[] = colorGroups.flatMap(

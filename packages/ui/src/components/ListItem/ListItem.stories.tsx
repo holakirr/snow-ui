@@ -1,0 +1,220 @@
+import { BroadcastIcon, BugBeetleIcon, UserIcon } from '@phosphor-icons/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { ReactNode } from 'react'
+import { Avatar, AvatarFallback } from '../Avatar'
+import { IconBox } from '../IconBox'
+import { Typography } from '../Text'
+import { ListItem } from './ListItem'
+
+const avatar = (initials: string, className?: string) => (
+  <IconBox size={24}>
+    <Avatar>
+      <AvatarFallback className={className ?? 'text-static-black'}>
+        {initials}
+      </AvatarFallback>
+    </Avatar>
+  </IconBox>
+)
+
+const tile = (icon: ReactNode, className: string) => (
+  <IconBox size={16} background className={`${className} text-static-black`}>
+    {icon}
+  </IconBox>
+)
+
+const meta = {
+  title: 'Components/ListItem',
+  component: ListItem,
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'A row of the dashboard lists (Figma Notifications, Activities, Contacts): a 24px icon or avatar, a title and an optional description or timestamp. It is an `IconText`, so `interactive` (hover fill), `active`, `flip` and `as` work the same way.',
+      },
+    },
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    interactive: { control: { type: 'boolean' } },
+    active: { control: { type: 'boolean' } },
+  },
+  args: {
+    icon: tile(<BugBeetleIcon />, 'bg-color-2'),
+    title: 'You fixed a bug.',
+    description: 'Just now',
+    className: 'w-62',
+  },
+} satisfies Meta<typeof ListItem>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {}
+
+export const Interactive: Story = {
+  args: { interactive: true, as: 'a', href: '#notification' },
+}
+
+export const Active: Story = {
+  args: { interactive: true, active: true },
+}
+
+export const TitleOnly: Story = {
+  args: {
+    icon: avatar('NC'),
+    title: 'Natali Craig',
+    description: undefined,
+  },
+}
+
+const Section = ({
+  title,
+  children,
+}: {
+  title: string
+  children: ReactNode
+}) => (
+  <section aria-label={title} className="flex w-62 flex-col gap-1">
+    <Typography as="h2" size={14} className="px-1 py-2 text-black">
+      {title}
+    </Typography>
+    <ul className="flex flex-col gap-1">{children}</ul>
+  </section>
+)
+
+const notifications = [
+  {
+    icon: <BugBeetleIcon />,
+    tint: 'bg-color-2',
+    title: 'You fixed a bug.',
+    time: 'Just now',
+  },
+  {
+    icon: <UserIcon />,
+    tint: 'bg-color-1',
+    title: 'New user registered.',
+    time: '59 minutes ago',
+  },
+  {
+    icon: <BugBeetleIcon />,
+    tint: 'bg-color-2',
+    title: 'You fixed a bug.',
+    time: '12 hours ago',
+  },
+  {
+    icon: <BroadcastIcon />,
+    tint: 'bg-color-1',
+    title: 'Andi Lane subscribed to you.',
+    time: 'Today, 11:59 AM',
+  },
+]
+
+const activities = [
+  {
+    initials: 'EM',
+    tint: 'bg-purple',
+    title: 'Changed the style.',
+    time: 'Just now',
+  },
+  {
+    initials: 'DC',
+    tint: 'bg-blue',
+    title: 'Released a new version.',
+    time: '59 minutes ago',
+  },
+  {
+    initials: 'AL',
+    tint: 'bg-mint',
+    title: 'Submitted a bug.',
+    time: '12 hours ago',
+  },
+  {
+    initials: 'KO',
+    tint: 'bg-orange',
+    title: 'Modified A data in Page X.',
+    time: 'Today, 11:59 AM',
+  },
+  {
+    initials: 'MM',
+    tint: 'bg-green',
+    title: 'Deleted a page in Project X.',
+    time: 'Feb 2, 2026',
+  },
+]
+
+const contacts = [
+  'Natali Craig',
+  'Drew Cano',
+  'Andi Lane',
+  'Koray Okumus',
+  'Kate Morrison',
+  'Melody Macy',
+]
+
+const initialsOf = (name: string) =>
+  name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+
+const Lists = () => (
+  <div className="flex flex-wrap items-start gap-10">
+    <Section title="Notifications">
+      {notifications.map((item) => (
+        <ListItem
+          key={item.time}
+          as="li"
+          interactive
+          icon={tile(item.icon, item.tint)}
+          title={item.title}
+          description={item.time}
+        />
+      ))}
+    </Section>
+
+    <Section title="Activities">
+      {activities.map((item, index) => (
+        <ListItem
+          key={item.time}
+          as="li"
+          interactive
+          icon={avatar(item.initials, `${item.tint} text-static-white`)}
+          title={item.title}
+          description={item.time}
+          className="relative"
+        >
+          {/* The Figma timeline: a Black/10% strip between the avatars. */}
+          {index < activities.length - 1 && (
+            <span
+              aria-hidden
+              className="absolute top-[39px] left-[19.5px] h-[17px] w-px bg-black-10"
+            />
+          )}
+        </ListItem>
+      ))}
+    </Section>
+
+    <Section title="Contacts">
+      {contacts.map((name) => (
+        <ListItem
+          key={name}
+          as="li"
+          interactive
+          icon={avatar(initialsOf(name))}
+          title={name}
+        />
+      ))}
+    </Section>
+  </div>
+)
+
+/** The Figma RightSidebar lists: Notifications, Activities and Contacts. */
+export const DashboardLists: Story = {
+  render: () => <Lists />,
+}
+
+export const DashboardListsDark: Story = {
+  render: () => <Lists />,
+  globals: { theme: 'dark' },
+}

@@ -86,3 +86,32 @@ export const Default: Story = {
     </DropdownMenu>
   ),
 }
+
+/** The Figma Popover as a menu, open: 36px items, a 12px radius, shortcuts. */
+export const Open: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="h-96">
+      <DropdownMenu defaultOpen modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="Open" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-60">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuItem>
+            Profile
+            <DropdownMenuShortcut keys={['⌘', 'P']} />
+          </DropdownMenuItem>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuCheckboxItem checked>Dark mode</DropdownMenuCheckboxItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
+          </DropdownMenuSub>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem disabled>API</DropdownMenuItem>
+          <DropdownMenuItem>Log out</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+}

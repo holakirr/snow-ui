@@ -31,13 +31,13 @@
     "ignoreUnknown": false,
     "includes": [
       "**",
-      "!**/dist",
-      "!**/storybook-static",
-      "!**/coverage",
-      "!**/playwright-report",
-      "!**/test-results",
+      "!**/dist/**",
+      "!**/storybook-static/**",
+      "!**/coverage/**",
+      "!**/playwright-report/**",
+      "!**/test-results/**",
       "!**/*.d.ts.map",
-      "!**/.claude"
+      "!**/.claude/**"
     ]
   },
   "javascript": {

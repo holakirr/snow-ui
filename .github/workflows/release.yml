@@ -24,6 +24,8 @@ name: Release
 on:
   push:
     branches: [main]
+  # Manual re-run, e.g. if a push event was missed
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

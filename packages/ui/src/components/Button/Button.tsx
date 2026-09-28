@@ -59,7 +59,7 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
 const buttonVariants = cva(
   [
     'group inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal text-black transition-all',
-    'cursor-pointer outline-none focus-visible:ring-4 focus-visible:ring-focus active:scale-95',
+    'cursor-pointer focus-ring active:scale-95',
     'disabled:cursor-not-allowed disabled:scale-100 disabled:text-black-20',
   ],
   {
@@ -69,11 +69,12 @@ const buttonVariants = cva(
         gray: 'bg-black-4 hover:bg-black-10 disabled:bg-black-4',
         outline:
           'bg-transparent inset-ring-[0.5px] inset-ring-black-10 hover:bg-black-4 disabled:bg-transparent',
-        // The label is white in both modes (the dark Primary is indigo).
+        // Figma draws a white label in both modes; on the dark indigo Primary
+        // that is 2.07:1, so the label flips to black there (10.15:1).
         filled:
-          'bg-primary text-static-white hover:bg-primary-hover disabled:bg-black-4',
-        // No box: 40% opacity, 100% on hover.
-        bare: 'bg-transparent opacity-40 hover:opacity-100 disabled:opacity-100',
+          'bg-primary text-white hover:bg-primary-hover disabled:bg-black-4',
+        // No box: 40% opacity, 100% on hover and keyboard focus.
+        bare: 'bg-transparent opacity-40 hover:opacity-100 focus-visible:opacity-100 disabled:opacity-100',
       },
       size: {
         sm: 'min-h-6 min-w-6 gap-1 rounded-12 px-3 py-1 text-12',
@@ -101,18 +102,25 @@ const buttonTextSizes: { [K in Size]: TextSize } = {
   lg: TEXT_SIZES[16],
 }
 
+/*
+ * Figma icon sizes, for icons that don't size themselves: an <svg> child
+ * without a `width` attribute or a `size-*` class. Icons from
+ * @holakirr/snow-ui-icons always render `width`, so pass their `size`
+ * (12/16/20 next to a label, 16/20/24 in an icon-only button).
+ */
+
 /** Icons next to a label: 12, 16 or 20px. */
 const buttonIconSizes: { [K in Size]: string } = {
-  sm: '[&>svg]:size-3',
-  md: '[&>svg]:size-4',
-  lg: '[&>svg]:size-5',
+  sm: '[&>svg:not([width]):not([class*=size-])]:size-3',
+  md: '[&>svg:not([width]):not([class*=size-])]:size-4',
+  lg: '[&>svg:not([width]):not([class*=size-])]:size-5',
 }
 
 /** Icon-only buttons: square padding and a bigger glyph (16, 20 or 24px). */
 const iconButtonClasses: { [K in Size]: string } = {
-  sm: 'p-1 [&>svg]:size-4',
-  md: 'p-2 [&>svg]:size-5',
-  lg: 'p-3 [&>svg]:size-6',
+  sm: 'p-1 [&>svg:not([width]):not([class*=size-])]:size-4',
+  md: 'p-2 [&>svg:not([width]):not([class*=size-])]:size-5',
+  lg: 'p-3 [&>svg:not([width]):not([class*=size-])]:size-6',
 }
 
 /**

@@ -1,7 +1,9 @@
+import { StarIcon } from '@holakirr/snow-ui-icons'
 import { composeStories } from '@storybook/react'
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { ROLES } from '../../constants'
+import { Button } from './Button'
 import * as stories from './Button.stories'
 
 const {
@@ -49,8 +51,9 @@ describe('Button', () => {
 
     expect(button).toBeInTheDocument()
     expect(button).toHaveClass('bg-primary')
-    // White label in both modes: the dark Primary is indigo.
-    expect(button).toHaveClass('text-static-white')
+    // `white` flips: a white label on black, a black label on the dark-mode
+    // indigo Primary (white on indigo is 2.07:1).
+    expect(button).toHaveClass('text-white')
     expect(button).toHaveClass('hover:bg-primary-hover')
   })
 
@@ -220,7 +223,57 @@ describe('Button', () => {
 
     expect(button).toBeInTheDocument()
     expect(button).toHaveClass('p-1')
-    expect(button).toHaveClass('[&>svg]:size-4')
+    expect(button).toHaveClass(
+      '[&>svg:not([width]):not([class*=size-])]:size-4',
+    )
     expect(button).toContainElement(icon)
+  })
+
+  it('shows the focus-ring on keyboard focus, even for bare buttons', async () => {
+    await Bare.run()
+
+    const button = screen.getByRole(ROLES.button)
+
+    expect(button).toHaveClass('focus-ring', 'focus-visible:opacity-100')
+  })
+
+  it('leaves icons that size themselves alone', () => {
+    const { container } = render(
+      <>
+        <Button
+          label="Sized by class"
+          leftContent={<svg className="size-6" />}
+        />
+        <Button label="Sized by attribute" leftContent={<svg width="24" />} />
+        <Button label="Unsized" leftContent={<svg />} />
+      </>,
+    )
+    const [byClass, byAttribute, unsized] = Array.from(
+      container.querySelectorAll('svg'),
+    )
+
+    // The Figma size applies only to an <svg> with no width and no size-* class.
+    const matches = (svg: Element) =>
+      svg.matches(':not([width]):not([class*=size-])')
+
+    expect(matches(byClass)).toBe(false)
+    expect(matches(byAttribute)).toBe(false)
+    expect(matches(unsized)).toBe(true)
+    expect(unsized.parentElement).toHaveClass(
+      '[&>svg:not([width]):not([class*=size-])]:size-3',
+    )
+  })
+
+  it('keeps an explicit icon size prop (e.g. Dialog close, 24px)', () => {
+    render(
+      <Button
+        size="md"
+        leftContent={<StarIcon size={24} data-testid="star" />}
+        label=""
+        title="Star"
+      />,
+    )
+
+    expect(screen.getByTestId('star')).toHaveAttribute('width', '24')
   })
 })

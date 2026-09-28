@@ -162,9 +162,18 @@ export const AllSizes: Story = {
   ),
 }
 
+// Figma icon sizes: next to a label, and in an icon-only button.
+const iconSizes = {
+  sm: { label: 12, only: 16 },
+  md: { label: 16, only: 20 },
+  lg: { label: 20, only: 24 },
+} as const
+
 /**
  * The Figma Button set: every variant and size, with an icon and a label,
  * a label only, and an icon only (hover a button to see its hover state).
+ * Icons from @holakirr/snow-ui-icons set their own size, so they get the
+ * Figma sizes through `size`.
  */
 export const Matrix: Story = {
   parameters: { layout: 'padded' },
@@ -190,8 +199,8 @@ export const Matrix: Story = {
                 variant={variant}
                 size={size}
                 label="Button"
-                leftContent={<StarIcon />}
-                rightContent={<StarIcon />}
+                leftContent={<StarIcon size={iconSizes[size].label} />}
+                rightContent={<StarIcon size={iconSizes[size].label} />}
               />
               <Button variant={variant} size={size} label="Button" />
               <Button
@@ -199,7 +208,7 @@ export const Matrix: Story = {
                 size={size}
                 label=""
                 title="Icon button"
-                leftContent={<StarIcon />}
+                leftContent={<StarIcon size={iconSizes[size].only} />}
               />
             </div>
           ))}

@@ -1,9 +1,8 @@
 import { ArrowLineLeftIcon, ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
+import { cva } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
 import type { Size } from '../../types'
 import { twMerge } from '../../utils/tw-merge'
-import { buttonVariants } from '../Button'
-import { Typography } from '../Text'
 
 const Pagination: FC<ComponentProps<'nav'>> = ({
   className,
@@ -22,80 +21,119 @@ const PaginationContent: FC<ComponentProps<'ul'>> = ({
   ...props
 }) => (
   <ul
-    className={twMerge('flex flex-row items-center gap-1', className)}
+    className={twMerge('flex flex-row items-center gap-2', className)}
     {...props}
   />
 )
 PaginationContent.displayName = 'PaginationContent'
 
 const PaginationItem: FC<ComponentProps<'li'>> = ({ className, ...props }) => (
-  <li className={twMerge('', className)} {...props} />
+  // `flex` keeps text and icon-only links on the same line box.
+  <li className={twMerge('flex', className)} {...props} />
 )
 PaginationItem.displayName = 'PaginationItem'
 
+/*
+ * Figma Pagination (Table page): Button Small "Outline" items, a 0.5px
+ * Black/10% stroke, radius 12, 12 Regular text; the current page has a
+ * Black/4% fill. `sm` is the Figma size.
+ */
+const paginationLinkVariants = cva(
+  'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1 border-[0.5px] border-black-10 font-normal text-black transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus aria-disabled:pointer-events-none aria-disabled:text-black-20',
+  {
+    variants: {
+      size: {
+        sm: 'h-6 min-w-6 rounded-12 px-3 text-12',
+        md: 'h-8 min-w-8 rounded-12 px-3 text-14',
+        lg: 'h-10 min-w-10 rounded-12 px-4 text-16',
+      },
+      isActive: {
+        true: 'bg-black-4',
+        false: 'bg-transparent',
+      },
+    },
+    defaultVariants: {
+      size: 'sm',
+      isActive: false,
+    },
+  },
+)
+
 type PaginationLinkProps = {
+  /** The current page: a Black/4% fill and `aria-current="page"`. */
   isActive?: boolean
+  /**
+   * `sm` is the Figma size (24px).
+   * @default 'sm'
+   */
   size?: Size
+  /** Disables the link (`aria-disabled`), e.g. "previous" on the first page. */
+  disabled?: boolean
 } & ComponentProps<'a'>
 
 const PaginationLink: FC<PaginationLinkProps> = ({
   className,
   isActive,
-  size = 'md',
+  size = 'sm',
+  disabled,
   ...props
 }) => (
   <a
     aria-current={isActive ? 'page' : undefined}
-    className={twMerge(
-      buttonVariants({
-        variant: isActive ? 'filled' : 'borderless',
-        size,
-      }),
-      className,
-    )}
+    aria-disabled={disabled || undefined}
+    tabIndex={disabled ? -1 : undefined}
+    data-active={isActive || undefined}
+    className={twMerge(paginationLinkVariants({ size, isActive }), className)}
     {...props}
   />
 )
 PaginationLink.displayName = 'PaginationLink'
 
 const PAGINATION_ICON_SIZES = {
-  sm: 'h-4 w-4',
-  md: 'h-5 w-5',
-  lg: 'h-6 w-6',
+  sm: 16,
+  md: 16,
+  lg: 20,
+}
+
+/** Icon-only links are square: the Figma prev/next buttons (padding 4). */
+const ICON_ONLY_PADDINGS = {
+  sm: 'px-1',
+  md: 'px-2',
+  lg: 'px-2.5',
 }
 
 const PaginationPrevious: FC<ComponentProps<typeof PaginationLink>> = ({
   className,
-  size = 'md',
+  size = 'sm',
   children,
   ...props
 }) => (
   <PaginationLink
     aria-label="Go to previous page"
     size={size}
-    className={twMerge('gap-1 pl-2.5', className)}
+    className={twMerge(children ? 'pl-2' : ICON_ONLY_PADDINGS[size], className)}
     {...props}
   >
-    <ArrowLineLeftIcon className={PAGINATION_ICON_SIZES[size]} />
-    <span>{children}</span>
+    <ArrowLineLeftIcon size={PAGINATION_ICON_SIZES[size]} />
+    {children && <span>{children}</span>}
   </PaginationLink>
 )
 PaginationPrevious.displayName = 'PaginationPrevious'
 
 const PaginationNext: FC<ComponentProps<typeof PaginationLink>> = ({
   className,
-  size = 'md',
+  size = 'sm',
   children,
   ...props
 }) => (
   <PaginationLink
     aria-label="Go to next page"
     size={size}
-    className={twMerge('gap-1 pr-2.5', className)}
+    className={twMerge(children ? 'pr-2' : ICON_ONLY_PADDINGS[size], className)}
     {...props}
   >
-    <span>{children}</span>
-    <ArrowLineRightIcon className={PAGINATION_ICON_SIZES[size]} />
+    {children && <span>{children}</span>}
+    <ArrowLineRightIcon size={PAGINATION_ICON_SIZES[size]} />
   </PaginationLink>
 )
 PaginationNext.displayName = 'PaginationNext'
@@ -105,14 +143,14 @@ type PaginationEllipsisProps = {
 } & Omit<ComponentProps<'span'>, 'size'>
 
 const ELLIPSIS_SIZES = {
-  sm: 'h-8 w-8',
-  md: 'h-9 w-9',
-  lg: 'h-10 w-10',
+  sm: 'h-6 min-w-6 text-12',
+  md: 'h-8 min-w-8 text-14',
+  lg: 'h-10 min-w-10 text-16',
 }
 
 const PaginationEllipsis = ({
   className,
-  size = 'md',
+  size = 'sm',
   ...props
 }: PaginationEllipsisProps) => {
   return (
@@ -120,13 +158,13 @@ const PaginationEllipsis = ({
       role="presentation"
       aria-hidden
       className={twMerge(
-        `flex ${ELLIPSIS_SIZES[size]} items-center justify-center`,
+        'flex items-center justify-center text-black-40',
+        ELLIPSIS_SIZES[size],
         className,
       )}
       {...props}
     >
-      <Typography size={16}>...</Typography>
-      <span className="sr-only">More pages</span>
+      …<span className="sr-only">More pages</span>
     </span>
   )
 }

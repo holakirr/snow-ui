@@ -306,7 +306,7 @@ export const colorGroups: ColorGroup[] = [
   {
     title: 'Accessibility',
     description:
-      'Library additions, not in the Figma kit, for text that must meet WCAG contrast. Secondary/Indigo text is 2.07:1 on white, so indigo text uses a darker indigo in light mode.',
+      'Library additions, not in the Figma kit, for text that must meet WCAG contrast. Secondary/Indigo text is 2.07:1 on white, so indigo text uses a darker indigo in light mode; Black/40% text is 2.85:1, so secondary text uses text-secondary; Secondary/Red text is 3.36:1, so error text uses red-text.',
     tokens: [
       {
         name: 'indigo-text',
@@ -315,6 +315,23 @@ export const colorGroups: ColorGroup[] = [
         dark: '#adadfb',
         swatch: 'bg-indigo-text',
         note: 'Indigo text: 5.37:1 on background-1 (light), 6.11:1 (dark). Link, active Tag',
+      },
+      {
+        name: 'text-secondary',
+        figma: '— (Black/40% text, darkened)',
+        light: 'rgb(0 0 0 / 0.6)',
+        dark: 'rgb(255 255 255 / 0.7)',
+        swatch: 'bg-text-secondary',
+        note: 'Secondary text (use text-secondary): 5.74:1 on background-1 (light), 7.08:1 (dark). Descriptions, captions, table headers, inactive tabs',
+      },
+      {
+        name: 'red-text',
+        figma:
+          '— (Secondary/Red, darkened in light mode, lightened in dark mode)',
+        light: '#d42020',
+        dark: '#ff8080',
+        swatch: 'bg-red-text',
+        note: 'Error text: 5.21:1 on background-1 (light), 5.21:1 (dark). FormMessage, invalid FormLabel',
       },
     ],
   },

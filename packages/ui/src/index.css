@@ -128,8 +128,18 @@
    * Accessibility additions (not in the Figma kit). Secondary/Indigo is 2.07:1
    * on white, so indigo text uses a darker indigo in light mode (5.37:1 on
    * background-1); dark mode keeps the Figma indigo (6.11:1 on #333).
+   * Black/40% text is 2.85:1 on white, so secondary text (descriptions,
+   * captions, table headers, inactive tabs) uses `text-secondary`: Black/60%
+   * in light mode (5.74:1 on background-1, at least 5.5:1 on background-2,
+   * the Black/4% hover and the Color 1/2 tints) and White/70% in dark mode
+   * (7.08:1 on #333, at least 4.76:1 on the lightest popover surface).
+   * Secondary/Red is 3.36:1 on white and 3.76:1 on #333, so error text
+   * (FormMessage, an invalid FormLabel) uses `red-text`: #D42020 in light mode
+   * (5.21:1 on background-1) and #FF8080 in dark mode (5.21:1 on #333).
    */
   --color-indigo-text: #5b5bd6;
+  --color-text-secondary: rgb(0 0 0 / 0.6);
+  --color-red-text: #d42020;
 
   /* Deprecated colour names, kept as aliases of the Figma tokens. */
   /* @deprecated → use primary, removed in next major */
@@ -219,6 +229,15 @@
   --animate-zoom-out-95: zoom-out-95 0.3s ease-out;
 }
 
+/*
+ * `text-secondary`: the secondary text colour (`--color-text-secondary`).
+ * `inline`, so the utility reads the token on the element and follows theme
+ * scopes.
+ */
+@theme inline {
+  --text-color-secondary: var(--color-text-secondary);
+}
+
 @layer base {
   /*
    * Theme scopes. `data-theme="dark"` on any element switches the tokens of
@@ -257,8 +276,10 @@
     --color-surface-2: rgb(0 0 0 / 0.03);
     --color-surface-3: rgb(0 0 0 / 0.02);
 
-    /* Accessibility addition: see `@theme static`. */
+    /* Accessibility additions: see `@theme static`. */
     --color-indigo-text: #5b5bd6;
+    --color-text-secondary: rgb(0 0 0 / 0.6);
+    --color-red-text: #d42020;
 
     /*
      * @deprecated → use the `--color-*` tokens, removed in next major.
@@ -299,8 +320,10 @@
     --color-surface-2: rgb(0 0 0 / 0.1);
     --color-surface-3: rgb(255 255 255 / 0.04);
 
-    /* Accessibility addition: see `@theme static`. */
+    /* Accessibility additions: see `@theme static`. */
     --color-indigo-text: #adadfb;
+    --color-text-secondary: rgb(255 255 255 / 0.7);
+    --color-red-text: #ff8080;
 
     /* @deprecated → use the `--color-*` tokens, removed in next major. */
     --black: 255, 255, 255;
@@ -339,8 +362,10 @@
       --color-surface-2: rgb(0 0 0 / 0.1);
       --color-surface-3: rgb(255 255 255 / 0.04);
 
-      /* Accessibility addition: see `@theme static`. */
+      /* Accessibility additions: see `@theme static`. */
       --color-indigo-text: #adadfb;
+      --color-text-secondary: rgb(255 255 255 / 0.7);
+      --color-red-text: #ff8080;
 
       /* @deprecated → use the `--color-*` tokens, removed in next major. */
       --black: 255, 255, 255;

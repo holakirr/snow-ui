@@ -113,6 +113,13 @@
   --color-orange: #ffb55b;
   --color-red: #ff4747;
 
+  /*
+   * Accessibility additions (not in the Figma kit). Secondary/Indigo is 2.07:1
+   * on white, so indigo text uses a darker indigo in light mode (5.37:1 on
+   * background-1); dark mode keeps the Figma indigo (6.11:1 on #333).
+   */
+  --color-indigo-text: #5b5bd6;
+
   /* Deprecated colour names, kept as aliases of the Figma tokens. */
   /* @deprecated → use primary, removed in next major */
   --color-brand: var(--color-primary);
@@ -226,6 +233,8 @@
       --color-surface-1: rgb(255 255 255 / 0.04);
       --color-surface-2: rgb(0 0 0 / 0.1);
       --color-surface-3: rgb(255 255 255 / 0.04);
+
+      --color-indigo-text: #adadfb;
     }
   }
 
@@ -275,6 +284,21 @@
 
 @utility glass-2 {
   @apply bg-background-3 backdrop-blur-bg-40 shadow-glass-2;
+}
+
+/*
+ * Keyboard focus indicator for every focusable control. The Figma "Focus"
+ * effect (a 4px Black/4% ring) is too faint to see, so it is combined with a
+ * 2px Black/80% outline (White/80% in dark mode) 2px outside the element:
+ * 12.6:1 on background-1 in light mode and 8.7:1 in dark mode (WCAG 1.4.11).
+ * Only shown on :focus-visible, i.e. for keyboard focus.
+ */
+@utility focus-ring {
+  &:focus-visible {
+    @apply ring-4 ring-focus;
+    outline: 2px solid var(--color-black-80);
+    outline-offset: 2px;
+  }
 }
 
 @utility glass {

@@ -146,4 +146,53 @@ describe('Input', () => {
     fireEvent.pointerDown(field as Element)
     expect(input).not.toHaveFocus()
   })
+
+  it('puts style on the field and inputStyle on the input', () => {
+    render(
+      <Input
+        aria-label="name"
+        style={{ width: 200 }}
+        inputStyle={{ letterSpacing: 2 }}
+      />,
+    )
+
+    const input = screen.getByRole('textbox')
+    const field = input.closest('[data-slot="input"]') as HTMLElement
+
+    expect(field.style.width).toBe('200px')
+    expect(input.style.letterSpacing).toBe('2px')
+    expect(input.style.width).toBe('')
+  })
+
+  it('shows a visible focus outline on the field for keyboard focus', () => {
+    render(<Input aria-label="name" />)
+
+    const field = screen
+      .getByRole('textbox')
+      .closest('[data-slot="input"]') as HTMLElement
+
+    expect(field).toHaveClass(
+      'has-[input:focus-visible]:outline-2',
+      'has-[input:focus-visible]:outline-black-80',
+    )
+  })
+
+  it('composes a callback ref with its own', () => {
+    let node: HTMLInputElement | null = null
+    render(
+      <Input
+        aria-label="name"
+        ref={(element) => {
+          node = element
+        }}
+        endContent={<span>icon</span>}
+      />,
+    )
+
+    // The internal ref still works: clicking the adornment focuses the input.
+    fireEvent.pointerDown(screen.getByText('icon'))
+
+    expect(node).toBe(screen.getByRole('textbox'))
+    expect(node).toHaveFocus()
+  })
 })

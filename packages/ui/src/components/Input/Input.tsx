@@ -1,12 +1,12 @@
 'use client'
 
+import { useComposedRefs } from '@radix-ui/react-compose-refs'
 import {
   type ComponentProps,
+  type CSSProperties,
   type FC,
   type PointerEvent,
   type ReactNode,
-  type Ref,
-  useCallback,
   useId,
   useRef,
 } from 'react'
@@ -20,23 +20,27 @@ import { Label } from '../Label'
  * Black/20% placeholder. Shared by `Textarea`.
  */
 export const basicInputClasses =
-  'rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all placeholder:text-black-20 hover:inset-ring-black-40'
+  'peer rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all placeholder:text-black-20 hover:inset-ring-black-40'
 
 /** The disabled look (the design has no Disabled state). */
 export const disabledInputClasses =
   'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0'
 
-/** Figma "Focus": a Black/40% stroke and the 4px `ring-focus`. */
-export const focusInputClasses =
-  'focus:outline-none focus:ring-4 focus:ring-focus focus:inset-ring-black-40'
+/**
+ * Figma "Focus": a Black/40% stroke, plus the `focus-ring` utility (the Figma
+ * ring and a visible outline).
+ */
+export const focusInputClasses = 'focus-ring focus:inset-ring-black-40'
 
 /** Figma "Static" (read-only): the stroke doesn't react to hover or focus. */
 export const staticInputClasses =
   'read-only:hover:inset-ring-black-20 read-only:focus:inset-ring-black-20'
 
-// The field shell: the same look, driven by the inner <input>.
+// The field shell: the same look, driven by the inner <input>. Its focus
+// indicator is the `focus-ring` recipe (Figma ring + 2px Black/80% outline),
+// shown while the <input> has keyboard focus.
 const fieldClasses =
-  'group/input relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all hover:inset-ring-black-40 focus-within:ring-4 focus-within:ring-focus focus-within:inset-ring-black-40'
+  'group/input relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all hover:inset-ring-black-40 focus-within:inset-ring-black-40 has-[input:focus-visible]:ring-4 has-[input:focus-visible]:ring-focus has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-black-80'
 
 const fieldStaticClasses =
   'hover:inset-ring-black-20 focus-within:inset-ring-black-20'
@@ -67,6 +71,11 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
    * Class names for the `<input>` element. `className` styles the field.
    */
   inputClassName?: string
+
+  /**
+   * Inline styles for the `<input>` element. `style` styles the field.
+   */
+  inputStyle?: CSSProperties
 }
 
 /**
@@ -77,6 +86,8 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
 const Input: FC<InputProps> = ({
   className,
   inputClassName,
+  style,
+  inputStyle,
   id,
   title,
   startContent,
@@ -89,14 +100,7 @@ const Input: FC<InputProps> = ({
   const generatedId = useId()
   const inputId = id ?? (title ? generatedId : undefined)
   const inputRef = useRef<HTMLInputElement | null>(null)
-
-  const setRef = useCallback(
-    (node: HTMLInputElement | null) => {
-      inputRef.current = node
-      assignRef(ref, node)
-    },
-    [ref],
-  )
+  const setRef = useComposedRefs(inputRef, ref)
 
   // Clicks on the padding or the adornments focus the input.
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
@@ -119,6 +123,7 @@ const Input: FC<InputProps> = ({
         disabled && fieldDisabledClasses,
         className,
       )}
+      style={style}
       data-slot="input"
       data-disabled={disabled || undefined}
       data-static={readOnly || undefined}
@@ -132,6 +137,7 @@ const Input: FC<InputProps> = ({
             'w-full min-w-0 bg-transparent text-inherit outline-none placeholder:text-black-20 disabled:cursor-not-allowed',
             inputClassName,
           )}
+          style={inputStyle}
           id={inputId}
           ref={setRef}
           role={ROLES.textbox}
@@ -146,13 +152,5 @@ const Input: FC<InputProps> = ({
 }
 
 Input.displayName = 'Input'
-
-function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
-  if (typeof ref === 'function') {
-    ref(value)
-  } else if (ref) {
-    ref.current = value
-  }
-}
 
 export { Input, type InputProps }

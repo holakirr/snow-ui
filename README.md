@@ -25,10 +25,15 @@ Take a look at my [CV](https://holakirr.com) =)
 To get started, install Holakirr Snow UI package via package manager of your choice:
 
 ```bash
-bun add @holakirr/snow-ui
+bun add @holakirr/snow-ui react react-dom react-hook-form
 ```
 
-Peer dependencies: `react` and `react-dom` 19.
+Peer dependencies you need to install alongside the package:
+
+- `react` and `react-dom` 19
+- `react-hook-form` 7 (used by the `Form` components)
+
+Tailwind CSS is not required at runtime: `@holakirr/snow-ui/index.css` ships precompiled.
 
 Then just import styles:
 
@@ -59,7 +64,8 @@ Components are documented in Storybook with examples and props documentation. Vi
 ## Testing
 
 - Unit tests are written using Vitest and React Testing Library
-- E2E tests are written using Playwright
+- E2E tests are written using Playwright; `bun run e2e` starts Storybook automatically (or reuses one already running on port 53741)
+- E2E visual snapshots are generated on macOS (`*-chromium-darwin.png`), so run `bun run e2e` / `bun run e2e:update` on macOS; other platforms need their own baselines
 - Unit tests cover Button, Accordion and date utils so far; more are welcome
 
 ## Usage

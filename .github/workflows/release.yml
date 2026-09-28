@@ -1,22 +1,29 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is published
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+# Publishes the package to npm when a GitHub release is published.
+#
+# Release process:
+#   1. Bump "version" in package.json via a regular PR and merge it into main.
+#   2. Publish a GitHub release whose tag matches that version (e.g. v2.0.3 or 2.0.3).
+# This workflow does not modify or push anything to the repository; it fails if
+# the release tag does not match package.json.
 
-name: Node.js Package
+name: Publish to npm
 
 on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-      id-token: write
     steps:
-      - name: Checkout code
+      - name: Checkout release tag
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -29,22 +36,31 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org/
 
-      - run: git config --global user.email "kpetunin@icloud.com"
-      - run: git config --global user.name "git bot"
-
-      - name: Install deps
+      - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Bump lib version
-        run: |
-          npm version --allow-same-version=true -m "chore: bump version to %s" ${{ github.event.release.tag_name }}
+      - name: Lint
+        run: bun run lint
 
-      - name: Push new version
-        run: git push origin HEAD:release
+      - name: Unit tests
+        run: bunx vitest run --exclude e2e
 
       - name: Build
         run: bun run build
 
-      - run: npm publish --access public
+      - name: Verify package version matches release tag
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${TAG_NAME#v}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::package.json version ($PKG_VERSION) does not match release tag ($TAG_NAME). Bump the version via PR before publishing the release."
+            exit 1
+          fi
+          echo "Version $PKG_VERSION matches release tag $TAG_NAME"
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -83,7 +83,7 @@ The design tokens live in `packages/ui/tokens/` as [W3C Design Tokens (DTCG 2025
 | File | Contents |
 | --- | --- |
 | `snow-ui.resolver.json` | The [resolver](https://www.designtokens.org/tr/2025.10/resolver/): the token files, and the `theme` modifier with the `light` and `dark` contexts |
-| `color.light.tokens.json` / `color.dark.tokens.json` | The Figma "Colors" collection in the SnowUI-Light / SnowUI-Dark mode, plus the library's additions (`primary-hover*`, `indigo-text`). Both files declare the same tokens |
+| `color.light.tokens.json` / `color.dark.tokens.json` | The Figma "Colors" collection in the SnowUI-Light / SnowUI-Dark mode, plus the library's additions (`primary-hover*`, `indigo-text`, `text-secondary`, `red-text`). Both files declare the same tokens |
 | `typography.tokens.json` | `font.sans` (with its `font-feature-settings`) and the Figma text styles, `text.<size>.regular` / `.semibold` |
 | `radius.tokens.json`, `effects.tokens.json` | Corner radius; shadows, the inner shadow, the focus ring colour and the background blurs |
 | `deprecated.tokens.json` | Old names: colour aliases (`$deprecated`) and the channels of the old token system |
@@ -115,7 +115,7 @@ The token names follow Tailwind (`color.black-80`), not Figma (`Black/80%`); eac
 
 ### Fonts
 
-`@holakirr/snow-ui/fonts.css` self-hosts Inter from `packages/ui/src/fonts/`: subsets of the rsms Inter 4.1 variable fonts (the Google Fonts build lacks the `ss01` / `cv01` features), split by unicode-range, with the OFL license in `src/fonts/LICENSE.txt`. They are committed; `packages/ui/scripts/subset-inter.py` (Python, fontTools) regenerates them and `fonts.css` when upgrading Inter, as described at the top of the script.
+`@holakirr/snow-ui/fonts.css` self-hosts Inter from `packages/ui/src/fonts/`: subsets of the rsms Inter 4.1 variable fonts (the Google Fonts build lacks the `ss01` / `cv01` features), split by unicode-range, with the OFL license in `src/fonts/LICENSE.txt` (hence the package's `MIT AND OFL-1.1` license). Besides Google Fonts' script ranges there is `ui-symbols` (≈10 kB: the arrows and keyboard symbols components and shortcut hints render, such as Link's ↗ and CommandPalette's ↩) and `symbols` (≈150 kB: everything else), so a single arrow doesn't pull in the big file; when a component starts rendering a new symbol, add its code point to `UI_SYMBOLS`. The design only uses upright Regular and Semibold, so the italic faces are opt-in (`fonts-italic.css`). The base layer sets `font-optical-sizing: none`: the Figma kit uses the "Inter" family (text optical size) at every size, not "Inter Display". The files are committed; `packages/ui/scripts/subset-inter.py` (Python, fontTools) regenerates them and both stylesheets, as described at the top of the script. Size budgets cover the Latin (upright and italic), Latin Extended, `symbols` and `ui-symbols` files.
 
 ## Changesets
 

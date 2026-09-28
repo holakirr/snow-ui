@@ -14,7 +14,6 @@
 .sb-show-main {
   background-color: var(--color-background-1);
   font-family: var(--font-sans);
-  font-optical-sizing: auto;
   font-weight: normal;
   font-style: normal;
 }

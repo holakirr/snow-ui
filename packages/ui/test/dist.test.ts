@@ -42,6 +42,7 @@ describe('package exports', () => {
     ['@holakirr/snow-ui/index.css', 'index.css'],
     ['@holakirr/snow-ui/theme.css', 'theme.css'],
     ['@holakirr/snow-ui/fonts.css', 'fonts.css'],
+    ['@holakirr/snow-ui/fonts-italic.css', 'fonts-italic.css'],
     [
       '@holakirr/snow-ui/fonts/inter-latin-normal.woff2',
       'fonts/inter-latin-normal.woff2',
@@ -174,16 +175,45 @@ describe('a Tailwind v4 project using theme.css and @source dist', () => {
   })
 })
 
-describe('fonts.css', () => {
-  it('points at font files that exist', () => {
-    const urls = [...read('fonts.css').matchAll(/url\("([^"]+)"\)/g)].map(
-      ([, url]) => url,
-    )
-    expect(urls.length).toBe(16)
-    for (const url of urls) {
+describe('fonts.css and fonts-italic.css', () => {
+  /** `[font-style, url, unicode-range]` of every @font-face. */
+  const faces = (file: string) =>
+    [...read(file).matchAll(/@font-face \{([^}]*)\}/g)].map(([, body]) => [
+      body.match(/font-style: (\w+);/)?.[1] ?? '',
+      body.match(/url\("([^"]+)"\)/)?.[1] ?? '',
+      body.match(/unicode-range:\s*([^;]+);/)?.[1].replace(/\s+/g, ' ') ?? '',
+    ])
+
+  it.each([
+    ['fonts.css', 'normal'],
+    ['fonts-italic.css', 'italic'],
+  ])('%s points at %s font files that exist', (file, style) => {
+    expect(faces(file)).toHaveLength(9)
+    for (const [fontStyle, url] of faces(file)) {
+      expect(fontStyle).toBe(style)
       expect(existsSync(join(dist, url)), url).toBe(true)
     }
     expect(existsSync(join(dist, 'fonts/LICENSE.txt'))).toBe(true)
+  })
+
+  it('serves the arrows components render (↗ ↩) from the small ui-symbols subset', () => {
+    const covering = (codepoint: number) =>
+      faces('fonts.css')
+        .filter(([, , ranges]) =>
+          ranges.split(', ').some((range) => {
+            const [start, end = start] = range.slice(2).split('-')
+            return (
+              codepoint >= Number.parseInt(start, 16) &&
+              codepoint <= Number.parseInt(end, 16)
+            )
+          }),
+        )
+        .map(([, url]) => url)
+    for (const codepoint of [0x2197, 0x21a9, 0x2318]) {
+      expect(covering(codepoint)).toEqual([
+        './fonts/inter-ui-symbols-normal.woff2',
+      ])
+    }
   })
 
   it('is not part of index.css', () => {

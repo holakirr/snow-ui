@@ -35,6 +35,7 @@
     "./index.css": "./dist/index.css",
     "./theme.css": "./dist/theme.css",
     "./fonts.css": "./dist/fonts.css",
+    "./fonts-italic.css": "./dist/fonts-italic.css",
     "./fonts/*": "./dist/fonts/*"
   },
   "repository": {
@@ -50,7 +51,7 @@
     "snow-ui",
     "snow"
   ],
-  "license": "MIT",
+  "license": "MIT AND OFL-1.1",
   "scripts": {
     "build": "rm -rf dist && bun run tokens && bun run build:css && tsdown",
     "build:css": "tailwindcss -i ./src/index.css -o ./dist/index.css --minify && bun scripts/build-css.ts",

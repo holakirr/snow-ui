@@ -12,7 +12,8 @@ import { fileURLToPath } from 'node:url'
  *   its `layer()`), so it doesn't depend on how the consumer resolves them.
  *   Its Tailwind directives (`@theme`, `@utility`, `@apply`…) stay as they
  *   are, for the consumer's Tailwind to compile.
- * - `dist/fonts.css` and `dist/fonts/`: the self-hosted Inter.
+ * - `dist/fonts.css`, `dist/fonts-italic.css` and `dist/fonts/`: the self-hosted
+ *   Inter.
  */
 
 const require = createRequire(import.meta.url)
@@ -51,7 +52,9 @@ export function buildCss(packageDir: string) {
     join(dist, 'theme.css'),
     `/*! @holakirr/snow-ui theme.css | MIT License | react-day-picker/style.css: MIT License */\n${bundleCss(join(src, 'theme.css'))}`,
   )
-  cpSync(join(src, 'fonts.css'), join(dist, 'fonts.css'))
+  for (const file of ['fonts.css', 'fonts-italic.css']) {
+    cpSync(join(src, file), join(dist, file))
+  }
   cpSync(join(src, 'fonts'), join(dist, 'fonts'), { recursive: true })
 }
 

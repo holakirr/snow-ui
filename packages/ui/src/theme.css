@@ -85,6 +85,18 @@
 }
 
 @layer base {
+  /*
+   * The SnowUI Figma kit sets its text in the "Inter" family, not "Inter
+   * Display": the text optical size at every size. Variable Inter has an
+   * `opsz` axis (14-32) that browsers otherwise follow the font size on
+   * (`font-optical-sizing: auto`), which would draw the larger text styles
+   * with the tighter display shapes. `none` keeps the default, opsz 14.
+   */
+  html,
+  :host {
+    font-optical-sizing: none;
+  }
+
   *,
   ::after,
   ::before,
@@ -267,12 +279,6 @@
     to {
       transform: scale(0.95);
     }
-  }
-}
-
-@layer utilities {
-  .opacity-4 {
-    opacity: 0.04;
   }
 }
 

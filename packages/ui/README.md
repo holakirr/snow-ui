@@ -46,17 +46,19 @@ import '@holakirr/snow-ui/index.css'
 @source "../node_modules/@holakirr/snow-ui/dist";
 ```
 
-`theme.css` is the same theme without Tailwind itself: the design tokens as theme variables (so `bg-black-10`, `text-14` or `rounded-12` work in your own markup), the theme scopes, the `dark` variant, the `glass*` and `focus-ring` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). Your Tailwind generates one set of utilities for your code and the components, instead of two copies of preflight and overlapping utilities. Import one of the two stylesheets, not both. Note that `theme.css` redefines `dark:` to follow [scoped themes](#scoped-themes) (`data-theme`, then the OS preference) and overrides Tailwind's `--font-sans`, `--color-black` and `--color-white`.
+`theme.css` is the same theme without Tailwind itself: the design tokens as theme variables (so `bg-black-10`, `text-14` or `rounded-12` work in your own markup), the theme scopes, the `dark` variant, the `glass*` and `focus-ring` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). Your Tailwind generates one set of utilities for your code and the components, instead of two copies of preflight and overlapping utilities. Import one of the two stylesheets, not both. Note that `theme.css` redefines `dark:` to follow [scoped themes](#scoped-themes) (`data-theme`, then the OS preference) and overrides Tailwind's `--font-sans`, `--color-black` and `--color-white`. With a [prefix](https://tailwindcss.com/docs/styling-with-utility-classes#using-the-prefix-option) (`@import "tailwindcss" prefix(tw)`), use `index.css` instead: the components' classes are unprefixed, so your Tailwind wouldn't generate them.
 
 **Cascade layers.** Both stylesheets keep every rule in Tailwind's cascade layers (`theme`, `base`, `components`, `utilities`; react-day-picker's stylesheet is in `components`), so your own unlayered CSS overrides them whatever the load order or specificity, and your utilities override the base and component rules.
 
-**Fonts (optional).** The design uses Inter with the `ss01` / `cv01` OpenType features, which the Google Fonts build of Inter doesn't include. `fonts.css` self-hosts [Inter](https://rsms.me/inter/) 4.1 (the rsms build, SIL Open Font License): variable weight 100–900, `font-display: swap`, split by `unicode-range` so browsers only download the scripts a page uses (about 105 kB for Latin):
+**Fonts (optional).** The design uses Inter with the `ss01` / `cv01` OpenType features, which the Google Fonts build of Inter doesn't include. `fonts.css` self-hosts [Inter](https://rsms.me/inter/) 4.1 (the rsms build, SIL Open Font License): variable weight 100–900, `font-display: swap`, split by `unicode-range` so browsers only download the scripts a page uses (about 105 kB for Latin, plus 10 kB when a page shows arrows or keyboard symbols such as the external-link ↗):
 
 ```tsx
 import '@holakirr/snow-ui/fonts.css'
+// Only if your app has italic text (the design has none):
+import '@holakirr/snow-ui/fonts-italic.css'
 ```
 
-The font files are in `@holakirr/snow-ui/fonts/*` (e.g. for a preload: `import latin from '@holakirr/snow-ui/fonts/inter-latin-normal.woff2?url'` in Vite). To load Inter yourself, use a build with those features; the stylesheets only set `font-family: Inter, sans-serif` and the `font-feature-settings`.
+Import it from JavaScript or through a bundler (Vite, webpack, Next.js), which resolve its relative `url()`s to the font files. Don't `@import` it into a stylesheet built by the Tailwind CLI: the CLI inlines it and keeps the `url("./fonts/…")` as they are, so they point next to your output file and 404. The font files are in `@holakirr/snow-ui/fonts/*` (e.g. for a preload: `import latin from '@holakirr/snow-ui/fonts/inter-latin-normal.woff2?url'` in Vite). To load Inter yourself, use a build with those features; the stylesheets only set `font-family: Inter, sans-serif`, the `font-feature-settings` and `font-optical-sizing: none` (see [Design tokens](#design-tokens)).
 
 ### Basic example
 
@@ -108,7 +110,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 
 - **Theme:** light by default; dark with `data-theme="dark"` on `<html>` or on any element (see [Scoped themes](#scoped-themes)), or with the OS dark preference unless `<html data-theme="light">`. `color-scheme` follows, so native controls and scrollbars match.
 - **Colors:** `primary` (black in light, indigo in dark), `black`, `white` and their Figma alpha steps (`black-80`, `black-40`, `black-20`, `black-10`, `black-4`, same for `white`), `background-1..3`, `surface-1..3`, `color-1`, `color-2`, `static-white`, `static-black`, the secondary colours (`purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`), and three accessible text colours (see below): `indigo-text`, `red-text` and `text-secondary` (the `text-secondary` utility; `var(--color-text-secondary)`) for secondary text, which Figma draws in Black/40%. Use them as `bg-black-10`, `text-secondary`, `border-black-10` or `var(--color-black-10)`. In dark mode, `black-10` and `black-4` get the design's stronger alpha (15% and 10%); the Tailwind modifiers `black/10` and `black/4` keep one alpha in both modes.
-- **Typography:** `text-12` … `text-64` (the Figma text styles: font size and line height), Inter with `font-feature-settings: "ss01" 1, "cv01" 1`.
+- **Typography:** `text-12` … `text-64` (the Figma text styles: font size and line height), Inter with `font-feature-settings: "ss01" 1, "cv01" 1` and `font-optical-sizing: none`: the Figma kit uses the "Inter" family (text optical size) at every size, not "Inter Display", so large text keeps the text shapes instead of following the variable font's `opsz` axis.
 - **Radius:** `rounded-4` … `rounded-80` (the Figma corner radius scale).
 - **Spacing:** the Figma spacing and size values are multiples of 4px, so Tailwind's spacing utilities (`p-1` = 4px, `gap-3` = 12px, `size-10` = 40px) cover them.
 - **Cursors:** a base rule gives buttons and ARIA controls (`option`, `menuitem`, `tab`, `radio`, `checkbox`, `switch`, `label[for]`…) the pointer cursor, which Tailwind v4's preflight no longer sets, and disabled elements (`:disabled`, `aria-disabled="true"`, `data-disabled`) the not-allowed cursor. `cursor-*` utilities override it.

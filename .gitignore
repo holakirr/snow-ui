@@ -30,3 +30,5 @@ test-results
 vite.config.js
 .tmp
 storybook-static
+vite.config.d.ts
+*storybook.log

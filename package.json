@@ -1,157 +1,41 @@
 {
-  "name": "@holakirr/snow-ui",
-  "private": false,
-  "version": "3.0.0",
+  "name": "snow-ui-monorepo",
+  "private": true,
   "type": "module",
-  "main": "dist/cjs/index.js",
-  "types": "dist/cjs/index.d.ts",
-  "module": "dist/esm/index.js",
-  "style": "dist/index.css",
-  "sideEffects": [
-    "**/*.css"
-  ],
-  "files": [
-    "dist/**"
-  ],
-  "author": {
-    "name": "Kirill Petunin",
-    "email": "kpetunin@icloud.com",
-    "url": "https://holakirr.com"
-  },
-  "exports": {
-    ".": {
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      },
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      }
-    },
-    "./react-hook-form": {
-      "require": {
-        "types": "./dist/cjs/react-hook-form.d.ts",
-        "default": "./dist/cjs/react-hook-form.js"
-      },
-      "import": {
-        "types": "./dist/esm/react-hook-form.d.ts",
-        "default": "./dist/esm/react-hook-form.js"
-      }
-    },
-    "./index.css": "./dist/index.css",
-    "./package.json": "./package.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/holakirr/snow-ui.git#main"
-  },
-  "description": "SnowUI is a React component library designed by ByeWind, implemented and improved by holakirr for creating beautiful and interactive user interfaces.",
-  "homepage": "https://snow-ui.holakirr.com",
-  "keywords": [
-    "react",
-    "ui",
-    "snow-ui",
-    "snow"
-  ],
-  "license": "MIT",
   "packageManager": "bun@1.3.11",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build": "rm -rf dist && bun run build:ts && bun run build:types:cjs && bun run build:types:esm && bun run build:css",
-    "build:ts": "bun build.ts",
-    "build:types:cjs": "bunx tsc -b ./src/tsconfig.cjs.json",
-    "build:types:esm": "bunx tsc -b ./src/tsconfig.esm.json",
-    "build:css": "bunx @tailwindcss/cli -i ./src/index.css -o ./dist/index.css --minify",
-    "build:storybook": "storybook build --disable-telemetry",
+    "build": "bun run build:icons && bun run build:ui",
+    "build:icons": "bun run --filter @holakirr/snow-ui-icons build",
+    "build:ui": "bun run --filter @holakirr/snow-ui build",
+    "test": "bun run --filter '*' test",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "format": "biome format .",
-    "format:fix": "biome format --write .",
+    "format": "biome format --write .",
+    "typecheck": "bun run --filter '*' typecheck && tsc -p tsconfig.json",
     "storybook": "storybook dev -p 53741",
-    "test": "vitest --exclude e2e",
-    "test:ui": "vitest --ui --exclude e2e",
-    "test:coverage": "vitest run --coverage --exclude e2e",
-    "e2e": "playwright test",
-    "e2e:update": "playwright test --update-snapshots",
-    "e2e:ui": "playwright test --ui",
-    "commit": "better-commits",
-    "clean:build": "rm -rf dist/ build-storybook.log storybook-static/ migration-storybook.log coverage/",
-    "clean:node_modules": "rm -rf node_modules/",
-    "clean:all": "bun run clean:build && bun run clean:node_modules"
-  },
-  "bugs": {
-    "url": "https://github.com/holakirr/snow-ui/issues"
-  },
-  "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-hook-form": "^7.60.0"
-  },
-  "peerDependenciesMeta": {
-    "react-hook-form": {
-      "optional": true
-    }
-  },
-  "dependencies": {
-    "@holakirr/snow-ui-icons": "^2.1.0",
-    "@phosphor-icons/react": "^2.1.10",
-    "@radix-ui/react-accordion": "^1.2.11",
-    "@radix-ui/react-avatar": "^1.1.10",
-    "@radix-ui/react-checkbox": "^1.3.2",
-    "@radix-ui/react-context-menu": "^2.2.15",
-    "@radix-ui/react-dialog": "^1.1.14",
-    "@radix-ui/react-dropdown-menu": "^2.1.15",
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-popover": "^1.1.14",
-    "@radix-ui/react-radio-group": "^1.3.7",
-    "@radix-ui/react-select": "^2.3.7",
-    "@radix-ui/react-separator": "^1.1.7",
-    "@radix-ui/react-slider": "^1.3.5",
-    "@radix-ui/react-slot": "^1.3.3",
-    "@radix-ui/react-switch": "^1.2.5",
-    "@radix-ui/react-tabs": "^1.1.12",
-    "@radix-ui/react-toast": "^1.2.14",
-    "@radix-ui/react-toggle": "^1.1.9",
-    "@radix-ui/react-toggle-group": "^1.1.10",
-    "@radix-ui/react-tooltip": "^1.2.7",
-    "class-variance-authority": "^0.7.1",
-    "date-fns": "^4.1.0",
-    "react-day-picker": "^9.8.0",
-    "tailwind-merge": "^3.3.1"
+    "build:storybook": "storybook build --disable-telemetry",
+    "e2e": "bun run --filter @holakirr/snow-ui e2e",
+    "clean": "rm -rf packages/*/dist packages/*/storybook-static packages/*/coverage"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.6",
-    "@hookform/resolvers": "^5.1.1",
-    "@playwright/test": "^1.53.2",
-    "@storybook/addon-a11y": "^9.1.1",
-    "@storybook/addon-docs": "^9.1.1",
-    "@storybook/addon-links": "^9.1.1",
-    "@storybook/addon-themes": "^9.1.1",
-    "@storybook/react-vite": "^9.1.1",
-    "@tailwindcss/cli": "^4.0.1",
+    "@storybook/addon-a11y": "^9.1.20",
+    "@storybook/addon-docs": "^9.1.20",
+    "@storybook/addon-themes": "^9.1.20",
+    "@storybook/react-vite": "^9.1.20",
     "@tailwindcss/vite": "^4.0.1",
-    "@tanstack/react-table": "^8.21.3",
-    "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.0",
-    "@types/bun": "^1.2.18",
     "@types/node": "24",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
-    "@vitest/coverage-v8": "^5.0.2",
-    "@vitest/ui": "^5.0.2",
-    "better-commits": "^1.17.1",
-    "esbuild": "^0.25.5",
-    "jsdom": "^26.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-hook-form": "^7.60.0",
-    "storybook": "^9.1.1",
+    "storybook": "^9.1.20",
+    "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.0.1",
     "typescript": "^5.8.3",
-    "vite": "^8.3.1",
-    "vitest": "^5.0.2",
-    "zod": "^4.0.14"
+    "vite": "^8.3.1"
   },
   "engines": {
     "node": ">=18"

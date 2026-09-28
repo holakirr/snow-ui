@@ -1,5 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite'
-import { workspaceAliases } from '../packages/ui/workspace-aliases'
+import { workspaceAliases } from '../packages/ui/workspace-aliases.ts'
 
 // One Storybook for every workspace package (deployed to snow-ui.holakirr.com).
 // Run it from the repository root: `bun run storybook` / `bun run build:storybook`.
@@ -12,6 +12,8 @@ const config: StorybookConfig = {
     '@storybook/addon-docs',
     '@storybook/addon-a11y',
     '@storybook/addon-themes',
+    // Runs the story tests (root vitest.config.ts) from Storybook's sidebar.
+    '@storybook/addon-vitest',
   ],
   framework: '@storybook/react-vite',
   typescript: {

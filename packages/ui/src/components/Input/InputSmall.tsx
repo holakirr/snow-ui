@@ -16,7 +16,7 @@ import { twMerge } from '../../utils/tw-merge'
 const inputVariants = cva(
   [
     'rounded-16 px-2 py-1 text-14 text-black backdrop-blur-[10px] transition-all placeholder:text-black-20',
-    'focus-ring',
+    'focus:ring-4 focus:ring-focus',
     'disabled:cursor-not-allowed disabled:text-black-20',
   ],
   {

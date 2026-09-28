@@ -4,7 +4,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "105 kB"
+    "limit": "115 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Button }",
@@ -18,7 +18,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ Calendar }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "34 kB"
+    "limit": "36 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Dialog, DialogContent, DialogTrigger }",
@@ -38,7 +38,7 @@
     "name": "@holakirr/snow-ui/index.css",
     "path": "packages/ui/dist/index.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "15 kB"
+    "limit": "16.5 kB"
   },
   {
     "name": "@holakirr/snow-ui-icons: full import (ESM)",

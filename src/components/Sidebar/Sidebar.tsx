@@ -20,7 +20,7 @@ import { useIsMobile } from '../../hooks'
 import { Button, type ButtonProps } from '../Button'
 import { Input, type InputProps } from '../Input'
 import { Separator, type SeparatorProps } from '../Separator'
-import { Sheet, SheetContent } from '../Sheet'
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '../Sheet'
 import { Skeleton } from '../Skeleton'
 import {
   Tooltip,
@@ -204,6 +204,10 @@ const Sidebar: FC<SidebarProps> = ({
           }
           side={side}
         >
+          <SheetTitle className="sr-only">Sidebar</SheetTitle>
+          <SheetDescription className="sr-only">
+            Displays the mobile sidebar.
+          </SheetDescription>
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
       </Sheet>

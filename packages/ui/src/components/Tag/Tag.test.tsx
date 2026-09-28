@@ -35,4 +35,59 @@ describe('Tag', () => {
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
+
+  it('renders the Figma states', () => {
+    const { rerender } = render(<Tag label="React" />)
+    const tag = screen.getByRole('listitem')
+
+    expect(tag).toHaveClass('hover:[--tag-fill:var(--color-black-10)]')
+
+    rerender(<Tag label="React" state="active" />)
+    expect(tag).toHaveClass('text-indigo-text')
+
+    rerender(<Tag label="React" state="static" />)
+    expect(tag.className).not.toContain('hover:')
+  })
+
+  it('renders the dot left icon, with the Figma paddings', () => {
+    const { container } = render(<Tag label="React" dot />)
+    const tag = screen.getByRole('listitem')
+
+    expect(container.querySelector('.rounded-full')).toBeInTheDocument()
+    expect(tag).toHaveClass('pl-1', 'pr-2')
+  })
+
+  it('renders the arrow shapes without icons', () => {
+    const onClose = vi.fn()
+    const { container, rerender } = render(
+      <Tag label="React" shape="arrow-left" dot onClose={onClose} />,
+    )
+
+    const tip = container.querySelector('svg')
+    expect(tip).toBeInTheDocument()
+    expect(tip?.nextElementSibling).toHaveTextContent('React')
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+
+    rerender(<Tag label="React" shape="arrow-right" />)
+    expect(
+      container.querySelector('svg')?.previousElementSibling,
+    ).toHaveTextContent('React')
+  })
+
+  it('gives the close button a 24px hit area and a decorative icon', () => {
+    render(<Tag label="React" onClose={() => {}} />)
+
+    const button = screen.getByRole('button', { name: 'Remove tag React' })
+    const icon = button.querySelector('svg')
+
+    expect(button).toHaveClass('size-3', 'after:-inset-1.5', 'focus-ring')
+    expect(icon).toHaveAttribute('aria-hidden', 'true')
+    expect(icon?.querySelector('title')).toBeNull()
+  })
+
+  it('uses the accessible indigo for active text', () => {
+    render(<Tag label="React" state="active" />)
+
+    expect(screen.getByRole('listitem')).toHaveClass('text-indigo-text')
+  })
 })

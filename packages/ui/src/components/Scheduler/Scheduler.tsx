@@ -80,7 +80,7 @@ const Scheduler: FC<SchedulerProps> = ({
             <Typography
               size={TEXT_SIZES[12]}
               className={twMerge(
-                'text-black/40 px-1 py-0.5 rounded',
+                'text-black-40 px-1 py-0.5 rounded-4',
                 date.getDate() === now.getDate() &&
                   date.getMonth() === now.getMonth() &&
                   date.getFullYear() === now.getFullYear()
@@ -101,7 +101,7 @@ const Scheduler: FC<SchedulerProps> = ({
                   i === 1 ? `calc(108*${i}px)` : `calc(108px + 116*${i - 1}px)`,
               }}
               orientation="vertical"
-              className="absolute bg-black/4"
+              className="absolute bg-black-4"
             />
           )}
         </Fragment>
@@ -109,7 +109,7 @@ const Scheduler: FC<SchedulerProps> = ({
 
       {hours.map((hour) => (
         <Fragment key={hour}>
-          <Typography size={TEXT_SIZES[12]} className="text-black/40">
+          <Typography size={TEXT_SIZES[12]} className="text-black-40">
             {new Date(new Date().setHours(hour)).toLocaleTimeString('en-US', {
               hour: 'numeric',
             })}
@@ -132,7 +132,7 @@ const Scheduler: FC<SchedulerProps> = ({
                   onDateClick(getCellDate(date, hour))
                 }
               }}
-              className="relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black/20"
+              className="relative focus-ring"
             >
               {events
                 ?.filter((event) => {
@@ -147,7 +147,7 @@ const Scheduler: FC<SchedulerProps> = ({
                 .map((event) => (
                   <EventItem
                     key={event.id}
-                    className="bg-color-2 text-blue-800 p-1 text-sm rounded cursor-pointer"
+                    className="bg-color-2 text-static-black p-1 text-14 rounded-4"
                     onEventClick={onEventClick}
                     event={event}
                   />
@@ -175,7 +175,7 @@ const Scheduler: FC<SchedulerProps> = ({
                 minute: 'numeric',
               })
               .substring(0, 5)}
-            className="bg-primary text-white font-normal text-xs text-nowrap"
+            className="bg-primary text-white font-normal text-12 text-nowrap"
           />
           <Separator className="bg-primary" />
         </div>

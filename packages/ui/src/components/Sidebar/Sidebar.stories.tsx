@@ -1,4 +1,4 @@
-import { ArrowLineUpIcon } from '@holakirr/snow-ui-icons'
+import { ArrowLineRightIcon, ArrowLineUpIcon } from '@holakirr/snow-ui-icons'
 import {
   ChartPieSliceIcon,
   ChatsTeardropIcon,
@@ -31,6 +31,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarProvider,
   SidebarSeparator,
   SidebarTrigger,
@@ -89,7 +92,7 @@ const meta: Meta<typeof Sidebar> = {
     docs: {
       description: {
         component:
-          'A composable, themeable and customizable sidebar component.',
+          'A composable, themeable and customizable sidebar component. It follows the Figma dashboard Sidebar: 212px wide, no fill (it sits on the page background), a 0.5px Black/10% edge, 14 Regular Black/40% section headings and 36px items with radius 12 and a Black/4% fill on hover and on the active item.',
       },
     },
   },
@@ -124,11 +127,7 @@ const Content = () => (
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                variant="outline"
-                asChild
-                isActive={item.isActive}
-              >
+              <SidebarMenuButton asChild isActive={item.isActive}>
                 <a href={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
@@ -216,4 +215,114 @@ export const Inset: Story = {
       </main>
     </SidebarProvider>
   ),
+}
+
+const Chevron = ({ open }: { open?: boolean }) => (
+  <ArrowLineRightIcon
+    aria-hidden
+    className={`!size-4 text-black-20 transition-transform ${open ? 'rotate-90' : ''}`}
+  />
+)
+
+const dashboards = items.slice(0, 3)
+const pages = items.slice(3)
+const profilePages = ['Overview', 'Projects', 'Campaigns', 'Documents']
+
+/** The Figma dashboard sidebar (`Type=Complex`, `Fold=False`). */
+export const Dashboard: Story = {
+  render: () => (
+    <SidebarProvider className="min-h-0 h-[760px] bg-background-1">
+      <Sidebar collapsible="none">
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton className="rounded-8">
+                <Avatar size="sm">
+                  <AvatarFallback>BW</AvatarFallback>
+                </Avatar>
+                <span>ByeWind</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <div className="flex gap-2 text-12">
+            <span className="px-3 py-1 text-black-40">Favorites</span>
+            <span className="px-3 py-1 text-black-20">Recently</span>
+          </div>
+          <SidebarMenu>
+            {['Overview', 'Projects'].map((title) => (
+              <SidebarMenuItem key={title}>
+                <SidebarMenuButton>
+                  <span
+                    aria-hidden
+                    className="mx-1 size-1.5 shrink-0 rounded-full bg-black-20"
+                  />
+                  <span>{title}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Dashboards</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {dashboards.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={item.isActive}>
+                      <a href={item.url} className="gap-1">
+                        {item.isActive ? (
+                          <span className="size-4 shrink-0" />
+                        ) : (
+                          <Chevron />
+                        )}
+                        <item.icon
+                          weight={item.isActive ? 'fill' : 'duotone'}
+                        />
+                        <span className="ml-1">{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+          <SidebarGroup>
+            <SidebarGroupLabel>Pages</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {pages.map((item, index) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url} className="gap-1">
+                        <Chevron open={index === 0} />
+                        <item.icon weight="duotone" />
+                        <span className="ml-1">{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                    {index === 0 && (
+                      <SidebarMenuSub className="ml-12 mr-0 border-l-0 px-0">
+                        {profilePages.map((title) => (
+                          <SidebarMenuSubItem key={title}>
+                            <SidebarMenuSubButton href="#">
+                              <span>{title}</span>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                      </SidebarMenuSub>
+                    )}
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    </SidebarProvider>
+  ),
+}
+
+export const DashboardDark: Story = {
+  ...Dashboard,
+  globals: { theme: 'dark' },
 }

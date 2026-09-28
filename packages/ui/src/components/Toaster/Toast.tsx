@@ -16,7 +16,9 @@ const ToastViewport: FC<
 > = ({ className, ...props }) => (
   <ToastPrimitives.Viewport
     className={twMerge(
-      'fixed bottom-0 z-[100] flex max-h-screen w-[calc(100vw-40px)] md:max-w-md md:w-auto flex-col-reverse gap-2 p-4 left-1/2 -translate-x-1/2',
+      // `w-max` sizes the viewport to its toasts; with `w-auto` a fixed box at
+      // left: 50% could only use half of the screen and squeezed them.
+      'fixed bottom-0 left-1/2 z-[100] flex max-h-screen w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col-reverse items-center gap-2 p-4 md:max-w-md',
       className,
     )}
     {...props}
@@ -24,13 +26,22 @@ const ToastViewport: FC<
 )
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
+/*
+ * Figma Toast: a Black/80% fill under a White/10% overlay (the gradient layer),
+ * "Background blur 40", radius 16, White/100% text. The Figma component pins
+ * the Colors collection to SnowUI-Light, so the toast stays dark in dark mode
+ * too: the colours are the static ones, and the green / yellow status icons
+ * keep a contrast of at least 5:1.
+ */
 const toastVariants = cva(
-  'group relative flex gap-2 w-full items-center justify-between overflow-hidden transition-all bg-black/80 rounded text-white data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:animate-out data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom',
+  'group relative flex w-fit max-w-full items-center justify-between overflow-hidden rounded-16 bg-static-black/80 bg-linear-to-r from-static-white/10 to-static-white/10 backdrop-blur-bg-40 text-static-white transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom',
   {
     variants: {
       size: {
-        lg: 'px-4 py-2 pr-8 rounded-lg',
-        sm: 'px-2 py-1 pr-6 rounded',
+        // Figma Big: padding 8/12, gap 8, text 14/20.
+        lg: 'gap-2 px-3 py-2 text-14',
+        // Figma small: padding 4/8, gap 4, text 12/16.
+        sm: 'gap-1 px-2 py-1 text-12',
       },
     },
     defaultVariants: {
@@ -67,12 +78,12 @@ const ToastAction: FC<ToastActionProps> = ({ className, size, ...props }) => (
 ToastAction.displayName = ToastPrimitives.Action.displayName
 
 const toastCloseStyles = cva(
-  'absolute p-1 cursor-pointer opacity-0 transition-opacity hover:text-black focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100',
+  'shrink-0 rounded-8 text-static-white/80 transition-colors hover:text-static-white focus-ring',
   {
     variants: {
       size: {
-        lg: 'right-1 top-1',
-        sm: 'right-0 top-0',
+        lg: 'p-0.5',
+        sm: 'p-0',
       },
     },
     defaultVariants: {
@@ -98,11 +109,11 @@ const ToastClose: FC<ToastCloseProps> = ({ className, size, ...props }) => (
 )
 ToastClose.displayName = ToastPrimitives.Close.displayName
 
-const toastTitleStyles = cva('font-semibold', {
+const toastTitleStyles = cva('font-normal', {
   variants: {
     size: {
-      lg: 'text-sm',
-      sm: 'text-xs',
+      lg: 'text-14',
+      sm: 'text-12',
     },
   },
   defaultVariants: {
@@ -123,11 +134,11 @@ const ToastTitle: FC<ToastTitleProps> = ({ className, size, ...props }) => (
 )
 ToastTitle.displayName = ToastPrimitives.Title.displayName
 
-const toastDescriptionStyles = cva('', {
+const toastDescriptionStyles = cva('text-static-white/80', {
   variants: {
     size: {
-      lg: 'text-sm',
-      sm: 'text-xs',
+      lg: 'text-14',
+      sm: 'text-12',
     },
   },
   defaultVariants: {

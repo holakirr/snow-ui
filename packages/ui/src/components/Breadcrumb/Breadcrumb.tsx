@@ -16,7 +16,8 @@ export type BreadcrumbListProps = ComponentProps<'ol'>
 const BreadcrumbList: FC<BreadcrumbListProps> = ({ className, ...props }) => (
   <ol
     className={twMerge(
-      'flex items-center gap-2 break-words text-sm',
+      // Figma Breadcrumb: a Group with gap 4 and 12 Regular items.
+      'flex items-center gap-1 break-words text-12',
       className,
     )}
     {...props}
@@ -29,7 +30,7 @@ export type BreadcrumbItemProps = ComponentProps<'li'>
 const BreadcrumbItem: FC<BreadcrumbItemProps> = ({ className, ...props }) => (
   <li
     className={twMerge(
-      'inline-flex items-center transition-colors text-black/40 last-of-type:text-black',
+      'inline-flex items-center transition-colors text-black-40 last-of-type:text-black',
       className,
     )}
     {...props}
@@ -50,9 +51,10 @@ const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
     as="a"
     aria-disabled={disabled}
     tabIndex={disabled ? -1 : 0}
+    // Figma: a Button Small "Borderless" (padding 4/12, radius 12).
     className={twMerge(
-      'transition-colors text-inherit',
-      disabled && 'text-black/10 pointer-events-none',
+      'rounded-12 px-3 py-1 text-12 text-inherit transition-colors hover:bg-black-4',
+      disabled && 'text-black-10 pointer-events-none',
       className,
     )}
     {...props}
@@ -69,7 +71,7 @@ const BreadcrumbPage: FC<BreadcrumbPageProps> = ({ className, ...props }) => (
     role="link"
     aria-disabled="true"
     aria-current="page"
-    className={twMerge('text-black', className)}
+    className={twMerge('px-3 py-1 text-black', className)}
     {...props}
   />
 )
@@ -85,7 +87,10 @@ const BreadcrumbSeparator: FC<BreadcrumbSeparatorProps> = ({
   <li
     role="presentation"
     aria-hidden="true"
-    className={twMerge('[&>svg]:w-3.5 [&>svg]:h-3.5 text-black/20', className)}
+    className={twMerge(
+      'text-14 text-black-10 [&>svg]:h-3.5 [&>svg]:w-3.5',
+      className,
+    )}
     {...props}
   >
     {children ?? '/'}

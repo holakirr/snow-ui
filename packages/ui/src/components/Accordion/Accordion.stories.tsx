@@ -59,3 +59,12 @@ export const Multiple: Story = {
     type: 'multiple',
   },
 }
+
+export const Dark: Story = {
+  args: {
+    type: 'single',
+    collapsible: true,
+    defaultValue: 'item-1',
+  },
+  globals: { theme: 'dark' },
+}

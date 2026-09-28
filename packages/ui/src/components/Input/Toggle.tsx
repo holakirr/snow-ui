@@ -1,42 +1,81 @@
 'use client'
 
 import * as TogglePrimitive from '@radix-ui/react-toggle'
-import { cva, type VariantProps } from 'class-variance-authority'
 import type { FC } from 'react'
+import type { Size, ToggleVariant } from '../../types'
+import { isIconOnly } from '../../utils/children'
 import { twMerge } from '../../utils/tw-merge'
+import { segmentedItemVariants } from '../Tabs/segmented'
 
-const toggleVariants = cva(
-  'inline-flex items-center justify-center font-medium transition-colors bg-transparent text-black/20 font-normal hover:bg-black/5 hover:text-black/40 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-black/10 data-[state=on]:text-black [&_svg]:pointer-events-none [&_svg]:shrink-0 disabled:text-black/10',
-  {
-    variants: {
-      variant: {
-        borderless: '',
-        outline: 'border border-black-10 disabled:border-black/10',
-      },
-      size: {
-        sm: 'text-sm py-1 px-2 has-only:px-1 rounded-lg gap-1 [&_svg]:size-4',
-        md: 'text-base py-2 px-4 has-only:px-2 rounded-xl gap-2 [&_svg]:size-5',
-        lg: 'text-lg py-3 px-6 has-only:px-3 rounded-2xl gap-2 [&_svg]:size-6',
-      },
-    },
-    defaultVariants: {
-      variant: 'borderless',
-      size: 'md',
-    },
-  },
-)
+type ToggleVariantProps = {
+  /**
+   * `borderless` (default) and `outline` toggles turn into a Gray button when
+   * on; `pill` toggles turn white with a shadow (use them in a
+   * `ToggleGroup variant="pill"`).
+   * @default "borderless"
+   */
+  variant?: ToggleVariant | null
+  /**
+   * The Figma Button size.
+   * @default "md"
+   */
+  size?: Size | null
+  /**
+   * Square, with a bigger (16, 20 or 24px) icon. Detected when omitted: the
+   * content is a single element without children, such as an icon.
+   */
+  iconOnly?: boolean | null
+}
 
-type ToggleProps = TogglePrimitive.ToggleProps &
-  VariantProps<typeof toggleVariants>
+const itemVariant = {
+  borderless: 'solid',
+  outline: 'outline',
+  pill: 'pill',
+} as const
 
-const Toggle: FC<ToggleProps> = ({ className, variant, size, ...props }) => (
+/**
+ * Toggle styles: the Figma segmented-control items (see `Tabs`). Off, a
+ * toggle is a Borderless button at 40% opacity (100% on hover and keyboard
+ * focus); on, it is a Gray button, or a white, shadowed one for `pill`.
+ */
+const toggleVariants = ({
+  variant,
+  size,
+  iconOnly,
+  className,
+}: ToggleVariantProps & { className?: string } = {}): string =>
+  twMerge(
+    segmentedItemVariants({
+      variant: itemVariant[variant ?? 'borderless'],
+      size: size ?? 'md',
+      iconOnly: !!iconOnly,
+    }),
+    className,
+  )
+
+type ToggleProps = TogglePrimitive.ToggleProps & ToggleVariantProps
+
+const Toggle: FC<ToggleProps> = ({
+  className,
+  variant,
+  size,
+  iconOnly,
+  children,
+  ...props
+}) => (
   <TogglePrimitive.Root
-    className={twMerge(toggleVariants({ variant, size, className }))}
-    tabIndex={0}
+    className={toggleVariants({
+      variant,
+      size,
+      iconOnly: iconOnly ?? isIconOnly(children),
+      className,
+    })}
     {...props}
-  />
+  >
+    {children}
+  </TogglePrimitive.Root>
 )
 
 Toggle.displayName = TogglePrimitive.Root.displayName
 
-export { Toggle, type ToggleProps, toggleVariants }
+export { Toggle, type ToggleProps, type ToggleVariantProps, toggleVariants }

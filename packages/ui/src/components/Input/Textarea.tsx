@@ -4,18 +4,24 @@ import {
   basicInputClasses,
   disabledInputClasses,
   focusInputClasses,
+  staticInputClasses,
 } from './Input'
 
 type TextareaProps = ComponentProps<'textarea'>
 
+/**
+ * Figma "Textarea": the Input field (12/16 padding, 16px radius, 0.5px
+ * stroke, 14/20 text), at least one row (44px) high. `readOnly` gives the
+ * Figma "Static" state.
+ */
 const Textarea: FC<TextareaProps> = ({ className, ...props }) => (
   <textarea
     className={twMerge(
-      'flex min-h-18 w-full focus-visible:outline-none',
+      'flex min-h-11 w-full',
       basicInputClasses,
+      staticInputClasses,
       disabledInputClasses,
       focusInputClasses,
-      'text-sm',
       className,
     )}
     {...props}

@@ -100,7 +100,7 @@ type ToastCloseProps = ComponentProps<typeof ToastPrimitives.Close> &
 const ToastClose: FC<ToastCloseProps> = ({ className, size, ...props }) => (
   <ToastPrimitives.Close
     className={twMerge(toastCloseStyles({ size }), className)}
-    toast-close
+    toast-close=""
     aria-label="Close"
     {...props}
   >

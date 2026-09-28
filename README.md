@@ -25,10 +25,15 @@ Take a look at my [CV](https://holakirr.com) =)
 To get started, install Holakirr Snow UI package via package manager of your choice:
 
 ```bash
-bun add @holakirr/snow-ui
+bun add @holakirr/snow-ui react react-dom react-hook-form
 ```
 
-Peer dependencies: `react` and `react-dom` 19.
+Peer dependencies you need to install alongside the package:
+
+- `react` and `react-dom` 19
+- `react-hook-form` 7 (used by the `Form` components)
+
+Tailwind CSS is not required at runtime: `@holakirr/snow-ui/index.css` ships precompiled.
 
 Then just import styles:
 

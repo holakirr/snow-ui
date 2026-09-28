@@ -5,6 +5,7 @@ export const BUTTON_VARIANTS: { [K in ButtonVariant]: K } = {
   gray: 'gray',
   outline: 'outline',
   filled: 'filled',
+  bare: 'bare',
 }
 
 export const SEPARATOR_DIRECTIONS: { [K in Direction]: K } = {

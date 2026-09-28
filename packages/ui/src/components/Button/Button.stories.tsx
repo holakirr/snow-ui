@@ -1,4 +1,6 @@
+import { StarIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Fragment } from 'react'
 import { BUTTON_VARIANTS, ROLES, SIZES } from '../../constants'
 import { Typography } from '../Text/Text'
 import { Button } from './Button'
@@ -93,6 +95,23 @@ export const Outline: Story = {
   },
 }
 
+/** Figma "Bare": no box, 40% opacity, 100% on hover. */
+export const Bare: Story = {
+  args: {
+    variant: 'bare',
+  },
+}
+
+export const Disabled: Story = {
+  render: (args) => (
+    <div className="flex items-center gap-4" title="Disabled buttons">
+      {Object.values(BUTTON_VARIANTS).map((variant) => (
+        <Button key={variant} {...args} variant={variant} disabled />
+      ))}
+    </div>
+  ),
+}
+
 export const AllVariants: Story = {
   render: (args) => (
     <div
@@ -100,10 +119,10 @@ export const AllVariants: Story = {
       title="Buttons all variants"
     >
       {Object.values(BUTTON_VARIANTS).map((variant) => (
-        <>
-          <Typography key={`${variant}-text`}>{variant}</Typography>
-          <Button key={variant} {...args} variant={variant} />
-        </>
+        <Fragment key={variant}>
+          <Typography>{variant}</Typography>
+          <Button {...args} variant={variant} />
+        </Fragment>
       ))}
     </div>
   ),
@@ -134,10 +153,57 @@ export const AllSizes: Story = {
       title="Buttons all sizes"
     >
       {Object.values(SIZES).map((size) => (
-        <>
-          <Typography key={`${size}-text`}>{size}</Typography>
-          <Button key={size} {...args} size={size} />
-        </>
+        <Fragment key={size}>
+          <Typography>{size}</Typography>
+          <Button {...args} size={size} />
+        </Fragment>
+      ))}
+    </div>
+  ),
+}
+
+/**
+ * The Figma Button set: every variant and size, with an icon and a label,
+ * a label only, and an icon only (hover a button to see its hover state).
+ */
+export const Matrix: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div
+      className="grid grid-cols-[auto_repeat(3,auto)] items-center gap-x-8 gap-y-4"
+      title="Button matrix"
+    >
+      <span />
+      {Object.values(SIZES).map((size) => (
+        <Typography key={size} size={12} className="text-black-40">
+          {size}
+        </Typography>
+      ))}
+      {Object.values(BUTTON_VARIANTS).map((variant) => (
+        <Fragment key={variant}>
+          <Typography size={12} className="text-black-40">
+            {variant}
+          </Typography>
+          {Object.values(SIZES).map((size) => (
+            <div key={size} className="flex items-center gap-2">
+              <Button
+                variant={variant}
+                size={size}
+                label="Button"
+                leftContent={<StarIcon />}
+                rightContent={<StarIcon />}
+              />
+              <Button variant={variant} size={size} label="Button" />
+              <Button
+                variant={variant}
+                size={size}
+                label=""
+                title="Icon button"
+                leftContent={<StarIcon />}
+              />
+            </div>
+          ))}
+        </Fragment>
       ))}
     </div>
   ),

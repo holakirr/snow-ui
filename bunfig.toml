@@ -1,0 +1,4 @@
+[install]
+# One hoisted node_modules at the root (packages with conflicting versions get
+# their own nested copy). Explicit so installs don't depend on lockfile age.
+linker = "hoisted"

@@ -44,7 +44,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/holakirr/snow-ui.git#main"
+    "url": "git+https://github.com/holakirr/snow-ui.git",
+    "directory": "packages/ui"
   },
   "description": "SnowUI is a React component library designed by ByeWind, implemented and improved by holakirr for creating beautiful and interactive user interfaces.",
   "homepage": "https://snow-ui.holakirr.com",
@@ -55,7 +56,6 @@
     "snow"
   ],
   "license": "MIT",
-  "packageManager": "bun@1.3.11",
   "scripts": {
     "build": "rm -rf dist && bun run build:ts && bun run build:types:cjs && bun run build:types:esm && bun run build:css",
     "build:ts": "bun build.ts",
@@ -63,12 +63,14 @@
     "build:types:esm": "bunx tsc -b ./src/tsconfig.esm.json",
     "build:css": "bunx @tailwindcss/cli -i ./src/index.css -o ./dist/index.css --minify",
     "build:storybook": "storybook build --disable-telemetry",
+    "typecheck": "tsc -p . --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format .",
     "format:fix": "biome format --write .",
     "storybook": "storybook dev -p 53741",
-    "test": "vitest --exclude e2e",
+    "test": "vitest run --exclude e2e",
+    "test:watch": "vitest --exclude e2e",
     "test:ui": "vitest --ui --exclude e2e",
     "test:coverage": "vitest run --coverage --exclude e2e",
     "e2e": "playwright test",
@@ -120,7 +122,6 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.6",
     "@hookform/resolvers": "^5.1.1",
     "@playwright/test": "^1.53.2",
     "@storybook/addon-a11y": "^9.1.1",

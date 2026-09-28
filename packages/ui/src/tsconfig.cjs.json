@@ -9,7 +9,8 @@
     "noEmit": false,
     "outDir": "../dist/cjs",
     "target": "ES2020",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "paths": {}
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["test", "**/*.test.*", "**/*.stories.*", "tsconfig.*"]

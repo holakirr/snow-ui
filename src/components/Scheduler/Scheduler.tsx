@@ -8,6 +8,7 @@ import type { CalendarEvent, StartOfWeek } from '../../types'
 import {
   getEarliestScheduleHour,
   getLatestScheduleHour,
+  getScheduleHours,
   getWeekDates,
 } from '../../utils'
 import { Separator } from '../Separator'
@@ -45,14 +46,12 @@ const Scheduler: FC<SchedulerProps> = ({
   const weekDates = getWeekDates(currentDate, startOfWeek)
 
   const earliestHour = getEarliestScheduleHour(events)
-  const earliestTime = new Date(new Date().setHours(earliestHour))
+  const earliestTime = new Date(new Date().setHours(earliestHour, 0, 0, 0))
   const latestHour = getLatestScheduleHour(events)
-  const latestTime = new Date(new Date().setHours(latestHour))
+  // The grid includes the whole latest hour, so it ends at latestHour + 1
+  const latestTime = new Date(new Date().setHours(latestHour + 1, 0, 0, 0))
   const now = new Date()
-  const hours = Array.from(
-    { length: latestHour - earliestHour },
-    (_, i) => i + earliestHour,
-  )
+  const hours = getScheduleHours(earliestHour, latestHour)
 
   return (
     <div
@@ -135,7 +134,7 @@ const Scheduler: FC<SchedulerProps> = ({
                 })
                 .map((event) => (
                   <EventItem
-                    key={event.title}
+                    key={event.id}
                     className="bg-bg4 text-blue-800 p-1 text-sm rounded cursor-pointer"
                     onEventClick={onEventClick}
                     event={event}

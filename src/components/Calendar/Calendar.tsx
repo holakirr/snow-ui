@@ -10,7 +10,6 @@ import {
   labelPrevious,
   useDayPicker,
 } from 'react-day-picker'
-import 'react-day-picker/style.css'
 import { twMerge } from 'tailwind-merge'
 import { Button, buttonVariants } from '../Button'
 
@@ -289,7 +288,6 @@ function Calendar({
                 variant="outline"
                 className="absolute left-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
                 type="button"
-                tabIndex={isPreviousDisabled ? undefined : -1}
                 disabled={isPreviousDisabled}
                 aria-label={
                   navView === 'years'
@@ -307,7 +305,6 @@ function Calendar({
                 variant="outline"
                 className="absolute right-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
                 type="button"
-                tabIndex={isNextDisabled ? undefined : -1}
                 disabled={isNextDisabled}
                 aria-label={
                   navView === 'years'
@@ -341,6 +338,21 @@ function Calendar({
         },
         MonthGrid: ({ className, children, ...props }) => {
           const { goToMonth, selected } = useDayPicker()
+          const getSelectedMonth = (value: unknown): number => {
+            if (value instanceof Date) return value.getMonth()
+            if (Array.isArray(value) && value[0] instanceof Date) {
+              return value[0].getMonth()
+            }
+            if (
+              value &&
+              typeof value === 'object' &&
+              'from' in value &&
+              value.from instanceof Date
+            ) {
+              return value.from.getMonth()
+            }
+            return new Date().getMonth()
+          }
           if (navView === 'years') {
             return (
               <div
@@ -380,7 +392,7 @@ function Calendar({
                           goToMonth(
                             new Date(
                               displayYears.from + i,
-                              (selected as Date | undefined)?.getMonth() ?? 0,
+                              getSelectedMonth(selected),
                             ),
                           )
                         }}

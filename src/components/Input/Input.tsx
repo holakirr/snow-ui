@@ -30,9 +30,15 @@ const Input: FC<InputProps> = ({
   ref,
   ...props
 }) => {
-  const [value, setInputValue] = useState(clientValue)
+  const isControlled = clientValue !== undefined
+  const [innerValue, setInnerValue] = useState(defaultValue ?? '')
+  const value = isControlled ? clientValue : innerValue
+  const hasValue = value !== undefined && value !== null && `${value}` !== ''
+
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value)
+    if (!isControlled) {
+      setInnerValue(event.target.value)
+    }
     if (onChange) {
       onChange(event)
     }
@@ -46,13 +52,13 @@ const Input: FC<InputProps> = ({
           disabledInputClasses,
           focusInputClasses,
           title && 'py-6 focus:pb-4 focus:pt-8',
-          title && (value || defaultValue) && 'pb-4 pt-8',
+          title && hasValue && 'pb-4 pt-8',
           className,
         )}
         placeholder={title ? '' : placeholder}
         id={id}
-        value={value}
-        defaultValue={defaultValue}
+        ref={ref}
+        {...(isControlled ? { value: clientValue } : { defaultValue })}
         role={ROLES.textbox}
         onChange={changeHandler}
         {...props}
@@ -62,9 +68,7 @@ const Input: FC<InputProps> = ({
           htmlFor={id}
           className={twMerge(
             'absolute left-5 -translate-y-1/2 peer-focus:top-4 peer-focus:text-xs peer-focus:translate-0',
-            value || defaultValue
-              ? 'top-6 text-xs translate-0'
-              : 'top-1/2 text-lg',
+            hasValue ? 'top-6 text-xs translate-0' : 'top-1/2 text-lg',
           )}
         >
           {title}

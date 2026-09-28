@@ -28,6 +28,8 @@ To get started, install Holakirr Snow UI package via package manager of your cho
 bun add @holakirr/snow-ui
 ```
 
+Peer dependencies: `react` and `react-dom` 19.
+
 Then just import styles:
 
 ```tsx
@@ -58,7 +60,7 @@ Components are documented in Storybook with examples and props documentation. Vi
 
 - Unit tests are written using Vitest and React Testing Library
 - E2E tests are written using Playwright
-- All components have corresponding test files
+- Unit tests cover Button, Accordion and date utils so far; more are welcome
 
 ## Usage
 

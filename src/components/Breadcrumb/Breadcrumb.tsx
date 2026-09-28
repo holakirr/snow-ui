@@ -16,7 +16,6 @@ export type BreadcrumbListProps = ComponentProps<'ol'>
 
 const BreadcrumbList: FC<BreadcrumbListProps> = ({ className, ...props }) => (
   <ol
-    aria-label="Breadcrumb List"
     className={twMerge(
       'flex items-center gap-2 break-words text-sm',
       className,
@@ -30,7 +29,6 @@ export type BreadcrumbItemProps = ComponentProps<'li'>
 
 const BreadcrumbItem: FC<BreadcrumbItemProps> = ({ className, ...props }) => (
   <li
-    aria-label="Breadcrumb Item"
     className={twMerge(
       'inline-flex items-center transition-colors text-black/40 last-of-type:text-black',
       className,
@@ -44,6 +42,15 @@ export type BreadcrumbLinkProps = ComponentProps<'a'> & {
   disabled?: boolean
 }
 
+// Links are not buttons: drop Button's role/type/title/aria-label defaults
+// so the link's own text is its accessible name.
+const linkOverrides = {
+  role: undefined,
+  type: undefined,
+  title: undefined,
+  'aria-label': undefined,
+}
+
 const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
   className,
   disabled,
@@ -51,7 +58,7 @@ const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
 }) => (
   <Button
     as="a"
-    aria-label="Breadcrumb Link"
+    {...linkOverrides}
     aria-disabled={disabled}
     tabIndex={disabled ? -1 : 0}
     className={twMerge(

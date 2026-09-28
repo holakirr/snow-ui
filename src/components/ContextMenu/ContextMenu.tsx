@@ -40,7 +40,7 @@ const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
 ContextMenuSubTrigger.displayName = CtxMenuPrimitive.SubTrigger.displayName
 
 const contentClasses =
-  'z-50 min-w-60 rounded-2xl border-[0.5px] border-black/10 bg-white/80 p-4 text-black backdrop-blur-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:slide-in-from-top data-[side=left]:slide-in-from-right data-[side=right]:slide-in-from-left data-[side=top]:slide-in-from-bottom'
+  'z-50 min-w-60 rounded-2xl border-[0.5px] border-black/10 bg-white/80 p-4 text-black backdrop-blur-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom'
 
 type ContextMenuSubContentProps = CtxMenuPrimitive.ContextMenuSubContentProps
 

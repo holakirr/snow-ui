@@ -160,7 +160,7 @@ const AppSidebar = () => (
             </DropdownMenuTrigger>
             <DropdownMenuContent
               side="top"
-              className="w-[--radix-popper-anchor-width]"
+              className="w-(--radix-popper-anchor-width)"
             >
               <DropdownMenuItem>
                 <span>Account</span>

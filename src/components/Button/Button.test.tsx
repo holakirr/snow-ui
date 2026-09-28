@@ -162,7 +162,7 @@ describe('Button', () => {
     const icon = screen.getByRole(ROLES.img)
 
     expect(button).toBeInTheDocument()
-    expect(button).toHaveClass('p-2')
+    expect(button).toHaveClass('p-1')
     expect(button).toContainElement(icon)
   })
 })

@@ -12,20 +12,30 @@ import { twMerge } from 'tailwind-merge'
 
 import { Typography } from '../Text'
 
-const AccordionContent: FC<AccordionContentProps> = ({ ...props }) => (
+const AccordionContent: FC<AccordionContentProps> = ({
+  className,
+  ...props
+}) => (
   <AccordionPrimitive.Content
-    className="p-4 pt-1 transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden"
+    className={twMerge(
+      'p-4 pt-1 transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden',
+      className,
+    )}
     {...props}
   />
 )
 
 const AccordionTrigger: FC<AccordionTriggerProps> = ({
   children,
+  className,
   ...props
 }) => (
   <AccordionPrimitive.Header className="flex w-full">
     <AccordionPrimitive.Trigger
-      className="flex w-full rounded-xl px-4 py-2 items-center justify-between transition-all hover:bg-black/10 focus:bg-black/10 cursor-pointer [&[data-state=open]>svg]:rotate-90 gap-2"
+      className={twMerge(
+        'flex w-full rounded-xl px-4 py-2 items-center justify-between transition-all hover:bg-black/10 focus:bg-black/10 cursor-pointer [&[data-state=open]>svg]:rotate-90 gap-2',
+        className,
+      )}
       tabIndex={0}
       {...props}
     >
@@ -33,7 +43,7 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
         {children}
       </Typography>
 
-      <ArrowLineRightIcon className="data-[state=open]:rotate-90" />
+      <ArrowLineRightIcon className="shrink-0 transition-transform" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 )
@@ -49,7 +59,6 @@ type AccordionProps = (
 
 const Accordion = ({ className, ...props }: AccordionProps) => (
   <AccordionPrimitive.Root
-    role="region"
     className={twMerge('flex flex-col gap-1 text-black', className)}
     {...props}
   />

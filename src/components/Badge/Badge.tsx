@@ -26,7 +26,7 @@ export const BadgeComponent = ({
     aria-label={content || 'Notification badge'}
     className={twMerge(
       'bg-purple rounded-full w-[6px] h-[6px] block text-center transition-all z-10',
-      content && 'w-auto h-auto text-black-100 px-[6px] py-[1px]',
+      content && 'w-auto h-auto text-black px-[6px] py-[1px]',
       className,
     )}
     {...props}

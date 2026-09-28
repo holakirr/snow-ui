@@ -5,6 +5,7 @@ import { differenceInCalendarDays } from 'date-fns'
 import {
   createContext,
   type Dispatch,
+  type ReactNode,
   type SetStateAction,
   useCallback,
   useContext,
@@ -15,12 +16,9 @@ import {
   type CustomComponents,
   DayPicker,
   type DayPickerProps,
-  labelNext,
-  labelPrevious,
   useDayPicker,
 } from 'react-day-picker'
 import { twMerge } from '../../utils/tw-merge'
-import { Button, buttonVariants } from '../Button'
 
 export type CalendarProps = DayPickerProps & {
   /**
@@ -34,6 +32,40 @@ export type CalendarProps = DayPickerProps & {
    * @default true
    */
   showYearSwitcher?: boolean
+
+  /**
+   * The first day of the week: 0 for Sunday, 1 for Monday. The Figma
+   * DatePicker starts on Monday. It wins over the `locale`'s week start.
+   * @default 1
+   */
+  weekStartsOn?: DayPickerProps['weekStartsOn']
+
+  /**
+   * Content above the toolbar, e.g. a date input: the Figma DatePicker's
+   * top row. It gets padding 16 and a 0.5px Black/10% line below.
+   */
+  header?: ReactNode
+
+  /**
+   * Shows the Figma "Today" action in the toolbar. It shows the current month
+   * and calls `onTodayClick`, e.g. to select today.
+   * @default false
+   */
+  showTodayButton?: boolean
+  /** Called by the "Today" action with today's date. */
+  onTodayClick?: (today: Date) => void
+  /**
+   * The last confirmed selection. When set, the toolbar shows the Figma
+   * "Last selection" action, which shows that date's month and calls
+   * `onLastSelectionClick`.
+   */
+  lastSelection?: Date
+  /** Called by the "Last selection" action with `lastSelection`. */
+  onLastSelectionClick?: (date: Date) => void
+  /** @default 'Today' */
+  todayLabel?: string
+  /** @default 'Last selection' */
+  lastSelectionLabel?: string
 
   monthsClassName?: string
   monthCaptionClassName?: string
@@ -81,6 +113,19 @@ type CalendarContextValue = {
   endMonth?: Date
   onPrevClick?: (month: Date) => void
   onNextClick?: (month: Date) => void
+  hideNavigation?: boolean
+  numberOfMonths: number
+  today?: Date
+  showTodayButton: boolean
+  onTodayClick?: (today: Date) => void
+  lastSelection?: Date
+  onLastSelectionClick?: (date: Date) => void
+  todayLabel: string
+  lastSelectionLabel: string
+  header?: ReactNode
+  navClassName?: string
+  buttonPreviousClassName?: string
+  buttonNextClassName?: string
 }
 
 const CalendarContext = createContext<CalendarContextValue | null>(null)
@@ -121,10 +166,19 @@ const isYearOutOfRange = (
 
 const CalendarChevron = ({ orientation }: ChevronProps) => {
   const Icon = orientation === 'left' ? ArrowLineLeftIcon : ArrowLineRightIcon
-  return <Icon className="h-4 w-4" />
+  return <Icon size={20} />
 }
 
-const CalendarNav: CustomComponents['Nav'] = ({ className }) => {
+// Figma: Button Small "Borderless" icon buttons, 28×28, radius 8.
+const navButtonClassName =
+  'inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-8 text-black transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus disabled:cursor-not-allowed disabled:text-black-20 disabled:hover:bg-transparent'
+
+// Figma: "Today" / "Last selection" tags, Black/4%, padding 2/4, radius 8.
+const actionClassName =
+  'inline-flex h-5 cursor-pointer items-center rounded-8 bg-black-4 px-1 text-12 text-black transition-colors hover:bg-black-10 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus'
+
+/** Previous / next buttons; in the year view they page through the years. */
+const useCalendarNav = () => {
   const {
     navView,
     displayYears,
@@ -134,7 +188,7 @@ const CalendarNav: CustomComponents['Nav'] = ({ className }) => {
     onPrevClick,
     onNextClick,
   } = useCalendarContext()
-  const { nextMonth, previousMonth, goToMonth } = useDayPicker()
+  const { nextMonth, previousMonth, goToMonth, labels } = useDayPicker()
 
   const yearsCount = displayYears.to - displayYears.from + 1
 
@@ -210,58 +264,165 @@ const CalendarNav: CustomComponents['Nav'] = ({ className }) => {
     setDisplayYears,
   ])
 
-  return (
-    <nav className={twMerge('flex items-center', className)}>
-      <Button
-        variant="outline"
-        className="absolute left-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
-        disabled={isPreviousDisabled}
-        aria-label={
-          navView === 'years'
-            ? `Go to the previous ${yearsCount} years`
-            : labelPrevious(previousMonth)
-        }
-        onClick={handlePreviousClick}
-      >
-        <ArrowLineLeftIcon className="h-4 w-4" />
-      </Button>
+  return {
+    previous: {
+      disabled: isPreviousDisabled,
+      label:
+        navView === 'years'
+          ? `Go to the previous ${yearsCount} years`
+          : labels.labelPrevious(previousMonth),
+      onClick: handlePreviousClick,
+    },
+    next: {
+      disabled: isNextDisabled,
+      label:
+        navView === 'years'
+          ? `Go to the next ${yearsCount} years`
+          : labels.labelNext(nextMonth),
+      onClick: handleNextClick,
+    },
+  }
+}
 
-      <Button
-        variant="outline"
-        className="absolute right-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
-        disabled={isNextDisabled}
-        aria-label={
-          navView === 'years'
-            ? `Go to the next ${yearsCount} years`
-            : labelNext(nextMonth)
-        }
-        onClick={handleNextClick}
+/** The Figma toolbar actions: "Today" and "Last selection". */
+const CalendarActions = () => {
+  const {
+    setNavView,
+    today,
+    showTodayButton,
+    onTodayClick,
+    lastSelection,
+    onLastSelectionClick,
+    todayLabel,
+    lastSelectionLabel,
+  } = useCalendarContext()
+  const { goToMonth } = useDayPicker()
+
+  if (!showTodayButton && !lastSelection) return null
+
+  const show = (date: Date) => {
+    setNavView('days')
+    goToMonth(new Date(date.getFullYear(), date.getMonth(), 1))
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      {showTodayButton && (
+        <button
+          type="button"
+          className={actionClassName}
+          onClick={() => {
+            const date = today ?? new Date()
+            show(date)
+            onTodayClick?.(date)
+          }}
+        >
+          {todayLabel}
+        </button>
+      )}
+      {lastSelection && (
+        <button
+          type="button"
+          className={actionClassName}
+          onClick={() => {
+            show(lastSelection)
+            onLastSelectionClick?.(lastSelection)
+          }}
+        >
+          {lastSelectionLabel}
+        </button>
+      )}
+    </div>
+  )
+}
+
+/**
+ * The Figma toolbar: the actions on the left, "‹ month ›" on the right. The
+ * navigation lives here instead of react-day-picker's `Nav`.
+ */
+const CalendarMonthCaption: CustomComponents['MonthCaption'] = ({
+  calendarMonth: _calendarMonth,
+  displayIndex,
+  className,
+  children,
+  ...props
+}) => {
+  const {
+    hideNavigation,
+    numberOfMonths,
+    navClassName,
+    buttonPreviousClassName,
+    buttonNextClassName,
+  } = useCalendarContext()
+  const { previous, next } = useCalendarNav()
+  const { labels } = useDayPicker()
+  const isFirst = displayIndex === 0
+  const isLast = displayIndex === numberOfMonths - 1
+
+  return (
+    <div className={className} {...props}>
+      {isFirst && <CalendarActions />}
+      <nav
+        aria-label={labels.labelNav()}
+        className={twMerge('ml-auto flex items-center gap-2', navClassName)}
       >
-        <ArrowLineRightIcon className="h-4 w-4" />
-      </Button>
-    </nav>
+        {!hideNavigation && isFirst && (
+          <button
+            type="button"
+            className={twMerge(navButtonClassName, buttonPreviousClassName)}
+            disabled={previous.disabled}
+            aria-label={previous.label}
+            onClick={previous.onClick}
+          >
+            <ArrowLineLeftIcon size={20} />
+          </button>
+        )}
+        {children}
+        {!hideNavigation && isLast && (
+          <button
+            type="button"
+            className={twMerge(navButtonClassName, buttonNextClassName)}
+            disabled={next.disabled}
+            aria-label={next.label}
+            onClick={next.onClick}
+          >
+            <ArrowLineRightIcon size={20} />
+          </button>
+        )}
+      </nav>
+    </div>
   )
 }
 
 const CalendarCaptionLabel: CustomComponents['CaptionLabel'] = ({
   children,
+  className,
   ...props
 }) => {
   const { navView, setNavView, displayYears, showYearSwitcher } =
     useCalendarContext()
 
-  if (!showYearSwitcher) return <span {...props}>{children}</span>
+  if (!showYearSwitcher) {
+    return (
+      <span className={className} {...props}>
+        {children}
+      </span>
+    )
+  }
 
   return (
-    <Button
-      className="h-7 w-full truncate text-sm font-medium"
-      size="sm"
+    <button
+      type="button"
+      className={twMerge(
+        'h-7 cursor-pointer rounded-8 px-1 transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus',
+        className,
+      )}
       onClick={() => setNavView((prev) => (prev === 'days' ? 'years' : 'days'))}
     >
       {navView === 'days'
         ? children
         : `${displayYears.from} - ${displayYears.to}`}
-    </Button>
+    </button>
   )
 }
 
@@ -300,13 +461,13 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
           )
 
           return (
-            <Button
+            <button
+              type="button"
               key={year}
               className={twMerge(
-                'h-7 w-full text-sm font-normal text-black',
-                year === currentYear && 'bg-black-10 font-medium text-black',
+                'h-10 w-full cursor-pointer rounded-12 text-12 text-black transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus disabled:cursor-not-allowed disabled:text-black-20 disabled:hover:bg-transparent',
+                year === currentYear && 'bg-black-4',
               )}
-              variant="outline"
               onClick={() => {
                 setNavView('days')
                 goToMonth(new Date(year, getSelectedMonth(selected)))
@@ -314,7 +475,7 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
               disabled={isBefore || isAfter}
             >
               {year}
-            </Button>
+            </button>
           )
         },
       )}
@@ -322,23 +483,45 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
   )
 }
 
+/**
+ * The Figma DatePicker surface: Background/3 with the "Glass 2" effect, a
+ * 1px Surface/1 stroke inside and radius 16. `header` renders above the
+ * months.
+ */
 const CalendarRoot: CustomComponents['Root'] = ({
   className,
   rootRef,
+  children,
   ...props
-}) => (
-  <div
-    ref={rootRef}
-    className={twMerge('p-4 rounded-2xl', className)}
-    {...props}
-  />
-)
+}) => {
+  const { header } = useCalendarContext()
+
+  return (
+    <div
+      ref={rootRef}
+      className={twMerge(
+        'w-fit rounded-16 text-black glass-2 inset-ring inset-ring-surface-1',
+        className,
+      )}
+      {...props}
+    >
+      {header && (
+        <div
+          data-slot="calendar-header"
+          className="flex items-center gap-2 border-b-[0.5px] border-black-10 p-4"
+        >
+          {header}
+        </div>
+      )}
+      {children}
+    </div>
+  )
+}
 
 /**
- * A custom calendar component built on top of react-day-picker.
- * @param props The props for the calendar.
- * @default yearRange 12
- * @returns
+ * A calendar built on react-day-picker, styled like the Figma DatePicker:
+ * the week starts on Monday, the selected day is Primary, today is
+ * Secondary/Indigo and days outside the month are Black/40%.
  */
 function Calendar({
   className,
@@ -347,6 +530,39 @@ function Calendar({
   showWeekNumber,
   yearRange = 12,
   numberOfMonths,
+  weekStartsOn = 1,
+  header,
+  showTodayButton = false,
+  onTodayClick,
+  lastSelection,
+  onLastSelectionClick,
+  todayLabel = 'Today',
+  lastSelectionLabel = 'Last selection',
+  hideNavigation,
+  classNames,
+  components,
+  monthsClassName,
+  monthCaptionClassName,
+  weekdaysClassName,
+  weekdayClassName,
+  monthClassName,
+  captionClassName,
+  captionLabelClassName,
+  buttonNextClassName,
+  buttonPreviousClassName,
+  navClassName,
+  monthGridClassName,
+  weekClassName,
+  dayClassName,
+  dayButtonClassName,
+  rangeStartClassName,
+  rangeEndClassName,
+  selectedClassName,
+  todayClassName,
+  outsideClassName,
+  disabledClassName,
+  rangeMiddleClassName,
+  hiddenClassName,
   ...props
 }: CalendarProps) {
   const [navView, setNavView] = useState<NavView>('days')
@@ -358,92 +574,14 @@ function Calendar({
     }
   })
 
-  const { onNextClick, onPrevClick, startMonth, endMonth } = props
+  const { onNextClick, onPrevClick, startMonth, endMonth, today } = props
 
-  const columnsDisplayed = navView === 'years' ? 1 : numberOfMonths
+  const columnsDisplayed = navView === 'years' ? 1 : (numberOfMonths ?? 1)
 
-  const _monthsClassName = twMerge('relative flex', props.monthsClassName)
-  const _monthCaptionClassName = twMerge(
-    'relative flex items-center justify-center',
-    props.captionClassName,
-    props.monthCaptionClassName,
-  )
-  const _weekdaysClassName = twMerge(
-    'grid grid-cols-7 h-[38px] items-center',
-    props.weekdaysClassName,
-  )
-  const _weekdayClassName = twMerge(
-    'w-full text-sm font-normal text-black-40',
-    props.weekdayClassName,
-  )
-  const _monthClassName = twMerge('w-full', props.monthClassName)
-  const _captionLabelClassName = twMerge(
-    'truncate text-sm font-medium flex items-center justify-center hover:bg-black/10',
-    props.captionLabelClassName,
-  )
-  const buttonNavClassName = buttonVariants({
-    variant: 'outline',
-    className:
-      'absolute h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
-  })
-  const _buttonNextClassName = twMerge(
-    buttonNavClassName,
-    'right-0',
-    props.buttonNextClassName,
-  )
-  const _buttonPreviousClassName = twMerge(
-    buttonNavClassName,
-    'left-0',
-    props.buttonPreviousClassName,
-  )
-  const _navClassName = twMerge('flex items-start', props.navClassName)
-  const _monthGridClassName = twMerge(
-    'mt-4 w-[328px]',
-    props.monthGridClassName,
-  )
-  const _weekClassName = twMerge('grid grid-cols-7', props.weekClassName)
-  const _dayClassName = twMerge(
-    'flex w-full items-center justify-center p-0 text-sm',
-    props.dayClassName,
-  )
-  const _dayButtonClassName = twMerge(
-    buttonVariants(),
-    'h-[38px] w-full rounded-xl p-0 font-normal transition-none aria-selected:opacity-100',
-    props.dayButtonClassName,
-  )
-  const buttonRangeClassName =
-    'bg-black-10 [&>button]:bg-black [&>button]:text-white [&>button]:hover:bg-black/80 [&>button]:hover:text-white'
-  const _rangeStartClassName = twMerge(
-    buttonRangeClassName,
-    'day-range-start [&>button]:rounded-r-none',
-    props.rangeStartClassName,
-  )
-  const _rangeEndClassName = twMerge(
-    buttonRangeClassName,
-    'day-range-end [&>button]:rounded-l-none',
-    props.rangeEndClassName,
-  )
-  const _rangeMiddleClassName = twMerge(
-    'bg-black !text-white [&>button]:bg-transparent [&>button]:!text-white [&>button]:hover:bg-black/80 [&>button]:hover:!text-white',
-    props.rangeMiddleClassName,
-  )
-  const _selectedClassName = twMerge(
-    '[&>button]:bg-black [&>button]:text-white [&>button]:hover:bg-black/80 [&>button]:hover:text-white',
-    props.selectedClassName,
-  )
-  const _todayClassName = twMerge(
-    '[&>button]:bg-indigo [&>button]:text-white [&>button]:hover:text-white [&>button]:hover:bg-indigo/80',
-    props.todayClassName,
-  )
-  const _outsideClassName = twMerge(
-    'day-outside text-black/80 opacity-50 aria-selected:bg-black-10/50 aria-selected:text-black/80 aria-selected:opacity-30',
-    props.outsideClassName,
-  )
-  const _disabledClassName = twMerge(
-    'text-black/80 opacity-50',
-    props.disabledClassName,
-  )
-  const _hiddenClassName = twMerge('invisible flex-1', props.hiddenClassName)
+  // Selected days are Primary (black; indigo in dark mode), like the Figma
+  // "Selected state"; ranges are one Primary band with rounded ends.
+  const selectedButton =
+    '[&>button]:bg-primary [&>button]:text-white [&>button]:hover:bg-primary-hover'
 
   return (
     <CalendarContext.Provider
@@ -457,44 +595,97 @@ function Calendar({
         endMonth,
         onPrevClick,
         onNextClick,
+        hideNavigation,
+        numberOfMonths: columnsDisplayed,
+        today,
+        showTodayButton,
+        onTodayClick,
+        lastSelection,
+        onLastSelectionClick,
+        todayLabel,
+        lastSelectionLabel,
+        header,
+        navClassName,
+        buttonPreviousClassName,
+        buttonNextClassName,
       }}
     >
       <DayPicker
         showOutsideDays={showOutsideDays}
         showWeekNumber={showWeekNumber}
+        weekStartsOn={weekStartsOn}
         className={className}
         classNames={{
-          months: _monthsClassName,
-          month_caption: _monthCaptionClassName,
-          weekdays: _weekdaysClassName,
-          weekday: _weekdayClassName,
-          month: _monthClassName,
-          caption_label: _captionLabelClassName,
-          button_next: _buttonNextClassName,
-          button_previous: _buttonPreviousClassName,
-          nav: _navClassName,
-          month_grid: _monthGridClassName,
-          week: _weekClassName,
-          day: _dayClassName,
-          day_button: _dayButtonClassName,
-          range_start: _rangeStartClassName,
-          range_middle: _rangeMiddleClassName,
-          range_end: _rangeEndClassName,
-          selected: _selectedClassName,
-          today: _todayClassName,
-          outside: _outsideClassName,
-          disabled: _disabledClassName,
-          hidden: _hiddenClassName,
+          months: twMerge('relative flex gap-4 p-4', monthsClassName),
+          month: twMerge('flex w-full flex-col', monthClassName),
+          month_caption: twMerge(
+            'flex h-7 items-center justify-between gap-2 text-12',
+            captionClassName,
+            monthCaptionClassName,
+          ),
+          caption_label: twMerge(
+            'truncate text-12 font-normal',
+            captionLabelClassName,
+          ),
+          month_grid: twMerge('mt-4 w-[328px]', monthGridClassName),
+          weekdays: twMerge(
+            'grid grid-cols-7 h-[38px] items-center',
+            weekdaysClassName,
+          ),
+          weekday: twMerge(
+            'w-full text-12 font-normal text-black-40',
+            weekdayClassName,
+          ),
+          week: twMerge('grid grid-cols-7', weekClassName),
+          day: twMerge(
+            'flex w-full items-center justify-center p-0 text-12',
+            dayClassName,
+          ),
+          // Figma: Button Medium "Borderless" days, 38px high, radius 12,
+          // 12 Regular, Black/4% on hover.
+          day_button: twMerge(
+            'h-[38px] w-full cursor-pointer rounded-12 p-0 font-normal text-inherit transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus disabled:cursor-not-allowed disabled:hover:bg-transparent',
+            dayButtonClassName,
+          ),
+          selected: twMerge(selectedButton, selectedClassName),
+          range_start: twMerge(
+            selectedButton,
+            'day-range-start [&>button]:rounded-r-none',
+            rangeStartClassName,
+          ),
+          range_middle: twMerge(
+            selectedButton,
+            '[&>button]:rounded-none',
+            rangeMiddleClassName,
+          ),
+          range_end: twMerge(
+            selectedButton,
+            'day-range-end [&>button]:rounded-l-none',
+            rangeEndClassName,
+          ),
+          // Figma "Today": Secondary/Indigo with white text, unless selected.
+          today: twMerge(
+            'not-aria-selected:[&>button]:bg-indigo not-aria-selected:[&>button]:text-static-white not-aria-selected:[&>button]:hover:bg-indigo/80',
+            todayClassName,
+          ),
+          outside: twMerge('day-outside text-black-40', outsideClassName),
+          disabled: twMerge('text-black-20', disabledClassName),
+          hidden: twMerge('invisible flex-1', hiddenClassName),
+          footer: 'px-4 pb-4 text-12 text-black-40',
+          ...classNames,
         }}
         components={{
           Chevron: CalendarChevron,
-          Nav: CalendarNav,
+          MonthCaption: CalendarMonthCaption,
           CaptionLabel: CalendarCaptionLabel,
           MonthGrid: CalendarMonthGrid,
           Root: CalendarRoot,
+          ...components,
         }}
         numberOfMonths={columnsDisplayed}
         {...props}
+        // The navigation is rendered in the month caption (the Figma toolbar).
+        hideNavigation
       />
     </CalendarContext.Provider>
   )

@@ -17,7 +17,7 @@ const meta: Meta<typeof Calendar> = {
     docs: {
       description: {
         component:
-          'A date field component that allows users to enter and edit date.',
+          'The Figma DatePicker: a glass surface (Background/3, "Glass 2", 1px Surface/1 stroke, radius 16), weeks starting on Monday, 12 Regular days, the selected day in Primary, today in Secondary/Indigo and outside days in Black/40%. `header` adds the top row (e.g. a date input); `showTodayButton` and `lastSelection` add the "Today" and "Last selection" actions.',
       },
     },
   },
@@ -25,6 +25,37 @@ const meta: Meta<typeof Calendar> = {
 
 export default meta
 type Story = StoryObj<typeof Calendar>
+
+// The Figma frames show February 2023 (1 February is a Wednesday) with the
+// 10th as today.
+const FIGMA_TODAY = new Date(2023, 1, 10)
+const FIGMA_MONTH = new Date(2023, 1, 1)
+
+/** The Figma top row: month / day / year segments, "/" in Black/20%. */
+const DateDisplay = ({ date }: { date?: Date }) => {
+  const parts = date
+    ? [
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0'),
+        String(date.getFullYear()),
+      ]
+    : ['MM', 'DD', 'YYYY']
+
+  return (
+    <output aria-label="Selected date" className="flex items-center text-14">
+      {parts.map((part, index) => (
+        <span key={part + String(index)} className="flex items-center">
+          {index > 0 && <span className="text-black-20">/</span>}
+          <span
+            className={`rounded-4 px-1 py-0.5 ${date ? '' : 'text-black-40'}`}
+          >
+            {part}
+          </span>
+        </span>
+      ))}
+    </output>
+  )
+}
 
 export const Default: Story = {
   render: () => {
@@ -35,34 +66,57 @@ export const Default: Story = {
         mode="single"
         selected={date}
         onSelect={setDate}
-        className="rounded-md border shadow"
-        showOutsideDays
-        showYearSwitcher
-        labels={{
-          labelNav: () => 'Select a date',
-        }}
+        defaultMonth={new Date(2025, 0, 1)}
       />
     )
   },
 }
 
-export const RuLocale: Story = {
+/** The Figma "Date only" DatePicker: header, toolbar actions and the grid. */
+export const DatePicker: Story = {
   render: () => {
-    const [date, setDate] = useState<Date | undefined>(new Date())
+    const [date, setDate] = useState<Date | undefined>()
+    const [lastSelection] = useState(new Date(2022, 9, 22))
 
     return (
       <Calendar
-        locale={ru}
         mode="single"
         selected={date}
         onSelect={setDate}
-        className="rounded-md border shadow"
-        captionLayout="dropdown"
-        showOutsideDays
-        showYearSwitcher
-        labels={{
-          labelNav: () => 'Select a date',
+        today={FIGMA_TODAY}
+        defaultMonth={FIGMA_MONTH}
+        showYearSwitcher={false}
+        formatters={{
+          formatCaption: (month) =>
+            month.toLocaleDateString('en-US', { month: 'short' }),
         }}
+        header={<DateDisplay date={date ?? lastSelection} />}
+        showTodayButton
+        onTodayClick={setDate}
+        lastSelection={lastSelection}
+        onLastSelectionClick={setDate}
+      />
+    )
+  },
+}
+
+export const DatePickerDark: Story = {
+  ...DatePicker,
+  globals: { theme: 'dark' },
+}
+
+/** Hover a day for the Figma "Hover state"; today and a selected day. */
+export const States: Story = {
+  render: () => {
+    const [date, setDate] = useState<Date | undefined>(new Date(2023, 1, 17))
+
+    return (
+      <Calendar
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        today={FIGMA_TODAY}
+        defaultMonth={FIGMA_MONTH}
       />
     )
   },
@@ -71,23 +125,43 @@ export const RuLocale: Story = {
 export const RangeSelected: Story = {
   render: () => {
     const [range, setRange] = useState<DateRange | undefined>({
-      from: new Date(2025, 0, 27),
-      to: new Date(2025, 0, 31),
+      from: new Date(2023, 1, 21),
+      to: new Date(2023, 1, 25),
     })
 
     return (
       <Calendar
-        locale={ru}
         mode="range"
         selected={range}
         onSelect={setRange}
-        className="rounded-md border shadow"
-        captionLayout="dropdown"
-        showOutsideDays
-        showYearSwitcher
-        labels={{
-          labelNav: () => 'Select a date',
-        }}
+        today={FIGMA_TODAY}
+        defaultMonth={FIGMA_MONTH}
+        showTodayButton
+      />
+    )
+  },
+}
+
+export const RangeSelectedDark: Story = {
+  ...RangeSelected,
+  globals: { theme: 'dark' },
+}
+
+export const TwoMonths: Story = {
+  render: () => {
+    const [range, setRange] = useState<DateRange | undefined>({
+      from: new Date(2023, 1, 21),
+      to: new Date(2023, 2, 3),
+    })
+
+    return (
+      <Calendar
+        mode="range"
+        numberOfMonths={2}
+        selected={range}
+        onSelect={setRange}
+        today={FIGMA_TODAY}
+        defaultMonth={FIGMA_MONTH}
       />
     )
   },
@@ -102,17 +176,41 @@ export const MultipleSelected: Story = {
 
     return (
       <Calendar
-        locale={ru}
         mode="multiple"
         selected={selected}
         onSelect={setSelected}
-        className="rounded-md border shadow"
-        captionLayout="label"
-        showOutsideDays
-        showYearSwitcher
-        labels={{
-          labelNav: () => 'Select a date',
-        }}
+        defaultMonth={new Date(2025, 0, 1)}
+      />
+    )
+  },
+}
+
+/** `weekStartsOn={0}` restores a Sunday start. */
+export const WeekStartsOnSunday: Story = {
+  render: () => (
+    <Calendar
+      mode="single"
+      weekStartsOn={0}
+      defaultMonth={new Date(2025, 0, 1)}
+    />
+  ),
+}
+
+export const RuLocale: Story = {
+  render: () => {
+    const [date, setDate] = useState<Date | undefined>(new Date(2025, 0, 20))
+
+    return (
+      <Calendar
+        locale={ru}
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        defaultMonth={new Date(2025, 0, 1)}
+        captionLayout="dropdown"
+        showTodayButton
+        todayLabel="Сегодня"
+        onTodayClick={setDate}
       />
     )
   },

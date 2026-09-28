@@ -1,8 +1,7 @@
 import { CloseIcon } from '@holakirr/snow-ui-icons'
 import type { ComponentProps, FC, ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import { ROLES } from '../../constants'
+import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
 import { Typography } from '../Text'
 
@@ -50,7 +49,9 @@ const Tag: FC<TagProps> = ({
   >
     {leftContent}
 
-    <Typography as="span">{label}</Typography>
+    <Typography as="span" size={12}>
+      {label}
+    </Typography>
 
     {onClose && (
       <Button

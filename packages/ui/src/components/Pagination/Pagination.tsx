@@ -1,7 +1,7 @@
 import { ArrowLineLeftIcon, ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
 import type { ComponentProps, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
 import type { Size } from '../../types'
+import { twMerge } from '../../utils/tw-merge'
 import { buttonVariants } from '../Button'
 import { Typography } from '../Text'
 
@@ -125,7 +125,7 @@ const PaginationEllipsis = ({
       )}
       {...props}
     >
-      <Typography>...</Typography>
+      <Typography size={16}>...</Typography>
       <span className="sr-only">More pages</span>
     </span>
   )

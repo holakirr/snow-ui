@@ -27,20 +27,22 @@ export const disabledInputClasses =
   'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0'
 
 /**
- * Figma "Focus": a Black/40% stroke, plus the `focus-ring` utility (the Figma
- * ring and a visible outline).
+ * Figma "Focus": a Black/40% stroke plus the Focus effect (4px Black/4% ring).
+ * Text fields follow the design exactly — the caret and the darker stroke mark
+ * focus — instead of the `focus-ring` outline other controls use.
  */
-export const focusInputClasses = 'focus-ring focus:inset-ring-black-40'
+export const focusInputClasses =
+  'focus:inset-ring-black-40 focus:ring-4 focus:ring-focus'
 
 /** Figma "Static" (read-only): the stroke doesn't react to hover or focus. */
 export const staticInputClasses =
   'read-only:hover:inset-ring-black-20 read-only:focus:inset-ring-black-20'
 
-// The field shell: the same look, driven by the inner <input>. Its focus
-// indicator is the `focus-ring` recipe (Figma ring + 2px Black/80% outline),
-// shown while the <input> has keyboard focus.
+// The field shell: the same look, driven by the inner <input>. Focus is the
+// Figma "Focus" state: Black/40% stroke + the 4px Focus ring, while the
+// <input> is focused (by mouse or keyboard, like the design).
 const fieldClasses =
-  'group/input relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all hover:inset-ring-black-40 focus-within:inset-ring-black-40 has-[input:focus-visible]:ring-4 has-[input:focus-visible]:ring-focus has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-black-80'
+  'group/input relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all hover:inset-ring-black-40 focus-within:inset-ring-black-40 has-[input:focus]:ring-4 has-[input:focus]:ring-focus'
 
 const fieldStaticClasses =
   'hover:inset-ring-black-20 focus-within:inset-ring-black-20'

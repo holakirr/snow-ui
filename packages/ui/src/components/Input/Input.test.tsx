@@ -164,7 +164,7 @@ describe('Input', () => {
     expect(input.style.width).toBe('')
   })
 
-  it('shows a visible focus outline on the field for keyboard focus', () => {
+  it('uses the Figma Focus state on the field (no outline)', () => {
     render(<Input aria-label="name" />)
 
     const field = screen
@@ -172,9 +172,11 @@ describe('Input', () => {
       .closest('[data-slot="input"]') as HTMLElement
 
     expect(field).toHaveClass(
-      'has-[input:focus-visible]:outline-2',
-      'has-[input:focus-visible]:outline-black-80',
+      'focus-within:inset-ring-black-40',
+      'has-[input:focus]:ring-4',
+      'has-[input:focus]:ring-focus',
     )
+    expect(field.className).not.toMatch(/outline-black-80/)
   })
 
   it('composes a callback ref with its own', () => {

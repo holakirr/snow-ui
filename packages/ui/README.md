@@ -124,7 +124,7 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 
 | Where | Figma | Library | Why |
 | --- | --- | --- | --- |
-| Focus indicator (all controls) | "Focus" effect: 4px ring, black 4% (1.1:1); no focus state on Button or Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline, offset 2px — 12.6:1 light, 8.7:1 dark | 2.4.7, 1.4.11 |
+| Focus indicator (all controls except text fields) | "Focus" effect: 4px ring, black 4% (1.1:1); no focus state on Button or Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline, offset 2px — 12.6:1 light, 8.7:1 dark | 2.4.7, 1.4.11 |
 | Inactive tabs, off toggles, Bare buttons, the Tag close icon | 40% layer opacity | 100% while keyboard-focused, so the focus ring isn't dimmed | 1.4.11 |
 | Filled Button label, checked Checkbox mark | `#FFF` in both modes: 2.07:1 on the dark-mode indigo Primary | the per-mode `white` token: white on black (21:1), black on indigo (10.15:1) | 1.4.3, 1.4.11 |
 | Badge number | `#FFF` on indigo, 2.07:1 | black on indigo, 10.15:1 | 1.4.3 |
@@ -134,6 +134,8 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Tag close button | a 12px icon | the same icon with a 24×24px hit area | 2.5.8 |
 | Icon-only tabs | — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
 | Dark Tooltip in dark mode | Black/80% flips to white/80% but the text stays `#FFF` | the text flips with it (black on white/80%) | 1.4.3 |
+
+Text fields (`Input`, `InputSmall`, `Textarea`, `Search`) keep the Figma "Focus" state exactly: a Black/40% stroke and the 4px Focus ring on any focus (mouse or keyboard); the caret and the stroke mark focus, so they don't get the `focus-ring` outline.
 
 Known gaps (Figma values kept for now): the Black/20% rings of unchecked Checkbox and Radio and the 0.5px Black/20% Input stroke (1.6:1), the Switch's white thumb on the dark-mode indigo track (2.07:1), Black/20% placeholders, the 40% Link arrow and external icon, and the Black/4% highlight of menu items.
 

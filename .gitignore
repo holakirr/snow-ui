@@ -30,3 +30,6 @@ test-results
 .tmp
 storybook-static
 *storybook.log
+
+# Claude Code agent worktrees
+.claude/worktrees/

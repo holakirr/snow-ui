@@ -24,9 +24,10 @@ export const BadgeComponent = ({
     role={ROLES.status}
     aria-label={content || 'Notification badge'}
     className={twMerge(
-      // Figma "Badge": Secondary/Indigo, a 6px dot or an 18px pill with a white number.
+      // Figma "Badge": Secondary/Indigo, a 6px dot or an 18px pill. Figma's
+      // white number is 2.07:1 on indigo, so it is black (10.15:1).
       'z-10 block rounded-80 bg-indigo text-center transition-all',
-      content ? 'min-w-4.5 px-1.5 py-px text-static-white' : 'size-1.5',
+      content ? 'min-w-4.5 px-1.5 py-px text-static-black' : 'size-1.5',
       className,
     )}
     {...props}

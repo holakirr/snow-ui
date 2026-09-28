@@ -43,7 +43,7 @@ describe('Tag', () => {
     expect(tag).toHaveClass('hover:[--tag-fill:var(--color-black-10)]')
 
     rerender(<Tag label="React" state="active" />)
-    expect(tag).toHaveClass('text-indigo')
+    expect(tag).toHaveClass('text-indigo-text')
 
     rerender(<Tag label="React" state="static" />)
     expect(tag.className).not.toContain('hover:')
@@ -72,5 +72,22 @@ describe('Tag', () => {
     expect(
       container.querySelector('svg')?.previousElementSibling,
     ).toHaveTextContent('React')
+  })
+
+  it('gives the close button a 24px hit area and a decorative icon', () => {
+    render(<Tag label="React" onClose={() => {}} />)
+
+    const button = screen.getByRole('button', { name: 'Remove tag React' })
+    const icon = button.querySelector('svg')
+
+    expect(button).toHaveClass('size-3', 'after:-inset-1.5', 'focus-ring')
+    expect(icon).toHaveAttribute('aria-hidden', 'true')
+    expect(icon?.querySelector('title')).toBeNull()
+  })
+
+  it('uses the accessible indigo for active text', () => {
+    render(<Tag label="React" state="active" />)
+
+    expect(screen.getByRole('listitem')).toHaveClass('text-indigo-text')
   })
 })

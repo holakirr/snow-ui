@@ -47,4 +47,13 @@ describe('Checkbox', () => {
       'bg-background-3',
     )
   })
+
+  it('draws the mark in the per-mode white (black on the dark indigo)', () => {
+    render(<Checkbox aria-label="agree" defaultChecked />)
+
+    const checkbox = screen.getByRole('checkbox')
+
+    expect(checkbox).toHaveClass('text-white', 'focus-ring')
+    expect(checkbox).not.toHaveClass('text-static-white')
+  })
 })

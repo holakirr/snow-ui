@@ -2,8 +2,15 @@
 
 import * as TabsPrimitive from '@radix-ui/react-tabs'
 import { cva } from 'class-variance-authority'
-import { createContext, type FC, type ReactNode, useContext } from 'react'
+import {
+  createContext,
+  type FC,
+  type ReactNode,
+  useContext,
+  useEffect,
+} from 'react'
 import type { Size } from '../../types'
+import { isDevelopment } from '../../utils/env'
 import { twMerge } from '../../utils/tw-merge'
 import { segmentedItemVariants, segmentedListVariants } from './segmented'
 
@@ -73,16 +80,17 @@ TabsList.displayName = TabsPrimitive.List.displayName
 const lineTriggerVariants = cva(
   [
     'group inline-flex flex-col items-center justify-center gap-1 whitespace-nowrap text-black transition-all',
-    'cursor-pointer rounded-4 outline-none focus-visible:ring-4 focus-visible:ring-focus',
-    'opacity-40 hover:opacity-100 data-[state=active]:text-primary data-[state=active]:opacity-100',
+    'cursor-pointer rounded-4 focus-ring',
+    // Keyboard focus lifts the 40% opacity so the focus ring stays visible.
+    'opacity-40 hover:opacity-100 focus-visible:opacity-100 data-[state=active]:text-primary data-[state=active]:opacity-100',
     'disabled:cursor-not-allowed disabled:opacity-20 [&_svg]:shrink-0',
   ],
   {
     variants: {
       size: {
-        sm: 'text-12 [&_svg]:size-3',
-        md: 'text-14 [&_svg]:size-4',
-        lg: 'text-16 [&_svg]:size-5',
+        sm: 'text-12 [&_svg:not([class*=size-])]:size-3',
+        md: 'text-14 [&_svg:not([class*=size-])]:size-4',
+        lg: 'text-16 [&_svg:not([class*=size-])]:size-5',
       },
     },
   },
@@ -111,6 +119,15 @@ const TabsTrigger: FC<TabsTriggerProps> = ({
 }) => {
   const { variant, size } = useContext(TabsListContext)
   const iconOnly = !!icon && (children === undefined || children === null)
+  const hasAccessibleName = !!(props['aria-label'] || props['aria-labelledby'])
+
+  useEffect(() => {
+    if (iconOnly && !hasAccessibleName && isDevelopment()) {
+      console.warn(
+        'TabsTrigger: an icon-only tab needs an `aria-label` or `aria-labelledby`.',
+      )
+    }
+  }, [iconOnly, hasAccessibleName])
 
   if (variant === 'line') {
     return (
@@ -165,10 +182,7 @@ type TabsContentProps = TabsPrimitive.TabsContentProps
 
 const TabsContent: FC<TabsContentProps> = ({ className, ...props }) => (
   <TabsPrimitive.Content
-    className={twMerge(
-      'mt-2 rounded-4 outline-none focus-visible:ring-4 focus-visible:ring-focus',
-      className,
-    )}
+    className={twMerge('mt-2 rounded-4 focus-ring', className)}
     {...props}
   />
 )

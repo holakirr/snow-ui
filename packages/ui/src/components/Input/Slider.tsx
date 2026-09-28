@@ -22,7 +22,7 @@ const Slider: FC<SliderPrimitive.SliderProps> = ({ className, ...props }) => {
         <SliderPrimitive.Thumb
           // biome-ignore lint/suspicious/noArrayIndexKey: thumbs are positional
           key={index}
-          className="block size-4 rounded-full border border-black-40 bg-white shadow-2 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus disabled:pointer-events-none disabled:opacity-40"
+          className="block size-4 rounded-full border border-black-40 bg-white shadow-2 transition-colors focus-ring disabled:pointer-events-none disabled:opacity-40"
         />
       ))}
     </SliderPrimitive.Root>

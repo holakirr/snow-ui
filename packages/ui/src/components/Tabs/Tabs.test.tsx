@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 
 import { Tabs, TabsList, type TabsListProps, TabsTrigger } from './Tabs'
 
@@ -111,7 +111,38 @@ describe('Tabs', () => {
 
     const tab = screen.getByRole('tab', { name: 'One' })
 
-    expect(tab).toHaveClass('p-3', '[&_svg]:size-6')
+    expect(tab).toHaveClass('p-3', '[&_svg:not([class*=size-])]:size-6')
     expect(tab.querySelector('span')).toBeNull()
+  })
+
+  it('warns about an icon-only trigger without an accessible name', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(
+      <Tabs defaultValue="one">
+        <TabsList variant="pill">
+          <TabsTrigger value="one" icon={<svg />} />
+          <TabsTrigger value="two" icon={<svg />} aria-label="Two" />
+        </TabsList>
+      </Tabs>,
+    )
+
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(warn.mock.calls[0][0]).toMatch(/aria-label/)
+    warn.mockRestore()
+  })
+
+  it('moves focus with the arrow keys and shows the focus ring', async () => {
+    renderTabs({ variant: 'pill' })
+
+    const one = screen.getByRole('tab', { name: 'One' })
+    const two = screen.getByRole('tab', { name: 'Two' })
+
+    one.focus()
+    fireEvent.keyDown(one, { key: 'ArrowRight' })
+
+    await waitFor(() => expect(two).toHaveFocus())
+    // Inactive items are at 40% opacity; keyboard focus lifts it.
+    expect(two).toHaveClass('focus-ring', 'focus-visible:opacity-100')
   })
 })

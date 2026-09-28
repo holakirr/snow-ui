@@ -15,8 +15,7 @@ const Switch: FC<SwitchPrimitives.SwitchProps> = ({ className, ...props }) => (
       'peer group inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-80 p-0.5 inset-shadow-inner transition-colors',
       'data-[state=unchecked]:bg-black-20 data-[state=checked]:bg-primary',
       'enabled:hover:data-[state=unchecked]:bg-black-40 enabled:hover:data-[state=checked]:bg-primary-hover-strong',
-      'outline-none focus-visible:ring-4 focus-visible:ring-focus',
-      'disabled:cursor-not-allowed disabled:opacity-40',
+      'focus-ring disabled:cursor-not-allowed disabled:opacity-40',
       className,
     )}
     {...props}

@@ -27,8 +27,7 @@ const RadioGroupItem: FC<RadioGroupItemProps> = ({ className, ...props }) => (
     className={twMerge(
       'group aspect-square size-7 shrink-0 cursor-pointer rounded-full bg-background-3 text-black inset-ring-2 inset-ring-black-20 transition-all',
       'enabled:hover:bg-black/8 enabled:hover:inset-ring-black-40',
-      'outline-none focus-visible:ring-4 focus-visible:ring-focus',
-      'disabled:cursor-not-allowed disabled:opacity-40',
+      'focus-ring disabled:cursor-not-allowed disabled:opacity-40',
       className,
     )}
     {...props}

@@ -59,8 +59,9 @@ export type TagProps = ComponentProps<'div'> & {
 const stateClasses: { [K in TagState]: string } = {
   default:
     'text-black [--tag-fill:var(--color-black-4)] hover:cursor-pointer hover:[--tag-fill:var(--color-black-10)]',
+  // Figma's indigo label is 2.07:1 on the tint; `indigo-text` is 5:1.
   active:
-    'text-indigo [--tag-fill:color-mix(in_srgb,var(--color-indigo)_10%,transparent)] hover:cursor-pointer',
+    'text-indigo-text [--tag-fill:color-mix(in_srgb,var(--color-indigo)_10%,transparent)] hover:cursor-pointer',
   static: 'text-black [--tag-fill:var(--color-black-4)]',
 }
 
@@ -161,13 +162,11 @@ const Tag: FC<TagProps> = ({
           onClick={onClose}
           aria-label={`Remove tag ${label}`}
           title={`Remove tag ${label}`}
-          className="flex size-3 cursor-pointer items-center justify-center rounded-4 opacity-40 outline-none transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-black-20"
+          // The 12px Figma icon, with a 24px hit area (WCAG 2.5.8) drawn by
+          // the ::after pseudo-element so the tag keeps its 20px height.
+          className="relative flex size-3 cursor-pointer items-center justify-center rounded-4 opacity-40 transition-opacity after:absolute after:-inset-1.5 after:content-[''] hover:opacity-100 focus-ring focus-visible:opacity-100"
         >
-          <CloseIcon
-            alt={`Close icon for tag ${label}`}
-            size={12}
-            className="fill-current"
-          />
+          <CloseIcon aria-hidden size={12} className="fill-current" />
         </button>
       )}
     </div>

@@ -12,17 +12,19 @@ type CheckboxProps = CheckboxPrimitive.CheckboxProps
  * - Unchecked: Background/3 with a 2px Black/20% ring; on hover a Black 8%
  *   fill and a Black/40% ring.
  * - Checked and indeterminate ("Multiple"): Primary with the Figma inner
- *   shadow and a white mark; on hover Primary under White/40%.
+ *   shadow and a white mark (black in dark mode); on hover Primary under
+ *   White/40%.
  */
 const Checkbox: FC<CheckboxProps> = ({ className, ...props }) => (
   <CheckboxPrimitive.Root
     className={twMerge(
-      'peer group size-7 shrink-0 cursor-pointer rounded-8 bg-background-3 text-static-white inset-ring-2 inset-ring-black-20 transition-all',
+      // The mark is white on the black Primary and black on the dark-mode
+      // indigo Primary (Figma's white mark is 2.07:1 there).
+      'peer group size-7 shrink-0 cursor-pointer rounded-8 bg-background-3 text-white inset-ring-2 inset-ring-black-20 transition-all',
       'enabled:hover:bg-black/8 enabled:hover:inset-ring-black-40',
       'data-[state=checked]:bg-primary data-[state=checked]:inset-ring-0 data-[state=checked]:inset-shadow-inner data-[state=checked]:enabled:hover:bg-primary-hover-strong',
       'data-[state=indeterminate]:bg-primary data-[state=indeterminate]:inset-ring-0 data-[state=indeterminate]:inset-shadow-inner data-[state=indeterminate]:enabled:hover:bg-primary-hover-strong',
-      'outline-none focus-visible:ring-4 focus-visible:ring-focus',
-      'disabled:cursor-not-allowed disabled:opacity-40',
+      'focus-ring disabled:cursor-not-allowed disabled:opacity-40',
       className,
     )}
     {...props}

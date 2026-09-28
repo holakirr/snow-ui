@@ -5,7 +5,7 @@
     "": {
       "name": "@holakirr/snow-ui",
       "dependencies": {
-        "@holakirr/snow-ui-icons": "^2.0.0",
+        "@holakirr/snow-ui-icons": "^2.1.0",
         "@phosphor-icons/react": "^2.1.10",
         "@radix-ui/react-accordion": "^1.2.11",
         "@radix-ui/react-avatar": "^1.1.10",
@@ -70,6 +70,9 @@
         "react-dom": "^19.0.0",
         "react-hook-form": "^7.60.0",
       },
+      "optionalPeers": [
+        "react-hook-form",
+      ],
     },
   },
   "packages": {
@@ -213,7 +216,7 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.9", "", {}, "sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg=="],
 
-    "@holakirr/snow-ui-icons": ["@holakirr/snow-ui-icons@2.0.0", "", { "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0" } }, "sha512-cr3/9Y9q0mzbrxrfnVb+Xl+sHzLxcUbaK53LNIYPpmdWUaGzVwJTvtkStutYMCETEGKKnSOFNEkPou+ljr9FMg=="],
+    "@holakirr/snow-ui-icons": ["@holakirr/snow-ui-icons@2.1.0", "", { "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0" } }, "sha512-FXhp6yC27Ln+G4ZKE+oHnVetvInHWHtOr2rFWXeXS6brx2DjsiRPMYtape5hB1hFlbz5tIn2PRnDTJbUkxSAuQ=="],
 
     "@hookform/resolvers": ["@hookform/resolvers@5.1.1", "", { "dependencies": { "@standard-schema/utils": "^0.3.0" }, "peerDependencies": { "react-hook-form": "^7.55.0" } }, "sha512-J/NVING3LMAEvexJkyTLjruSm7aOFx7QX21pzkiJfMoNG0wl5aFEjLTl7ay7IQb9EWY6AkrBy7tHL2Alijpdcg=="],
 

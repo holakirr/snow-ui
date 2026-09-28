@@ -119,7 +119,11 @@ export default CustomIcon;
 
 ## Related project
 
-[Holakirr Snow UI](https://www.npmjs.com/package/@holakirr/snow-ui)
+[Holakirr Snow UI](https://www.npmjs.com/package/@holakirr/snow-ui) — developed alongside this package in the same repository ([`packages/ui`](https://github.com/holakirr/snow-ui/tree/main/packages/ui)).
+
+## Development
+
+This package lives in the [snow-ui monorepo](https://github.com/holakirr/snow-ui) under `packages/icons` (previously `holakirr/snow-ui-icons`). Install dependencies and run scripts from the repository root — see the [root README](https://github.com/holakirr/snow-ui#readme). Package-only scripts: `bun run --filter @holakirr/snow-ui-icons <build|test|typecheck|storybook|build:storybook>`.
 
 ## License
 

@@ -25,13 +25,10 @@ Take a look at my [CV](https://holakirr.com) =)
 To get started, install Holakirr Snow UI package via package manager of your choice:
 
 ```bash
-bun add @holakirr/snow-ui react react-dom react-hook-form
+bun add @holakirr/snow-ui react react-dom
 ```
 
-Peer dependencies you need to install alongside the package:
-
-- `react` and `react-dom` 19
-- `react-hook-form` 7 (used by the `Form` components)
+Peer dependencies: `react` and `react-dom` 19. Nothing else is required — the library is not tied to any form or state library.
 
 Tailwind CSS is not required at runtime: `@holakirr/snow-ui/index.css` ships precompiled.
 
@@ -55,6 +52,34 @@ function App() {
   </Button>
  )
 }
+```
+
+## Forms
+
+`Form*` components are library-agnostic: pass the validation state to `FormItem` and the label, control, description and message are wired up (ids, `aria-invalid`, `aria-describedby`).
+
+```tsx
+import { Form, FormControl, FormItem, FormLabel, FormMessage, Input } from '@holakirr/snow-ui'
+
+<Form onSubmit={handleSubmit}>
+  <FormItem error={errors.email}>
+    <FormLabel>Email</FormLabel>
+    <FormControl>
+      <Input name="email" />
+    </FormControl>
+    <FormMessage />
+  </FormItem>
+</Form>
+```
+
+This works with any form library (TanStack Form, Formik, Conform, server actions…). Adapters can provide the state for nested items with `<FormFieldState value={{ name, error, invalid }}>`.
+
+### react-hook-form
+
+An optional adapter is available as a separate entry point. Install `react-hook-form` yourself; the main entry doesn't import it.
+
+```tsx
+import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/snow-ui/react-hook-form'
 ```
 
 ## Component Documentation

@@ -37,7 +37,7 @@ bun run visual -g "Button"       # extra arguments go to `playwright test`
 VISUAL_SKIP_BUILD=1 bun run visual  # reuse the current storybook-static/
 ```
 
-Requirements: Docker (on Apple Silicon the amd64 image runs through Rosetta, a few minutes for the whole suite) and `bun install` done on the host (the container only uses the pure-JS `@playwright/test` from `node_modules`; Storybook is built on the host), plus network access for the Inter web font. Failures leave the actual/expected/diff images in `test-results/visual/` and an HTML report in `playwright-report/` (`bunx playwright show-report`).
+Requirements: Docker (on Apple Silicon the amd64 image runs through Rosetta, a few minutes for the whole suite) and `bun install` done on the host (the container only uses the pure-JS `@playwright/test` from `node_modules`; Storybook is built on the host). No network is needed: Storybook bundles the self-hosted Inter (`packages/ui/src/fonts.css`). Failures leave the actual/expected/diff images in `test-results/visual/` and an HTML report in `playwright-report/` (`bunx playwright show-report`).
 
 When a change is intended, run `bun run visual:update`, review the changed PNGs in the diff and commit them with the change. A story added without a baseline fails the comparison; opt a story or a whole component out with the `skip-visual` tag. `visual:update` only writes new and changed images: after removing or renaming stories, delete their PNGs (or empty the folder and regenerate everything).
 
@@ -51,7 +51,7 @@ In CI, the `visual` job runs the same image as a job container against the Story
 
 `bun run build` runs [publint](https://publint.dev) and [are-the-types-wrong](https://arethetypeswrong.github.io) on both packages after tsdown builds them (configured in `packages/*/tsdown.config.ts`), so broken `exports`, missing files or types that resolve differently in ESM and CommonJS fail the build.
 
-`bun run test:dist` (after `bun run build`) checks the published stylesheets of `@holakirr/snow-ui` (`packages/ui/test/dist.test.ts`): it compiles a Tailwind v4 project stylesheet that imports `@holakirr/snow-ui/theme.css` with `@source` on `dist` (`packages/ui/test/fixtures/app.css`, resolved through the package's `exports`) and fails if it misses any class the built components use; it also checks that every rule of `index.css` is in a cascade layer.
+`bun run test:dist` (after `bun run build`) checks the published stylesheets of `@holakirr/snow-ui` (`packages/ui/test/dist.test.ts`): it compiles a Tailwind v4 project stylesheet that imports `@holakirr/snow-ui/theme.css` with `@source` on `dist` (`packages/ui/test/fixtures/app.css`, resolved through the package's `exports`) and fails if it misses any class the built components use; it also checks that every rule of `index.css` is in a cascade layer and that `fonts.css` points at existing files.
 
 ### Generated token files
 
@@ -93,6 +93,10 @@ The token names follow Tailwind (`color.black-80`), not Figma (`Black/80%`); eac
 1. Export the variables as DTCG JSON, one file per mode. Figma's native variables export (announced at Schema 2025 and rolling out: right-click the "Colors" collection → Export) writes DTCG JSON; so do plugins such as [Design Tokens (W3C) Export](https://www.figma.com/community/plugin/1377982390646186215/design-tokens-w3c-export) or Tokens Studio (with the W3C DTCG token format), which also cover text and effect styles. `bunx tz import <figma file url>` (Terrazzo) writes a resolver with the tokens directly, but reading Variables through the Figma REST API requires an Enterprise plan (Styles work on every plan), as does any CI automation built on that API.
 2. Copy the changed values into the matching tokens here (by Figma name), keeping the token names, the library additions (no Figma name) and the deprecated aliases. The export's colour objects can be pasted as they are.
 3. Run `bun run tokens`, review the diff of `src/styles/tokens.generated.css` and the Foundations pages in Storybook, and run `bun run test` and `bun run visual`.
+
+### Fonts
+
+`@holakirr/snow-ui/fonts.css` self-hosts Inter from `packages/ui/src/fonts/`: subsets of the rsms Inter 4.1 variable fonts (the Google Fonts build lacks the `ss01` / `cv01` features), split by unicode-range, with the OFL license in `src/fonts/LICENSE.txt`. They are committed; `packages/ui/scripts/subset-inter.py` (Python, fontTools) regenerates them and `fonts.css` when upgrading Inter, as described at the top of the script.
 
 ## Changesets
 

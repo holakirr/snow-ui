@@ -280,18 +280,32 @@ export const TypographyPage = () => (
       title="OpenType features"
       description={
         <>
-          The design sets <Code>{fontFeatureSettings}</Code> on every text
-          layer; the stylesheet applies it to <Code>html</Code> through{' '}
+          The design sets <Code>{fontFeatureSettings}</Code> (open digits and
+          the alternate one) on every text layer; the stylesheet applies it to{' '}
+          <Code>html</Code> through{' '}
           <Code>--font-sans--font-feature-settings</Code>. The glyphs only
           change when the loaded Inter build contains these features: the Google
-          Fonts build (used by this Storybook) doesn't, the full build from
-          rsms.me/inter does.
+          Fonts build doesn't, the rsms build in{' '}
+          <Code>@holakirr/snow-ui/fonts.css</Code> (used by this Storybook)
+          does.
         </>
       }
     >
-      <Code>
-        html {'{'} font-feature-settings: {fontFeatureSettings}; {'}'}
-      </Code>
+      <div className="flex flex-col gap-2">
+        <Code>
+          html {'{'} font-feature-settings: {fontFeatureSettings}; {'}'}
+        </Code>
+        <div className="flex items-center gap-6">
+          <span className="text-48">1 3 4 6 9</span>
+          <span className="text-12 text-black-40">{fontFeatureSettings}</span>
+        </div>
+        <div className="flex items-center gap-6">
+          <span className="text-48" style={{ fontFeatureSettings: 'normal' }}>
+            1 3 4 6 9
+          </span>
+          <span className="text-12 text-black-40">normal</span>
+        </div>
+      </div>
     </Section>
   </Page>
 )

@@ -30,9 +30,11 @@ export default defineConfig({
     customExports: (exports) => ({
       ...exports,
       // Built separately by the `build:css` script: index.css by the Tailwind
-      // CLI, theme.css by scripts/build-css.ts.
+      // CLI, theme.css and fonts.css by scripts/build-css.ts.
       './index.css': './dist/index.css',
       './theme.css': './dist/theme.css',
+      './fonts.css': './dist/fonts.css',
+      './fonts/*': './dist/fonts/*',
     }),
   },
   publint: true,
@@ -41,7 +43,12 @@ export default defineConfig({
     // node10 has no `exports` support, so the `./react-hook-form` subpath
     // can't resolve there; the root entry is still covered via main/types.
     profile: 'node16',
-    // Stylesheets, not JS modules.
-    excludeEntrypoints: ['./index.css', './theme.css'],
+    // Stylesheets and font files, not JS modules.
+    excludeEntrypoints: [
+      './index.css',
+      './theme.css',
+      './fonts.css',
+      /^\.\/fonts\//,
+    ],
   },
 })

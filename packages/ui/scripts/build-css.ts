@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { cpSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url'
  *   its `layer()`), so it doesn't depend on how the consumer resolves them.
  *   Its Tailwind directives (`@theme`, `@utility`, `@apply`…) stay as they
  *   are, for the consumer's Tailwind to compile.
+ * - `dist/fonts.css` and `dist/fonts/`: the self-hosted Inter.
  */
 
 const require = createRequire(import.meta.url)
@@ -50,6 +51,8 @@ export function buildCss(packageDir: string) {
     join(dist, 'theme.css'),
     `/*! @holakirr/snow-ui theme.css | MIT License | react-day-picker/style.css: MIT License */\n${bundleCss(join(src, 'theme.css'))}`,
   )
+  cpSync(join(src, 'fonts.css'), join(dist, 'fonts.css'))
+  cpSync(join(src, 'fonts'), join(dist, 'fonts'), { recursive: true })
 }
 
 if (import.meta.main) {

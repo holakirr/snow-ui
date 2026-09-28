@@ -60,7 +60,7 @@ jobs:
 
       # The published stylesheets: theme.css compiled by a Tailwind v4
       # project (with `@source` on dist) must generate every component class;
-      # index.css layering, package exports.
+      # index.css layering, fonts.css files, package exports.
       - name: Check the built stylesheets
         run: bun run test:dist
 

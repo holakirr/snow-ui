@@ -33,7 +33,9 @@
     },
     "./package.json": "./package.json",
     "./index.css": "./dist/index.css",
-    "./theme.css": "./dist/theme.css"
+    "./theme.css": "./dist/theme.css",
+    "./fonts.css": "./dist/fonts.css",
+    "./fonts/*": "./dist/fonts/*"
   },
   "repository": {
     "type": "git",

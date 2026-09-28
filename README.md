@@ -43,7 +43,7 @@ Run a script in a single package with `bun run --filter <package-name> <script>`
 
 ### Library builds
 
-Both packages are built with [tsdown](https://tsdown.dev) (`packages/*/tsdown.config.ts`): ESM (`.js`) and CommonJS (`.cjs`) with matching `.d.ts` / `.d.cts`, one output file per source module (`unbundle`), so `'use client'` directives stay on their modules and single-icon imports stay small. tsdown writes the `exports` / `main` / `module` / `types` fields of each `package.json` and runs publint and are-the-types-wrong after every build. Before tsdown runs, `@holakirr/snow-ui` regenerates its token files (`bun run tokens`, see [Design tokens](CONTRIBUTING.md#design-tokens)) and builds its stylesheets: `dist/index.css` with the Tailwind CLI, then `dist/theme.css` (for projects on Tailwind v4, imports inlined) with `packages/ui/scripts/build-css.ts`.
+Both packages are built with [tsdown](https://tsdown.dev) (`packages/*/tsdown.config.ts`): ESM (`.js`) and CommonJS (`.cjs`) with matching `.d.ts` / `.d.cts`, one output file per source module (`unbundle`), so `'use client'` directives stay on their modules and single-icon imports stay small. tsdown writes the `exports` / `main` / `module` / `types` fields of each `package.json` and runs publint and are-the-types-wrong after every build. Before tsdown runs, `@holakirr/snow-ui` regenerates its token files (`bun run tokens`, see [Design tokens](CONTRIBUTING.md#design-tokens)) and builds its stylesheets: `dist/index.css` with the Tailwind CLI, then `dist/theme.css` (for projects on Tailwind v4, imports inlined), `dist/fonts.css` and `dist/fonts/` with `packages/ui/scripts/build-css.ts`.
 
 The handful of [Phosphor](https://phosphoricons.com) icons both packages use are inlined under `dist/vendor/` (see `tsdown.vendor.ts`) rather than depended on: `@phosphor-icons/react` ships its CommonJS build as `dist/index.cjs.js` inside a `"type": "module"` package, so Node can't `require()` it.
 
@@ -58,7 +58,7 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 | Types | `bun run typecheck` | `build` | `tsc` reports an error in a package or the root tooling |
 | Unit tests (Vitest, jsdom) | `bun run test` | `build` | a `*.test.ts(x)` test fails |
 | Package checks ([publint](https://publint.dev), [are-the-types-wrong](https://arethetypeswrong.github.io)) | `bun run build` | `build` | a package's `exports`/types would break for some consumers |
-| Built stylesheets | `bun run test:dist` | `build` | a Tailwind v4 project using `theme.css` doesn't get every component class, or `index.css` has an unlayered rule |
+| Built stylesheets | `bun run test:dist` | `build` | a Tailwind v4 project using `theme.css` doesn't get every component class, `index.css` has an unlayered rule, or `fonts.css` points at a missing file |
 | Storybook tests ([`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon)) | `bun run test:storybook` | `storybook-tests` | a story throws while rendering or its `play` function fails |
 | Accessibility ([axe](https://github.com/dequelabs/axe-core) via `@storybook/addon-a11y`) | `bun run test:storybook` / Storybook's a11y panel | `storybook-tests` | not yet: `a11y.test` is `'todo'` (violations are warnings) |
 | Visual regression (Playwright, in Docker) | `bun run visual` | `visual` | a story's screenshot (light or dark theme) differs from its baseline; skipped until baselines are committed |

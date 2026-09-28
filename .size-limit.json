@@ -41,6 +41,19 @@
     "limit": "16.5 kB"
   },
   {
+    "name": "@holakirr/snow-ui/fonts.css",
+    "path": "packages/ui/dist/fonts.css",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "limit": "1.5 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui/fonts.css: Inter, Latin subset (woff2)",
+    "path": "packages/ui/dist/fonts/inter-latin-normal.woff2",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "brotli": false,
+    "limit": "115 kB"
+  },
+  {
     "name": "@holakirr/snow-ui-icons: full import (ESM)",
     "path": "packages/icons/dist/main.js",
     "import": "*",

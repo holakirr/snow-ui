@@ -41,6 +41,11 @@ describe('package exports', () => {
   it.each([
     ['@holakirr/snow-ui/index.css', 'index.css'],
     ['@holakirr/snow-ui/theme.css', 'theme.css'],
+    ['@holakirr/snow-ui/fonts.css', 'fonts.css'],
+    [
+      '@holakirr/snow-ui/fonts/inter-latin-normal.woff2',
+      'fonts/inter-latin-normal.woff2',
+    ],
   ])('%s → dist/%s', (specifier, file) => {
     expect(require.resolve(specifier)).toBe(join(dist, file))
   })
@@ -166,5 +171,23 @@ describe('a Tailwind v4 project using theme.css and @source dist', () => {
     expect(output).toMatch(/--color-primary: #000;/)
     expect(output).toMatch(/\[data-theme="dark"\] \{\s+color-scheme: dark;/)
     expect(output).toMatch(/@layer components \{\s+\.rdp-root \{/)
+  })
+})
+
+describe('fonts.css', () => {
+  it('points at font files that exist', () => {
+    const urls = [...read('fonts.css').matchAll(/url\("([^"]+)"\)/g)].map(
+      ([, url]) => url,
+    )
+    expect(urls.length).toBe(16)
+    for (const url of urls) {
+      expect(existsSync(join(dist, url)), url).toBe(true)
+    }
+    expect(existsSync(join(dist, 'fonts/LICENSE.txt'))).toBe(true)
+  })
+
+  it('is not part of index.css', () => {
+    expect(read('index.css')).not.toMatch(/@font-face/)
+    expect(dirname(require.resolve('@holakirr/snow-ui/fonts.css'))).toBe(dist)
   })
 })

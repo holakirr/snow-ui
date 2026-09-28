@@ -50,6 +50,14 @@ import '@holakirr/snow-ui/index.css'
 
 **Cascade layers.** Both stylesheets keep every rule in Tailwind's cascade layers (`theme`, `base`, `components`, `utilities`; react-day-picker's stylesheet is in `components`), so your own unlayered CSS overrides them whatever the load order or specificity, and your utilities override the base and component rules.
 
+**Fonts (optional).** The design uses Inter with the `ss01` / `cv01` OpenType features, which the Google Fonts build of Inter doesn't include. `fonts.css` self-hosts [Inter](https://rsms.me/inter/) 4.1 (the rsms build, SIL Open Font License): variable weight 100–900, `font-display: swap`, split by `unicode-range` so browsers only download the scripts a page uses (about 105 kB for Latin):
+
+```tsx
+import '@holakirr/snow-ui/fonts.css'
+```
+
+The font files are in `@holakirr/snow-ui/fonts/*` (e.g. for a preload: `import latin from '@holakirr/snow-ui/fonts/inter-latin-normal.woff2?url'` in Vite). To load Inter yourself, use a build with those features; the stylesheets only set `font-family: Inter, sans-serif` and the `font-feature-settings`.
+
 ### Basic example
 
 Buttons are build using the Button component:
@@ -107,7 +115,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 - **Focus:** the `focus-ring` utility is the keyboard focus indicator of every component: on `:focus-visible` it draws the Figma "Focus" ring (`ring-4 ring-focus`) plus a 2px `black-80` outline offset by 2px. Use it on your own focusable elements: `<button className="focus-ring">`.
 - **Effects:** `shadow-1`, `shadow-2`, `shadow-glow`, `shadow-glass-1`, `shadow-glass-2`, `inset-shadow-inner`, the Figma focus ring `ring-4 ring-focus` (or `shadow-focus`), the background blurs `backdrop-blur-bg-40` (20px) and `backdrop-blur-bg-100` (50px), and `glass` / `glass-1` / `glass-2`, which approximate Figma's Glass effects with a fill, a background blur and a shadow.
 
-The package doesn't load Inter. Load it yourself; the Google Fonts build of Inter doesn't include the `ss01` / `cv01` features, the build from [rsms.me/inter](https://rsms.me/inter/) does.
+Inter itself is opt-in: import `@holakirr/snow-ui/fonts.css` (see [Installation](#installation)) or load a build with the `ss01` / `cv01` features yourself.
 
 Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `background`, `foreground`, `muted`, `accent`, `destructive`, `input`, `ring`…) still work as deprecated aliases; see the [changelog](CHANGELOG.md) for the mapping.
 

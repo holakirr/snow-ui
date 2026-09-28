@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const FourLeafCloverWeights: CustomIconWeights = new Map([
+export const FourLeafCloverWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"thin",
 		<path

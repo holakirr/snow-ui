@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const XLSXWeights: CustomIconWeights = new Map([
+export const XLSXWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="XLSXRegular" stroke="none">

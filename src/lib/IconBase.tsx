@@ -22,7 +22,6 @@ export const IconBase: BaseIcon = ({
 			width={size}
 			height={size}
 			fill={color}
-			stroke={color}
 			viewBox="0 0 32 32"
 			transform={mirrored ? "scale(-1, 1)" : undefined}
 			style={{ transition: "all .15s", ...style }}

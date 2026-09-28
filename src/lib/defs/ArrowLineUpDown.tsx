@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const ArrowLineUpDownWeights: CustomIconWeights = new Map([
+export const ArrowLineUpDownWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="ArrowLineUpDownRegular" stroke="none">

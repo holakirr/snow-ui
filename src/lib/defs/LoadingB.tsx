@@ -5,7 +5,7 @@ const y = 1;
 const width = 2;
 const height = 5;
 
-export const LoadingBWeights: CustomIconWeights = new Map([
+export const LoadingBWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="LoadingBRegular" stroke="none">

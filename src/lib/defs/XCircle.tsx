@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const XCircleWeights: CustomIconWeights = new Map([
+export const XCircleWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"thin",
 		<path

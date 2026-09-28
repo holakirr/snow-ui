@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const OneNoteWeights: CustomIconWeights = new Map([
+export const OneNoteWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="OneNoteRegular" stroke="none">

@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const DotsThreeOutlineHorizontalWeights: CustomIconWeights = new Map([
+export const DotsThreeOutlineHorizontalWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="DotsThreeOutlineHorizontalRegular" stroke="none">

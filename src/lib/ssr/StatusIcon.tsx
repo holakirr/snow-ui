@@ -46,5 +46,4 @@ const StatusIcon = ({ status, className, ...props }: StatusIconProps) => {
 	}
 };
 
-StatusIcon.displayName = "StatusIcon";
 export { StatusIcon };

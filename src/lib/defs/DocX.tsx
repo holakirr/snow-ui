@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const DocXWeights: CustomIconWeights = new Map([
+export const DocXWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="DocXRegular" stroke="none">

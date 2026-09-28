@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const ClipboardWeights: CustomIconWeights = new Map([
+export const ClipboardWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"thin",
 		<path

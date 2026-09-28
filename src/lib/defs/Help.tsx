@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const HelpWeights: CustomIconWeights = new Map([
+export const HelpWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="HelpRegular" stroke="none">

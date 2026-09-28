@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const NotepadWeights: CustomIconWeights = new Map([
+export const NotepadWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="NotepadRegular" stroke="none">

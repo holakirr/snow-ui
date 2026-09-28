@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const SnowUIWeights: CustomIconWeights = new Map([
+export const SnowUIWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="SnowIcon" stroke="none">

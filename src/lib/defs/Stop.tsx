@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const StopWeights: CustomIconWeights = new Map([
+export const StopWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="StopRegular" stroke="none">

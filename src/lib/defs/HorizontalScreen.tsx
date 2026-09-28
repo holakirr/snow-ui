@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const HorizontalScreenWeights: CustomIconWeights = new Map([
+export const HorizontalScreenWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<path

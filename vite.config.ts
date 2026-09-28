@@ -1,35 +1,43 @@
 import { resolve } from "node:path";
-import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
 	plugins: [
 		react(),
-		tailwindcss(),
 		dts({
-			// insertTypesEntry: true,
-			exclude: ["src/lib/defs/**/*", "src/**/*.stories.tsx", "src/**/*.stories.ts"],
+			exclude: [
+				"src/lib/defs/**/*",
+				"src/test/**/*",
+				"src/**/*.stories.tsx",
+				"src/**/*.stories.ts",
+				"src/**/*.test.tsx",
+				"src/**/*.test.ts",
+			],
 		}),
 	],
 	build: {
+		// Consumers minify; keeping output readable preserves component names and pure annotations.
+		minify: false,
 		lib: {
 			entry: resolve(__dirname, "src/main.tsx"),
-			name: "@holakirr/snow-ui-icons",
-			formats: ["es", "umd"],
-			fileName: (format) => `main.${format === "umd" ? "umd.cjs" : "js"}`,
+			formats: ["es", "cjs"],
+			// npm never packs nested `node_modules` folders, so bundled deps (phosphor) go to `vendor/`.
+			fileName: (format, entryName) =>
+				`${entryName.replace(/^.*node_modules\//, "vendor/")}.${format === "es" ? "js" : "cjs"}`,
 		},
 		rollupOptions: {
-			external: ["react", "react-dom", "react/jsx-runtime", "@holakirr/snow-ui"],
+			external: ["react", "react-dom", "react/jsx-runtime"],
 			output: {
-				globals: {
-					react: "React",
-					"react-dom": "ReactDOM",
-					"react/jsx-runtime": "jsxRuntime",
-					"@holakirr/snow-ui": "snowUi",
-				},
+				preserveModules: true,
+				preserveModulesRoot: "src",
 			},
 		},
+	},
+	test: {
+		environment: "jsdom",
+		setupFiles: ["./src/test/setup.ts"],
+		include: ["src/**/*.test.{ts,tsx}"],
 	},
 });

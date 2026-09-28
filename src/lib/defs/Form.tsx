@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const FormWeights: CustomIconWeights = new Map([
+export const FormWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="FormRegular" stroke="none">

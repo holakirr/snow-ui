@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const DotWeights: CustomIconWeights = new Map([
+export const DotWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<path

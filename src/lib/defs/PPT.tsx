@@ -1,6 +1,6 @@
 import type { CustomIconWeights } from "../types";
 
-export const PPTWeights: CustomIconWeights = new Map([
+export const PPTWeights: CustomIconWeights = /* @__PURE__ */ new Map([
 	[
 		"regular",
 		<g key="PPTRegular" stroke="none">

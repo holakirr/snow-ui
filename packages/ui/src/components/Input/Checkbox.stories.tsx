@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Label } from '../Label'
 import { Checkbox } from './Checkbox'
 
 const meta: Meta<typeof Checkbox> = {
@@ -21,3 +22,40 @@ export default meta
 type Story = StoryObj<typeof Checkbox>
 
 export const Default: Story = {}
+
+export const Checked: Story = {
+  args: { defaultChecked: true },
+}
+
+/** Figma "Multiple". */
+export const Indeterminate: Story = {
+  args: { checked: 'indeterminate' },
+}
+
+export const Disabled: Story = {
+  args: { disabled: true, defaultChecked: true },
+}
+
+/** The Figma Checkbox set: False, True and Multiple (hover for the hover state). */
+export const States: Story = {
+  render: () => (
+    <div className="flex items-center gap-6">
+      {(
+        [
+          ['unchecked', false],
+          ['checked', true],
+          ['indeterminate', 'indeterminate'],
+        ] as const
+      ).map(([name, checked]) => (
+        <div key={name} className="flex items-center gap-2">
+          <Checkbox id={`checkbox-${name}`} defaultChecked={checked} />
+          <Label htmlFor={`checkbox-${name}`}>{name}</Label>
+        </div>
+      ))}
+      <div className="flex items-center gap-2">
+        <Checkbox id="checkbox-disabled" disabled />
+        <Label htmlFor="checkbox-disabled">disabled</Label>
+      </div>
+    </div>
+  ),
+}

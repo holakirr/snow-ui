@@ -6,6 +6,11 @@ on:
   push:
     branches: [main]
 
+# A new push to a PR supersedes the running checks; main always runs to the end.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 
@@ -37,11 +42,183 @@ jobs:
         run: bun run test
 
       # Builds icons first, then ui (ui's type declarations import icons' dist).
+      # tsdown runs publint and are-the-types-wrong on both packages.
       - name: Build packages
         run: bun run build
 
       - name: Build Storybook
         run: bun run build:storybook
+
+      # Consumed by the `size` and `visual` jobs below.
+      - name: Upload package builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist
+          path: packages/*/dist
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: storybook-static
+          path: storybook-static
+          if-no-files-found: error
+          retention-days: 3
+
+  # Bundle-size budgets from .size-limit.json, measured on the built packages.
+  # Plain `size-limit` (no third-party action holding a write token); the
+  # report goes to the job summary.
+  size:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Download package builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+          path: packages
+
+      - name: Check size budgets
+        run: |
+          set -o pipefail
+          bun run size | tee size-limit.txt
+
+      - name: Write size report
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f size-limit.txt ]; then
+            {
+              echo '### Size budgets'
+              echo '```'
+              cat size-limit.txt
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  # Every story rendered in headless Chromium through Vitest browser mode
+  # (@storybook/addon-vitest): render errors and failing play functions fail
+  # the job; axe runs on every story and follows parameters.a11y.test.
+  storybook-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      STORYBOOK_DISABLE_TELEMETRY: 1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Get Playwright version
+        id: playwright
+        run: echo "version=$(jq -r .version node_modules/playwright/package.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
+
+      # Browsers come from the cache when it hits; the system libraries they
+      # need are apt packages and are installed on every run.
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      - name: Storybook tests
+        run: bun run test:storybook
+
+  # Screenshot comparison of every story (light + dark) against the committed
+  # Linux baselines in visual/__screenshots__, in the same Playwright image
+  # `bun run visual` uses locally. Keep the image tag in sync with the
+  # @playwright/test version in package.json.
+  visual:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check for baselines
+        id: baselines
+        run: |
+          if ls visual/__screenshots__/*.png > /dev/null 2>&1; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Visual regression skipped::No baselines in visual/__screenshots__ yet. Generate them with \`bun run visual:update\` (Docker) and commit them to enable this check."
+          fi
+
+      # setup-bun extracts a zip; the Playwright image has no unzip.
+      - name: Install unzip
+        if: steps.baselines.outputs.present == 'true'
+        run: apt-get update && apt-get install -y --no-install-recommends unzip
+
+      - name: Setup Bun
+        if: steps.baselines.outputs.present == 'true'
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        if: steps.baselines.outputs.present == 'true'
+        run: bun install --frozen-lockfile
+
+      - name: Download Storybook build
+        if: steps.baselines.outputs.present == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: storybook-static
+          path: storybook-static
+
+      - name: Visual regression tests
+        if: steps.baselines.outputs.present == 'true'
+        run: bun run visual:test
+
+      - name: Upload visual diffs
+        if: ${{ failure() && steps.baselines.outputs.present == 'true' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-diffs
+          path: |
+            test-results/visual
+            playwright-report
+          retention-days: 14
 
   # Warns (never fails the PR) when packages changed without a changeset.
   # Docs/CI-only PRs don't need one; `bun changeset --empty` silences it.

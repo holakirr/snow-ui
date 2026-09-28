@@ -45,7 +45,15 @@ The handful of [Phosphor](https://phosphoricons.com) icons both packages use are
 
 ## Releasing
 
-Bump the package's `version` via PR, then publish a GitHub release tagged `@holakirr/snow-ui@X.Y.Z` or `@holakirr/snow-ui-icons@X.Y.Z` (legacy `vX.Y.Z` tags publish `@holakirr/snow-ui`). `.github/workflows/release.yml` checks, builds and publishes the matching package to npm with provenance.
+Versions and changelogs are managed with [Changesets](https://github.com/changesets/changesets); see [CONTRIBUTING.md](CONTRIBUTING.md) for the contributor side.
+
+1. Every PR that changes a published package adds a changeset (`bun changeset`): which packages, which semver bump, and a user-facing summary.
+2. On each push to `main`, `.github/workflows/release.yml` runs [changesets/action](https://github.com/changesets/action). While changesets are pending it opens or updates the **"chore(release): version packages"** PR, which runs `bun run version-packages` (`changeset version` — bumps versions, bumps `@holakirr/snow-ui`'s `@holakirr/snow-ui-icons` range when icons is released, prepends to each `CHANGELOG.md`, deletes the consumed changesets — then `bun install --lockfile-only` to sync `bun.lock`).
+3. Merging that PR runs the workflow again with no pending changesets, so it runs `bun run release`: `bun run build`, then `changeset publish`, which runs `npm publish` in every package whose version isn't on npm yet. The action then pushes the `@holakirr/snow-ui@X.Y.Z` / `@holakirr/snow-ui-icons@X.Y.Z` tags and creates a GitHub release for each.
+
+The version PR is opened with the workflow's `GITHUB_TOKEN`, so other workflows (Build Check) don't run on it automatically; close and reopen it to run them before merging.
+
+Publishing uses [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers) (OIDC, no `NPM_TOKEN`) with provenance (`publishConfig.provenance`). On npmjs.com, the Trusted Publisher of **both** packages must be the GitHub repository `holakirr/snow-ui` with workflow filename `release.yml` (the icons package still points at its old repository, `holakirr/snow-ui-icons`, until the owner re-points it).
 
 ## License
 

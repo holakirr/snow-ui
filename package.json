@@ -18,10 +18,15 @@
     "storybook": "storybook dev -p 53741",
     "build:storybook": "storybook build --disable-telemetry",
     "e2e": "bun run --filter @holakirr/snow-ui e2e",
-    "clean": "rm -rf packages/*/dist packages/*/storybook-static packages/*/coverage"
+    "clean": "rm -rf packages/*/dist packages/*/storybook-static packages/*/coverage",
+    "changeset": "changeset",
+    "version-packages": "changeset version && bun install --lockfile-only",
+    "release": "bun run build && changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
     "@storybook/addon-a11y": "^10.6.0",
     "@storybook/addon-docs": "^10.6.0",
     "@storybook/addon-themes": "^10.6.0",

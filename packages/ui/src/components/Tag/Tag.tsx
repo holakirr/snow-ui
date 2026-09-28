@@ -83,8 +83,10 @@ const ArrowTip: FC<{ side: 'left' | 'right' }> = ({ side }) => (
 
 /**
  * Tag component displays a tag with a label and optional dot and close icon.
- * It has no role of its own: in a list of tags, render them in a `<ul>` /
- * `role="list"` and pass `role="listitem"` (or wrap each in an `<li>`).
+ * It has no role of its own. For a list of tags, render them in a
+ * `role="list"` container and pass `role="listitem"` to each tag, or wrap
+ * each tag in an `<li>` of a `<ul>` (a `<ul>` can't contain the tags'
+ * `<div>`s directly).
  */
 const Tag: FC<TagProps> = ({
   leftContent,
@@ -163,7 +165,10 @@ const Tag: FC<TagProps> = ({
           title={`Remove tag ${label}`}
           // The 12px Figma icon, with a 24px hit area (WCAG 2.5.8) drawn by
           // the ::after pseudo-element so the tag keeps its 20px height.
-          className="relative flex size-3 cursor-pointer items-center justify-center rounded-4 opacity-40 transition-opacity after:absolute after:-inset-1.5 after:content-[''] hover:opacity-100 focus-ring focus-visible:opacity-100"
+          // Figma: 40% opacity (2.85:1). At 80% the icon meets 3:1 (1.4.11)
+          // on every tag, the active indigo one included (3.46:1 light,
+          // 3.83:1 dark; 60% would be 2.43:1 there).
+          className="relative flex size-3 cursor-pointer items-center justify-center rounded-4 opacity-80 transition-opacity after:absolute after:-inset-1.5 after:content-[''] hover:opacity-100 focus-ring focus-visible:opacity-100"
         >
           <CloseIcon aria-hidden size={12} className="fill-current" />
         </button>

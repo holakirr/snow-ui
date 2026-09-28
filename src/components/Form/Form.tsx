@@ -5,85 +5,86 @@ import {
   type ComponentPropsWithoutRef,
   createContext,
   type FC,
+  type FormHTMLAttributes,
   type HTMLAttributes,
+  type ReactNode,
   useContext,
   useId,
 } from 'react'
-import {
-  Controller,
-  type ControllerProps,
-  type FieldPath,
-  type FieldValues,
-  FormProvider,
-  useFormContext,
-} from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 
 import { Label, type LabelProps } from '../Label'
 import { Typography } from '../Text'
 
-const Form = FormProvider
-
-type FormFieldContextValue<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = {
-  name: TName
+/**
+ * Validation state of a single field. Form components are library-agnostic:
+ * pass the state via `FormItem` props, or provide it with `FormFieldState`
+ * (this is how adapters such as `@holakirr/snow-ui/react-hook-form` work).
+ */
+type FormFieldStateValue = {
+  name?: string
+  /** Error message; a truthy value also marks the field invalid */
+  error?: ReactNode
+  invalid?: boolean
 }
 
-const FormFieldContext = createContext<FormFieldContextValue>(
-  {} as FormFieldContextValue,
-)
+const FormFieldStateContext = createContext<FormFieldStateValue>({})
 
-const FormField = <
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  ...props
-}: ControllerProps<TFieldValues, TName>) => (
-  <FormFieldContext.Provider value={{ name: props.name }}>
-    <Controller {...props} />
-  </FormFieldContext.Provider>
-)
+const FormFieldState = FormFieldStateContext.Provider
 
-const useFormField = () => {
-  const fieldContext = useContext(FormFieldContext)
-  const itemContext = useContext(FormItemContext)
-  const { getFieldState, formState } = useFormContext()
-
-  if (!fieldContext?.name) {
-    throw new Error('useFormField should be used within <FormField>')
-  }
-
-  const fieldState = getFieldState(fieldContext.name, formState)
-
-  const { id } = itemContext
-
-  return {
-    id,
-    name: fieldContext.name,
-    formItemId: `${id}-form-item`,
-    formDescriptionId: `${id}-form-item-description`,
-    formMessageId: `${id}-form-item-message`,
-    ...fieldState,
-  }
-}
-
-type FormItemContextValue = {
+type FormItemContextValue = FormFieldStateValue & {
   id: string
 }
 
-const FormItemContext = createContext<FormItemContextValue>(
-  {} as FormItemContextValue,
-)
+const FormItemContext = createContext<FormItemContextValue | null>(null)
 
-type FormItemProps = HTMLAttributes<HTMLDivElement>
+const useFormField = () => {
+  const itemContext = useContext(FormItemContext)
 
-const FormItem: FC<FormItemProps> = ({ className, ...props }) => {
+  if (!itemContext) {
+    throw new Error('useFormField should be used within <FormItem>')
+  }
+
+  const { id, name, error, invalid } = itemContext
+
+  return {
+    id,
+    name,
+    error,
+    invalid: invalid ?? Boolean(error),
+    formItemId: `${id}-form-item`,
+    formDescriptionId: `${id}-form-item-description`,
+    formMessageId: `${id}-form-item-message`,
+  }
+}
+
+type FormProps = FormHTMLAttributes<HTMLFormElement>
+
+const Form: FC<FormProps> = (props) => <form {...props} />
+
+Form.displayName = 'Form'
+
+type FormItemProps = HTMLAttributes<HTMLDivElement> & FormFieldStateValue
+
+const FormItem: FC<FormItemProps> = ({
+  className,
+  name,
+  error,
+  invalid,
+  ...props
+}) => {
   const id = useId()
+  const fieldState = useContext(FormFieldStateContext)
 
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider
+      value={{
+        id,
+        name: name ?? fieldState.name,
+        error: error ?? fieldState.error,
+        invalid: invalid ?? fieldState.invalid,
+      }}
+    >
       <div className={twMerge('relative space-y-2', className)} {...props} />
     </FormItemContext.Provider>
   )
@@ -92,11 +93,11 @@ const FormItem: FC<FormItemProps> = ({ className, ...props }) => {
 FormItem.displayName = 'FormItem'
 
 const FormLabel: FC<LabelProps> = ({ className, ...props }) => {
-  const { error, formItemId } = useFormField()
+  const { invalid, formItemId } = useFormField()
 
   return (
     <Label
-      className={twMerge(error && 'text-destructive', className)}
+      className={twMerge(invalid && 'text-destructive', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -108,17 +109,18 @@ FormLabel.displayName = 'FormLabel'
 const FormControl: FC<ComponentPropsWithoutRef<typeof Slot>> = ({
   ...props
 }) => {
-  const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
+  const { invalid, formItemId, formDescriptionId, formMessageId } =
+    useFormField()
 
   return (
     <Slot
       id={formItemId}
       aria-describedby={
-        !error
+        !invalid
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
       }
-      aria-invalid={!!error}
+      aria-invalid={invalid}
       {...props}
     />
   )
@@ -151,7 +153,7 @@ const FormMessage: FC<FormMessageProps> = ({
   ...props
 }) => {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message) : children
+  const body = error && error !== true ? error : children
 
   if (!body) {
     return null
@@ -175,12 +177,14 @@ export {
   Form,
   FormControl,
   FormDescription,
-  FormField,
+  FormFieldState,
   FormItem,
   FormLabel,
   FormMessage,
   useFormField,
-  type FormItemProps,
   type FormDescriptionProps,
+  type FormFieldStateValue,
+  type FormItemProps,
   type FormMessageProps,
+  type FormProps,
 }

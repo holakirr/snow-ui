@@ -29,6 +29,16 @@
         "default": "./dist/esm/index.js"
       }
     },
+    "./react-hook-form": {
+      "require": {
+        "types": "./dist/cjs/react-hook-form.d.ts",
+        "default": "./dist/cjs/react-hook-form.js"
+      },
+      "import": {
+        "types": "./dist/esm/react-hook-form.d.ts",
+        "default": "./dist/esm/react-hook-form.js"
+      }
+    },
     "./index.css": "./dist/index.css",
     "./package.json": "./package.json"
   },
@@ -76,6 +86,11 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.60.0"
+  },
+  "peerDependenciesMeta": {
+    "react-hook-form": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@holakirr/snow-ui-icons": "^2.0.0",

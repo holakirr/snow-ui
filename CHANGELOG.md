@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Breaking changes
+
+- The library no longer depends on `react-hook-form`. `Form`, `FormItem`, `FormLabel`, `FormControl`, `FormDescription` and `FormMessage` from the main entry are library-agnostic: pass `error` / `invalid` to `FormItem`, or provide them with the new `FormFieldState`. `Form` is now a styled-less `<form>` wrapper.
+- `FormField` and the react-hook-form `Form` (`FormProvider`) moved to `@holakirr/snow-ui/react-hook-form`. Migrate by changing the import path; the API is unchanged. `react-hook-form` is now an optional peer dependency.
+
 ## 2.1.0
 
 ### Breaking-ish changes (check before upgrading)

@@ -33,7 +33,7 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
   <SelectPrimitive.Trigger
     className={twMerge(
       // The Figma Input field with a trailing 16px ArrowLineUpDown.
-      'group flex w-full cursor-pointer items-center justify-between gap-2 whitespace-nowrap rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all data-[placeholder]:text-black-20 [&>span]:line-clamp-1',
+      'group flex w-full cursor-pointer items-center justify-between gap-2 whitespace-nowrap rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all data-[placeholder]:text-secondary [&>span]:line-clamp-1',
       'hover:inset-ring-black-40 data-[state=open]:inset-ring-black-40',
       'focus-ring data-[state=open]:ring-4 data-[state=open]:ring-focus',
       'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0',

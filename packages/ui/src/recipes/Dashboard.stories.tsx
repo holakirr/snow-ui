@@ -83,7 +83,7 @@ const iconButton = (label: string, icon: ReactNode, onClick?: () => void) => (
 /* ------------------------------ Sidebar ------------------------------ */
 
 const SectionTitle = ({ children }: { children: ReactNode }) => (
-  <Typography as="h2" size={14} className="px-3 py-1 text-black-40">
+  <Typography as="h2" size={14} className="px-3 py-1 text-secondary">
     {children}
   </Typography>
 )
@@ -146,10 +146,11 @@ const DashboardSidebar = () => (
       </IconText>
       <div className="flex flex-col gap-1">
         <Group gap={8} aria-label="Shortcuts" className="px-2">
-          <Typography size={14} className="text-black-40">
+          {/* Figma: Black/40% and Black/20% (2.85:1, 1.6:1). */}
+          <Typography size={14} className="text-black-80">
             Favorites
           </Typography>
-          <Typography size={14} className="text-black-20">
+          <Typography size={14} className="text-secondary">
             Recently
           </Typography>
         </Group>
@@ -182,7 +183,7 @@ const DashboardSidebar = () => (
       </nav>
     </SidebarContent>
     <SidebarFooter className="items-center p-0">
-      <Typography size={14} semibold className="text-black-40">
+      <Typography size={14} semibold className="text-secondary">
         SnowUI
       </Typography>
     </SidebarFooter>
@@ -196,7 +197,8 @@ const SearchButton = (props: ComponentProps<'button'>) => (
   <button
     type="button"
     className={searchStyles({
-      className: 'w-40 cursor-pointer text-black-20',
+      // Figma: Black/20% (1.6:1); the label is text, so text-secondary.
+      className: 'w-40 cursor-pointer text-secondary',
     })}
     {...props}
   >
@@ -205,7 +207,7 @@ const SearchButton = (props: ComponentProps<'button'>) => (
     <KBD
       keys={['/']}
       aria-hidden
-      className="inline-flex h-4 items-center rounded-[6px] border-[0.5px] border-black-10 px-1 text-12 text-black-20"
+      className="inline-flex h-4 items-center rounded-[6px] border-[0.5px] border-black-10 px-1 text-12 text-secondary"
     />
   </button>
 )
@@ -304,7 +306,7 @@ const DashboardContent = () => (
       <Typography as="h1" size={14} semibold>
         Overview
       </Typography>
-      <Typography size={12} className="text-black-40">
+      <Typography size={12} className="text-secondary">
         Today
       </Typography>
     </div>
@@ -457,7 +459,7 @@ const DashboardRightSidebar = () => (
           key={item.time}
           as="li"
           interactive
-          icon={avatar(item.initials, `${item.tint} text-static-white`)}
+          icon={avatar(item.initials, `${item.tint} text-static-black`)}
           title={item.title}
           description={item.time}
           className="relative"

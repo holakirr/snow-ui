@@ -72,6 +72,6 @@ export const WithCustomClasses: Story = {
   args: {
     href: '#',
     children: 'Custom Styled Link',
-    className: 'text-red font-semibold',
+    className: 'text-black font-semibold underline',
   },
 }

@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 import { tokenScales } from '../utils/token-scales.generated'
+import { twMerge } from '../utils/tw-merge'
 import {
   blurs,
   colorGroups,
@@ -271,4 +272,15 @@ describe('generated tokens (tokens.generated.css ↔ tokens.generated.ts)', () =
       themeNames('--blur-').map((name) => suffix(name, '--blur-')),
     )
   })
+
+  it.each(colorTokens)(
+    'tailwind-merge reads text-$name / bg-$name as colours',
+    ({ name }) => {
+      // A colour replaces another colour, never a text size.
+      expect(twMerge(`text-14 text-black text-${name}`)).toBe(
+        `text-14 text-${name}`,
+      )
+      expect(twMerge(`bg-white bg-${name}`)).toBe(`bg-${name}`)
+    },
+  )
 })

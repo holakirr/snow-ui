@@ -82,7 +82,7 @@ const Variants = () => (
       },
     ].map(({ label, props }) => (
       <div key={label} className="flex flex-col items-start gap-2">
-        <Typography size={12} className="text-black-40">
+        <Typography size={12} className="text-secondary">
           {label}
         </Typography>
         <IconText icon={icon} {...props}>
@@ -132,7 +132,7 @@ export const Examples: Story = {
       >
         <span className="flex flex-col">
           <Typography size={14}>Email</Typography>
-          <Typography size={12} className="text-black-40">
+          <Typography size={12} className="text-secondary">
             Set a permanent password to login to your account.
           </Typography>
         </span>

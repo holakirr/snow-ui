@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 import { ru } from 'react-day-picker/locale'
+import { expect } from 'storybook/test'
 
 import { Calendar } from './Calendar'
 
@@ -17,7 +18,7 @@ const meta: Meta<typeof Calendar> = {
     docs: {
       description: {
         component:
-          'The Figma DatePicker: a glass surface (Background/3, "Glass 2", 1px Surface/1 stroke, radius 16), weeks starting on Monday, 12 Regular days, the selected day in Primary, today in Secondary/Indigo and outside days in Black/40%. `header` adds the top row (e.g. a date input); `showTodayButton` and `lastSelection` add the "Today" and "Last selection" actions.',
+          'The Figma DatePicker: a glass surface (Background/3, "Glass 2", 1px Surface/1 stroke, radius 16), weeks starting on Monday, 12 Regular days, the selected day in Primary, today in Secondary/Indigo and outside days in `text-secondary` (Figma: Black/40%, 2.85:1). `header` adds the top row (e.g. a date input); `showTodayButton` and `lastSelection` add the "Today" and "Last selection" actions.',
       },
     },
   },
@@ -31,7 +32,7 @@ type Story = StoryObj<typeof Calendar>
 const FIGMA_TODAY = new Date(2023, 1, 10)
 const FIGMA_MONTH = new Date(2023, 1, 1)
 
-/** The Figma top row: month / day / year segments, "/" in Black/20%. */
+/** The Figma top row: month / day / year segments and "/" (Figma: Black/20%; `text-secondary` here). */
 const DateDisplay = ({ date }: { date?: Date }) => {
   const parts = date
     ? [
@@ -45,9 +46,9 @@ const DateDisplay = ({ date }: { date?: Date }) => {
     <output aria-label="Selected date" className="flex items-center text-14">
       {parts.map((part, index) => (
         <span key={part + String(index)} className="flex items-center">
-          {index > 0 && <span className="text-black-20">/</span>}
+          {index > 0 && <span className="text-secondary">/</span>}
           <span
-            className={`rounded-4 px-1 py-0.5 ${date ? '' : 'text-black-40'}`}
+            className={`rounded-4 px-1 py-0.5 ${date ? '' : 'text-secondary'}`}
           >
             {part}
           </span>
@@ -69,6 +70,61 @@ export const Default: Story = {
         defaultMonth={new Date(2025, 0, 1)}
       />
     )
+  },
+  play: async ({ canvas, userEvent, step }) => {
+    const grid = () => canvas.getByRole('grid')
+    const cell = (label: RegExp) =>
+      canvas.getByRole('button', { name: label }).closest('[role="gridcell"]')
+
+    await expect(grid()).toHaveAccessibleName(/January 2025/)
+    await expect(cell(/January 20th, 2025/)).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+
+    await step('Next and Previous change the month', async () => {
+      await userEvent.click(canvas.getByRole('button', { name: /next month/i }))
+      await expect(grid()).toHaveAccessibleName(/February 2025/)
+      await userEvent.click(
+        canvas.getByRole('button', { name: /previous month/i }),
+      )
+      await userEvent.click(
+        canvas.getByRole('button', { name: /previous month/i }),
+      )
+      await expect(grid()).toHaveAccessibleName(/December 2024/)
+      await userEvent.click(canvas.getByRole('button', { name: /next month/i }))
+      await expect(grid()).toHaveAccessibleName(/January 2025/)
+    })
+
+    await step('a click selects a day', async () => {
+      await userEvent.click(
+        canvas.getByRole('button', { name: /January 14th, 2025/ }),
+      )
+      await expect(cell(/January 14th, 2025/)).toHaveAttribute(
+        'aria-selected',
+        'true',
+      )
+      await expect(cell(/January 20th, 2025/)).not.toHaveAttribute(
+        'aria-selected',
+        'true',
+      )
+    })
+
+    await step('arrow keys move between days, Enter selects', async () => {
+      await userEvent.keyboard('{ArrowRight}')
+      await expect(
+        canvas.getByRole('button', { name: /January 15th, 2025/ }),
+      ).toHaveFocus()
+      await userEvent.keyboard('{ArrowDown}')
+      await expect(
+        canvas.getByRole('button', { name: /January 22nd, 2025/ }),
+      ).toHaveFocus()
+      await userEvent.keyboard('{Enter}')
+      await expect(cell(/January 22nd, 2025/)).toHaveAttribute(
+        'aria-selected',
+        'true',
+      )
+    })
   },
 }
 

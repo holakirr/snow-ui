@@ -75,6 +75,15 @@
   --animate-zoom-out-95: zoom-out-95 0.3s ease-out;
 }
 
+/*
+ * `text-secondary`: the secondary text colour (`--color-text-secondary`).
+ * `inline`, so the utility reads the token on the element and follows theme
+ * scopes.
+ */
+@theme inline {
+  --text-color-secondary: var(--color-text-secondary);
+}
+
 @layer base {
   *,
   ::after,

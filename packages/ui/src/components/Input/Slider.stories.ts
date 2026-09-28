@@ -8,6 +8,8 @@ const meta: Meta<typeof Slider> = {
   tags: ['autodocs', 'a11y'],
   args: {
     className: 'w-60',
+    // Goes to the thumb (`role="slider"`); a range gets "…, minimum/maximum".
+    'aria-label': 'Volume',
   },
   argTypes: {},
   parameters: {

@@ -6,7 +6,8 @@ const meta: Meta<typeof Textarea> = {
   title: 'Components/Input/Textarea',
   component: Textarea,
   tags: ['autodocs', 'a11y'],
-  args: {},
+  // A textarea without a visible label needs an accessible name.
+  args: { 'aria-label': 'Message', placeholder: 'Type your message' },
   argTypes: {},
   parameters: {
     docs: {

@@ -80,11 +80,11 @@ const Scheduler: FC<SchedulerProps> = ({
             <Typography
               size={TEXT_SIZES[12]}
               className={twMerge(
-                'text-black-40 px-1 py-0.5 rounded-4',
+                'text-secondary px-1 py-0.5 rounded-4',
                 date.getDate() === now.getDate() &&
                   date.getMonth() === now.getMonth() &&
                   date.getFullYear() === now.getFullYear()
-                  ? 'bg-indigo text-static-white'
+                  ? 'bg-indigo text-static-black'
                   : '',
               )}
             >
@@ -109,7 +109,7 @@ const Scheduler: FC<SchedulerProps> = ({
 
       {hours.map((hour) => (
         <Fragment key={hour}>
-          <Typography size={TEXT_SIZES[12]} className="text-black-40">
+          <Typography size={TEXT_SIZES[12]} className="text-secondary">
             {new Date(new Date().setHours(hour)).toLocaleTimeString('en-US', {
               hour: 'numeric',
             })}

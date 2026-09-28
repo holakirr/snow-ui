@@ -366,6 +366,23 @@
     "indigo-text": {
       "$value": "{color.indigo}",
       "$description": "Accessibility addition (not in the Figma kit): Secondary/Indigo is 2.07:1 on white, so indigo text is darker in light mode (5.37:1 on background-1); dark mode keeps the Figma indigo (6.11:1 on #333). Link, active Tag."
+    },
+    "text-secondary": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 1, 1],
+        "alpha": 0.7,
+        "hex": "#ffffff"
+      },
+      "$description": "Accessibility addition (not in the Figma kit): Black/40% text is 2.85:1 on white, so secondary text (descriptions, captions, table headers, inactive tabs; the text-secondary utility) is Black/60% in light mode (5.74:1 on background-1, at least 5.5:1 on background-2, the Black/4% hover and the Color 1/2 tints) and White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface)."
+    },
+    "red-text": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 0.502, 0.502],
+        "hex": "#ff8080"
+      },
+      "$description": "Accessibility addition (not in the Figma kit): Secondary/Red is 3.36:1 on white and 3.76:1 on #333, so error text (FormMessage, an invalid FormLabel) is #D42020 in light mode and #FF8080 in dark mode (5.21:1 on background-1 in both)."
     }
   }
 }

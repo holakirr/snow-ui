@@ -19,7 +19,7 @@ const meta: Meta<typeof Breadcrumb> = {
     docs: {
       description: {
         component:
-          'The Figma dashboard breadcrumb: 12 Regular items with the Button Small "Borderless" padding (4/12, radius 12, Black/4% on hover), Black/40% parents, a Black/100% current page and Black/10% "/" separators, 4px apart.',
+          'The Figma dashboard breadcrumb: 12 Regular items with the Button Small "Borderless" padding (4/12, radius 12, Black/4% on hover), `text-secondary` parents (Figma: Black/40%, 2.85:1), a Black/100% current page and Black/10% "/" separators, 4px apart.',
       },
     },
   },

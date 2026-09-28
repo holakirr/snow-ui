@@ -568,7 +568,8 @@ const mergeClassNames = (
 /**
  * A calendar built on react-day-picker, styled like the Figma DatePicker:
  * the week starts on Monday, the selected day is Primary, today is
- * Secondary/Indigo and days outside the month are Black/40%.
+ * Secondary/Indigo and days outside the month are `text-secondary` (Figma:
+ * Black/40%, 2.85:1).
  *
  * The previous / next buttons sit in one navigation landmark labelled
  * "Month navigation"; translate it with `labels={{ labelNav: () => '…' }}`.
@@ -699,7 +700,7 @@ function Calendar({
               weekdaysClassName,
             ),
             weekday: twMerge(
-              'w-full text-12 font-normal text-black-40',
+              'w-full text-12 font-normal text-secondary',
               weekdayClassName,
             ),
             week: twMerge('grid grid-cols-7', weekClassName),
@@ -735,7 +736,7 @@ function Calendar({
               'not-aria-selected:[&>button]:bg-indigo not-aria-selected:[&>button]:text-static-black not-aria-selected:[&>button]:hover:bg-indigo/80',
               todayClassName,
             ),
-            outside: twMerge('day-outside text-black-40', outsideClassName),
+            outside: twMerge('day-outside text-secondary', outsideClassName),
             disabled: twMerge('text-black-20', disabledClassName),
             hidden: twMerge('invisible flex-1', hiddenClassName),
             footer: 'px-4 pb-4 text-12 text-black-80',

@@ -27,7 +27,8 @@ bun run build          # tsdown build of icons, then ui (+ publint and attw chec
 bun run test:dist      # checks of the built ui stylesheets (needs `bun run build`)
 bun run storybook      # shared Storybook (ui + icons) on :53741
 bun run build:storybook # static Storybook in ./storybook-static
-bun run test:storybook # every story rendered in headless Chromium (+ play functions, axe)
+bun run test:storybook # every story in headless Chromium, light and dark theme (+ play functions, axe)
+bun run test:coverage  # ui unit tests + Storybook tests with V8 coverage and thresholds
 bun run size           # bundle-size budgets (needs `bun run build`)
 bun run visual         # visual regression tests in Docker (`visual:update` writes baselines)
 ```
@@ -56,11 +57,12 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 | Generated tokens | `bun run tokens` | `build` | the files generated from `packages/ui/tokens` differ from the committed ones |
 | Lint and format ([Biome](https://biomejs.dev)) | `bun run lint` | `build` | a lint rule or the formatter reports a problem |
 | Types | `bun run typecheck` | `build` | `tsc` reports an error in a package or the root tooling |
-| Unit tests (Vitest, jsdom) | `bun run test` | `build` | a `*.test.ts(x)` test fails |
+| Unit tests (Vitest, jsdom) | `bun run test` | `build` (icons), `storybook-tests` (ui, with coverage) | a `*.test.ts(x)` test fails |
 | Package checks ([publint](https://publint.dev), [are-the-types-wrong](https://arethetypeswrong.github.io)) | `bun run build` | `build` | a package's `exports`/types would break for some consumers |
 | Built stylesheets | `bun run test:dist` | `build` | a Tailwind v4 project using `theme.css` doesn't get every component class, `index.css` has an unlayered rule, or `fonts.css` points at a missing file |
-| Storybook tests ([`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon)) | `bun run test:storybook` | `storybook-tests` | a story throws while rendering or its `play` function fails |
-| Accessibility ([axe](https://github.com/dequelabs/axe-core) via `@storybook/addon-a11y`) | `bun run test:storybook` / Storybook's a11y panel | `storybook-tests` | not yet: `a11y.test` is `'todo'` (violations are warnings) |
+| Storybook tests ([`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon)) | `bun run test:storybook` | `storybook-tests` | a story throws while rendering or its `play` function (interaction test) fails, in the light or the dark theme |
+| Accessibility ([axe](https://github.com/dequelabs/axe-core) via `@storybook/addon-a11y`) | `bun run test:storybook` / Storybook's a11y panel | `storybook-tests` | axe finds a violation in any story, in either theme, after its `play` function (`a11y.test: 'error'`) |
+| Coverage ([V8](https://vitest.dev/guide/coverage)) | `bun run test:coverage` | `storybook-tests` | coverage of `packages/ui/src` by the ui unit tests and the Storybook tests drops below the thresholds in `vitest.config.ts` |
 | Visual regression (Playwright, in Docker) | `bun run visual` | `visual` | a story's screenshot (light or dark theme) differs from its baseline; skipped until baselines are committed |
 | Bundle size ([size-limit](https://github.com/ai/size-limit)) | `bun run size` | `size` | an entry point grows past its budget in `.size-limit.json` |
 | Changesets | `bun changeset status` | `changeset` | never: warns when a package changed without a changeset |

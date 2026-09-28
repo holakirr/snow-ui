@@ -179,7 +179,7 @@ const Lists = () => (
           key={item.time}
           as="li"
           interactive
-          icon={avatar(item.initials, `${item.tint} text-static-white`)}
+          icon={avatar(item.initials, `${item.tint} text-static-black`)}
           title={item.title}
           description={item.time}
           className="relative"

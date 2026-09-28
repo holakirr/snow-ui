@@ -55,7 +55,8 @@ const adornmentClasses =
 
 type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
   /**
-   * The Figma "2 row" title: a 12/16 Black/40% label above the value.
+   * The Figma "2 row" title: a 12/16 label above the value, in
+   * `text-secondary` (Figma: Black/40%, 2.85:1).
    */
   title?: string
 

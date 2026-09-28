@@ -32,19 +32,29 @@ export const segmentedListVariants = cva('inline-flex items-center', {
  * The items of a segmented control: Figma Button instances. The selected item
  * (`data-state="active"` for tabs, `data-state="on"` for toggles) is a Gray
  * button (`solid`) or a white, shadowed one (`pill`); the others are
- * Borderless buttons at 40% opacity (100% on hover and keyboard focus).
+ * Borderless buttons. Figma dims them to 40% opacity (2.85:1); here their
+ * label and icon use `text-secondary` (5.74:1 light, 7.08:1 dark) and turn
+ * black on hover, keyboard focus and when selected.
+ *
+ * The colour is `var(--segment-fg)` and the states only change that
+ * property, so a `text-*` class passed as `className` sets the colour in
+ * every state (tailwind-merge drops `text-(--segment-fg)`); set
+ * `[--segment-fg:…]` instead to change the rest colour and keep the states.
+ * Disabled sets `color` itself and wins by specificity, whatever the element
+ * (a <button>, or a link with `asChild`).
+ *
  * Icons are sized unless they have a `size-*` class. Shared by
  * `TabsTrigger` and `Toggle`.
  */
 export const segmentedItemVariants = cva(
   [
-    'inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal text-black transition-all',
+    'inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal transition-all',
     'cursor-pointer focus-ring',
-    // Keyboard focus lifts the 40% opacity so the focus ring stays visible.
-    'opacity-40 hover:opacity-100 focus-visible:opacity-100 data-[state=active]:opacity-100 data-[state=on]:opacity-100',
-    // Disabled items stay visible: full opacity, Black/20% content and a
-    // 0.5px Black/10% outline so the item's shape shows even when it's off.
-    'disabled:cursor-not-allowed disabled:opacity-100 disabled:bg-black-4 disabled:text-black-20',
+    'text-(--segment-fg) [--segment-fg:var(--color-text-secondary)]',
+    'hover:[--segment-fg:var(--color-black)] focus-visible:[--segment-fg:var(--color-black)] data-[state=active]:[--segment-fg:var(--color-black)] data-[state=on]:[--segment-fg:var(--color-black)]',
+    // Disabled items stay visible: Black/20% content and a 0.5px Black/10%
+    // outline so the item's shape shows even when it's off.
+    'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
   ],
   {

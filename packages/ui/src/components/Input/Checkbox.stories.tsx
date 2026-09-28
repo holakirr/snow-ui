@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 import { Label } from '../Label'
 import { Checkbox } from './Checkbox'
 
@@ -7,7 +8,8 @@ const meta: Meta<typeof Checkbox> = {
   component: Checkbox,
   tags: ['autodocs', 'a11y'],
   argTypes: {},
-  args: {},
+  // A checkbox without a visible label needs an accessible name.
+  args: { 'aria-label': 'Accept the terms' },
   parameters: {
     docs: {
       description: {
@@ -27,9 +29,26 @@ export const Checked: Story = {
   args: { defaultChecked: true },
 }
 
-/** Figma "Multiple". */
+/** Figma "Multiple". A click checks it, then it toggles as usual. */
 export const Indeterminate: Story = {
-  args: { checked: 'indeterminate' },
+  args: { defaultChecked: 'indeterminate' },
+  play: async ({ canvas, userEvent, step }) => {
+    const checkbox = canvas.getByRole('checkbox', { name: 'Accept the terms' })
+    await expect(checkbox).toHaveAttribute('aria-checked', 'mixed')
+
+    await step('a click checks an indeterminate checkbox', async () => {
+      await userEvent.click(checkbox)
+      await expect(checkbox).toHaveAttribute('aria-checked', 'true')
+      await expect(checkbox).toBeChecked()
+    })
+
+    await step('then it toggles between unchecked and checked', async () => {
+      await userEvent.click(checkbox)
+      await expect(checkbox).toHaveAttribute('aria-checked', 'false')
+      await userEvent.keyboard(' ')
+      await expect(checkbox).toHaveAttribute('aria-checked', 'true')
+    })
+  },
 }
 
 export const Disabled: Story = {

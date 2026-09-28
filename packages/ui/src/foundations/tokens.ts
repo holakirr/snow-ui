@@ -81,8 +81,8 @@ export const colorGroups: ColorGroup[] = [
   ]),
   group(
     'Accessibility',
-    'Library additions, not in the Figma kit, for text that must meet WCAG contrast. Secondary/Indigo text is 2.07:1 on white, so indigo text uses a darker indigo in light mode.',
-    ['indigo-text'],
+    'Library additions, not in the Figma kit, for text that must meet WCAG contrast. Secondary/Indigo text is 2.07:1 on white, so indigo text uses a darker indigo in light mode; Black/40% text is 2.85:1, so secondary text uses text-secondary; Secondary/Red text is 3.36:1, so error text uses red-text.',
+    ['indigo-text', 'text-secondary', 'red-text'],
   ),
 ]
 

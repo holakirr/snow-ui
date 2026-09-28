@@ -229,14 +229,14 @@ describe('Calendar', () => {
     expect(today).not.toHaveClass('[&>button]:bg-primary')
   })
 
-  it('shows outside days in Black/40%', () => {
+  it('shows outside days in text-secondary (Figma Black/40% is 2.85:1)', () => {
     render(<Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />)
 
     const outside = screen
       .getAllByRole('gridcell')
       .find((cell) => cell.getAttribute('data-day') === '2024-12-30')
     expect(outside).toHaveAttribute('data-outside', 'true')
-    expect(outside).toHaveClass('text-black-40')
+    expect(outside).toHaveClass('text-secondary')
     expect(outside).not.toHaveClass('opacity-50')
   })
 
@@ -403,7 +403,7 @@ describe('Calendar', () => {
     // …and the other slots keep theirs.
     expect(
       screen.getAllByRole('columnheader', { hidden: true })[0],
-    ).toHaveClass('text-12', 'text-black-40')
+    ).toHaveClass('text-12', 'text-secondary')
     expect(
       screen.getByRole('button', { name: /next month/i }),
     ).toBeInTheDocument()

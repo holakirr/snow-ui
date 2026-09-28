@@ -93,6 +93,22 @@
    * dark mode keeps the Figma indigo (6.11:1 on #333). Link, active Tag.
    */
   --color-indigo-text: #5b5bd6;
+  /*
+   * Accessibility addition (not in the Figma kit): Black/40% text is 2.85:1 on
+   * white, so secondary text (descriptions, captions, table headers, inactive
+   * tabs; the text-secondary utility) is Black/60% in light mode (5.74:1 on
+   * background-1, at least 5.5:1 on background-2, the Black/4% hover and the
+   * Color 1/2 tints) and White/70% in dark mode (7.08:1 on #333, at least
+   * 4.76:1 on the lightest popover surface).
+   */
+  --color-text-secondary: rgb(0 0 0 / 0.6);
+  /*
+   * Accessibility addition (not in the Figma kit): Secondary/Red is 3.36:1 on
+   * white and 3.76:1 on #333, so error text (FormMessage, an invalid
+   * FormLabel) is #D42020 in light mode and #FF8080 in dark mode (5.21:1 on
+   * background-1 in both).
+   */
+  --color-red-text: #d42020;
 
   /* Deprecated colour names, kept as aliases of the tokens that replaced them. */
   /* @deprecated Use primary; removed in the next major. */
@@ -212,6 +228,8 @@
     --color-surface-2: rgb(0 0 0 / 0.03);
     --color-surface-3: rgb(0 0 0 / 0.02);
     --color-indigo-text: #5b5bd6;
+    --color-text-secondary: rgb(0 0 0 / 0.6);
+    --color-red-text: #d42020;
 
     /*
      * @deprecated Use the `--color-*` tokens; removed in the next major.
@@ -252,6 +270,8 @@
     --color-surface-2: rgb(0 0 0 / 0.1);
     --color-surface-3: rgb(255 255 255 / 0.04);
     --color-indigo-text: #adadfb;
+    --color-text-secondary: rgb(255 255 255 / 0.7);
+    --color-red-text: #ff8080;
 
     /*
      * @deprecated Use the `--color-*` tokens; removed in the next major.
@@ -293,6 +313,8 @@
       --color-surface-2: rgb(0 0 0 / 0.1);
       --color-surface-3: rgb(255 255 255 / 0.04);
       --color-indigo-text: #adadfb;
+      --color-text-secondary: rgb(255 255 255 / 0.7);
+      --color-red-text: #ff8080;
 
       /*
        * @deprecated Use the `--color-*` tokens; removed in the next major.

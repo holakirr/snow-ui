@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, waitFor, within } from 'storybook/test'
 
 import {
   Select,
@@ -29,9 +30,42 @@ export default meta
 type Story = StoryObj<typeof Select>
 
 export const Default: Story = {
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const trigger = canvas.getByRole('combobox', { name: 'Fruit' })
+    await expect(trigger).toHaveTextContent('Select a fruit')
+
+    await step('selects an option with the pointer', async () => {
+      await userEvent.click(trigger)
+      const listbox = await page.findByRole('listbox')
+      await expect(listbox).toBeVisible()
+      await userEvent.click(page.getByRole('option', { name: 'Banana' }))
+      await waitFor(() =>
+        expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
+      )
+      await expect(trigger).toHaveTextContent('Banana')
+      await expect(trigger).toHaveFocus()
+    })
+
+    await step('selects an option with the keyboard', async () => {
+      await userEvent.keyboard('{Enter}')
+      await waitFor(() =>
+        expect(page.getByRole('option', { name: 'Banana' })).toHaveFocus(),
+      )
+      await userEvent.keyboard('{ArrowDown}')
+      await expect(
+        page.getByRole('option', { name: 'Blueberry' }),
+      ).toHaveFocus()
+      await userEvent.keyboard('{Enter}')
+      await waitFor(() =>
+        expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
+      )
+      await expect(trigger).toHaveTextContent('Blueberry')
+    })
+  },
   render: () => (
     <Select>
-      <SelectTrigger className="w-[200px]">
+      <SelectTrigger className="w-[200px]" aria-label="Fruit">
         <SelectValue placeholder="Select a fruit" />
       </SelectTrigger>
       <SelectContent>
@@ -51,7 +85,7 @@ export const Default: Story = {
 export const Disabled: Story = {
   render: () => (
     <Select disabled>
-      <SelectTrigger className="w-[200px]">
+      <SelectTrigger className="w-[200px]" aria-label="Fruit">
         <SelectValue placeholder="Select a fruit" />
       </SelectTrigger>
       <SelectContent>
@@ -71,7 +105,7 @@ export const Disabled: Story = {
 export const WithDisabledOption: Story = {
   render: () => (
     <Select>
-      <SelectTrigger className="w-[200px]">
+      <SelectTrigger className="w-[200px]" aria-label="Fruit">
         <SelectValue placeholder="Select a fruit" />
       </SelectTrigger>
       <SelectContent>
@@ -94,7 +128,7 @@ export const WithDisabledOption: Story = {
 export const Scrollable: Story = {
   render: () => (
     <Select>
-      <SelectTrigger className="w-[280px]">
+      <SelectTrigger className="w-[280px]" aria-label="Timezone">
         <SelectValue placeholder="Select a timezone" />
       </SelectTrigger>
       <SelectContent>
@@ -157,11 +191,28 @@ export const Scrollable: Story = {
 
 /** The Figma select pattern: the Input field and the Popover menu, open. */
 export const Open: Story = {
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    a11y: {
+      config: {
+        rules: [
+          {
+            // False positive: while the listbox is open, Radix hides the rest
+            // of the page with aria-hidden and traps focus in the listbox
+            // (FocusScope), so the trigger inside the hidden page can't be
+            // focused. axe sees a focusable button under aria-hidden but not
+            // the focus trap. The closed Select passes this rule.
+            id: 'aria-hidden-focus',
+            enabled: false,
+          },
+        ],
+      },
+    },
+  },
   render: () => (
     <div className="h-80">
       <Select defaultOpen defaultValue="banana">
-        <SelectTrigger className="w-[240px]">
+        <SelectTrigger className="w-[240px]" aria-label="Fruit">
           <SelectValue placeholder="Select a fruit" />
         </SelectTrigger>
         <SelectContent>

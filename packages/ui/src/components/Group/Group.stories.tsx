@@ -94,7 +94,7 @@ const Variants = () => (
       { label: 'Gap 4', props: { gap: 4 as const } },
     ].map(({ label, props }) => (
       <div key={label} className="flex flex-col gap-2">
-        <Typography size={12} className="text-black-40">
+        <Typography size={12} className="text-secondary">
           {label}
         </Typography>
         <Group aria-label={label} className="w-80" {...props}>
@@ -108,7 +108,7 @@ const Variants = () => (
         { label: 'Column, reverse', props: { vertical: true, reverse: true } },
       ].map(({ label, props }) => (
         <div key={label} className="flex flex-col gap-2">
-          <Typography size={12} className="text-black-40">
+          <Typography size={12} className="text-secondary">
             {label}
           </Typography>
           <Group aria-label={label} {...props}>

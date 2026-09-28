@@ -30,7 +30,7 @@ export type BreadcrumbItemProps = ComponentProps<'li'>
 const BreadcrumbItem: FC<BreadcrumbItemProps> = ({ className, ...props }) => (
   <li
     className={twMerge(
-      'inline-flex items-center transition-colors text-black-40 last-of-type:text-black',
+      'inline-flex items-center transition-colors text-secondary last-of-type:text-black',
       className,
     )}
     {...props}

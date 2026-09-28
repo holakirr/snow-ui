@@ -8,7 +8,7 @@ const { Default, Interactive, TitleOnly, DashboardLists } =
   composeStories(stories)
 
 describe('ListItem', () => {
-  it('renders the icon, a 14px title and a 12px Black/40% description', async () => {
+  it('renders the icon, a 14px title and a 12px secondary description', async () => {
     await Default.run()
 
     const title = screen.getByText('You fixed a bug.')
@@ -16,7 +16,7 @@ describe('ListItem', () => {
     const row = title.closest('[class*="rounded-12"]') as HTMLElement
 
     expect(title).toHaveClass('text-14', 'text-black')
-    expect(description).toHaveClass('text-12', 'text-black-40')
+    expect(description).toHaveClass('text-12', 'text-secondary')
     // Two lines: the icon aligns to the top, as in Figma.
     expect(row).toHaveClass('items-start', 'flex', 'w-62')
     expect(row.firstElementChild).toHaveAttribute('data-size', '16')

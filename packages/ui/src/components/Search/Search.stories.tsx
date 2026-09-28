@@ -60,7 +60,7 @@ export const Controlled: Story = {
           value={value}
           onChange={(event) => setValue(event.target.value)}
         />
-        <Typography size={12} className="text-black-40">
+        <Typography size={12} className="text-secondary">
           Value: “{value}”
         </Typography>
       </div>
@@ -71,10 +71,10 @@ export const Controlled: Story = {
 const Variants = () => (
   <div className="grid grid-cols-[auto_repeat(2,10rem)] items-center gap-x-8 gap-y-4">
     <span />
-    <Typography size={12} className="text-black-40">
+    <Typography size={12} className="text-secondary">
       Gray
     </Typography>
-    <Typography size={12} className="text-black-40">
+    <Typography size={12} className="text-secondary">
       Outline
     </Typography>
     {[
@@ -83,7 +83,7 @@ const Variants = () => (
       { label: 'Disabled', props: { disabled: true } },
     ].map(({ label, props }) => (
       <div key={label} className="contents">
-        <Typography size={12} className="text-black-40">
+        <Typography size={12} className="text-secondary">
           {label}
         </Typography>
         {(['gray', 'outline'] as const).map((variant) => (
@@ -97,7 +97,7 @@ const Variants = () => (
         ))}
       </div>
     ))}
-    <Typography size={12} className="text-black-40">
+    <Typography size={12} className="text-secondary">
       Large
     </Typography>
     <div className="col-span-2">

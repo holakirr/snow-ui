@@ -50,8 +50,10 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
-      - name: Unit tests
-        run: bun run test
+      # The ui unit tests run with coverage in the storybook-tests job
+      # (`bun run test:coverage`), so only the icons tests run here.
+      - name: Unit tests (icons)
+        run: bun run --filter @holakirr/snow-ui-icons test
 
       # Builds icons first, then ui (ui's type declarations import icons' dist).
       # tsdown runs publint and are-the-types-wrong on both packages.
@@ -129,8 +131,10 @@ jobs:
           fi
 
   # Every story rendered in headless Chromium through Vitest browser mode
-  # (@storybook/addon-vitest): render errors and failing play functions fail
-  # the job; axe runs on every story and follows parameters.a11y.test.
+  # (@storybook/addon-vitest), in the light and the dark theme: render errors,
+  # failing play functions and axe violations fail the job. The same run
+  # collects coverage of the ui source (with the ui unit tests) and fails
+  # under the thresholds in vitest.config.ts.
   storybook-tests:
     runs-on: ubuntu-latest
 
@@ -172,8 +176,29 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: bunx playwright install-deps chromium
 
-      - name: Storybook tests
-        run: bun run test:storybook
+      - name: Storybook tests (light and dark) with coverage
+        run: bun run test:coverage
+
+      - name: Write coverage report
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            {
+              echo '### Coverage (ui unit tests + Storybook tests)'
+              echo '| Metric | Covered |'
+              echo '| --- | --- |'
+              jq -r '.total | to_entries[] | select(.key != "branchesTrue") | "| \(.key) | \(.value.pct)% (\(.value.covered)/\(.value.total)) |"' coverage/coverage-summary.json
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage
+          path: coverage
+          if-no-files-found: ignore
+          retention-days: 7
 
   # Screenshot comparison of every story (light + dark) against the committed
   # Linux baselines in visual/__screenshots__, in the same Playwright image

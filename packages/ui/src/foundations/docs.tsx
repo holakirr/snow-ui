@@ -42,7 +42,7 @@ const Page = ({
       <Typography as="h1" size={32} semibold>
         {title}
       </Typography>
-      <Typography as="p" className="max-w-3xl text-black-40">
+      <Typography as="p" className="max-w-3xl text-secondary">
         {intro}
       </Typography>
     </header>
@@ -65,7 +65,7 @@ const Section = ({
         {title}
       </Typography>
       {description && (
-        <Typography as="p" className="max-w-3xl text-black-40">
+        <Typography as="p" className="max-w-3xl text-secondary">
           {description}
         </Typography>
       )}
@@ -76,16 +76,27 @@ const Section = ({
 
 /** `head` is a list of `[label, width class]` pairs (fixed table layout). */
 const Table = ({
+  label,
   head,
   children,
 }: {
+  /** Names the scrollable region (and the table) for assistive technology. */
+  label: string
   head: [string, string][]
   children: ReactNode
 }) => (
-  <div className="overflow-x-auto">
+  // A horizontally scrollable region must be reachable with the keyboard
+  // (axe `scrollable-region-focusable`, WCAG 2.1.1).
+  <section
+    // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region needs focus so keyboard users can scroll it
+    tabIndex={0}
+    aria-label={label}
+    className="overflow-x-auto rounded-4 focus-ring"
+  >
     <table className="w-full min-w-3xl table-fixed border-collapse text-left text-14">
+      <caption className="sr-only">{label}</caption>
       <thead>
-        <tr className="border-b border-black-10 text-12 text-black-40">
+        <tr className="border-b border-black-10 text-12 text-secondary">
           {head.map(([label, width]) => (
             <th key={label} className={twMerge('py-2 pr-4 font-normal', width)}>
               {label}
@@ -95,7 +106,7 @@ const Table = ({
       </thead>
       <tbody>{children}</tbody>
     </table>
-  </div>
+  </section>
 )
 
 const Row = ({ children }: { children: ReactNode }) => (
@@ -144,7 +155,7 @@ export const ColorsPage = () => (
       <>
         Figma "Colors" variables, SnowUI-Light and SnowUI-Dark modes. Every
         token is a Tailwind colour (<Code>bg-black-10</Code>,{' '}
-        <Code>text-black-40</Code>, <Code>border-black-10</Code>) and a CSS
+        <Code>text-secondary</Code>, <Code>border-black-10</Code>) and a CSS
         variable (<Code>var(--color-black-10)</Code>). The preview column
         follows the theme toolbar; the Light and Dark columns always show both
         modes.
@@ -158,6 +169,7 @@ export const ColorsPage = () => (
         description={group.description}
       >
         <Table
+          label={`${group.title} colour tokens`}
           head={[
             ['Preview', 'w-18'],
             ['Token', 'w-[26%]'],
@@ -182,7 +194,7 @@ export const ColorsPage = () => (
                 <div className="flex flex-col gap-0.5">
                   <Code>{token.name}</Code>
                   {token.note && (
-                    <span className="text-12 text-black-40">{token.note}</span>
+                    <span className="text-12 text-secondary">{token.note}</span>
                   )}
                 </div>
               </Cell>
@@ -204,6 +216,7 @@ export const ColorsPage = () => (
       description="Still work as aliases of the tokens above; removed in the next major."
     >
       <Table
+        label="Deprecated colour names"
         head={[
           ['Old', 'w-[30%]'],
           ['Use instead', 'w-[30%]'],
@@ -247,6 +260,7 @@ export const TypographyPage = () => (
   >
     <Section title="Text styles">
       <Table
+        label="Text styles"
         head={[
           ['Style', 'w-32'],
           ['Regular', ''],
@@ -258,7 +272,7 @@ export const TypographyPage = () => (
             <Cell className="whitespace-nowrap">
               <div className="flex flex-col gap-0.5">
                 <Code>{utility}</Code>
-                <span className="text-12 text-black-40">
+                <span className="text-12 text-secondary">
                   {size} / {lineHeight}px
                 </span>
               </div>
@@ -297,13 +311,13 @@ export const TypographyPage = () => (
         </Code>
         <div className="flex items-center gap-6">
           <span className="text-48">1 3 4 6 9</span>
-          <span className="text-12 text-black-40">{fontFeatureSettings}</span>
+          <span className="text-12 text-secondary">{fontFeatureSettings}</span>
         </div>
         <div className="flex items-center gap-6">
           <span className="text-48" style={{ fontFeatureSettings: 'normal' }}>
             1 3 4 6 9
           </span>
-          <span className="text-12 text-black-40">normal</span>
+          <span className="text-12 text-secondary">normal</span>
         </div>
       </div>
     </Section>
@@ -332,7 +346,7 @@ export const RadiusPage = () => (
             )}
           />
           <Code>{utility}</Code>
-          <span className="text-12 text-black-40">{px}px</span>
+          <span className="text-12 text-secondary">{px}px</span>
         </div>
       ))}
     </div>
@@ -340,11 +354,14 @@ export const RadiusPage = () => (
 )
 
 const ScaleTable = ({
+  label,
   items,
 }: {
+  label: string
   items: { px: number; utility: string }[]
 }) => (
   <Table
+    label={label}
     head={[
       ['Figma', 'w-24'],
       ['Tailwind', 'w-48'],
@@ -374,10 +391,10 @@ export const SpacingPage = () => (
     intro="Figma's Spacing and Size variables (Standard density) are multiples of 4px, which is Tailwind's spacing unit, so they map to the regular spacing utilities; there are no extra tokens. The Expanded and Condensed density modes are not implemented."
   >
     <Section title="Spacing" description="Padding, margin and gap.">
-      <ScaleTable items={spacing} />
+      <ScaleTable label="Spacing scale" items={spacing} />
     </Section>
     <Section title="Size" description="Icons, avatars and controls.">
-      <ScaleTable items={sizes} />
+      <ScaleTable label="Size scale" items={sizes} />
     </Section>
   </Page>
 )
@@ -420,7 +437,7 @@ export const EffectsPage = () => (
               )}
             />
             <Code>{utility}</Code>
-            <span className="text-12 text-black-40">
+            <span className="text-12 text-secondary">
               {figma}
               {note && ` · ${note}`}
             </span>

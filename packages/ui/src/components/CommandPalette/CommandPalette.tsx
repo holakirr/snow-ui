@@ -53,7 +53,7 @@ export type CommandPaletteItem = {
  */
 export type CommandPaletteGroup = {
   id: string
-  /** The section title (14 Regular, Black/40%). */
+  /** The section title (14 Regular, `text-secondary`; Figma: Black/40%). */
   heading?: ReactNode
   items: CommandPaletteItem[]
 }
@@ -380,7 +380,7 @@ const CommandPaletteList: FC<ListProps> = ({
                   id={headingId}
                   role="presentation"
                   size={14}
-                  className="px-2 py-1 text-black-40"
+                  className="px-2 py-1 text-secondary"
                 >
                   {group.heading}
                 </Typography>
@@ -417,7 +417,7 @@ const CommandPaletteList: FC<ListProps> = ({
                       <Typography
                         size={14}
                         aria-hidden
-                        className="shrink-0 text-black-20"
+                        className="shrink-0 text-secondary"
                       >
                         ↩
                       </Typography>
@@ -431,7 +431,11 @@ const CommandPaletteList: FC<ListProps> = ({
       </div>
       <div role="status" aria-live="polite" className="empty:hidden">
         {isEmpty && (
-          <Typography as="p" size={14} className="px-2 pt-4 pb-2 text-black-40">
+          <Typography
+            as="p"
+            size={14}
+            className="px-2 pt-4 pb-2 text-secondary"
+          >
             {emptyMessage}
           </Typography>
         )}

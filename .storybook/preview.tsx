@@ -8,13 +8,13 @@ import './index.css'
 
 const preview: Preview = {
   parameters: {
-    // Storybook tests (`bun run test:storybook`) run axe on every story.
-    // 'todo' reports violations as warnings in the Storybook UI without
-    // failing the run; switch to 'error' once the existing violations are
-    // fixed (a story or component can opt in earlier with its own
-    // `parameters.a11y.test = 'error'`).
+    // Storybook tests (`bun run test:storybook`) run axe on every story, in
+    // the light and the dark theme, after its `play` function: any violation
+    // fails the test. Turn off a rule only for one story, with the reason in
+    // a comment (`parameters.a11y.config.rules`), when it is a false positive
+    // or a documented design exception; see CONTRIBUTING.md.
     a11y: {
-      test: 'todo',
+      test: 'error',
     },
     backgrounds: {
       disabled: true,

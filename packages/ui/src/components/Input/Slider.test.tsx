@@ -34,6 +34,35 @@ describe('Slider', () => {
     expect(screen.getAllByRole('slider')).toHaveLength(3)
   })
 
+  it('names the thumb with aria-label, not the role-less root', () => {
+    const { container } = render(<Slider aria-label="Volume" />)
+
+    expect(screen.getByRole('slider', { name: 'Volume' })).toBeInTheDocument()
+    expect(container.firstElementChild).not.toHaveAttribute('aria-label')
+  })
+
+  it('names each thumb of a range', () => {
+    render(<Slider aria-label="Price" defaultValue={[20, 80]} />)
+
+    expect(
+      screen.getByRole('slider', { name: 'Price, minimum' }),
+    ).toHaveAttribute('aria-valuenow', '20')
+    expect(
+      screen.getByRole('slider', { name: 'Price, maximum' }),
+    ).toHaveAttribute('aria-valuenow', '80')
+  })
+
+  it('passes aria-labelledby to the thumbs', () => {
+    render(
+      <>
+        <span id="volume-label">Volume</span>
+        <Slider aria-labelledby="volume-label" />
+      </>,
+    )
+
+    expect(screen.getByRole('slider', { name: 'Volume' })).toBeInTheDocument()
+  })
+
   it('shows grab cursors on the thumb and a pointer on the track', () => {
     const { container } = render(<Slider defaultValue={[50]} />)
 

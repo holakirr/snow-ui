@@ -97,7 +97,7 @@ const FormLabel: FC<LabelProps> = ({ className, ...props }) => {
 
   return (
     <Label
-      className={twMerge(invalid && 'text-red', className)}
+      className={twMerge(invalid && 'text-red-text', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -137,7 +137,7 @@ const FormDescription: FC<FormDescriptionProps> = ({ className, ...props }) => {
     <Typography
       as="p"
       id={formDescriptionId}
-      className={twMerge('text-12 text-black-40', className)}
+      className={twMerge('text-12 text-secondary', className)}
       {...props}
     />
   )
@@ -163,7 +163,7 @@ const FormMessage: FC<FormMessageProps> = ({
     <Typography
       as="p"
       id={formMessageId}
-      className={twMerge('text-12 text-red', className)}
+      className={twMerge('text-12 text-red-text', className)}
       {...props}
     >
       {body}

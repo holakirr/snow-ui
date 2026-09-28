@@ -108,7 +108,7 @@ const Header = () => (
         <SidebarMenuButton>
           <picture>
             <Avatar size="sm" className="group-data-[collapsible=icon]:size-4">
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src="https://github.com/shadcn.png" alt="" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </picture>
@@ -245,8 +245,9 @@ export const Dashboard: Story = {
             </SidebarMenuItem>
           </SidebarMenu>
           <div className="flex gap-2 text-12">
-            <span className="px-3 py-1 text-black-40">Favorites</span>
-            <span className="px-3 py-1 text-black-20">Recently</span>
+            {/* Figma: Black/40% and Black/20% (2.85:1, 1.6:1); text-black-80 and text-secondary here. */}
+            <span className="px-3 py-1 text-black-80">Favorites</span>
+            <span className="px-3 py-1 text-secondary">Recently</span>
           </div>
           <SidebarMenu>
             {['Overview', 'Projects'].map((title) => (

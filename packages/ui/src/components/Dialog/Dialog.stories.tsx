@@ -99,7 +99,7 @@ export const AddData: Story = {
           </DialogBody>
         </DialogContent>
       </Dialog>
-      <Typography className="p-6 text-black-40">
+      <Typography className="p-6 text-secondary">
         Page content under the mask
       </Typography>
     </div>

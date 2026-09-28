@@ -108,13 +108,15 @@ const orders: Order[] = [
   },
 ]
 
-// Figma status colours: a dot plus text in the Secondary colour.
+// Figma status colours: a dot plus text in the Secondary colour. The
+// Secondary colours are 1.7–2.4:1 on white, so only the dot is coloured and
+// the text stays black (WCAG 1.4.3); the label carries the meaning (1.4.1).
 const STATUS_COLORS: Record<Order['status'], string> = {
-  'In Progress': 'text-purple',
-  Complete: 'text-green',
-  Pending: 'text-blue',
-  Approved: 'text-orange',
-  Rejected: 'text-black-40',
+  'In Progress': 'bg-purple',
+  Complete: 'bg-green',
+  Pending: 'bg-blue',
+  Approved: 'bg-orange',
+  Rejected: 'bg-black-40',
 }
 
 const initials = (name: string) =>
@@ -184,10 +186,11 @@ const columns: ColumnDef<typeof features, Order>[] = [
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => (
-      <span
-        className={`flex items-center gap-1 ${STATUS_COLORS[row.original.status]}`}
-      >
-        <span aria-hidden className="size-1.5 rounded-full bg-current" />
+      <span className="flex items-center gap-1">
+        <span
+          aria-hidden
+          className={`size-1.5 rounded-full ${STATUS_COLORS[row.original.status]}`}
+        />
         {row.original.status}
       </span>
     ),
@@ -363,7 +366,7 @@ export const Filtered: Story = {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-black-40"
+                  className="h-24 text-center text-secondary"
                 >
                   No results.
                 </TableCell>

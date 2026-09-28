@@ -88,7 +88,7 @@ export const States: Story = {
     <div className="grid grid-cols-4 gap-4">
       {states.map(({ label, props, ...rest }) => (
         <div key={label} className="flex flex-col gap-2">
-          <Typography size={12} className="text-black-40">
+          <Typography size={12} className="text-secondary">
             {label}
           </Typography>
           <Card {...props} className="relative w-[180px] flex flex-col gap-1">
@@ -131,7 +131,7 @@ export const Selectable: Story = {
             className="relative w-[160px] flex flex-col gap-1"
           >
             <Typography semibold>{plan}</Typography>
-            <Typography size={12} className="text-black-40">
+            <Typography size={12} className="text-secondary">
               Plan
             </Typography>
             {value === plan && <Marker checked />}
@@ -152,7 +152,7 @@ export const Block: Story = {
         {['Google', 'YouTube', 'Instagram', 'Pinterest'].map((site) => (
           <div key={site} className="flex justify-between">
             <Typography size={12}>{site}</Typography>
-            <Typography size={12} className="text-black-40">
+            <Typography size={12} className="text-secondary">
               12.5K
             </Typography>
           </div>

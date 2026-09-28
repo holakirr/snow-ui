@@ -184,13 +184,13 @@ export const Matrix: Story = {
     >
       <span />
       {Object.values(SIZES).map((size) => (
-        <Typography key={size} size={12} className="text-black-40">
+        <Typography key={size} size={12} className="text-secondary">
           {size}
         </Typography>
       ))}
       {Object.values(BUTTON_VARIANTS).map((variant) => (
         <Fragment key={variant}>
-          <Typography size={12} className="text-black-40">
+          <Typography size={12} className="text-secondary">
             {variant}
           </Typography>
           {Object.values(SIZES).map((size) => (

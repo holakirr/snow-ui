@@ -24,7 +24,8 @@ const SearchButton = ({
   <button
     type="button"
     className={searchStyles({
-      className: 'w-40 cursor-pointer text-black-20',
+      // Figma: Black/20% (1.6:1); the label is text, so text-secondary.
+      className: 'w-40 cursor-pointer text-secondary',
     })}
     {...props}
   >
@@ -33,7 +34,7 @@ const SearchButton = ({
     <KBD
       keys={[shortcut]}
       aria-hidden
-      className="inline-flex h-4 items-center rounded-[6px] border-[0.5px] border-black-10 px-1 text-12 text-black-20"
+      className="inline-flex h-4 items-center rounded-[6px] border-[0.5px] border-black-10 px-1 text-12 text-secondary"
     />
   </button>
 )
@@ -93,12 +94,12 @@ const groups: CommandPaletteGroup[] = [
       {
         id: 'emma',
         label: 'Emma Smith',
-        icon: avatar('ES', 'bg-purple text-static-white'),
+        icon: avatar('ES', 'bg-purple text-static-black'),
       },
       {
         id: 'melody',
         label: 'Melody Macy',
-        icon: avatar('MM', 'bg-orange text-static-white'),
+        icon: avatar('MM', 'bg-orange text-static-black'),
       },
     ],
   },
@@ -198,7 +199,7 @@ export const AsyncResults: Story = {
           onQueryChange={setQuery}
           onSelect={(item) => setSelected(item.label)}
         />
-        <Typography size={12} className="text-black-40">
+        <Typography size={12} className="text-secondary">
           Selected: {selected ?? 'nothing'}
         </Typography>
       </div>

@@ -30,6 +30,21 @@ const meta: Meta<typeof Tabs> = {
 export default meta
 type Story = StoryObj<typeof Tabs>
 
+/**
+ * A panel per tab: each tab's `aria-controls` points at its panel, so a tab
+ * list without panels is invalid ARIA (a view switcher without panels is a
+ * `ToggleGroup`).
+ */
+const Panels = ({ values }: { values: string[] }) => (
+  <>
+    {values.map((value) => (
+      <TabsContent key={value} value={value} className="text-12 text-secondary">
+        {value[0].toUpperCase() + value.slice(1)} panel
+      </TabsContent>
+    ))}
+  </>
+)
+
 export const Default: Story = {
   render: () => (
     <Tabs defaultValue="account" className="w-[400px]">
@@ -56,6 +71,7 @@ export const Pill: Story = {
         <TabsTrigger value="week">Week</TabsTrigger>
         <TabsTrigger value="month">Month</TabsTrigger>
       </TabsList>
+      <Panels values={['day', 'week', 'month']} />
     </Tabs>
   ),
 }
@@ -74,6 +90,7 @@ export const IconToggle: Story = {
           Starred
         </TabsTrigger>
       </TabsList>
+      <Panels values={['text', 'notes', 'star']} />
     </Tabs>
   ),
 }
@@ -88,6 +105,7 @@ export const Solid: Story = {
           Month
         </TabsTrigger>
       </TabsList>
+      <Panels values={['day', 'week', 'month']} />
     </Tabs>
   ),
 }
@@ -100,6 +118,7 @@ export const IconOnly: Story = {
         <TabsTrigger value="notes" icon={<CopyIcon />} aria-label="Notes" />
         <TabsTrigger value="star" icon={<StarIcon />} aria-label="Starred" />
       </TabsList>
+      <Panels values={['text', 'notes', 'star']} />
     </Tabs>
   ),
 }
@@ -113,13 +132,13 @@ export const Matrix: Story = {
     <div className="grid grid-cols-[auto_repeat(3,auto)] items-center gap-x-10 gap-y-6">
       <span />
       {Object.values(SIZES).map((size) => (
-        <Typography key={size} size={12} className="text-black-40">
+        <Typography key={size} size={12} className="text-secondary">
           {size}
         </Typography>
       ))}
       {variants.map((variant) => (
         <Fragment key={variant}>
-          <Typography size={12} className="text-black-40">
+          <Typography size={12} className="text-secondary">
             {variant}
           </Typography>
           {Object.values(SIZES).map((size) => (
@@ -145,6 +164,7 @@ export const Matrix: Story = {
                   Starred
                 </TabsTrigger>
               </TabsList>
+              <Panels values={['one', 'two', 'three']} />
             </Tabs>
           ))}
         </Fragment>

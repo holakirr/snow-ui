@@ -45,9 +45,9 @@ const DateDisplay = ({ date }: { date?: Date }) => {
     <output aria-label="Selected date" className="flex items-center text-14">
       {parts.map((part, index) => (
         <span key={part + String(index)} className="flex items-center">
-          {index > 0 && <span className="text-black-20">/</span>}
+          {index > 0 && <span className="text-secondary">/</span>}
           <span
-            className={`rounded-4 px-1 py-0.5 ${date ? '' : 'text-black-40'}`}
+            className={`rounded-4 px-1 py-0.5 ${date ? '' : 'text-secondary'}`}
           >
             {part}
           </span>

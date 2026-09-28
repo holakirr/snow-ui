@@ -80,7 +80,7 @@ export const Matrix: Story = {
     <div className="grid grid-cols-[auto_repeat(6,auto)] items-center gap-x-6 gap-y-4">
       {states.map((state) => (
         <Fragment key={state}>
-          <Typography size={12} className="text-black-40">
+          <Typography size={12} className="text-secondary">
             {state}
           </Typography>
           <Tag label="Tag" state={state} dot onClose={() => {}} />

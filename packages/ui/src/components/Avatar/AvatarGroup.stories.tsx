@@ -26,15 +26,24 @@ export const Default: Story = {
   args: {
     children: [
       <Avatar key="1">
-        <AvatarImage src="https://avatar.iran.liara.run/public/18" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/18"
+          alt="User 18"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="2">
-        <AvatarImage src="https://avatar.iran.liara.run/public/50" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/50"
+          alt="User 50"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="3">
-        <AvatarImage src="https://avatar.iran.liara.run/public/70" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/70"
+          alt="User 70"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
     ],
@@ -46,15 +55,24 @@ export const WithMoreItems: Story = {
     items: 2,
     children: [
       <Avatar key="1">
-        <AvatarImage src="https://avatar.iran.liara.run/public/18" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/18"
+          alt="User 18"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="2">
-        <AvatarImage src="https://avatar.iran.liara.run/public/50" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/50"
+          alt="User 50"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="3">
-        <AvatarImage src="https://avatar.iran.liara.run/public/70" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/70"
+          alt="User 70"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
     ],
@@ -66,19 +84,31 @@ export const WithSmallAvatars: Story = {
     items: 3,
     children: [
       <Avatar key="1" size="sm">
-        <AvatarImage src="https://avatar.iran.liara.run/public/18" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/18"
+          alt="User 18"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="2" size="sm">
-        <AvatarImage src="https://avatar.iran.liara.run/public/50" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/50"
+          alt="User 50"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="3" size="sm">
-        <AvatarImage src="https://avatar.iran.liara.run/public/70" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/70"
+          alt="User 70"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="3" size="sm">
-        <AvatarImage src="https://avatar.iran.liara.run/public/90" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/90"
+          alt="User 90"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
     ],
@@ -90,19 +120,31 @@ export const WithMediumAvatars: Story = {
     items: 2,
     children: [
       <Avatar key="1" size="md">
-        <AvatarImage src="https://avatar.iran.liara.run/public/18" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/18"
+          alt="User 18"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="2" size="md">
-        <AvatarImage src="https://avatar.iran.liara.run/public/50" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/50"
+          alt="User 50"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="3" size="md">
-        <AvatarImage src="https://avatar.iran.liara.run/public/70" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/70"
+          alt="User 70"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
       <Avatar key="3" size="md">
-        <AvatarImage src="https://avatar.iran.liara.run/public/90" />
+        <AvatarImage
+          src="https://avatar.iran.liara.run/public/90"
+          alt="User 90"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>,
     ],

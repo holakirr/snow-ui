@@ -7,7 +7,8 @@ const meta: Meta<typeof Checkbox> = {
   component: Checkbox,
   tags: ['autodocs', 'a11y'],
   argTypes: {},
-  args: {},
+  // A checkbox without a visible label needs an accessible name.
+  args: { 'aria-label': 'Accept the terms' },
   parameters: {
     docs: {
       description: {

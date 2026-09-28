@@ -18,7 +18,10 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <AvatarImage src="https://avatars.githubusercontent.com/u/19807798?v=4" />
+        <AvatarImage
+          src="https://avatars.githubusercontent.com/u/19807798?v=4"
+          alt="holakirr"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </>
     ),
@@ -29,15 +32,24 @@ export const Sizes: Story = {
   render: () => (
     <div className="flex items-center space-x-4">
       <Avatar size="sm">
-        <AvatarImage src="https://avatars.githubusercontent.com/u/19807798?v=4" />
+        <AvatarImage
+          src="https://avatars.githubusercontent.com/u/19807798?v=4"
+          alt="holakirr"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>
       <Avatar size="md">
-        <AvatarImage src="https://avatars.githubusercontent.com/u/19807798?v=4" />
+        <AvatarImage
+          src="https://avatars.githubusercontent.com/u/19807798?v=4"
+          alt="holakirr"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>
       <Avatar size="lg">
-        <AvatarImage src="https://avatars.githubusercontent.com/u/19807798?v=4" />
+        <AvatarImage
+          src="https://avatars.githubusercontent.com/u/19807798?v=4"
+          alt="holakirr"
+        />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>
     </div>

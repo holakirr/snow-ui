@@ -18,6 +18,11 @@ const preview: Preview = {
       },
     },
     layout: 'centered',
+    options: {
+      storySort: {
+        order: ['Foundations', 'Components', 'Icons'],
+      },
+    },
   },
 
   decorators: [
@@ -29,11 +34,15 @@ const preview: Preview = {
       attributeName: 'data-theme',
       defaultTheme: 'light',
     }),
-    (Story) => (
-      <StoryWrapper>
+    (Story, { parameters }) =>
+      // `storyWrapper: false` opts a story out of the dashed component frame.
+      parameters.storyWrapper === false ? (
         <Story />
-      </StoryWrapper>
-    ),
+      ) : (
+        <StoryWrapper>
+          <Story />
+        </StoryWrapper>
+      ),
   ],
 
   tags: ['autodocs'],

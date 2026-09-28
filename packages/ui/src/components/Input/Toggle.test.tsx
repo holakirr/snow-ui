@@ -108,4 +108,25 @@ describe('ToggleGroup', () => {
     expect(toggle).toHaveFocus()
     expect(toggle).toHaveClass('focus-ring', 'focus-visible:opacity-100')
   })
+
+  it('keeps a disabled toggle visible and non-interactive', () => {
+    render(
+      <Toggle aria-label="bold" disabled>
+        B
+      </Toggle>,
+    )
+
+    const toggle = screen.getByRole('button', { name: 'bold' })
+
+    expect(toggle).toBeDisabled()
+    // Full opacity with Black/20% content and a Black/10% outline, instead of
+    // 20% opacity on top of the 40% "off" opacity.
+    expect(toggle).toHaveClass(
+      'disabled:opacity-100',
+      'disabled:text-black-20',
+      'disabled:inset-ring-black-10',
+      'disabled:cursor-not-allowed',
+    )
+    expect(toggle).not.toHaveClass('disabled:opacity-20')
+  })
 })

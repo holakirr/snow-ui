@@ -56,4 +56,19 @@ describe('Checkbox', () => {
     expect(checkbox).toHaveClass('text-white', 'focus-ring')
     expect(checkbox).not.toHaveClass('text-static-white')
   })
+
+  it('keeps disabled checkboxes visible', () => {
+    render(<Checkbox aria-label="agree" disabled defaultChecked />)
+
+    const checkbox = screen.getByRole('checkbox')
+
+    expect(checkbox).toBeDisabled()
+    expect(checkbox).toHaveClass(
+      'disabled:bg-black-4',
+      'disabled:inset-ring-black-10',
+      'data-[state=checked]:disabled:bg-black-10',
+      'disabled:cursor-not-allowed',
+    )
+    expect(checkbox).not.toHaveClass('disabled:opacity-40')
+  })
 })

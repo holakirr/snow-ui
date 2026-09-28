@@ -25,15 +25,18 @@ type RadioGroupItemProps = ComponentProps<typeof RadioGroupPrimitive.Item>
 const RadioGroupItem: FC<RadioGroupItemProps> = ({ className, ...props }) => (
   <RadioGroupPrimitive.Item
     className={twMerge(
-      'group aspect-square size-7 shrink-0 cursor-pointer rounded-full bg-background-3 text-black inset-ring-2 inset-ring-black-20 transition-all',
+      'peer group aspect-square size-7 shrink-0 cursor-pointer rounded-full bg-background-3 text-black inset-ring-2 inset-ring-black-20 transition-all',
       'enabled:hover:bg-black/8 enabled:hover:inset-ring-black-40',
-      'focus-ring disabled:cursor-not-allowed disabled:opacity-40',
+      'focus-ring',
+      // Disabled (no Figma state): a Black/4% circle with a Black/10% ring
+      // and a Black/20% dot. Visible in both modes.
+      'disabled:cursor-not-allowed disabled:bg-black-4 disabled:inset-ring-black-10',
       className,
     )}
     {...props}
   >
     <RadioGroupPrimitive.Indicator className="flex size-full items-center justify-center">
-      <span className="size-3.5 rounded-full bg-primary inset-shadow-inner transition-colors group-enabled:group-hover:bg-primary-hover-strong" />
+      <span className="size-3.5 rounded-full bg-primary inset-shadow-inner transition-colors group-enabled:group-hover:bg-primary-hover-strong group-disabled:bg-black-20 group-disabled:inset-shadow-none" />
     </RadioGroupPrimitive.Indicator>
   </RadioGroupPrimitive.Item>
 )

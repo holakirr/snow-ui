@@ -78,3 +78,10 @@ export const Pressed: Story = {
     defaultPressed: true,
   },
 }
+
+export const DisabledPressed: Story = {
+  args: {
+    disabled: true,
+    defaultPressed: true,
+  },
+}

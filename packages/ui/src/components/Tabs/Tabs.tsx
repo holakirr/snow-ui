@@ -83,7 +83,7 @@ const lineTriggerVariants = cva(
     'cursor-pointer rounded-4 focus-ring',
     // Keyboard focus lifts the 40% opacity so the focus ring stays visible.
     'opacity-40 hover:opacity-100 focus-visible:opacity-100 data-[state=active]:text-primary data-[state=active]:opacity-100',
-    'disabled:cursor-not-allowed disabled:opacity-20 [&_svg]:shrink-0',
+    'disabled:cursor-not-allowed disabled:opacity-100 disabled:text-black-20 [&_svg]:shrink-0',
   ],
   {
     variants: {

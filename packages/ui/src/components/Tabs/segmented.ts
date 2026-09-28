@@ -42,7 +42,9 @@ export const segmentedItemVariants = cva(
     'cursor-pointer focus-ring',
     // Keyboard focus lifts the 40% opacity so the focus ring stays visible.
     'opacity-40 hover:opacity-100 focus-visible:opacity-100 data-[state=active]:opacity-100 data-[state=on]:opacity-100',
-    'disabled:cursor-not-allowed disabled:opacity-20',
+    // Disabled items stay visible: full opacity, Black/20% content and a
+    // 0.5px Black/10% outline so the item's shape shows even when it's off.
+    'disabled:cursor-not-allowed disabled:opacity-100 disabled:text-black-20 disabled:inset-ring-[0.5px] disabled:inset-ring-black-10',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
   ],
   {

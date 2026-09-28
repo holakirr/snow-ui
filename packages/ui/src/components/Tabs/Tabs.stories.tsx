@@ -84,7 +84,9 @@ export const Solid: Story = {
       <TabsList variant="solid">
         <TabsTrigger value="day">Day</TabsTrigger>
         <TabsTrigger value="week">Week</TabsTrigger>
-        <TabsTrigger value="month">Month</TabsTrigger>
+        <TabsTrigger value="month" disabled>
+          Month
+        </TabsTrigger>
       </TabsList>
     </Tabs>
   ),

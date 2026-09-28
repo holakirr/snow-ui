@@ -24,7 +24,11 @@ const Checkbox: FC<CheckboxProps> = ({ className, ...props }) => (
       'enabled:hover:bg-black/8 enabled:hover:inset-ring-black-40',
       'data-[state=checked]:bg-primary data-[state=checked]:inset-ring-0 data-[state=checked]:inset-shadow-inner data-[state=checked]:enabled:hover:bg-primary-hover-strong',
       'data-[state=indeterminate]:bg-primary data-[state=indeterminate]:inset-ring-0 data-[state=indeterminate]:inset-shadow-inner data-[state=indeterminate]:enabled:hover:bg-primary-hover-strong',
-      'focus-ring disabled:cursor-not-allowed disabled:opacity-40',
+      'focus-ring',
+      // Disabled (no Figma state): a Black/4% box with a Black/10% ring; when
+      // checked, a Black/10% fill with a Black/40% mark. Visible in both modes.
+      'disabled:cursor-not-allowed disabled:bg-black-4 disabled:inset-ring-black-10 disabled:text-black-40',
+      'data-[state=checked]:disabled:bg-black-10 data-[state=checked]:disabled:inset-shadow-none data-[state=indeterminate]:disabled:bg-black-10 data-[state=indeterminate]:disabled:inset-shadow-none',
       className,
     )}
     {...props}

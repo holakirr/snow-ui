@@ -15,7 +15,10 @@ const Switch: FC<SwitchPrimitives.SwitchProps> = ({ className, ...props }) => (
       'peer group inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-80 p-0.5 inset-shadow-inner transition-colors',
       'data-[state=unchecked]:bg-black-20 data-[state=checked]:bg-primary',
       'enabled:hover:data-[state=unchecked]:bg-black-40 enabled:hover:data-[state=checked]:bg-primary-hover-strong',
-      'focus-ring disabled:cursor-not-allowed disabled:opacity-40',
+      'focus-ring',
+      // Disabled (no Figma state): a Black/10% track (Black/20% when on) with
+      // the white thumb, so it stays visible in both modes.
+      'disabled:cursor-not-allowed disabled:data-[state=unchecked]:bg-black-10 disabled:data-[state=checked]:bg-black-20 disabled:inset-shadow-none',
       className,
     )}
     {...props}

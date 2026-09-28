@@ -6,6 +6,14 @@ import './index.css'
 
 const preview: Preview = {
   parameters: {
+    // Storybook tests (`bun run test:storybook`) run axe on every story.
+    // 'todo' reports violations as warnings in the Storybook UI without
+    // failing the run; switch to 'error' once the existing violations are
+    // fixed (a story or component can opt in earlier with its own
+    // `parameters.a11y.test = 'error'`).
+    a11y: {
+      test: 'todo',
+    },
     backgrounds: {
       disabled: true,
     },

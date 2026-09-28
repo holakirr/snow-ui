@@ -4,5 +4,5 @@
     "types": ["node", "vite/client"]
   },
   // Root-level tooling only; each package has its own tsconfig.
-  "include": [".storybook/*.ts", ".storybook/*.tsx"]
+  "include": [".storybook/*.ts", ".storybook/*.tsx", "vitest.config.ts"]
 }

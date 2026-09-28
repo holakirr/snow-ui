@@ -27,8 +27,6 @@ dist-ssr
 playwright-report
 coverage
 test-results
-vite.config.js
 .tmp
 storybook-static
-vite.config.d.ts
 *storybook.log

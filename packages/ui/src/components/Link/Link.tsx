@@ -17,4 +17,5 @@ const Link = ({ className, ...props }: React.ComponentProps<'a'>) => (
 )
 
 Link.displayName = 'Link'
+
 export { Link }

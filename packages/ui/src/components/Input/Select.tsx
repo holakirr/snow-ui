@@ -5,7 +5,7 @@ import {
   ArrowLineUpDownIcon,
   ArrowLineUpIcon,
 } from '@holakirr/snow-ui-icons'
-import { Check } from '@phosphor-icons/react'
+import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import type { FC } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -159,19 +159,19 @@ SelectSeparator.displayName = SelectPrimitive.Separator.displayName
 export {
   Select,
   SelectContent,
+  type SelectContentProps,
   SelectGroup,
   SelectItem,
-  SelectLabel,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-  type SelectContentProps,
   type SelectItemProps,
+  SelectLabel,
   type SelectLabelProps,
+  SelectScrollDownButton,
   type SelectScrollDownButtonProps,
+  SelectScrollUpButton,
   type SelectScrollUpButtonProps,
+  SelectSeparator,
   type SelectSeparatorProps,
+  SelectTrigger,
   type SelectTriggerProps,
+  SelectValue,
 }

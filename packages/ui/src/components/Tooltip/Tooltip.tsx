@@ -33,7 +33,7 @@ TooltipContent.displayName = TooltipPrimitive.Content.displayName
 export {
   Tooltip,
   TooltipContent,
+  type TooltipContentProps,
   TooltipProvider,
   TooltipTrigger,
-  type TooltipContentProps,
 }

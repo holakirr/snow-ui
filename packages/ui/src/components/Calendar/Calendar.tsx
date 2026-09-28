@@ -40,6 +40,11 @@ export type CalendarProps = DayPickerProps & {
   weekdaysClassName?: string
   weekdayClassName?: string
   monthClassName?: string
+  /**
+   * @deprecated Use `monthCaptionClassName`. react-day-picker has no separate
+   * `caption` slot (v9 ignored it, v10 removed it), so this is merged into the
+   * month caption.
+   */
   captionClassName?: string
   captionLabelClassName?: string
   buttonNextClassName?: string
@@ -361,6 +366,7 @@ function Calendar({
   const _monthsClassName = twMerge('relative flex', props.monthsClassName)
   const _monthCaptionClassName = twMerge(
     'relative flex items-center justify-center',
+    props.captionClassName,
     props.monthCaptionClassName,
   )
   const _weekdaysClassName = twMerge(
@@ -372,10 +378,6 @@ function Calendar({
     props.weekdayClassName,
   )
   const _monthClassName = twMerge('w-full', props.monthClassName)
-  const _captionClassName = twMerge(
-    'relative flex items-center justify-center pt-1',
-    props.captionClassName,
-  )
   const _captionLabelClassName = twMerge(
     'truncate text-sm font-medium flex items-center justify-center hover:bg-black/10',
     props.captionLabelClassName,
@@ -468,7 +470,6 @@ function Calendar({
           weekdays: _weekdaysClassName,
           weekday: _weekdayClassName,
           month: _monthClassName,
-          caption: _captionClassName,
           caption_label: _captionLabelClassName,
           button_next: _buttonNextClassName,
           button_previous: _buttonPreviousClassName,

@@ -2,17 +2,19 @@ import { ArrowLineUpDownIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   type ColumnDef,
-  type ColumnFiltersState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  type SortingState,
-  useReactTable,
-  type VisibilityState,
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  filterFns,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  sortFns,
+  tableFeatures,
+  useTable,
 } from '@tanstack/react-table'
-import { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarGroup } from '../Avatar'
 import { Button } from '../Button'
 import { Input } from '../Input'
@@ -112,7 +114,21 @@ type Payment = {
   email: string
 }
 
-const columns: ColumnDef<Payment>[] = [
+// @tanstack/react-table v9: features and row models are opted into up front.
+const features = tableFeatures({
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  filteredRowModel: createFilteredRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  filterFns,
+  sortFns,
+})
+
+const columns: ColumnDef<typeof features, Payment>[] = [
   // {
   //   id: 'select',
   //   header: ({ table }) => (
@@ -261,32 +277,9 @@ export const TableB: Story = {
 
 export const TableA: Story = {
   render: () => {
-    // It uses @tanstack/react-table to manage the state of the table
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-      {},
-    )
-    const [rowSelection, setRowSelection] = useState({})
-
-    const table = useReactTable({
-      data,
-      columns,
-      onSortingChange: setSorting,
-      onColumnFiltersChange: setColumnFilters,
-      getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      getFilteredRowModel: getFilteredRowModel(),
-      onColumnVisibilityChange: setColumnVisibility,
-      onRowSelectionChange: setRowSelection,
-      state: {
-        sorting,
-        columnFilters,
-        columnVisibility,
-        rowSelection,
-      },
-    })
+    // @tanstack/react-table manages the table state (sorting, filters,
+    // visibility, selection, pagination) and re-renders on changes.
+    const table = useTable({ features, data, columns })
 
     return (
       <div className="w-full">
@@ -334,12 +327,9 @@ export const TableA: Story = {
                   {headerGroup.headers.map((header) => {
                     return (
                       <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                        {header.isPlaceholder ? null : (
+                          <table.FlexRender header={header} />
+                        )}
                       </TableHead>
                     )
                   })}
@@ -355,10 +345,7 @@ export const TableA: Story = {
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
+                        <table.FlexRender cell={cell} />
                       </TableCell>
                     ))}
                   </TableRow>

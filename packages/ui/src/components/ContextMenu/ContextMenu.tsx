@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowRightIcon } from '@holakirr/snow-ui-icons'
-import { Check } from '@phosphor-icons/react'
+import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as CtxMenuPrimitive from '@radix-ui/react-context-menu'
 import type { FC } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -183,26 +183,26 @@ ContextMenuShortcut.displayName = 'ContextMenuShortcut'
 export {
   ContextMenu,
   ContextMenuCheckboxItem,
+  type ContextMenuCheckboxItemProps,
   ContextMenuContent,
+  type ContextMenuContentProps,
   ContextMenuGroup,
   ContextMenuItem,
+  type ContextMenuItemProps,
   ContextMenuLabel,
+  type ContextMenuLabelProps,
   ContextMenuPortal,
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
+  type ContextMenuRadioItemProps,
   ContextMenuSeparator,
+  type ContextMenuSeparatorProps,
   ContextMenuShortcut,
+  type ContextMenuShortcutProps,
   ContextMenuSub,
   ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-  type ContextMenuCheckboxItemProps,
-  type ContextMenuContentProps,
-  type ContextMenuItemProps,
-  type ContextMenuLabelProps,
-  type ContextMenuRadioItemProps,
-  type ContextMenuSeparatorProps,
-  type ContextMenuShortcutProps,
   type ContextMenuSubContentProps,
+  ContextMenuSubTrigger,
   type ContextMenuSubTriggerProps,
+  ContextMenuTrigger,
 }

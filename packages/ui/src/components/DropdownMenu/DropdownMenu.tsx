@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowLineRightIcon, DotIcon } from '@holakirr/snow-ui-icons'
-import { Check } from '@phosphor-icons/react'
+import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import type { ComponentProps, FC } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -227,28 +227,28 @@ DropdownMenuShortcut.displayName = 'DropdownMenuShortcut'
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,
+  type DropdownMenuCheckboxItemProps,
   DropdownMenuContent,
-  dropdownMenuContentStyles,
+  type DropdownMenuContentProps,
   DropdownMenuGroup,
+  type DropdownMenuGroupProps,
   DropdownMenuItem,
+  type DropdownMenuItemProps,
   DropdownMenuLabel,
+  type DropdownMenuLabelProps,
   DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  type DropdownMenuRadioItemProps,
   DropdownMenuSeparator,
+  type DropdownMenuSeparatorProps,
   DropdownMenuShortcut,
+  type DropdownMenuShortcutProps,
   DropdownMenuSub,
   DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-  type DropdownMenuCheckboxItemProps,
-  type DropdownMenuContentProps,
-  type DropdownMenuGroupProps,
-  type DropdownMenuItemProps,
-  type DropdownMenuLabelProps,
-  type DropdownMenuRadioItemProps,
-  type DropdownMenuSeparatorProps,
-  type DropdownMenuShortcutProps,
   type DropdownMenuSubContentProps,
+  DropdownMenuSubTrigger,
   type DropdownMenuSubTriggerProps,
+  DropdownMenuTrigger,
+  dropdownMenuContentStyles,
 }

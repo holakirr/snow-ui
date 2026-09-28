@@ -1,6 +1,6 @@
 'use client'
 
-import { Check } from '@phosphor-icons/react'
+import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 import type { FC } from 'react'
 import { twMerge } from 'tailwind-merge'

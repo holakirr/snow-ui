@@ -36,6 +36,6 @@ export {
   Popover,
   PopoverAnchor,
   PopoverContent,
-  PopoverTrigger,
   type PopoverContentProps,
+  PopoverTrigger,
 }

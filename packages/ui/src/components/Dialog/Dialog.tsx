@@ -119,9 +119,9 @@ export {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  type DialogHeaderProps,
   DialogOverlay,
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-  type DialogHeaderProps,
 }

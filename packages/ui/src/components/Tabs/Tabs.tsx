@@ -60,9 +60,9 @@ TabsContent.displayName = TabsPrimitive.Content.displayName
 export {
   Tabs,
   TabsContent,
-  TabsList,
-  TabsTrigger,
-  type TabsListProps,
-  type TabsTriggerProps,
   type TabsContentProps,
+  TabsList,
+  type TabsListProps,
+  TabsTrigger,
+  type TabsTriggerProps,
 }

@@ -34,6 +34,6 @@ RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName
 export {
   RadioGroup,
   RadioGroupItem,
-  type RadioGroupProps,
   type RadioGroupItemProps,
+  type RadioGroupProps,
 }

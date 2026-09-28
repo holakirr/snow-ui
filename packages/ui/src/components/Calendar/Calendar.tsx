@@ -1,6 +1,11 @@
 'use client'
 
-import { ArrowLineLeftIcon, ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
+import {
+  ArrowLineDownIcon,
+  ArrowLineLeftIcon,
+  ArrowLineRightIcon,
+  ArrowLineUpIcon,
+} from '@holakirr/snow-ui-icons'
 import { differenceInCalendarDays } from 'date-fns'
 import {
   createContext,
@@ -17,6 +22,7 @@ import {
   type CustomComponents,
   DayPicker,
   type DayPickerProps,
+  getDefaultClassNames,
   useDayPicker,
 } from 'react-day-picker'
 import { twMerge } from '../../utils/tw-merge'
@@ -33,6 +39,13 @@ export type CalendarProps = DayPickerProps & {
    * @default true
    */
   showYearSwitcher?: boolean
+
+  /**
+   * Show the days of the previous and next months in the first and last
+   * weeks.
+   * @default true for one month, false for several months
+   */
+  showOutsideDays?: boolean
 
   /**
    * The first day of the week: 0 for Sunday, 1 for Monday. The Figma
@@ -166,10 +179,26 @@ const isYearOutOfRange = (
       (endMonth && differenceInCalendarDays(date, endMonth) > 0),
   )
 
-const CalendarChevron = ({ orientation }: ChevronProps) => {
-  const Icon = orientation === 'left' ? ArrowLineLeftIcon : ArrowLineRightIcon
-  return <Icon size={20} />
+const CHEVRONS = {
+  left: ArrowLineLeftIcon,
+  right: ArrowLineRightIcon,
+  up: ArrowLineUpIcon,
+  down: ArrowLineDownIcon,
 }
+
+/** The dropdown caption's chevron (react-day-picker's `Chevron`). */
+const CalendarChevron = ({ orientation = 'left', className }: ChevronProps) => {
+  const Icon = CHEVRONS[orientation]
+  return (
+    <Icon size={16} aria-hidden className={twMerge('shrink-0', className)} />
+  )
+}
+
+/*
+ * react-day-picker's own classes for the dropdown caption: its stylesheet
+ * lays the native <select> transparently over the label, so these must stay.
+ */
+const rdpClassNames = getDefaultClassNames()
 
 // Figma: Button Small "Borderless" icon buttons, 28×28, radius 8.
 const navButtonClassName =
@@ -548,7 +577,7 @@ const mergeClassNames = (
  */
 function Calendar({
   className,
-  showOutsideDays = true,
+  showOutsideDays,
   showYearSwitcher = true,
   showWeekNumber,
   yearRange = 12,
@@ -635,7 +664,9 @@ function Calendar({
       }}
     >
       <DayPicker
-        showOutsideDays={showOutsideDays}
+        // Outside days are shown for one month; with several months they
+        // would repeat the neighbouring month's dates.
+        showOutsideDays={showOutsideDays ?? columnsDisplayed === 1}
         showWeekNumber={showWeekNumber}
         weekStartsOn={weekStartsOn}
         className={className}
@@ -649,9 +680,19 @@ function Calendar({
               monthCaptionClassName,
             ),
             caption_label: twMerge(
-              'truncate text-12 font-normal',
+              'inline-flex items-center gap-1 whitespace-nowrap text-12 font-normal',
               captionLabelClassName,
             ),
+            // captionLayout="dropdown": each dropdown is a pointer-cursor chip
+            // with a Black/4% hover, like the Figma borderless buttons.
+            dropdowns: twMerge(rdpClassNames.dropdowns, 'gap-1'),
+            dropdown_root: twMerge(
+              rdpClassNames.dropdown_root,
+              'h-7 cursor-pointer rounded-8 px-1 transition-colors hover:bg-black-4 has-focus-visible:ring-4 has-focus-visible:ring-focus',
+            ),
+            dropdown: twMerge(rdpClassNames.dropdown, 'cursor-pointer'),
+            // Replaces rdp-chevron, whose accent fill would make it blue.
+            chevron: 'fill-current',
             month_grid: twMerge('mt-4 w-[328px]', monthGridClassName),
             weekdays: twMerge(
               'grid grid-cols-7 h-[38px] items-center',

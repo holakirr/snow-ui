@@ -1,3 +1,4 @@
+import { ArrowLineDownIcon } from '@holakirr/snow-ui-icons'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
@@ -49,6 +50,81 @@ describe('Calendar', () => {
     expect(
       screen.getByRole('button', { name: /february 2025/i }),
     ).toBeInTheDocument()
+  })
+
+  it.each([
+    ['label', 'label'],
+    ['dropdown', 'dropdown'],
+  ] as const)(
+    'moves between months with Previous / Next (%s caption)',
+    (_name, captionLayout) => {
+      render(
+        <Calendar
+          mode="range"
+          captionLayout={captionLayout}
+          defaultMonth={new Date(2025, 0, 1)}
+          startMonth={new Date(2020, 0, 1)}
+          endMonth={new Date(2030, 11, 1)}
+        />,
+      )
+
+      const shownMonth = () =>
+        captionLayout === 'dropdown'
+          ? `${
+              (
+                screen.getByRole('combobox', {
+                  name: /choose the month/i,
+                }) as HTMLSelectElement
+              ).value
+            }/${
+              (
+                screen.getByRole('combobox', {
+                  name: /choose the year/i,
+                }) as HTMLSelectElement
+              ).value
+            }`
+          : screen.getByRole('button', { name: /^[a-z]+ \d{4}$/i }).textContent
+
+      const before = shownMonth()
+      fireEvent.click(screen.getByRole('button', { name: /next month/i }))
+      const after = shownMonth()
+      expect(after).not.toBe(before)
+      expect(after).toBe(
+        captionLayout === 'dropdown' ? '1/2025' : 'February 2025',
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: /previous month/i }))
+      fireEvent.click(screen.getByRole('button', { name: /previous month/i }))
+      expect(shownMonth()).toBe(
+        captionLayout === 'dropdown' ? '11/2024' : 'December 2024',
+      )
+    },
+  )
+
+  it('uses down chevrons and pointer dropdowns in the dropdown caption', () => {
+    render(
+      <Calendar
+        mode="single"
+        captionLayout="dropdown"
+        defaultMonth={new Date(2025, 0, 1)}
+      />,
+    )
+
+    const month = screen.getByRole('combobox', { name: /choose the month/i })
+    // react-day-picker's own classes stay, so its stylesheet still lays the
+    // native select over the label.
+    expect(month).toHaveClass('rdp-dropdown', 'cursor-pointer')
+    expect(month.parentElement).toHaveClass(
+      'rdp-dropdown_root',
+      'cursor-pointer',
+    )
+    // The chevron next to the label points down (ArrowLineDown).
+    const chevron = month.parentElement?.querySelector('svg')
+    expect(chevron).not.toBeNull()
+    expect(chevron?.innerHTML).toBe(
+      render(<ArrowLineDownIcon size={16} />).container.querySelector('svg')
+        ?.innerHTML,
+    )
   })
 
   it('switches to the year view and back in range mode without throwing', () => {
@@ -255,6 +331,30 @@ describe('Calendar', () => {
     ).toContainElement(
       within(first).getByRole('button', { name: /previous month/i }),
     )
+  })
+
+  it('hides outside days by default when it shows several months', () => {
+    const { container, rerender } = render(
+      <Calendar
+        mode="single"
+        numberOfMonths={2}
+        defaultMonth={new Date(2025, 0, 1)}
+      />,
+    )
+    const visibleOutside = () =>
+      container.querySelectorAll('[data-outside]:not([data-hidden])').length
+
+    expect(visibleOutside()).toBe(0)
+
+    rerender(
+      <Calendar
+        mode="single"
+        numberOfMonths={2}
+        showOutsideDays
+        defaultMonth={new Date(2025, 0, 1)}
+      />,
+    )
+    expect(visibleOutside()).toBeGreaterThan(0)
   })
 
   it('translates the navigation label with labels.labelNav', () => {

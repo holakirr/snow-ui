@@ -215,3 +215,26 @@ export const RuLocale: Story = {
     )
   },
 }
+
+/** Month / year dropdowns in the caption, over two months. */
+export const RangeWithDropdowns: Story = {
+  render: () => {
+    const [range, setRange] = useState<DateRange | undefined>({
+      from: new Date(2025, 0, 27),
+      to: new Date(2025, 1, 4),
+    })
+
+    return (
+      <Calendar
+        mode="range"
+        numberOfMonths={2}
+        captionLayout="dropdown"
+        startMonth={new Date(2020, 0, 1)}
+        endMonth={new Date(2030, 11, 1)}
+        selected={range}
+        onSelect={setRange}
+        defaultMonth={new Date(2025, 0, 1)}
+      />
+    )
+  },
+}

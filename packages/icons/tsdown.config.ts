@@ -1,10 +1,5 @@
-import { defineConfig, type UserConfig } from 'tsdown'
-
-type OutputOptions = Exclude<
-  UserConfig['outputOptions'],
-  // biome-ignore lint/complexity/noBannedTypes: narrowing the union
-  Function | undefined
->
+import { defineConfig } from 'tsdown'
+import { vendorOutputOptions } from '../../tsdown.vendor.ts'
 
 export default defineConfig({
   entry: ['src/main.tsx'],
@@ -16,30 +11,14 @@ export default defineConfig({
   unbundle: true,
   dts: true,
   deps: {
-    // StatusIcon's two phosphor glyphs are inlined, so consumers don't need
-    // @phosphor-icons/react (whose CJS build is a single ~5 MB file).
+    // StatusIcon's two phosphor glyphs are inlined (under dist/vendor), so
+    // consumers don't install @phosphor-icons/react, whose CommonJS build
+    // can't be require()d: it is `dist/index.cjs.js` in a "type": "module"
+    // package, so Node loads it as ESM and throws.
     onlyBundle: ['@phosphor-icons/react'],
   },
-  // npm never packs nested `node_modules` folders, so the inlined phosphor
-  // modules are emitted under `dist/vendor/` instead.
-  outputOptions: (options) => ({
-    ...options,
-    entryFileNames: vendorPath(options.entryFileNames),
-  }),
+  outputOptions: vendorOutputOptions,
   exports: true,
   publint: true,
   attw: { profile: 'strict', level: 'error' },
 })
-
-function vendorPath(
-  fileNames: OutputOptions['entryFileNames'],
-): OutputOptions['entryFileNames'] {
-  return (chunk) => {
-    const fileName =
-      typeof fileNames === 'function' ? fileNames(chunk) : (fileNames ?? '')
-    return fileName.replace(
-      '[name]',
-      chunk.name.replace(/^.*node_modules\//, 'vendor/'),
-    )
-  }
-}

@@ -79,7 +79,6 @@
   },
   "dependencies": {
     "@holakirr/snow-ui-icons": "^2.1.0",
-    "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-accordion": "^1.2.20",
     "@radix-ui/react-avatar": "^1.2.6",
     "@radix-ui/react-checkbox": "^1.3.11",
@@ -107,6 +106,7 @@
   "devDependencies": {
     "@arethetypeswrong/core": "^0.18.5",
     "@hookform/resolvers": "^5.9.1",
+    "@phosphor-icons/react": "^2.1.10",
     "@playwright/test": "^1.63.0",
     "@storybook/addon-a11y": "^10.6.0",
     "@storybook/addon-docs": "^10.6.0",
@@ -140,5 +140,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "inlinedDependencies": {
+    "@phosphor-icons/react": "2.1.10"
   }
 }

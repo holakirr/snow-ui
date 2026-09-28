@@ -1,4 +1,5 @@
 import { defineConfig } from 'tsdown'
+import { vendorOutputOptions } from '../../tsdown.vendor.ts'
 
 export default defineConfig({
   entry: ['src/index.ts', 'src/react-hook-form.tsx'],
@@ -16,6 +17,15 @@ export default defineConfig({
   // so publint/attw below see the complete package.
   clean: false,
   dts: true,
+  deps: {
+    // The few phosphor icons used here are inlined (under dist/vendor):
+    // @phosphor-icons/react's CommonJS build can't be require()d (it is
+    // `dist/index.cjs.js` in a "type": "module" package, so Node loads it as
+    // ESM and throws), which would break `require('@holakirr/snow-ui')`.
+    alwaysBundle: [/^@phosphor-icons\/react/],
+    onlyBundle: [/^@phosphor-icons\/react/],
+  },
+  outputOptions: vendorOutputOptions,
   exports: {
     customExports: (exports) => ({
       ...exports,

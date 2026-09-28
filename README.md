@@ -41,6 +41,8 @@ Run a script in a single package with `bun run --filter <package-name> <script>`
 
 Both packages are built with [tsdown](https://tsdown.dev) (`packages/*/tsdown.config.ts`): ESM (`.js`) and CommonJS (`.cjs`) with matching `.d.ts` / `.d.cts`, one output file per source module (`unbundle`), so `'use client'` directives stay on their modules and single-icon imports stay small. tsdown writes the `exports` / `main` / `module` / `types` fields of each `package.json` and runs publint and are-the-types-wrong after every build. `@holakirr/snow-ui` additionally builds `dist/index.css` with the Tailwind CLI before tsdown runs.
 
+The handful of [Phosphor](https://phosphoricons.com) icons both packages use are inlined under `dist/vendor/` (see `tsdown.vendor.ts`) rather than depended on: `@phosphor-icons/react` ships its CommonJS build as `dist/index.cjs.js` inside a `"type": "module"` package, so Node can't `require()` it.
+
 ## Releasing
 
 Bump the package's `version` via PR, then publish a GitHub release tagged `@holakirr/snow-ui@X.Y.Z` or `@holakirr/snow-ui-icons@X.Y.Z` (legacy `vX.Y.Z` tags publish `@holakirr/snow-ui`). `.github/workflows/release.yml` checks, builds and publishes the matching package to npm with provenance.

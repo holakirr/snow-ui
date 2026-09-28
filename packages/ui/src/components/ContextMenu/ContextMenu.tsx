@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowRightIcon } from '@holakirr/snow-ui-icons'
-import { Check } from '@phosphor-icons/react'
+import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as CtxMenuPrimitive from '@radix-ui/react-context-menu'
 import type { FC } from 'react'
 import { twMerge } from 'tailwind-merge'

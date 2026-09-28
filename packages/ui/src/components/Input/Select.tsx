@@ -5,7 +5,7 @@ import {
   ArrowLineUpDownIcon,
   ArrowLineUpIcon,
 } from '@holakirr/snow-ui-icons'
-import { Check } from '@phosphor-icons/react'
+import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import type { FC } from 'react'
 import { twMerge } from 'tailwind-merge'

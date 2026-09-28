@@ -1,6 +1,6 @@
 'use client'
 
-import { SidebarSimple } from '@phosphor-icons/react'
+import { SidebarSimple } from '@phosphor-icons/react/dist/csr/SidebarSimple'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {

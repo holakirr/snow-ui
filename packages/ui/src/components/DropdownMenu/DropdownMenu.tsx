@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowLineRightIcon, DotIcon } from '@holakirr/snow-ui-icons'
-import { Check } from '@phosphor-icons/react'
+import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import type { ComponentProps, FC } from 'react'
 import { twMerge } from 'tailwind-merge'

@@ -206,15 +206,17 @@ const columns: ColumnDef<typeof features, Order>[] = [
 ]
 
 /**
- * The Figma "Order List" (Table A): selectable rows (`data-state="selected"`),
+ * The Figma "Table A" (Order List): selectable rows (`data-state="selected"`,
+ * select-all with an indeterminate state, Space toggles a focused checkbox),
  * sortable headers, a row action on hover and the pagination footer.
  */
-export const OrderList: Story = {
+export const TableA: Story = {
   render: () => {
     const table = useTable({
       features,
       data: orders,
       columns,
+      enableRowSelection: true,
       initialState: {
         pagination: { pageIndex: 0, pageSize: 5 },
         rowSelection: { '3': true },
@@ -309,8 +311,8 @@ export const OrderList: Story = {
   },
 }
 
-export const OrderListDark: Story = {
-  ...OrderList,
+export const TableADark: Story = {
+  ...TableA,
   globals: { theme: 'dark' },
 }
 

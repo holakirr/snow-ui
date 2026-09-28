@@ -1,6 +1,7 @@
+import { composeStories } from '@storybook/react'
 import { fireEvent, render, screen, within } from '@testing-library/react'
+import { userEvent } from 'storybook/test'
 import { describe, expect, it, vi } from 'vitest'
-
 import {
   Table,
   TableBody,
@@ -9,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from './Table'
+import * as stories from './Table.stories'
 
 describe('Table', () => {
   it('uses the Figma weights and paddings: 12 Regular, cells padded 8/12', () => {
@@ -119,5 +121,78 @@ describe('Table', () => {
       'aria-sort',
       'descending',
     )
+  })
+})
+
+const { TableA } = composeStories(stories)
+
+const rowOf = (orderId: string) => {
+  const row = screen.getByRole('cell', { name: orderId }).closest('tr')
+  if (!row) throw new Error(`row ${orderId} not found`)
+  return row
+}
+
+describe('Table A (TanStack Table)', () => {
+  it('cycles aria-sort through ascending, descending and none', () => {
+    render(<TableA />)
+
+    const header = screen.getByRole('columnheader', { name: /user/i })
+    const button = within(header).getByRole('button', { name: /user/i })
+    expect(header).toHaveAttribute('aria-sort', 'none')
+
+    fireEvent.click(button)
+    expect(header).toHaveAttribute('aria-sort', 'ascending')
+    expect(
+      within(screen.getAllByRole('row')[1]).getByText('Andi Lane'),
+    ).toBeInTheDocument()
+
+    fireEvent.click(button)
+    expect(header).toHaveAttribute('aria-sort', 'descending')
+    expect(
+      within(screen.getAllByRole('row')[1]).getByText('Orlando Diggs'),
+    ).toBeInTheDocument()
+
+    fireEvent.click(button)
+    expect(header).toHaveAttribute('aria-sort', 'none')
+
+    // Columns that can't be sorted stay plain headers.
+    const date = screen.getByRole('columnheader', { name: 'Date' })
+    expect(date).not.toHaveAttribute('aria-sort')
+    expect(within(date).queryByRole('button')).toBeNull()
+  })
+
+  it('selects rows with their checkboxes and marks them data-state="selected"', () => {
+    render(<TableA />)
+
+    // #CM9804 starts selected, so "Select all" is indeterminate.
+    const selectAll = screen.getByRole('checkbox', { name: 'Select all' })
+    expect(selectAll).toHaveAttribute('aria-checked', 'mixed')
+    expect(rowOf('#CM9804')).toHaveAttribute('data-state', 'selected')
+    expect(rowOf('#CM9801')).not.toHaveAttribute('data-state')
+
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select #CM9801' }))
+    expect(rowOf('#CM9801')).toHaveAttribute('data-state', 'selected')
+
+    fireEvent.click(selectAll)
+    for (const id of ['#CM9801', '#CM9802', '#CM9803', '#CM9804', '#CM9805']) {
+      expect(rowOf(id)).toHaveAttribute('data-state', 'selected')
+    }
+    expect(selectAll).toHaveAttribute('aria-checked', 'true')
+
+    fireEvent.click(selectAll)
+    expect(rowOf('#CM9804')).not.toHaveAttribute('data-state')
+    expect(selectAll).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('toggles a row with the keyboard', async () => {
+    const user = userEvent.setup()
+    render(<TableA />)
+
+    const checkbox = screen.getByRole('checkbox', { name: 'Select #CM9802' })
+    checkbox.focus()
+    await user.keyboard(' ')
+    expect(rowOf('#CM9802')).toHaveAttribute('data-state', 'selected')
+    await user.keyboard(' ')
+    expect(rowOf('#CM9802')).not.toHaveAttribute('data-state')
   })
 })

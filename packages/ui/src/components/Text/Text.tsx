@@ -1,23 +1,22 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ElementType, ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import type { PolymorphicProps, TextSize } from '../../types'
+import { twMerge } from '../../utils/tw-merge'
 
 const defaultTag = 'span'
 
 const textStyles = cva(['font-sans font-normal transition-all'], {
   variants: {
+    // Figma text styles: size / line height (see `--text-*` in index.css).
     size: {
-      64: 'text-[4rem] leading-[4.875rem]',
-      48: 'text-[3rem] leading-[3.625rem]',
-      32: 'text-[2rem] leading-[2.5rem]',
-      24: 'text-2xl',
-      18: 'text-lg',
-      16: 'text-base',
-      14: 'text-sm',
-      12: 'text-xs',
-      default: 'text-base',
+      64: 'text-64',
+      48: 'text-48',
+      32: 'text-32',
+      24: 'text-24',
+      18: 'text-18',
+      16: 'text-16',
+      14: 'text-14',
+      12: 'text-12',
     },
     semibold: {
       true: 'font-semibold',
@@ -35,6 +34,8 @@ const textStyles = cva(['font-sans font-normal transition-all'], {
     },
   },
   defaultVariants: {
+    // Figma's Text component defaults to "14 Regular".
+    size: 14,
     align: 'left',
   },
 })
@@ -49,7 +50,8 @@ export type TextProps<C extends ElementType = typeof defaultTag> =
   PolymorphicProps<C> &
     VariantProps<typeof textStyles> & {
       /**
-       * The size of the text.
+       * The size of the text: a Figma text style (font size / line height).
+       * @default 14
        */
       size?: TextSize
     }

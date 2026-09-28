@@ -14,9 +14,8 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import { useIsMobile } from '../../hooks'
+import { twMerge } from '../../utils/tw-merge'
 import { Button, type ButtonProps } from '../Button'
 import { Input, type InputProps } from '../Input'
 import { Separator, type SeparatorProps } from '../Separator'
@@ -263,7 +262,7 @@ const Sidebar: FC<SidebarProps> = ({
       >
         <div
           data-sidebar="sidebar"
-          className="flex h-full w-full flex-col bg-white group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border"
+          className="flex h-full w-full flex-col bg-white group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-black-10"
         >
           {children}
         </div>
@@ -312,7 +311,7 @@ const SidebarRail: FC<SidebarRailProps> = ({ className, ...props }) => {
       onClick={toggleSidebar}
       title="Toggle Sidebar"
       className={twMerge(
-        'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-white-border group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
+        'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-black-10 group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
         '[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize',
         '[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize',
         'group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-white',
@@ -331,7 +330,7 @@ type SidebarInsetProps = ComponentProps<'main'>
 const SidebarInset: FC<SidebarInsetProps> = ({ className, ...props }) => (
   <main
     className={twMerge(
-      'relative flex min-h-svh flex-1 flex-col bg-background',
+      'relative flex min-h-svh flex-1 flex-col bg-background-1',
       'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl',
       className,
     )}
@@ -504,7 +503,7 @@ const sidebarMenuButtonVariants = cva(
     variants: {
       variant: {
         default: 'hover:bg-black/10',
-        outline: 'bg-background hover:bg-black/4',
+        outline: 'bg-background-1 hover:bg-black/4',
       },
       size: {
         default: 'h-8 text-sm',
@@ -679,7 +678,7 @@ const SidebarMenuSub: FC<SidebarMenuSubProps> = ({ className, ...props }) => (
   <ul
     data-sidebar="menu-sub"
     className={twMerge(
-      'mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5',
+      'mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-black-10 px-2.5 py-0.5',
       'group-data-[collapsible=icon]:hidden',
       className,
     )}

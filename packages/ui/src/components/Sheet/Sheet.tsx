@@ -4,7 +4,7 @@ import { CloseIcon } from '@holakirr/snow-ui-icons'
 import * as SheetPrimitive from '@radix-ui/react-dialog'
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
 
 const Sheet = SheetPrimitive.Root
@@ -20,7 +20,7 @@ type SheetOverlayProps = SheetPrimitive.DialogOverlayProps
 const SheetOverlay: FC<SheetOverlayProps> = ({ className, ...props }) => (
   <SheetPrimitive.Overlay
     className={twMerge(
-      'fixed inset-0 z-50 bg-[#000]/40  data-[state=open]:animate-in data-[state=closed]:animate-out',
+      'fixed inset-0 z-50 bg-static-black/40  data-[state=open]:animate-in data-[state=closed]:animate-out',
       className,
     )}
     {...props}
@@ -29,7 +29,7 @@ const SheetOverlay: FC<SheetOverlayProps> = ({ className, ...props }) => (
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  'fixed z-50 gap-4 bg-bg1 p-4 transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out',
+  'fixed z-50 gap-4 bg-background-1 p-4 transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out',
   {
     variants: {
       side: {
@@ -106,7 +106,7 @@ type SheetTitleProps = SheetPrimitive.DialogTitleProps
 
 const SheetTitle: FC<SheetTitleProps> = ({ className, ...props }) => (
   <SheetPrimitive.Title
-    className={twMerge('text-lg font-semibold text-foreground', className)}
+    className={twMerge('text-lg font-semibold text-black', className)}
     {...props}
   />
 )
@@ -119,7 +119,7 @@ const SheetDescription: FC<SheetDescriptionProps> = ({
   ...props
 }) => (
   <SheetPrimitive.Description
-    className={twMerge('text-sm text-muted-foreground', className)}
+    className={twMerge('text-sm text-black-40', className)}
     {...props}
   />
 )

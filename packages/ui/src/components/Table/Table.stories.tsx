@@ -224,7 +224,7 @@ type Story = StoryObj<typeof Table>
 
 export const TableB: Story = {
   render: () => (
-    <div className="rounded-2xl bg-bg2 p-6">
+    <div className="rounded-2xl bg-background-2 p-6">
       <Table>
         <TableCaption>Tasks</TableCaption>
         <TableHeader>
@@ -364,7 +364,7 @@ export const TableA: Story = {
           </Table>
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
+          <div className="flex-1 text-sm text-black-40">
             {table.getFilteredSelectedRowModel().rows.length} of{' '}
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>

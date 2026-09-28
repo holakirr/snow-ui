@@ -11,7 +11,7 @@ import {
   useContext,
   useId,
 } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 
 import { Label, type LabelProps } from '../Label'
 import { Typography } from '../Text'
@@ -97,7 +97,7 @@ const FormLabel: FC<LabelProps> = ({ className, ...props }) => {
 
   return (
     <Label
-      className={twMerge(invalid && 'text-destructive', className)}
+      className={twMerge(invalid && 'text-red', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -163,7 +163,7 @@ const FormMessage: FC<FormMessageProps> = ({
     <Typography
       as="p"
       id={formMessageId}
-      className={twMerge('text-sm font-medium text-destructive', className)}
+      className={twMerge('text-sm font-medium text-red', className)}
       {...props}
     >
       {body}

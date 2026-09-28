@@ -3,9 +3,9 @@
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
 import { SIZES } from '../../constants'
 import type { Size } from '../../types'
+import { twMerge } from '../../utils/tw-merge'
 import { Typography } from '../Text'
 
 const avatarStyles = cva(
@@ -58,7 +58,7 @@ const AvatarFallback: FC<AvatarFallbackProps> = ({
 }) => (
   <AvatarPrimitive.Fallback
     className={twMerge(
-      'flex h-full w-full items-center justify-center rounded-full bg-bg4 text-black',
+      'flex h-full w-full items-center justify-center rounded-full bg-color-2 text-black',
       className,
     )}
     {...props}

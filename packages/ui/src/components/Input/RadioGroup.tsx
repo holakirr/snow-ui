@@ -2,7 +2,7 @@
 
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
 import type { ComponentProps, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 
 type RadioGroupProps = ComponentProps<typeof RadioGroupPrimitive.Root>
 
@@ -25,7 +25,7 @@ const RadioGroupItem: FC<RadioGroupItemProps> = ({ className, ...props }) => (
     {...props}
   >
     <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-      <span className="w-[14px] h-[14px] aspect-square rounded-full bg-brand group-hover:bg-brand-hover group-disabled:bg-black/10" />
+      <span className="w-[14px] h-[14px] aspect-square rounded-full bg-primary group-hover:bg-primary-hover-strong group-disabled:bg-black/10" />
     </RadioGroupPrimitive.Indicator>
   </RadioGroupPrimitive.Item>
 )

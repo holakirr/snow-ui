@@ -4,7 +4,7 @@ import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group'
 import type { VariantProps } from 'class-variance-authority'
 
 import { type ComponentProps, createContext, type FC, useContext } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 import { toggleVariants } from './Toggle'
 
 const ToggleGroupContext = createContext<VariantProps<typeof toggleVariants>>({

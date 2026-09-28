@@ -3,7 +3,7 @@
 import * as LabelPrimitive from '@radix-ui/react-label'
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentPropsWithoutRef, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 
 const labelVariants = cva(
   'text-sm font-medium leading-none text-black/20 w-min transition-all',

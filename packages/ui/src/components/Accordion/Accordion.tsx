@@ -8,7 +8,7 @@ import type {
 } from '@radix-ui/react-accordion'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
 import type { FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 
 import { Typography } from '../Text'
 

@@ -3,7 +3,7 @@
 import { CloseIcon } from '@holakirr/snow-ui-icons'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import type { ComponentProps, ComponentPropsWithoutRef, FC, JSX } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 
 import { Button } from '../Button'
 import { Typography } from '../Text'
@@ -81,7 +81,10 @@ const DialogHeader: FC<DialogHeaderProps> = ({
 DialogHeader.displayName = 'DialogHeader'
 
 const DialogBody: FC<ComponentProps<'div'>> = ({ className, ...props }) => (
-  <div className={twMerge('bg-bg1 p-10 rounded-4xl', className)} {...props} />
+  <div
+    className={twMerge('bg-background-1 p-10 rounded-4xl', className)}
+    {...props}
+  />
 )
 
 DialogBody.displayName = 'DialogBody'

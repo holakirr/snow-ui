@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 
 import { type TextProps, Typography } from './Text'
 

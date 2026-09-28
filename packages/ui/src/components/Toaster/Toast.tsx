@@ -4,10 +4,9 @@ import { CloseIcon } from '@holakirr/snow-ui-icons'
 import * as ToastPrimitives from '@radix-ui/react-toast'
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import { SIMPLE_SIZES } from '../../constants'
 import type { SimpleSize, StatusNotify } from '../../types'
+import { twMerge } from '../../utils/tw-merge'
 import { buttonVariants } from '../Button'
 
 const ToastProvider = ToastPrimitives.Provider
@@ -68,7 +67,7 @@ const ToastAction: FC<ToastActionProps> = ({ className, size, ...props }) => (
 ToastAction.displayName = ToastPrimitives.Action.displayName
 
 const toastCloseStyles = cva(
-  'absolute p-1 cursor-pointer opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100',
+  'absolute p-1 cursor-pointer opacity-0 transition-opacity hover:text-black focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100',
   {
     variants: {
       size: {

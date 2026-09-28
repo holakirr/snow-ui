@@ -1,9 +1,8 @@
 'use client'
 
 import { type ComponentProps, type FC, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import { ROLES } from '../../constants'
+import { twMerge } from '../../utils/tw-merge'
 import { Label } from '../Label'
 
 export const basicInputClasses =
@@ -13,7 +12,7 @@ export const disabledInputClasses =
   'disabled:bg-black/5 disabled:text-black/10 disabled:inset-ring-0 disabled:cursor-not-allowed'
 
 export const focusInputClasses =
-  'text-lg focus:ring-4 focus:ring-black/5 focus:outline-none active:inset-ring-black/40 focus:inset-ring-black/40'
+  'text-lg focus:ring-4 focus:ring-focus focus:outline-none active:inset-ring-black/40 focus:inset-ring-black/40'
 
 type InputProps = ComponentProps<'input'> & {
   title?: string

@@ -2,7 +2,7 @@
 
 import * as TabsPrimitive from '@radix-ui/react-tabs'
 import type { FC } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from '../../utils/tw-merge'
 import { Separator } from '../Separator'
 
 const Tabs = TabsPrimitive.Root
@@ -29,7 +29,7 @@ const TabsTrigger: FC<TabsTriggerProps> = ({
 }) => (
   <TabsPrimitive.Trigger
     className={twMerge(
-      'group flex flex-col items-center justify-center whitespace-nowrap gap-1 text-sm ring-offset-black/10 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/10 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-brand data-[state=active]:[&>[role="presentation"]]:bg-brand',
+      'group flex flex-col items-center justify-center whitespace-nowrap gap-1 text-sm ring-offset-black/10 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/10 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-primary data-[state=active]:[&>[role="presentation"]]:bg-primary',
       className,
     )}
     {...props}
@@ -49,7 +49,7 @@ type TabsContentProps = TabsPrimitive.TabsContentProps
 const TabsContent: FC<TabsContentProps> = ({ className, ...props }) => (
   <TabsPrimitive.Content
     className={twMerge(
-      'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+      'mt-2 ring-offset-background-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
       className,
     )}
     {...props}

@@ -3,6 +3,7 @@
 import * as TogglePrimitive from '@radix-ui/react-toggle'
 import type { FC } from 'react'
 import type { Size, ToggleVariant } from '../../types'
+import { isIconOnly } from '../../utils/children'
 import { twMerge } from '../../utils/tw-merge'
 import { segmentedItemVariants } from '../Tabs/segmented'
 
@@ -19,6 +20,11 @@ type ToggleVariantProps = {
    * @default "md"
    */
   size?: Size | null
+  /**
+   * Square, with a bigger (16, 20 or 24px) icon. Detected when omitted: the
+   * content is a single element without children, such as an icon.
+   */
+  iconOnly?: boolean | null
 }
 
 const itemVariant = {
@@ -27,42 +33,47 @@ const itemVariant = {
   pill: 'pill',
 } as const
 
-// Icon-only toggles are square, with a 16, 20 or 24px glyph.
-const iconOnlyClasses: { [K in Size]: string } = {
-  sm: 'has-[>svg:only-child]:p-1 has-[>svg:only-child]:[&_svg]:size-4',
-  md: 'has-[>svg:only-child]:p-2 has-[>svg:only-child]:[&_svg]:size-5',
-  lg: 'has-[>svg:only-child]:p-3 has-[>svg:only-child]:[&_svg]:size-6',
-}
-
 /**
  * Toggle styles: the Figma segmented-control items (see `Tabs`). Off, a
- * toggle is a Borderless button at 40% opacity (100% on hover); on, it is a
- * Gray button, or a white, shadowed one for `pill`.
+ * toggle is a Borderless button at 40% opacity (100% on hover and keyboard
+ * focus); on, it is a Gray button, or a white, shadowed one for `pill`.
  */
 const toggleVariants = ({
   variant,
   size,
+  iconOnly,
   className,
-}: ToggleVariantProps & { className?: string } = {}): string => {
-  const toggleSize = size ?? 'md'
-
-  return twMerge(
+}: ToggleVariantProps & { className?: string } = {}): string =>
+  twMerge(
     segmentedItemVariants({
       variant: itemVariant[variant ?? 'borderless'],
-      size: toggleSize,
+      size: size ?? 'md',
+      iconOnly: !!iconOnly,
     }),
-    iconOnlyClasses[toggleSize],
     className,
   )
-}
 
 type ToggleProps = TogglePrimitive.ToggleProps & ToggleVariantProps
 
-const Toggle: FC<ToggleProps> = ({ className, variant, size, ...props }) => (
+const Toggle: FC<ToggleProps> = ({
+  className,
+  variant,
+  size,
+  iconOnly,
+  children,
+  ...props
+}) => (
   <TogglePrimitive.Root
-    className={toggleVariants({ variant, size, className })}
+    className={toggleVariants({
+      variant,
+      size,
+      iconOnly: iconOnly ?? isIconOnly(children),
+      className,
+    })}
     {...props}
-  />
+  >
+    {children}
+  </TogglePrimitive.Root>
 )
 
 Toggle.displayName = TogglePrimitive.Root.displayName

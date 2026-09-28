@@ -32,13 +32,16 @@ export const segmentedListVariants = cva('inline-flex items-center', {
  * The items of a segmented control: Figma Button instances. The selected item
  * (`data-state="active"` for tabs, `data-state="on"` for toggles) is a Gray
  * button (`solid`) or a white, shadowed one (`pill`); the others are
- * Borderless buttons at 40% opacity. Shared by `TabsTrigger` and `Toggle`.
+ * Borderless buttons at 40% opacity (100% on hover and keyboard focus).
+ * Icons are sized unless they have a `size-*` class. Shared by
+ * `TabsTrigger` and `Toggle`.
  */
 export const segmentedItemVariants = cva(
   [
     'inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal text-black transition-all',
-    'cursor-pointer outline-none focus-visible:ring-4 focus-visible:ring-focus',
-    'opacity-40 hover:opacity-100 data-[state=active]:opacity-100 data-[state=on]:opacity-100',
+    'cursor-pointer focus-ring',
+    // Keyboard focus lifts the 40% opacity so the focus ring stays visible.
+    'opacity-40 hover:opacity-100 focus-visible:opacity-100 data-[state=active]:opacity-100 data-[state=on]:opacity-100',
     'disabled:cursor-not-allowed disabled:opacity-20',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
   ],
@@ -52,9 +55,9 @@ export const segmentedItemVariants = cva(
       },
       // Figma Button sizes; icons next to a label are 12, 16 or 20px.
       size: {
-        sm: 'min-h-6 min-w-6 gap-1 rounded-12 px-3 py-1 text-12 [&_svg]:size-3',
-        md: 'min-h-9 min-w-9 gap-1.5 rounded-16 px-4 py-2 text-14 [&_svg]:size-4',
-        lg: 'min-h-12 min-w-12 gap-2 rounded-20 px-5 py-3 text-16 [&_svg]:size-5',
+        sm: 'min-h-6 min-w-6 gap-1 rounded-12 px-3 py-1 text-12 [&_svg:not([class*=size-])]:size-3',
+        md: 'min-h-9 min-w-9 gap-1.5 rounded-16 px-4 py-2 text-14 [&_svg:not([class*=size-])]:size-4',
+        lg: 'min-h-12 min-w-12 gap-2 rounded-20 px-5 py-3 text-16 [&_svg:not([class*=size-])]:size-5',
       },
       // Icon-only items: square, with a 16, 20 or 24px glyph.
       iconOnly: {
@@ -62,9 +65,21 @@ export const segmentedItemVariants = cva(
       },
     },
     compoundVariants: [
-      { iconOnly: true, size: 'sm', className: 'p-1 [&_svg]:size-4' },
-      { iconOnly: true, size: 'md', className: 'p-2 [&_svg]:size-5' },
-      { iconOnly: true, size: 'lg', className: 'p-3 [&_svg]:size-6' },
+      {
+        iconOnly: true,
+        size: 'sm',
+        className: 'p-1 [&_svg:not([class*=size-])]:size-4',
+      },
+      {
+        iconOnly: true,
+        size: 'md',
+        className: 'p-2 [&_svg:not([class*=size-])]:size-5',
+      },
+      {
+        iconOnly: true,
+        size: 'lg',
+        className: 'p-3 [&_svg:not([class*=size-])]:size-6',
+      },
     ],
     defaultVariants: {
       variant: 'solid',

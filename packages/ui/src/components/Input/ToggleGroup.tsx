@@ -2,6 +2,7 @@
 
 import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group'
 import { type ComponentProps, createContext, type FC, useContext } from 'react'
+import { isIconOnly } from '../../utils/children'
 import { twMerge } from '../../utils/tw-merge'
 import { segmentedListVariants } from '../Tabs/segmented'
 import { type ToggleVariantProps, toggleVariants } from './Toggle'
@@ -21,6 +22,7 @@ const ToggleGroup: FC<ToggleGroupProps> = ({
   className,
   variant,
   size,
+  iconOnly,
   children,
   ...props
 }) => (
@@ -35,7 +37,7 @@ const ToggleGroup: FC<ToggleGroupProps> = ({
     )}
     {...props}
   >
-    <ToggleGroupContext.Provider value={{ variant, size }}>
+    <ToggleGroupContext.Provider value={{ variant, size, iconOnly }}>
       {children}
     </ToggleGroupContext.Provider>
   </ToggleGroupPrimitive.Root>
@@ -51,6 +53,7 @@ const ToggleGroupItem: FC<ToggleGroupItemProps> = ({
   children,
   variant,
   size,
+  iconOnly,
   ...props
 }) => {
   const context = useContext(ToggleGroupContext)
@@ -60,6 +63,7 @@ const ToggleGroupItem: FC<ToggleGroupItemProps> = ({
       className={toggleVariants({
         variant: variant ?? context.variant,
         size: size ?? context.size,
+        iconOnly: iconOnly ?? context.iconOnly ?? isIconOnly(children),
         className,
       })}
       {...props}

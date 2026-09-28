@@ -63,4 +63,49 @@ describe('ToggleGroup', () => {
 
     expect(screen.getByRole('button')).toHaveClass('min-h-12', 'rounded-20')
   })
+
+  it('detects icon-only content', () => {
+    render(
+      <ToggleGroup type="multiple" size="md">
+        <ToggleGroupItem value="icon" aria-label="Icon">
+          <svg />
+        </ToggleGroupItem>
+        <ToggleGroupItem value="both" aria-label="Icon and text">
+          <svg /> Bold
+        </ToggleGroupItem>
+        <ToggleGroupItem value="label" aria-label="Label">
+          <span>Bold</span>
+        </ToggleGroupItem>
+      </ToggleGroup>,
+    )
+
+    expect(screen.getByRole('button', { name: 'Icon' })).toHaveClass('p-2')
+    // An icon with text next to it keeps the label padding.
+    expect(screen.getByRole('button', { name: 'Icon and text' })).toHaveClass(
+      'px-4',
+      'py-2',
+    )
+    expect(screen.getByRole('button', { name: 'Label' })).toHaveClass('px-4')
+  })
+
+  it('lets iconOnly override the detection', () => {
+    render(
+      <Toggle aria-label="custom" iconOnly size="lg">
+        <span className="icon" />
+        <span className="icon" />
+      </Toggle>,
+    )
+
+    expect(screen.getByRole('button', { name: 'custom' })).toHaveClass('p-3')
+  })
+
+  it('keeps the focus ring visible on an off toggle', () => {
+    render(<Toggle aria-label="bold">B</Toggle>)
+
+    const toggle = screen.getByRole('button', { name: 'bold' })
+    toggle.focus()
+
+    expect(toggle).toHaveFocus()
+    expect(toggle).toHaveClass('focus-ring', 'focus-visible:opacity-100')
+  })
 })

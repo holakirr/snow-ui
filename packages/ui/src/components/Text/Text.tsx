@@ -86,4 +86,5 @@ function Typography<C extends ElementType = typeof defaultTag>({
 }
 
 Typography.displayName = 'Typography'
+
 export { Typography }

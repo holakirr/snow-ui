@@ -136,10 +136,10 @@ export {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
+  type PaginationEllipsisProps,
   PaginationItem,
   PaginationLink,
+  type PaginationLinkProps,
   PaginationNext,
   PaginationPrevious,
-  type PaginationLinkProps,
-  type PaginationEllipsisProps,
 }

@@ -18,6 +18,7 @@ export const IconBase: BaseIcon = ({
   )
 
   return (
+    // biome-ignore lint/a11y/noSvgWithoutTitle: the <title> is rendered when `alt` is set; unlabelled icons are aria-hidden
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"

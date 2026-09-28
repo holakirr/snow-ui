@@ -127,4 +127,4 @@ const Button = <C extends ElementType = typeof defaultTag>({
 }
 Button.displayName = 'Button'
 
-export { Button, buttonVariants, type ButtonProps }
+export { Button, type ButtonProps, buttonVariants }

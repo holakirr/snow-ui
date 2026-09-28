@@ -5,6 +5,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
+  TooltipShortcut,
   TooltipTrigger,
 } from './Tooltip'
 
@@ -54,6 +55,53 @@ export const FromBottom: Story = {
           <p>Add to library</p>
         </TooltipContent>
       </Tooltip>
+    </TooltipProvider>
+  ),
+}
+
+export const Light: Story = {
+  args: {},
+  render: () => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="outline">Hover</Button>
+        </TooltipTrigger>
+        <TooltipContent variant="light">
+          <p>Add to library</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  ),
+}
+
+/**
+ * The Figma Tooltip set, open: Dark and Light, with a shortcut in the
+ * secondary (40%) text.
+ */
+export const Variants: Story = {
+  args: {},
+  parameters: { layout: 'padded' },
+  render: () => (
+    <TooltipProvider>
+      <div className="flex items-center gap-24 px-4 pt-10 pb-2">
+        <Tooltip open>
+          <TooltipTrigger asChild>
+            <Button variant="outline" label="Dark" />
+          </TooltipTrigger>
+          <TooltipContent>
+            Tooltip <TooltipShortcut>⌘K</TooltipShortcut>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip open>
+          <TooltipTrigger asChild>
+            <Button variant="outline" label="Light" />
+          </TooltipTrigger>
+          <TooltipContent variant="light">
+            Tooltip <TooltipShortcut>⌘K</TooltipShortcut>
+          </TooltipContent>
+        </Tooltip>
+      </div>
     </TooltipProvider>
   ),
 }

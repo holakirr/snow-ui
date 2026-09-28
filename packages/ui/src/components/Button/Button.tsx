@@ -29,44 +29,65 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
       label?: string
 
       /**
-       * The icon component to be displayed on the right side of the button.
+       * The icon component to be displayed on the left side of the button.
        */
       leftContent?: JSX.Element
 
       /**
-       * The icon component to be displayed on the left side of the button.
+       * The icon component to be displayed on the right side of the button.
        */
       rightContent?: JSX.Element
 
       /**
-       * The size of the text displayed on the button.
+       * The size of the label text. Defaults to the Figma text style of the
+       * button size: 12 (`sm`), 14 (`md`) or 16 (`lg`).
        */
       textSize?: TextSize
 
       /**
        * The variant of the button.
+       * @default "borderless"
        */
       variant?: ButtonVariant
     }
 
+/**
+ * Figma "Button" (Size × Variant × State). The design has Default and Hover
+ * states only; the focus ring (`ring-focus`) and the disabled look are the
+ * library's own, built from the same tokens.
+ */
 const buttonVariants = cva(
-  'group transition-all hover:cursor-pointer disabled:cursor-not-allowed text-black disabled:text-black/10 inline-flex justify-center items-center focus:outline-hidden focus:ring-4 focus:ring-focus active:scale-95',
+  [
+    'group inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal text-black transition-all',
+    'cursor-pointer focus-ring active:scale-95',
+    'disabled:cursor-not-allowed disabled:scale-100 disabled:text-black-20',
+  ],
   {
     variants: {
       variant: {
-        borderless: 'bg-transparent font-normal hover:bg-black/5',
-        gray: 'bg-black/5 hover:bg-black/20 disabled:bg-black/5 focus:ring-offset-2',
+        borderless: 'bg-transparent hover:bg-black-4 disabled:bg-transparent',
+        gray: 'bg-black-4 hover:bg-black-10 disabled:bg-black-4',
         outline:
-          'bg-transparent border border-black/10 border-solid hover:bg-black/5 disabled:border-black/10',
+          'bg-transparent inset-ring-[0.5px] inset-ring-black-10 hover:bg-black-4 disabled:bg-transparent',
+        // Figma draws a white label in both modes; on the dark indigo Primary
+        // that is 2.07:1, so the label flips to black there (10.15:1).
         filled:
-          'text-white bg-primary hover:bg-primary-hover-strong disabled:bg-black/4',
+          'bg-primary text-white hover:bg-primary-hover disabled:bg-black-4',
+        // No box: 40% opacity, 100% on hover and keyboard focus.
+        bare: 'bg-transparent opacity-40 hover:opacity-100 focus-visible:opacity-100 disabled:opacity-100',
       },
       size: {
-        sm: 'text-sm py-1 px-2 rounded-lg gap-1',
-        md: 'text-base py-2 px-4 rounded-xl gap-2',
-        lg: 'text-lg py-3 px-6 rounded-2xl gap-2',
+        sm: 'min-h-6 min-w-6 gap-1 rounded-12 px-3 py-1 text-12',
+        md: 'min-h-9 min-w-9 gap-1.5 rounded-16 px-4 py-2 text-14',
+        lg: 'min-h-12 min-w-12 gap-2 rounded-20 px-5 py-3 text-16',
       },
     },
+    compoundVariants: [
+      {
+        variant: 'bare',
+        className: 'min-h-0 min-w-0 rounded-none p-0',
+      },
+    ],
     defaultVariants: {
       variant: 'borderless',
       size: 'sm',
@@ -74,10 +95,32 @@ const buttonVariants = cva(
   },
 )
 
-const IconButtonPaddings: { [K in Size]: string } = {
-  sm: 'p-1',
-  md: 'p-2',
-  lg: 'p-4',
+/** Label text style per size (Figma: 12/16, 14/20, 16/24). */
+const buttonTextSizes: { [K in Size]: TextSize } = {
+  sm: TEXT_SIZES[12],
+  md: TEXT_SIZES[14],
+  lg: TEXT_SIZES[16],
+}
+
+/*
+ * Figma icon sizes, for icons that don't size themselves: an <svg> child
+ * without a `width` attribute or a `size-*` class. Icons from
+ * @holakirr/snow-ui-icons always render `width`, so pass their `size`
+ * (12/16/20 next to a label, 16/20/24 in an icon-only button).
+ */
+
+/** Icons next to a label: 12, 16 or 20px. */
+const buttonIconSizes: { [K in Size]: string } = {
+  sm: '[&>svg:not([width]):not([class*=size-])]:size-3',
+  md: '[&>svg:not([width]):not([class*=size-])]:size-4',
+  lg: '[&>svg:not([width]):not([class*=size-])]:size-5',
+}
+
+/** Icon-only buttons: square padding and a bigger glyph (16, 20 or 24px). */
+const iconButtonClasses: { [K in Size]: string } = {
+  sm: 'p-1 [&>svg:not([width]):not([class*=size-])]:size-4',
+  md: 'p-2 [&>svg:not([width]):not([class*=size-])]:size-5',
+  lg: 'p-3 [&>svg:not([width]):not([class*=size-])]:size-6',
 }
 
 /**
@@ -90,13 +133,16 @@ const Button = <C extends ElementType = typeof defaultTag>({
   leftContent,
   rightContent,
   size,
-  textSize = TEXT_SIZES[16],
+  textSize,
   variant,
   children,
   ...props
 }: ButtonProps<C>): JSX.Element => {
   const Component = as ?? defaultTag
   const isNativeButton = Component === defaultTag
+  const buttonSize = size ?? SIZES.sm
+  // `children` may be screen-reader-only text, so they don't count here.
+  const isIconOnly = !!leftContent && !rightContent && !label
 
   return (
     <Component
@@ -104,9 +150,9 @@ const Button = <C extends ElementType = typeof defaultTag>({
       aria-label={label && children == null ? label : undefined}
       className={twMerge(
         buttonVariants({ variant, size }),
-        !!leftContent &&
-          !rightContent &&
-          !label && [IconButtonPaddings[size || SIZES.sm]],
+        isIconOnly
+          ? [iconButtonClasses[buttonSize], variant === 'bare' && 'p-0']
+          : buttonIconSizes[buttonSize],
         className,
       )}
       {...props}
@@ -114,8 +160,8 @@ const Button = <C extends ElementType = typeof defaultTag>({
       {leftContent}
       {label && (
         <Typography
-          className="group-hover:px-1 text-center text-inherit"
-          size={textSize}
+          className="text-center text-inherit group-hover:px-1 group-disabled:px-0"
+          size={textSize ?? buttonTextSizes[buttonSize]}
         >
           {label}
         </Typography>

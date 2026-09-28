@@ -419,8 +419,11 @@ export const EffectsPage = () => (
       title="Focus ring"
       description={
         <>
-          Figma "Focus": a 4px ring at black 4%. Components use{' '}
-          <Code>focus:ring-4 focus:ring-focus</Code>.
+          Figma "Focus": a 4px ring at black 4%. It is too faint to be a focus
+          indicator on its own, so components use the <Code>focus-ring</Code>{' '}
+          utility: on <Code>:focus-visible</Code> it draws the Figma ring plus a
+          2px <Code>black-80</Code> outline, offset by 2px (12.6:1 in light
+          mode, 8.7:1 in dark mode). Press Tab to focus the second card.
         </>
       }
     >
@@ -428,6 +431,12 @@ export const EffectsPage = () => (
         <EffectCard className={twMerge('w-48', focusRing.utility)}>
           <Code>{focusRing.utility}</Code>
         </EffectCard>
+        <button
+          type="button"
+          className="focus-ring w-48 rounded-16 bg-background-1 p-4 text-left"
+        >
+          <Code>focus-ring</Code>
+        </button>
         <Code>
           {focusRing.variable}: {focusRing.value}
         </Code>

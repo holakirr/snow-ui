@@ -112,11 +112,24 @@ describe('Button', () => {
   it('renders as link', async () => {
     await AsLink.run()
 
-    const button = screen.getByRole(ROLES.button)
+    const button = screen.getByRole(ROLES.link)
 
     expect(button).toBeInTheDocument()
     expect(button).toHaveAttribute('href')
     expect(button.tagName).toBe('A')
+    expect(button).not.toHaveAttribute('type')
+    expect(button).not.toHaveAttribute('role')
+  })
+
+  it('sets native button type and no default title', async () => {
+    await Filled.run()
+
+    const button = screen.getByRole(ROLES.button)
+
+    expect(button).toHaveAttribute('type', 'button')
+    expect(button).not.toHaveAttribute('title')
+    expect(button).not.toHaveAttribute('tabindex')
+    expect(button).not.toHaveAttribute('aria-label', 'Button aria label')
   })
 
   it('renders with left content', async () => {

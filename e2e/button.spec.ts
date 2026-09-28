@@ -30,7 +30,10 @@ test.describe('Button Component', () => {
           }),
         )
 
-        const button = page.getByRole('button', { name: component })
+        const button = page.getByRole(
+          variant === 'as-link' ? 'link' : 'button',
+          { name: component },
+        )
 
         await expect(button).toBeVisible()
         await expect(button).toHaveScreenshot(`${theme}-${variant}.png`, {
@@ -53,7 +56,7 @@ test.describe('Button Component', () => {
         }),
       )
 
-      const button = page.getByTitle('Button')
+      const button = page.getByRole('button', { name: component })
 
       await expect(button).toBeVisible()
       await expect(button).toContainText(variant)

@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import type { ElementType, JSX } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { ROLES, SIZES, TEXT_SIZES } from '../../constants'
+import { SIZES, TEXT_SIZES } from '../../constants'
 import type {
   ButtonVariant,
   PolymorphicProps,
@@ -96,11 +96,12 @@ const Button = <C extends ElementType = typeof defaultTag>({
   ...props
 }: ButtonProps<C>): JSX.Element => {
   const Component = as ?? defaultTag
+  const isNativeButton = Component === defaultTag
 
   return (
     <Component
-      type="button"
-      title={label?.toString() || 'Button title'}
+      type={isNativeButton ? 'button' : undefined}
+      aria-label={label && children == null ? label : undefined}
       className={twMerge(
         buttonVariants({ variant, size }),
         !!leftContent &&
@@ -108,9 +109,6 @@ const Button = <C extends ElementType = typeof defaultTag>({
           !label && [IconButtonPaddings[size || SIZES.sm]],
         className,
       )}
-      role={ROLES.button}
-      tabIndex={0}
-      aria-label={label?.toString() || 'Button aria label'}
       {...props}
     >
       {leftContent}

@@ -55,7 +55,7 @@ function ListItem<C extends ElementType = typeof defaultTag>({
           {title}
         </Typography>
         {description && (
-          <Typography size={12} className="truncate text-black-40">
+          <Typography size={12} className="truncate text-secondary">
             {description}
           </Typography>
         )}

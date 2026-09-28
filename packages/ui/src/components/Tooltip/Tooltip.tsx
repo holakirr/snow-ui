@@ -58,10 +58,12 @@ TooltipContent.displayName = TooltipPrimitive.Content.displayName
 type TooltipShortcutProps = ComponentProps<'span'>
 
 /**
- * The Figma tooltip's secondary text, e.g. a keyboard shortcut: 40% opacity.
+ * The Figma tooltip's secondary text, e.g. a keyboard shortcut. Figma draws it
+ * at 40% opacity (2.8:1); 70% keeps it secondary and at least 5.5:1 on both
+ * tooltip variants in both modes (WCAG 1.4.3).
  */
 const TooltipShortcut: FC<TooltipShortcutProps> = ({ className, ...props }) => (
-  <span className={twMerge('opacity-40', className)} {...props} />
+  <span className={twMerge('opacity-70', className)} {...props} />
 )
 TooltipShortcut.displayName = 'TooltipShortcut'
 

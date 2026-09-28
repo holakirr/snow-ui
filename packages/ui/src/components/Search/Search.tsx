@@ -203,7 +203,8 @@ const Search: FC<SearchProps> = ({
           aria-label={clearLabel}
           title={clearLabel}
           onClick={clear}
-          className="flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-40 outline-none transition-opacity hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
+          // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon (WCAG 1.4.11).
+          className="flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
         >
           <XCircleIcon weight="fill" size={clearIconSizes[size]} />
         </button>
@@ -214,7 +215,10 @@ const Search: FC<SearchProps> = ({
             keys={shortcut}
             separator=""
             aria-hidden
-            className="inline-flex h-4 w-auto shrink-0 items-center rounded-[6px] border-[0.5px] border-black-10 px-1 text-12 text-black-20"
+            // Figma: Black/20% text (1.6:1). The hint is text, so `text-secondary`,
+            // with no fill of its own: on the hovered dark field a second
+            // Black/4% layer took it under 4.5:1.
+            className="inline-flex h-4 w-auto shrink-0 items-center rounded-[6px] border-[0.5px] border-black-10 bg-transparent px-1 text-12 text-secondary"
           />
         )
       )}

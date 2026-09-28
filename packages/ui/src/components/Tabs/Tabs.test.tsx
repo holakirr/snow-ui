@@ -36,7 +36,11 @@ describe('Tabs', () => {
     const line = tab.querySelector('[aria-hidden]')
 
     expect(list).toHaveAttribute('data-variant', 'line')
-    expect(tab).toHaveClass('text-14', 'data-[state=active]:text-primary')
+    expect(tab).toHaveClass(
+      'text-14',
+      'text-secondary',
+      'enabled:data-[state=active]:text-primary',
+    )
     expect(line).toHaveClass('h-0.5', 'group-data-[state=active]:bg-primary')
   })
 
@@ -58,8 +62,8 @@ describe('Tabs', () => {
     expect(active).toHaveClass(
       'data-[state=active]:bg-white-80',
       'data-[state=active]:shadow-2',
-      'opacity-40',
-      'data-[state=active]:opacity-100',
+      'text-secondary',
+      'enabled:data-[state=active]:text-black',
       'rounded-16',
     )
     // No underline in the segmented variants.
@@ -142,7 +146,7 @@ describe('Tabs', () => {
     fireEvent.keyDown(one, { key: 'ArrowRight' })
 
     await waitFor(() => expect(two).toHaveFocus())
-    // Inactive items are at 40% opacity; keyboard focus lifts it.
-    expect(two).toHaveClass('focus-ring', 'focus-visible:opacity-100')
+    // Inactive items are text-secondary; keyboard focus turns them black.
+    expect(two).toHaveClass('focus-ring', 'focus-visible:text-black')
   })
 })

@@ -10,7 +10,12 @@ describe('Toggle', () => {
 
     const toggle = screen.getByRole('button', { name: 'bold' })
 
-    expect(toggle).toHaveClass('opacity-40', 'data-[state=on]:bg-black-4')
+    // Off: text-secondary (Figma's 40% opacity is 2.85:1); on: black.
+    expect(toggle).toHaveClass(
+      'text-secondary',
+      'enabled:data-[state=on]:text-black',
+      'data-[state=on]:bg-black-4',
+    )
 
     fireEvent.click(toggle)
 
@@ -106,7 +111,7 @@ describe('ToggleGroup', () => {
     toggle.focus()
 
     expect(toggle).toHaveFocus()
-    expect(toggle).toHaveClass('focus-ring', 'focus-visible:opacity-100')
+    expect(toggle).toHaveClass('focus-ring', 'focus-visible:text-black')
   })
 
   it('keeps a disabled toggle visible and non-interactive', () => {
@@ -119,10 +124,8 @@ describe('ToggleGroup', () => {
     const toggle = screen.getByRole('button', { name: 'bold' })
 
     expect(toggle).toBeDisabled()
-    // Full opacity with Black/20% content on a Black/4% tile, instead of
-    // 20% opacity on top of the 40% "off" opacity.
+    // Black/20% content on a Black/4% tile, instead of 20% opacity.
     expect(toggle).toHaveClass(
-      'disabled:opacity-100',
       'disabled:text-black-20',
       'disabled:bg-black-4',
       'disabled:cursor-not-allowed',

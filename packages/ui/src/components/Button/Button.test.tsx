@@ -73,8 +73,10 @@ describe('Button', () => {
 
     const button = screen.getByRole(ROLES.button)
 
-    expect(button).toHaveClass('opacity-40')
-    expect(button).toHaveClass('hover:opacity-100')
+    // Figma's 40% opacity is 2.85:1; the label is text-secondary instead.
+    expect(button).toHaveClass('text-secondary', 'hover:text-black')
+    expect(button).not.toHaveClass('text-black')
+    expect(button.className).not.toMatch(/opacity-40/)
     expect(button).toHaveClass('p-0')
     expect(button).not.toHaveClass('px-3')
     expect(button).not.toHaveClass('min-h-6')
@@ -234,7 +236,7 @@ describe('Button', () => {
 
     const button = screen.getByRole(ROLES.button)
 
-    expect(button).toHaveClass('focus-ring', 'focus-visible:opacity-100')
+    expect(button).toHaveClass('focus-ring', 'focus-visible:text-black')
   })
 
   it('leaves icons that size themselves alone', () => {

@@ -70,7 +70,7 @@ describe('Input', () => {
     expect(title.compareDocumentPosition(input)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     )
-    expect(title).toHaveClass('text-12', 'text-black-40')
+    expect(title).toHaveClass('text-12', 'text-secondary')
     expect(input).toHaveAttribute('placeholder', 'you@example.com')
   })
 

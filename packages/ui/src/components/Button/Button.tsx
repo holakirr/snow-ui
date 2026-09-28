@@ -73,8 +73,9 @@ const buttonVariants = cva(
         // that is 2.07:1, so the label flips to black there (10.15:1).
         filled:
           'bg-primary text-white hover:bg-primary-hover disabled:bg-black-4',
-        // No box: 40% opacity, 100% on hover and keyboard focus.
-        bare: 'bg-transparent opacity-40 hover:opacity-100 focus-visible:opacity-100 disabled:opacity-100',
+        // No box. Figma dims it to 40% opacity (2.85:1); the label uses
+        // `text-secondary` instead (5.74:1), black on hover and keyboard focus.
+        bare: 'bg-transparent text-secondary hover:text-black focus-visible:text-black',
       },
       size: {
         sm: 'min-h-6 min-w-6 gap-1 rounded-12 px-3 py-1 text-12',

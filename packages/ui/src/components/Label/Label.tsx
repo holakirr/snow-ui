@@ -7,7 +7,7 @@ import { twMerge } from '../../utils/tw-merge'
 
 // Figma Input "Title": 12/16 Regular, Black/40%.
 const labelVariants = cva(
-  'text-12 font-normal text-black-40 transition-all peer-disabled:cursor-not-allowed',
+  'text-12 font-normal text-secondary transition-all peer-disabled:cursor-not-allowed',
 )
 
 type LabelProps = ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &

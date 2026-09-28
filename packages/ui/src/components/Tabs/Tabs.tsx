@@ -76,14 +76,17 @@ const TabsList: FC<TabsListProps> = ({
 )
 TabsList.displayName = TabsPrimitive.List.displayName
 
-/** Figma "Underline" tab: the inactive label is at 40% opacity, 100% on hover. */
+/**
+ * Figma "Underline" tab. Figma dims the inactive label to 40% opacity
+ * (2.85:1); here it is `text-secondary` (5.74:1 light, 7.08:1 dark), black on
+ * hover and keyboard focus, and `primary` when active.
+ */
 const lineTriggerVariants = cva(
   [
-    'group inline-flex flex-col items-center justify-center gap-1 whitespace-nowrap text-black transition-all',
+    'group inline-flex flex-col items-center justify-center gap-1 whitespace-nowrap text-secondary transition-all',
     'cursor-pointer rounded-4 focus-ring',
-    // Keyboard focus lifts the 40% opacity so the focus ring stays visible.
-    'opacity-40 hover:opacity-100 focus-visible:opacity-100 data-[state=active]:text-primary data-[state=active]:opacity-100',
-    'disabled:cursor-not-allowed disabled:opacity-100 disabled:text-black-20 [&_svg]:shrink-0',
+    'hover:text-black focus-visible:text-black enabled:data-[state=active]:text-primary',
+    'disabled:cursor-not-allowed disabled:text-black-20 [&_svg]:shrink-0',
   ],
   {
     variants: {

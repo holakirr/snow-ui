@@ -7,7 +7,7 @@ import './index.css'
 const preview: Preview = {
   parameters: {
     backgrounds: {
-      disable: true,
+      disabled: true,
     },
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {

@@ -3,12 +3,7 @@
   "compilerOptions": {
     "useDefineForClassFields": true,
     "allowImportingTsExtensions": true,
-    "allowJs": true,
-    "declaration": true,
-    "declarationDir": "./dist",
-    "sourceMap": true,
-    "outDir": "./dist"
+    "allowJs": true
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src"]
 }

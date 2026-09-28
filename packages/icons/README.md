@@ -14,7 +14,7 @@ Take a look at my [CV](https://holakirr.com) =)
 - 🔍 TypeScript for type safety
 - ✅ Unit tests with Vitest + Testing Library
 - 🌲 Tree-shakeable ESM (one module per icon) plus CommonJS build
-- 🚀 Vite for fast development and building
+- 🚀 tsdown (Rolldown) library build, checked with publint and are-the-types-wrong
 - ⚡️ Powered by Bun for fast package management and running scripts
 
 ## Usage

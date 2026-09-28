@@ -5,6 +5,9 @@
 #   2. Publish a GitHub release whose tag matches that version (e.g. v2.0.3 or 2.0.3).
 # This workflow does not modify or push anything to the repository; it fails if
 # the release tag does not match package.json.
+#
+# npm auth: Trusted Publisher configured on npmjs.com for this repo and
+# workflow file (release.yml) with "Allow npm publish" enabled.
 
 name: Publish to npm
 
@@ -33,7 +36,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies
@@ -61,6 +64,6 @@ jobs:
           echo "Version $PKG_VERSION matches release tag $TAG_NAME"
 
       - name: Publish to npm
+        # Authenticates via npm Trusted Publishing (OIDC, needs npm >= 11.5
+        # from Node 24 and `id-token: write`); no NPM_TOKEN is used.
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

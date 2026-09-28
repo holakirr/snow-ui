@@ -10,6 +10,7 @@
     "build": "bun run build:icons && bun run build:ui",
     "build:icons": "bun run --filter @holakirr/snow-ui-icons build",
     "build:ui": "bun run --filter @holakirr/snow-ui build",
+    "tokens": "bun run --filter @holakirr/snow-ui tokens",
     "test": "bun run --filter '*' test",
     "test:storybook": "vitest run --project storybook",
     "lint": "biome check .",

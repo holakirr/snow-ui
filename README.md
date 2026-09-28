@@ -22,6 +22,7 @@ bun install            # install all workspaces
 bun run lint           # biome check (one shared biome.json)
 bun run typecheck      # tsc for every package
 bun run test           # vitest for every package
+bun run tokens         # regenerate the ui token files from packages/ui/tokens (DTCG)
 bun run build          # tsdown build of icons, then ui (+ publint and attw checks)
 bun run storybook      # shared Storybook (ui + icons) on :53741
 bun run build:storybook # static Storybook in ./storybook-static
@@ -41,7 +42,7 @@ Run a script in a single package with `bun run --filter <package-name> <script>`
 
 ### Library builds
 
-Both packages are built with [tsdown](https://tsdown.dev) (`packages/*/tsdown.config.ts`): ESM (`.js`) and CommonJS (`.cjs`) with matching `.d.ts` / `.d.cts`, one output file per source module (`unbundle`), so `'use client'` directives stay on their modules and single-icon imports stay small. tsdown writes the `exports` / `main` / `module` / `types` fields of each `package.json` and runs publint and are-the-types-wrong after every build. `@holakirr/snow-ui` additionally builds `dist/index.css` with the Tailwind CLI before tsdown runs.
+Both packages are built with [tsdown](https://tsdown.dev) (`packages/*/tsdown.config.ts`): ESM (`.js`) and CommonJS (`.cjs`) with matching `.d.ts` / `.d.cts`, one output file per source module (`unbundle`), so `'use client'` directives stay on their modules and single-icon imports stay small. tsdown writes the `exports` / `main` / `module` / `types` fields of each `package.json` and runs publint and are-the-types-wrong after every build. Before tsdown runs, `@holakirr/snow-ui` regenerates its token files (`bun run tokens`, see [Design tokens](CONTRIBUTING.md#design-tokens)) and builds `dist/index.css` with the Tailwind CLI.
 
 The handful of [Phosphor](https://phosphoricons.com) icons both packages use are inlined under `dist/vendor/` (see `tsdown.vendor.ts`) rather than depended on: `@phosphor-icons/react` ships its CommonJS build as `dist/index.cjs.js` inside a `"type": "module"` package, so Node can't `require()` it.
 
@@ -51,6 +52,7 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 
 | Gate | Local command | CI job | Fails the build when |
 | --- | --- | --- | --- |
+| Generated tokens | `bun run tokens` | `build` | the files generated from `packages/ui/tokens` differ from the committed ones |
 | Lint and format ([Biome](https://biomejs.dev)) | `bun run lint` | `build` | a lint rule or the formatter reports a problem |
 | Types | `bun run typecheck` | `build` | `tsc` reports an error in a package or the root tooling |
 | Unit tests (Vitest, jsdom) | `bun run test` | `build` | a `*.test.ts(x)` test fails |

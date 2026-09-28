@@ -17,7 +17,8 @@ import {
   textStyles,
 } from './tokens'
 
-// Storybook "Foundations" pages, rendered from the token list in tokens.ts.
+// Storybook "Foundations" pages, rendered from the token data in tokens.ts
+// (generated from the DTCG tokens by `bun run tokens`).
 
 const MODE_BACKGROUNDS = { light: '#fff', dark: '#333' }
 

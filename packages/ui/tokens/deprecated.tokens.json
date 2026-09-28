@@ -1,0 +1,110 @@
+{
+  "color": {
+    "$type": "color",
+    "brand": {
+      "$value": "{color.primary}",
+      "$deprecated": "Use primary; removed in the next major."
+    },
+    "brand-hover": {
+      "$value": "{color.primary-hover-strong}",
+      "$deprecated": "Use primary-hover-strong; removed in the next major."
+    },
+    "bg1": {
+      "$value": "{color.background-1}",
+      "$deprecated": "Use background-1; removed in the next major."
+    },
+    "bg2": {
+      "$value": "{color.background-2}",
+      "$deprecated": "Use background-2; removed in the next major."
+    },
+    "bg3": {
+      "$value": "{color.color-1}",
+      "$deprecated": "Use color-1; removed in the next major."
+    },
+    "bg4": {
+      "$value": "{color.color-2}",
+      "$deprecated": "Use color-2; removed in the next major."
+    },
+    "bg5": {
+      "$value": "{color.surface-1}",
+      "$deprecated": "Use surface-1; removed in the next major."
+    },
+    "background": {
+      "$value": "{color.background-1}",
+      "$deprecated": "Use background-1; removed in the next major."
+    },
+    "foreground": {
+      "$value": "{color.black}",
+      "$deprecated": "Use black; removed in the next major."
+    },
+    "muted": {
+      "$value": "{color.black-4}",
+      "$deprecated": "Use black-4; removed in the next major."
+    },
+    "muted-foreground": {
+      "$value": "{color.black-40}",
+      "$deprecated": "Use black-40; removed in the next major."
+    },
+    "accent": {
+      "$value": "{color.black-10}",
+      "$deprecated": "Use black-10; removed in the next major."
+    },
+    "accent-foreground": {
+      "$value": "{color.black}",
+      "$deprecated": "Use black; removed in the next major."
+    },
+    "destructive": {
+      "$value": "{color.red}",
+      "$deprecated": "Use red; removed in the next major."
+    },
+    "input": {
+      "$value": "{color.black-10}",
+      "$deprecated": "Use black-10; removed in the next major."
+    },
+    "ring": {
+      "$value": "{color.primary}",
+      "$deprecated": "Use primary; removed in the next major."
+    },
+    "sidebar-border": {
+      "$value": "{color.black-10}",
+      "$deprecated": "Use black-10; removed in the next major."
+    },
+    "white-border": {
+      "$value": "{color.black-10}",
+      "$deprecated": "Use black-10; removed in the next major."
+    }
+  },
+  "channels": {
+    "$type": "color",
+    "$description": "Comma-separated channels of the old token system (`rgba(var(--black), 0.5)`): `--black`, `--white`, `--brand`… They follow the theme scopes but are not Tailwind theme variables.",
+    "$deprecated": "Use the `--color-*` tokens; removed in the next major.",
+    "black": {
+      "$value": "{color.black}",
+      "$deprecated": "Use the `--color-*` tokens; removed in the next major."
+    },
+    "white": {
+      "$value": "{color.white}",
+      "$deprecated": "Use the `--color-*` tokens; removed in the next major."
+    },
+    "brand": {
+      "$value": "{color.primary}",
+      "$deprecated": "Use the `--color-*` tokens; removed in the next major."
+    },
+    "brand-hover": {
+      "$value": "{color.primary-hover-strong}",
+      "$deprecated": "Use the `--color-*` tokens; removed in the next major."
+    },
+    "bg1": {
+      "$value": "{color.background-1}",
+      "$deprecated": "Use the `--color-*` tokens; removed in the next major."
+    },
+    "bg2": {
+      "$value": "{color.background-2}",
+      "$deprecated": "Use the `--color-*` tokens; removed in the next major."
+    },
+    "bg5": {
+      "$value": "{color.surface-1}",
+      "$deprecated": "Use the `--color-*` tokens; removed in the next major."
+    }
+  }
+}

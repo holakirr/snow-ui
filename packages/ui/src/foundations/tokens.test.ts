@@ -1,10 +1,11 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-import { tokenScales } from '../utils/tw-merge'
+import { tokenScales } from '../utils/token-scales.generated'
 import {
   blurs,
+  colorGroups,
   colorTokens,
   deprecatedColors,
   focusRing,
@@ -14,7 +15,19 @@ import {
   textStyles,
 } from './tokens'
 
-const css = readFileSync(join(import.meta.dirname, '../index.css'), 'utf8')
+// The DTCG tokens (packages/ui/tokens) are generated into
+// src/styles/tokens.generated.css and ./tokens.generated.ts by
+// `bun run tokens`; CI fails when the committed files are stale. These tests
+// check the token files, and that the generated CSS and docs data agree.
+
+const tokensDir = join(import.meta.dirname, '../../tokens')
+const readJson = (file: string) =>
+  JSON.parse(readFileSync(join(tokensDir, file), 'utf8'))
+
+const css = readFileSync(
+  join(import.meta.dirname, '../styles/tokens.generated.css'),
+  'utf8',
+)
 const source = css.replace(/\/\*[\s\S]*?\*\//g, '')
 
 const normalize = (value: string) =>
@@ -26,7 +39,8 @@ const normalize = (value: string) =>
     .toLowerCase()
 
 /** Body of the first `{ … }` block that follows `start` (braces matched). */
-const blockAfter = (source: string, start: number) => {
+const blockAfter = (start: number) => {
+  expect(start).toBeGreaterThanOrEqual(0)
   const open = source.indexOf('{', start)
   let depth = 0
   for (let i = open; i < source.length; i++) {
@@ -34,7 +48,7 @@ const blockAfter = (source: string, start: number) => {
     if (source[i] === '}') depth--
     if (depth === 0) return source.slice(open + 1, i)
   }
-  throw new Error('Unbalanced braces in index.css')
+  throw new Error('Unbalanced braces in tokens.generated.css')
 }
 
 /** `--name: value;` declarations of a block without nested blocks. */
@@ -47,30 +61,87 @@ const declarations = (block: string) => {
   return map
 }
 
-const theme = declarations(
-  blockAfter(source, source.indexOf('@theme static {')),
-)
-
+const theme = declarations(blockAfter(source.indexOf('@theme static {')))
 // The dark scope; `src/theme.test.ts` checks that the other scopes match it.
-const dark = declarations(
-  blockAfter(source, source.indexOf('[data-theme="dark"] {')),
-)
+const dark = declarations(blockAfter(source.indexOf('[data-theme="dark"] {')))
 
 const themeNames = (prefix: string) =>
   [...theme.keys()].filter(
     (name) => name.startsWith(prefix) && !name.includes('--', 2),
   )
 
-describe('design tokens (index.css ↔ foundations/tokens.ts)', () => {
-  it.each(colorTokens)('--color-$name matches Figma in both modes', (token) => {
-    const variable = `--color-${token.name}`
-    const light = theme.get(variable)
-
-    expect(light).toBe(normalize(token.light))
-    expect(dark.get(variable) ?? light).toBe(normalize(token.dark))
+/** Flattens a DTCG group into `[id, token]` pairs. */
+const flatten = (
+  group: Record<string, unknown>,
+  path: string[] = [],
+): [string, Record<string, unknown>][] =>
+  Object.entries(group).flatMap(([key, value]) => {
+    if (key.startsWith('$') || typeof value !== 'object' || !value) return []
+    const node = value as Record<string, unknown>
+    return '$value' in node
+      ? [[[...path, key].join('.'), node]]
+      : flatten(node, [...path, key])
   })
 
-  it('documents every colour token', () => {
+describe('DTCG token files (packages/ui/tokens)', () => {
+  const light = flatten(readJson('color.light.tokens.json'))
+  const darkTokens = flatten(readJson('color.dark.tokens.json'))
+
+  it('are listed by the resolver', () => {
+    const resolver = readJson('snow-ui.resolver.json')
+    const referenced = [
+      ...Object.values(
+        resolver.sets as Record<string, { sources: { $ref: string }[] }>,
+      ).flatMap((set) => set.sources),
+      ...Object.values(
+        resolver.modifiers as Record<
+          string,
+          { contexts: Record<string, { $ref: string }[]> }
+        >,
+      ).flatMap((modifier) => Object.values(modifier.contexts).flat()),
+    ].map(({ $ref }) => $ref)
+
+    expect(referenced.sort()).toEqual(
+      readdirSync(tokensDir)
+        .filter((file) => file.endsWith('.tokens.json'))
+        .sort(),
+    )
+  })
+
+  it('declare the same colour tokens in the light and the dark mode', () => {
+    expect(darkTokens.map(([id]) => id)).toEqual(light.map(([id]) => id))
+  })
+
+  it('give every Figma colour its Figma name', () => {
+    for (const [id, token] of light) {
+      const figma = (
+        token.$extensions as Record<string, { figma?: string }> | undefined
+      )?.['com.holakirr.snow-ui']?.figma
+      // Library additions have no Figma name and say why in $description.
+      if (!figma) expect(token.$description, id).toMatch(/addition|overlay/i)
+    }
+  })
+
+  it('use sRGB colours and px dimensions', () => {
+    const files = readdirSync(tokensDir).filter((file) =>
+      file.endsWith('.tokens.json'),
+    )
+    const values = JSON.stringify(files.map(readJson))
+    expect(values).not.toMatch(/"colorSpace":\s*"(?!srgb")/)
+    expect(values).not.toMatch(/"unit":\s*"(?!px")/)
+  })
+})
+
+describe('generated tokens (tokens.generated.css ↔ tokens.generated.ts)', () => {
+  it.each(colorTokens)('--color-$name has its value in both modes', (token) => {
+    const variable = `--color-${token.name}`
+    const lightValue = theme.get(variable)
+
+    expect(lightValue).toBe(normalize(token.light))
+    expect(dark.get(variable) ?? lightValue).toBe(normalize(token.dark))
+  })
+
+  it('documents every colour token once', () => {
     const documented = [
       ...colorTokens.map(({ name }) => name),
       ...deprecatedColors.map(({ name }) => name),
@@ -80,6 +151,11 @@ describe('design tokens (index.css ↔ foundations/tokens.ts)', () => {
     for (const name of dark.keys()) {
       if (name.startsWith('--color-')) expect(documented).toContain(name)
     }
+    expect(
+      colorGroups
+        .flatMap((group) => group.tokens.map(({ name }) => name))
+        .sort(),
+    ).toEqual(colorTokens.map(({ name }) => name).sort())
   })
 
   it.each(deprecatedColors)(
@@ -89,22 +165,62 @@ describe('design tokens (index.css ↔ foundations/tokens.ts)', () => {
       expect(theme.get(`--color-${name}`)).toBe(`var(--color-${use})`)
       expect(css).toMatch(
         new RegExp(
-          `/\\* @deprecated → use ${use}, removed in next major \\*/\\s*--color-${name}:`,
+          `/\\* @deprecated Use ${use}; removed in the next major\\. \\*/\\s*--color-${name}:`,
         ),
       )
     },
   )
 
+  it('resolves the color-mix() tokens to their $value in each mode', () => {
+    const rgb = (hex: string) => {
+      const long =
+        hex.length === 4
+          ? `#${[...hex.slice(1)].map((c) => c + c).join('')}`
+          : hex
+      return [1, 3, 5].map((i) => Number.parseInt(long.slice(i, i + 2), 16))
+    }
+    const resolved = (name: string, mode: 'light' | 'dark') => {
+      const token = colorTokens.find((candidate) => candidate.name === name)
+      return token?.resolved?.[mode] ?? token?.[mode] ?? ''
+    }
+    const formulas = colorTokens.filter(({ light }) =>
+      light.startsWith('color-mix('),
+    )
+
+    expect(formulas.map(({ name }) => name)).toEqual([
+      'primary-hover',
+      'primary-hover-strong',
+    ])
+    for (const token of formulas) {
+      const [, a, b, percent] =
+        token.light.match(
+          /^color-mix\(in srgb, var\(--color-([\w-]+)\), var\(--color-([\w-]+)\) (\d+)%\)$/,
+        ) ?? []
+      for (const mode of ['light', 'dark'] as const) {
+        const p = Number(percent) / 100
+        const mixed = rgb(resolved(a, mode)).map((c, i) =>
+          Math.round(c * (1 - p) + rgb(resolved(b, mode))[i] * p),
+        )
+        expect(
+          rgb(token.resolved?.[mode] ?? ''),
+          `${token.name} ${mode}`,
+        ).toEqual(mixed)
+      }
+    }
+  })
+
   it('has the Figma text styles', () => {
     expect(themeNames('--text-').sort()).toEqual(
       textStyles.map(({ size }) => `--text-${size}`).sort(),
     )
-    for (const { size, lineHeight } of textStyles) {
+    for (const { size, lineHeight, weights } of textStyles) {
       expect(theme.get(`--text-${size}`)).toBe(`${size / 16}rem`)
       expect(theme.get(`--text-${size}--line-height`)).toBe(
         `${lineHeight / 16}rem`,
       )
+      expect(weights).toEqual([400, 600])
     }
+    expect(theme.get('--font-sans')).toBe('inter, sans-serif')
     expect(theme.get('--font-sans--font-feature-settings')).toBe(
       normalize(fontFeatureSettings),
     )
@@ -135,7 +251,7 @@ describe('design tokens (index.css ↔ foundations/tokens.ts)', () => {
     }
   })
 
-  it('keeps the tailwind-merge scales in sync', () => {
+  it('gives tailwind-merge every token scale', () => {
     const suffix = (utility: string, prefix: string) =>
       utility.slice(prefix.length)
 

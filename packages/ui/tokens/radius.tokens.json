@@ -1,0 +1,39 @@
+{
+  "radius": {
+    "$type": "dimension",
+    "$description": "Figma \"Corner Radius\" collection (Standard mode). `--radius-<px>`, in rem.",
+    "4": {
+      "$value": { "value": 4, "unit": "px" }
+    },
+    "8": {
+      "$value": { "value": 8, "unit": "px" }
+    },
+    "12": {
+      "$value": { "value": 12, "unit": "px" }
+    },
+    "16": {
+      "$value": { "value": 16, "unit": "px" }
+    },
+    "20": {
+      "$value": { "value": 20, "unit": "px" }
+    },
+    "24": {
+      "$value": { "value": 24, "unit": "px" }
+    },
+    "28": {
+      "$value": { "value": 28, "unit": "px" }
+    },
+    "32": {
+      "$value": { "value": 32, "unit": "px" }
+    },
+    "40": {
+      "$value": { "value": 40, "unit": "px" }
+    },
+    "48": {
+      "$value": { "value": 48, "unit": "px" }
+    },
+    "80": {
+      "$value": { "value": 80, "unit": "px" }
+    }
+  }
+}

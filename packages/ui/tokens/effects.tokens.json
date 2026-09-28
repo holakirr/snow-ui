@@ -1,0 +1,221 @@
+{
+  "shadow": {
+    "$type": "shadow",
+    "$description": "Figma effect styles (drop shadows). Their colours are raw values: they do not flip in dark mode.",
+    "1": {
+      "$value": {
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0],
+          "alpha": 0.1,
+          "hex": "#000000"
+        },
+        "offsetX": { "value": 0, "unit": "px" },
+        "offsetY": { "value": 0.5, "unit": "px" },
+        "blur": { "value": 0.5, "unit": "px" },
+        "spread": { "value": 0, "unit": "px" }
+      },
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Drop shadow 1" }
+      }
+    },
+    "2": {
+      "$value": {
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0],
+          "alpha": 0.1,
+          "hex": "#000000"
+        },
+        "offsetX": { "value": 0, "unit": "px" },
+        "offsetY": { "value": 2, "unit": "px" },
+        "blur": { "value": 4, "unit": "px" },
+        "spread": { "value": 0, "unit": "px" }
+      },
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Drop shadow 2" }
+      }
+    },
+    "focus": {
+      "$value": {
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0],
+          "alpha": 0.04,
+          "hex": "#000000"
+        },
+        "offsetX": { "value": 0, "unit": "px" },
+        "offsetY": { "value": 0, "unit": "px" },
+        "blur": { "value": 0, "unit": "px" },
+        "spread": { "value": 4, "unit": "px" }
+      },
+      "$description": "Or ring-4 ring-focus, which composes with other shadows.",
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Focus" }
+      }
+    },
+    "glow": {
+      "$value": [
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.2,
+            "hex": "#ffffff"
+          },
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": 0, "unit": "px" },
+          "blur": { "value": 12, "unit": "px" },
+          "spread": { "value": 8, "unit": "px" }
+        },
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.2,
+            "hex": "#000000"
+          },
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": 0, "unit": "px" },
+          "blur": { "value": 12, "unit": "px" },
+          "spread": { "value": 8, "unit": "px" }
+        }
+      ],
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Glow" }
+      }
+    },
+    "glass-1": {
+      "$value": {
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0],
+          "alpha": 0.04,
+          "hex": "#000000"
+        },
+        "offsetX": { "value": 0, "unit": "px" },
+        "offsetY": { "value": 4, "unit": "px" },
+        "blur": { "value": 16, "unit": "px" },
+        "spread": { "value": 0, "unit": "px" }
+      },
+      "$extensions": {
+        "com.holakirr.snow-ui": {
+          "figma": "Glass 1 (drop shadow part)"
+        }
+      }
+    },
+    "glass-2": {
+      "$value": {
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0],
+          "alpha": 0.1,
+          "hex": "#000000"
+        },
+        "offsetX": { "value": 0, "unit": "px" },
+        "offsetY": { "value": 8, "unit": "px" },
+        "blur": { "value": 28, "unit": "px" },
+        "spread": { "value": 0, "unit": "px" }
+      },
+      "$extensions": {
+        "com.holakirr.snow-ui": {
+          "figma": "Glass 2 (drop shadow part)"
+        }
+      }
+    }
+  },
+  "inset-shadow": {
+    "$type": "shadow",
+    "$description": "Figma effect styles (inner shadows): `inset-shadow-*`.",
+    "inner": {
+      "$value": [
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.1,
+            "hex": "#000000"
+          },
+          "offsetX": { "value": 1, "unit": "px" },
+          "offsetY": { "value": 1.5, "unit": "px" },
+          "blur": { "value": 4, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" },
+          "inset": true
+        },
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.08,
+            "hex": "#000000"
+          },
+          "offsetX": { "value": 1, "unit": "px" },
+          "offsetY": { "value": 1.5, "unit": "px" },
+          "blur": { "value": 4, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" },
+          "inset": true
+        },
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.25,
+            "hex": "#ffffff"
+          },
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": -0.5, "unit": "px" },
+          "blur": { "value": 1, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" },
+          "inset": true
+        },
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.3,
+            "hex": "#ffffff"
+          },
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": -0.5, "unit": "px" },
+          "blur": { "value": 1, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" },
+          "inset": true
+        }
+      ],
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Inner shadow" }
+      }
+    }
+  },
+  "ring-color": {
+    "$type": "color",
+    "focus": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 0],
+        "alpha": 0.04,
+        "hex": "#000000"
+      },
+      "$description": "The Figma \"Focus\" effect as a ring colour: `ring-4 ring-focus`.",
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Focus" }
+      }
+    }
+  },
+  "blur": {
+    "$type": "dimension",
+    "$description": "Figma background blurs. CSS blur is half the Figma value (Figma \"Background blur 40\" = 20px).",
+    "bg-40": {
+      "$value": { "value": 20, "unit": "px" },
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Background blur 40" }
+      }
+    },
+    "bg-100": {
+      "$value": { "value": 50, "unit": "px" },
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Background blur 100" }
+      }
+    }
+  }
+}

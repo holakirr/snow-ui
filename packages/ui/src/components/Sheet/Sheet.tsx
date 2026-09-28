@@ -20,7 +20,8 @@ type SheetOverlayProps = SheetPrimitive.DialogOverlayProps
 const SheetOverlay: FC<SheetOverlayProps> = ({ className, ...props }) => (
   <SheetPrimitive.Overlay
     className={twMerge(
-      // The Dialog mask: the Figma gradient and "Background blur 40".
+      // The Dialog mask: the Figma gradient and "Background blur 40". Figma's
+      // dark dashboards use the same raw colours, so it doesn't flip.
       'fixed inset-0 z-50 bg-linear-to-t from-[#cbddff]/50 to-[#d7d0ff]/20 backdrop-blur-bg-40 data-[state=open]:animate-in data-[state=closed]:animate-out',
       className,
     )}

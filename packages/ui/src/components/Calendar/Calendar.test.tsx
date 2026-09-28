@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 import { describe, expect, it, vi } from 'vitest'
@@ -145,7 +145,11 @@ describe('Calendar', () => {
       '[&>button]:text-white',
     )
     expect(today).toHaveAttribute('data-today', 'true')
-    expect(today).toHaveClass('not-aria-selected:[&>button]:bg-indigo')
+    expect(today).toHaveClass(
+      'not-aria-selected:[&>button]:bg-indigo',
+      // Static black on indigo (10:1); Figma's white is 2.07:1.
+      'not-aria-selected:[&>button]:text-static-black',
+    )
     expect(today).not.toHaveClass('[&>button]:bg-primary')
   })
 
@@ -213,6 +217,95 @@ describe('Calendar', () => {
     expect(onLastSelectionClick).toHaveBeenCalledWith(lastSelection)
     expect(
       screen.getByRole('button', { name: /may 2024/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('puts Previous in the first caption and Next in the last one', () => {
+    const { container } = render(
+      <Calendar
+        mode="single"
+        numberOfMonths={2}
+        defaultMonth={new Date(2025, 0, 1)}
+      />,
+    )
+
+    const captions = container.querySelectorAll<HTMLElement>(
+      '[data-slot="calendar-caption"]',
+    )
+    expect(captions).toHaveLength(2)
+    const [first, last] = captions
+
+    expect(
+      within(first).getByRole('button', { name: /previous month/i }),
+    ).toBeInTheDocument()
+    expect(
+      within(first).queryByRole('button', { name: /next month/i }),
+    ).toBeNull()
+    expect(
+      within(last).getByRole('button', { name: /next month/i }),
+    ).toBeInTheDocument()
+    expect(
+      within(last).queryByRole('button', { name: /previous month/i }),
+    ).toBeNull()
+
+    // A single navigation landmark, not one per month.
+    expect(screen.getAllByRole('navigation')).toHaveLength(1)
+    expect(
+      screen.getByRole('navigation', { name: 'Month navigation' }),
+    ).toContainElement(
+      within(first).getByRole('button', { name: /previous month/i }),
+    )
+  })
+
+  it('translates the navigation label with labels.labelNav', () => {
+    render(
+      <Calendar
+        mode="single"
+        labels={{ labelNav: () => 'Navigation des mois' }}
+        defaultMonth={new Date(2025, 0, 1)}
+      />,
+    )
+
+    expect(
+      screen.getByRole('navigation', { name: 'Navigation des mois' }),
+    ).toBeInTheDocument()
+  })
+
+  it('renders no navigation landmark when the navigation is hidden', () => {
+    render(
+      <Calendar
+        mode="single"
+        hideNavigation
+        defaultMonth={new Date(2025, 0, 1)}
+      />,
+    )
+
+    expect(screen.queryByRole('navigation')).toBeNull()
+    expect(
+      screen.queryByRole('button', { name: /next month/i }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('merges user classNames into the defaults', () => {
+    render(
+      <Calendar
+        mode="single"
+        classNames={{ day: 'custom-day', selected: 'ring-2' }}
+        defaultMonth={new Date(2025, 0, 1)}
+      />,
+    )
+
+    const day = screen
+      .getAllByRole('gridcell')
+      .find((cell) => cell.getAttribute('data-day') === '2025-01-15')
+    // The user's class is added to the slot's defaults…
+    expect(day).toHaveClass('custom-day', 'text-12', 'justify-center')
+    // …and the other slots keep theirs.
+    expect(
+      screen.getAllByRole('columnheader', { hidden: true })[0],
+    ).toHaveClass('text-12', 'text-black-40')
+    expect(
+      screen.getByRole('button', { name: /next month/i }),
     ).toBeInTheDocument()
   })
 

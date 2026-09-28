@@ -14,6 +14,9 @@ type StatusIconProps = CustomIconProps & {
  * Secondary/Yellow for failure. They read the `@holakirr/snow-ui` colour
  * tokens when its CSS is loaded and fall back to the Figma values otherwise.
  * A `color` prop still wins, since it sets the icon's `fill`.
+ *
+ * The colours are light: they are meant for dark surfaces like the toast
+ * (5:1 or more there) and don't reach 3:1 on white.
  */
 const STATUS_COLORS = {
   [STATUSES.success]: 'var(--color-green, #71dd8c)',

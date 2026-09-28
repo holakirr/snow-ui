@@ -440,8 +440,9 @@ const SidebarGroupLabel: FC<SidebarGroupLabelProps> = ({
     <Comp
       data-sidebar="group-label"
       className={twMerge(
-        // Figma section heading: 14 Regular, Black/40%, padding 4/12, radius 12.
-        'duration-200 flex h-7 shrink-0 items-center rounded-12 px-3 text-14 font-normal text-black-40 outline-none transition-[margin,opacity] ease-linear focus-visible:ring-4 focus-visible:ring-focus [&>svg]:size-4 [&>svg]:shrink-0',
+        // Figma section heading: 14 Regular, padding 4/12, radius 12. Black/80%
+        // instead of Figma's Black/40% (2.85:1) for a 4.5:1 text contrast.
+        'duration-200 flex h-7 shrink-0 items-center rounded-12 px-3 text-14 font-normal text-black-80 outline-none transition-[margin,opacity] ease-linear focus-visible:ring-4 focus-visible:ring-focus [&>svg]:size-4 [&>svg]:shrink-0',
         'group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:-mt-7 group-data-[collapsible=icon]:opacity-0',
         className,
       )}
@@ -636,7 +637,7 @@ const SidebarMenuBadge: FC<SidebarMenuBadgeProps> = ({
   <div
     data-sidebar="menu-badge"
     className={twMerge(
-      'absolute right-2 flex h-5 min-w-5 items-center justify-center rounded-8 px-1 text-12 font-normal tabular-nums text-black-40 select-none pointer-events-none',
+      'absolute right-2 flex h-5 min-w-5 items-center justify-center rounded-8 px-1 text-12 font-normal tabular-nums text-black select-none pointer-events-none',
       'peer-hover/menu-button:text-black peer-data-[active=true]/menu-button:text-black',
       'peer-data-[size=sm]/menu-button:top-1',
       'peer-data-[size=default]/menu-button:top-2',

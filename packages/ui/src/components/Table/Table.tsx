@@ -83,7 +83,9 @@ type TableHeadProps = ComponentProps<'th'> & {
   /**
    * Makes the header a sort button with a sort icon and sets `aria-sort`:
    * `'asc'` / `'desc'` for the sorted column, `false` for a sortable column
-   * that isn't sorted. With TanStack Table pass `column.getIsSorted()`.
+   * that isn't sorted, `undefined` for a column that can't be sorted. With
+   * TanStack Table pass
+   * `column.getCanSort() ? column.getIsSorted() : undefined`.
    */
   sortDirection?: TableSortDirection
   /**

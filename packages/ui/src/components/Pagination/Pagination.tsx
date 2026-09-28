@@ -76,12 +76,18 @@ const PaginationLink: FC<PaginationLinkProps> = ({
   isActive,
   size = 'sm',
   disabled,
+  href,
+  onClick,
   ...props
 }) => (
+  // A disabled link has no `href` (so it can't navigate or take focus) and
+  // keeps `role="link"` with `aria-disabled`.
   <a
+    href={disabled ? undefined : href}
+    onClick={disabled ? undefined : onClick}
+    role={disabled ? 'link' : undefined}
     aria-current={isActive ? 'page' : undefined}
     aria-disabled={disabled || undefined}
-    tabIndex={disabled ? -1 : undefined}
     data-active={isActive || undefined}
     className={twMerge(paginationLinkVariants({ size, isActive }), className)}
     {...props}
@@ -155,8 +161,6 @@ const PaginationEllipsis = ({
 }: PaginationEllipsisProps) => {
   return (
     <span
-      role="presentation"
-      aria-hidden
       className={twMerge(
         'flex items-center justify-center text-black-40',
         ELLIPSIS_SIZES[size],
@@ -164,7 +168,8 @@ const PaginationEllipsis = ({
       )}
       {...props}
     >
-      …<span className="sr-only">More pages</span>
+      <span aria-hidden>…</span>
+      <span className="sr-only">More pages</span>
     </span>
   )
 }

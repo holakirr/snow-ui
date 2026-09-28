@@ -18,8 +18,8 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
   /**
    * Shows a close button. The Figma toast has none: it closes itself, on
-   * swipe or with Escape.
-   * @default false
+   * swipe or with Escape. Defaults to `true` for toasts with an `action` or
+   * an infinite `duration`, `false` otherwise.
    */
   closable?: boolean
 }

@@ -26,11 +26,13 @@ ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 /*
  * Figma Toast: a Black/80% fill under a White/10% overlay (the gradient layer),
- * "Background blur 40", radius 16, White/100% text. The tokens flip in dark
- * mode, so the toast turns light there.
+ * "Background blur 40", radius 16, White/100% text. The Figma component pins
+ * the Colors collection to SnowUI-Light, so the toast stays dark in dark mode
+ * too: the colours are the static ones, and the green / yellow status icons
+ * keep a contrast of at least 5:1.
  */
 const toastVariants = cva(
-  'group relative flex w-fit max-w-full items-center justify-between overflow-hidden rounded-16 bg-black-80 bg-linear-to-r from-white-10 to-white-10 backdrop-blur-bg-40 text-white transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom',
+  'group relative flex w-fit max-w-full items-center justify-between overflow-hidden rounded-16 bg-static-black/80 bg-linear-to-r from-static-white/10 to-static-white/10 backdrop-blur-bg-40 text-static-white transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom',
   {
     variants: {
       size: {
@@ -74,7 +76,7 @@ const ToastAction: FC<ToastActionProps> = ({ className, size, ...props }) => (
 ToastAction.displayName = ToastPrimitives.Action.displayName
 
 const toastCloseStyles = cva(
-  'shrink-0 cursor-pointer rounded-8 text-white-80 transition-colors hover:text-white focus:outline-hidden focus-visible:ring-4 focus-visible:ring-focus',
+  'shrink-0 cursor-pointer rounded-8 text-static-white/80 transition-colors hover:text-static-white focus:outline-hidden focus-visible:ring-4 focus-visible:ring-focus',
   {
     variants: {
       size: {
@@ -130,7 +132,7 @@ const ToastTitle: FC<ToastTitleProps> = ({ className, size, ...props }) => (
 )
 ToastTitle.displayName = ToastPrimitives.Title.displayName
 
-const toastDescriptionStyles = cva('text-white-80', {
+const toastDescriptionStyles = cva('text-static-white/80', {
   variants: {
     size: {
       lg: 'text-14',

@@ -13,6 +13,7 @@ import {
 } from 'react'
 import {
   type ChevronProps,
+  type ClassNames,
   type CustomComponents,
   DayPicker,
   type DayPickerProps,
@@ -123,6 +124,7 @@ type CalendarContextValue = {
   todayLabel: string
   lastSelectionLabel: string
   header?: ReactNode
+  navLabel: string
   navClassName?: string
   buttonPreviousClassName?: string
   buttonNextClassName?: string
@@ -350,23 +352,26 @@ const CalendarMonthCaption: CustomComponents['MonthCaption'] = ({
   const {
     hideNavigation,
     numberOfMonths,
+    navLabel,
     navClassName,
     buttonPreviousClassName,
     buttonNextClassName,
   } = useCalendarContext()
   const { previous, next } = useCalendarNav()
-  const { labels } = useDayPicker()
-  const isFirst = displayIndex === 0
-  const isLast = displayIndex === numberOfMonths - 1
+  const showPrevious = !hideNavigation && displayIndex === 0
+  const showNext = !hideNavigation && displayIndex === numberOfMonths - 1
+  // One navigation landmark: the first caption's nav holds Previous (and Next
+  // for a single month); later captions render Next without a landmark.
+  const Group = showPrevious ? 'nav' : 'div'
 
   return (
-    <div className={className} {...props}>
-      {isFirst && <CalendarActions />}
-      <nav
-        aria-label={labels.labelNav()}
+    <div data-slot="calendar-caption" className={className} {...props}>
+      {displayIndex === 0 && <CalendarActions />}
+      <Group
+        aria-label={showPrevious ? navLabel : undefined}
         className={twMerge('ml-auto flex items-center gap-2', navClassName)}
       >
-        {!hideNavigation && isFirst && (
+        {showPrevious && (
           <button
             type="button"
             className={twMerge(navButtonClassName, buttonPreviousClassName)}
@@ -378,7 +383,7 @@ const CalendarMonthCaption: CustomComponents['MonthCaption'] = ({
           </button>
         )}
         {children}
-        {!hideNavigation && isLast && (
+        {showNext && (
           <button
             type="button"
             className={twMerge(navButtonClassName, buttonNextClassName)}
@@ -389,7 +394,7 @@ const CalendarMonthCaption: CustomComponents['MonthCaption'] = ({
             <ArrowLineRightIcon size={20} />
           </button>
         )}
-      </nav>
+      </Group>
     </div>
   )
 }
@@ -518,10 +523,28 @@ const CalendarRoot: CustomComponents['Root'] = ({
   )
 }
 
+/** Merges the user's `classNames` into the defaults slot by slot. */
+const mergeClassNames = (
+  defaults: Partial<ClassNames>,
+  overrides: Partial<ClassNames> = {},
+): Partial<ClassNames> => {
+  const merged: Partial<ClassNames> = { ...defaults }
+  for (const [slot, value] of Object.entries(overrides) as [
+    keyof ClassNames,
+    string | undefined,
+  ][]) {
+    merged[slot] = twMerge(defaults[slot], value)
+  }
+  return merged
+}
+
 /**
  * A calendar built on react-day-picker, styled like the Figma DatePicker:
  * the week starts on Monday, the selected day is Primary, today is
  * Secondary/Indigo and days outside the month are Black/40%.
+ *
+ * The previous / next buttons sit in one navigation landmark labelled
+ * "Month navigation"; translate it with `labels={{ labelNav: () => '…' }}`.
  */
 function Calendar({
   className,
@@ -605,6 +628,7 @@ function Calendar({
         todayLabel,
         lastSelectionLabel,
         header,
+        navLabel: props.labels?.labelNav?.() ?? 'Month navigation',
         navClassName,
         buttonPreviousClassName,
         buttonNextClassName,
@@ -615,65 +639,68 @@ function Calendar({
         showWeekNumber={showWeekNumber}
         weekStartsOn={weekStartsOn}
         className={className}
-        classNames={{
-          months: twMerge('relative flex gap-4 p-4', monthsClassName),
-          month: twMerge('flex w-full flex-col', monthClassName),
-          month_caption: twMerge(
-            'flex h-7 items-center justify-between gap-2 text-12',
-            captionClassName,
-            monthCaptionClassName,
-          ),
-          caption_label: twMerge(
-            'truncate text-12 font-normal',
-            captionLabelClassName,
-          ),
-          month_grid: twMerge('mt-4 w-[328px]', monthGridClassName),
-          weekdays: twMerge(
-            'grid grid-cols-7 h-[38px] items-center',
-            weekdaysClassName,
-          ),
-          weekday: twMerge(
-            'w-full text-12 font-normal text-black-40',
-            weekdayClassName,
-          ),
-          week: twMerge('grid grid-cols-7', weekClassName),
-          day: twMerge(
-            'flex w-full items-center justify-center p-0 text-12',
-            dayClassName,
-          ),
-          // Figma: Button Medium "Borderless" days, 38px high, radius 12,
-          // 12 Regular, Black/4% on hover.
-          day_button: twMerge(
-            'h-[38px] w-full cursor-pointer rounded-12 p-0 font-normal text-inherit transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus disabled:cursor-not-allowed disabled:hover:bg-transparent',
-            dayButtonClassName,
-          ),
-          selected: twMerge(selectedButton, selectedClassName),
-          range_start: twMerge(
-            selectedButton,
-            'day-range-start [&>button]:rounded-r-none',
-            rangeStartClassName,
-          ),
-          range_middle: twMerge(
-            selectedButton,
-            '[&>button]:rounded-none',
-            rangeMiddleClassName,
-          ),
-          range_end: twMerge(
-            selectedButton,
-            'day-range-end [&>button]:rounded-l-none',
-            rangeEndClassName,
-          ),
-          // Figma "Today": Secondary/Indigo with white text, unless selected.
-          today: twMerge(
-            'not-aria-selected:[&>button]:bg-indigo not-aria-selected:[&>button]:text-static-white not-aria-selected:[&>button]:hover:bg-indigo/80',
-            todayClassName,
-          ),
-          outside: twMerge('day-outside text-black-40', outsideClassName),
-          disabled: twMerge('text-black-20', disabledClassName),
-          hidden: twMerge('invisible flex-1', hiddenClassName),
-          footer: 'px-4 pb-4 text-12 text-black-40',
-          ...classNames,
-        }}
+        classNames={mergeClassNames(
+          {
+            months: twMerge('relative flex gap-4 p-4', monthsClassName),
+            month: twMerge('flex w-full flex-col', monthClassName),
+            month_caption: twMerge(
+              'flex h-7 items-center justify-between gap-2 text-12',
+              captionClassName,
+              monthCaptionClassName,
+            ),
+            caption_label: twMerge(
+              'truncate text-12 font-normal',
+              captionLabelClassName,
+            ),
+            month_grid: twMerge('mt-4 w-[328px]', monthGridClassName),
+            weekdays: twMerge(
+              'grid grid-cols-7 h-[38px] items-center',
+              weekdaysClassName,
+            ),
+            weekday: twMerge(
+              'w-full text-12 font-normal text-black-40',
+              weekdayClassName,
+            ),
+            week: twMerge('grid grid-cols-7', weekClassName),
+            day: twMerge(
+              'flex w-full items-center justify-center p-0 text-12',
+              dayClassName,
+            ),
+            // Figma: Button Medium "Borderless" days, 38px high, radius 12,
+            // 12 Regular, Black/4% on hover.
+            day_button: twMerge(
+              'h-[38px] w-full cursor-pointer rounded-12 p-0 font-normal text-inherit transition-colors hover:bg-black-4 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-focus disabled:cursor-not-allowed disabled:hover:bg-transparent',
+              dayButtonClassName,
+            ),
+            selected: twMerge(selectedButton, selectedClassName),
+            range_start: twMerge(
+              selectedButton,
+              'day-range-start [&>button]:rounded-r-none',
+              rangeStartClassName,
+            ),
+            range_middle: twMerge(
+              selectedButton,
+              '[&>button]:rounded-none',
+              rangeMiddleClassName,
+            ),
+            range_end: twMerge(
+              selectedButton,
+              'day-range-end [&>button]:rounded-l-none',
+              rangeEndClassName,
+            ),
+            // Figma "Today": Secondary/Indigo, unless selected. The text is
+            // static black (10:1) instead of Figma's white (2.07:1).
+            today: twMerge(
+              'not-aria-selected:[&>button]:bg-indigo not-aria-selected:[&>button]:text-static-black not-aria-selected:[&>button]:hover:bg-indigo/80',
+              todayClassName,
+            ),
+            outside: twMerge('day-outside text-black-40', outsideClassName),
+            disabled: twMerge('text-black-20', disabledClassName),
+            hidden: twMerge('invisible flex-1', hiddenClassName),
+            footer: 'px-4 pb-4 text-12 text-black-80',
+          },
+          classNames,
+        )}
         components={{
           Chevron: CalendarChevron,
           MonthCaption: CalendarMonthCaption,

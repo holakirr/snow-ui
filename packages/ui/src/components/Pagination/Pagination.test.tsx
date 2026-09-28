@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -72,11 +73,36 @@ describe('Pagination', () => {
     expect(next).toHaveTextContent('Next')
   })
 
-  it('disables a link with aria-disabled and removes it from the tab order', () => {
-    renderPagination()
+  it('renders a disabled link without href, so it neither navigates nor takes focus', () => {
+    const onClick = vi.fn()
+    render(<PaginationPrevious href="/page/1" disabled onClick={onClick} />)
 
     const previous = screen.getByRole('link', { name: 'Go to previous page' })
+    expect(previous).not.toHaveAttribute('href')
     expect(previous).toHaveAttribute('aria-disabled', 'true')
-    expect(previous).toHaveAttribute('tabindex', '-1')
+    previous.focus()
+    expect(previous).not.toHaveFocus()
+    fireEvent.click(previous)
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it('keeps href and onClick on enabled links', () => {
+    const onClick = vi.fn()
+    render(<PaginationNext href="/page/2" onClick={onClick} />)
+
+    const next = screen.getByRole('link', { name: 'Go to next page' })
+    expect(next).toHaveAttribute('href', '/page/2')
+    expect(next).not.toHaveAttribute('role')
+    fireEvent.click(next)
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('hides only the ellipsis glyph from assistive technology', () => {
+    render(<PaginationEllipsis />)
+
+    const label = screen.getByText('More pages')
+    expect(label).toBeVisible()
+    expect(label.closest('[aria-hidden]')).toBeNull()
+    expect(screen.getByText('…')).toHaveAttribute('aria-hidden')
   })
 })

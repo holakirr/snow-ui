@@ -97,6 +97,16 @@ The package doesn't load Inter. Load it yourself; the Google Fonts build of Inte
 
 Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `background`, `foreground`, `muted`, `accent`, `destructive`, `input`, `ring`…) still work as deprecated aliases; see the [changelog](CHANGELOG.md) for the mapping.
 
+## Accessibility deviations from the Figma kit
+
+Where the Figma kit conflicts with WCAG 2.2 AA, the components follow WCAG.
+
+Data, overlay and navigation components:
+
+- **Calendar:** today's date is static black on Secondary/Indigo (10:1). Figma uses white, which is 2.07:1.
+- **Sidebar:** group labels (`SidebarGroupLabel`) are `black-80`. Figma's Black/40% is 2.85:1 at 14px, below the 4.5:1 for text.
+- **Toast:** toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer and an action doesn't vanish on a timer. The Figma toast has no close button.
+
 ## Component Documentation
 
 Components are documented in Storybook with examples and props documentation. Visit the [Storybook](https://snow-ui.holakirr.com) to explore the components and their usage.

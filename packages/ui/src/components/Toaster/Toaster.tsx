@@ -15,6 +15,21 @@ import {
 /** How long a toast stays on screen: "stay 3s" in the Figma Toast guidance. */
 const TOAST_DURATION = 3000
 
+/**
+ * The Figma toast has no close button: it closes itself. A toast that
+ * doesn't (no timeout) or that has an action gets one by default, so it can
+ * be dismissed with a pointer and the action isn't lost when time runs out.
+ */
+const isClosable = ({
+  closable,
+  action,
+  duration,
+}: {
+  closable?: boolean
+  action?: unknown
+  duration: number
+}) => closable ?? (Boolean(action) || duration === Number.POSITIVE_INFINITY)
+
 export type ToasterProps = {
   /**
    * Time in milliseconds before each toast closes. A toast's own `duration`
@@ -55,7 +70,11 @@ export function Toaster({ duration = TOAST_DURATION }: ToasterProps = {}) {
               )}
             </div>
             {action}
-            {closable && <ToastClose size={size} />}
+            {isClosable({
+              closable,
+              action,
+              duration: props.duration ?? duration,
+            }) && <ToastClose size={size} />}
           </Toast>
         ),
       )}

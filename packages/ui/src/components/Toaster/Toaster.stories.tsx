@@ -105,7 +105,11 @@ const ToastWithActionExample = () => (
           size: 'lg',
           title: 'Deleted',
           action: (
-            <Button variant="borderless" size="sm" className="text-white">
+            <Button
+              variant="borderless"
+              size="sm"
+              className="text-static-white hover:bg-static-white/10"
+            >
               Undo
             </Button>
           ),
@@ -146,7 +150,6 @@ const ClosableExample = () => (
       onClick={() =>
         toast({
           title: 'Stays until closed',
-          closable: true,
           duration: Number.POSITIVE_INFINITY,
         })
       }
@@ -157,7 +160,10 @@ const ClosableExample = () => (
   </>
 )
 
-/** `closable` adds a close button, which the Figma toast doesn't have. */
+/**
+ * `closable` adds a close button, which the Figma toast doesn't have. It is
+ * on by default for toasts with an `action` or an infinite `duration`.
+ */
 export const Closable: Story = {
   render: () => <ClosableExample />,
 }

@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { toast } from '../../hooks'
@@ -65,10 +65,13 @@ describe('Toaster', () => {
     })
 
     const node = getToast('Something Wrong')
+    // Static colours: the Figma toast is pinned to SnowUI-Light, so it stays
+    // dark in dark mode and the status icons keep their contrast.
     expect(node).toHaveClass(
       'rounded-16',
-      'bg-black-80',
-      'from-white-10',
+      'bg-static-black/80',
+      'from-static-white/10',
+      'text-static-white',
       'backdrop-blur-bg-40',
       'px-3',
       'py-2',
@@ -76,6 +79,54 @@ describe('Toaster', () => {
     const icon = screen.getByRole('img', { name: 'Icon for status error' })
     expect(icon).toHaveAttribute('width', '20')
     expect(icon.style.color).toBe('var(--color-yellow, #fc0)')
+  })
+
+  it("lets a toast's own duration beat the Toaster's", () => {
+    render(<Toaster duration={1000} />)
+    act(() => {
+      toast({ title: 'Slow', duration: 5000 })
+    })
+
+    act(() => {
+      vi.advanceTimersByTime(1100)
+    })
+    expect(getToast('Slow')).toHaveAttribute('data-state', 'open')
+
+    act(() => {
+      vi.advanceTimersByTime(4000)
+    })
+    expect(screen.queryByText('Slow')).not.toBeInTheDocument()
+  })
+
+  it('adds a close button to toasts with an action or no timeout', () => {
+    render(<Toaster />)
+    act(() => {
+      toast({
+        title: 'Deleted',
+        action: <button type="button">Undo</button>,
+      })
+    })
+    expect(
+      within(getToast('Deleted')).getByRole('button', { name: 'Close' }),
+    ).toBeInTheDocument()
+
+    act(() => {
+      toast({ title: 'Sticky', duration: Number.POSITIVE_INFINITY })
+    })
+    expect(
+      within(getToast('Sticky')).getByRole('button', { name: 'Close' }),
+    ).toBeInTheDocument()
+
+    act(() => {
+      toast({
+        title: 'No close',
+        action: <button type="button">Undo</button>,
+        closable: false,
+      })
+    })
+    expect(
+      within(getToast('No close')).queryByRole('button', { name: 'Close' }),
+    ).not.toBeInTheDocument()
   })
 
   it('renders a close button only for closable toasts', () => {

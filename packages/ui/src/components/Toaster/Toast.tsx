@@ -16,7 +16,9 @@ const ToastViewport: FC<
 > = ({ className, ...props }) => (
   <ToastPrimitives.Viewport
     className={twMerge(
-      'fixed bottom-0 z-[100] flex max-h-screen w-[calc(100vw-40px)] md:max-w-md md:w-auto flex-col-reverse items-center gap-2 p-4 left-1/2 -translate-x-1/2',
+      // `w-max` sizes the viewport to its toasts; with `w-auto` a fixed box at
+      // left: 50% could only use half of the screen and squeezed them.
+      'fixed bottom-0 left-1/2 z-[100] flex max-h-screen w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col-reverse items-center gap-2 p-4 md:max-w-md',
       className,
     )}
     {...props}

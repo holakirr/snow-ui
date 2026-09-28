@@ -14,8 +14,11 @@ const meta: Meta<typeof Toaster> = {
     docs: {
       description: {
         component:
-          'Toasts appear at the bottom and close after 3 seconds ("stay 3s" in the Figma guidance). Call `toast()` from anywhere and render `<Toaster />` once.',
+          'Toasts appear at the bottom and close after 3 seconds ("stay 3s" in the Figma guidance). Call `toast()` from anywhere and render `<Toaster />` once. `toast()` feeds a shared store, so every mounted `<Toaster />` shows its toasts: to run independent toasters, give each an `id` and pass the same `toasterId` to `toast()`.',
       },
+      // Each story in its own iframe: the fixed viewport then sits at the
+      // bottom of that story, and its toasts don't show up in the others.
+      story: { inline: false, iframeHeight: 360 },
     },
   },
 }

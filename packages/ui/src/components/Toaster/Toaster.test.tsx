@@ -143,4 +143,33 @@ describe('Toaster', () => {
     })
     expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
   })
+
+  it('keeps toasters with different ids independent', () => {
+    render(
+      <>
+        <Toaster />
+        <Toaster id="sidebar" />
+      </>,
+    )
+
+    act(() => {
+      toast({ title: 'Saved' })
+      toast({ title: 'Synced', toasterId: 'sidebar' })
+    })
+
+    const [main, sidebar] = screen.getAllByRole('region')
+    // Each toaster shows only its own toast, and the per-toaster limit of
+    // one doesn't let the second toast evict the first.
+    expect(within(main).getByText('Saved')).toBeInTheDocument()
+    expect(within(main).queryByText('Synced')).toBeNull()
+    expect(within(sidebar).getByText('Synced')).toBeInTheDocument()
+    expect(within(sidebar).queryByText('Saved')).toBeNull()
+
+    act(() => {
+      toast({ title: 'Saved again' })
+    })
+    expect(within(main).queryByText('Saved')).toBeNull()
+    expect(within(main).getByText('Saved again')).toBeInTheDocument()
+    expect(within(sidebar).getByText('Synced')).toBeInTheDocument()
+  })
 })

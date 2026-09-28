@@ -23,7 +23,7 @@
     "visual": "bash visual/docker.sh",
     "visual:update": "bash visual/docker.sh --update",
     "visual:test": "playwright test -c visual/playwright.config.ts",
-    "clean": "rm -rf packages/*/dist packages/*/storybook-static packages/*/coverage",
+    "clean": "rm -rf packages/*/dist packages/*/storybook-static packages/*/coverage coverage",
     "changeset": "changeset",
     "version-packages": "changeset version && bun install --lockfile-only",
     "release": "bun run build && changeset publish"

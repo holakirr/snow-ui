@@ -54,7 +54,7 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 | --- | --- | --- | --- |
 | Lint and format ([Biome](https://biomejs.dev)) | `bun run lint` | `build` | a lint rule or the formatter reports a problem |
 | Types | `bun run typecheck` | `build` | `tsc` reports an error in a package or the root tooling |
-| Unit tests (Vitest, jsdom) | `bun run test` | `build` | a `*.test.ts(x)` test fails |
+| Unit tests (Vitest, jsdom) | `bun run test` | `build` (icons), `storybook-tests` (ui, with coverage) | a `*.test.ts(x)` test fails |
 | Package checks ([publint](https://publint.dev), [are-the-types-wrong](https://arethetypeswrong.github.io)) | `bun run build` | `build` | a package's `exports`/types would break for some consumers |
 | Storybook tests ([`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon)) | `bun run test:storybook` | `storybook-tests` | a story throws while rendering or its `play` function (interaction test) fails, in the light or the dark theme |
 | Accessibility ([axe](https://github.com/dequelabs/axe-core) via `@storybook/addon-a11y`) | `bun run test:storybook` / Storybook's a11y panel | `storybook-tests` | axe finds a violation in any story, in either theme, after its `play` function (`a11y.test: 'error'`) |

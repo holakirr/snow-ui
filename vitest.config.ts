@@ -65,9 +65,14 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text-summary', 'text', 'html', 'json-summary'],
       reportsDirectory: 'coverage',
-      // The ui source, matched from the repository root (Storybook projects)
-      // and from packages/ui (its unit-test project).
-      include: ['packages/ui/src/**/*.{ts,tsx}', 'src/**/*.{ts,tsx}'],
+      // The ui source. Vitest matches these globs against a file's path
+      // relative to the first project root that contains it: with `--project`
+      // filters (`test:coverage`) the roots are packages/ui (the ui unit
+      // tests, listed first) and the repository root, so ui files are
+      // `src/…`; without a filter the only root is the repository root and
+      // they are `packages/ui/src/…`. Each pattern alone reports 0 files in
+      // the other case.
+      include: ['src/**/*.{ts,tsx}', 'packages/ui/src/**/*.{ts,tsx}'],
       exclude: [
         '**/*.stories.{ts,tsx}',
         '**/*.test.{ts,tsx}',

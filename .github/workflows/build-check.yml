@@ -38,8 +38,10 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
-      - name: Unit tests
-        run: bun run test
+      # The ui unit tests run with coverage in the storybook-tests job
+      # (`bun run test:coverage`), so only the icons tests run here.
+      - name: Unit tests (icons)
+        run: bun run --filter @holakirr/snow-ui-icons test
 
       # Builds icons first, then ui (ui's type declarations import icons' dist).
       # tsdown runs publint and are-the-types-wrong on both packages.

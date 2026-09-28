@@ -343,8 +343,14 @@ const CommandPaletteList: FC<ListProps> = ({
           loading ? (
             <LoadingAIcon
               size={20}
+              // LoadingAIcon draws and turns its ring around (12, 12), for a
+              // 24×24 box, but gets a 32×32 viewBox, so the ring sat
+              // off-centre and `animate-spin` swung it around the box's
+              // centre. Show it in the box it is drawn for; it animates
+              // itself (a turn plus a growing arc), so no CSS spin.
+              viewBox="0 0 24 24"
               aria-hidden
-              className="shrink-0 animate-spin text-black-40"
+              className="shrink-0 text-black-40"
             />
           ) : undefined
         }

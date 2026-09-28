@@ -16,6 +16,12 @@ type ToasterToast = ToastProps & {
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  /**
+   * Shows a close button. The Figma toast has none: it closes itself, on
+   * swipe or with Escape.
+   * @default false
+   */
+  closable?: boolean
 }
 
 const ACTION_TYPES = {

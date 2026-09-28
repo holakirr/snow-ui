@@ -12,29 +12,50 @@ import {
   ToastViewport,
 } from './Toast'
 
-export function Toaster() {
+/** How long a toast stays on screen: "stay 3s" in the Figma Toast guidance. */
+const TOAST_DURATION = 3000
+
+export type ToasterProps = {
+  /**
+   * Time in milliseconds before each toast closes. A toast's own `duration`
+   * wins.
+   * @default 3000
+   */
+  duration?: number
+}
+
+export function Toaster({ duration = TOAST_DURATION }: ToasterProps = {}) {
   const { toasts } = useToast()
 
   return (
-    <ToastProvider>
+    <ToastProvider duration={duration}>
       {toasts.map(
-        ({ id, title, description, action, status, size, ...props }) => (
+        ({
+          id,
+          title,
+          description,
+          action,
+          status,
+          size,
+          closable,
+          ...props
+        }) => (
           <Toast key={id} size={size} {...props}>
-            <div
-              className={`flex items-center ${size === 'lg' ? 'gap-2' : 'gap-1'}`}
-            >
-              {status && (
-                <StatusIcon size={size === 'lg' ? 24 : 16} status={status} />
+            {status && (
+              <StatusIcon
+                size={size === 'lg' ? 20 : 16}
+                status={status}
+                className="shrink-0"
+              />
+            )}
+            <div className="grid">
+              {title && <ToastTitle size={size}>{title}</ToastTitle>}
+              {description && (
+                <ToastDescription size={size}>{description}</ToastDescription>
               )}
-              <div className={`grid ${size === 'lg' ? 'gap-1' : ''}`}>
-                {title && <ToastTitle size={size}>{title}</ToastTitle>}
-                {description && (
-                  <ToastDescription size={size}>{description}</ToastDescription>
-                )}
-              </div>
             </div>
             {action}
-            <ToastClose size={size} />
+            {closable && <ToastClose size={size} />}
           </Toast>
         ),
       )}

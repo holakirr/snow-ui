@@ -1,16 +1,58 @@
+import { StatusIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { toast } from '../../hooks'
+import type { SimpleSize, StatusNotify } from '../../types'
 import { Button } from '../Button'
+import { Toast, ToastProvider, ToastTitle, ToastViewport } from './Toast'
 import { Toaster } from './Toaster'
 
 const meta: Meta<typeof Toaster> = {
   title: 'Components/Toaster',
   component: Toaster,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Toasts appear at the bottom and close after 3 seconds ("stay 3s" in the Figma guidance). Call `toast()` from anywhere and render `<Toaster />` once.',
+      },
+    },
+  },
 }
 
 export default meta
 type Story = StoryObj<typeof Toaster>
+
+const variants: { status: StatusNotify; size: SimpleSize; title: string }[] = [
+  { status: 'success', size: 'lg', title: 'Done' },
+  { status: 'error', size: 'lg', title: 'Something Wrong' },
+  { status: 'success', size: 'sm', title: 'Done' },
+  { status: 'error', size: 'sm', title: 'Something Wrong' },
+]
+
+/** The four Figma variants (State × Big), rendered in place without a timer. */
+export const AllVariants: Story = {
+  render: () => (
+    <ToastProvider duration={Number.POSITIVE_INFINITY}>
+      {variants.map(({ status, size, title }) => (
+        <Toast key={`${status}-${size}`} size={size} open>
+          <StatusIcon
+            status={status}
+            size={size === 'lg' ? 20 : 16}
+            className="shrink-0"
+          />
+          <ToastTitle size={size}>{title}</ToastTitle>
+        </Toast>
+      ))}
+      <ToastViewport className="static left-auto w-auto translate-x-0 flex-col items-start p-0" />
+    </ToastProvider>
+  ),
+}
+
+export const AllVariantsDark: Story = {
+  ...AllVariants,
+  globals: { theme: 'dark' },
+}
 
 const ToastExample = () => (
   <>
@@ -39,8 +81,8 @@ const LargeToastExample = () => (
       onClick={() =>
         toast({
           size: 'lg',
-          title: 'Heads up!',
-          description: 'This is a large toast message',
+          status: 'success',
+          title: 'Done',
         })
       }
       variant="filled"
@@ -60,11 +102,10 @@ const ToastWithActionExample = () => (
     <Button
       onClick={() =>
         toast({
-          size: 'sm',
-          title: 'Heads up!',
-          description: 'This is a toast message with action',
+          size: 'lg',
+          title: 'Deleted',
           action: (
-            <Button variant="filled" size="sm">
+            <Button variant="borderless" size="sm" className="text-white">
               Undo
             </Button>
           ),
@@ -82,21 +123,41 @@ export const WithAction: Story = {
 }
 
 const ToastWithStatusExample = () => (
+  <div className="flex gap-2">
+    <Button onClick={() => toast({ status: 'success', title: 'Done' })}>
+      Success
+    </Button>
+    <Button
+      onClick={() => toast({ status: 'error', title: 'Something Wrong' })}
+    >
+      Failure
+    </Button>
+    <Toaster />
+  </div>
+)
+
+export const WithStatus: Story = {
+  render: () => <ToastWithStatusExample />,
+}
+
+const ClosableExample = () => (
   <>
     <Button
       onClick={() =>
         toast({
-          status: 'error',
-          title: 'Heads up!',
+          title: 'Stays until closed',
+          closable: true,
+          duration: Number.POSITIVE_INFINITY,
         })
       }
     >
-      Show Toast with status
+      Show closable toast
     </Button>
     <Toaster />
   </>
 )
 
-export const WithStatus: Story = {
-  render: () => <ToastWithStatusExample />,
+/** `closable` adds a close button, which the Figma toast doesn't have. */
+export const Closable: Story = {
+  render: () => <ClosableExample />,
 }

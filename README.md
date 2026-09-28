@@ -18,10 +18,10 @@ Take a look at my [CV](https://holakirr.com) =)
 
 ## Usage
 
-Don't forget to install @phosphor-icons/react. Just import the icon you need and use it in your component.
+Just import the icon you need and use it in your component.
 
 ```bash
-bun add @holakirr/snow-ui
+bun add @holakirr/snow-ui-icons
 ```
 
 ```jsx
@@ -63,20 +63,20 @@ Components can accept arbitrary SVG elements as children, so long as they are va
 You may wish to import all icons at once for use in your project, though depending on your bundler this could prevent tree-shaking and make your app's bundle larger.
 
 ```jsx
-import \* as Icon from "@holakirr/snow-ui-icons";
+import * as Icon from "@holakirr/snow-ui-icons";
 
-<Icon.Smiley />
-<Icon.Folder weight="thin" />
-<Icon.BatteryHalf size="24px" />
+<Icon.StarIcon />
+<Icon.SearchIcon color="teal" />
+<Icon.CloseIcon size={32} />
 ```
 
 ### Custom Icons
 
-It is possible to extend SnowUI Icons with your custom icons, taking advantage of the styling and context abstractions used in our library. To create a custom icon, first design your icons on a 32\*32 pixel grid, and export them as SVG. For best results, flatten the icon so that you only export assets with `path` elements. Strip any `fill` or `stroke` attributes, as these will be inherited from the wrapper.
+It is possible to extend SnowUI Icons with your custom icons, taking advantage of the styling abstractions used in our library. To create a custom icon, first design your icons on a 32×32 pixel grid, and export them as SVG. For best results, flatten the icon so that you only export assets with `path` elements. Strip any `fill` or `stroke` attributes, as these will be inherited from the wrapper.
 
 Next, create a new React component, importing the `IconBase` component, as well as the `Icon` and `IconWeight` types from this library. Define a `Map<IconWeight, ReactElement>` that maps each icon weight to the contents of each SVG asset, effectively removing the wrapping `<svg>` element from each. Name your component, and render an `<IconBase />`, passing all props and the ref, as well as the `weights` you defined earlier, as JSX props:
 
-````jsx
+```jsx
 import { forwardRef, ReactElement } from "react";
 import { Icon, IconBase, IconWeight } from "@holakirr/snow-ui-icons";
 
@@ -111,4 +111,3 @@ export default CustomIcon;
 ## License
 
 MIT
-````

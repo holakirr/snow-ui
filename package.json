@@ -28,7 +28,7 @@
 		"snow-ui",
 		"snow-ui-icons"
 	],
-	"packageManager": "bun@1.2.19",
+	"packageManager": "bun@1.3.11",
 	"scripts": {
 		"build": "tsc -b && vite build",
 		"lint": "biome check .",

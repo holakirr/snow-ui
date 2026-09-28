@@ -16,7 +16,7 @@ const StatusIcon = ({ status, className, ...props }: StatusIconProps) => {
 			return (
 				<LoadingAIcon
 					alt={alt}
-					className={`fill-black-100 ${className}`}
+					className={`fill-black-100 ${className ?? ""}`}
 					style={{
 						fill: "rgba(var(--color-black))",
 					}}
@@ -25,11 +25,21 @@ const StatusIcon = ({ status, className, ...props }: StatusIconProps) => {
 			);
 		case STATUSES.error:
 			return (
-				<Warning alt={alt} className={`fill-secondary-red ${className}`} role="img" {...props} />
+				<Warning
+					alt={alt}
+					className={`fill-secondary-red ${className ?? ""}`}
+					role="img"
+					{...props}
+				/>
 			);
 		case STATUSES.success:
 			return (
-				<Check alt={alt} className={`fill-secondary-green ${className}`} role="img" {...props} />
+				<Check
+					alt={alt}
+					className={`fill-secondary-green ${className ?? ""}`}
+					role="img"
+					{...props}
+				/>
 			);
 		default:
 			return null;

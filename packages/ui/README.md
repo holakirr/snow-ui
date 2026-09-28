@@ -87,7 +87,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 `index.css` implements the SnowUI Figma tokens (the SnowUI-Light and SnowUI-Dark modes) as Tailwind theme variables. Storybook's "Foundations" pages list every token with its Figma name and both mode values.
 
 - **Theme:** light by default; dark with `data-theme="dark"` on `<html>` or on any element (see [Scoped themes](#scoped-themes)), or with the OS dark preference unless `<html data-theme="light">`. `color-scheme` follows, so native controls and scrollbars match.
-- **Colors:** `primary` (black in light, indigo in dark), `black`, `white` and their Figma alpha steps (`black-80`, `black-40`, `black-20`, `black-10`, `black-4`, same for `white`), `background-1..3`, `surface-1..3`, `color-1`, `color-2`, `static-white`, `static-black`, the secondary colours (`purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`), and `indigo-text`, an accessible indigo for text (see below). Use them as `bg-black-10`, `text-black-40`, `border-black-10` or `var(--color-black-10)`. In dark mode, `black-10` and `black-4` get the design's stronger alpha (15% and 10%); the Tailwind modifiers `black/10` and `black/4` keep one alpha in both modes.
+- **Colors:** `primary` (black in light, indigo in dark), `black`, `white` and their Figma alpha steps (`black-80`, `black-40`, `black-20`, `black-10`, `black-4`, same for `white`), `background-1..3`, `surface-1..3`, `color-1`, `color-2`, `static-white`, `static-black`, the secondary colours (`purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`), and three accessible text colours (see below): `indigo-text`, `red-text` and `text-secondary` (the `text-secondary` utility; `var(--color-text-secondary)`) for secondary text, which Figma draws in Black/40%. Use them as `bg-black-10`, `text-secondary`, `border-black-10` or `var(--color-black-10)`. In dark mode, `black-10` and `black-4` get the design's stronger alpha (15% and 10%); the Tailwind modifiers `black/10` and `black/4` keep one alpha in both modes.
 - **Typography:** `text-12` … `text-64` (the Figma text styles: font size and line height), Inter with `font-feature-settings: "ss01" 1, "cv01" 1`.
 - **Radius:** `rounded-4` … `rounded-80` (the Figma corner radius scale).
 - **Spacing:** the Figma spacing and size values are multiples of 4px, so Tailwind's spacing utilities (`p-1` = 4px, `gap-3` = 12px, `size-10` = 40px) cover them.
@@ -133,7 +133,7 @@ The components that map to the SnowUI Figma base components:
 - **`Strip`** — a row or column of equal segments (`count`, `vertical`, `thickness`, `rounded`); with `value` it is a segmented progress bar (`role="progressbar"`, or `role="meter"`).
 - **`Search`** — the 28px search field (`gray` / `outline`, `sm` / `lg`) with a search icon, a keyboard shortcut hint (`shortcut={['/']}`) and a clear button (also Escape) that calls `onChange` with an empty value and `onClear`.
 - **`CommandPalette`** — the Figma "SearchPopup": a dialog with a search combobox and a grouped listbox. Pass `groups` of items (`label`, `icon`, `keywords`, `disabled`, `onSelect`); ↑ / ↓ move the highlight, Enter or a click selects (`onSelect(item, event)` — check `event.metaKey` to open in a new tab), Escape closes. `hotkey` (`'/'`, `'mod+k'`) opens it, `filter={false}` + `onQueryChange` + `loading` serve results from a server, `emptyMessage` replaces "No results".
-- **`ListItem`** — a row of the dashboard Notifications / Activities / Contacts lists: `icon`, `title` and a Black/40% `description` or timestamp; an `IconText`, so `interactive`, `active` and `as` work too.
+- **`ListItem`** — a row of the dashboard Notifications / Activities / Contacts lists: `icon`, `title` and a `text-secondary` `description` or timestamp (Figma: Black/40%); an `IconText`, so `interactive`, `active` and `as` work too.
 
 Storybook's "Recipes/Dashboard" composes them with `Sidebar`, `Breadcrumb`, `Card` and `Button` into the SnowUI dashboard layout (sidebar, header, content, right sidebar).
 
@@ -144,7 +144,13 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Where | Figma | Library | Why |
 | --- | --- | --- | --- |
 | Focus indicator (all controls except text fields) | "Focus" effect: 4px ring, black 4% (1.1:1); no focus state on Button or Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline, offset 2px — 12.6:1 light, 8.7:1 dark | 2.4.7, 1.4.11 |
-| Inactive tabs, off toggles, Bare buttons, the Tag close icon | 40% layer opacity | 100% while keyboard-focused, so the focus ring isn't dimmed | 1.4.11 |
+| Secondary text: Breadcrumb parents, Table headers, Calendar weekdays and outside days, Dialog / Sheet / Form descriptions, `Label` (and the Input title), ListItem descriptions, menu group labels (DropdownMenu, ContextMenu, Select), CommandPalette headings and empty message, Scheduler day and hour labels, the Pagination ellipsis | Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`, at least 5.5:1 on `background-2`, the Black/4% hover and the Color 1/2 tints), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+| Inactive tabs (every `TabsList` variant), off `Toggle` / `ToggleGroup` items, Bare buttons | 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus (`primary` for the active Underline tab); disabled items keep Black/20% | 1.4.3, 1.4.11 |
+| The Tag close icon | 40% layer opacity: 2.85:1 | 80%: at least 3.46:1 on every tag, the active indigo one included (60% would be 2.43:1 there); 100% on hover and keyboard focus | 1.4.11 |
+| Select placeholder, the Search shortcut hint, the CommandPalette Enter hint | Black/20%: 1.6:1 | `text-secondary`. The Select placeholder is the trigger's visible text, not a native placeholder; the Search hint has no fill of its own (a second Black/4% layer on the hovered dark field took it under 4.5:1) | 1.4.3 |
+| Error text: `FormMessage`, an invalid `FormLabel` | Secondary/Red `#FF4747`: 3.36:1 on white, 3.76:1 on #333 | `red-text`: `#D42020` in light mode, `#FF8080` in dark mode (5.21:1 on `background-1` in both) | 1.4.3 |
+| `TooltipShortcut` | 40% opacity: 2.8:1 | 70%: at least 5.5:1 on both tooltip variants in both modes | 1.4.3 |
+| Search clear button | 40% opacity: 2.85:1 | 60% (5.74:1) | 1.4.11 |
 | Filled Button label, checked Checkbox mark | `#FFF` in both modes: 2.07:1 on the dark-mode indigo Primary | the per-mode `white` token: white on black (21:1), black on indigo (10.15:1) | 1.4.3, 1.4.11 |
 | Badge number | `#FFF` on indigo, 2.07:1 | black on indigo, 10.15:1 | 1.4.3 |
 | Indigo text: default Link, active Tag | Secondary/Indigo `#ADADFB`: 2.07:1 on white | `indigo-text`: `#5B5BD6` in light mode (5.37:1; 5.04:1 on the active Tag tint), `#ADADFB` in dark mode (6.11:1). Fills keep the Figma indigo | 1.4.3 |
@@ -154,15 +160,22 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Icon-only tabs | — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
 | Dark Tooltip in dark mode | Black/80% flips to white/80% but the text stays `#FFF` | the text flips with it (black on white/80%) | 1.4.3 |
 
+The colour of those inactive items and Bare buttons is a custom property (`--segment-fg` for segmented items and `Toggle`, `--tab-fg` for Underline tabs, `--button-fg` for Bare buttons) that hover, focus and the selected state change. A `text-*` class passed as `className` sets the colour in every state; to change only the rest colour, set the property: `className="[--button-fg:var(--color-red-text)]"`. The state colours don't depend on `:enabled`, so a `TabsTrigger` or `Toggle` rendered as a link (`asChild`) gets them too.
+
 Text fields (`Input`, `InputSmall`, `Textarea`, `Search`) keep the Figma "Focus" state exactly: a Black/40% stroke and the 4px Focus ring on any focus (mouse or keyboard); the caret and the stroke mark focus, so they don't get the `focus-ring` outline.
 
 Data, overlay and navigation components:
 
-- **Calendar:** today's date is static black on Secondary/Indigo (10.15:1). Figma uses white, which is 2.07:1 (1.4.3).
+- **Calendar:** today's date is static black on Secondary/Indigo (10.15:1). Figma uses white, which is 2.07:1 (1.4.3). Outside days (the previous and next month's dates in the grid) are real, selectable dates, not decoration, so they get the full 4.5:1: `text-secondary` instead of Black/40%.
+- **Scheduler:** today's day label is static black on Secondary/Indigo (was white, 2.06:1); event times are 60% static black on Color 2 (5.5:1) instead of 40% (1.4.3).
 - **Sidebar:** group labels (`SidebarGroupLabel`) are `black-80` (12.6:1 light, 8.7:1 dark). Figma's Black/40% is 2.85:1 at 14px (1.4.3).
 - **Toast:** toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer and an action doesn't vanish on a timer (2.2.1). The Figma toast has no close button.
 
-Known gaps (Figma values kept for now): the Black/20% rings of unchecked Checkbox and Radio and the 0.5px Black/20% Input stroke (1.6:1), the Switch's white thumb on the dark-mode indigo track (2.07:1), Black/20% placeholders, the 40% Link arrow and external icon, and the Black/4% highlight of menu items.
+Known gaps (Figma values kept for now): the Black/20% rings of unchecked Checkbox and Radio and the 0.5px Black/20% Input stroke (1.6:1), the Switch's white thumb on the dark-mode indigo track (2.07:1), the Black/20% placeholders of the native text fields (`Input`, `InputSmall`, `Textarea`, `Search`: axe doesn't check `::placeholder`, and they are never the field's only label), the 40% Link arrow and external icon, and the Black/4% highlight of menu items.
+
+Storybook demos follow the same rules: the Table and Dashboard status cells colour only the dot (the Secondary colours are 1.7–2.4:1 as text), and avatar initials on Secondary colours are static black, not white.
+
+Every story is checked with [axe](https://github.com/dequelabs/axe-core) in the light and the dark theme, after its interaction test, and a violation fails CI (see the repository's CONTRIBUTING.md).
 
 ## Component Documentation
 
@@ -170,6 +183,7 @@ Components are documented in Storybook with examples and props documentation. Vi
 
 ## Testing
 
+- Storybook stories are tests too: every story is rendered in Chromium in both themes, checked with axe, and many have `play` interaction tests (keyboard, focus, selection)
 - Unit tests are written using Vitest and React Testing Library
 - E2E tests are written using Playwright; `bun run e2e` starts Storybook automatically (or reuses one already running on port 53741)
 - E2E visual snapshots are generated on macOS (`*-chromium-darwin.png`), so run `bun run e2e` / `bun run e2e:update` on macOS; other platforms need their own baselines

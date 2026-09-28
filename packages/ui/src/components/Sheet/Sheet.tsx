@@ -123,7 +123,7 @@ const SheetDescription: FC<SheetDescriptionProps> = ({
   ...props
 }) => (
   <SheetPrimitive.Description
-    className={twMerge('text-14 text-black-40', className)}
+    className={twMerge('text-14 text-secondary', className)}
     {...props}
   />
 )

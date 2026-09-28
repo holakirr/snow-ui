@@ -1,6 +1,6 @@
 # Contributing
 
-Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook`, `bun run build` and `bun run size`; if you changed how anything looks, also `bun run visual` (Docker).
+Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook` (or `bun run test:coverage`, which also checks coverage), `bun run build` and `bun run size`; if you changed how anything looks, also `bun run visual` (Docker).
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org) (`feat(ui): …`, `fix(icons): …`, `docs: …`).
 
@@ -14,15 +14,34 @@ The [Build Check](.github/workflows/build-check.yml) workflow runs every gate be
 
 ### Storybook tests and accessibility
 
-`bun run test:storybook` turns every story into a test with [`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon): each story is rendered in headless Chromium (Vitest browser mode with the Playwright provider) and fails if it throws or its `play` function fails. It is the `storybook` project of the root `vitest.config.ts`, next to the packages' unit-test projects. The first run needs the browser: `bunx playwright install chromium`. You can also run the tests from Storybook's sidebar (the testing widget at the bottom) while `bun run storybook` is running.
+`bun run test:storybook` turns every story into a test with [`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon): each story is rendered in headless Chromium (Vitest browser mode with the Playwright provider, at Storybook's 1200×900 default viewport) and fails if it throws or its `play` function fails. Every story runs twice: in the light theme (the `storybook` project of the root `vitest.config.ts`) and in the dark theme (`storybook-dark`, the theme global set to `dark`; stories that pin a theme with `globals: { theme: … }` keep it). The first run needs the browser: `bunx playwright install chromium`. You can also run the tests from Storybook's sidebar (the testing widget at the bottom) while `bun run storybook` is running.
 
-[axe](https://github.com/dequelabs/axe-core) runs on every story as part of these tests (`@storybook/addon-a11y`). How violations count is set by `parameters.a11y.test`, globally in `.storybook/preview.tsx` and overridable per component or story:
+**Interaction tests.** Give a story a `play` function (`expect`, `waitFor`, `within`, `fn` from `storybook/test`; `canvas` and `userEvent` come from the play context) for behaviour that matters to users: keyboard support, focus management, what a control announces. Overlays render in a portal, so query them with `within(canvasElement.ownerDocument.body)`. End a play function in a stable state and close modal overlays, because axe checks the page after it.
 
-- `'todo'` (the current global value): violations show up as warnings in Storybook's accessibility panel and test widget, and never fail the run;
-- `'error'`: violations fail the test, locally and in CI;
-- `'off'`: axe doesn't run (only for stories that demonstrate misuse on purpose).
+**Accessibility is a hard gate.** [axe](https://github.com/dequelabs/axe-core) (`@storybook/addon-a11y`) runs on every story, in both themes, after its `play` function, and `parameters.a11y.test` is `'error'` globally (`.storybook/preview.tsx`): any violation fails the test, locally and in CI.
 
-The goal is `'error'` everywhere. When you fix a component's violations, set `parameters: { a11y: { test: 'error' } }` in its stories' meta so it can't regress; once the remaining ones are fixed, the global value flips to `'error'`.
+- Fix violations in the component when the component is at fault (roles, names, contrast), in the story when the demo is (an unlabelled control, an image without `alt`).
+- Text needs 4.5:1 (3:1 at 18px or 14px bold and up): use `text-black`, `text-black-80` or `text-secondary` for text, never `text-black-40` / `text-black-20` (placeholders and disabled controls excepted), and `indigo-text` / `red-text` for coloured text.
+- Only when axe is wrong (a false positive) or for a deviation documented in the ui README, turn off one rule for one story, with the reason next to it:
+
+  ```ts
+  parameters: {
+    a11y: {
+      config: {
+        rules: [
+          // Why this is a false positive or an accepted exception.
+          { id: 'aria-hidden-focus', enabled: false },
+        ],
+      },
+    },
+  },
+  ```
+
+  Never set `a11y.test` to `'todo'` or `'off'` to get a PR through. Current exceptions: `aria-hidden-focus` on Select "Open" (Radix hides the page with `aria-hidden` while the listbox is open and traps focus in it, so the trigger can't be focused; axe doesn't see the focus trap).
+
+### Coverage
+
+`bun run test:coverage` runs the ui unit tests and both Storybook projects with [V8 coverage](https://vitest.dev/guide/coverage) and merges them into one report of `packages/ui/src` (stories, tests, the Foundations pages and the recipes are excluded) in `coverage/` (`coverage/index.html`). It fails when statements, branches, functions or lines drop below the thresholds in the root `vitest.config.ts`, which sit about 2 points under the measured coverage. CI runs it in the `storybook-tests` job, writes the totals to the job summary and uploads the report. When your PR raises coverage, raise the thresholds with it; don't lower them to make a PR pass: add tests (a unit test, or a `play` function) instead.
 
 ### Visual regression tests
 

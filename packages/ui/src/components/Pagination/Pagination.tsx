@@ -162,7 +162,7 @@ const PaginationEllipsis = ({
   return (
     <span
       className={twMerge(
-        'flex items-center justify-center text-black-40',
+        'flex items-center justify-center text-secondary',
         ELLIPSIS_SIZES[size],
         className,
       )}

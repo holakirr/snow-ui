@@ -1,10 +1,14 @@
 'use client'
 
+import { Slottable } from '@radix-ui/react-slot'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
 import { cva } from 'class-variance-authority'
 import {
+  cloneElement,
   createContext,
   type FC,
+  isValidElement,
+  type ReactElement,
   type ReactNode,
   useContext,
   useEffect,
@@ -76,14 +80,20 @@ const TabsList: FC<TabsListProps> = ({
 )
 TabsList.displayName = TabsPrimitive.List.displayName
 
-/** Figma "Underline" tab: the inactive label is at 40% opacity, 100% on hover. */
+/**
+ * Figma "Underline" tab. Figma dims the inactive label to 40% opacity
+ * (2.85:1); here it is `text-secondary` (5.74:1 light, 7.08:1 dark), black on
+ * hover and keyboard focus, and `primary` when active. As for the segmented
+ * items, the colour is a custom property (`--tab-fg`): a `text-*` class
+ * replaces it in every state, and disabled wins on any element.
+ */
 const lineTriggerVariants = cva(
   [
-    'group inline-flex flex-col items-center justify-center gap-1 whitespace-nowrap text-black transition-all',
+    'group inline-flex flex-col items-center justify-center gap-1 whitespace-nowrap transition-all',
     'cursor-pointer rounded-4 focus-ring',
-    // Keyboard focus lifts the 40% opacity so the focus ring stays visible.
-    'opacity-40 hover:opacity-100 focus-visible:opacity-100 data-[state=active]:text-primary data-[state=active]:opacity-100',
-    'disabled:cursor-not-allowed disabled:opacity-100 disabled:text-black-20 [&_svg]:shrink-0',
+    'text-(--tab-fg) [--tab-fg:var(--color-text-secondary)]',
+    'hover:[--tab-fg:var(--color-black)] focus-visible:[--tab-fg:var(--color-black)] data-[state=active]:[--tab-fg:var(--color-primary)]',
+    'disabled:cursor-not-allowed disabled:text-black-20 [&_svg]:shrink-0',
   ],
   {
     variants: {
@@ -111,15 +121,51 @@ type TabsTriggerProps = TabsPrimitive.TabsTriggerProps & {
   icon?: ReactNode
 }
 
+type ChildProps = {
+  children?: ReactNode
+  'aria-label'?: string
+  'aria-labelledby'?: string
+}
+
+/**
+ * With `asChild`, the child element (a router link, say) is the tab: the
+ * trigger's own elements (the icon, the label wrapper, the underline) go
+ * inside it, around its content.
+ */
+const withContent = (
+  child: ReactNode,
+  render: (content: ReactNode) => ReactNode,
+): ReactNode =>
+  isValidElement<ChildProps>(child)
+    ? cloneElement(
+        child as ReactElement<ChildProps>,
+        undefined,
+        render(child.props.children),
+      )
+    : child
+
+/**
+ * A tab. With `asChild`, the child element (a router link, say) is the tab and
+ * the icon, the label and the Underline line are rendered inside it.
+ */
 const TabsTrigger: FC<TabsTriggerProps> = ({
   className,
   children,
   icon,
+  asChild,
   ...props
 }) => {
   const { variant, size } = useContext(TabsListContext)
-  const iconOnly = !!icon && (children === undefined || children === null)
-  const hasAccessibleName = !!(props['aria-label'] || props['aria-labelledby'])
+  const childProps =
+    asChild && isValidElement<ChildProps>(children) ? children.props : undefined
+  const label = childProps ? childProps.children : children
+  const iconOnly = !!icon && (label === undefined || label === null)
+  const hasAccessibleName = !!(
+    props['aria-label'] ||
+    props['aria-labelledby'] ||
+    childProps?.['aria-label'] ||
+    childProps?.['aria-labelledby']
+  )
 
   useEffect(() => {
     if (iconOnly && !hasAccessibleName && isDevelopment()) {
@@ -130,22 +176,47 @@ const TabsTrigger: FC<TabsTriggerProps> = ({
   }, [iconOnly, hasAccessibleName])
 
   if (variant === 'line') {
+    const renderLabel = (content: ReactNode) => (
+      <span className="inline-flex items-center gap-1">
+        {icon}
+        {content}
+      </span>
+    )
+    const underline = (
+      <span
+        aria-hidden
+        className="h-0.5 w-full rounded-full bg-transparent transition-colors group-data-[state=active]:bg-primary"
+      />
+    )
+
     return (
       <TabsPrimitive.Trigger
+        asChild={asChild}
         className={twMerge(lineTriggerVariants({ size }), className)}
         {...props}
       >
-        <span className="inline-flex items-center gap-1">
-          {icon}
-          {children}
-        </span>
-        <span
-          aria-hidden
-          className="h-0.5 w-full rounded-full bg-transparent transition-colors group-data-[state=active]:bg-primary"
-        />
+        {asChild ? (
+          <Slottable>{withContent(children, renderLabel)}</Slottable>
+        ) : (
+          renderLabel(children)
+        )}
+        {underline}
       </TabsPrimitive.Trigger>
     )
   }
+
+  const renderLabel = (content: ReactNode) =>
+    !iconOnly && (
+      <span
+        className={twMerge(
+          variant === 'icon-toggle' &&
+            icon &&
+            'group-data-[state=inactive]:sr-only',
+        )}
+      >
+        {content}
+      </span>
+    )
 
   return (
     <TabsPrimitive.Trigger
@@ -159,19 +230,23 @@ const TabsTrigger: FC<TabsTriggerProps> = ({
           icon && ['group', iconToggleInactiveClasses[size]],
         className,
       )}
+      asChild={asChild}
       {...props}
     >
-      {icon}
-      {!iconOnly && (
-        <span
-          className={twMerge(
-            variant === 'icon-toggle' &&
-              icon &&
-              'group-data-[state=inactive]:sr-only',
-          )}
-        >
-          {children}
-        </span>
+      {asChild ? (
+        <Slottable>
+          {withContent(children, (content) => (
+            <>
+              {icon}
+              {renderLabel(content)}
+            </>
+          ))}
+        </Slottable>
+      ) : (
+        <>
+          {icon}
+          {renderLabel(children)}
+        </>
       )}
     </TabsPrimitive.Trigger>
   )

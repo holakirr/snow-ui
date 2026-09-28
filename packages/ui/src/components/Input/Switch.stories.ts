@@ -6,7 +6,8 @@ const meta: Meta<typeof Switch> = {
   title: 'Components/Input/Switch',
   component: Switch,
   tags: ['autodocs', 'a11y'],
-  args: {},
+  // A switch without a visible label needs an accessible name.
+  args: { 'aria-label': 'Airplane mode' },
   argTypes: {},
   parameters: {
     docs: {

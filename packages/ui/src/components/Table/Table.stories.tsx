@@ -15,6 +15,7 @@ import {
   tableFeatures,
   useTable,
 } from '@tanstack/react-table'
+import { expect, within } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarGroup } from '../Avatar'
 import { Button } from '../Button'
 import { Card } from '../Card'
@@ -108,13 +109,15 @@ const orders: Order[] = [
   },
 ]
 
-// Figma status colours: a dot plus text in the Secondary colour.
+// Figma status colours: a dot plus text in the Secondary colour. The
+// Secondary colours are 1.7–2.4:1 on white, so only the dot is coloured and
+// the text stays black (WCAG 1.4.3); the label carries the meaning (1.4.1).
 const STATUS_COLORS: Record<Order['status'], string> = {
-  'In Progress': 'text-purple',
-  Complete: 'text-green',
-  Pending: 'text-blue',
-  Approved: 'text-orange',
-  Rejected: 'text-black-40',
+  'In Progress': 'bg-purple',
+  Complete: 'bg-green',
+  Pending: 'bg-blue',
+  Approved: 'bg-orange',
+  Rejected: 'bg-black-40',
 }
 
 const initials = (name: string) =>
@@ -184,10 +187,11 @@ const columns: ColumnDef<typeof features, Order>[] = [
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => (
-      <span
-        className={`flex items-center gap-1 ${STATUS_COLORS[row.original.status]}`}
-      >
-        <span aria-hidden className="size-1.5 rounded-full bg-current" />
+      <span className="flex items-center gap-1">
+        <span
+          aria-hidden
+          className={`size-1.5 rounded-full ${STATUS_COLORS[row.original.status]}`}
+        />
         {row.original.status}
       </span>
     ),
@@ -212,6 +216,63 @@ const columns: ColumnDef<typeof features, Order>[] = [
  * sortable headers, a row action on hover and the pagination footer.
  */
 export const TableA: Story = {
+  play: async ({ canvas, userEvent, step }) => {
+    const header = canvas.getByRole('columnheader', { name: /Order ID/ })
+    const firstId = () =>
+      within(canvas.getAllByRole('row')[1]).getAllByRole('cell')[1].textContent
+
+    await step('a sortable header sorts and sets aria-sort', async () => {
+      await expect(header).toHaveAttribute('aria-sort', 'none')
+      const sortButton = within(header).getByRole('button', {
+        name: /Order ID/,
+      })
+      await userEvent.click(sortButton)
+      const first = header.getAttribute('aria-sort')
+      await expect(['ascending', 'descending']).toContain(first)
+      const firstRow = firstId()
+      await userEvent.click(sortButton)
+      await expect(header).toHaveAttribute(
+        'aria-sort',
+        first === 'ascending' ? 'descending' : 'ascending',
+      )
+      await expect(firstId()).not.toBe(firstRow)
+      // Non-sortable columns have no aria-sort and no button.
+      const date = canvas.getByRole('columnheader', { name: 'Date' })
+      await expect(date).not.toHaveAttribute('aria-sort')
+      await expect(within(date).queryByRole('button')).not.toBeInTheDocument()
+    })
+
+    await step('row checkboxes select rows', async () => {
+      const all = canvas.getByRole('checkbox', { name: 'Select all' })
+      // One row is selected initially: "Select all" is mixed.
+      await expect(all).toHaveAttribute('aria-checked', 'mixed')
+      const rows = canvas.getAllByRole('checkbox', { name: /^Select #/ })
+      const unchecked = rows.find(
+        (box) => box.getAttribute('aria-checked') === 'false',
+      ) as HTMLElement
+      await userEvent.click(unchecked)
+      await expect(unchecked).toHaveAttribute('aria-checked', 'true')
+      await expect(unchecked.closest('tr')).toHaveAttribute(
+        'data-state',
+        'selected',
+      )
+
+      await userEvent.click(all)
+      for (const box of canvas.getAllByRole('checkbox', {
+        name: /^Select #/,
+      })) {
+        await expect(box).toHaveAttribute('aria-checked', 'true')
+      }
+      await expect(all).toHaveAttribute('aria-checked', 'true')
+
+      await userEvent.click(all)
+      for (const box of canvas.getAllByRole('checkbox', {
+        name: /^Select #/,
+      })) {
+        await expect(box).toHaveAttribute('aria-checked', 'false')
+      }
+    })
+  },
   render: () => {
     const table = useTable({
       features,
@@ -363,7 +424,7 @@ export const Filtered: Story = {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-black-40"
+                  className="h-24 text-center text-secondary"
                 >
                   No results.
                 </TableCell>

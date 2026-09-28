@@ -1,5 +1,6 @@
 import { DefaultIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 import { SIZES, TOGGLE_VARIANTS } from '../../constants'
 import { Typography } from '../Text'
 import { Toggle } from './Toggle'
@@ -27,11 +28,39 @@ type Story = StoryObj<typeof Toggle>
 
 export const Default: Story = {
   args: {},
+  play: async ({ canvas, userEvent, step }) => {
+    const toggle = canvas.getByRole('button', { name: 'Toggle' })
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+
+    await step('a click turns it on and off', async () => {
+      await userEvent.click(toggle)
+      await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+      await expect(toggle).toHaveAttribute('data-state', 'on')
+      await userEvent.click(toggle)
+      await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+    })
+
+    await step('Space and Enter toggle it too', async () => {
+      toggle.focus()
+      await userEvent.keyboard(' ')
+      await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+      await userEvent.keyboard('{Enter}')
+      await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+    })
+  },
 }
 
 export const Disabled: Story = {
   args: {
     disabled: true,
+  },
+  play: async ({ canvas, userEvent }) => {
+    const toggle = canvas.getByRole('button', { name: 'Toggle' })
+    await expect(toggle).toBeDisabled()
+    // Out of the tab order, and it stays off.
+    await userEvent.tab()
+    await expect(toggle).not.toHaveFocus()
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false')
   },
 }
 

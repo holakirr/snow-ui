@@ -124,7 +124,7 @@ const DialogDescription: FC<
   ComponentProps<typeof DialogPrimitive.Description>
 > = ({ className, ...props }) => (
   <DialogPrimitive.Description
-    className={twMerge('text-14 text-black-40 text-center', className)}
+    className={twMerge('text-14 text-secondary text-center', className)}
     {...props}
   />
 )

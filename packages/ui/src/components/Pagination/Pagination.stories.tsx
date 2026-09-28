@@ -34,11 +34,14 @@ type Story = StoryObj<typeof Pagination>
 const Template = ({
   size = 'sm',
   labels = false,
+  label,
 }: {
   size?: Size
   labels?: boolean
+  /** Several navigation landmarks on a page need distinct names. */
+  label?: string
 }) => (
-  <Pagination>
+  <Pagination aria-label={label ?? 'pagination'}>
     <PaginationContent>
       <PaginationItem>
         <PaginationPrevious size={size} href="#" disabled>
@@ -82,14 +85,14 @@ export const Sizes: Story = {
     <div className="flex flex-col gap-4">
       {(['sm', 'md', 'lg'] as const).map((size) => (
         <div key={size} className="flex flex-col gap-2">
-          <Typography size={12} className="text-black-40">
+          <Typography size={12} className="text-secondary">
             {size === 'sm'
               ? 'Small (Figma)'
               : size === 'md'
                 ? 'Medium'
                 : 'Large'}
           </Typography>
-          <Template size={size} />
+          <Template size={size} label={`Pagination, ${size}`} />
         </div>
       ))}
     </div>

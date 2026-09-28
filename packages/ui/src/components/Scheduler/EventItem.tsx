@@ -57,7 +57,7 @@ export const EventItem: FC<EventItemProps> = ({
               {title}
             </Typography>
 
-            <div className="flex gap-0.5 text-nowrap opacity-40">
+            <div className="flex gap-0.5 text-nowrap opacity-60">
               <Typography size={TEXT_SIZES[12]}>
                 {date
                   .toLocaleTimeString('ru-RU', {

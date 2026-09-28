@@ -20,7 +20,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  // Icons take the text colour; the story frame is Black/40%.
+  // Icons take the text colour; the story frame is text-secondary.
   decorators: [
     (Story) => (
       <div className="text-black">
@@ -63,13 +63,13 @@ const Grid = () => (
   <div className="grid grid-cols-[auto_repeat(4,minmax(0,1fr))] items-center gap-x-10 gap-y-6">
     <span />
     {['Plain', 'Background', 'Badge', 'Background + badge'].map((label) => (
-      <Typography key={label} size={12} className="text-black-40">
+      <Typography key={label} size={12} className="text-secondary">
         {label}
       </Typography>
     ))}
     {sizes.map((size) => (
       <div key={size} className="contents">
-        <Typography size={12} className="text-black-40">
+        <Typography size={12} className="text-secondary">
           {size}
         </Typography>
         <IconBox size={size}>
@@ -135,7 +135,7 @@ export const CountBadge: Story = {
       size={24}
       background
       badge={
-        <BadgeComponent content="3" className="bg-indigo text-static-white" />
+        <BadgeComponent content="3" className="bg-indigo text-static-black" />
       }
     >
       <BellIcon />

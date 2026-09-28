@@ -52,7 +52,7 @@ const Variants = () => (
     <div className="flex flex-col gap-4">
       {[1, 2, 3, 4, 5, 6, 7].map((count) => (
         <div key={count} className="flex items-center gap-4">
-          <Typography size={12} className="w-4 text-black-40">
+          <Typography size={12} className="w-4 text-secondary">
             {count}
           </Typography>
           <Strip count={count} />
@@ -81,7 +81,7 @@ const ExampleSet = () => (
   <div className="flex w-96 flex-col gap-8">
     <div className="flex flex-col gap-2">
       <Typography size={12} className="text-black">
-        Users <span className="text-black-40">86 of 100 Used</span>
+        Users <span className="text-secondary">86 of 100 Used</span>
       </Typography>
       <Strip
         count={7}
@@ -104,7 +104,7 @@ const ExampleSet = () => (
         aria-valuetext="Weak"
         className="w-full"
       />
-      <Typography size={12} className="text-black-40">
+      <Typography size={12} className="text-secondary">
         Use 8 or more characters with a mix of letters, numbers &amp; symbols.
       </Typography>
     </div>

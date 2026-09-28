@@ -1,7 +1,9 @@
 import { StarIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment } from 'react'
+import { expect } from 'storybook/test'
 import { BUTTON_VARIANTS, ROLES, SIZES } from '../../constants'
+import { colorOf, settledColor } from '../../test/colors'
 import { Typography } from '../Text/Text'
 import { Button } from './Button'
 
@@ -95,7 +97,47 @@ export const Outline: Story = {
   },
 }
 
-/** Figma "Bare": no box, 40% opacity, 100% on hover. */
+/**
+ * A Bare button's colour comes from `--button-fg`, which hover and keyboard
+ * focus switch to black. A `text-*` class sets the colour in every state
+ * instead ("Delete"); `[--button-fg:…]` changes only the rest colour.
+ */
+export const BareCustomColor: Story = {
+  render: () => (
+    <div className="flex gap-4">
+      <Button variant="bare" label="Archive" />
+      <Button variant="bare" label="Delete" className="text-red-text" />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const archive = canvas.getByRole('button', { name: 'Archive' })
+    const remove = canvas.getByRole('button', { name: 'Delete' })
+    const red = colorOf('text-red-text', canvasElement)
+
+    await expect(await settledColor(archive)).toBe(
+      colorOf('text-secondary', canvasElement),
+    )
+    await expect(await settledColor(remove)).toBe(red)
+
+    await step('keyboard focus turns the default one black', async () => {
+      await userEvent.tab()
+      await expect(archive).toHaveFocus()
+      await expect(archive.matches(':focus-visible')).toBe(true)
+      await expect(await settledColor(archive)).toBe(
+        colorOf('text-black', canvasElement),
+      )
+    })
+
+    await step('and keeps the custom colour', async () => {
+      await userEvent.tab()
+      await expect(remove).toHaveFocus()
+      await expect(remove.matches(':focus-visible')).toBe(true)
+      await expect(await settledColor(remove)).toBe(red)
+    })
+  },
+}
+
+/** Figma "Bare": no box, a secondary label (Figma: 40% opacity), black on hover. */
 export const Bare: Story = {
   args: {
     variant: 'bare',
@@ -184,13 +226,13 @@ export const Matrix: Story = {
     >
       <span />
       {Object.values(SIZES).map((size) => (
-        <Typography key={size} size={12} className="text-black-40">
+        <Typography key={size} size={12} className="text-secondary">
           {size}
         </Typography>
       ))}
       {Object.values(BUTTON_VARIANTS).map((variant) => (
         <Fragment key={variant}>
-          <Typography size={12} className="text-black-40">
+          <Typography size={12} className="text-secondary">
             {variant}
           </Typography>
           {Object.values(SIZES).map((size) => (

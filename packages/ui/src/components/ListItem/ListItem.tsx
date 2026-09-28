@@ -21,7 +21,7 @@ export type ListItemProps<C extends ElementType = typeof defaultTag> = Omit<
 
   /**
    * The second line: a timestamp or a short description (12 Regular,
-   * Black/40%).
+   * `text-secondary`; Figma: Black/40%).
    */
   description?: ReactNode
 }
@@ -55,7 +55,7 @@ function ListItem<C extends ElementType = typeof defaultTag>({
           {title}
         </Typography>
         {description && (
-          <Typography size={12} className="truncate text-black-40">
+          <Typography size={12} className="truncate text-secondary">
             {description}
           </Typography>
         )}

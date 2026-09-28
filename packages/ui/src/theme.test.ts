@@ -106,7 +106,7 @@ beforeAll(async () => {
   const base = import.meta.dirname
   const source = await readFile(join(base, 'index.css'), 'utf8')
   const compiler = await compile(source, { base, loadStylesheet })
-  css = compiler.build(['dark:bg-black', 'bg-primary-hover'])
+  css = compiler.build(['dark:bg-black', 'bg-primary-hover', 'text-secondary'])
   rules = parse(css)
 })
 
@@ -137,6 +137,18 @@ describe('theme scopes (compiled index.css)', () => {
 
   it('follows the OS preference unless <html data-theme="light">', () => {
     expect(osDark().declarations).toEqual(dark().declarations)
+  })
+
+  it('reads text-secondary on the element, so it follows theme scopes', () => {
+    // `@theme inline`: the utility uses the token itself, not a copy
+    // computed on <html> (which would keep the light value in a dark scope).
+    const utility = rules.find((r) => r.selector === '.text-secondary')
+    expect(utility?.declarations.get('color')).toBe(
+      'var(--color-text-secondary)',
+    )
+    expect(dark().declarations.get('--color-text-secondary')).toBe(
+      'rgb(255 255 255 / 0.7)',
+    )
   })
 
   it('orders the scopes so that data-theme wins over :root', () => {

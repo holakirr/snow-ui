@@ -73,8 +73,15 @@ describe('Button', () => {
 
     const button = screen.getByRole(ROLES.button)
 
-    expect(button).toHaveClass('opacity-40')
-    expect(button).toHaveClass('hover:opacity-100')
+    // Figma's 40% opacity is 2.85:1; the label is text-secondary instead,
+    // through --button-fg, which hover and keyboard focus switch to black.
+    expect(button).toHaveClass(
+      'text-(--button-fg)',
+      '[--button-fg:var(--color-text-secondary)]',
+      'hover:[--button-fg:var(--color-black)]',
+    )
+    expect(button).not.toHaveClass('text-black')
+    expect(button.className).not.toMatch(/opacity-40/)
     expect(button).toHaveClass('p-0')
     expect(button).not.toHaveClass('px-3')
     expect(button).not.toHaveClass('min-h-6')
@@ -234,7 +241,22 @@ describe('Button', () => {
 
     const button = screen.getByRole(ROLES.button)
 
-    expect(button).toHaveClass('focus-ring', 'focus-visible:opacity-100')
+    expect(button).toHaveClass(
+      'focus-ring',
+      'focus-visible:[--button-fg:var(--color-black)]',
+    )
+  })
+
+  it('keeps a custom colour on a bare button in every state', () => {
+    render(<Button variant="bare" className="text-red-text" label="Delete" />)
+
+    const button = screen.getByRole(ROLES.button, { name: 'Delete' })
+
+    // The consumer's colour replaces `text-(--button-fg)`; the hover and
+    // focus classes only change --button-fg, which nothing reads any more.
+    expect(button).toHaveClass('text-red-text')
+    expect(button).not.toHaveClass('text-(--button-fg)')
+    expect(button.className).not.toMatch(/(hover|focus-visible):text-/)
   })
 
   it('leaves icons that size themselves alone', () => {

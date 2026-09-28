@@ -1,6 +1,7 @@
 import { SearchIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type ComponentProps, useEffect, useState } from 'react'
+import { expect, fn, waitFor, within } from 'storybook/test'
 import { Avatar, AvatarFallback } from '../Avatar'
 import { Button } from '../Button'
 import { IconBox } from '../IconBox'
@@ -24,7 +25,8 @@ const SearchButton = ({
   <button
     type="button"
     className={searchStyles({
-      className: 'w-40 cursor-pointer text-black-20',
+      // Figma: Black/20% (1.6:1); the label is text, so text-secondary.
+      className: 'w-40 cursor-pointer text-secondary',
     })}
     {...props}
   >
@@ -33,7 +35,7 @@ const SearchButton = ({
     <KBD
       keys={[shortcut]}
       aria-hidden
-      className="inline-flex h-4 items-center rounded-[6px] border-[0.5px] border-black-10 px-1 text-12 text-black-20"
+      className="inline-flex h-4 items-center rounded-[6px] border-[0.5px] border-black-10 px-1 text-12 text-secondary"
     />
   </button>
 )
@@ -93,12 +95,12 @@ const groups: CommandPaletteGroup[] = [
       {
         id: 'emma',
         label: 'Emma Smith',
-        icon: avatar('ES', 'bg-purple text-static-white'),
+        icon: avatar('ES', 'bg-purple text-static-black'),
       },
       {
         id: 'melody',
         label: 'Melody Macy',
-        icon: avatar('MM', 'bg-orange text-static-white'),
+        icon: avatar('MM', 'bg-orange text-static-black'),
       },
     ],
   },
@@ -128,7 +130,64 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
+export const Default: Story = {
+  args: { onSelect: fn() },
+  play: async ({ args, canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const trigger = canvas.getByRole('button', { name: 'Search' })
+
+    await step(
+      'the trigger opens it with focus in the search field',
+      async () => {
+        await userEvent.click(trigger)
+        await page.findByRole('dialog', { name: 'Search' })
+        await waitFor(() =>
+          expect(page.getByRole('combobox', { name: 'Search' })).toHaveFocus(),
+        )
+      },
+    )
+
+    await step('typing filters and highlights the first result', async () => {
+      const field = page.getByRole('combobox', { name: 'Search' })
+      await userEvent.keyboard('tok')
+      const options = page.getAllByRole('option')
+      await expect(options).toHaveLength(1)
+      await expect(options[0]).toHaveTextContent('Design tokens')
+      await expect(options[0]).toHaveAttribute('aria-selected', 'true')
+      await expect(field).toHaveAttribute(
+        'aria-activedescendant',
+        options[0].id,
+      )
+    })
+
+    await step('Enter selects it and closes the palette', async () => {
+      await userEvent.keyboard('{Enter}')
+      await expect(args.onSelect).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'tokens', label: 'Design tokens' }),
+        expect.anything(),
+      )
+      await waitFor(() =>
+        expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
+      )
+      await expect(trigger).toHaveFocus()
+    })
+
+    await step('the hotkey opens it, Escape closes it', async () => {
+      await userEvent.keyboard('/')
+      await page.findByRole('dialog', { name: 'Search' })
+      await userEvent.keyboard('{ArrowDown}')
+      await expect(page.getAllByRole('option')[1]).toHaveAttribute(
+        'aria-selected',
+        'true',
+      )
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() =>
+        expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
+      )
+      await expect(args.onSelect).toHaveBeenCalledTimes(1)
+    })
+  },
+}
 
 export const Open: Story = {
   args: { defaultOpen: true },
@@ -198,7 +257,7 @@ export const AsyncResults: Story = {
           onQueryChange={setQuery}
           onSelect={(item) => setSelected(item.label)}
         />
-        <Typography size={12} className="text-black-40">
+        <Typography size={12} className="text-secondary">
           Selected: {selected ?? 'nothing'}
         </Typography>
       </div>

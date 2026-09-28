@@ -10,12 +10,52 @@ describe('Toggle', () => {
 
     const toggle = screen.getByRole('button', { name: 'bold' })
 
-    expect(toggle).toHaveClass('opacity-40', 'data-[state=on]:bg-black-4')
+    // Off: text-secondary (Figma's 40% opacity is 2.85:1); on: black.
+    expect(toggle).toHaveClass(
+      'text-(--segment-fg)',
+      '[--segment-fg:var(--color-text-secondary)]',
+      'data-[state=on]:[--segment-fg:var(--color-black)]',
+      'data-[state=on]:bg-black-4',
+    )
 
     fireEvent.click(toggle)
 
     expect(toggle).toHaveAttribute('data-state', 'on')
     expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('turns black when on, also when rendered as a link (asChild)', () => {
+    render(
+      <Toggle asChild pressed>
+        <a href="#bold" aria-label="bold">
+          B
+        </a>
+      </Toggle>,
+    )
+
+    const link = screen.getByLabelText('bold')
+
+    expect(link.tagName).toBe('A')
+    expect(link).toHaveAttribute('data-state', 'on')
+    // `:enabled` never matches a link: the "on" colour must not depend on it.
+    expect(link.matches(':enabled')).toBe(false)
+    expect(link).toHaveClass(
+      'data-[state=on]:[--segment-fg:var(--color-black)]',
+    )
+    expect(link.className).not.toMatch(/enabled:/)
+  })
+
+  it('keeps a custom colour in every state', () => {
+    render(
+      <Toggle aria-label="bold" className="text-red-text" pressed>
+        B
+      </Toggle>,
+    )
+
+    const toggle = screen.getByRole('button', { name: 'bold' })
+
+    expect(toggle).toHaveClass('text-red-text')
+    expect(toggle).not.toHaveClass('text-(--segment-fg)')
   })
 
   it('uses the Figma Button sizes', () => {
@@ -106,7 +146,10 @@ describe('ToggleGroup', () => {
     toggle.focus()
 
     expect(toggle).toHaveFocus()
-    expect(toggle).toHaveClass('focus-ring', 'focus-visible:opacity-100')
+    expect(toggle).toHaveClass(
+      'focus-ring',
+      'focus-visible:[--segment-fg:var(--color-black)]',
+    )
   })
 
   it('keeps a disabled toggle visible and non-interactive', () => {
@@ -119,10 +162,8 @@ describe('ToggleGroup', () => {
     const toggle = screen.getByRole('button', { name: 'bold' })
 
     expect(toggle).toBeDisabled()
-    // Full opacity with Black/20% content on a Black/4% tile, instead of
-    // 20% opacity on top of the 40% "off" opacity.
+    // Black/20% content on a Black/4% tile, instead of 20% opacity.
     expect(toggle).toHaveClass(
-      'disabled:opacity-100',
       'disabled:text-black-20',
       'disabled:bg-black-4',
       'disabled:cursor-not-allowed',

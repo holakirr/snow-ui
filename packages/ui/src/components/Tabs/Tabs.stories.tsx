@@ -1,7 +1,9 @@
 import { CopyIcon, StarIcon, TextAIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment } from 'react'
+import { expect } from 'storybook/test'
 import { SIZES } from '../../constants'
+import { colorOf, settledColor } from '../../test/colors'
 import { Typography } from '../Text'
 import {
   Tabs,
@@ -30,7 +32,64 @@ const meta: Meta<typeof Tabs> = {
 export default meta
 type Story = StoryObj<typeof Tabs>
 
+/**
+ * A panel per tab: each tab's `aria-controls` points at its panel, so a tab
+ * list without panels is invalid ARIA (a view switcher without panels is a
+ * `ToggleGroup`).
+ */
+const Panels = ({ values }: { values: string[] }) => (
+  <>
+    {values.map((value) => (
+      <TabsContent key={value} value={value} className="text-12 text-secondary">
+        {value[0].toUpperCase() + value.slice(1)} panel
+      </TabsContent>
+    ))}
+  </>
+)
+
 export const Default: Story = {
+  play: async ({ canvas, userEvent, step }) => {
+    const account = canvas.getByRole('tab', { name: 'Account' })
+    const password = canvas.getByRole('tab', { name: 'Password' })
+
+    await step('Tab moves into the list, onto the selected tab', async () => {
+      await userEvent.tab()
+      await expect(account).toHaveFocus()
+      await expect(account).toHaveAttribute('aria-selected', 'true')
+      await expect(canvas.getByRole('tabpanel')).toHaveTextContent(
+        'Make changes to your account here.',
+      )
+    })
+
+    await step(
+      'ArrowRight selects the next tab and shows its panel',
+      async () => {
+        await userEvent.keyboard('{ArrowRight}')
+        await expect(password).toHaveFocus()
+        await expect(password).toHaveAttribute('aria-selected', 'true')
+        await expect(account).toHaveAttribute('aria-selected', 'false')
+        await expect(canvas.getByRole('tabpanel')).toHaveTextContent(
+          'Change your password here.',
+        )
+      },
+    )
+
+    await step('the disabled tab is skipped and focus wraps', async () => {
+      await userEvent.keyboard('{ArrowRight}')
+      await expect(account).toHaveFocus()
+      await userEvent.keyboard('{ArrowLeft}')
+      await expect(password).toHaveFocus()
+      await userEvent.keyboard('{End}')
+      await expect(password).toHaveFocus()
+      await userEvent.keyboard('{Home}')
+      await expect(account).toHaveFocus()
+    })
+
+    await step('Tab leaves the list for the panel', async () => {
+      await userEvent.tab()
+      await expect(canvas.getByRole('tabpanel')).toHaveFocus()
+    })
+  },
   render: () => (
     <Tabs defaultValue="account" className="w-[400px]">
       <TabsList>
@@ -56,6 +115,7 @@ export const Pill: Story = {
         <TabsTrigger value="week">Week</TabsTrigger>
         <TabsTrigger value="month">Month</TabsTrigger>
       </TabsList>
+      <Panels values={['day', 'week', 'month']} />
     </Tabs>
   ),
 }
@@ -74,6 +134,7 @@ export const IconToggle: Story = {
           Starred
         </TabsTrigger>
       </TabsList>
+      <Panels values={['text', 'notes', 'star']} />
     </Tabs>
   ),
 }
@@ -88,6 +149,7 @@ export const Solid: Story = {
           Month
         </TabsTrigger>
       </TabsList>
+      <Panels values={['day', 'week', 'month']} />
     </Tabs>
   ),
 }
@@ -100,8 +162,70 @@ export const IconOnly: Story = {
         <TabsTrigger value="notes" icon={<CopyIcon />} aria-label="Notes" />
         <TabsTrigger value="star" icon={<StarIcon />} aria-label="Starred" />
       </TabsList>
+      <Panels values={['text', 'notes', 'star']} />
     </Tabs>
   ),
+}
+
+/**
+ * Triggers rendered as links with `asChild` (a router's `<Link>`, say): the
+ * link is the tab, and gets the tab's colours in every state (they don't
+ * depend on `:enabled`, which a link never matches).
+ */
+export const Links: Story = {
+  render: () => (
+    <div className="flex flex-col gap-6">
+      {(['line', 'pill'] as const).map((variant) => (
+        <Tabs key={variant} defaultValue="overview">
+          <TabsList variant={variant} aria-label={`Sections (${variant})`}>
+            <TabsTrigger value="overview" asChild>
+              <a href="#overview">Overview</a>
+            </TabsTrigger>
+            <TabsTrigger value="projects" asChild>
+              <a href="#projects">Projects</a>
+            </TabsTrigger>
+          </TabsList>
+          <Panels values={['overview', 'projects']} />
+        </Tabs>
+      ))}
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const [lineActive, pillActive] = canvas.getAllByRole('tab', {
+      name: 'Overview',
+    })
+    const [lineIdle, pillIdle] = canvas.getAllByRole('tab', {
+      name: 'Projects',
+    })
+    const secondary = colorOf('text-secondary', canvasElement)
+
+    await step('the links are the tabs', async () => {
+      await expect(lineActive.tagName).toBe('A')
+      await expect(lineActive).toHaveAttribute('aria-selected', 'true')
+    })
+
+    await step('the active link has the active colour', async () => {
+      await expect(await settledColor(lineActive)).toBe(
+        colorOf('text-primary', canvasElement),
+      )
+      await expect(await settledColor(pillActive)).toBe(
+        colorOf('text-black', canvasElement),
+      )
+      await expect(await settledColor(lineIdle)).toBe(secondary)
+      await expect(await settledColor(pillIdle)).toBe(secondary)
+    })
+
+    await step('selecting another link moves the colour', async () => {
+      pillActive.focus()
+      await userEvent.keyboard('{ArrowRight}')
+      await expect(pillIdle).toHaveAttribute('aria-selected', 'true')
+      await expect(await settledColor(pillIdle)).toBe(
+        colorOf('text-black', canvasElement),
+      )
+      pillIdle.blur()
+      await expect(await settledColor(pillActive)).toBe(secondary)
+    })
+  },
 }
 
 const variants: TabsVariant[] = ['line', 'pill', 'icon-toggle', 'solid']
@@ -113,13 +237,13 @@ export const Matrix: Story = {
     <div className="grid grid-cols-[auto_repeat(3,auto)] items-center gap-x-10 gap-y-6">
       <span />
       {Object.values(SIZES).map((size) => (
-        <Typography key={size} size={12} className="text-black-40">
+        <Typography key={size} size={12} className="text-secondary">
           {size}
         </Typography>
       ))}
       {variants.map((variant) => (
         <Fragment key={variant}>
-          <Typography size={12} className="text-black-40">
+          <Typography size={12} className="text-secondary">
             {variant}
           </Typography>
           {Object.values(SIZES).map((size) => (
@@ -145,6 +269,7 @@ export const Matrix: Story = {
                   Starred
                 </TabsTrigger>
               </TabsList>
+              <Panels values={['one', 'two', 'three']} />
             </Tabs>
           ))}
         </Fragment>

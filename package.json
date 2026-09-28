@@ -11,7 +11,8 @@
     "build:icons": "bun run --filter @holakirr/snow-ui-icons build",
     "build:ui": "bun run --filter @holakirr/snow-ui build",
     "test": "bun run --filter '*' test",
-    "test:storybook": "vitest run --project storybook",
+    "test:storybook": "vitest run --project storybook --project storybook-dark",
+    "test:coverage": "vitest run --coverage --project @holakirr/snow-ui --project storybook --project storybook-dark",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
@@ -22,7 +23,7 @@
     "visual": "bash visual/docker.sh",
     "visual:update": "bash visual/docker.sh --update",
     "visual:test": "playwright test -c visual/playwright.config.ts",
-    "clean": "rm -rf packages/*/dist packages/*/storybook-static packages/*/coverage",
+    "clean": "rm -rf packages/*/dist packages/*/storybook-static packages/*/coverage coverage",
     "changeset": "changeset",
     "version-packages": "changeset version && bun install --lockfile-only",
     "release": "bun run build && changeset publish"

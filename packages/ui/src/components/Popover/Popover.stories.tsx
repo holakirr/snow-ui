@@ -47,10 +47,13 @@ export const Open: Story = {
         <PopoverTrigger asChild>
           <Button variant="outline" label="Open" />
         </PopoverTrigger>
-        <PopoverContent align="start">
+        {/* PopoverContent is a dialog: name it (here by its title). */}
+        <PopoverContent align="start" aria-labelledby="popover-title">
           <div className="flex flex-col gap-2">
-            <Typography semibold>Popover</Typography>
-            <Typography className="text-black-40">
+            <Typography id="popover-title" semibold>
+              Popover
+            </Typography>
+            <Typography className="text-secondary">
               Padding 12, radius 16, Background/3, a Surface/1 stroke and the
               Glass 2 effect.
             </Typography>

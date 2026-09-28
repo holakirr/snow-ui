@@ -122,7 +122,7 @@ const TableHead: FC<TableHeadProps> = ({
     <th
       aria-sort={sortable ? ARIA_SORT[sort] : undefined}
       className={twMerge(
-        'h-10 px-3 py-2 text-left align-middle font-normal text-black-40 border-b border-black-20',
+        'h-10 px-3 py-2 text-left align-middle font-normal text-secondary border-b border-black-20',
         className,
       )}
       {...props}

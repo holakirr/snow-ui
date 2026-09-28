@@ -1,6 +1,5 @@
 import { CloseIcon } from '@holakirr/snow-ui-icons'
 import type { ComponentProps, FC, ReactNode } from 'react'
-import { ROLES } from '../../constants'
 import { twMerge } from '../../utils/tw-merge'
 import { Typography } from '../Text'
 
@@ -84,6 +83,8 @@ const ArrowTip: FC<{ side: 'left' | 'right' }> = ({ side }) => (
 
 /**
  * Tag component displays a tag with a label and optional dot and close icon.
+ * It has no role of its own: in a list of tags, render them in a `<ul>` /
+ * `role="list"` and pass `role="listitem"` (or wrap each in an `<li>`).
  */
 const Tag: FC<TagProps> = ({
   leftContent,
@@ -122,7 +123,6 @@ const Tag: FC<TagProps> = ({
           className,
         )}
         ref={ref}
-        role={ROLES.listitem}
         {...props}
       >
         {shape === 'arrow-left' && <ArrowTip side="left" />}
@@ -149,7 +149,6 @@ const Tag: FC<TagProps> = ({
         className,
       )}
       ref={ref}
-      role={ROLES.listitem}
       {...props}
     >
       {hasLeft && left}

@@ -37,21 +37,21 @@ describe('Tag', () => {
   })
 
   it('renders the Figma states', () => {
-    const { rerender } = render(<Tag label="React" />)
-    const tag = screen.getByRole('listitem')
+    const { rerender } = render(<Tag label="React" data-testid="tag" />)
+    const tag = screen.getByTestId('tag')
 
     expect(tag).toHaveClass('hover:[--tag-fill:var(--color-black-10)]')
 
-    rerender(<Tag label="React" state="active" />)
+    rerender(<Tag label="React" data-testid="tag" state="active" />)
     expect(tag).toHaveClass('text-indigo-text')
 
-    rerender(<Tag label="React" state="static" />)
+    rerender(<Tag label="React" data-testid="tag" state="static" />)
     expect(tag.className).not.toContain('hover:')
   })
 
   it('renders the dot left icon, with the Figma paddings', () => {
-    const { container } = render(<Tag label="React" dot />)
-    const tag = screen.getByRole('listitem')
+    const { container } = render(<Tag label="React" data-testid="tag" dot />)
+    const tag = screen.getByTestId('tag')
 
     expect(container.querySelector('.rounded-full')).toBeInTheDocument()
     expect(tag).toHaveClass('pl-1', 'pr-2')
@@ -86,8 +86,27 @@ describe('Tag', () => {
   })
 
   it('uses the accessible indigo for active text', () => {
-    render(<Tag label="React" state="active" />)
+    render(<Tag label="React" data-testid="tag" state="active" />)
 
-    expect(screen.getByRole('listitem')).toHaveClass('text-indigo-text')
+    expect(screen.getByTestId('tag')).toHaveClass('text-indigo-text')
+  })
+
+  it('has no role of its own, so a standalone tag is valid ARIA', () => {
+    render(<Tag label="React" data-testid="tag" />)
+
+    expect(screen.getByTestId('tag')).not.toHaveAttribute('role')
+    expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
+  })
+
+  it('takes role="listitem" when rendered in a list', () => {
+    render(
+      // biome-ignore lint/a11y/useSemanticElements: tags are <div>s, which a <ul> can't contain
+      <div role="list">
+        <Tag label="React" role="listitem" />
+        <Tag label="Vue" role="listitem" />
+      </div>,
+    )
+
+    expect(screen.getAllByRole('listitem')).toHaveLength(2)
   })
 })

@@ -1,0 +1,8 @@
+/*
+ * A consumer app's stylesheet (as in the README), for test/dist.test.ts. The
+ * package resolves through the workspace link in the root node_modules, like
+ * an installed dependency. `source(none)`: only the package is scanned.
+ */
+@import "tailwindcss" source(none);
+@import "@holakirr/snow-ui/theme.css";
+@source "../../../../node_modules/@holakirr/snow-ui/dist";

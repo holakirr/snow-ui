@@ -30,13 +30,25 @@ bun add @holakirr/snow-ui react react-dom
 
 Peer dependencies: `react` and `react-dom` 19. Nothing else is required — the library is not tied to any form or state library.
 
-Tailwind CSS is not required at runtime: `@holakirr/snow-ui/index.css` ships precompiled.
+Then import the styles, in one of two ways.
 
-Then just import styles:
+**Without Tailwind CSS:** `index.css` ships precompiled (Tailwind's preflight, the theme and every class the components use):
 
 ```tsx
 import '@holakirr/snow-ui/index.css'
 ```
+
+**With Tailwind CSS v4 in your project:** import the theme into your stylesheet after Tailwind, and let Tailwind scan the package for the classes the components use (the `@source` path is relative to that stylesheet):
+
+```css
+@import "tailwindcss";
+@import "@holakirr/snow-ui/theme.css";
+@source "../node_modules/@holakirr/snow-ui/dist";
+```
+
+`theme.css` is the same theme without Tailwind itself: the design tokens as theme variables (so `bg-black-10`, `text-14` or `rounded-12` work in your own markup), the theme scopes, the `dark` variant, the `glass*` and `focus-ring` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). Your Tailwind generates one set of utilities for your code and the components, instead of two copies of preflight and overlapping utilities. Import one of the two stylesheets, not both. Note that `theme.css` redefines `dark:` to follow [scoped themes](#scoped-themes) (`data-theme`, then the OS preference) and overrides Tailwind's `--font-sans`, `--color-black` and `--color-white`.
+
+**Cascade layers.** Both stylesheets keep every rule in Tailwind's cascade layers (`theme`, `base`, `components`, `utilities`; react-day-picker's stylesheet is in `components`), so your own unlayered CSS overrides them whatever the load order or specificity, and your utilities override the base and component rules.
 
 ### Basic example
 
@@ -84,7 +96,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 
 ## Design tokens
 
-`index.css` implements the SnowUI Figma tokens (the SnowUI-Light and SnowUI-Dark modes) as Tailwind theme variables. They are generated from [W3C Design Tokens (DTCG)](https://www.designtokens.org/) files in [`tokens/`](https://github.com/holakirr/snow-ui/tree/main/packages/ui/tokens), the source of truth, which other tools (Style Dictionary, Terrazzo, Figma plugins) can read too. Storybook's "Foundations" pages list every token with its Figma name and both mode values.
+`index.css` and `theme.css` implement the SnowUI Figma tokens (the SnowUI-Light and SnowUI-Dark modes) as Tailwind theme variables. They are generated from [W3C Design Tokens (DTCG)](https://www.designtokens.org/) files in [`tokens/`](https://github.com/holakirr/snow-ui/tree/main/packages/ui/tokens), the source of truth, which other tools (Style Dictionary, Terrazzo, Figma plugins) can read too. Storybook's "Foundations" pages list every token with its Figma name and both mode values.
 
 - **Theme:** light by default; dark with `data-theme="dark"` on `<html>` or on any element (see [Scoped themes](#scoped-themes)), or with the OS dark preference unless `<html data-theme="light">`. `color-scheme` follows, so native controls and scrollbars match.
 - **Colors:** `primary` (black in light, indigo in dark), `black`, `white` and their Figma alpha steps (`black-80`, `black-40`, `black-20`, `black-10`, `black-4`, same for `white`), `background-1..3`, `surface-1..3`, `color-1`, `color-2`, `static-white`, `static-black`, the secondary colours (`purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`), and `indigo-text`, an accessible indigo for text (see below). Use them as `bg-black-10`, `text-black-40`, `border-black-10` or `var(--color-black-10)`. In dark mode, `black-10` and `black-4` get the design's stronger alpha (15% and 10%); the Tailwind modifiers `black/10` and `black/4` keep one alpha in both modes.

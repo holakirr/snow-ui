@@ -110,6 +110,44 @@ beforeAll(async () => {
   rules = parse(css)
 })
 
+describe('cascade layers (compiled index.css)', () => {
+  it('puts every rule in a layer, so unlayered consumer CSS wins', () => {
+    const topLevel = rules.filter((r) => r.context.length === 0)
+    const unlayered = topLevel.filter(
+      (r) => !/^@(layer|property|keyframes) /.test(r.selector),
+    )
+    expect(unlayered.map((r) => r.selector)).toEqual([])
+    // Tailwind's layers only (declared in this order by
+    // `@layer theme, base, components, utilities`).
+    const layers = new Set(
+      topLevel
+        .filter((r) => r.selector.startsWith('@layer '))
+        .map((r) => r.selector.slice('@layer '.length)),
+    )
+    expect(
+      [...layers].filter(
+        (layer) =>
+          !['properties', 'theme', 'base', 'components', 'utilities'].includes(
+            layer,
+          ),
+      ),
+    ).toEqual([])
+    expect(css).toMatch(/@layer theme, base, components, utilities;/)
+  })
+
+  it("puts react-day-picker's stylesheet in the components layer", () => {
+    const rdp = rules.filter((r) => r.selector.startsWith('.rdp-'))
+    expect(rdp.length).toBeGreaterThan(10)
+    for (const r of rdp)
+      expect(r.context[0], r.selector).toBe('@layer components')
+    expect(
+      rules
+        .filter((r) => r.selector.startsWith('@keyframes rdp-'))
+        .map((r) => r.context),
+    ).toEqual(Array(6).fill(['@layer components']))
+  })
+})
+
 describe('theme scopes (compiled index.css)', () => {
   const light = () => rule(':root, [data-theme="light"]', ['@layer base'])
   const dark = () => rule('[data-theme="dark"]', ['@layer base'])

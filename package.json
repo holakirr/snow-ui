@@ -12,6 +12,7 @@
     "build:ui": "bun run --filter @holakirr/snow-ui build",
     "tokens": "bun run --filter @holakirr/snow-ui tokens",
     "test": "bun run --filter '*' test",
+    "test:dist": "bun run --filter @holakirr/snow-ui test:dist",
     "test:storybook": "vitest run --project storybook",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",

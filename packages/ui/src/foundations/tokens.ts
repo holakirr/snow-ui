@@ -119,7 +119,7 @@ export const sizes: { px: number; utility: string }[] = [
   { px: 80, utility: 'size-20' },
 ]
 
-/** Approximations of Figma's Glass effects (utilities in index.css). */
+/** Approximations of Figma's Glass effects (utilities in theme.css). */
 export const glass: { utility: string; figma: string; recipe: string }[] = [
   {
     utility: 'glass-1',

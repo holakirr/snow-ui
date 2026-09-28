@@ -32,7 +32,8 @@
       "require": "./dist/react-hook-form.cjs"
     },
     "./package.json": "./package.json",
-    "./index.css": "./dist/index.css"
+    "./index.css": "./dist/index.css",
+    "./theme.css": "./dist/theme.css"
   },
   "repository": {
     "type": "git",
@@ -50,7 +51,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist && bun run tokens && bun run build:css && tsdown",
-    "build:css": "tailwindcss -i ./src/index.css -o ./dist/index.css --minify",
+    "build:css": "tailwindcss -i ./src/index.css -o ./dist/index.css --minify && bun scripts/build-css.ts",
     "tokens": "tz build && biome format --write src/styles/tokens.generated.css src/foundations/tokens.generated.ts src/utils/token-scales.generated.ts",
     "typecheck": "tsc -p . --noEmit",
     "lint": "biome check .",
@@ -58,6 +59,7 @@
     "format": "biome format .",
     "format:fix": "biome format --write .",
     "test": "vitest run",
+    "test:dist": "vitest run -c vitest.dist.config.ts",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",

@@ -10,6 +10,10 @@ const meta: Meta<typeof Link> = {
       control: 'text',
       description: 'The URL that the hyperlink points to.',
     },
+    variant: {
+      control: 'radio',
+      options: ['default', 'arrow', 'external'],
+    },
     children: {
       control: 'text',
       description: 'The content of the link.',
@@ -31,19 +35,43 @@ export const Default: Story = {
   },
 }
 
+export const Arrow: Story = {
+  args: {
+    href: '#',
+    children: 'Arrow Link',
+    variant: 'arrow',
+  },
+}
+
+export const External: Story = {
+  args: {
+    href: 'https://example.com',
+    children: 'External Link',
+    variant: 'external',
+    target: '_blank',
+    rel: 'noopener noreferrer',
+  },
+}
+
+/** The Figma Link set (hover a link to see its hover state). */
+export const AllVariants: Story = {
+  render: () => (
+    <div className="flex items-center gap-6">
+      <Link href="#">Link</Link>
+      <Link href="#" variant="arrow">
+        Link
+      </Link>
+      <Link href="#" variant="external">
+        Link
+      </Link>
+    </div>
+  ),
+}
+
 export const WithCustomClasses: Story = {
   args: {
     href: '#',
     children: 'Custom Styled Link',
-    className: 'text-red-500 font-bold',
-  },
-}
-
-export const ExternalLink: Story = {
-  args: {
-    href: 'https://example.com',
-    children: 'External Link',
-    target: '_blank',
-    rel: 'noopener noreferrer',
+    className: 'text-red font-semibold',
   },
 }

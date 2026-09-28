@@ -154,3 +154,25 @@ export const Scrollable: Story = {
     </Select>
   ),
 }
+
+/** The Figma select pattern: the Input field and the Popover menu, open. */
+export const Open: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="h-80">
+      <Select defaultOpen defaultValue="banana">
+        <SelectTrigger className="w-[240px]">
+          <SelectValue placeholder="Select a fruit" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Fruits</SelectLabel>
+            <SelectItem value="apple">Apple</SelectItem>
+            <SelectItem value="banana">Banana</SelectItem>
+            <SelectItem value="blueberry">Blueberry</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
+  ),
+}

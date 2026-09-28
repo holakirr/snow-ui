@@ -33,4 +33,15 @@ describe('Slider', () => {
 
     expect(screen.getAllByRole('slider')).toHaveLength(3)
   })
+
+  it('shows grab cursors on the thumb and a pointer on the track', () => {
+    const { container } = render(<Slider defaultValue={[50]} />)
+
+    const thumb = screen.getByRole('slider')
+    const track = container.querySelector('.cursor-pointer')
+
+    expect(thumb).toHaveClass('cursor-grab', 'active:cursor-grabbing')
+    expect(track).toHaveClass('data-[disabled]:cursor-not-allowed')
+    expect(track).toContainElement(container.querySelector('.bg-black'))
+  })
 })

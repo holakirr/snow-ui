@@ -33,7 +33,8 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
   <AccordionPrimitive.Header className="flex w-full">
     <AccordionPrimitive.Trigger
       className={twMerge(
-        'flex w-full rounded-xl px-4 py-2 items-center justify-between transition-all hover:bg-black/10 focus:bg-black/10 cursor-pointer [&[data-state=open]>svg]:rotate-90 gap-2',
+        // Like the Figma Sidebar collapsible item: radius 12, Black/4% on hover.
+        'flex w-full rounded-12 px-4 py-2 items-center justify-between transition-all hover:bg-black-4 focus-visible:bg-black-4 focus-ring [&[data-state=open]>svg]:rotate-90 gap-2',
         className,
       )}
       tabIndex={0}

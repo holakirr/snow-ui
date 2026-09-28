@@ -137,7 +137,7 @@ const FormDescription: FC<FormDescriptionProps> = ({ className, ...props }) => {
     <Typography
       as="p"
       id={formDescriptionId}
-      className={twMerge('text-base text-black/40', className)}
+      className={twMerge('text-12 text-black-40', className)}
       {...props}
     />
   )
@@ -163,7 +163,7 @@ const FormMessage: FC<FormMessageProps> = ({
     <Typography
       as="p"
       id={formMessageId}
-      className={twMerge('text-sm font-medium text-red', className)}
+      className={twMerge('text-12 text-red', className)}
       {...props}
     >
       {body}

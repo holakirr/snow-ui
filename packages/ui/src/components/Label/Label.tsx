@@ -5,8 +5,9 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentPropsWithoutRef, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 
+// Figma Input "Title": 12/16 Regular, Black/40%.
 const labelVariants = cva(
-  'text-sm font-medium leading-none text-black/20 w-min transition-all',
+  'text-12 font-normal text-black-40 transition-all peer-disabled:cursor-not-allowed',
 )
 
 type LabelProps = ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &

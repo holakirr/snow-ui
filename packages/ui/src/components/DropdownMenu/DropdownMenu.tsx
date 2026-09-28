@@ -6,10 +6,20 @@ import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import type { ComponentProps, FC } from 'react'
 import { TEXT_SIZES } from '../../constants'
 import { twMerge } from '../../utils/tw-merge'
+import {
+  popoverAnimationClasses,
+  popoverItemClasses,
+  popoverLabelClasses,
+  popoverSeparatorClasses,
+  popoverSurfaceClasses,
+} from '../Popover/surface'
 import { KBD, type KBDProps } from '../Text'
 
-const dropdownMenuContentStyles =
-  'z-50 min-w-[8rem] overflow-hidden rounded-2xl border border-black/10 bg-white/80 p-4 backdrop-blur-bg-40 text-black text-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:animate-zoom-out-95 data-[state=open]:animate-zoom-in-95 data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom'
+const dropdownMenuContentStyles = twMerge(
+  'z-50 min-w-[8rem] overflow-hidden',
+  popoverSurfaceClasses,
+  popoverAnimationClasses,
+)
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 
@@ -22,7 +32,7 @@ const DropdownMenuGroup: FC<DropdownMenuGroupProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.Group
-    className={twMerge('py-2', className)}
+    className={twMerge('py-1', className)}
     {...props}
   />
 )
@@ -46,11 +56,7 @@ const DropdownMenuSubTrigger: FC<DropdownMenuSubTriggerProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.SubTrigger
-    className={twMerge(
-      'flex cursor-pointer gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-black/4 data-[state=open]:bg-black/4 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
-      inset && 'pl-8',
-      className,
-    )}
+    className={twMerge(popoverItemClasses, inset && 'pl-8', className)}
     {...props}
   >
     {children}
@@ -107,11 +113,7 @@ const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.Item
-    className={twMerge(
-      'relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-black/4 focus:text-black data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0',
-      inset && 'pl-8',
-      className,
-    )}
+    className={twMerge(popoverItemClasses, inset && 'pl-8', className)}
     {...props}
   />
 )
@@ -128,14 +130,11 @@ const DropdownMenuCheckboxItem: FC<DropdownMenuCheckboxItemProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.CheckboxItem
-    className={twMerge(
-      'relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-black/4 focus:text-black data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-      className,
-    )}
+    className={twMerge(popoverItemClasses, 'pl-8', className)}
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-2 flex size-4 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
         <Check size={16} />
       </DropdownMenuPrimitive.ItemIndicator>
@@ -156,13 +155,10 @@ const DropdownMenuRadioItem: FC<DropdownMenuRadioItemProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.RadioItem
-    className={twMerge(
-      'relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-black/4 focus:text-black data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-      className,
-    )}
+    className={twMerge(popoverItemClasses, 'pl-8', className)}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-2 flex size-4 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
         <DotIcon size={16} className="fill-current" weight="fill" />
       </DropdownMenuPrimitive.ItemIndicator>
@@ -184,11 +180,7 @@ const DropdownMenuLabel: FC<DropdownMenuLabelProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.Label
-    className={twMerge(
-      'px-2 py-1.5 text-sm font-semibold',
-      inset && 'pl-8',
-      className,
-    )}
+    className={twMerge(popoverLabelClasses, inset && 'pl-8', className)}
     {...props}
   />
 )
@@ -203,7 +195,7 @@ const DropdownMenuSeparator: FC<DropdownMenuSeparatorProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.Separator
-    className={twMerge('h-px bg-black/4', className)}
+    className={twMerge(popoverSeparatorClasses, className)}
     {...props}
   />
 )

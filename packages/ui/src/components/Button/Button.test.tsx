@@ -1,7 +1,9 @@
+import { StarIcon } from '@holakirr/snow-ui-icons'
 import { composeStories } from '@storybook/react'
-import { screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { ROLES } from '../../constants'
+import { Button } from './Button'
 import * as stories from './Button.stories'
 
 const {
@@ -9,6 +11,8 @@ const {
   Gray,
   Filled,
   Outline,
+  Bare,
+  Disabled,
   Sm,
   Md,
   Lg,
@@ -36,7 +40,8 @@ describe('Button', () => {
     const button = screen.getByRole(ROLES.button)
 
     expect(button).toBeInTheDocument()
-    expect(button).toHaveClass('bg-black/5')
+    expect(button).toHaveClass('bg-black-4')
+    expect(button).toHaveClass('hover:bg-black-10')
   })
 
   it('renders with filled variant', async () => {
@@ -46,8 +51,10 @@ describe('Button', () => {
 
     expect(button).toBeInTheDocument()
     expect(button).toHaveClass('bg-primary')
+    // `white` flips: a white label on black, a black label on the dark-mode
+    // indigo Primary (white on indigo is 2.07:1).
     expect(button).toHaveClass('text-white')
-    expect(button).toHaveClass('hover:bg-primary-hover-strong')
+    expect(button).toHaveClass('hover:bg-primary-hover')
   })
 
   it('renders with outline variant', async () => {
@@ -56,8 +63,33 @@ describe('Button', () => {
     const button = screen.getByRole(ROLES.button)
 
     expect(button).toBeInTheDocument()
-    expect(button).toHaveClass('border')
-    expect(button).toHaveClass('border-black/10')
+    // 0.5px inside stroke, like the Figma "Outline" variant.
+    expect(button).toHaveClass('inset-ring-[0.5px]')
+    expect(button).toHaveClass('inset-ring-black-10')
+  })
+
+  it('renders with bare variant', async () => {
+    await Bare.run()
+
+    const button = screen.getByRole(ROLES.button)
+
+    expect(button).toHaveClass('opacity-40')
+    expect(button).toHaveClass('hover:opacity-100')
+    expect(button).toHaveClass('p-0')
+    expect(button).not.toHaveClass('px-3')
+    expect(button).not.toHaveClass('min-h-6')
+  })
+
+  it('renders disabled buttons with the token styles', async () => {
+    await Disabled.run()
+
+    const buttons = screen.getAllByRole(ROLES.button)
+
+    expect(buttons).toHaveLength(5)
+    for (const button of buttons) {
+      expect(button).toBeDisabled()
+      expect(button).toHaveClass('disabled:text-black-20')
+    }
   })
 
   it('renders with sm size', async () => {
@@ -66,10 +98,13 @@ describe('Button', () => {
     const button = screen.getByRole(ROLES.button)
 
     expect(button).toBeInTheDocument()
-    expect(button).toHaveClass('text-sm')
+    expect(button).toHaveClass('text-12')
+    expect(button).toHaveClass('min-h-6')
     expect(button).toHaveClass('py-1')
-    expect(button).toHaveClass('px-2')
-    expect(button).toHaveClass('rounded-lg')
+    expect(button).toHaveClass('px-3')
+    expect(button).toHaveClass('gap-1')
+    expect(button).toHaveClass('rounded-12')
+    expect(screen.getByText('Button')).toHaveClass('text-12')
   })
 
   it('renders with md size', async () => {
@@ -78,10 +113,13 @@ describe('Button', () => {
     const button = screen.getByRole(ROLES.button)
 
     expect(button).toBeInTheDocument()
-    expect(button).toHaveClass('text-base')
+    expect(button).toHaveClass('text-14')
+    expect(button).toHaveClass('min-h-9')
     expect(button).toHaveClass('py-2')
     expect(button).toHaveClass('px-4')
-    expect(button).toHaveClass('rounded-xl')
+    expect(button).toHaveClass('gap-1.5')
+    expect(button).toHaveClass('rounded-16')
+    expect(screen.getByText('Button')).toHaveClass('text-14')
   })
 
   it('renders with lg size', async () => {
@@ -90,10 +128,19 @@ describe('Button', () => {
     const button = screen.getByRole(ROLES.button)
 
     expect(button).toBeInTheDocument()
-    expect(button).toHaveClass('text-lg')
+    expect(button).toHaveClass('text-16')
+    expect(button).toHaveClass('min-h-12')
     expect(button).toHaveClass('py-3')
-    expect(button).toHaveClass('px-6')
-    expect(button).toHaveClass('rounded-2xl')
+    expect(button).toHaveClass('px-5')
+    expect(button).toHaveClass('gap-2')
+    expect(button).toHaveClass('rounded-20')
+    expect(screen.getByText('Button')).toHaveClass('text-16')
+  })
+
+  it('lets textSize override the label size', async () => {
+    const { container } = render(<Lg textSize={12} />)
+
+    expect(within(container).getByText('Button')).toHaveClass('text-12')
   })
 
   it('renders with children', async () => {
@@ -176,6 +223,57 @@ describe('Button', () => {
 
     expect(button).toBeInTheDocument()
     expect(button).toHaveClass('p-1')
+    expect(button).toHaveClass(
+      '[&>svg:not([width]):not([class*=size-])]:size-4',
+    )
     expect(button).toContainElement(icon)
+  })
+
+  it('shows the focus-ring on keyboard focus, even for bare buttons', async () => {
+    await Bare.run()
+
+    const button = screen.getByRole(ROLES.button)
+
+    expect(button).toHaveClass('focus-ring', 'focus-visible:opacity-100')
+  })
+
+  it('leaves icons that size themselves alone', () => {
+    const { container } = render(
+      <>
+        <Button
+          label="Sized by class"
+          leftContent={<svg className="size-6" />}
+        />
+        <Button label="Sized by attribute" leftContent={<svg width="24" />} />
+        <Button label="Unsized" leftContent={<svg />} />
+      </>,
+    )
+    const [byClass, byAttribute, unsized] = Array.from(
+      container.querySelectorAll('svg'),
+    )
+
+    // The Figma size applies only to an <svg> with no width and no size-* class.
+    const matches = (svg: Element) =>
+      svg.matches(':not([width]):not([class*=size-])')
+
+    expect(matches(byClass)).toBe(false)
+    expect(matches(byAttribute)).toBe(false)
+    expect(matches(unsized)).toBe(true)
+    expect(unsized.parentElement).toHaveClass(
+      '[&>svg:not([width]):not([class*=size-])]:size-3',
+    )
+  })
+
+  it('keeps an explicit icon size prop (e.g. Dialog close, 24px)', () => {
+    render(
+      <Button
+        size="md"
+        leftContent={<StarIcon size={24} data-testid="star" />}
+        label=""
+        title="Star"
+      />,
+    )
+
+    expect(screen.getByTestId('star')).toHaveAttribute('width', '24')
   })
 })

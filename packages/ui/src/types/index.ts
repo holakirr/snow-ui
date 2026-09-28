@@ -28,9 +28,14 @@ export type Size = SimpleSize | 'md'
 
 export type TextSize = 12 | 14 | 16 | 18 | 24 | 32 | 48 | 64
 
-export type ButtonVariant = 'borderless' | 'gray' | 'outline' | 'filled'
+export type ButtonVariant =
+  | 'borderless'
+  | 'gray'
+  | 'outline'
+  | 'filled'
+  | 'bare'
 
-export type ToggleVariant = 'borderless' | 'outline'
+export type ToggleVariant = 'borderless' | 'outline' | 'pill'
 
 export type Direction = 'horizontal' | 'vertical'
 

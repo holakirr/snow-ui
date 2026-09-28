@@ -86,7 +86,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 
 `index.css` implements the SnowUI Figma tokens (the SnowUI-Light and SnowUI-Dark modes) as Tailwind theme variables. Storybook's "Foundations" pages list every token with its Figma name and both mode values.
 
-- **Theme:** light by default; dark with `<html data-theme="dark">`, or with the OS dark preference unless `<html data-theme="light">`.
+- **Theme:** light by default; dark with `data-theme="dark"` on `<html>` or on any element (see [Scoped themes](#scoped-themes)), or with the OS dark preference unless `<html data-theme="light">`. `color-scheme` follows, so native controls and scrollbars match.
 - **Colors:** `primary` (black in light, indigo in dark), `black`, `white` and their Figma alpha steps (`black-80`, `black-40`, `black-20`, `black-10`, `black-4`, same for `white`), `background-1..3`, `surface-1..3`, `color-1`, `color-2`, `static-white`, `static-black`, and the secondary colours (`purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`). Use them as `bg-black-10`, `text-black-40`, `border-black-10` or `var(--color-black-10)`. In dark mode, `black-10` and `black-4` get the design's stronger alpha (15% and 10%); the Tailwind modifiers `black/10` and `black/4` keep one alpha in both modes.
 - **Typography:** `text-12` … `text-64` (the Figma text styles: font size and line height), Inter with `font-feature-settings: "ss01" 1, "cv01" 1`.
 - **Radius:** `rounded-4` … `rounded-80` (the Figma corner radius scale).
@@ -96,6 +96,25 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 The package doesn't load Inter. Load it yourself; the Google Fonts build of Inter doesn't include the `ss01` / `cv01` features, the build from [rsms.me/inter](https://rsms.me/inter/) does.
 
 Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `background`, `foreground`, `muted`, `accent`, `destructive`, `input`, `ring`…) still work as deprecated aliases; see the [changelog](CHANGELOG.md) for the mapping.
+
+### Scoped themes
+
+`data-theme` works on any element, not only `<html>`: the tokens of an element come from its nearest `data-theme` ancestor, so a subtree can use the other mode, and `data-theme="light"` inside a dark subtree switches back.
+
+```tsx
+<html data-theme="light">
+  …
+  <aside data-theme="dark" className="bg-background-1 text-black">
+    {/* dark tokens: background-1 is #333, black is white */}
+    <div data-theme="light">{/* light again */}</div>
+  </aside>
+</html>
+```
+
+- A scope sets the tokens and `color-scheme`, not a background or text colour: give it `bg-background-1 text-black` (or your own) to paint it.
+- Without `data-theme` on `<html>`, the page follows the OS preference; `<html data-theme="light">` or `"dark"` pins it. Scopes inside work either way.
+- `dark:` utilities follow the same scopes, with one limit: a dark scope inside a light scope inside a dark scope gets the dark tokens but not `dark:` utilities. Prefer the tokens, which switch at any depth.
+- Overlays are portalled: the content of `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope, so it takes the theme of `<html>`. Set the theme on `<html>` for the whole app, or give the content its own scope: `<PopoverContent data-theme="dark">` (the `*Content` components pass it through). Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
 
 ## Components
 

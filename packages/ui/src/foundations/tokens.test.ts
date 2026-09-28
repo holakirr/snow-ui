@@ -51,12 +51,10 @@ const theme = declarations(
   blockAfter(source, source.indexOf('@theme static {')),
 )
 
-const dark = new Map<string, string>()
-for (const match of source.matchAll(/@variant dark \{/g)) {
-  for (const [name, value] of declarations(blockAfter(source, match.index))) {
-    dark.set(name, value)
-  }
-}
+// The dark scope; `src/theme.test.ts` checks that the other scopes match it.
+const dark = declarations(
+  blockAfter(source, source.indexOf('[data-theme="dark"] {')),
+)
 
 const themeNames = (prefix: string) =>
   [...theme.keys()].filter(

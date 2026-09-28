@@ -10,26 +10,37 @@
  *
  * Light values live in `@theme static` below (always emitted as CSS
  * variables, so `var(--color-surface-1)` works even when no utility uses it);
- * dark values override them in `@layer base` with the `dark` variant.
+ * the theme scopes in `@layer base` switch them per element (see "Theme
+ * scopes" there).
  *
  * The token list is mirrored in `src/foundations/tokens.ts`, which renders the
  * Storybook "Foundations" pages; `src/foundations/tokens.test.ts` fails when
- * the two drift apart.
+ * the two drift apart, and `src/theme.test.ts` checks the compiled scopes.
  */
 
 /*
- * Theme switch: dark when <html data-theme="dark">, or when the OS prefers
- * dark and <html> is not data-theme="light". Also drives `dark:` utilities.
+ * `dark:` utilities: on and inside a data-theme="dark" element, or anywhere
+ * when the OS prefers dark and <html> is not data-theme="light" — but not on
+ * or inside a data-theme="light" element within a dark scope. Selectors can't
+ * find the nearest data-theme at any depth, so a dark scope inside a light
+ * scope inside a dark scope gets the dark tokens (they follow any depth) but
+ * not `dark:` utilities. `:where()` keeps a `dark:` utility at the
+ * specificity of one class.
  */
 @custom-variant dark {
-  &:where([data-theme="dark"], [data-theme="dark"] *) {
+  &:where([data-theme="dark"], [data-theme="dark"] *):not(
+    :where(
+      [data-theme="dark"] [data-theme="light"],
+      [data-theme="dark"] [data-theme="light"] *
+    )
+  ) {
     @slot;
   }
   @media (prefers-color-scheme: dark) {
     &:where(
         :root:not([data-theme="light"]),
         :root:not([data-theme="light"]) *
-      ) {
+      ):not(:where([data-theme="light"], [data-theme="light"] *)) {
       @slot;
     }
   }
@@ -202,9 +213,97 @@
 }
 
 @layer base {
-  :root {
-    /* Colors: SnowUI-Dark mode (only the tokens that differ from light). */
-    @variant dark {
+  /*
+   * Theme scopes. `data-theme="dark"` on any element switches the tokens of
+   * its subtree to SnowUI-Dark and `data-theme="light"` switches them back
+   * (a light panel in a dark page); with no data-theme on <html>, the page
+   * follows the OS preference. The tokens are inherited CSS variables, so an
+   * element gets the values of its nearest data-theme ancestor, at any depth.
+   * `color-scheme` follows, for native controls, scrollbars and system colours.
+   *
+   * Only the tokens that differ between the modes are listed; the light values
+   * repeat `@theme static` so that a light scope can override a dark parent.
+   */
+  :root,
+  [data-theme="light"] {
+    color-scheme: light;
+
+    --color-primary: #000;
+
+    --color-black: #000;
+    --color-black-80: rgb(0 0 0 / 0.8);
+    --color-black-40: rgb(0 0 0 / 0.4);
+    --color-black-20: rgb(0 0 0 / 0.2);
+    --color-black-10: rgb(0 0 0 / 0.1);
+    --color-black-4: rgb(0 0 0 / 0.04);
+    --color-white: #fff;
+    --color-white-80: rgb(255 255 255 / 0.8);
+    --color-white-40: rgb(255 255 255 / 0.4);
+    --color-white-20: rgb(255 255 255 / 0.2);
+    --color-white-10: rgb(255 255 255 / 0.1);
+    --color-white-4: rgb(255 255 255 / 0.04);
+
+    --color-background-1: #fff;
+    --color-background-2: #f9f9fa;
+    --color-background-3: rgb(255 255 255 / 0.9);
+    --color-surface-1: rgb(255 255 255 / 0.8);
+    --color-surface-2: rgb(0 0 0 / 0.03);
+    --color-surface-3: rgb(0 0 0 / 0.02);
+
+    /*
+     * @deprecated → use the `--color-*` tokens, removed in next major.
+     * Comma-separated channels of the old token system (`rgba(var(--black), 0.5)`).
+     */
+    --black: 0, 0, 0;
+    --white: 255, 255, 255;
+    --brand: 0, 0, 0;
+    --brand-hover: 102, 102, 102;
+    --bg1: 255, 255, 255;
+    --bg2: 249, 249, 250;
+    --bg5: 255, 255, 255, 0.8;
+  }
+
+  /* SnowUI-Dark mode. The same values as the OS-preference block below. */
+  [data-theme="dark"] {
+    color-scheme: dark;
+
+    --color-primary: #adadfb;
+
+    --color-black: #fff;
+    --color-black-80: rgb(255 255 255 / 0.8);
+    --color-black-40: rgb(255 255 255 / 0.4);
+    --color-black-20: rgb(255 255 255 / 0.2);
+    --color-black-10: rgb(255 255 255 / 0.15);
+    --color-black-4: rgb(255 255 255 / 0.1);
+    --color-white: #000;
+    --color-white-80: rgb(0 0 0 / 0.8);
+    --color-white-40: rgb(0 0 0 / 0.4);
+    --color-white-20: rgb(0 0 0 / 0.2);
+    --color-white-10: rgb(0 0 0 / 0.1);
+    --color-white-4: rgb(0 0 0 / 0.04);
+
+    --color-background-1: #333;
+    --color-background-2: rgb(255 255 255 / 0.04);
+    --color-background-3: rgb(64 64 64 / 0.9);
+    --color-surface-1: rgb(255 255 255 / 0.04);
+    --color-surface-2: rgb(0 0 0 / 0.1);
+    --color-surface-3: rgb(255 255 255 / 0.04);
+
+    /* @deprecated → use the `--color-*` tokens, removed in next major. */
+    --black: 255, 255, 255;
+    --white: 0, 0, 0;
+    --brand: 173, 173, 251;
+    --brand-hover: 104, 104, 151;
+    --bg1: 51, 51, 51;
+    --bg2: 255, 255, 255, 0.04;
+    --bg5: 255, 255, 255, 0.04;
+  }
+
+  /* No data-theme on <html>: dark when the OS prefers dark. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+
       --color-primary: #adadfb;
 
       --color-black: #fff;
@@ -226,25 +325,8 @@
       --color-surface-1: rgb(255 255 255 / 0.04);
       --color-surface-2: rgb(0 0 0 / 0.1);
       --color-surface-3: rgb(255 255 255 / 0.04);
-    }
-  }
 
-  /*
-   * @deprecated → use the `--color-*` tokens, removed in next major.
-   * Comma-separated channels of the old token system (`rgba(var(--black), 0.5)`).
-   */
-  :root {
-    --black: 0, 0, 0;
-    --white: 255, 255, 255;
-    --brand: 0, 0, 0;
-    --brand-hover: 102, 102, 102;
-    --bg1: 255, 255, 255;
-    --bg2: 249, 249, 250;
-    --bg5: 255, 255, 255, 0.8;
-  }
-
-  :root {
-    @variant dark {
+      /* @deprecated → use the `--color-*` tokens, removed in next major. */
       --black: 255, 255, 255;
       --white: 0, 0, 0;
       --brand: 173, 173, 251;
@@ -253,6 +335,40 @@
       --bg2: 255, 255, 255, 0.04;
       --bg5: 255, 255, 255, 0.04;
     }
+  }
+
+  /*
+   * A variable defined with var() is computed on the element that declares it
+   * and inherited as a value, so the `@theme static` formulas would keep the
+   * values of <html>. Each scope re-declares the ones built on tokens that
+   * differ between the modes.
+   */
+  [data-theme] {
+    --color-primary-hover: color-mix(
+      in srgb,
+      var(--color-primary),
+      var(--color-white) 20%
+    );
+    --color-primary-hover-strong: color-mix(
+      in srgb,
+      var(--color-primary),
+      var(--color-white) 40%
+    );
+    --color-brand: var(--color-primary);
+    --color-brand-hover: var(--color-primary-hover-strong);
+    --color-bg1: var(--color-background-1);
+    --color-bg2: var(--color-background-2);
+    --color-bg5: var(--color-surface-1);
+    --color-background: var(--color-background-1);
+    --color-foreground: var(--color-black);
+    --color-muted: var(--color-black-4);
+    --color-muted-foreground: var(--color-black-40);
+    --color-accent: var(--color-black-10);
+    --color-accent-foreground: var(--color-black);
+    --color-input: var(--color-black-10);
+    --color-ring: var(--color-primary);
+    --color-sidebar-border: var(--color-black-10);
+    --color-white-border: var(--color-black-10);
   }
 
   *,

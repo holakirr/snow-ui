@@ -44,7 +44,6 @@ const Tag: FC<TagProps> = ({
       !leftContent && 'pl-2',
       className,
     )}
-    tabIndex={0}
     ref={ref}
     role={ROLES.listitem}
     {...props}
@@ -56,7 +55,8 @@ const Tag: FC<TagProps> = ({
     {onClose && (
       <Button
         onClick={onClose}
-        onKeyDown={(e) => e.key === 'Enter' && onClose()}
+        aria-label={`Remove tag ${label}`}
+        title={`Remove tag ${label}`}
         className="p-0"
         leftContent={
           <CloseIcon

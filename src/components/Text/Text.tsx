@@ -1,5 +1,6 @@
-import { cva, cx, type VariantProps } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 import type { ElementType, ReactNode } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import type { PolymorphicProps, TextSize } from '../../types'
 
@@ -73,8 +74,9 @@ function Typography<C extends ElementType = typeof defaultTag>({
   return (
     <Component
       ref={ref}
-      className={cx(
-        textStyles({ size, semibold, align, italic, underline, className }),
+      className={twMerge(
+        textStyles({ size, semibold, align, italic, underline }),
+        className,
       )}
       {...props}
     >

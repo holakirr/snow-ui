@@ -18,37 +18,26 @@ export const getWeekDates = (
   return week
 }
 
-type ComparisonFn = (a: Date, b: Date) => boolean
+const getEventHours = (events: CalendarEvent[]): number[] =>
+  events.flatMap(({ date, endsAt }) => [date.getHours(), endsAt.getHours()])
 
-const getScheduleHour = (
-  events: CalendarEvent[],
-  defaultHour: number,
-  compareDate: ComparisonFn,
-): number => {
-  if (!events.length) {
-    return defaultHour
-  }
-
-  const eventHour = events
-    .reduce((prev, current) => {
-      return compareDate(prev.date, current.date) ? prev : current
-    })
-    .date.getHours()
-
-  if (
-    !eventHour ||
-    (defaultHour === SCHEDULE_CONFIG.MIN_HOUR
-      ? eventHour > defaultHour
-      : eventHour < defaultHour)
-  ) {
-    return defaultHour
-  }
-
-  return eventHour
-}
-
+/**
+ * Returns the first hour of the schedule grid: the earliest event hour
+ * (start or end), but never later than `SCHEDULE_CONFIG.MIN_HOUR`.
+ */
 export const getEarliestScheduleHour = (events: CalendarEvent[]): number =>
-  getScheduleHour(events, SCHEDULE_CONFIG.MIN_HOUR, (a, b) => a < b)
+  Math.min(SCHEDULE_CONFIG.MIN_HOUR, ...getEventHours(events))
 
+/**
+ * Returns the last hour of the schedule grid (inclusive): the latest event
+ * hour (start or end), but never earlier than `SCHEDULE_CONFIG.MAX_HOUR`.
+ */
 export const getLatestScheduleHour = (events: CalendarEvent[]): number =>
-  getScheduleHour(events, SCHEDULE_CONFIG.MAX_HOUR, (a, b) => a > b)
+  Math.max(SCHEDULE_CONFIG.MAX_HOUR, ...getEventHours(events))
+
+/**
+ * Returns the list of hours rendered by the schedule grid, including both
+ * bounds.
+ */
+export const getScheduleHours = (earliest: number, latest: number): number[] =>
+  Array.from({ length: latest - earliest + 1 }, (_, i) => i + earliest)

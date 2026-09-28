@@ -26,7 +26,7 @@ export function Toaster() {
               {status && (
                 <StatusIcon size={size === 'lg' ? 24 : 16} status={status} />
               )}
-              <div className={`grid ${size === 'lg' && 'gap-1'}`}>
+              <div className={`grid ${size === 'lg' ? 'gap-1' : ''}`}>
                 {title && <ToastTitle size={size}>{title}</ToastTitle>}
                 {description && (
                   <ToastDescription size={size}>{description}</ToastDescription>

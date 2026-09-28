@@ -10,10 +10,9 @@ describe('Accordion', () => {
   it('renders with single props', async () => {
     await Single.run()
 
-    const accordion = screen.getByRole('region')
     const accordionTriggers = screen.getAllByRole('button')
 
-    expect(accordion).toBeInTheDocument()
+    expect(screen.queryByRole('region')).not.toBeInTheDocument()
     expect(accordionTriggers).toHaveLength(3)
 
     await act(async () => {
@@ -22,11 +21,13 @@ describe('Accordion', () => {
 
     expect(accordionTriggers[0]).toHaveAttribute('data-state', 'open')
     expect(accordionTriggers[0]).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getAllByRole('region')).toHaveLength(1)
 
     await act(async () => {
       await accordionTriggers[1].click()
     })
 
+    expect(screen.getAllByRole('region')).toHaveLength(1)
     expect(accordionTriggers[0]).toHaveAttribute('data-state', 'closed')
     expect(accordionTriggers[0]).toHaveAttribute('aria-expanded', 'false')
     expect(accordionTriggers[1]).toHaveAttribute('data-state', 'open')
@@ -38,10 +39,9 @@ describe('Accordion', () => {
   it('renders with multiple type', async () => {
     await Multiple.run()
 
-    const accordion = screen.getByRole('region')
     const accordionTriggers = screen.getAllByRole('button')
 
-    expect(accordion).toBeInTheDocument()
+    expect(screen.queryByRole('region')).not.toBeInTheDocument()
     expect(accordionTriggers).toHaveLength(3)
 
     await act(async () => {
@@ -55,6 +55,7 @@ describe('Accordion', () => {
       await accordionTriggers[1].click()
     })
 
+    expect(screen.getAllByRole('region')).toHaveLength(2)
     expect(accordionTriggers[0]).toHaveAttribute('data-state', 'open')
     expect(accordionTriggers[0]).toHaveAttribute('aria-expanded', 'true')
     expect(accordionTriggers[1]).toHaveAttribute('data-state', 'open')

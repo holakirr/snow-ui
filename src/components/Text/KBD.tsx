@@ -1,7 +1,6 @@
 import type { FC } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { ROLES } from '../../constants'
 import { type TextProps, Typography } from './Text'
 
 type KBDProps = TextProps<'kbd'> & {
@@ -15,7 +14,6 @@ const KBD: FC<KBDProps> = ({ keys, separator = '+', className, ...props }) => {
   return (
     <Typography
       as="kbd"
-      role={ROLES.definition}
       aria-keyshortcuts={shortcut}
       className={twMerge('w-min text-black/20', className)}
       {...props}

@@ -1,4 +1,5 @@
 import type { ComponentProps, FC } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { TEXT_SIZES } from '../../constants'
 import type { CalendarEvent } from '../../types'
@@ -15,7 +16,11 @@ export type EventItemProps = ComponentProps<'div'> & {
   onEventClick: (event: CalendarEvent) => void
 }
 
-export const EventItem: FC<EventItemProps> = ({ event, onEventClick }) => {
+export const EventItem: FC<EventItemProps> = ({
+  event,
+  onEventClick,
+  className,
+}) => {
   const { endsAt, date, title, dropdownContentRenderer } = event
 
   const duration = endsAt.getTime() - date.getTime()
@@ -27,7 +32,10 @@ export const EventItem: FC<EventItemProps> = ({ event, onEventClick }) => {
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: since we are using onClick */}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: since we are using onClick */}
         <div
-          className="w-full bg-bg4 flex flex-col gap-2 p-2 rounded-lg cursor-pointer absolute z-[1]"
+          className={twMerge(
+            'w-full bg-bg4 flex flex-col gap-2 p-2 rounded-lg cursor-pointer absolute z-[1]',
+            className,
+          )}
           onClick={(e) => {
             e.stopPropagation()
             onEventClick(event)

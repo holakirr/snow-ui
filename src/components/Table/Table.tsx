@@ -7,7 +7,6 @@ type TableProps = ComponentProps<'table'>
 const Table: FC<TableProps> = ({ className, ...props }) => (
   <div className="relative w-full overflow-auto">
     <table
-      aria-label="Data Table"
       className={twMerge('w-full caption-top text-xs', className)}
       {...props}
     />

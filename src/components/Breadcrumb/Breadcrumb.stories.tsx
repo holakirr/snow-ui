@@ -30,7 +30,10 @@ const meta: Meta<typeof Breadcrumb> = {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink href="/docs/components/breadcrumbs">
+          <BreadcrumbLink
+            href="/docs/components/breadcrumbs"
+            aria-current="page"
+          >
             Breadcrumb
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -69,7 +72,10 @@ export const WithCustomSeparator: Story = {
         </BreadcrumbItem>
         {CustomSeparator}
         <BreadcrumbItem>
-          <BreadcrumbLink href="/docs/components/breadcrumbs">
+          <BreadcrumbLink
+            href="/docs/components/breadcrumbs"
+            aria-current="page"
+          >
             Breadcrumb
           </BreadcrumbLink>
         </BreadcrumbItem>

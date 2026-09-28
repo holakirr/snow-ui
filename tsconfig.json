@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  // Root-level tooling only; each package has its own tsconfig.
+  "include": [".storybook/*.ts", ".storybook/*.tsx"]
+}

@@ -12,7 +12,9 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
+    // The shared Storybook lives at the repository root.
     command: 'bun run storybook --ci',
+    cwd: '../..',
     port: 53741,
     reuseExistingServer: !process.env.CI,
   },

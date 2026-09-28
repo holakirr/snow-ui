@@ -3,7 +3,7 @@
 SnowUI Icons is a React icons library implementation of icons from [SnowUI design kit](https://snowui.byewind.com) by [ByeWind](https://byewind.com/). Implemented and improved by [holakirr](https://github.com/holakirr).
 Build your design using [it](https://www.figma.com/community/file/1301134685302006646). The best experience you will get using it with [@holakirr/snow-ui](https://www.npmjs.com/package/@holakirr/snow-ui)
 
-[Storybook](https://snow-ui-icons.holakirr.com)
+[Storybook](https://snow-ui.holakirr.com) (shared with `@holakirr/snow-ui`, under "Icons")
 
 Take a look at my [CV](https://holakirr.com) =)
 
@@ -12,7 +12,7 @@ Take a look at my [CV](https://holakirr.com) =)
 - 🎨 49 icons ready to use
 - 📚 Storybook for component documentation and development
 - 🔍 TypeScript for type safety
-- ✅ Unit tests with Vitest + Testing Library; visual review in Storybook (Chromatic)
+- ✅ Unit tests with Vitest + Testing Library
 - 🌲 Tree-shakeable ESM (one module per icon) plus CommonJS build
 - 🚀 Vite for fast development and building
 - ⚡️ Powered by Bun for fast package management and running scripts
@@ -123,7 +123,7 @@ export default CustomIcon;
 
 ## Development
 
-This package lives in the [snow-ui monorepo](https://github.com/holakirr/snow-ui) under `packages/icons` (previously `holakirr/snow-ui-icons`). Install dependencies and run scripts from the repository root — see the [root README](https://github.com/holakirr/snow-ui#readme). Package-only scripts: `bun run --filter @holakirr/snow-ui-icons <build|test|typecheck|storybook|build:storybook>`.
+This package lives in the [snow-ui monorepo](https://github.com/holakirr/snow-ui) under `packages/icons` (previously `holakirr/snow-ui-icons`). Install dependencies and run scripts from the repository root — see the [root README](https://github.com/holakirr/snow-ui#readme). Package-only scripts: `bun run --filter @holakirr/snow-ui-icons <build|test|typecheck>`. Icon stories are part of the shared Storybook at the repository root (`bun run storybook`).
 
 ## License
 

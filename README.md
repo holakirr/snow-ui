@@ -4,12 +4,14 @@ Monorepo for the React implementation of the [SnowUI design kit](https://snowui.
 
 ## Packages
 
-| Package | Path | npm | Storybook |
-| --- | --- | --- | --- |
-| [`@holakirr/snow-ui`](packages/ui) | `packages/ui` | [![npm](https://img.shields.io/npm/v/@holakirr/snow-ui)](https://www.npmjs.com/package/@holakirr/snow-ui) | [snow-ui.holakirr.com](https://snow-ui.holakirr.com) |
-| [`@holakirr/snow-ui-icons`](packages/icons) | `packages/icons` | [![npm](https://img.shields.io/npm/v/@holakirr/snow-ui-icons)](https://www.npmjs.com/package/@holakirr/snow-ui-icons) | [snow-ui-icons.holakirr.com](https://snow-ui-icons.holakirr.com) |
+| Package | Path | npm |
+| --- | --- | --- |
+| [`@holakirr/snow-ui`](packages/ui) | `packages/ui` | [![npm](https://img.shields.io/npm/v/@holakirr/snow-ui)](https://www.npmjs.com/package/@holakirr/snow-ui) |
+| [`@holakirr/snow-ui-icons`](packages/icons) | `packages/icons` | [![npm](https://img.shields.io/npm/v/@holakirr/snow-ui-icons)](https://www.npmjs.com/package/@holakirr/snow-ui-icons) |
 
 `@holakirr/snow-ui` is the component library (React 19, Tailwind CSS v4, Radix UI). `@holakirr/snow-ui-icons` is the icon set it uses; it is also published on its own.
+
+Both packages are documented in one Storybook — [snow-ui.holakirr.com](https://snow-ui.holakirr.com) — with components under "Components" and icons under "Icons". Its config lives in the root `.storybook/`.
 
 ## Development
 
@@ -21,8 +23,8 @@ bun run lint           # biome check (one shared biome.json)
 bun run typecheck      # tsc for every package
 bun run test           # vitest for every package
 bun run build          # build icons, then ui
-bun run storybook      # ui Storybook on :53741 (storybook:icons for icons on :6006)
-bun run build:storybook
+bun run storybook      # shared Storybook (ui + icons) on :53741
+bun run build:storybook # static Storybook in ./storybook-static
 bun run e2e            # ui Playwright visual tests (macOS baselines)
 ```
 
@@ -32,7 +34,7 @@ Run a script in a single package with `bun run --filter <package-name> <script>`
 
 `packages/ui` depends on `"@holakirr/snow-ui-icons": "^<version>"` (a regular semver range, not `workspace:`, so the published package.json stays valid). Bun links it to `packages/icons` as long as the local version satisfies the range.
 
-- Storybook, Vitest and `typecheck` in `packages/ui` resolve the icons package from **source** (`packages/icons/src`) via a Vite alias (`packages/ui/workspace-aliases.ts`) and tsconfig `paths`, so they work from a clean clone without building icons.
+- Storybook, Vitest and `typecheck` resolve the icons package from **source** (`packages/icons/src`) via a Vite alias (`packages/ui/workspace-aliases.ts`, used by `.storybook/main.ts` and `packages/ui/vitest.config.ts`) and tsconfig `paths`, so they work from a clean clone without building icons.
 - The ui **library build** emits type declarations that import the icons package, so it needs `packages/icons/dist`. The root `bun run build` builds icons first; when building ui on its own, run `bun run build:icons` beforehand.
 
 ## Releasing

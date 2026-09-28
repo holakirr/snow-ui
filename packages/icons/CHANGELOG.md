@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.1
+
+### Patch Changes
+
+- [#149](https://github.com/holakirr/snow-ui/pull/149) [`2576127`](https://github.com/holakirr/snow-ui/commit/25761274df7395ae159a7d561ff316c8f63d53d1) Thanks [@holakirr](https://github.com/holakirr)! - Built with tsdown. CommonJS consumers get matching `.d.cts` type declarations (`require` no longer resolves to ESM-flavoured `.d.ts` types). The exported icons and API are unchanged.
+
 ## 2.1.0
 
 ### Features

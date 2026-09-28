@@ -37,12 +37,7 @@ const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.SubTrigger
-    className={twMerge(
-      popoverItemClasses,
-      'cursor-default',
-      inset && 'pl-8',
-      className,
-    )}
+    className={twMerge(popoverItemClasses, inset && 'pl-8', className)}
     {...props}
   >
     {children}
@@ -85,7 +80,7 @@ const ContextMenuContent: FC<ContextMenuContentProps> = ({
 )
 ContextMenuContent.displayName = CtxMenuPrimitive.Content.displayName
 
-const itemClasses = twMerge(popoverItemClasses, 'cursor-default')
+const itemClasses = popoverItemClasses
 
 type ContextMenuItemProps = CtxMenuPrimitive.ContextMenuItemProps & {
   inset?: boolean

@@ -15,14 +15,14 @@ const Slider: FC<SliderPrimitive.SliderProps> = ({ className, ...props }) => {
       )}
       {...props}
     >
-      <SliderPrimitive.Track className="relative h-[34px] w-full grow overflow-hidden rounded-8 bg-black-4">
+      <SliderPrimitive.Track className="relative h-[34px] w-full grow cursor-pointer overflow-hidden rounded-8 bg-black-4 data-[disabled]:cursor-not-allowed">
         <SliderPrimitive.Range className="absolute h-full bg-black data-[disabled]:bg-black-80" />
       </SliderPrimitive.Track>
       {thumbs.map((_, index) => (
         <SliderPrimitive.Thumb
           // biome-ignore lint/suspicious/noArrayIndexKey: thumbs are positional
           key={index}
-          className="block size-4 rounded-full border border-black-40 bg-white shadow-2 transition-colors focus-ring disabled:pointer-events-none disabled:opacity-40"
+          className="block size-4 cursor-grab rounded-full border border-black-40 bg-white shadow-2 transition-colors focus-ring active:cursor-grabbing data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40"
         />
       ))}
     </SliderPrimitive.Root>

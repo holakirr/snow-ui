@@ -144,7 +144,7 @@ const SelectItem: FC<SelectItemProps> = ({ className, children, ...props }) => (
   <SelectPrimitive.Item
     className={twMerge(
       popoverItemClasses,
-      'w-full cursor-default pr-8 hover:bg-black-4',
+      'w-full pr-8 hover:bg-black-4',
       className,
     )}
     {...props}

@@ -271,6 +271,35 @@
   ::file-selector-button {
     border-color: var(--color-black-10);
   }
+
+  /*
+   * Tailwind v4's preflight no longer gives buttons a pointer cursor. Restore
+   * it for every interactive control (native and ARIA roles), and show
+   * not-allowed on disabled ones. Utilities (cursor-*) still override these.
+   */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="option"]:not([aria-disabled="true"]),
+  [role="menuitem"]:not([aria-disabled="true"]),
+  [role="menuitemcheckbox"]:not([aria-disabled="true"]),
+  [role="menuitemradio"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  [role="radio"]:not([aria-disabled="true"]),
+  [role="checkbox"]:not([aria-disabled="true"]),
+  [role="switch"]:not([aria-disabled="true"]),
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+
+  /* After the pointer rule, with the same specificity, so it wins. */
+  :is(
+    :disabled,
+    [aria-disabled="true"],
+    [data-disabled]:not([data-disabled="false"])
+  ) {
+    cursor: not-allowed;
+  }
 }
 
 /*

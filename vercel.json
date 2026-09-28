@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "storybook",
   "installCommand": "bun install",
-  "buildCommand": "bun run build:storybook",
-  "outputDirectory": "storybook-static"
+  "buildCommand": "bun run --filter @holakirr/snow-ui build:storybook",
+  "outputDirectory": "packages/ui/storybook-static"
 }

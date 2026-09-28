@@ -3,6 +3,8 @@ name: Build Check
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -13,10 +15,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version-file: package.json
 
@@ -26,11 +30,15 @@ jobs:
       - name: Lint
         run: bun run lint
 
-      - name: Unit tests
-        run: bunx vitest run --exclude e2e
-
       - name: Typecheck
-        run: bunx tsc -p . --noEmit
+        run: bun run typecheck
 
-      - name: Build
+      - name: Unit tests
+        run: bun run test
+
+      # Builds icons first, then ui (ui's type declarations import icons' dist).
+      - name: Build packages
         run: bun run build
+
+      - name: Build Storybooks
+        run: bun run build:storybook

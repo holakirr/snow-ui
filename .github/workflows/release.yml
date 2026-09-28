@@ -1,13 +1,17 @@
-# Publishes the package to npm when a GitHub release is published.
+# Publishes one workspace package to npm when a GitHub release is published.
 #
 # Release process:
-#   1. Bump "version" in package.json via a regular PR and merge it into main.
-#   2. Publish a GitHub release whose tag matches that version (e.g. v2.0.3 or 2.0.3).
+#   1. Bump "version" in the package's package.json via a regular PR and merge
+#      it into main.
+#   2. Publish a GitHub release whose tag names the package and version:
+#        @holakirr/snow-ui@X.Y.Z        -> packages/ui
+#        @holakirr/snow-ui-icons@X.Y.Z  -> packages/icons
+#      Legacy tags (vX.Y.Z or X.Y.Z) publish @holakirr/snow-ui.
 # This workflow does not modify or push anything to the repository; it fails if
-# the release tag does not match package.json.
+# the tag doesn't match a workspace package name and version.
 #
-# npm auth: Trusted Publisher configured on npmjs.com for this repo and
-# workflow file (release.yml) with "Allow npm publish" enabled.
+# npm auth: Trusted Publisher configured on npmjs.com for each package, pointing
+# at this repo and workflow file (release.yml) with "Allow npm publish" enabled.
 
 name: Publish to npm
 
@@ -40,31 +44,61 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org/
 
+      - name: Resolve package from release tag
+        id: pkg
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          case "$TAG_NAME" in
+            @*@*)
+              PKG_NAME="${TAG_NAME%@*}"
+              TAG_VERSION="${TAG_NAME##*@}"
+              ;;
+            *)
+              PKG_NAME="@holakirr/snow-ui"
+              TAG_VERSION="${TAG_NAME#v}"
+              ;;
+          esac
+
+          PKG_DIR=""
+          for dir in packages/*/; do
+            dir="${dir%/}"
+            if [ "$(node -p "require('./$dir/package.json').name")" = "$PKG_NAME" ]; then
+              PKG_DIR="$dir"
+            fi
+          done
+          if [ -z "$PKG_DIR" ]; then
+            echo "::error::Release tag $TAG_NAME does not match any workspace package."
+            exit 1
+          fi
+
+          PKG_VERSION=$(node -p "require('./$PKG_DIR/package.json').version")
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::$PKG_NAME version ($PKG_VERSION) does not match release tag ($TAG_NAME). Bump the version via PR before publishing the release."
+            exit 1
+          fi
+
+          echo "Publishing $PKG_NAME@$PKG_VERSION from $PKG_DIR"
+          echo "dir=$PKG_DIR" >> "$GITHUB_OUTPUT"
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
       - name: Lint
         run: bun run lint
 
-      - name: Unit tests
-        run: bunx vitest run --exclude e2e
+      - name: Typecheck
+        run: bun run typecheck
 
+      - name: Unit tests
+        run: bun run test
+
+      # Builds every package (icons before ui, whose types import icons' dist).
       - name: Build
         run: bun run build
-
-      - name: Verify package version matches release tag
-        env:
-          TAG_NAME: ${{ github.event.release.tag_name }}
-        run: |
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          TAG_VERSION="${TAG_NAME#v}"
-          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
-            echo "::error::package.json version ($PKG_VERSION) does not match release tag ($TAG_NAME). Bump the version via PR before publishing the release."
-            exit 1
-          fi
-          echo "Version $PKG_VERSION matches release tag $TAG_NAME"
 
       - name: Publish to npm
         # Authenticates via npm Trusted Publishing (OIDC, needs npm >= 11.5
         # from Node 24 and `id-token: write`); no NPM_TOKEN is used.
+        working-directory: ${{ steps.pkg.outputs.dir }}
         run: npm publish --provenance --access public

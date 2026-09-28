@@ -1,11 +1,20 @@
 # Changelog
 
-## Unreleased
+## 3.0.0
 
 ### Breaking changes
 
-- The library no longer depends on `react-hook-form`. `Form`, `FormItem`, `FormLabel`, `FormControl`, `FormDescription` and `FormMessage` from the main entry are library-agnostic: pass `error` / `invalid` to `FormItem`, or provide them with the new `FormFieldState`. `Form` is now a styled-less `<form>` wrapper.
+- The library no longer depends on `react-hook-form`. `Form`, `FormItem`, `FormLabel`, `FormControl`, `FormDescription` and `FormMessage` from the main entry are library-agnostic: pass `error` / `invalid` to `FormItem`, or provide them with the new `FormFieldState`. `Form` is now a plain `<form>` wrapper.
 - `FormField` and the react-hook-form `Form` (`FormProvider`) moved to `@holakirr/snow-ui/react-hook-form`. Migrate by changing the import path; the API is unchanged. `react-hook-form` is now an optional peer dependency.
+
+  ```diff
+  - import { Form, FormField, FormItem } from '@holakirr/snow-ui'
+  + import { Form, FormField, FormItem } from '@holakirr/snow-ui/react-hook-form'
+  ```
+
+### Dependencies
+
+- `vite` 8, `@radix-ui/react-select` 2.3.7, `@radix-ui/react-slot` 1.3.3; GitHub Actions `checkout`/`setup-node` v7.
 
 ## 2.1.0
 

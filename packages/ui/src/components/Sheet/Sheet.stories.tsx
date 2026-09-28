@@ -127,3 +127,29 @@ export const Size: Story = {
     </Sheet>
   ),
 }
+
+/** Open on load, to compare the mask and the glass panel in both themes. */
+export const Open: Story = {
+  tags: ['!autodocs'],
+  parameters: { layout: 'fullscreen', storyWrapper: false },
+  render: () => (
+    <div className="h-svh w-full bg-background-1 p-6">
+      <Sheet defaultOpen>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Notifications</SheetTitle>
+            <SheetDescription>
+              You have 3 unread notifications.
+            </SheetDescription>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
+      <Label>Page content under the mask</Label>
+    </div>
+  ),
+}
+
+export const OpenDark: Story = {
+  ...Open,
+  globals: { theme: 'dark' },
+}

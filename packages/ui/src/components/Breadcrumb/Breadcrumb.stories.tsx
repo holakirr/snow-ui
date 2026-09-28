@@ -7,6 +7,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
+  BreadcrumbPage,
   BreadcrumbSeparator,
 } from './Breadcrumb'
 
@@ -14,6 +15,14 @@ const meta: Meta<typeof Breadcrumb> = {
   title: 'Components/Breadcrumb',
   component: Breadcrumb,
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'The Figma dashboard breadcrumb: 12 Regular items with the Button Small "Borderless" padding (4/12, radius 12, Black/4% on hover), Black/40% parents, a Black/100% current page and Black/10% "/" separators, 4px apart.',
+      },
+    },
+  },
   args: {
     children: (
       <BreadcrumbList>
@@ -47,6 +56,28 @@ type Story = StoryObj<typeof Breadcrumb>
 
 export const Default: Story = {
   args: {},
+}
+
+/** The Figma dashboard header: "Dashboards / Default". */
+export const Dashboard: Story = {
+  args: {
+    children: (
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="#dashboards">Dashboards</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>Default</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    ),
+  },
+}
+
+export const DashboardDark: Story = {
+  ...Dashboard,
+  globals: { theme: 'dark' },
 }
 
 const CustomSeparator = (

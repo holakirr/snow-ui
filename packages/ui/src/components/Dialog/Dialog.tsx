@@ -24,7 +24,10 @@ const DialogOverlay: FC<
 > = ({ className, ...props }) => (
   <DialogPrimitive.Overlay
     className={twMerge(
-      'fixed inset-0 z-50 bg-linear-to-t from-[#cbddff]/50 to-[#d7d0ff]/20 data-[state=open]:backdrop-blur-xs starting:data-[state=open]:backdrop-blur-none data-[state=closed]:backdrop-blur-none starting:data-[state=closed]:backdrop-blur-xs',
+      // Figma "Mask": a linear gradient (#CBDDFF 50% → #D7D0FF 20%) and
+      // "Background blur 40". The Figma dark dashboards use the same raw
+      // colours ("Add data", SnowUI-Dark), so the mask doesn't flip.
+      'fixed inset-0 z-50 bg-linear-to-t from-[#cbddff]/50 to-[#d7d0ff]/20 data-[state=open]:backdrop-blur-bg-40 starting:data-[state=open]:backdrop-blur-none data-[state=closed]:backdrop-blur-none starting:data-[state=closed]:backdrop-blur-bg-40',
       animationClasses,
       className,
     )}
@@ -41,7 +44,8 @@ const DialogContent: FC<
     <DialogOverlay />
     <DialogPrimitive.Content
       className={twMerge(
-        'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 duration-200 gap-7',
+        // Figma "Add data": 576px wide, the title row and the popup 28px apart.
+        'fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 duration-200 gap-7',
         animationClasses,
         className,
       )}
@@ -80,9 +84,21 @@ const DialogHeader: FC<DialogHeaderProps> = ({
 
 DialogHeader.displayName = 'DialogHeader'
 
+/**
+ * The popup card. Its padding is the `--dialog-padding` CSS variable (32px,
+ * 80px from the md breakpoint): pass a padding class such as `p-4` to replace
+ * it at every breakpoint, or set the variable to keep it responsive.
+ */
 const DialogBody: FC<ComponentProps<'div'>> = ({ className, ...props }) => (
   <div
-    className={twMerge('bg-background-1 p-10 rounded-4xl', className)}
+    // Figma "Popup": Background/3 with "Background blur 40", radius 32 and
+    // padding 80 (32 below the md breakpoint). The padding reads the
+    // --dialog-padding variable, so a padding class replaces it at every
+    // breakpoint, and setting the variable changes it responsively.
+    className={twMerge(
+      'rounded-32 bg-background-3 p-(--dialog-padding) backdrop-blur-bg-40 [--dialog-padding:--spacing(8)] md:[--dialog-padding:--spacing(20)]',
+      className,
+    )}
     {...props}
   />
 )
@@ -95,7 +111,7 @@ const DialogTitle: FC<ComponentProps<typeof DialogPrimitive.Title>> = ({
 }) => (
   <DialogPrimitive.Title
     className={twMerge(
-      'text-5xl font-semibold leading-none tracking-tight text-center',
+      'text-48 font-semibold tracking-tight text-center',
       className,
     )}
     {...props}
@@ -108,7 +124,7 @@ const DialogDescription: FC<
   ComponentProps<typeof DialogPrimitive.Description>
 > = ({ className, ...props }) => (
   <DialogPrimitive.Description
-    className={twMerge('text-sm text-black/40 text-center', className)}
+    className={twMerge('text-14 text-black-40 text-center', className)}
     {...props}
   />
 )

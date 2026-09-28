@@ -30,9 +30,11 @@ import {
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = '16rem'
+// Figma Sidebar: 212px wide.
+const SIDEBAR_WIDTH = '13.25rem'
 const SIDEBAR_WIDTH_MOBILE = '18rem'
-const SIDEBAR_WIDTH_ICON = '3rem'
+// A 36px menu button plus 8px on each side.
+const SIDEBAR_WIDTH_ICON = '3.25rem'
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
 
 type SidebarContext = {
@@ -160,7 +162,7 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
             } as CSSProperties
           }
           className={twMerge(
-            'group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-white',
+            'group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-background-2',
             className,
           )}
           {...props}
@@ -193,7 +195,8 @@ const Sidebar: FC<SidebarProps> = ({
     return (
       <div
         className={twMerge(
-          'flex h-full w-(--sidebar-width) flex-col bg-white text-black',
+          'flex h-full w-(--sidebar-width) flex-col border-black-10 bg-transparent py-2 text-black',
+          side === 'left' ? 'border-r-[0.5px]' : 'border-l-[0.5px]',
           className,
         )}
         {...props}
@@ -209,7 +212,7 @@ const Sidebar: FC<SidebarProps> = ({
         <SheetContent
           data-sidebar="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-white p-0 text-black [&>button]:hidden"
+          className="w-(--sidebar-width) bg-background-1 p-0 py-2 text-black [&>button]:hidden"
           style={
             {
               '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
@@ -255,14 +258,16 @@ const Sidebar: FC<SidebarProps> = ({
           // Adjust the padding for floating and inset variants.
           variant === 'floating' || variant === 'inset'
             ? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]'
-            : 'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l',
+            : // Figma: a 0.5px Black/10% stroke on the inner edge.
+              'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r-[0.5px] group-data-[side=right]:border-l-[0.5px] border-black-10',
           className,
         )}
         {...props}
       >
         <div
           data-sidebar="sidebar"
-          className="flex h-full w-full flex-col bg-white group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-black-10"
+          // Figma: no fill, the sidebar sits on the page background.
+          className="flex h-full w-full flex-col bg-transparent py-2 group-data-[variant=floating]:rounded-16 group-data-[variant=floating]:border-[0.5px] group-data-[variant=floating]:border-black-10 group-data-[variant=floating]:bg-background-1"
         >
           {children}
         </div>
@@ -314,7 +319,7 @@ const SidebarRail: FC<SidebarRailProps> = ({ className, ...props }) => {
         'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-black-10 group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
         '[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize',
         '[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize',
-        'group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-white',
+        'group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-background-1',
         '[[data-side=left][data-collapsible=offcanvas]_&]:-right-2',
         '[[data-side=right][data-collapsible=offcanvas]_&]:-left-2',
         className,
@@ -331,7 +336,7 @@ const SidebarInset: FC<SidebarInsetProps> = ({ className, ...props }) => (
   <main
     className={twMerge(
       'relative flex min-h-svh flex-1 flex-col bg-background-1',
-      'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl',
+      'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-12',
       className,
     )}
     {...props}
@@ -357,7 +362,10 @@ type SidebarHeaderProps = ComponentProps<'div'>
 const SidebarHeader: FC<SidebarHeaderProps> = ({ className, ...props }) => (
   <div
     data-sidebar="header"
-    className={twMerge('flex flex-col gap-2 p-2', className)}
+    className={twMerge(
+      'flex flex-col gap-2 px-4 py-2 group-data-[collapsible=icon]:px-2',
+      className,
+    )}
     {...props}
   />
 )
@@ -368,7 +376,10 @@ type SidebarFooterProps = ComponentProps<'div'>
 const SidebarFooter: FC<SidebarFooterProps> = ({ className, ...props }) => (
   <div
     data-sidebar="footer"
-    className={twMerge('flex flex-col gap-2 p-2', className)}
+    className={twMerge(
+      'flex flex-col gap-2 px-4 py-2 group-data-[collapsible=icon]:px-2',
+      className,
+    )}
     {...props}
   />
 )
@@ -382,7 +393,7 @@ const SidebarSeparator: FC<SidebarSeparatorProps> = ({
 }) => (
   <Separator
     data-sidebar="separator"
-    className={twMerge('mx-2 w-auto bg-black/10', className)}
+    className={twMerge('mx-4 w-auto', className)}
     {...props}
   />
 )
@@ -407,7 +418,10 @@ type SidebarGroupProps = ComponentProps<'div'>
 const SidebarGroup: FC<SidebarGroupProps> = ({ className, ...props }) => (
   <div
     data-sidebar="group"
-    className={twMerge('relative flex w-full min-w-0 flex-col p-2', className)}
+    className={twMerge(
+      'relative flex w-full min-w-0 flex-col px-4 py-2 group-data-[collapsible=icon]:px-2',
+      className,
+    )}
     {...props}
   />
 )
@@ -426,8 +440,10 @@ const SidebarGroupLabel: FC<SidebarGroupLabelProps> = ({
     <Comp
       data-sidebar="group-label"
       className={twMerge(
-        'duration-200 flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-black/70 outline-none transition-[margin,opa] ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
-        'group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0',
+        // Figma section heading: 14 Regular, padding 4/12, radius 12. Black/80%
+        // instead of Figma's Black/40% (2.85:1) for a 4.5:1 text contrast.
+        'duration-200 flex h-7 shrink-0 items-center rounded-12 px-3 text-14 font-normal text-black-80 transition-[margin,opacity] ease-linear focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
+        'group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:-mt-7 group-data-[collapsible=icon]:opacity-0',
         className,
       )}
       {...props}
@@ -449,7 +465,7 @@ const SidebarGroupAction: FC<SidebarGroupActionProps> = ({
     <Comp
       data-sidebar="group-action"
       className={twMerge(
-        'absolute right-3 top-3.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-black outline-none transition-transform hover:bg-black/4 hover:text-black focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
+        'absolute right-5 top-3 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'group-data-[collapsible=icon]:hidden',
@@ -469,7 +485,7 @@ const SidebarGroupContent: FC<SidebarGroupContentProps> = ({
 }) => (
   <div
     data-sidebar="group-content"
-    className={twMerge('w-full text-sm', className)}
+    className={twMerge('w-full text-14', className)}
     {...props}
   />
 )
@@ -497,18 +513,23 @@ const SidebarMenuItem: FC<SidebarMenuItemProps> = ({ className, ...props }) => (
 )
 SidebarMenuItem.displayName = 'SidebarMenuItem'
 
+/*
+ * Figma nav item ("Frame"): padding 8, radius 12, 14 Regular text, 20px icons,
+ * a Black/4% fill on hover and on the active item.
+ */
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-md p-2 text-left text-black text-sm outline-none transition-[width,height,padding] hover:bg-black/4 focus-visible:ring-2 active:bg-black/4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black/10 data-[active=true]:font-medium data-[state=open]:hover:bg-black/4 group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
+  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-12 p-2 text-left text-black text-14 font-normal transition-[width,height,padding] hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'hover:bg-black/10',
-        outline: 'bg-background-1 hover:bg-black/4',
+        default: '',
+        outline:
+          'bg-background-1 inset-ring-[0.5px] inset-ring-black-10 hover:bg-black-4',
       },
       size: {
-        default: 'h-8 text-sm',
-        sm: 'h-7 text-xs',
-        lg: 'h-12 text-sm group-data-[collapsible=icon]:!p-0',
+        default: 'h-9 text-14',
+        sm: 'h-7 text-12',
+        lg: 'h-12 text-14 group-data-[collapsible=icon]:!p-0',
       },
     },
     defaultVariants: {
@@ -590,12 +611,12 @@ const SidebarMenuAction: FC<SidebarMenuActionProps> = ({
     <Comp
       data-sidebar="menu-action"
       className={twMerge(
-        'absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-black outline-none transition-transform hover:bg-black/4 hover:text-black focus-visible:ring-2 peer-hover/menu-button:text-black [&>svg]:size-4 [&>svg]:shrink-0',
+        'absolute right-2 top-2 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring peer-hover/menu-button:text-black [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'peer-data-[size=sm]/menu-button:top-1',
-        'peer-data-[size=default]/menu-button:top-1.5',
-        'peer-data-[size=lg]/menu-button:top-2.5',
+        'peer-data-[size=default]/menu-button:top-2',
+        'peer-data-[size=lg]/menu-button:top-3.5',
         'group-data-[collapsible=icon]:hidden',
         showOnHover &&
           'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-black md:opacity-0',
@@ -616,11 +637,11 @@ const SidebarMenuBadge: FC<SidebarMenuBadgeProps> = ({
   <div
     data-sidebar="menu-badge"
     className={twMerge(
-      'absolute right-1 flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium tabular-nums text-black select-none pointer-events-none',
+      'absolute right-2 flex h-5 min-w-5 items-center justify-center rounded-8 px-1 text-12 font-normal tabular-nums text-black select-none pointer-events-none',
       'peer-hover/menu-button:text-black peer-data-[active=true]/menu-button:text-black',
       'peer-data-[size=sm]/menu-button:top-1',
-      'peer-data-[size=default]/menu-button:top-1.5',
-      'peer-data-[size=lg]/menu-button:top-2.5',
+      'peer-data-[size=default]/menu-button:top-2',
+      'peer-data-[size=lg]/menu-button:top-3.5',
       'group-data-[collapsible=icon]:hidden',
       className,
     )}
@@ -647,14 +668,14 @@ const SidebarMenuSkeleton: FC<SidebarMenuSkeletonProps> = ({
     <div
       data-sidebar="menu-skeleton"
       className={twMerge(
-        'rounded-md h-8 flex gap-2 px-2 items-center',
+        'rounded-12 h-9 flex gap-2 px-2 items-center',
         className,
       )}
       {...props}
     >
       {showIcon && (
         <Skeleton
-          className="size-4 rounded-md"
+          className="size-5 rounded-8"
           data-sidebar="menu-skeleton-icon"
         />
       )}
@@ -715,10 +736,10 @@ const SidebarMenuSubButton: FC<SidebarMenuSubButtonProps> = ({
       data-size={size}
       data-active={isActive}
       className={twMerge(
-        'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-black outline-none hover:bg-black/4 hover:text-black focus-visible:ring-2 active:bg-black/4 active:text-black disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-black',
-        'data-[active=true]:bg-black/4 data-[active=true]:text-black',
-        size === 'sm' && 'text-xs',
-        size === 'md' && 'text-sm',
+        'flex h-9 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-12 px-2 font-normal text-black hover:bg-black-4 hover:text-black focus-ring active:bg-black-4 active:text-black disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-black',
+        'data-[active=true]:bg-black-4 data-[active=true]:text-black',
+        size === 'sm' && 'h-7 text-12',
+        size === 'md' && 'text-14',
         'group-data-[collapsible=icon]:hidden',
         className,
       )}

@@ -1,4 +1,4 @@
-import { ArrowLineUpDownIcon } from '@holakirr/snow-ui-icons'
+import { DotsThreeOutlineHorizontalIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   type ColumnDef,
@@ -17,7 +17,16 @@ import {
 } from '@tanstack/react-table'
 import { Avatar, AvatarFallback, AvatarGroup } from '../Avatar'
 import { Button } from '../Button'
-import { Input } from '../Input'
+import { Card } from '../Card'
+import { Checkbox, Input } from '../Input'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../Pagination'
 import {
   Table,
   TableBody,
@@ -33,86 +42,86 @@ const meta: Meta<typeof Table> = {
   title: 'Components/Table',
   component: Table,
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Figma Table: 12 Regular text, 40px rows, a Black/20% line under the header, Black/4% row separators and a Black/4% rounded highlight on hovered rows and on rows with `data-state="selected"`. `TableHead` becomes a sort button with `sortDirection` / `onSort`.',
+      },
+    },
+  },
 }
 
-// TODO: Add DataTableDemo back once DropdownMenu is implemented
-// "use client"
+export default meta
+type Story = StoryObj<typeof Table>
 
-// import * as React from "react"
-// import {
-//   ColumnDef,
-//   ColumnFiltersState,
-//   SortingState,
-//   VisibilityState,
-//   flexRender,
-//   getCoreRowModel,
-//   getFilteredRowModel,
-//   getPaginationRowModel,
-//   getSortedRowModel,
-//   useReactTable,
-// } from "@tanstack/react-table"
-// import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+type Order = {
+  id: string
+  user: string
+  project: string
+  date: string
+  status: 'In Progress' | 'Complete' | 'Pending' | 'Approved' | 'Rejected'
+}
 
-// import { Button } from "@/components/ui/button"
-// import { Checkbox } from "@/components/ui/checkbox"
-// import {
-//   DropdownMenu,
-//   DropdownMenuCheckboxItem,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu"
-// import { Input } from "@/components/ui/input"
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table"
-
-const data: Payment[] = [
+const orders: Order[] = [
   {
-    id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
+    id: '#CM9801',
+    user: 'Natali Craig',
+    project: 'Landing Page',
+    date: 'Just now',
+    status: 'In Progress',
   },
   {
-    id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
+    id: '#CM9802',
+    user: 'Kate Morrison',
+    project: 'CRM Admin pages',
+    date: 'A minute ago',
+    status: 'Complete',
   },
   {
-    id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
+    id: '#CM9803',
+    user: 'Drew Cano',
+    project: 'Client Project',
+    date: '1 hour ago',
+    status: 'Pending',
   },
   {
-    id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
+    id: '#CM9804',
+    user: 'Orlando Diggs',
+    project: 'Admin Dashboard',
+    date: 'Yesterday',
+    status: 'Approved',
   },
   {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
+    id: '#CM9805',
+    user: 'Andi Lane',
+    project: 'App Landing Page',
+    date: 'Feb 2, 2026',
+    status: 'Rejected',
+  },
+  {
+    id: '#CM9806',
+    user: 'Koray Okumus',
+    project: 'Blog Redesign',
+    date: 'Feb 1, 2026',
+    status: 'Complete',
   },
 ]
 
-type Payment = {
-  id: string
-  amount: number
-  status: 'pending' | 'processing' | 'success' | 'failed'
-  email: string
+// Figma status colours: a dot plus text in the Secondary colour.
+const STATUS_COLORS: Record<Order['status'], string> = {
+  'In Progress': 'text-purple',
+  Complete: 'text-green',
+  Pending: 'text-blue',
+  Approved: 'text-orange',
+  Rejected: 'text-black-40',
 }
+
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
 
 // @tanstack/react-table v9: features and row models are opted into up front.
 const features = tableFeatures({
@@ -128,103 +137,249 @@ const features = tableFeatures({
   sortFns,
 })
 
-const columns: ColumnDef<typeof features, Payment>[] = [
-  // {
-  //   id: 'select',
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && 'indeterminate')
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
+const checkboxClassName =
+  // The Figma table checkbox is 16px (the Checkbox component is 28px).
+  'size-4 rounded-4 inset-ring-[1.5px] translate-y-0'
+
+const columns: ColumnDef<typeof features, Order>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        className={checkboxClassName}
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        className={checkboxClassName}
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label={`Select ${row.original.id}`}
+      />
+    ),
+    enableSorting: false,
+  },
+  { accessorKey: 'id', header: 'Order ID' },
+  {
+    accessorKey: 'user',
+    header: 'User',
+    cell: ({ row }) => (
+      <span className="flex items-center gap-2">
+        <Avatar size="sm">
+          <AvatarFallback>{initials(row.original.user)}</AvatarFallback>
+        </Avatar>
+        {row.original.user}
+      </span>
+    ),
+  },
+  { accessorKey: 'project', header: 'Project' },
+  { accessorKey: 'date', header: 'Date', enableSorting: false },
   {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('status')}</div>
+      <span
+        className={`flex items-center gap-1 ${STATUS_COLORS[row.original.status]}`}
+      >
+        <span aria-hidden className="size-1.5 rounded-full bg-current" />
+        {row.original.status}
+      </span>
     ),
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="gray"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Email
-          <ArrowLineUpDownIcon />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
+    id: 'actions',
+    header: () => <span className="sr-only">Actions</span>,
+    cell: ({ row }) => (
+      <Button
+        aria-label={`More actions for ${row.original.id}`}
+        className="opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100"
+        leftContent={<DotsThreeOutlineHorizontalIcon size={16} />}
+      />
+    ),
+    enableSorting: false,
   },
-  {
-    accessorKey: 'amount',
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = Number.parseFloat(row.getValue('amount'))
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount)
-
-      return <div className="text-right font-medium">{formatted}</div>
-    },
-  },
-  // {
-  //   id: 'actions',
-  //   enableHiding: false,
-  //   cell: ({ row }) => {
-  //     const payment = row.original
-
-  //     return (
-  //       <DropdownMenu>
-  //         <DropdownMenuTrigger asChild>
-  //           <Button variant="ghost" className="h-8 w-8 p-0">
-  //             <span className="sr-only">Open menu</span>
-  //             <MoreHorizontal />
-  //           </Button>
-  //         </DropdownMenuTrigger>
-  //         <DropdownMenuContent align="end">
-  //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-  //           <DropdownMenuItem
-  //             onClick={() => navigator.clipboard.writeText(payment.id)}
-  //           >
-  //             Copy payment ID
-  //           </DropdownMenuItem>
-  //           <DropdownMenuSeparator />
-  //           <DropdownMenuItem>View customer</DropdownMenuItem>
-  //           <DropdownMenuItem>View payment details</DropdownMenuItem>
-  //         </DropdownMenuContent>
-  //       </DropdownMenu>
-  //     )
-  //   },
-  // },
 ]
 
-export default meta
-type Story = StoryObj<typeof Table>
+/**
+ * The Figma "Table A" (Order List): selectable rows (`data-state="selected"`,
+ * select-all with an indeterminate state, Space toggles a focused checkbox),
+ * sortable headers, a row action on hover and the pagination footer.
+ */
+export const TableA: Story = {
+  render: () => {
+    const table = useTable({
+      features,
+      data: orders,
+      columns,
+      enableRowSelection: true,
+      initialState: {
+        pagination: { pageIndex: 0, pageSize: 5 },
+        rowSelection: { '3': true },
+      },
+    })
+    const pageIndex = table.store.state.pagination.pageIndex
 
+    return (
+      <div className="flex w-[892px] flex-col gap-4">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className={header.column.id === 'select' ? 'w-8 px-2' : ''}
+                    sortDirection={
+                      header.column.getCanSort()
+                        ? header.column.getIsSorted()
+                        : undefined
+                    }
+                    onSort={header.column.getToggleSortingHandler()}
+                  >
+                    {header.isPlaceholder ? null : (
+                      <table.FlexRender header={header} />
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                className="group/row"
+                data-state={row.getIsSelected() ? 'selected' : undefined}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className={cell.column.id === 'select' ? 'w-8 px-2' : ''}
+                  >
+                    <table.FlexRender cell={cell} />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <Pagination>
+          <PaginationContent className="w-full [&>li]:flex-1 [&>li>a]:w-full">
+            {table.getPageOptions().map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  href={`#page-${page + 1}`}
+                  isActive={page === pageIndex}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    table.setPageIndex(page)
+                  }}
+                >
+                  {page + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationPrevious
+                href="#previous"
+                disabled={!table.getCanPreviousPage()}
+                onClick={(event) => {
+                  event.preventDefault()
+                  table.previousPage()
+                }}
+              />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext
+                href="#next"
+                disabled={!table.getCanNextPage()}
+                onClick={(event) => {
+                  event.preventDefault()
+                  table.nextPage()
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+    )
+  },
+}
+
+export const TableADark: Story = {
+  ...TableA,
+  globals: { theme: 'dark' },
+}
+
+/** A filterable list, as in the Figma "Search results" guidance. */
+export const Filtered: Story = {
+  render: () => {
+    const table = useTable({
+      features,
+      data: orders,
+      columns: columns.filter((column) => column.id !== 'select'),
+    })
+
+    return (
+      <div className="flex w-[720px] flex-col gap-4">
+        <Input
+          placeholder="Filter projects..."
+          value={(table.getColumn('project')?.getFilterValue() as string) ?? ''}
+          onChange={(event) =>
+            table.getColumn('project')?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    <table.FlexRender header={header} />
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} className="group/row">
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      <table.FlexRender cell={cell} />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-black-40"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    )
+  },
+}
+
+/** Table B: a compact table inside a dashboard block. */
 export const TableB: Story = {
   render: () => (
-    <div className="rounded-2xl bg-background-2 p-6">
+    <Card variant="block" className="w-[560px]">
       <Table>
         <TableCaption>Tasks</TableCaption>
         <TableHeader>
@@ -248,8 +403,8 @@ export const TableB: Story = {
             <TableCell>3hr 20min</TableCell>
             <TableCell>In Progress</TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell>Coffee detail page</TableCell>
+          <TableRow data-state="selected">
+            <TableCell>Drinking bottle graphics</TableCell>
             <TableCell>
               <AvatarGroup>
                 <Avatar size="sm">
@@ -261,7 +416,7 @@ export const TableB: Story = {
               </AvatarGroup>
             </TableCell>
             <TableCell>3hr 20min</TableCell>
-            <TableCell>In Progress</TableCell>
+            <TableCell>Complete</TableCell>
           </TableRow>
         </TableBody>
         <TableFooter>
@@ -271,123 +426,6 @@ export const TableB: Story = {
           </TableRow>
         </TableFooter>
       </Table>
-    </div>
+    </Card>
   ),
-}
-
-export const TableA: Story = {
-  render: () => {
-    // @tanstack/react-table manages the table state (sorting, filters,
-    // visibility, selection, pagination) and re-renders on changes.
-    const table = useTable({ features, data, columns })
-
-    return (
-      <div className="w-full">
-        <div className="flex items-center py-4">
-          <Input
-            placeholder="Filter emails..."
-            value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              table.getColumn('email')?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          />
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  )
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-        </div>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder ? null : (
-                          <table.FlexRender header={header} />
-                        )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        <table.FlexRender cell={cell} />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="flex-1 text-sm text-black-40">
-            {table.getFilteredSelectedRowModel().rows.length} of{' '}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-          <div className="space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-      </div>
-    )
-  },
 }

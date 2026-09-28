@@ -36,3 +36,8 @@ export const Default: Story = {
     </div>
   ),
 }
+
+export const Dark: Story = {
+  ...Default,
+  globals: { theme: 'dark' },
+}

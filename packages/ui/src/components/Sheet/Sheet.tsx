@@ -20,7 +20,9 @@ type SheetOverlayProps = SheetPrimitive.DialogOverlayProps
 const SheetOverlay: FC<SheetOverlayProps> = ({ className, ...props }) => (
   <SheetPrimitive.Overlay
     className={twMerge(
-      'fixed inset-0 z-50 bg-static-black/40  data-[state=open]:animate-in data-[state=closed]:animate-out',
+      // The Dialog mask: the Figma gradient and "Background blur 40". Figma's
+      // dark dashboards use the same raw colours, so it doesn't flip.
+      'fixed inset-0 z-50 bg-linear-to-t from-[#cbddff]/50 to-[#d7d0ff]/20 backdrop-blur-bg-40 data-[state=open]:animate-in data-[state=closed]:animate-out',
       className,
     )}
     {...props}
@@ -29,16 +31,18 @@ const SheetOverlay: FC<SheetOverlayProps> = ({ className, ...props }) => (
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  'fixed z-50 gap-4 bg-background-1 p-4 transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out',
+  // A glass panel like the Figma popups (Background/3, "Background blur 40")
+  // with the 0.5px Black/10% edge of the dashboard side panels.
+  'fixed z-50 gap-4 border-black-10 bg-background-3 p-4 backdrop-blur-bg-40 transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out',
   {
     variants: {
       side: {
-        top: 'inset-x-0 top-0 data-[state=closed]:animate-slide-out-to-top data-[state=open]:animate-slide-in-from-top',
+        top: 'inset-x-0 top-0 border-b-[0.5px] data-[state=closed]:animate-slide-out-to-top data-[state=open]:animate-slide-in-from-top',
         bottom:
-          'inset-x-0 bottom-0 data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom',
-        left: 'inset-y-0 left-0 h-full w-3/4 data-[state=closed]:animate-slide-out-to-left data-[state=open]:animate-slide-in-from-left sm:max-w-sm',
+          'inset-x-0 bottom-0 border-t-[0.5px] data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom',
+        left: 'inset-y-0 left-0 h-full w-3/4 border-r-[0.5px] data-[state=closed]:animate-slide-out-to-left data-[state=open]:animate-slide-in-from-left sm:max-w-sm',
         right:
-          'inset-y-0 right-0 h-full w-3/4 data-[state=closed]:animate-slide-out-to-right data-[state=open]:animate-slide-in-from-right sm:max-w-sm',
+          'inset-y-0 right-0 h-full w-3/4 border-l-[0.5px] data-[state=closed]:animate-slide-out-to-right data-[state=open]:animate-slide-in-from-right sm:max-w-sm',
       },
     },
     defaultVariants: {
@@ -106,7 +110,7 @@ type SheetTitleProps = SheetPrimitive.DialogTitleProps
 
 const SheetTitle: FC<SheetTitleProps> = ({ className, ...props }) => (
   <SheetPrimitive.Title
-    className={twMerge('text-lg font-semibold text-black', className)}
+    className={twMerge('text-18 font-semibold text-black', className)}
     {...props}
   />
 )
@@ -119,7 +123,7 @@ const SheetDescription: FC<SheetDescriptionProps> = ({
   ...props
 }) => (
   <SheetPrimitive.Description
-    className={twMerge('text-sm text-black-40', className)}
+    className={twMerge('text-14 text-black-40', className)}
     {...props}
   />
 )

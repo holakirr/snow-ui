@@ -1,5 +1,24 @@
 # Changelog
 
+## 4.0.0
+
+### Major Changes
+
+- [#149](https://github.com/holakirr/snow-ui/pull/149) [`2576127`](https://github.com/holakirr/snow-ui/commit/25761274df7395ae159a7d561ff316c8f63d53d1) Thanks [@holakirr](https://github.com/holakirr)! - Upgrade `react-day-picker` to v10. `CalendarProps` extends `DayPickerProps`, so the props and APIs react-day-picker v10 removed are no longer accepted by `Calendar`:
+  
+  - `fromMonth` / `toMonth` / `fromYear` / `toYear` → `startMonth` / `endMonth` (e.g. `startMonth={new Date(2020, 0)}`); `fromDate` / `toDate` → `hidden={{ before: date }}` / `hidden={{ after: date }}`.
+  - `initialFocus` → `autoFocus`.
+  - `onDayKeyUp`, `onDayKeyPress`, `onDayPointerEnter`/`Leave`, `onDayTouch*` and `onWeekNumberClick` → a custom `DayButton` / `WeekNumber` in `components`.
+  - The v8-style `classNames` keys (`DeprecatedUI`) and `components.Button` → the v9 `UI` keys and `PreviousMonthButton` / `NextMonthButton`.
+  
+  See the [react-day-picker upgrade guide](https://daypicker.dev/upgrading). `captionClassName` is deprecated in favour of `monthCaptionClassName` (it is merged into the month caption, as react-day-picker has no separate `caption` slot).
+
+### Patch Changes
+
+- [#149](https://github.com/holakirr/snow-ui/pull/149) [`2576127`](https://github.com/holakirr/snow-ui/commit/25761274df7395ae159a7d561ff316c8f63d53d1) Thanks [@holakirr](https://github.com/holakirr)! - Built with tsdown into a flat `dist` (`.js` + `.cjs`, with `.d.ts` + `.d.cts` declarations). `require('@holakirr/snow-ui')` now works: the Phosphor icons are bundled into the build instead of being required from `@phosphor-icons/react`, whose CommonJS file Node loads as ESM, so `@phosphor-icons/react` is no longer a dependency. CommonJS consumers get matching `.d.cts` type declarations.
+- Updated dependencies [[`2576127`](https://github.com/holakirr/snow-ui/commit/25761274df7395ae159a7d561ff316c8f63d53d1)]:
+  - @holakirr/snow-ui-icons@2.1.1
+
 ## 3.0.0
 
 ### Breaking changes

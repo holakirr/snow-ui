@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Library build: resolve the icons package as a real dependency
+    // (its published types), not the workspace source used for typechecking.
+    "paths": {}
+  },
+  "include": ["src"],
+  "exclude": ["src/test", "src/**/*.test.*", "src/**/*.stories.*"]
+}

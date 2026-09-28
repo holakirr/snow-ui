@@ -22,7 +22,7 @@ bun install            # install all workspaces
 bun run lint           # biome check (one shared biome.json)
 bun run typecheck      # tsc for every package
 bun run test           # vitest for every package
-bun run build          # build icons, then ui
+bun run build          # tsdown build of icons, then ui (+ publint and attw checks)
 bun run storybook      # shared Storybook (ui + icons) on :53741
 bun run build:storybook # static Storybook in ./storybook-static
 bun run e2e            # ui Playwright visual tests (macOS baselines)
@@ -36,6 +36,10 @@ Run a script in a single package with `bun run --filter <package-name> <script>`
 
 - Storybook, Vitest and `typecheck` resolve the icons package from **source** (`packages/icons/src`) via a Vite alias (`packages/ui/workspace-aliases.ts`, used by `.storybook/main.ts` and `packages/ui/vitest.config.ts`) and tsconfig `paths`, so they work from a clean clone without building icons.
 - The ui **library build** emits type declarations that import the icons package, so it needs `packages/icons/dist`. The root `bun run build` builds icons first; when building ui on its own, run `bun run build:icons` beforehand.
+
+### Library builds
+
+Both packages are built with [tsdown](https://tsdown.dev) (`packages/*/tsdown.config.ts`): ESM (`.js`) and CommonJS (`.cjs`) with matching `.d.ts` / `.d.cts`, one output file per source module (`unbundle`), so `'use client'` directives stay on their modules and single-icon imports stay small. tsdown writes the `exports` / `main` / `module` / `types` fields of each `package.json` and runs publint and are-the-types-wrong after every build. `@holakirr/snow-ui` additionally builds `dist/index.css` with the Tailwind CLI before tsdown runs.
 
 ## Releasing
 

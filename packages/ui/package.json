@@ -3,9 +3,9 @@
   "private": false,
   "version": "3.0.0",
   "type": "module",
-  "main": "dist/cjs/index.js",
-  "types": "dist/cjs/index.d.ts",
-  "module": "dist/esm/index.js",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "module": "./dist/index.js",
   "style": "dist/index.css",
   "sideEffects": [
     "**/*.css"
@@ -20,27 +20,15 @@
   },
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      },
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      }
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./react-hook-form": {
-      "require": {
-        "types": "./dist/cjs/react-hook-form.d.ts",
-        "default": "./dist/cjs/react-hook-form.js"
-      },
-      "import": {
-        "types": "./dist/esm/react-hook-form.d.ts",
-        "default": "./dist/esm/react-hook-form.js"
-      }
+      "import": "./dist/react-hook-form.js",
+      "require": "./dist/react-hook-form.cjs"
     },
-    "./index.css": "./dist/index.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./index.css": "./dist/index.css"
   },
   "repository": {
     "type": "git",
@@ -57,11 +45,8 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && bun run build:ts && bun run build:types:cjs && bun run build:types:esm && bun run build:css",
-    "build:ts": "bun build.ts",
-    "build:types:cjs": "bunx tsc -b ./src/tsconfig.cjs.json",
-    "build:types:esm": "bunx tsc -b ./src/tsconfig.esm.json",
-    "build:css": "bunx @tailwindcss/cli -i ./src/index.css -o ./dist/index.css --minify",
+    "build": "rm -rf dist && bun run build:css && tsdown",
+    "build:css": "tailwindcss -i ./src/index.css -o ./dist/index.css --minify",
     "typecheck": "tsc -p . --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
@@ -120,6 +105,7 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
+    "@arethetypeswrong/core": "^0.18.5",
     "@hookform/resolvers": "^5.1.1",
     "@playwright/test": "^1.53.2",
     "@storybook/addon-a11y": "^9.1.20",
@@ -139,13 +125,14 @@
     "@vitest/coverage-v8": "^5.0.2",
     "@vitest/ui": "^5.0.2",
     "better-commits": "^1.17.1",
-    "esbuild": "^0.25.5",
     "jsdom": "^26.1.0",
+    "publint": "^0.3.24",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.60.0",
     "storybook": "^9.1.20",
     "tailwindcss": "^4.0.1",
+    "tsdown": "^0.23.0",
     "typescript": "^5.8.3",
     "vite": "^8.3.1",
     "vitest": "^5.0.2",

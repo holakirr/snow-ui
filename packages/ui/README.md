@@ -15,7 +15,7 @@ Take a look at my [CV](https://holakirr.com) =)
 - ✅ Comprehensive testing setup:
   - Unit testing with Vitest
   - E2E testing with Playwright
-- 🚀 Vite for fast development and building
+- 🚀 tsdown (Rolldown) library build, checked with publint and are-the-types-wrong
 - ⚡️ Powered by Bun for fast package management and running scripts
 
 ## Getting Started

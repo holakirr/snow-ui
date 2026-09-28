@@ -345,7 +345,7 @@ type SidebarInputProps = InputProps
 const SidebarInput: FC<SidebarInputProps> = ({ className, ...props }) => (
   <Input
     data-sidebar="input"
-    className={twMerge('h-8 w-full focus-visible:ring-2', className)}
+    className={twMerge('h-8 w-full py-1.5', className)}
     {...props}
   />
 )

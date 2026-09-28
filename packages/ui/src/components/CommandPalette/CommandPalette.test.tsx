@@ -240,6 +240,54 @@ describe('CommandPalette', () => {
     rerender(<CommandPalette groups={groups} defaultOpen query="" />)
     expect(screen.getAllByRole('option')).toHaveLength(5)
   })
+
+  it('keeps the highlighted item when the groups change', () => {
+    const { rerender } = render(
+      <CommandPalette groups={groups} defaultOpen filter={false} />,
+    )
+    const combobox = screen.getByRole('combobox')
+    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+    expect(activeOption()).toHaveAccessibleName('ByeWind')
+
+    // E.g. new server-side results arrive in front of the current ones.
+    const [recent, visited] = groups
+    rerender(
+      <CommandPalette
+        groups={[
+          {
+            ...recent,
+            items: [{ id: 'new', label: 'New result' }, ...recent.items],
+          },
+          visited,
+        ]}
+        defaultOpen
+        filter={false}
+      />,
+    )
+
+    expect(activeOption()).toHaveAccessibleName('ByeWind')
+    expect(combobox).toHaveAttribute(
+      'aria-activedescendant',
+      activeOption()?.id,
+    )
+  })
+
+  it('builds valid option ids from ids with spaces', () => {
+    render(
+      <CommandPalette
+        groups={[
+          { id: 'my group', items: [{ id: 'a b', label: 'Spaced id' }] },
+        ]}
+        defaultOpen
+      />,
+    )
+    const id = screen
+      .getByRole('combobox')
+      .getAttribute('aria-activedescendant')
+
+    expect(id).not.toMatch(/\s/)
+    expect(document.getElementById(id ?? '')).toHaveAccessibleName('Spaced id')
+  })
 })
 
 describe('defaultCommandPaletteFilter', () => {

@@ -242,10 +242,9 @@ const CommandPaletteList: FC<ListProps> = ({
         ...group,
         groupIndex,
         items: group.items
-          .map((item, itemIndex) => ({
-            item,
-            key: `${groupIndex}-${itemIndex}`,
-          }))
+          // Keyed by ids (not positions) so the highlighted item survives
+          // `groups` changing, e.g. with server-side results.
+          .map((item) => ({ item, key: `${group.id}:${item.id}` }))
           .filter(
             ({ item }) =>
               filter === false || trimmed === '' || filter(item, trimmed),
@@ -265,7 +264,10 @@ const CommandPaletteList: FC<ListProps> = ({
   // The first result is highlighted by default.
   const active =
     options.find((option) => option.key === activeKey) ?? options[0]
-  const optionId = (key: string) => `${baseId}-option-${key}`
+  // Ids come from props: escape everything but [A-Za-z0-9-] so the DOM id is
+  // valid in `aria-activedescendant` (space-separated) and collision-free.
+  const optionId = (key: string) =>
+    `${baseId}-option-${key.replace(/[^A-Za-z0-9-]/g, (char) => `_${char.charCodeAt(0).toString(16)}_`)}`
   const activeId = active ? optionId(active.key) : undefined
 
   useEffect(() => {

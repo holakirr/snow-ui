@@ -7,7 +7,8 @@ const Skeleton: FC<SkeletonProps> = ({ className, ...props }) => (
   <div
     aria-hidden="true"
     className={twMerge(
-      'animate-pulse rounded-md bg-linear-to-t from-white to-black/10',
+      // SnowUI's neutral fill (Black/4%) on the kit's 8px radius.
+      'animate-pulse rounded-8 bg-black-4',
       className,
     )}
     {...props}

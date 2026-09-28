@@ -16,6 +16,18 @@ type ToasterToast = ToastProps & {
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  /**
+   * Shows a close button. The Figma toast has none: it closes itself, on
+   * swipe or with Escape. Defaults to `true` for toasts with an `action` or
+   * an infinite `duration`, `false` otherwise.
+   */
+  closable?: boolean
+  /**
+   * The `<Toaster id>` that shows this toast. Toasts without one go to the
+   * `<Toaster>` without an `id`. Each toaster keeps its own limit of one
+   * visible toast.
+   */
+  toasterId?: string
 }
 
 const ACTION_TYPES = {
@@ -76,11 +88,22 @@ const addToRemoveQueue = (toastId: string) => {
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case ACTION_TYPES.ADD_TOAST:
+    case ACTION_TYPES.ADD_TOAST: {
+      // The limit applies per toaster, so toasters don't evict each other.
+      const sameToaster = state.toasts.filter(
+        (t) => t.toasterId === action.toast.toasterId,
+      )
+      const otherToasters = state.toasts.filter(
+        (t) => t.toasterId !== action.toast.toasterId,
+      )
       return {
         ...state,
-        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+        toasts: [
+          ...[action.toast, ...sameToaster].slice(0, TOAST_LIMIT),
+          ...otherToasters,
+        ],
       }
+    }
 
     case ACTION_TYPES.UPDATE_TOAST:
       return {

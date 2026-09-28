@@ -10,7 +10,8 @@ const meta: Meta<typeof Separator> = {
   parameters: {
     docs: {
       description: {
-        component: 'Visually or semantically separates content',
+        component:
+          'Visually or semantically separates content. Defaults to the Black/10% divider of the Figma dashboards; `hairline` draws it 0.5px thick.',
       },
     },
   },
@@ -19,6 +20,10 @@ const meta: Meta<typeof Separator> = {
       control: 'radio',
       options: ['horizontal', 'vertical'],
       description: 'The orientation of the separator',
+    },
+    hairline: {
+      control: 'boolean',
+      description: 'Draw a 0.5px hairline',
     },
     decorative: {
       control: 'boolean',
@@ -58,9 +63,29 @@ export const Vertical: Story = {
   ),
 }
 
+export const Hairline: Story = {
+  args: {
+    hairline: true,
+  },
+  render: (args) => (
+    <div className="flex w-[240px] flex-col gap-2">
+      <Typography>1px (default)</Typography>
+      <Separator />
+      <Typography>0.5px hairline</Typography>
+      <Separator {...args} />
+      <Typography>Below content</Typography>
+    </div>
+  ),
+}
+
+export const Dark: Story = {
+  ...Hairline,
+  globals: { theme: 'dark' },
+}
+
 export const CustomStyles: Story = {
   args: {
-    className: 'bg-red-500',
+    className: 'bg-primary',
   },
   render: (args) => (
     <div className="flex flex-col gap-2">

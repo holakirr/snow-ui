@@ -1,3 +1,4 @@
+import { CheckCircle, Warning } from '@phosphor-icons/react/dist/ssr'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
@@ -180,7 +181,36 @@ describe('StatusIcon', () => {
     const { container } = render(<StatusIcon status={status} />)
     const svg = getSvg(container)
     expect(svg).toHaveAccessibleName(`Icon for status ${status}`)
-    expect(svg.getAttribute('class')).not.toContain('undefined')
+    expect(svg.getAttribute('class') ?? '').not.toContain('undefined')
+  })
+
+  it.each([
+    ['error', Warning, 'var(--color-yellow, #fc0)'],
+    ['success', CheckCircle, 'var(--color-green, #71dd8c)'],
+  ] as const)(
+    'renders %s as the filled Figma Toast icon in its token colour',
+    (status, Glyph, color) => {
+      const svg = getSvg(render(<StatusIcon status={status} />).container)
+      const expected = getSvg(render(<Glyph weight="fill" />).container)
+
+      expect(svg.innerHTML.replace(/<title>.*<\/title>/, '')).toBe(
+        expected.innerHTML,
+      )
+      expect(svg.style.color).toBe(color)
+      expect(svg).toHaveAttribute('fill', 'currentColor')
+    },
+  )
+
+  it('lets style and color props override the status colour', () => {
+    const styled = getSvg(
+      render(<StatusIcon status="error" style={{ color: 'red' }} />).container,
+    )
+    expect(styled.style.color).toBe('red')
+
+    const colored = getSvg(
+      render(<StatusIcon status="success" color="blue" />).container,
+    )
+    expect(colored).toHaveAttribute('fill', 'blue')
   })
 
   it('appends a custom className', () => {

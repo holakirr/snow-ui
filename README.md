@@ -25,7 +25,9 @@ bun run test           # vitest for every package
 bun run build          # tsdown build of icons, then ui (+ publint and attw checks)
 bun run storybook      # shared Storybook (ui + icons) on :53741
 bun run build:storybook # static Storybook in ./storybook-static
-bun run e2e            # ui Playwright visual tests (macOS baselines)
+bun run test:storybook # every story rendered in headless Chromium (+ play functions, axe)
+bun run size           # bundle-size budgets (needs `bun run build`)
+bun run visual         # visual regression tests in Docker (`visual:update` writes baselines)
 ```
 
 Run a script in a single package with `bun run --filter <package-name> <script>`, e.g. `bun run --filter @holakirr/snow-ui-icons test`.
@@ -42,6 +44,22 @@ Run a script in a single package with `bun run --filter <package-name> <script>`
 Both packages are built with [tsdown](https://tsdown.dev) (`packages/*/tsdown.config.ts`): ESM (`.js`) and CommonJS (`.cjs`) with matching `.d.ts` / `.d.cts`, one output file per source module (`unbundle`), so `'use client'` directives stay on their modules and single-icon imports stay small. tsdown writes the `exports` / `main` / `module` / `types` fields of each `package.json` and runs publint and are-the-types-wrong after every build. `@holakirr/snow-ui` additionally builds `dist/index.css` with the Tailwind CLI before tsdown runs.
 
 The handful of [Phosphor](https://phosphoricons.com) icons both packages use are inlined under `dist/vendor/` (see `tsdown.vendor.ts`) rather than depended on: `@phosphor-icons/react` ships its CommonJS build as `dist/index.cjs.js` inside a `"type": "module"` package, so Node can't `require()` it.
+
+## Quality gates
+
+Every PR and every push to `main` runs [Build Check](.github/workflows/build-check.yml). Each gate also runs locally; [CONTRIBUTING.md](CONTRIBUTING.md#quality-gates) has the details.
+
+| Gate | Local command | CI job | Fails the build when |
+| --- | --- | --- | --- |
+| Lint and format ([Biome](https://biomejs.dev)) | `bun run lint` | `build` | a lint rule or the formatter reports a problem |
+| Types | `bun run typecheck` | `build` | `tsc` reports an error in a package or the root tooling |
+| Unit tests (Vitest, jsdom) | `bun run test` | `build` | a `*.test.ts(x)` test fails |
+| Package checks ([publint](https://publint.dev), [are-the-types-wrong](https://arethetypeswrong.github.io)) | `bun run build` | `build` | a package's `exports`/types would break for some consumers |
+| Storybook tests ([`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon)) | `bun run test:storybook` | `storybook-tests` | a story throws while rendering or its `play` function fails |
+| Accessibility ([axe](https://github.com/dequelabs/axe-core) via `@storybook/addon-a11y`) | `bun run test:storybook` / Storybook's a11y panel | `storybook-tests` | not yet: `a11y.test` is `'todo'` (violations are warnings) |
+| Visual regression (Playwright, in Docker) | `bun run visual` | `visual` | a story's screenshot (light or dark theme) differs from its baseline; skipped until baselines are committed |
+| Bundle size ([size-limit](https://github.com/ai/size-limit)) | `bun run size` | `size` | an entry point grows past its budget in `.size-limit.json` |
+| Changesets | `bun changeset status` | `changeset` | never: warns when a package changed without a changeset |
 
 ## Releasing
 

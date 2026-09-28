@@ -91,6 +91,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 - **Typography:** `text-12` … `text-64` (the Figma text styles: font size and line height), Inter with `font-feature-settings: "ss01" 1, "cv01" 1`.
 - **Radius:** `rounded-4` … `rounded-80` (the Figma corner radius scale).
 - **Spacing:** the Figma spacing and size values are multiples of 4px, so Tailwind's spacing utilities (`p-1` = 4px, `gap-3` = 12px, `size-10` = 40px) cover them.
+- **Cursors:** a base rule gives buttons and ARIA controls (`option`, `menuitem`, `tab`, `radio`, `checkbox`, `switch`, `label[for]`…) the pointer cursor, which Tailwind v4's preflight no longer sets, and disabled elements (`:disabled`, `aria-disabled="true"`, `data-disabled`) the not-allowed cursor. `cursor-*` utilities override it.
 - **Focus:** the `focus-ring` utility is the keyboard focus indicator of every component: on `:focus-visible` it draws the Figma "Focus" ring (`ring-4 ring-focus`) plus a 2px `black-80` outline offset by 2px. Use it on your own focusable elements: `<button className="focus-ring">`.
 - **Effects:** `shadow-1`, `shadow-2`, `shadow-glow`, `shadow-glass-1`, `shadow-glass-2`, `inset-shadow-inner`, the Figma focus ring `ring-4 ring-focus` (or `shadow-focus`), the background blurs `backdrop-blur-bg-40` (20px) and `backdrop-blur-bg-100` (50px), and `glass` / `glass-1` / `glass-2`, which approximate Figma's Glass effects with a fill, a background blur and a shadow.
 

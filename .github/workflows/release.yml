@@ -35,6 +35,8 @@ permissions: {}
 
 jobs:
   release:
+    # workflow_dispatch can target any branch; only ever version/publish from main
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write # version commit/branch, tags, GitHub releases

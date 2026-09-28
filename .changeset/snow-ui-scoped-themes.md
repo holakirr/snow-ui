@@ -8,3 +8,4 @@ Scoped themes: `data-theme="dark"` now works on any element, not only `<html>`. 
 - `color-scheme` is set to `light` or `dark` with the theme, so native form controls, scrollbars and the default page colours match. With the OS in dark mode and no `data-theme` on `<html>`, the page canvas and default text colour are now dark as well; pin `<html data-theme="light">` if your app has no dark mode.
 - The `dark:` variant no longer matches inside a `data-theme="light"` element nested in a dark scope.
 - Overlays (`Dialog`, `Popover`, `Select`, menus, `Tooltip`, `Sheet`, `CommandPalette`) are portalled to `<body>`, so they take the theme of `<html>`; pass `data-theme` to their `*Content` component to scope them.
+- `CommandPalette`: the loading spinner turns around its centre (it used to swing around the icon box).

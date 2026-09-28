@@ -231,6 +231,22 @@ describe('CommandPalette', () => {
     expect(screen.getByRole('listbox')).toHaveAttribute('aria-busy', 'true')
   })
 
+  it('centres the loading spinner in its box', () => {
+    renderOpen({ loading: true })
+    const spinner = screen
+      .getByRole('dialog')
+      .querySelector('svg:has(circle)') as SVGSVGElement
+    const circle = spinner.querySelector('circle') as SVGCircleElement
+    const [x, y, width, height] = (spinner.getAttribute('viewBox') ?? '')
+      .split(' ')
+      .map(Number)
+
+    // The ring turns around its centre, which must be the box's centre.
+    expect(Number(circle.getAttribute('cx'))).toBe(x + width / 2)
+    expect(Number(circle.getAttribute('cy'))).toBe(y + height / 2)
+    expect(spinner.getAttribute('class')).not.toContain('animate-spin')
+  })
+
   it('supports a controlled query', () => {
     const { rerender } = render(
       <CommandPalette groups={groups} defaultOpen query="over" />,

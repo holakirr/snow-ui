@@ -6,7 +6,7 @@ import type { PolymorphicProps, TextSize } from '../../types'
 
 const defaultTag = 'span'
 
-const textStyles = cva(['font-normal transition-all'], {
+const textStyles = cva(['font-sans font-normal transition-all'], {
   variants: {
     size: {
       64: 'text-[4rem] leading-[4.875rem]',

@@ -1,7 +1,9 @@
-import { SearchWeights } from "../defs/Search";
-import { IconBase } from "../IconBase";
-import type { Icon } from "../types";
+import { SearchWeights } from '../defs/Search'
+import { IconBase } from '../IconBase'
+import type { Icon } from '../types'
 
-const SearchIcon: Icon = (props) => <IconBase {...props} weights={SearchWeights} />;
+const SearchIcon: Icon = (props) => (
+  <IconBase {...props} weights={SearchWeights} />
+)
 
-export { SearchIcon };
+export { SearchIcon }

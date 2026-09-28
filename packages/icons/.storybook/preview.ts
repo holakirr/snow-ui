@@ -1,19 +1,19 @@
-import type { Preview } from "@storybook/react-vite";
+import type { Preview } from '@storybook/react-vite'
 
-import "./preview.css";
+import './preview.css'
 
 const preview: Preview = {
-	parameters: {
-		controls: {
-			matchers: {
-				color: /(background|color)$/i,
-				date: /Date$/i,
-			},
-		},
-		layout: "centered",
-	},
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
+    },
+    layout: 'centered',
+  },
 
-	tags: ["autodocs"],
-};
+  tags: ['autodocs'],
+}
 
-export default preview;
+export default preview

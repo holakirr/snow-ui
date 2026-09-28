@@ -1,7 +1,9 @@
-import { TextAWeights } from "../defs/TextA";
-import { IconBase } from "../IconBase";
-import type { Icon } from "../types";
+import { TextAWeights } from '../defs/TextA'
+import { IconBase } from '../IconBase'
+import type { Icon } from '../types'
 
-const TextAIcon: Icon = (props) => <IconBase {...props} weights={TextAWeights} />;
+const TextAIcon: Icon = (props) => (
+  <IconBase {...props} weights={TextAWeights} />
+)
 
-export { TextAIcon };
+export { TextAIcon }

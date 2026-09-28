@@ -1,7 +1,7 @@
-import { FormWeights } from "../defs/Form";
-import { IconBase } from "../IconBase";
-import type { Icon } from "../types";
+import { FormWeights } from '../defs/Form'
+import { IconBase } from '../IconBase'
+import type { Icon } from '../types'
 
-const FormIcon: Icon = (props) => <IconBase {...props} weights={FormWeights} />;
+const FormIcon: Icon = (props) => <IconBase {...props} weights={FormWeights} />
 
-export { FormIcon };
+export { FormIcon }

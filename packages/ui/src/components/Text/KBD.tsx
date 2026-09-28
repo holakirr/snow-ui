@@ -1,21 +1,51 @@
+import { cva, type VariantProps } from 'class-variance-authority'
 import type { FC } from 'react'
+import { TEXT_SIZES } from '../../constants'
 import { twMerge } from '../../utils/tw-merge'
 
 import { type TextProps, Typography } from './Text'
 
-type KBDProps = TextProps<'kbd'> & {
-  keys: string[]
-  separator?: string
-}
+/**
+ * Figma "Kbd" (Variant Solid / Border): 16px high, at least 28px wide, 4px
+ * side padding, 6px radius, 12/16 text in Black/100%.
+ */
+const kbdVariants = cva(
+  'inline-flex h-4 min-w-7 shrink-0 items-center justify-center whitespace-nowrap rounded-[6px] px-1 text-black',
+  {
+    variants: {
+      variant: {
+        solid: 'bg-black-4',
+        border: 'bg-transparent inset-ring-[0.5px] inset-ring-black-10',
+      },
+    },
+    defaultVariants: {
+      variant: 'solid',
+    },
+  },
+)
 
-const KBD: FC<KBDProps> = ({ keys, separator = '+', className, ...props }) => {
+type KBDProps = TextProps<'kbd'> &
+  VariantProps<typeof kbdVariants> & {
+    keys: string[]
+    separator?: string
+  }
+
+const KBD: FC<KBDProps> = ({
+  keys,
+  separator = '+',
+  variant,
+  size = TEXT_SIZES[12],
+  className,
+  ...props
+}) => {
   const shortcut = keys.join(separator)
 
   return (
     <Typography
       as="kbd"
       aria-keyshortcuts={shortcut}
-      className={twMerge('w-min text-black/20', className)}
+      size={size}
+      className={twMerge(kbdVariants({ variant }), className)}
       {...props}
     >
       {shortcut}
@@ -24,4 +54,4 @@ const KBD: FC<KBDProps> = ({ keys, separator = '+', className, ...props }) => {
 }
 KBD.displayName = 'KBD'
 
-export { KBD, type KBDProps }
+export { KBD, type KBDProps, kbdVariants }

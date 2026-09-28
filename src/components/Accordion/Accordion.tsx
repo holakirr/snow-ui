@@ -69,4 +69,10 @@ AccordionTrigger.displayName = 'AccordionTrigger'
 AccordionItem.displayName = 'AccordionItem'
 Accordion.displayName = 'Accordion'
 
-export { Accordion, AccordionContent, AccordionItem, AccordionTrigger }
+export {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  type AccordionProps,
+}

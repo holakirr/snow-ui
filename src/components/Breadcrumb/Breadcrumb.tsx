@@ -42,15 +42,6 @@ export type BreadcrumbLinkProps = ComponentProps<'a'> & {
   disabled?: boolean
 }
 
-// Links are not buttons: drop Button's role/type/title/aria-label defaults
-// so the link's own text is its accessible name.
-const linkOverrides = {
-  role: undefined,
-  type: undefined,
-  title: undefined,
-  'aria-label': undefined,
-}
-
 const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
   className,
   disabled,
@@ -58,7 +49,6 @@ const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
 }) => (
   <Button
     as="a"
-    {...linkOverrides}
     aria-disabled={disabled}
     tabIndex={disabled ? -1 : 0}
     className={twMerge(
@@ -73,7 +63,22 @@ BreadcrumbLink.displayName = 'BreadcrumbLink'
 
 export type BreadcrumbPageProps = ComponentProps<'span'>
 
-const BreadcrumbSeparator: FC<ComponentProps<'li'>> = ({
+const BreadcrumbPage: FC<BreadcrumbPageProps> = ({ className, ...props }) => (
+  // biome-ignore lint/a11y/useFocusableInteractive: the current page is intentionally not focusable
+  // biome-ignore lint/a11y/useSemanticElements: the current page is not a real link
+  <span
+    role="link"
+    aria-disabled="true"
+    aria-current="page"
+    className={twMerge('text-black', className)}
+    {...props}
+  />
+)
+BreadcrumbPage.displayName = 'BreadcrumbPage'
+
+export type BreadcrumbSeparatorProps = ComponentProps<'li'>
+
+const BreadcrumbSeparator: FC<BreadcrumbSeparatorProps> = ({
   children,
   className,
   ...props
@@ -89,7 +94,9 @@ const BreadcrumbSeparator: FC<ComponentProps<'li'>> = ({
 )
 BreadcrumbSeparator.displayName = 'BreadcrumbSeparator'
 
-const BreadcrumbEllipsis: FC<ComponentProps<'span'>> = ({
+export type BreadcrumbEllipsisProps = ComponentProps<'span'>
+
+const BreadcrumbEllipsis: FC<BreadcrumbEllipsisProps> = ({
   className,
   ...props
 }) => (
@@ -112,5 +119,6 @@ export {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
+  BreadcrumbPage,
   BreadcrumbSeparator,
 }

@@ -185,4 +185,4 @@ const Scheduler: FC<SchedulerProps> = ({
   )
 }
 
-export { Scheduler }
+export { Scheduler, type SchedulerProps }

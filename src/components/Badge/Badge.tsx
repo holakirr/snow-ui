@@ -63,4 +63,4 @@ const Badge = ({ content, children, className, ...props }: BadgeProps) => (
 )
 
 Badge.displayName = 'Badge'
-export { Badge }
+export { Badge, type BadgeProps }

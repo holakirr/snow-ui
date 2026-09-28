@@ -57,4 +57,4 @@ const AvatarGroup: FC<AvatarGroupProps> = ({
 }
 AvatarGroup.displayName = 'AvatarGroup'
 
-export { AvatarGroup }
+export { AvatarGroup, type AvatarGroupProps }

@@ -21,4 +21,4 @@ const Card: FC<CardProps> = ({ bordered, className, ...props }) => (
 )
 Card.displayName = 'Card'
 
-export { Card }
+export { Card, type CardProps }

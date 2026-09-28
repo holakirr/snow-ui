@@ -3,7 +3,7 @@
 import { ArrowRightIcon } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react'
 import * as CtxMenuPrimitive from '@radix-ui/react-context-menu'
-import type { ComponentProps, FC } from 'react'
+import type { FC } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { KBD, type KBDProps } from '../Text'
 
@@ -19,16 +19,21 @@ const ContextMenuSub = CtxMenuPrimitive.Sub
 
 const ContextMenuRadioGroup = CtxMenuPrimitive.RadioGroup
 
-type ContextMenuSubTriggerProps = CtxMenuPrimitive.ContextMenuSubTriggerProps
+type ContextMenuSubTriggerProps =
+  CtxMenuPrimitive.ContextMenuSubTriggerProps & {
+    inset?: boolean
+  }
 
 const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
   className,
+  inset,
   children,
   ...props
 }) => (
   <CtxMenuPrimitive.SubTrigger
     className={twMerge(
       'flex cursor-default select-none items-center rounded-lg p-2 text-sm text-black outline-none focus:bg-black/4 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[state=open]:bg-black/4 data-[state=open]:text-black',
+      inset && 'pl-8',
       className,
     )}
     {...props}
@@ -73,11 +78,17 @@ ContextMenuContent.displayName = CtxMenuPrimitive.Content.displayName
 const itemClasses =
   'relative flex cursor-default select-none items-center rounded-lg p-2 text-sm text-black outline-none focus:bg-black/4 data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
 
-type ContextMenuItemProps = CtxMenuPrimitive.ContextMenuItemProps
+type ContextMenuItemProps = CtxMenuPrimitive.ContextMenuItemProps & {
+  inset?: boolean
+}
 
-const ContextMenuItem: FC<ContextMenuItemProps> = ({ className, ...props }) => (
+const ContextMenuItem: FC<ContextMenuItemProps> = ({
+  className,
+  inset,
+  ...props
+}) => (
   <CtxMenuPrimitive.Item
-    className={twMerge(itemClasses, className)}
+    className={twMerge(itemClasses, inset && 'pl-8', className)}
     {...props}
   />
 )
@@ -128,14 +139,21 @@ const ContextMenuRadioItem: FC<ContextMenuRadioItemProps> = ({
 )
 ContextMenuRadioItem.displayName = CtxMenuPrimitive.RadioItem.displayName
 
-type ContextMenuLabelProps = CtxMenuPrimitive.ContextMenuLabelProps
+type ContextMenuLabelProps = CtxMenuPrimitive.ContextMenuLabelProps & {
+  inset?: boolean
+}
 
 const ContextMenuLabel: FC<ContextMenuLabelProps> = ({
   className,
+  inset,
   ...props
 }) => (
   <CtxMenuPrimitive.Label
-    className={twMerge('p-2 text-sm font-semibold text-black', className)}
+    className={twMerge(
+      'p-2 text-sm font-semibold text-black',
+      inset && 'pl-8',
+      className,
+    )}
     {...props}
   />
 )
@@ -154,11 +172,12 @@ const ContextMenuSeparator: FC<ContextMenuSeparatorProps> = ({
 )
 ContextMenuSeparator.displayName = CtxMenuPrimitive.Separator.displayName
 
-type ContextMenuShortcutProps = ComponentProps<'span'>
+type ContextMenuShortcutProps = KBDProps
 
-const ContextMenuShortcut: FC<KBDProps> = ({ className, ...props }) => (
-  <KBD className="ml-auto" {...props} />
-)
+const ContextMenuShortcut: FC<ContextMenuShortcutProps> = ({
+  className,
+  ...props
+}) => <KBD className={twMerge('ml-auto', className)} {...props} />
 ContextMenuShortcut.displayName = 'ContextMenuShortcut'
 
 export {

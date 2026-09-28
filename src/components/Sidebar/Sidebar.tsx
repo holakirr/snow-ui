@@ -776,4 +776,5 @@ export {
   type SidebarRailProps,
   type SidebarSeparatorProps,
   type SidebarTriggerProps,
+  type SidebarFooterProps,
 }

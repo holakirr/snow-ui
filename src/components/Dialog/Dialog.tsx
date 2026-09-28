@@ -123,4 +123,5 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
+  type DialogHeaderProps,
 }

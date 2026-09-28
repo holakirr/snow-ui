@@ -167,4 +167,8 @@ export {
   ToastViewport,
   type ToastActionElement,
   type ToastProps,
+  type ToastActionProps,
+  type ToastCloseProps,
+  type ToastTitleProps,
+  type ToastDescriptionProps,
 }

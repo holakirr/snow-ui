@@ -180,4 +180,7 @@ export {
   FormLabel,
   FormMessage,
   useFormField,
+  type FormItemProps,
+  type FormDescriptionProps,
+  type FormMessageProps,
 }

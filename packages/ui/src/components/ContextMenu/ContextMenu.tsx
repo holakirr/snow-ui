@@ -5,6 +5,12 @@ import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as CtxMenuPrimitive from '@radix-ui/react-context-menu'
 import type { FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
+import {
+  popoverItemClasses,
+  popoverLabelClasses,
+  popoverSeparatorClasses,
+  popoverSurfaceClasses,
+} from '../Popover/surface'
 import { KBD, type KBDProps } from '../Text'
 
 const ContextMenu = CtxMenuPrimitive.Root
@@ -32,20 +38,24 @@ const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
 }) => (
   <CtxMenuPrimitive.SubTrigger
     className={twMerge(
-      'flex cursor-default select-none items-center rounded-lg p-2 text-sm text-black outline-none focus:bg-black/4 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[state=open]:bg-black/4 data-[state=open]:text-black',
+      popoverItemClasses,
+      'cursor-default',
       inset && 'pl-8',
       className,
     )}
     {...props}
   >
     {children}
-    <ArrowRightIcon className="ml-auto h-4 w-4" />
+    <ArrowRightIcon className="ml-auto" />
   </CtxMenuPrimitive.SubTrigger>
 )
 ContextMenuSubTrigger.displayName = CtxMenuPrimitive.SubTrigger.displayName
 
-const contentClasses =
-  'z-50 min-w-60 rounded-2xl border-[0.5px] border-black/10 bg-white/80 p-4 text-black backdrop-blur-bg-40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom'
+const contentClasses = twMerge(
+  'z-50 min-w-60',
+  popoverSurfaceClasses,
+  'data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom',
+)
 
 type ContextMenuSubContentProps = CtxMenuPrimitive.ContextMenuSubContentProps
 
@@ -75,8 +85,7 @@ const ContextMenuContent: FC<ContextMenuContentProps> = ({
 )
 ContextMenuContent.displayName = CtxMenuPrimitive.Content.displayName
 
-const itemClasses =
-  'relative flex cursor-default select-none items-center rounded-lg p-2 text-sm text-black outline-none focus:bg-black/4 data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+const itemClasses = twMerge(popoverItemClasses, 'cursor-default')
 
 type ContextMenuItemProps = CtxMenuPrimitive.ContextMenuItemProps & {
   inset?: boolean
@@ -108,9 +117,9 @@ const ContextMenuCheckboxItem: FC<ContextMenuCheckboxItemProps> = ({
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-2 flex size-4 items-center justify-center">
       <CtxMenuPrimitive.ItemIndicator>
-        <Check className="h-4 w-4" />
+        <Check />
       </CtxMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -129,9 +138,9 @@ const ContextMenuRadioItem: FC<ContextMenuRadioItemProps> = ({
     className={twMerge(itemClasses, 'pl-8', className)}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-2 flex size-4 items-center justify-center">
       <CtxMenuPrimitive.ItemIndicator>
-        <span className="block w-[14px] h-[14px] aspect-square rounded-full bg-primary group-hover:bg-primary-hover-strong group-disabled:bg-black/10" />
+        <span className="block size-1.5 rounded-full bg-current" />
       </CtxMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -149,11 +158,7 @@ const ContextMenuLabel: FC<ContextMenuLabelProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.Label
-    className={twMerge(
-      'p-2 text-sm font-semibold text-black',
-      inset && 'pl-8',
-      className,
-    )}
+    className={twMerge(popoverLabelClasses, inset && 'pl-8', className)}
     {...props}
   />
 )
@@ -166,7 +171,7 @@ const ContextMenuSeparator: FC<ContextMenuSeparatorProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.Separator
-    className={twMerge('my-2 h-px bg-black/4', className)}
+    className={twMerge(popoverSeparatorClasses, className)}
     {...props}
   />
 )

@@ -9,6 +9,13 @@ import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import type { FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
+import {
+  popoverAnimationClasses,
+  popoverItemClasses,
+  popoverLabelClasses,
+  popoverSeparatorClasses,
+  popoverSurfaceClasses,
+} from '../Popover/surface'
 
 const Select = SelectPrimitive.Root
 
@@ -25,10 +32,11 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
 }) => (
   <SelectPrimitive.Trigger
     className={twMerge(
-      'group flex w-full items-center justify-between whitespace-nowrap rounded-2xl border-[.5px] border-black/10 bg-surface-1 px-5 py-[13.5px] text-lg text-black data-[placeholder]:text-black/20 dark:data-[placeholder]:text-black/60 [&>span]:line-clamp-1 transition-all',
-      'hover:border-black/40',
-      'focus:outline-none focus:ring-4 focus:ring-focus data-[state=open]:ring-4 data-[state=open]:ring-focus',
-      'disabled:border-black/4 disabled:bg-black/4 disabled:text-black/10 disabled:cursor-not-allowed',
+      // The Figma Input field with a trailing 16px ArrowLineUpDown.
+      'group flex w-full cursor-pointer items-center justify-between gap-2 whitespace-nowrap rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all data-[placeholder]:text-black-20 [&>span]:line-clamp-1',
+      'hover:inset-ring-black-40 data-[state=open]:inset-ring-black-40',
+      'focus:outline-none focus-visible:ring-4 focus-visible:ring-focus data-[state=open]:ring-4 data-[state=open]:ring-focus',
+      'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0',
       className,
     )}
     {...props}
@@ -36,8 +44,8 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
     {children}
     <SelectPrimitive.Icon asChild>
       <ArrowLineUpDownIcon
-        size={20}
-        className="group-disabled:fill-black/10 fill-black/40 dark:fill-black/80"
+        size={16}
+        className="shrink-0 fill-black-40 group-disabled:fill-black-20"
       />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
@@ -57,7 +65,7 @@ const SelectScrollUpButton: FC<SelectScrollUpButtonProps> = ({
     )}
     {...props}
   >
-    <ArrowLineUpIcon className="h-4 w-4" />
+    <ArrowLineUpIcon size={16} />
   </SelectPrimitive.ScrollUpButton>
 )
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
@@ -75,7 +83,7 @@ const SelectScrollDownButton: FC<SelectScrollDownButtonProps> = ({
     )}
     {...props}
   >
-    <ArrowLineDownIcon className="h-4 w-4" />
+    <ArrowLineDownIcon size={16} />
   </SelectPrimitive.ScrollDownButton>
 )
 SelectScrollDownButton.displayName =
@@ -92,7 +100,11 @@ const SelectContent: FC<SelectContentProps> = ({
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       className={twMerge(
-        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-2xl border border-black/10 bg-white/80 backdrop-blur-bg-40 text-black data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:animate-zoom-out-95 data-[state=open]:animate-zoom-in-95 data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom touch-manipulation sm:touch-auto',
+        'relative z-50 max-h-96 min-w-[8rem] touch-manipulation overflow-hidden sm:touch-auto',
+        popoverSurfaceClasses,
+        // The padding is on the viewport, so the list scrolls inside it.
+        'p-0',
+        popoverAnimationClasses,
         position === 'popper' &&
           'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
         className,
@@ -103,7 +115,7 @@ const SelectContent: FC<SelectContentProps> = ({
       <SelectScrollUpButton />
       <SelectPrimitive.Viewport
         className={twMerge(
-          'p-2',
+          'p-3',
           position === 'popper' &&
             'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]',
         )}
@@ -120,7 +132,7 @@ type SelectLabelProps = SelectPrimitive.SelectLabelProps
 
 const SelectLabel: FC<SelectLabelProps> = ({ className, ...props }) => (
   <SelectPrimitive.Label
-    className={twMerge('p-2 text-sm font-semibold', className)}
+    className={twMerge(popoverLabelClasses, className)}
     {...props}
   />
 )
@@ -131,14 +143,16 @@ type SelectItemProps = SelectPrimitive.SelectItemProps
 const SelectItem: FC<SelectItemProps> = ({ className, children, ...props }) => (
   <SelectPrimitive.Item
     className={twMerge(
-      'relative flex w-full cursor-default select-none items-center rounded-lg p-2 text-sm outline-none hover:bg-black/5 focus:bg-black/5 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 transition-all',
+      popoverItemClasses,
+      'w-full cursor-default pr-8 hover:bg-black-4',
       className,
     )}
     {...props}
   >
-    <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+    {/* Figma: a trailing 16px Check on the selected item. */}
+    <span className="absolute right-2 flex size-4 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <Check className="h-4 w-4" />
+        <Check />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -150,7 +164,7 @@ type SelectSeparatorProps = SelectPrimitive.SelectSeparatorProps
 
 const SelectSeparator: FC<SelectSeparatorProps> = ({ className, ...props }) => (
   <SelectPrimitive.Separator
-    className={twMerge('-mx-1 my-1 h-px bg-black-4', className)}
+    className={twMerge(popoverSeparatorClasses, className)}
     {...props}
   />
 )

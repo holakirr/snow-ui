@@ -37,3 +37,26 @@ export const Default: Story = {
     ),
   },
 }
+
+/** The Figma Popover, open. */
+export const Open: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="h-64">
+      <Popover defaultOpen>
+        <PopoverTrigger asChild>
+          <Button variant="outline" label="Open" />
+        </PopoverTrigger>
+        <PopoverContent align="start">
+          <div className="flex flex-col gap-2">
+            <Typography semibold>Popover</Typography>
+            <Typography className="text-black-40">
+              Padding 12, radius 16, Background/3, a Surface/1 stroke and the
+              Glass 2 effect.
+            </Typography>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  ),
+}

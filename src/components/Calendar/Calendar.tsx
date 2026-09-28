@@ -2,8 +2,17 @@
 
 import { ArrowLineLeftIcon, ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
 import { differenceInCalendarDays } from 'date-fns'
-import { useCallback, useMemo, useState } from 'react'
 import {
+  createContext,
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useContext,
+  useState,
+} from 'react'
+import {
+  type ChevronProps,
+  type CustomComponents,
   DayPicker,
   type DayPickerProps,
   labelNext,
@@ -50,6 +59,277 @@ export type CalendarProps = DayPickerProps & {
   hiddenClassName?: string
 }
 
+type NavView = 'days' | 'years'
+
+type DisplayYears = {
+  from: number
+  to: number
+}
+
+type CalendarContextValue = {
+  navView: NavView
+  setNavView: Dispatch<SetStateAction<NavView>>
+  displayYears: DisplayYears
+  setDisplayYears: Dispatch<SetStateAction<DisplayYears>>
+  showYearSwitcher: boolean
+  startMonth?: Date
+  endMonth?: Date
+  onPrevClick?: (month: Date) => void
+  onNextClick?: (month: Date) => void
+}
+
+const CalendarContext = createContext<CalendarContextValue | null>(null)
+
+const useCalendarContext = () => {
+  const context = useContext(CalendarContext)
+  if (!context) {
+    throw new Error('Calendar components must be used within a Calendar.')
+  }
+  return context
+}
+
+const getSelectedMonth = (value: unknown): number => {
+  if (value instanceof Date) return value.getMonth()
+  if (Array.isArray(value) && value[0] instanceof Date) {
+    return value[0].getMonth()
+  }
+  if (
+    value &&
+    typeof value === 'object' &&
+    'from' in value &&
+    value.from instanceof Date
+  ) {
+    return value.from.getMonth()
+  }
+  return new Date().getMonth()
+}
+
+const isYearOutOfRange = (
+  date: Date,
+  startMonth?: Date,
+  endMonth?: Date,
+): boolean =>
+  Boolean(
+    (startMonth && differenceInCalendarDays(date, startMonth) < 0) ||
+      (endMonth && differenceInCalendarDays(date, endMonth) > 0),
+  )
+
+const CalendarChevron = ({ orientation }: ChevronProps) => {
+  const Icon = orientation === 'left' ? ArrowLineLeftIcon : ArrowLineRightIcon
+  return <Icon className="h-4 w-4" />
+}
+
+const CalendarNav: CustomComponents['Nav'] = ({ className }) => {
+  const {
+    navView,
+    displayYears,
+    setDisplayYears,
+    startMonth,
+    endMonth,
+    onPrevClick,
+    onNextClick,
+  } = useCalendarContext()
+  const { nextMonth, previousMonth, goToMonth } = useDayPicker()
+
+  const yearsCount = displayYears.to - displayYears.from + 1
+
+  const isPreviousDisabled =
+    navView === 'years'
+      ? isYearOutOfRange(
+          new Date(displayYears.from - 1, 0, 1),
+          startMonth,
+          endMonth,
+        )
+      : !previousMonth
+
+  const isNextDisabled =
+    navView === 'years'
+      ? isYearOutOfRange(
+          new Date(displayYears.to + 1, 0, 1),
+          startMonth,
+          endMonth,
+        )
+      : !nextMonth
+
+  const handlePreviousClick = useCallback(() => {
+    if (navView === 'years') {
+      setDisplayYears((prev) => ({
+        from: prev.from - (prev.to - prev.from + 1),
+        to: prev.to - (prev.to - prev.from + 1),
+      }))
+      onPrevClick?.(
+        new Date(
+          displayYears.from - (displayYears.to - displayYears.from),
+          0,
+          1,
+        ),
+      )
+      return
+    }
+    if (!previousMonth) return
+    goToMonth(previousMonth)
+    onPrevClick?.(previousMonth)
+  }, [
+    navView,
+    previousMonth,
+    goToMonth,
+    onPrevClick,
+    displayYears,
+    setDisplayYears,
+  ])
+
+  const handleNextClick = useCallback(() => {
+    if (navView === 'years') {
+      setDisplayYears((prev) => ({
+        from: prev.from + (prev.to - prev.from + 1),
+        to: prev.to + (prev.to - prev.from + 1),
+      }))
+      onNextClick?.(
+        new Date(
+          displayYears.from + (displayYears.to - displayYears.from),
+          0,
+          1,
+        ),
+      )
+      return
+    }
+    if (!nextMonth) return
+    goToMonth(nextMonth)
+    onNextClick?.(nextMonth)
+  }, [
+    navView,
+    nextMonth,
+    goToMonth,
+    onNextClick,
+    displayYears,
+    setDisplayYears,
+  ])
+
+  return (
+    <nav className={twMerge('flex items-center', className)}>
+      <Button
+        variant="outline"
+        className="absolute left-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
+        disabled={isPreviousDisabled}
+        aria-label={
+          navView === 'years'
+            ? `Go to the previous ${yearsCount} years`
+            : labelPrevious(previousMonth)
+        }
+        onClick={handlePreviousClick}
+      >
+        <ArrowLineLeftIcon className="h-4 w-4" />
+      </Button>
+
+      <Button
+        variant="outline"
+        className="absolute right-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
+        disabled={isNextDisabled}
+        aria-label={
+          navView === 'years'
+            ? `Go to the next ${yearsCount} years`
+            : labelNext(nextMonth)
+        }
+        onClick={handleNextClick}
+      >
+        <ArrowLineRightIcon className="h-4 w-4" />
+      </Button>
+    </nav>
+  )
+}
+
+const CalendarCaptionLabel: CustomComponents['CaptionLabel'] = ({
+  children,
+  ...props
+}) => {
+  const { navView, setNavView, displayYears, showYearSwitcher } =
+    useCalendarContext()
+
+  if (!showYearSwitcher) return <span {...props}>{children}</span>
+
+  return (
+    <Button
+      className="h-7 w-full truncate text-sm font-medium"
+      size="sm"
+      onClick={() => setNavView((prev) => (prev === 'days' ? 'years' : 'days'))}
+    >
+      {navView === 'days'
+        ? children
+        : `${displayYears.from} - ${displayYears.to}`}
+    </Button>
+  )
+}
+
+const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
+  className,
+  children,
+  ...props
+}) => {
+  const { navView, setNavView, displayYears, startMonth, endMonth } =
+    useCalendarContext()
+  const { goToMonth, selected } = useDayPicker()
+
+  if (navView !== 'years') {
+    return (
+      <table className={className} {...props}>
+        {children}
+      </table>
+    )
+  }
+
+  const currentYear = new Date().getFullYear()
+
+  return (
+    <div className={twMerge('grid grid-cols-4 gap-y-2', className)} {...props}>
+      {Array.from(
+        { length: displayYears.to - displayYears.from + 1 },
+        (_, i) => {
+          const year = displayYears.from + i
+          const isBefore = Boolean(
+            startMonth &&
+              differenceInCalendarDays(new Date(year, 11, 31), startMonth) < 0,
+          )
+          const isAfter = Boolean(
+            endMonth &&
+              differenceInCalendarDays(new Date(year, 0, 0), endMonth) > 0,
+          )
+
+          return (
+            <Button
+              key={year}
+              className={twMerge(
+                'h-7 w-full text-sm font-normal text-foreground',
+                year === currentYear &&
+                  'bg-accent font-medium text-accent-foreground',
+              )}
+              variant="outline"
+              onClick={() => {
+                setNavView('days')
+                goToMonth(new Date(year, getSelectedMonth(selected)))
+              }}
+              disabled={isBefore || isAfter}
+            >
+              {year}
+            </Button>
+          )
+        },
+      )}
+    </div>
+  )
+}
+
+const CalendarRoot: CustomComponents['Root'] = ({
+  className,
+  rootRef,
+  ...props
+}) => (
+  <div
+    ref={rootRef}
+    className={twMerge('p-4 rounded-2xl', className)}
+    {...props}
+  />
+)
+
 /**
  * A custom calendar component built on top of react-day-picker.
  * @param props The props for the calendar.
@@ -65,19 +345,14 @@ function Calendar({
   numberOfMonths,
   ...props
 }: CalendarProps) {
-  const [navView, setNavView] = useState<'days' | 'years'>('days')
-  const [displayYears, setDisplayYears] = useState<{
-    from: number
-    to: number
-  }>(
-    useMemo(() => {
-      const currentYear = new Date().getFullYear()
-      return {
-        from: currentYear - Math.floor(yearRange / 2 - 1),
-        to: currentYear + Math.ceil(yearRange / 2),
-      }
-    }, [yearRange]),
-  )
+  const [navView, setNavView] = useState<NavView>('days')
+  const [displayYears, setDisplayYears] = useState<DisplayYears>(() => {
+    const currentYear = new Date().getFullYear()
+    return {
+      from: currentYear - Math.floor(yearRange / 2 - 1),
+      to: currentYear + Math.ceil(yearRange / 2),
+    }
+  })
 
   const { onNextClick, onPrevClick, startMonth, endMonth } = props
 
@@ -170,255 +445,58 @@ function Calendar({
   const _hiddenClassName = twMerge('invisible flex-1', props.hiddenClassName)
 
   return (
-    <DayPicker
-      showOutsideDays={showOutsideDays}
-      showWeekNumber={false}
-      className={twMerge('p-3', className)}
-      classNames={{
-        months: _monthsClassName,
-        month_caption: _monthCaptionClassName,
-        weekdays: _weekdaysClassName,
-        weekday: _weekdayClassName,
-        month: _monthClassName,
-        caption: _captionClassName,
-        caption_label: _captionLabelClassName,
-        button_next: _buttonNextClassName,
-        button_previous: _buttonPreviousClassName,
-        nav: _navClassName,
-        month_grid: _monthGridClassName,
-        week: _weekClassName,
-        day: _dayClassName,
-        day_button: _dayButtonClassName,
-        range_start: _rangeStartClassName,
-        range_middle: _rangeMiddleClassName,
-        range_end: _rangeEndClassName,
-        selected: _selectedClassName,
-        today: _todayClassName,
-        outside: _outsideClassName,
-        disabled: _disabledClassName,
-        hidden: _hiddenClassName,
+    <CalendarContext.Provider
+      value={{
+        navView,
+        setNavView,
+        displayYears,
+        setDisplayYears,
+        showYearSwitcher,
+        startMonth,
+        endMonth,
+        onPrevClick,
+        onNextClick,
       }}
-      components={{
-        Chevron: ({ orientation }) => {
-          const Icon =
-            orientation === 'left' ? ArrowLineLeftIcon : ArrowLineRightIcon
-          return <Icon className="h-4 w-4" />
-        },
-        Nav: ({ className }) => {
-          const { nextMonth, previousMonth, goToMonth } = useDayPicker()
-
-          const isPreviousDisabled = (() => {
-            if (navView === 'years') {
-              return (
-                (startMonth &&
-                  differenceInCalendarDays(
-                    new Date(displayYears.from - 1, 0, 1),
-                    startMonth,
-                  ) < 0) ||
-                (endMonth &&
-                  differenceInCalendarDays(
-                    new Date(displayYears.from - 1, 0, 1),
-                    endMonth,
-                  ) > 0)
-              )
-            }
-            return !previousMonth
-          })()
-
-          const isNextDisabled = (() => {
-            if (navView === 'years') {
-              return (
-                (startMonth &&
-                  differenceInCalendarDays(
-                    new Date(displayYears.to + 1, 0, 1),
-                    startMonth,
-                  ) < 0) ||
-                (endMonth &&
-                  differenceInCalendarDays(
-                    new Date(displayYears.to + 1, 0, 1),
-                    endMonth,
-                  ) > 0)
-              )
-            }
-            return !nextMonth
-          })()
-
-          const handlePreviousClick = useCallback(() => {
-            if (!previousMonth) return
-            if (navView === 'years') {
-              setDisplayYears((prev) => ({
-                from: prev.from - (prev.to - prev.from + 1),
-                to: prev.to - (prev.to - prev.from + 1),
-              }))
-              onPrevClick?.(
-                new Date(
-                  displayYears.from - (displayYears.to - displayYears.from),
-                  0,
-                  1,
-                ),
-              )
-              return
-            }
-            goToMonth(previousMonth)
-            onPrevClick?.(previousMonth)
-          }, [previousMonth, goToMonth])
-
-          const handleNextClick = useCallback(() => {
-            if (!nextMonth) return
-            if (navView === 'years') {
-              setDisplayYears((prev) => ({
-                from: prev.from + (prev.to - prev.from + 1),
-                to: prev.to + (prev.to - prev.from + 1),
-              }))
-              onNextClick?.(
-                new Date(
-                  displayYears.from + (displayYears.to - displayYears.from),
-                  0,
-                  1,
-                ),
-              )
-              return
-            }
-            goToMonth(nextMonth)
-            onNextClick?.(nextMonth)
-          }, [goToMonth, nextMonth])
-          return (
-            <nav className={twMerge('flex items-center', className)}>
-              <Button
-                variant="outline"
-                className="absolute left-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
-                type="button"
-                disabled={isPreviousDisabled}
-                aria-label={
-                  navView === 'years'
-                    ? `Go to the previous ${
-                        displayYears.to - displayYears.from + 1
-                      } years`
-                    : labelPrevious(previousMonth)
-                }
-                onClick={handlePreviousClick}
-              >
-                <ArrowLineLeftIcon className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                className="absolute right-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
-                type="button"
-                disabled={isNextDisabled}
-                aria-label={
-                  navView === 'years'
-                    ? `Go to the next ${
-                        displayYears.to - displayYears.from + 1
-                      } years`
-                    : labelNext(nextMonth)
-                }
-                onClick={handleNextClick}
-              >
-                <ArrowLineRightIcon className="h-4 w-4" />
-              </Button>
-            </nav>
-          )
-        },
-        CaptionLabel: ({ children, ...props }) => {
-          if (!showYearSwitcher) return <span {...props}>{children}</span>
-          return (
-            <Button
-              className="h-7 w-full truncate text-sm font-medium"
-              size="sm"
-              onClick={() =>
-                setNavView((prev) => (prev === 'days' ? 'years' : 'days'))
-              }
-            >
-              {navView === 'days'
-                ? children
-                : `${displayYears.from} - ${displayYears.to}`}
-            </Button>
-          )
-        },
-        MonthGrid: ({ className, children, ...props }) => {
-          const { goToMonth, selected } = useDayPicker()
-          const getSelectedMonth = (value: unknown): number => {
-            if (value instanceof Date) return value.getMonth()
-            if (Array.isArray(value) && value[0] instanceof Date) {
-              return value[0].getMonth()
-            }
-            if (
-              value &&
-              typeof value === 'object' &&
-              'from' in value &&
-              value.from instanceof Date
-            ) {
-              return value.from.getMonth()
-            }
-            return new Date().getMonth()
-          }
-          if (navView === 'years') {
-            return (
-              <div
-                className={twMerge('grid grid-cols-4 gap-y-2', className)}
-                {...props}
-              >
-                {Array.from(
-                  { length: displayYears.to - displayYears.from + 1 },
-                  (_, i) => {
-                    const isBefore =
-                      differenceInCalendarDays(
-                        new Date(displayYears.from + i, 11, 31),
-                        // biome-ignore lint/style/noNonNullAssertion: it's necessary to use the startMonth
-                        startMonth!,
-                      ) < 0
-
-                    const isAfter =
-                      differenceInCalendarDays(
-                        new Date(displayYears.from + i, 0, 0),
-                        // biome-ignore lint/style/noNonNullAssertion: it's necessary to use the endMonth
-                        endMonth!,
-                      ) > 0
-
-                    const isDisabled = isBefore || isAfter
-                    return (
-                      <Button
-                        // biome-ignore lint/suspicious/noArrayIndexKey: it's necessary to use the index as a key
-                        key={i}
-                        className={twMerge(
-                          'h-7 w-full text-sm font-normal text-foreground',
-                          displayYears.from + i === new Date().getFullYear() &&
-                            'bg-accent font-medium text-accent-foreground',
-                        )}
-                        variant="outline"
-                        onClick={() => {
-                          setNavView('days')
-                          goToMonth(
-                            new Date(
-                              displayYears.from + i,
-                              getSelectedMonth(selected),
-                            ),
-                          )
-                        }}
-                        disabled={navView === 'years' ? isDisabled : undefined}
-                      >
-                        {displayYears.from + i}
-                      </Button>
-                    )
-                  },
-                )}
-              </div>
-            )
-          }
-          return (
-            <table className={className} {...props}>
-              {children}
-            </table>
-          )
-        },
-        Root: ({ className, ...props }) => (
-          <div className={twMerge(className, 'p-4 rounded-2xl')} {...props} />
-        ),
-      }}
-      numberOfMonths={columnsDisplayed}
-      {...props}
-    />
+    >
+      <DayPicker
+        showOutsideDays={showOutsideDays}
+        showWeekNumber={showWeekNumber}
+        className={className}
+        classNames={{
+          months: _monthsClassName,
+          month_caption: _monthCaptionClassName,
+          weekdays: _weekdaysClassName,
+          weekday: _weekdayClassName,
+          month: _monthClassName,
+          caption: _captionClassName,
+          caption_label: _captionLabelClassName,
+          button_next: _buttonNextClassName,
+          button_previous: _buttonPreviousClassName,
+          nav: _navClassName,
+          month_grid: _monthGridClassName,
+          week: _weekClassName,
+          day: _dayClassName,
+          day_button: _dayButtonClassName,
+          range_start: _rangeStartClassName,
+          range_middle: _rangeMiddleClassName,
+          range_end: _rangeEndClassName,
+          selected: _selectedClassName,
+          today: _todayClassName,
+          outside: _outsideClassName,
+          disabled: _disabledClassName,
+          hidden: _hiddenClassName,
+        }}
+        components={{
+          Chevron: CalendarChevron,
+          Nav: CalendarNav,
+          CaptionLabel: CalendarCaptionLabel,
+          MonthGrid: CalendarMonthGrid,
+          Root: CalendarRoot,
+        }}
+        numberOfMonths={columnsDisplayed}
+        {...props}
+      />
+    </CalendarContext.Provider>
   )
 }
 Calendar.displayName = 'Calendar'

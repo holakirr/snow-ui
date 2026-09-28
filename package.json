@@ -124,7 +124,7 @@
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
     "@vitest/coverage-v8": "^4.1.11",
-    "@vitest/ui": "^4.1.11",
+    "@vitest/ui": "^5.0.2",
     "better-commits": "^1.17.1",
     "esbuild": "^0.25.5",
     "jsdom": "^26.1.0",

@@ -1,0 +1,3 @@
+# Visual regression baselines (visual/__screenshots__) and other images:
+# never diffed as text or touched by line-ending conversion.
+*.png binary

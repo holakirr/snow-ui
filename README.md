@@ -63,7 +63,7 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 | Storybook tests ([`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon)) | `bun run test:storybook` | `storybook-tests` | a story throws while rendering or its `play` function (interaction test) fails, in the light or the dark theme |
 | Accessibility ([axe](https://github.com/dequelabs/axe-core) via `@storybook/addon-a11y`) | `bun run test:storybook` / Storybook's a11y panel | `storybook-tests` | axe finds a violation in any story, in either theme, after its `play` function (`a11y.test: 'error'`) |
 | Coverage ([V8](https://vitest.dev/guide/coverage)) | `bun run test:coverage` | `storybook-tests` | coverage of `packages/ui/src` by the ui unit tests and the Storybook tests drops below the thresholds in `vitest.config.ts` |
-| Visual regression (Playwright, in Docker) | `bun run visual` | `visual` | a story's screenshot (light or dark theme) differs from its baseline; skipped until baselines are committed |
+| Visual regression (Playwright, in Docker) | `bun run visual` | `visual` | a story's screenshot (light or dark theme) differs from its baseline in `visual/__screenshots__` (update them with `bun run visual:update`) |
 | Bundle size ([size-limit](https://github.com/ai/size-limit)) | `bun run size` | `size` | an entry point grows past its budget in `.size-limit.json` |
 | Changesets | `bun changeset status` | `changeset` | never: warns when a package changed without a changeset |
 

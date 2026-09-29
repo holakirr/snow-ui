@@ -60,6 +60,7 @@
     "playwright": "1.63.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "remark-gfm": "^4.0.1",
     "size-limit": "^14.1.0",
     "storybook": "^10.6.0",
     "tailwind-merge": "^3.7.0",

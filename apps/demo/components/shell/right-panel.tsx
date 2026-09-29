@@ -70,7 +70,12 @@ export const RightPanel = ({
       id={PANEL_ID}
       aria-label={label}
       hidden={!open}
-      className="hidden w-70 shrink-0 flex-col gap-6 border-s-[0.5px] border-black-10 p-5 xl:flex"
+      // Scrolls on its own when taller than the viewport: focusable, so the
+      // keyboard can scroll it too.
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region
+      tabIndex={0}
+      // Stays in view while the page scrolls, like the left sidebar.
+      className="sticky top-0 hidden h-svh w-70 shrink-0 flex-col gap-6 self-start overflow-y-auto border-s-[0.5px] border-black-10 p-5 xl:flex"
     >
       {children}
     </aside>

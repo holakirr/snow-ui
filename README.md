@@ -22,7 +22,7 @@ Requirements: [Bun](https://bun.sh) 1.3.11 (see `packageManager`). The repo uses
 bun install            # install all workspaces
 bun run lint           # biome check (one shared biome.json)
 bun run typecheck      # tsc for every package
-bun run test           # vitest for every package
+bun run test           # vitest for every package and the release scripts
 bun run tokens         # regenerate the ui token files from packages/ui/tokens (DTCG)
 bun run build          # tsdown build of icons, then ui, then charts (+ publint and attw checks)
 bun run test:dist      # checks of the built ui stylesheets and charts package (needs `bun run build`)

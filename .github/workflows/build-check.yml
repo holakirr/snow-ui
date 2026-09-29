@@ -70,6 +70,10 @@ jobs:
       - name: Unit tests (icons)
         run: bun run --filter @holakirr/snow-ui-icons test
 
+      # The release step's decisions (scripts/publish-plan.ts).
+      - name: Unit tests (scripts)
+        run: bun run test:scripts
+
       # Builds icons, then ui (ui's type declarations import icons' dist), then
       # charts. tsdown runs publint and are-the-types-wrong on every package.
       - name: Build packages

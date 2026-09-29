@@ -279,7 +279,12 @@ describe('Calendar', () => {
       screen.getByRole('button', { name: String(value) })
     const cell = (value: number) => year(value).closest('[role="gridcell"]')
 
-    const open = async (props: Partial<CalendarProps> = {}) => {
+    const open = async (
+      props: Pick<
+        CalendarProps,
+        'dir' | 'startMonth' | 'endMonth' | 'onNextClick'
+      > = {},
+    ) => {
       render(
         <Calendar
           mode="single"

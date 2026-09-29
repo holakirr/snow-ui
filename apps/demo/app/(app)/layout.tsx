@@ -1,5 +1,5 @@
-import { SidebarProvider } from '@holakirr/snow-ui'
-import { cookies } from 'next/headers'
+import { readSidebarState, SidebarProvider } from '@holakirr/snow-ui'
+import { headers } from 'next/headers'
 import type { ReactNode } from 'react'
 import { AppHeader } from '@/components/shell/app-header'
 import { AppSidebar } from '@/components/shell/app-sidebar'
@@ -7,21 +7,16 @@ import { RightPanel, RightPanelProvider } from '@/components/shell/right-panel'
 import { RightPanelContent } from '@/components/shell/right-panel-content'
 import { getRequestPreferences } from '@/lib/i18n/server'
 
-/**
- * `SidebarProvider` remembers the open state in this cookie and reads it in
- * its initial state on the client. Reading it here too, for `defaultOpen`,
- * makes the server render the same state (otherwise a collapsed sidebar
- * would hydrate with a mismatch). The library doesn't export the name.
- */
-const SIDEBAR_COOKIE = 'sidebar:state'
-
 /** The dashboard layout of the Figma kit: sidebar, header, content, right sidebar. */
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const [{ lang, dict }, store] = await Promise.all([
+  const [{ lang, dict }, requestHeaders] = await Promise.all([
     getRequestPreferences(),
-    cookies(),
+    headers(),
   ])
-  const defaultOpen = store.get(SIDEBAR_COOKIE)?.value !== 'false'
+  // `SidebarProvider` saves the open state in a cookie. Reading it here, for
+  // `defaultOpen`, makes the server render the sidebar the way the user left
+  // it (the browser would otherwise switch to it after hydration).
+  const defaultOpen = readSidebarState(requestHeaders.get('cookie')) ?? true
 
   return (
     <RightPanelProvider>

@@ -50,7 +50,8 @@ export type SnowUIProviderProps = {
 }
 
 export type SnowUIContextValue = {
-  messages: Messages
+  /** Every namespace: the provider's messages over the English defaults. */
+  messages: Required<Messages>
   locale?: Locale
   /** Undefined unless a provider sets it, so portals inherit `<html dir>`. */
   dir?: TextDirection
@@ -124,7 +125,8 @@ SnowUIProvider.displayName = 'SnowUIProvider'
  * `defaultMessages` without one). Use it to localize your own components
  * together with the library's.
  */
-export const useMessages = (): Messages => useContext(SnowUIContext).messages
+export const useMessages = (): Required<Messages> =>
+  useContext(SnowUIContext).messages
 
 /**
  * Everything the nearest `SnowUIProvider` sets: `messages`, `locale` and

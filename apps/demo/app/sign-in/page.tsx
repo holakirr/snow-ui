@@ -40,7 +40,7 @@ export default async function SignInPage() {
           asChild
           interactive
           icon={
-            <IconBox size={24} aria-hidden className="dark:invert">
+            <IconBox size={24} aria-hidden className="text-black">
               <SnowUIIcon />
             </IconBox>
           }
@@ -67,7 +67,7 @@ export default async function SignInPage() {
           className="flex w-full max-w-110 flex-col gap-6 p-6 md:p-10"
         >
           <div className="flex flex-col items-center gap-2 text-center">
-            <IconBox size={48} aria-hidden className="dark:invert">
+            <IconBox size={48} aria-hidden className="text-black">
               <SnowUIIcon />
             </IconBox>
             <Typography asChild size={24} semibold>

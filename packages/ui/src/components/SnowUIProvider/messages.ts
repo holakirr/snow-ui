@@ -7,9 +7,14 @@
  * Pass a translation (or part of one) to `SnowUIProvider`'s `messages`; a
  * component's own label prop (`closeLabel`, `clearLabel`, `aria-label`…)
  * wins over the provider.
+ *
+ * The namespaces added in 5.1 (`avatarGroup`, `charts`) are optional, so a
+ * translation typed as `Messages` before they existed still compiles; the
+ * English defaults fill them in, and `useMessages()` always returns every
+ * namespace (`Required<Messages>`). They become required in 6.0.
  */
 export type Messages = {
-  avatarGroup: {
+  avatarGroup?: {
     /** Screen-reader text of the "+N" avatar: the avatars not shown. */
     more: (count: number) => string
   }
@@ -47,7 +52,7 @@ export type Messages = {
    * The charts of `@holakirr/snow-ui-charts` (5.1 and later). Each has a
    * prop that wins over it.
    */
-  charts: {
+  charts?: {
     /** Shown instead of a chart without data (`emptyMessage`). */
     empty: string
     /** Announced while a chart loads (`loadingLabel`). */
@@ -133,11 +138,11 @@ export type Messages = {
 
 /** A partial translation: any namespace, and any message in it. */
 export type MessagesOverrides = {
-  [Namespace in keyof Messages]?: Partial<Messages[Namespace]>
+  [Namespace in keyof Messages]?: Partial<NonNullable<Messages[Namespace]>>
 }
 
 /** The English messages, used where no `SnowUIProvider` sets others. */
-export const defaultMessages: Messages = {
+export const defaultMessages: Required<Messages> = {
   avatarGroup: {
     more: (count) => `${count} more`,
   },
@@ -217,9 +222,9 @@ export const defaultMessages: Messages = {
  * optional fields can't blank a string.
  */
 export const mergeMessages = (
-  base: Messages,
+  base: Required<Messages>,
   overrides?: MessagesOverrides,
-): Messages => {
+): Required<Messages> => {
   if (!overrides) return base
   return Object.fromEntries(
     (Object.keys(base) as (keyof Messages)[]).map((namespace) => [
@@ -233,7 +238,7 @@ export const mergeMessages = (
         ),
       },
     ]),
-  ) as Messages
+  ) as Required<Messages>
 }
 
 /**

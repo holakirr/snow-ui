@@ -1,0 +1,176 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/API conventions" />
+
+# API conventions
+
+How the components' props are named and behave, across the library: what you can rely on everywhere, and where 5.x still differs from component to component. The differences are listed as they are today, with what changes and when: fixes that break nothing ship in 5.x; renames wait for 6.0, after a deprecation in 5.x (a development warning, the old name still working). Each component's page has its full props table.
+
+## Props in general
+
+- **`className`** merges with the component's classes through a `twMerge` that knows the kit's tokens, and yours win conflicts: `<Button className="px-8">` replaces the button's padding, `className="text-14"` its text style. Compound components take it on every part (`DialogContent`, `TabsTrigger`…).
+- **Everything else** that the component doesn't use goes to the element it renders: `id`, `aria-*`, `data-*`, event handlers, `style`. The props tables list the component's own props and those of the Radix part it wraps; each page names the element that gets the rest.
+- **`ref`** reaches the element the component renders (React 19 passes it as a prop). A few 5.0 prop types don't list it yet although the ref works (`Checkbox`, `Switch`, `SelectTrigger`, `DialogContent`, `Label`): the types are fixed in 5.x.
+- **Types** are exported next to each component: `ButtonProps`, `TabsListProps`, `CalendarProps`… The cva helpers some components are built with (`buttonVariants`, `toggleVariants`) are exported too, to style your own elements like them.
+- **Required props** are rare and marked with `*` in the tables: a `label` where the component has no other text (`Tag`), a `value` that ties a part to its root (`TabsTrigger`, `SelectItem`, `RadioGroupItem`), the data of a chart.
+
+## Controlled and uncontrolled state
+
+State follows Radix's naming everywhere, as a controlled prop, an uncontrolled default and a change callback:
+
+| State | Props | Components |
+| --- | --- | --- |
+| Value | `value` / `defaultValue` / `onValueChange` | `Tabs`, `Accordion`, `Select`, `RadioGroup`, `ToggleGroup`, `Slider` |
+| Open | `open` / `defaultOpen` / `onOpenChange` | `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, `SidebarProvider`, `Toast` |
+| Checked | `checked` / `defaultChecked` / `onCheckedChange` | `Checkbox`, `Switch`, menu checkbox items |
+| Pressed | `pressed` / `defaultPressed` / `onPressedChange` | `Toggle` |
+
+The callbacks get the new value, not an event. Pass the controlled prop to own the state, the default to let the component keep it.
+
+Components that differ, on purpose or for now:
+
+| Component | Today | Why, and what changes |
+| --- | --- | --- |
+| `Input`, `Textarea`, `InputSmall` | native `value` / `defaultValue` / `onChange(event)` | Native fields, kept native. |
+| `Search` | native `onChange(event)` plus `onValueChange(value)` | Both, so it works as a native field and like the Radix components. |
+| `CommandPalette` | `query` / `defaultQuery` / `onQueryChange` for the search text | The same pattern for a second value, next to `open`. |
+| `Calendar` | react-day-picker's `selected` / `onSelect` and `month` / `defaultMonth` / `onMonthChange` | The props of the underlying day picker, kept as they are. |
+| `Scheduler` | `currentDate` is controlled only; `onDateClick` and `onEventClick` are required | 6.0: a `defaultDate` and optional handlers (a breaking change). |
+| `Sidebar` | the mobile open state isn't controllable | Planned. |
+| `Toaster` | driven by `toast()` / `useToast()`, not by props | By design: one queue for the app. |
+
+## Composition: `asChild`
+
+A component that renders one element takes `asChild` to render its only child instead, e.g. a router link, and passes its classes, props, `ref` and event handlers to it. The component's own content (a Button's `label` and icons, a Link's arrow) goes inside the child.
+
+```tsx
+<Button asChild variant="filled" label="Docs">
+  <RouterLink to="/docs" />
+</Button>
+```
+
+- **Where:** `Button`, `Typography`, `IconText`, `ListItem`, `Link`, `BreadcrumbLink`, `PaginationLink`, `PaginationPrevious`, `PaginationNext`, `SidebarMenuButton`, `SidebarMenuSubButton`, `SidebarGroupLabel`, `SidebarGroupAction`, `SidebarMenuAction`, and every Radix part (`DialogTrigger`, `TabsTrigger`, `DropdownMenuTrigger`, `TooltipTrigger`…). Composite components that render several elements of their own (`Search`, `Calendar`, `Tag`) don't.
+- **Merging:** for the same prop the child's value wins, except `style`, which merges, and event handlers, which both run (the child's first). Classes merge with the child's last.
+- **Behaviour you can stop:** what a component does on an event (a `DialogTrigger` opening, a menu item closing its menu, `Search` clearing on Escape) runs after your handler and is skipped when your handler calls `event.preventDefault()`.
+- **Deprecated `as`:** `Button`, `Typography`, `IconText` and `ListItem` still take `as="a"`, with a development warning. Removed in 6.0: use `asChild` and move element props (`href`, `type`) to the child.
+
+The [Button page](?path=/docs/components-button--docs#composition-aschild) shows it in practice; the ui package README has the details.
+
+## Sizes
+
+Sizes follow the Figma kit's names for each component, which is why they aren't one scale:
+
+| Component | Prop | Values | Default |
+| --- | --- | --- | --- |
+| `Button`, `SidebarTrigger` | `size` | `sm`, `md`, `lg` (24, 36, 48px) | `sm` |
+| `Toggle`, `ToggleGroup`, `ToggleGroupItem` | `size` | `sm`, `md`, `lg` (the Button sizes) | `md` |
+| `TabsList` | `size` | `sm`, `md`, `lg` | `md` |
+| `Avatar` | `size` | `sm`, `md`, `lg` (24, 32, 64px) | `lg` |
+| `PaginationLink`, `PaginationPrevious`, `PaginationNext`, `PaginationEllipsis` | `size` | `sm`, `md`, `lg` | `sm` |
+| `Search` | `size` | `sm`, `lg` (28, 48px) | `sm` |
+| `Toast` and its parts | `size` | `sm`, `lg` | `sm` |
+| `SidebarMenuButton` | `size` | `default`, `sm`, `lg` | `default` |
+| `SidebarMenuSubButton` | `size` | `sm`, `md` | `md` |
+| `IconBox`, the icons | `size` | pixels (`16`, `20`, `24`…) | `24` |
+| `Typography`, `KBD`, menu shortcuts | `size` | a Figma text style (`12`, `14`, `16`…) | `14` (`KBD`: `12`) |
+| `Button` | `textSize` | a Figma text style, over the size's own | — |
+| `Strip` | `thickness` | pixels | `2` |
+
+Form fields (`Input`, `Textarea`, `Select`, `Checkbox`, `Switch`, `RadioGroup`, `Slider`) have one size, the Figma one; `InputSmall` is the kit's small field.
+
+**Planned for 6.0:** one scale for the box sizes (`sm` / `md` / `lg`, with `SidebarMenuButton`'s `default` renamed to `md`), the same default across components that sit side by side, and a `size` on the form fields. 5.x adds the new names first, with the old ones deprecated.
+
+## Variants
+
+| Component | Prop | Values | Default |
+| --- | --- | --- | --- |
+| `Button` | `variant` | `borderless`, `gray`, `outline`, `filled`, `bare` | `borderless` |
+| `Toggle`, `ToggleGroup` | `variant` | `borderless`, `outline`, `pill` | `borderless` |
+| `TabsList` | `variant` | `line`, `pill`, `icon-toggle`, `solid` | `line` |
+| `Search`, `InputSmall` | `variant` | `gray`, `outline` | `gray` |
+| `Link` | `variant` | `default`, `arrow`, `external` | `default` |
+| `Card` | `variant` | `default`, `block` | `default` |
+| `KBD`, menu shortcuts | `variant` | `solid`, `border` | `solid` |
+| `TooltipContent` | `variant` | `dark`, `light` | `dark` |
+| `Sidebar` | `variant` / `collapsible` | `sidebar`, `floating`, `inset` / `offcanvas`, `icon`, `none` | `sidebar` / `offcanvas` |
+| `SidebarMenuButton` | `variant` | `default`, `outline` | `default` |
+| `Tag` | `state` / `shape` | `default`, `active`, `static` / `default`, `arrow-start`, `arrow-end`, `arrow-left`, `arrow-right` | `default` |
+| `Separator` | `hairline` | boolean | `false` |
+
+The values are the Figma variant names where the kit has them. The same look has different names across components (a Toggle's on state is a Gray button; a Card's border is a boolean, `bordered`) and `Tag` splits its look over `state` and `shape`.
+
+**Planned for 6.0:** one name per look where components share it (`border` / `outline`), and variants as a `variant` prop where a boolean or a second prop does the job today, with the current names deprecated in 5.x.
+
+## Current, selected and disabled
+
+| Meaning | Prop | Components |
+| --- | --- | --- |
+| Disabled | `disabled` | every control (native or Radix); on Radix roots it disables the whole group |
+| The current item (navigation) | `isActive` | `PaginationLink`, `SidebarMenuButton`, `SidebarMenuSubButton` |
+| | `active` | `IconText`, `ListItem` |
+| | `state="active"` | `Tag` |
+| Selected (a choice the user made) | `selected` | `Card` |
+| Interactive (hover and focus styles) | `interactive` | `Card`, `IconText`, `ListItem` |
+
+The styles read these props, not `aria-current` or `aria-selected`: pass both when a router sets `aria-current` for you. `PaginationLink`'s `isActive` also sets `aria-current="page"`.
+
+**Planned for 6.0:** one prop for the current item, `active`, on every component above (`isActive` deprecated in 5.x).
+
+## Invalid state
+
+`FormItem` takes `error` (a message; truthy marks the field invalid) or `invalid`. `FormControl` then sets `aria-invalid` and `aria-describedby` (the description and the message) on the control, `FormLabel` turns red and `FormMessage` shows the error. Outside a form, set `aria-invalid` yourself. In 5.0 the fields themselves (`Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroup`) have no invalid style; one that reads `aria-invalid` is planned for 5.x.
+
+## Styling hooks: `data-*` attributes
+
+Style states from outside with Tailwind's data variants (`data-[state=open]:…`) or attribute selectors. The Radix parts set Radix's attributes:
+
+| Attribute | Values | On |
+| --- | --- | --- |
+| `data-state` | `open` / `closed` | the dialog, sheet, popover, menu, select and accordion parts |
+| | `checked` / `unchecked` / `indeterminate` | `Checkbox`, `Switch`, `RadioGroupItem`, menu checkbox and radio items |
+| | `on` / `off` | `Toggle`, `ToggleGroupItem` |
+| | `active` / `inactive` | `TabsTrigger`, `TabsContent` |
+| | `closed` / `delayed-open` / `instant-open` | `TooltipContent` |
+| `data-disabled` | present | disabled Radix parts |
+| `data-highlighted` | present | the focused item of a menu or select |
+| `data-orientation` | `horizontal` / `vertical` | `Tabs`, `Slider`, `Separator`, `Accordion`; `ToggleGroup` and `RadioGroup` when `orientation` is set |
+| `data-side`, `data-align` | `top` / `right` / `bottom` / `left`, `start` / `center` / `end` | floating content (popover, menus, tooltip, select) |
+| `data-placeholder` | present | `SelectTrigger` while nothing is selected |
+
+The library adds its own:
+
+| Attribute | Values | On |
+| --- | --- | --- |
+| `data-active` | `true` (the sidebar buttons also render `false`) | `IconText`, `ListItem`, `PaginationLink`, `SidebarMenuButton`, `SidebarMenuSubButton`, `CommandPalette` items |
+| `data-state` | `selected` | `Card` with `selected`; `TableRow` styles it too |
+| | `filled` / `empty` | `Strip` segments |
+| | `expanded` / `collapsed` | `Sidebar` |
+| `data-variant` | the variant | `TabsList`, `ToggleGroup`, `Search`, `TooltipContent`, `Sidebar` |
+| `data-size` | the size | `IconBox`, `Search`, `SidebarMenuButton`, `SidebarMenuSubButton` |
+| `data-side` | `left` / `right` (physical) | `SheetContent`, `Sidebar` |
+| `data-collapsible`, `data-mobile` | the mode | `Sidebar` |
+| `data-static` | present | a read-only `Input` |
+| `data-slot` | `input`, `checkbox-mark`, `badge`, `calendar-caption`, `calendar-header` | inner elements of `Input`, `Checkbox`, `IconBox`, `Calendar` |
+| `data-sidebar` | the part's name | every `Sidebar*` part |
+
+The attributes in these tables are part of the public API: renaming or removing one is a breaking change. Classes and the DOM structure inside a component are not.
+
+## Built-in text and labels
+
+Every string a component renders on its own comes from the `SnowUIProvider` messages (see [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs)), and a prop on the component wins over them. Most of those props are named `…Label` after what they name: `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `loadingLabel` (`CommandPalette`), `todayLabel` and `lastSelectionLabel` (`Calendar`), `thumbLabels` (`Slider`). The others: `label` names the component itself (`CommandPalette`, `BreadcrumbEllipsis`, `PaginationEllipsis`); `Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger` and `Badge` take a plain `aria-label`; `placeholder` and `emptyMessage` keep their usual names.
+
+**Planned for 6.0:** `…Label` everywhere a component names one of its own elements.
+
+## Accessible names you provide
+
+Components without text need a name from you: icon-only buttons and toggles (`aria-label`), icon-only tabs (`TabsTrigger` warns in development without one), `Checkbox`, `Switch`, `Slider` and `Select` without a visible `Label` (use `<Label htmlFor>` or `aria-label`), and several tab lists or groups on one page (`aria-label` on `TabsList`, `Group`). Charts warn in development when they have no `title`, `aria-label` or `aria-labelledby`.
+
+## Deprecated in 5.x, removed in 6.0
+
+| Component | Deprecated | Use |
+| --- | --- | --- |
+| `Button`, `Tag`, `DialogHeader` | `leftContent`, `rightContent` | `startContent`, `endContent` (they follow the text direction) |
+| `Tag` | `onClose` | `onRemove` |
+| `Button`, `Typography`, `IconText`, `ListItem` | `as` | `asChild` |
+
+Each logs one development warning, once per page load.

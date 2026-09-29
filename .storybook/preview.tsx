@@ -66,7 +66,15 @@ const preview: Preview = {
       storySort: {
         order: [
           'Guides',
-          ['Getting started', 'Theming', 'Localization and RTL'],
+          [
+            'Getting started',
+            'API conventions',
+            'Theming',
+            'Localization and RTL',
+            'Next.js App Router',
+            'Vite',
+            'React Router 7',
+          ],
           'Foundations',
           'Components',
           'Charts',

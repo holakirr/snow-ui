@@ -37,6 +37,7 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
+  rmSync,
   statSync,
   writeFileSync,
 } from 'node:fs'
@@ -44,6 +45,7 @@ import { createServer, type Server } from 'node:http'
 import { tmpdir } from 'node:os'
 import { dirname, extname, join, relative, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
+import { gzipSync } from 'node:zlib'
 import { buildRegistry, shadcnBin } from '../src/build'
 import { loadConfig } from '../src/cli'
 import { createPlan, type Manifest } from '../src/plan'
@@ -64,6 +66,8 @@ const repoRoot = resolve(import.meta.dirname, '../../..')
 const HEADER_MARK = 'SnowUI for React ('
 
 interface Context {
+  /** Measurements for the summary. */
+  notes: string[]
   work: string
   registryUrl: string
   manifest: Manifest
@@ -434,6 +438,49 @@ function checkCss(css: string, where: string) {
   console.log(`  ${where}: tokens, fonts, dark scopes and utilities OK`)
 }
 
+const kB = (bytes: number) => `${(bytes / 1000).toFixed(1)} kB`
+
+/**
+ * The CSS the app's stylesheet compiles to with the Tailwind CLI, as it is
+ * (the base item's theme-core.css) and with theme.css instead, which adds
+ * the classes of every npm component: what a project that copies few
+ * components saves.
+ */
+async function measureTheme(ctx: Context, app: string, stylesheet: string) {
+  const source = readFileSync(join(app, stylesheet), 'utf8')
+  assert(
+    source.includes('@import "@holakirr/snow-ui/theme-core.css"'),
+    `${stylesheet} doesn't import theme-core.css`,
+  )
+  const variants = {
+    'theme-core.css': source,
+    'theme.css': source.replace('/theme-core.css"', '/theme.css"'),
+  }
+  const sizes: Record<string, { raw: number; gzip: number }> = {}
+  for (const [name, css] of Object.entries(variants)) {
+    const input = join(app, `measure-${name}`)
+    const output = join(ctx.work, `measure-${name}`)
+    writeFileSync(
+      input,
+      css.replaceAll('@import "./', `@import "./${dirname(stylesheet)}/`),
+    )
+    await run(
+      join(repoRoot, 'node_modules/.bin/tailwindcss'),
+      ['-i', input, '-o', output, '--minify'],
+      { cwd: app, env: ctx.env, quiet: true },
+    )
+    rmSync(input)
+    const built = readFileSync(output)
+    sizes[name] = { raw: built.length, gzip: gzipSync(built).length }
+  }
+  const core = sizes['theme-core.css']
+  const full = sizes['theme.css']
+  const note = `${relative(ctx.work, app)}, one copied Button: theme-core.css → ${kB(core.raw)} (${kB(core.gzip)} gzip), theme.css → ${kB(full.raw)} (${kB(full.gzip)} gzip)`
+  console.log(`  ${note}`)
+  ctx.notes.push(note)
+  assert(core.raw < full.raw / 2, 'theme-core.css saves less than expected')
+}
+
 const addEverything = (ctx: Context, app: string) =>
   shadcn(ctx, app, 'add', '@snow-ui/all', '@snow-ui/snow-ui-charts', '--yes')
 
@@ -446,6 +493,8 @@ async function smokeNext(ctx: Context) {
   )
   assert(components.style === 'radix-nova', `style is ${components.style}`)
   assert(components.registries?.['@snow-ui'], 'no @snow-ui registry')
+  await shadcn(ctx, app, 'add', '@snow-ui/button', '--yes')
+  await measureTheme(ctx, app, 'src/app/globals.css')
   await addEverything(ctx, app)
   checkSources(ctx, app, true)
   writeFileSync(join(app, 'src/smoke.tsx'), smokePage(ctx.manifest, true))
@@ -480,6 +529,8 @@ async function smokeVite(ctx: Context) {
   log('vite: create-vite + Tailwind, shadcn init (SnowUI base), add every item')
   const app = await createVite(ctx)
   await shadcn(ctx, app, 'init', `${ctx.registryUrl}/snow-ui.json`, '--yes')
+  await shadcn(ctx, app, 'add', '@snow-ui/button', '--yes')
+  await measureTheme(ctx, app, 'src/index.css')
   await addEverything(ctx, app)
   checkSources(ctx, app, false)
   writeFileSync(join(app, 'src/smoke.tsx'), smokePage(ctx.manifest, false))
@@ -542,7 +593,7 @@ async function smokeExistingShadcn(ctx: Context) {
     globals,
     readFileSync(globals, 'utf8').replace(
       '@import "tailwindcss";',
-      '@import "tailwindcss";\n@import "@holakirr/snow-ui/theme.css";\n@import "@holakirr/snow-ui/fonts.css";',
+      '@import "tailwindcss";\n@import "@holakirr/snow-ui/theme-core.css";\n@import "@holakirr/snow-ui/fonts.css";',
     ),
   )
   writeFileSync(join(app, 'src/smoke.tsx'), smokePage(ctx.manifest, true))
@@ -597,6 +648,7 @@ async function main() {
     registryUrl,
     manifest: createPlan(config, configDir).manifest,
     tarballs: {},
+    notes: [],
     env: {
       ...process.env,
       CI: '1',
@@ -662,6 +714,7 @@ async function main() {
     `${ctx.manifest.items.length} items, shadcn ${shadcnVersion}, ${source}`,
     '',
     ...results.map(([app, result]) => `- **${app}**: ${result}`),
+    ...(ctx.notes.length ? ['', ...ctx.notes.map((note) => `- ${note}`)] : []),
   ].join('\n')
   console.log(`\n${summary}`)
   if (process.env.GITHUB_STEP_SUMMARY) {

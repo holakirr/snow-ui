@@ -45,6 +45,8 @@ import '@holakirr/snow-ui/index.css'
 @import "@holakirr/snow-ui/theme.css";
 ```
 
+If you don't render the package's components — you copy them from the [`@snow-ui` registry](https://snow-ui.holakirr.com/?path=/docs/guides-registry--docs), or only use the tokens — import `@holakirr/snow-ui/theme-core.css` instead: the same theme without that `@source`, so Tailwind doesn't generate the classes of every component.
+
 `theme.css` is the same theme without Tailwind itself: the design tokens as theme variables (so `bg-black-10`, `text-14` or `rounded-12` work in your own markup), the theme scopes, the `dark` variant, the `glass*` and `focus-ring` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). Your Tailwind generates one set of utilities for your code and the components, instead of two copies of preflight and overlapping utilities. Import one of the two stylesheets, not both. Note that `theme.css` redefines `dark:` to follow [scoped themes](#scoped-themes) (`data-theme` or the `light` / `dark` classes, then the OS preference) and overrides Tailwind's `--font-sans`, `--color-black` and `--color-white`. With a [prefix](https://tailwindcss.com/docs/styling-with-utility-classes#using-the-prefix-option) (`@import "tailwindcss" prefix(tw)`), use `index.css` instead: the components' classes are unprefixed, so your Tailwind wouldn't generate them.
 
 **Cascade layers.** Both stylesheets keep every rule in Tailwind's cascade layers (`theme`, `base`, `components`, `utilities`; react-day-picker's stylesheet is in `components`), so your own unlayered CSS overrides them whatever the load order or specificity, and your utilities override the base and component rules.

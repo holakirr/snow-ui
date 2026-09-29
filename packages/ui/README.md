@@ -124,6 +124,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 - **Spacing:** the Figma spacing and size values are multiples of 4px, so Tailwind's spacing utilities (`p-1` = 4px, `gap-3` = 12px, `size-10` = 40px) cover them.
 - **Cursors:** a base rule gives buttons and ARIA controls (`option`, `menuitem`, `tab`, `radio`, `checkbox`, `switch`, `label[for]`…) the pointer cursor, which Tailwind v4's preflight no longer sets, and disabled elements (`:disabled`, `aria-disabled="true"`, `data-disabled`) the not-allowed cursor. `cursor-*` utilities override it.
 - **Focus:** the `focus-ring` utility is the keyboard focus indicator of every component: on `:focus-visible` it draws the Figma "Focus" ring (`ring-4 ring-focus`) plus a 2px `black-80` outline offset by 2px. Use it on your own focusable elements: `<button className="focus-ring">`.
+- **Motion:** with the OS setting `prefers-reduced-motion: reduce`, the overlays fade instead of sliding or zooming, the Accordion opens at once, and the Skeleton pulse, the Button press, the Switch thumb, the Dialog zoom and the Accordion chevron stop moving (WCAG 2.3.3). Storybook's Foundations › Motion page lists the animation tokens.
 - **Effects:** `shadow-1`, `shadow-2`, `shadow-glow`, `shadow-glass-1`, `shadow-glass-2`, `inset-shadow-inner`, the Figma focus ring `ring-4 ring-focus` (or `shadow-focus`), the background blurs `backdrop-blur-bg-40` (20px) and `backdrop-blur-bg-100` (50px), and `glass` / `glass-1` / `glass-2`, which approximate Figma's Glass effects with a fill, a background blur and a shadow.
 
 Inter itself is opt-in: import `@holakirr/snow-ui/fonts.css` (see [Installation](#installation)) or load a build with the `ss01` / `cv01` features yourself.
@@ -357,7 +358,7 @@ Components are documented in Storybook with examples and props documentation. Vi
 
 ## Testing
 
-- Storybook stories are tests too: every story is rendered in Chromium in both themes, checked with axe, and many have `play` interaction tests (keyboard, focus, selection)
+- Storybook stories are tests too: every story is rendered in Chromium in both themes and once more with the OS asking for more contrast and reduced motion, checked with axe, and many have `play` interaction tests (keyboard, focus, selection)
 - Unit tests are written using Vitest and React Testing Library
 - Visual regression tests screenshot every story in both themes with Playwright, in Docker, and compare the shots with the committed Linux baselines (`bun run visual` / `bun run visual:update` from the repository root; see CONTRIBUTING.md)
 - Unit tests cover most components (see the `*.test.tsx` files next to them), the toast store, the date utils and the design tokens; more are welcome

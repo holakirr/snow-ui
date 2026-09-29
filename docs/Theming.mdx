@@ -68,6 +68,10 @@ The theme is light by default. It is dark:
 
 In this Storybook, the theme toolbar switches every story; stories named "Dark" pin the dark theme.
 
+## Motion
+
+With the OS setting `prefers-reduced-motion: reduce` (WCAG 2.3.3), the overlays — Dialog and Sheet backdrops, Sheet, Popover, menus, Select, Tooltip, Toast, CommandPalette — fade instead of sliding or zooming, with the same timing, and the Accordion opens and closes at once: `theme.css` points the `--animate-*` tokens at the fades (see [Foundations › Motion](?path=/story/foundations--motion)). The components' own movements use `motion-reduce:` utilities: a pressed Button doesn't shrink, the Switch thumb and the Accordion chevron jump, a Dialog only fades and the Skeleton stops pulsing. State changes stay visible. Use the `animate-*` tokens and `motion-reduce:` in your own components the same way.
+
 ## Tailwind CSS v4 projects: `theme.css`
 
 `theme.css` is the theme without Tailwind itself: the tokens as theme variables, the theme scopes, the `dark` variant, the `glass*` and `focus-ring` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). `index.css` is the same compiled with Tailwind, for projects without it.
@@ -82,6 +86,7 @@ It adds the package's built components to Tailwind's sources itself (`@source`, 
 What it changes in your Tailwind setup:
 
 - `dark:` follows the scoped themes (`data-theme` or the `light` / `dark` classes, then the OS preference) instead of only `prefers-color-scheme`.
+- With `prefers-reduced-motion: reduce`, the theme's `--animate-slide-*` and `--animate-zoom-*` tokens fade and `--animate-accordion-*` don't animate.
 - It overrides Tailwind's `--font-sans` (Inter), `--color-black` and `--color-white` (which swap in dark mode).
 - It adds the kit's scales next to Tailwind's: `text-12`…, `rounded-4`…, the colours above.
 

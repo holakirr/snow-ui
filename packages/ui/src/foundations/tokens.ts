@@ -137,3 +137,103 @@ export const glass: { utility: string; figma: string; recipe: string }[] = [
     recipe: 'Same as glass-2',
   },
 ]
+
+/**
+ * The animation tokens of theme.css (`--animate-*`, `animate-*` utilities)
+ * and what they become with reduced motion (`prefers-reduced-motion:
+ * reduce`); the utilities are written out so Tailwind generates them.
+ * `theme.test.ts` checks the list against theme.css.
+ */
+export const animations: {
+  utility: string
+  /** The keyframes it runs. */
+  keyframes: string
+  /** The keyframes with reduced motion (`none`: it doesn't animate). */
+  reduced: string
+  usedBy: string
+}[] = [
+  {
+    utility: 'animate-in',
+    keyframes: 'animate-in',
+    reduced: 'animate-in',
+    usedBy: 'Overlays: fade in',
+  },
+  {
+    utility: 'animate-out',
+    keyframes: 'animate-out',
+    reduced: 'animate-out',
+    usedBy: 'Overlays: fade out',
+  },
+  {
+    utility: 'animate-slide-in-from-top',
+    keyframes: 'slide-in-from-top',
+    reduced: 'animate-in',
+    usedBy: 'Sheet, Popover, menus, Select, Tooltip',
+  },
+  {
+    utility: 'animate-slide-out-to-top',
+    keyframes: 'slide-out-to-top',
+    reduced: 'animate-out',
+    usedBy: 'Sheet',
+  },
+  {
+    utility: 'animate-slide-in-from-right',
+    keyframes: 'slide-in-from-right',
+    reduced: 'animate-in',
+    usedBy: 'Sheet, Popover, menus, Select, Tooltip',
+  },
+  {
+    utility: 'animate-slide-out-to-right',
+    keyframes: 'slide-out-to-right',
+    reduced: 'animate-out',
+    usedBy: 'Sheet',
+  },
+  {
+    utility: 'animate-slide-in-from-bottom',
+    keyframes: 'slide-in-from-bottom',
+    reduced: 'animate-in',
+    usedBy: 'Sheet, Toast, Popover, menus, Select, Tooltip',
+  },
+  {
+    utility: 'animate-slide-out-to-bottom',
+    keyframes: 'slide-out-to-bottom',
+    reduced: 'animate-out',
+    usedBy: 'Sheet, Toast',
+  },
+  {
+    utility: 'animate-slide-in-from-left',
+    keyframes: 'slide-in-from-left',
+    reduced: 'animate-in',
+    usedBy: 'Sheet, Popover, menus, Select, Tooltip',
+  },
+  {
+    utility: 'animate-slide-out-to-left',
+    keyframes: 'slide-out-to-left',
+    reduced: 'animate-out',
+    usedBy: 'Sheet',
+  },
+  {
+    utility: 'animate-zoom-in-95',
+    keyframes: 'zoom-in-95',
+    reduced: 'animate-in',
+    usedBy: 'Popover, Select, Tooltip',
+  },
+  {
+    utility: 'animate-zoom-out-95',
+    keyframes: 'zoom-out-95',
+    reduced: 'animate-out',
+    usedBy: 'Popover, Select, Tooltip',
+  },
+  {
+    utility: 'animate-accordion-down',
+    keyframes: 'accordion-down',
+    reduced: 'none',
+    usedBy: 'Accordion: opens',
+  },
+  {
+    utility: 'animate-accordion-up',
+    keyframes: 'accordion-up',
+    reduced: 'none',
+    usedBy: 'Accordion: closes',
+  },
+]

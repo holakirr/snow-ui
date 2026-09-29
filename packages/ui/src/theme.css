@@ -335,6 +335,35 @@
       translate: calc(250% * var(--progress-direction, 1)) 0;
     }
   }
+
+  /*
+   * Reduced motion (WCAG 2.3.3, the OS "reduce motion" setting): the
+   * animation tokens above stop moving things. Overlays (Dialog and Sheet
+   * backdrops, Sheet, Popover, menus, Select, Tooltip, Toast, CommandPalette)
+   * fade instead of sliding or zooming, with the same timing, so their state
+   * changes stay visible and Radix still waits for the exit animation; the
+   * Accordion opens and closes at once. The transitions of position, size or
+   * scale that components set with utilities (the Button press, the Switch
+   * thumb, the Dialog zoom, the Accordion chevron) and the Skeleton pulse use
+   * `motion-reduce:` utilities in the components.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    :root,
+    :host {
+      --animate-accordion-down: none;
+      --animate-accordion-up: none;
+      --animate-slide-in-from-top: var(--animate-in);
+      --animate-slide-in-from-right: var(--animate-in);
+      --animate-slide-in-from-left: var(--animate-in);
+      --animate-slide-in-from-bottom: var(--animate-in);
+      --animate-slide-out-to-top: var(--animate-out);
+      --animate-slide-out-to-right: var(--animate-out);
+      --animate-slide-out-to-left: var(--animate-out);
+      --animate-slide-out-to-bottom: var(--animate-out);
+      --animate-zoom-in-95: var(--animate-in);
+      --animate-zoom-out-95: var(--animate-out);
+    }
+  }
 }
 
 @layer components {

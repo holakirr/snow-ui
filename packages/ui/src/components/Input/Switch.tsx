@@ -27,7 +27,7 @@ const Switch: FC<SwitchProps> = ({ className, ...props }) => (
     )}
     {...props}
   >
-    <SwitchPrimitives.Thumb className="pointer-events-none block size-3 rounded-full bg-static-white shadow-2 transition-transform data-[state=checked]:translate-x-3 rtl:data-[state=checked]:-translate-x-3 data-[state=unchecked]:translate-x-0" />
+    <SwitchPrimitives.Thumb className="pointer-events-none block size-3 rounded-full bg-static-white shadow-2 transition-transform data-[state=checked]:translate-x-3 rtl:data-[state=checked]:-translate-x-3 data-[state=unchecked]:translate-x-0 motion-reduce:transition-none" />
   </SwitchPrimitives.Root>
 )
 Switch.displayName = SwitchPrimitives.Root.displayName

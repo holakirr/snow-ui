@@ -1,8 +1,17 @@
 import type { CSSProperties, ReactNode } from 'react'
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '../components/Accordion'
+import { Switch } from '../components/Input'
+import { Skeleton } from '../components/Skeleton'
 import { Typography } from '../components/Text'
 import { twMerge } from '../utils/tw-merge'
 import {
+  animations,
   blurs,
   type ColorToken,
   colorGroups,
@@ -522,6 +531,77 @@ export const EffectsPage = () => (
             </span>
           </div>
         ))}
+      </div>
+    </Section>
+  </Page>
+)
+
+export const MotionPage = () => (
+  <Page
+    title="Motion"
+    intro={
+      <>
+        The animation tokens of <Code>theme.css</Code> and what they become when
+        the OS asks for reduced motion (
+        <Code>prefers-reduced-motion: reduce</Code>, WCAG 2.3.3). Overlays then
+        fade instead of sliding or zooming, with the same timing, so their state
+        changes stay visible; the Accordion opens at once. Components that move
+        with Tailwind utilities use <Code>motion-reduce:</Code>: the Button
+        press, the Switch thumb, the Dialog zoom, the Accordion chevron and the
+        Skeleton pulse.
+      </>
+    }
+  >
+    <Section title="Animation tokens">
+      <Table
+        label="Animation tokens"
+        head={[
+          ['Utility', 'w-[30%]'],
+          ['Keyframes', 'w-[22%]'],
+          ['Reduced motion', 'w-[18%]'],
+          ['Used by', ''],
+        ]}
+      >
+        {animations.map(({ utility, keyframes, reduced, usedBy }) => (
+          <Row key={utility}>
+            <Cell>
+              <div className="flex items-center gap-3">
+                {/* Runs once when the page opens (the play test reads it). */}
+                <span
+                  data-motion={utility}
+                  className={twMerge(
+                    'size-6 shrink-0 overflow-hidden rounded-8 bg-color-2',
+                    utility,
+                  )}
+                />
+                <Code>{utility}</Code>
+              </div>
+            </Cell>
+            <Cell>
+              <Code>{keyframes}</Code>
+            </Cell>
+            <Cell>
+              <Code>{reduced}</Code>
+            </Cell>
+            <Cell className="text-black-80">{usedBy}</Cell>
+          </Row>
+        ))}
+      </Table>
+    </Section>
+
+    <Section
+      title="Components"
+      description="With reduced motion the Skeleton stops pulsing, the Switch thumb and the Accordion chevron jump instead of sliding and turning, a Dialog only fades in and a pressed Button doesn't shrink."
+    >
+      <div className="flex flex-wrap items-center gap-8 rounded-24 bg-background-2 p-6">
+        <Skeleton data-motion="skeleton" className="h-10 w-40" />
+        <Switch data-motion="switch" aria-label="Notifications" />
+        <Accordion type="single" collapsible className="w-64">
+          <AccordionItem value="details">
+            <AccordionTrigger data-motion="accordion">Details</AccordionTrigger>
+            <AccordionContent>It opens without animating.</AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     </Section>
   </Page>

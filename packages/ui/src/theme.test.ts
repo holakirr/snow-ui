@@ -3,10 +3,11 @@ import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { compile } from 'tailwindcss'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { animations } from './foundations/tokens'
 
-// Theme scopes, checked on the compiled CSS: which rules declare the tokens
-// for `data-theme`, the `light` / `dark` classes and the OS preference, and
-// which elements `dark:` matches.
+// Theme scopes and reduced motion, checked on the compiled CSS: which rules
+// declare the tokens for `data-theme`, the `light` / `dark` classes and the
+// OS preferences, and which elements `dark:` matches.
 
 const require = createRequire(import.meta.url)
 
@@ -89,6 +90,7 @@ const parse = (css: string) => {
 }
 
 const DARK_QUERY = '@media (prefers-color-scheme: dark)'
+const MOTION_QUERY = '@media (prefers-reduced-motion: reduce)'
 
 let rules: Rule[]
 let css: string
@@ -337,5 +339,40 @@ describe('theme scopes (compiled index.css)', () => {
       setScope(html, null)
       document.body.replaceChildren()
     })
+  })
+})
+
+describe('reduced motion (compiled index.css)', () => {
+  it('fades instead of sliding or zooming, and stops the Accordion', async () => {
+    const theme = await readFile(join(import.meta.dirname, 'theme.css'), 'utf8')
+    const block = theme.slice(theme.indexOf('@theme {'))
+    const tokens = new Map(
+      [
+        ...block
+          .slice(0, block.indexOf('}'))
+          .matchAll(/^\s*(--animate-[\w-]+): ([\w-]+) /gm),
+      ].map(([, name, keyframes]) => [name, keyframes]),
+    )
+    const reduced = rule(':root, :host', [
+      '@layer base',
+      MOTION_QUERY,
+    ]).declarations
+
+    // The Foundations "Motion" page lists every animation token.
+    expect(animations.map(({ utility }) => `--${utility}`).sort()).toEqual(
+      [...tokens.keys()].sort(),
+    )
+    for (const { utility, keyframes, reduced: to } of animations) {
+      const name = `--${utility}`
+      expect(tokens.get(name), name).toBe(keyframes)
+      // Fades stay; the rest fade (`var(--animate-in)`) or stop (`none`).
+      expect(reduced.get(name), name).toBe(
+        to === keyframes ? undefined : to === 'none' ? 'none' : `var(--${to})`,
+      )
+    }
+    expect(reduced.size).toBe(
+      animations.filter(({ keyframes, reduced: to }) => to !== keyframes)
+        .length,
+    )
   })
 })

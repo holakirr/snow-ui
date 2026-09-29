@@ -96,7 +96,8 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
 const buttonVariants = cva(
   [
     'group inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal text-black transition-all',
-    'cursor-pointer focus-ring active:scale-95',
+    // The press scale is motion: none with reduced motion.
+    'cursor-pointer focus-ring active:scale-95 motion-reduce:active:scale-100',
     'disabled:cursor-not-allowed disabled:scale-100 disabled:text-black-20',
   ],
   {

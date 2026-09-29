@@ -50,6 +50,8 @@ export const Invalid: Story = {
     const textarea = canvas.getByRole('textbox', { name: 'Message' })
 
     await expect(textarea).toBeInvalid()
-    await expect(await hasInsetRing(textarea, 'text-red', '1px')).toBe(true)
+    await expect(
+      await hasInsetRing(textarea, 'text-control-border-invalid', '1px'),
+    ).toBe(true)
   },
 }

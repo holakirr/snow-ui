@@ -254,6 +254,8 @@ export const Invalid: Story = {
     const trigger = canvas.getByRole('combobox', { name: 'Fruit' })
 
     await expect(trigger).toBeInvalid()
-    await expect(await hasInsetRing(trigger, 'text-red', '1px')).toBe(true)
+    await expect(
+      await hasInsetRing(trigger, 'text-control-border-invalid', '1px'),
+    ).toBe(true)
   },
 }

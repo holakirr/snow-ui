@@ -62,6 +62,8 @@ export const Invalid: Story = {
     const control = canvas.getByRole('switch')
 
     await expect(control).toBeInvalid()
-    await expect(await hasInsetRing(control, 'text-red', '1px')).toBe(true)
+    await expect(
+      await hasInsetRing(control, 'text-control-border-invalid', '1px'),
+    ).toBe(true)
   },
 }

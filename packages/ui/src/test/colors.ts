@@ -21,7 +21,7 @@ export const settledColor = async (element: HTMLElement): Promise<string> => {
 
 /**
  * Whether `element` has an inset ring (Tailwind `inset-ring-*`, a stroke) of
- * `width` in the colour of `colorClass` (e.g. `text-red`), once its CSS
+ * `width` in the colour of `colorClass` (e.g. `text-control-border-invalid`), once its CSS
  * transitions have ended.
  */
 export const hasInsetRing = async (

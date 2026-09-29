@@ -168,11 +168,15 @@ export const Invalid: Story = {
     const field = input.closest('[data-slot="input"]') as HTMLElement
 
     await expect(input).toBeInvalid()
-    await expect(await hasInsetRing(field, 'text-red', '1px')).toBe(true)
+    await expect(
+      await hasInsetRing(field, 'text-control-border-invalid', '1px'),
+    ).toBe(true)
 
     await step('the stroke stays red on focus', async () => {
       await userEvent.click(input)
-      await expect(await hasInsetRing(field, 'text-red', '1px')).toBe(true)
+      await expect(
+        await hasInsetRing(field, 'text-control-border-invalid', '1px'),
+      ).toBe(true)
       await userEvent.tab()
     })
   },

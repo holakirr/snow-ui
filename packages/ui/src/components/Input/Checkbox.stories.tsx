@@ -105,11 +105,15 @@ export const Invalid: Story = {
     const checkbox = canvas.getByRole('checkbox')
 
     await expect(checkbox).toBeInvalid()
-    await expect(await hasInsetRing(checkbox, 'text-red', '2px')).toBe(true)
+    await expect(
+      await hasInsetRing(checkbox, 'text-control-border-invalid', '2px'),
+    ).toBe(true)
 
     await step('the ring stays red on hover', async () => {
       await userEvent.hover(checkbox)
-      await expect(await hasInsetRing(checkbox, 'text-red', '2px')).toBe(true)
+      await expect(
+        await hasInsetRing(checkbox, 'text-control-border-invalid', '2px'),
+      ).toBe(true)
       await userEvent.unhover(checkbox)
     })
   },

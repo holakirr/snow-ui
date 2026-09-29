@@ -19,7 +19,7 @@ import '@holakirr/snow-ui/index.css' // or '@holakirr/snow-ui/theme.css' in a Ta
 import '@holakirr/snow-ui-charts/styles.css'
 ```
 
-`styles.css` is plain CSS (about 1.6 kB): the tooltip, the legend, the empty and loading states, the focus ring and the donut centre. Every rule is in the `components` cascade layer and reads the tokens of `@holakirr/snow-ui` (`var(--color-*)`, `var(--text-*)`, `var(--radius-*)`…), so it works with `index.css` and with `theme.css`, follows dark mode and [scoped themes](https://www.npmjs.com/package/@holakirr/snow-ui#scoped-themes), and your own CSS overrides it. In a Tailwind v4 stylesheet you can import it there too (`@import "@holakirr/snow-ui-charts/styles.css";`).
+`styles.css` is plain CSS (under 2 kB compressed): the tooltip, the legend, the empty and loading states, the focus ring and the donut centre. Every rule is in the `components` cascade layer and reads the tokens of `@holakirr/snow-ui` (`var(--color-*)`, `var(--text-*)`, `var(--radius-*)`…), so it works with `index.css` and with `theme.css`, follows dark mode and [scoped themes](https://www.npmjs.com/package/@holakirr/snow-ui#scoped-themes), and your own CSS overrides it. In a Tailwind v4 stylesheet you can import it there too (`@import "@holakirr/snow-ui-charts/styles.css";`).
 
 ## Usage
 
@@ -56,7 +56,7 @@ const revenue = [
 | `ChartTooltip`, `ChartTooltipContent` | The SnowUI tooltip (`dark`, the Figma chart tooltip, or `light` glass). |
 | `ChartLegend`, `ChartLegendContent` | The SnowUI legend (a dot and a label, optional values). |
 
-The cartesian charts share `grid`, `xAxis`, `yAxis`, `xTickFormatter`, `yTickFormatter`, `tickCount`, `domain`, `tooltip`, `legend`, `animate` and the `ChartContainer` props (`title`, `description`, `height`, `loading`, `emptyMessage`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`…).
+The cartesian charts share `grid`, `xAxis`, `yAxis`, `xTickFormatter`, `yTickFormatter`, `tickCount`, `domain`, `tooltip`, `legend`, `legendValues`, `animate` and the `ChartContainer` props (`title`, `description`, `height`, `loading`, `emptyMessage`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`…).
 
 ### Config and colours
 

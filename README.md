@@ -46,7 +46,7 @@ Run a script in a single package with `bun run --filter <package-name> <script>`
 
 ### How charts consume ui
 
-`packages/charts` has `"@holakirr/snow-ui": "^5.0.0"` as a **peer** dependency: apps load its stylesheet (the tokens the charts read as `var(--color-*)`) and the charts read `useSnowUI()` (locale, direction) from it. Storybook, Vitest and `typecheck` resolve it (and icons) from source (`packages/charts/workspace-aliases.ts`, tsconfig `paths`), so the stories' `SnowUIProvider` and the charts share one context. The charts' type declarations import the built ui package, so `bun run build` builds it first.
+`packages/charts` has `"@holakirr/snow-ui": "^5.0.0"` as a **peer** dependency: apps load its stylesheet (the tokens the charts read as `var(--color-*)`) and the charts read `useSnowUI()` (locale, direction) from it. Storybook, Vitest and `typecheck` resolve it (and icons) from source (`packages/charts/workspace-aliases.ts`, tsconfig `paths`), so the stories' `SnowUIProvider` and the charts share one context. The library build resolves it as the installed package (its `dist` types, `tsconfig.build.json`), so `bun run build` builds ui before the charts.
 
 ### Library builds
 

@@ -40,7 +40,7 @@ import { LineChart } from '@holakirr/snow-ui-charts'
 
 ## Anatomy
 
-1. **Legend** (with two series or more; `legend` forces it on or off): each series' dot and label. A dashed series has a hollow dot.
+1. **Legend** (with two series or more; `legend` forces it on or off): each series' dot and label, and optionally a total after it (`legendValues`, Semibold, like the Figma "Current Week  $58,211"). A dashed series has a hollow dot.
 2. **Value axis**: compact numbers (`0`, `10K`, `20K`, `30K`), 4 ticks in steps of 1, 2 or 5 × 10ⁿ (`tickCount`, `domain`, `yTickFormatter`).
 3. **Gridlines and baseline** (`grid`): 0.5px Black/4% lines and a 0.5px Black/20% baseline. The Figma dashboards hide them (`grid={false}`).
 4. **Lines**: 1px (`strokeWidth`), monotone curves (`curve`: `smooth`, `linear`, `step`); `dots` marks every point.

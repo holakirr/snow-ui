@@ -73,6 +73,11 @@ export interface CartesianChartProps<TDatum extends object>
   /** The legend. Defaults to shown when there are two series or more. */
   legend?: boolean
   /**
+   * Text after a series' label in the legend, by key: a total, like the
+   * Figma "Revenue" legend ("Current Week  $58,211").
+   */
+  legendValues?: Readonly<Record<string, ReactNode>>
+  /**
    * Animates the series on mount and on data changes. Defaults to `'auto'`:
    * on, unless the user prefers reduced motion (and off during SSR).
    */

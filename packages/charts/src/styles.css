@@ -256,6 +256,12 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* In a row, a total after the label is Semibold ("Current Week  $58,211"). */
+  .snow-chart-legend[data-layout="horizontal"] .snow-chart-legend__value {
+    padding-inline-start: 4px;
+    font-weight: 600;
+  }
+
   /* Donut: the centre label (Figma SemicircleChart "Percentage 58%"). */
   .snow-chart-donut__center {
     position: absolute;

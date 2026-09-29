@@ -13,7 +13,6 @@ import {
   useId,
   useMemo,
   useRef,
-  useState,
 } from 'react'
 import { ResponsiveContainer } from 'recharts'
 import { ChartTable } from './ChartTable'
@@ -165,7 +164,9 @@ export const ChartContainer = ({
   const rootRef = useRef<HTMLElement | null>(null)
   const locale = useChartLocale(localeProp)
   const dir = useChartDirection(rootRef, dirProp)
-  const [announcement, setAnnouncement] = useState('')
+  // The live region's text is set on the element itself: announcing the
+  // point the keyboard moved to must not re-render the chart.
+  const liveRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!title && !ariaLabel && !ariaLabelledBy) {
@@ -186,7 +187,10 @@ export const ChartContainer = ({
 
   const announce = useCallback((text: string) => {
     const root = rootRef.current
-    if (root?.contains(root.ownerDocument.activeElement)) setAnnouncement(text)
+    const live = liveRef.current
+    if (live && root?.contains(root.ownerDocument.activeElement)) {
+      live.textContent = text
+    }
   }, [])
 
   const context = useMemo<ChartContextValue>(
@@ -311,9 +315,24 @@ export const ChartContainer = ({
             formatCategory={categoryFormatter}
           />
         )}
-        <div className="snow-chart-sr-only" role="status" aria-live="polite">
-          {loading ? loadingLabel : announcement}
-        </div>
+        {loading ? (
+          <div
+            key="loading"
+            className="snow-chart-sr-only"
+            role="status"
+            aria-live="polite"
+          >
+            {loadingLabel}
+          </div>
+        ) : (
+          <div
+            key="live"
+            ref={liveRef}
+            className="snow-chart-sr-only"
+            role="status"
+            aria-live="polite"
+          />
+        )}
       </figure>
     </ChartContextProvider>
   )

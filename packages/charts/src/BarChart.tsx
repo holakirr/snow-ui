@@ -64,7 +64,7 @@ const withCategories = (
 
 type PlotProps<TDatum extends object> = Omit<
   BarChartProps<TDatum>,
-  keyof ChartFrameProps | 'series' | 'legend'
+  keyof ChartFrameProps | 'series' | 'legend' | 'legendValues'
 > &
   SvgLabelProps & { keys: readonly string[] }
 
@@ -184,7 +184,9 @@ const Plot = <TDatum extends object>({
             reversed={rtl}
             axisLine={grid ? BASELINE : false}
             tickMargin={12}
-            minTickGap={8}
+            // Every bar keeps its label unless two labels really overlap
+            // (Figma: "Windows" and "Android" 57px apart).
+            minTickGap={2}
           />
           <YAxis
             {...valueAxis}
@@ -233,6 +235,7 @@ export const BarChart = <TDatum extends object>({
   xKey,
   series,
   legend,
+  legendValues,
   colorBy,
   title,
   description,
@@ -293,7 +296,11 @@ export const BarChart = <TDatum extends object>({
       categoryFormatter={categoryFormatter}
       locale={locale}
       dir={dir}
-      legend={showLegend ? <ChartLegendContent keys={legendKeys} /> : undefined}
+      legend={
+        showLegend ? (
+          <ChartLegendContent keys={legendKeys} values={legendValues} />
+        ) : undefined
+      }
       legendPosition={legendPosition}
       className={className}
       style={style}

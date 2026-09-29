@@ -90,15 +90,15 @@ export default defineConfig({
         '**/*.figma.ts',
         '**/src/code-connect/**',
       ],
-      // Measured with this config (Sept 2026): statements 93.4%, branches
-      // 87.9%, functions 88.0%, lines 94.3%. The thresholds sit about 2 points
-      // below, so a PR that drops coverage fails; raise them as coverage
-      // grows, never lower them to make a PR pass.
+      // Measured with this config (Sept 2026, ui and charts): statements
+      // 96.2%, branches 91.6%, functions 94.0%, lines 97.0%. The thresholds
+      // sit about 2 points below, so a PR that drops coverage fails; raise
+      // them as coverage grows, never lower them to make a PR pass.
       thresholds: {
-        statements: 91,
-        branches: 85,
-        functions: 86,
-        lines: 92,
+        statements: 94,
+        branches: 89,
+        functions: 92,
+        lines: 95,
       },
     },
   },

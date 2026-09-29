@@ -49,6 +49,7 @@ export const Revenue: Story = {
           xKey="month"
           config={revenueConfig}
           valueFormatter={usd}
+          legendValues={{ current: '$58,211', previous: '$68,768' }}
           grid={false}
           fade
         />
@@ -59,8 +60,8 @@ export const Revenue: Story = {
     const canvas = within(canvasElement)
     // The legend names both series.
     const legend = canvasElement.querySelector('[data-slot="chart-legend"]')
-    expect(legend).toHaveTextContent('Current week')
-    expect(legend).toHaveTextContent('Previous week')
+    expect(legend).toHaveTextContent('Current week$58,211')
+    expect(legend).toHaveTextContent('Previous week$68,768')
     // The chart is named by the card title.
     const surface = await chartSurface(canvasElement)
     expect(surface).toHaveAccessibleName('Revenue')

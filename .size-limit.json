@@ -126,6 +126,6 @@
     "name": "@holakirr/snow-ui-charts/styles.css",
     "path": "packages/charts/dist/styles.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "1.8 kB"
+    "limit": "1.9 kB"
   }
 ]

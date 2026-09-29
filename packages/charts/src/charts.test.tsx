@@ -38,6 +38,7 @@ describe('LineChart', () => {
         data={revenue}
         xKey="month"
         config={revenueConfig}
+        legendValues={{ current: '$58K' }}
       />,
     )
     await waitFor(() =>
@@ -78,7 +79,7 @@ describe('LineChart', () => {
       )
         .getAllByRole('listitem')
         .map((item) => item.textContent),
-    ).toEqual(['Current week', 'Previous week'])
+    ).toEqual(['Current week$58K', 'Previous week'])
     expect(screen.getByRole('table', { name: 'Revenue' })).toBeInTheDocument()
   })
 

@@ -117,7 +117,7 @@ const AreaGradient = ({
 
 type PlotProps<TDatum extends object> = Omit<
   SeriesChartProps<TDatum>,
-  keyof ChartFrameProps | 'series' | 'legend'
+  keyof ChartFrameProps | 'series' | 'legend' | 'legendValues'
 > &
   SvgLabelProps & {
     type: 'line' | 'area'
@@ -301,6 +301,7 @@ export const SeriesChart = <TDatum extends object>({
   xKey,
   series,
   legend,
+  legendValues,
   title,
   description,
   height,
@@ -346,7 +347,11 @@ export const SeriesChart = <TDatum extends object>({
       categoryFormatter={categoryFormatter}
       locale={locale}
       dir={dir}
-      legend={showLegend ? <ChartLegendContent keys={keys} /> : undefined}
+      legend={
+        showLegend ? (
+          <ChartLegendContent keys={keys} values={legendValues} />
+        ) : undefined
+      }
       legendPosition={legendPosition}
       className={className}
       style={style}

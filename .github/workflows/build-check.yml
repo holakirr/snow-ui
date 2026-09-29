@@ -18,6 +18,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    outputs:
+      # The `visual` job runs in the Playwright image of this version.
+      playwright-version: ${{ steps.playwright.outputs.version }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -31,6 +35,10 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Get Playwright version
+        id: playwright
+        run: echo "version=$(jq -r .version node_modules/@playwright/test/package.json)" >> "$GITHUB_OUTPUT"
 
       # The DTCG tokens in packages/ui/tokens are the source of truth: the
       # committed files generated from them (CSS, Foundations data,
@@ -209,13 +217,14 @@ jobs:
 
   # Screenshot comparison of every story (light + dark) against the committed
   # Linux baselines in visual/__screenshots__, in the same Playwright image
-  # `bun run visual` uses locally. Keep the image tag in sync with the
-  # @playwright/test version in package.json.
+  # `bun run visual` uses locally (visual/docker.sh): the one of the installed
+  # @playwright/test version. Any difference fails the job; the diffs are
+  # uploaded as the `visual-diffs` artifact.
   visual:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      image: mcr.microsoft.com/playwright:v${{ needs.build.outputs.playwright-version }}-noble
       options: --ipc=host
 
     steps:

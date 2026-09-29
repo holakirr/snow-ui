@@ -69,29 +69,32 @@ Dark theme, open: [OpenDark story](?path=/story/components-datepicker--open-dark
 
 - The trigger is a `<button role="combobox">` with `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls`: the label names it, its text is its value (like the Select trigger). The popover is a `dialog` named "Choose a date".
 - The popover is modal: focus moves into it, stays there (Tab cycles through the calendar's buttons), and the rest of the page is hidden from assistive technology until it closes; then focus returns to the trigger.
-- **Keyboard** (checked in the stories' interaction tests and the unit tests):
-
-| Key | Does |
-| --- | --- |
-| Enter, Space, ↓ | on the field: open the calendar, with focus on the picked day (or today, or the first day of the month) |
-| Backspace, Delete | on the field: clear the date (`clearable`) |
-| arrow keys, Page Up / Down, Home / End | in the calendar: move between days, weeks and months (react-day-picker; see [Calendar](?path=/docs/components-calendar--docs#accessibility)) |
-| Enter, Space | in the calendar: pick the focused day and close |
-| Escape | close without a change |
-
 - Clicking the picked day again keeps it (react-day-picker would unselect it) and closes the calendar.
 - Name the field with a [Label](?path=/docs/components-label--docs) (or `FormLabel`) linked to its `id`, or `aria-label`: a combobox isn't named by its text. `required` sets `aria-required`.
 - `name` adds a hidden input with the date as `yyyy-MM-dd` for native form submission.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+On the field, then in the calendar (the Default story's test and the unit tests):
+
+| Key | Action |
+| --- | --- |
+| Enter, Space, ArrowDown | on the field: open the calendar, with focus on the picked day (or today, or the first day of the month) |
+| Backspace, Delete | on the field: clear the date (`clearable`) |
+| Arrow keys, Page Up / Page Down, Home / End | in the calendar: move between days, weeks and months (react-day-picker; see [Calendar](?path=/docs/components-calendar--docs#keyboard)) |
+| Enter, Space | in the calendar: pick the focused day and close the calendar; focus returns to the field |
+| Tab / Shift + Tab | in the calendar: move between its buttons (focus stays in the popover) |
+| Escape | close the calendar without a change |
+
+### Deviations from the Figma kit
+
+The full table is in the package README; the calendar has the deviations listed on the [Calendar](?path=/docs/components-calendar--docs#accessibility) page.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px | 2.4.7, 1.4.11 |
 | Placeholder in Black/20%: 1.6:1 | `text-secondary`: it is the trigger's visible text, as in Select | 1.4.3 |
 | The clear icon at 40% opacity (2.85:1) | 60% (the 3:1 of a control's icon) | 1.4.11 |
-
-The calendar has the deviations listed on the [Calendar](?path=/docs/components-calendar--docs#accessibility) page.
 
 ## Localization and RTL
 
@@ -165,5 +168,7 @@ DatePicker has no `asChild`: it renders a field with a trigger and a clear butto
 - [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the locale, messages and direction.
 
 ## Props
+
+Everything not listed goes to the trigger, a `<button role="combobox">` (`id`, `aria-*`, `onBlur`, `ref`…); `className` and `style` go to the field, `contentClassName` to the popover, `calendarProps` to the [Calendar](?path=/docs/components-calendar--docs#props).
 
 <Controls />

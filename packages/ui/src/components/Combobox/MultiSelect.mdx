@@ -70,16 +70,25 @@ Dark theme, open: [OpenDark story](?path=/story/components-multiselect--open-dar
 - The picked options describe the field ("Selected: React, TypeScript", through `aria-describedby`, next to `FormControl`'s description), so screen readers read them when the field gets focus.
 - Removing a tag is announced ("React removed") in a visually hidden `status` region, like the empty and loading messages.
 - Each tag's remove button is a tab stop named "Remove tag React" (`messages.tag.remove`).
-- **Keyboard:** as in [Combobox](?path=/docs/components-combobox--docs#accessibility), with these differences:
-
-| Key | Does |
-| --- | --- |
-| Enter | adds or removes the highlighted option; the list stays open |
-| Backspace | in the empty field: removes the last tag |
-| Escape | closes the list (it doesn't clear the tags) |
-
 - `required` sets `aria-required` on the input, not the native `required` (the text stays empty while tags are picked).
 - `name` adds one hidden input per value for native form submission.
+
+### Keyboard
+
+As in [Combobox](?path=/docs/components-combobox--docs#keyboard), except for these keys (the Default story's test and the unit tests):
+
+| Key | Action |
+| --- | --- |
+| typing | open the list, filter it and highlight the first match |
+| ArrowDown / ArrowUp | open the list, or move the highlight, wrapping around |
+| Enter | add or remove the highlighted option; the list stays open and the query clears |
+| Backspace | in the empty field: remove the last tag |
+| Escape | close the list (it doesn't clear the tags) |
+| Tab / Shift + Tab | move between the tags' remove buttons, the field and the clear button |
+
+### Deviations from the Figma kit
+
+As in [Combobox](?path=/docs/components-combobox--docs#deviations-from-the-figma-kit); the tags are the Figma Tag (see [Tag](?path=/docs/components-tag--docs#accessibility) for its remove button).
 
 ## Localization and RTL
 
@@ -132,5 +141,7 @@ MultiSelect has no `asChild`: `className` and `style` go to the field, `inputCla
 - [Form](?path=/docs/components-form--docs): label, description and error message.
 
 ## Props
+
+Everything not listed goes to the `<input role="combobox">` (`id`, `aria-*`, `placeholder`, `onBlur`, `ref`…; `required` becomes `aria-required`); `className` and `style` go to the field. `options` takes the same `ComboboxOption`s and `ComboboxOptionGroup`s as Combobox.
 
 <Controls />

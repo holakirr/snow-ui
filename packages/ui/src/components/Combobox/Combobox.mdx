@@ -95,26 +95,30 @@ Dark theme, open: [OpenDark story](?path=/story/components-combobox--open-dark).
 
 - The field is an `<input role="combobox">` with `aria-autocomplete="list"`, `aria-expanded` and, while open, `aria-controls` pointing at the `listbox`. Options are `option`s, in `group`s named by their title; the selected one is `aria-selected`, a disabled one `aria-disabled`.
 - **Focus never leaves the field.** The highlighted option is the field's `aria-activedescendant`, so screen readers read it as the highlight moves.
-- **Keyboard** (checked in the stories' interaction tests and the unit tests):
-
-| Key | Does |
-| --- | --- |
-| typing | opens the list, filters it and highlights the first match |
-| ↓ | opens the list on the selected option (or the first); moves the highlight down, wrapping around |
-| ↑ | opens the list on the selected option (or the last); moves the highlight up, wrapping around |
-| Alt + ↓ | opens the list without moving the highlight |
-| Alt + ↑ | closes the list |
-| Enter | picks the highlighted option and closes the list; with the list closed, submits the form |
-| Escape | closes the list; with the list closed, clears the field (`clearable`) |
-| Tab | moves on: the list closes, the text goes back to the selected label |
-
 - A click on the field opens or closes the list; a click on an option picks it.
 - Emptying the text and leaving the field clears the value (with `clearable`, the default).
 - Name the field with a [Label](?path=/docs/components-label--docs) (or `FormLabel`) linked to its `id`, or `aria-label`. The list takes the same name.
 - The empty and loading messages are also in a visually hidden `status` region, so screen readers announce them.
 - `name` adds a hidden input with the value (not the label) for native form submission.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+Focus stays in the field; the highlight is its `aria-activedescendant` (the Default story's test and the unit tests):
+
+| Key | Action |
+| --- | --- |
+| typing | open the list, filter it and highlight the first match |
+| ArrowDown | open the list on the selected option (or the first); with the list open, move the highlight down, wrapping around |
+| ArrowUp | open the list on the selected option (or the last); with the list open, move the highlight up, wrapping around |
+| Alt + ArrowDown | open the list without moving the highlight |
+| Alt + ArrowUp | close the list |
+| Enter | pick the highlighted option and close the list; with the list closed, submit the form |
+| Escape | close the list; with the list closed, clear the field (`clearable`) |
+| Tab | move on: the list closes and the text goes back to the selected label (or clears the value if you emptied it) |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -191,5 +195,7 @@ Combobox has no `asChild`: it renders a field with an input, buttons and a porta
 - [Form](?path=/docs/components-form--docs): label, description and error message.
 
 ## Props
+
+Everything not listed goes to the `<input role="combobox">` (`id`, `aria-*`, `placeholder`, `required`, `onBlur`, `ref`…); `className` and `style` go to the field. `options` takes `ComboboxOption`s (`{ value, label, icon?, keywords?, disabled? }`) and `ComboboxOptionGroup`s (`{ label, options }`).
 
 <Controls />

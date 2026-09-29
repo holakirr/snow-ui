@@ -59,8 +59,24 @@ As in [DatePicker](?path=/docs/components-datepicker--docs#states). In the calen
 ## Accessibility
 
 - As in [DatePicker](?path=/docs/components-datepicker--docs#accessibility): a `<button role="combobox">` that opens a modal `dialog`, here named "Choose a date range", with focus on the range's start (or today).
-- The calendar is a `grid` with `aria-multiselectable`; the days of the range are `aria-selected`. Enter or Space on a day picks the start, then the end.
+- The calendar is a `grid` with `aria-multiselectable`; the days of the range are `aria-selected`.
 - `name` adds a hidden input with the range as an ISO 8601 interval: `2025-01-13/2025-01-16`.
+
+### Keyboard
+
+As in [DatePicker](?path=/docs/components-datepicker--docs#keyboard), except that Enter picks a start, then an end (the Default story's test and the unit tests):
+
+| Key | Action |
+| --- | --- |
+| Enter, Space, ArrowDown | on the field: open the calendar, with focus on the range's start (or today) |
+| Backspace, Delete | on the field: clear the range (`clearable`) |
+| Arrow keys, Page Up / Page Down, Home / End | in the calendar: move between days, weeks and months |
+| Enter, Space | in the calendar: pick the start, then the end; the second pick closes the calendar and focus returns to the field |
+| Escape | close the calendar; after only a start, the field keeps its previous range |
+
+### Deviations from the Figma kit
+
+As in [DatePicker](?path=/docs/components-datepicker--docs#deviations-from-the-figma-kit).
 
 ## Localization and RTL
 
@@ -108,5 +124,7 @@ As in DatePicker: no `asChild`; `className` and `style` go to the field, the but
 - [Form](?path=/docs/components-form--docs): label, description and error message.
 
 ## Props
+
+As in [DatePicker](?path=/docs/components-datepicker--docs#props): everything not listed goes to the trigger, `className` and `style` to the field, `contentClassName` to the popover, `calendarProps` to the Calendar.
 
 <Controls />

@@ -126,11 +126,13 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
       contentClassName={contentClassName}
       hiddenInputs={
         name !== undefined && (
-          // An ISO 8601 interval: "2025-01-20/2025-01-27".
+          // An ISO 8601 interval: "2025-01-20/2025-01-27". Disabled with the
+          // field, so a form doesn't submit it.
           <input
             type="hidden"
             name={name}
             value={value?.from ? `${iso(value.from)}/${iso(value.to)}` : ''}
+            disabled={disabled}
           />
         )
       }

@@ -221,6 +221,29 @@ describe('DateRangePicker', () => {
     )
   })
 
+  it('leaves a disabled field out of the form data', () => {
+    const { container } = render(
+      <form>
+        <DateRangePicker
+          aria-label="Stay"
+          name="stay"
+          defaultValue={january(13, 16)}
+        />
+        <DateRangePicker
+          aria-label="Trip"
+          name="trip"
+          defaultValue={january(13, 16)}
+          disabled
+        />
+      </form>,
+    )
+    const data = new FormData(
+      container.querySelector('form') as HTMLFormElement,
+    )
+    expect(data.get('stay')).toBe('2025-01-13/2025-01-16')
+    expect(data.has('trip')).toBe(false)
+  })
+
   it('is localized by SnowUIProvider', () => {
     render(
       <SnowUIProvider

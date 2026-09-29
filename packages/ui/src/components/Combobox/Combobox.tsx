@@ -242,7 +242,14 @@ const Combobox: FC<ComboboxProps> = ({
                 : ''}
           </span>
           {name !== undefined && (
-            <input type="hidden" name={name} value={value ?? ''} />
+            // Disabled with the field: a form doesn't submit it, as with a
+            // native `<select disabled>`.
+            <input
+              type="hidden"
+              name={name}
+              value={value ?? ''}
+              disabled={disabled}
+            />
           )}
         </div>
       </PopoverPrimitive.Anchor>

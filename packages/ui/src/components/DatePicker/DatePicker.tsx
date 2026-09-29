@@ -92,10 +92,12 @@ const DatePicker: FC<DatePickerProps> = ({
       contentClassName={contentClassName}
       hiddenInputs={
         name !== undefined && (
+          // Disabled with the field, so a form doesn't submit it.
           <input
             type="hidden"
             name={name}
             value={value ? format(value, 'yyyy-MM-dd') : ''}
+            disabled={disabled}
           />
         )
       }

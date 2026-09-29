@@ -217,6 +217,31 @@ describe('MultiSelect', () => {
     expect(field()).not.toHaveAttribute('required')
   })
 
+  it('leaves a disabled field out of the form data', () => {
+    const { container } = render(
+      <form>
+        <MultiSelect
+          aria-label="Skills"
+          options={skills}
+          name="skills"
+          defaultValue={['react', 'figma']}
+        />
+        <MultiSelect
+          aria-label="Other"
+          options={skills}
+          name="other"
+          defaultValue={['react']}
+          disabled
+        />
+      </form>,
+    )
+    const data = new FormData(
+      container.querySelector('form') as HTMLFormElement,
+    )
+    expect(data.getAll('skills')).toEqual(['react', 'figma'])
+    expect(data.has('other')).toBe(false)
+  })
+
   it('translates its strings with SnowUIProvider', () => {
     render(
       <SnowUIProvider

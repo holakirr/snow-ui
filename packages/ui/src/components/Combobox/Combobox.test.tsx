@@ -502,6 +502,31 @@ describe('Combobox', () => {
     expect(field()).not.toHaveAttribute('name')
   })
 
+  it('leaves a disabled field out of the form data', () => {
+    const { container } = render(
+      <form>
+        <Combobox
+          aria-label="Fruit"
+          options={fruits}
+          name="fruit"
+          defaultValue="apple"
+        />
+        <Combobox
+          aria-label="Other"
+          options={fruits}
+          name="other"
+          defaultValue="banana"
+          disabled
+        />
+      </form>,
+    )
+    const data = new FormData(
+      container.querySelector('form') as HTMLFormElement,
+    )
+    expect(data.get('fruit')).toBe('apple')
+    expect(data.has('other')).toBe(false)
+  })
+
   it('uses the contrast tokens: stroke, placeholder and invalid stroke', () => {
     renderCombobox({ 'aria-invalid': true })
     const shell = field().closest('[data-slot="combobox"]')

@@ -250,6 +250,29 @@ describe('DatePicker', () => {
     expect(hidden).toHaveValue('2025-01-20')
   })
 
+  it('leaves a disabled field out of the form data', () => {
+    const { container } = render(
+      <form>
+        <DatePicker
+          aria-label="Due"
+          name="due"
+          defaultValue={new Date(2025, 0, 20)}
+        />
+        <DatePicker
+          aria-label="Start"
+          name="start"
+          defaultValue={new Date(2025, 0, 20)}
+          disabled
+        />
+      </form>,
+    )
+    const data = new FormData(
+      container.querySelector('form') as HTMLFormElement,
+    )
+    expect(data.get('due')).toBe('2025-01-20')
+    expect(data.has('start')).toBe(false)
+  })
+
   it('shows the red stroke while invalid; marks the field required', () => {
     renderDatePicker({ 'aria-invalid': true, required: true })
     expect(field()).toBeInvalid()

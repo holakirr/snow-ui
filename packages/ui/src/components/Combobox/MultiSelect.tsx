@@ -287,7 +287,14 @@ const MultiSelect: FC<MultiSelectProps> = ({
           </span>
           {name !== undefined &&
             values.map((item) => (
-              <input key={item} type="hidden" name={name} value={item} />
+              // Disabled with the field, so a form doesn't submit them.
+              <input
+                key={item}
+                type="hidden"
+                name={name}
+                value={item}
+                disabled={disabled}
+              />
             ))}
         </div>
       </PopoverPrimitive.Anchor>

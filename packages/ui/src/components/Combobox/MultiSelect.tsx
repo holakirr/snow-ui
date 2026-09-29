@@ -22,7 +22,6 @@ import {
   comboboxInputClasses,
   comboboxInvalidClasses,
   comboboxStaticClasses,
-  isInvalid,
   useCombobox,
   useListLabel,
 } from './listbox'
@@ -211,7 +210,6 @@ const MultiSelect: FC<MultiSelectProps> = ({
           data-slot="multi-select"
           data-state={isOpen ? 'open' : 'closed'}
           data-disabled={disabled || undefined}
-          data-invalid={isInvalid(ariaInvalid) || undefined}
           onPointerDown={state.handleFieldPointerDown}
           onClick={state.handleFieldClick}
         >

@@ -139,9 +139,6 @@ export const disabledMatchers = (
       : [disabledDates]),
 ]
 
-/** Whether an `aria-invalid` value marks the field invalid. */
-const isInvalid = (value: unknown) => value === true || value === 'true'
-
 type TriggerProps = Omit<
   DatePickerSharedProps,
   | 'open'
@@ -248,8 +245,9 @@ export const DatePickerField = ({
             // (Black/40% on hover and while open, with the 4px Focus ring).
             'group/date-picker relative flex w-full rounded-16 bg-surface-1 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all hover:inset-ring-black-40',
             'data-[state=open]:inset-ring-black-40 data-[state=open]:ring-4 data-[state=open]:ring-focus',
-            // An invalid field (`aria-invalid` on the trigger): a Red stroke.
-            'data-invalid:inset-ring-red data-invalid:hover:inset-ring-red data-invalid:data-[state=open]:inset-ring-red',
+            // Invalid, while the trigger has `aria-invalid="true"`: the 1px
+            // Red stroke of `Input`, also while the calendar is open.
+            'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red has-aria-invalid:data-[state=open]:inset-ring-red',
             // The disabled look (the design has no Disabled state).
             'data-disabled:bg-black-4 data-disabled:text-black-20 data-disabled:inset-ring-0 data-disabled:hover:inset-ring-0',
             className,
@@ -258,7 +256,6 @@ export const DatePickerField = ({
           data-slot="date-picker"
           data-state={open ? 'open' : 'closed'}
           data-disabled={disabled || undefined}
-          data-invalid={isInvalid(ariaInvalid) || undefined}
         >
           <PopoverPrimitive.Trigger asChild>
             <button

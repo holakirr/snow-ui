@@ -505,9 +505,12 @@ export type ComboboxState = ReturnType<typeof useCombobox>
 export const comboboxFieldClasses =
   'group/combobox relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all hover:inset-ring-black-40 focus-within:inset-ring-black-40 has-[input:focus]:ring-4 has-[input:focus]:ring-focus data-[state=open]:inset-ring-black-40 data-[state=open]:ring-4 data-[state=open]:ring-focus'
 
-/** An invalid field (`aria-invalid` on the input): a Red stroke. */
+/**
+ * Invalid, while the input has `aria-invalid="true"` (`FormControl` sets it):
+ * the 1px Red stroke of `Input`, also while the list is open.
+ */
 export const comboboxInvalidClasses =
-  'data-invalid:inset-ring-red data-invalid:hover:inset-ring-red data-invalid:focus-within:inset-ring-red data-invalid:data-[state=open]:inset-ring-red'
+  'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red has-aria-invalid:data-[state=open]:inset-ring-red'
 
 /** The disabled look (the design has no Disabled state), as in `Input`. */
 export const comboboxDisabledClasses =
@@ -519,9 +522,6 @@ export const comboboxStaticClasses =
 
 export const comboboxInputClasses =
   'min-w-0 flex-1 bg-transparent text-inherit outline-none placeholder:text-black-20 disabled:cursor-not-allowed'
-
-/** Whether an `aria-invalid` value marks the field invalid. */
-export const isInvalid = (value: unknown) => value === true || value === 'true'
 
 type ComboboxAdornmentsProps = {
   loading: boolean

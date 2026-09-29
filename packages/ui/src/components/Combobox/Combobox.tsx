@@ -21,7 +21,6 @@ import {
   comboboxInputClasses,
   comboboxInvalidClasses,
   comboboxStaticClasses,
-  isInvalid,
   useCombobox,
   useListLabel,
 } from './listbox'
@@ -188,7 +187,6 @@ const Combobox: FC<ComboboxProps> = ({
           data-slot="combobox"
           data-state={isOpen ? 'open' : 'closed'}
           data-disabled={disabled || undefined}
-          data-invalid={isInvalid(ariaInvalid) || undefined}
           onPointerDown={state.handleFieldPointerDown}
           onClick={state.handleFieldClick}
         >

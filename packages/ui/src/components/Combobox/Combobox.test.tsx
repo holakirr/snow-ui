@@ -476,12 +476,12 @@ describe('Combobox', () => {
     expect(field()).not.toHaveAttribute('name')
   })
 
-  it('marks the field invalid from aria-invalid', () => {
+  it('shows the red stroke while the input is invalid', () => {
     renderCombobox({ 'aria-invalid': true })
-    expect(field()).toHaveAttribute('aria-invalid', 'true')
-    expect(field().closest('[data-slot="combobox"]')).toHaveAttribute(
-      'data-invalid',
-      'true',
+    expect(field()).toBeInvalid()
+    expect(field().closest('[data-slot="combobox"]')).toHaveClass(
+      'has-aria-invalid:inset-ring',
+      'has-aria-invalid:inset-ring-red',
     )
   })
 

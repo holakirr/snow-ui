@@ -62,6 +62,8 @@ type RefTargets = {
   Card: HTMLDivElement
   Checkbox: HTMLButtonElement
   // A dialog with its own trigger: there is no single element to point at.
+  // The <input role="combobox">, as react-hook-form needs to focus it.
+  Combobox: HTMLInputElement
   CommandPalette: null
   ContextMenu: null
   ContextMenuCheckboxItem: HTMLDivElement
@@ -78,6 +80,9 @@ type RefTargets = {
   ContextMenuSubContent: HTMLDivElement
   ContextMenuSubTrigger: HTMLDivElement
   ContextMenuTrigger: HTMLSpanElement
+  // The trigger, a <button role="combobox">.
+  DatePicker: HTMLButtonElement
+  DateRangePicker: HTMLButtonElement
   Dialog: null
   DialogBody: HTMLDivElement
   DialogClose: HTMLButtonElement
@@ -121,6 +126,8 @@ type RefTargets = {
   Link: HTMLAnchorElement
   // Generic, so `ComponentProps` can't see its ref: see the JSX below.
   ListItem: 'jsx'
+  // The <input role="combobox"> after the tags.
+  MultiSelect: HTMLInputElement
   Pagination: HTMLElement
   PaginationContent: HTMLUListElement
   PaginationEllipsis: HTMLSpanElement
@@ -297,6 +304,10 @@ type Values = {
   plan: string
   size: string
   volume: number[]
+  fruit: string | null
+  skills: string[]
+  due: Date | null
+  stay: ui.DateRange | null
 }
 
 /**
@@ -395,6 +406,54 @@ export const ReactHookForm = () => {
           <rhf.FormItem>
             <rhf.FormControl>
               <ui.Slider ref={ref} onValueChange={onChange} {...field} />
+            </rhf.FormControl>
+          </rhf.FormItem>
+        )}
+      />
+      <rhf.FormField
+        control={form.control}
+        name="fruit"
+        render={({ field: { onChange, ...field } }) => (
+          <rhf.FormItem>
+            <rhf.FormControl>
+              <ui.Combobox options={[]} onValueChange={onChange} {...field} />
+            </rhf.FormControl>
+          </rhf.FormItem>
+        )}
+      />
+      <rhf.FormField
+        control={form.control}
+        name="skills"
+        render={({ field: { onChange, ...field } }) => (
+          <rhf.FormItem>
+            <rhf.FormControl>
+              <ui.MultiSelect
+                options={[]}
+                onValueChange={onChange}
+                {...field}
+              />
+            </rhf.FormControl>
+          </rhf.FormItem>
+        )}
+      />
+      <rhf.FormField
+        control={form.control}
+        name="due"
+        render={({ field: { onChange, ...field } }) => (
+          <rhf.FormItem>
+            <rhf.FormControl>
+              <ui.DatePicker onValueChange={onChange} {...field} />
+            </rhf.FormControl>
+          </rhf.FormItem>
+        )}
+      />
+      <rhf.FormField
+        control={form.control}
+        name="stay"
+        render={({ field: { onChange, ...field } }) => (
+          <rhf.FormItem>
+            <rhf.FormControl>
+              <ui.DateRangePicker onValueChange={onChange} {...field} />
             </rhf.FormControl>
           </rhf.FormItem>
         )}

@@ -229,13 +229,13 @@ describe('DatePicker', () => {
     expect(hidden).toHaveValue('2025-01-20')
   })
 
-  it('marks the field invalid and required', () => {
+  it('shows the red stroke while invalid; marks the field required', () => {
     renderDatePicker({ 'aria-invalid': true, required: true })
-    expect(field()).toHaveAttribute('aria-invalid', 'true')
+    expect(field()).toBeInvalid()
     expect(field()).toHaveAttribute('aria-required', 'true')
-    expect(field().closest('[data-slot="date-picker"]')).toHaveAttribute(
-      'data-invalid',
-      'true',
+    expect(field().closest('[data-slot="date-picker"]')).toHaveClass(
+      'has-aria-invalid:inset-ring',
+      'has-aria-invalid:inset-ring-red',
     )
   })
 

@@ -521,9 +521,6 @@ export const InForm: Story = {
           expect.stringContaining('Pick a fruit.'),
         )
         await expect(field).toHaveFocus()
-        await expect(field.closest('[data-slot="combobox"]')).toHaveAttribute(
-          'data-invalid',
-        )
       },
     )
 

@@ -1,0 +1,37 @@
+{
+  "name": "@holakirr/snow-ui-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Demo app of SnowUI: the Figma kit's dashboard, sign-in and settings pages built with @holakirr/snow-ui, -icons and -charts on Next.js.",
+  "scripts": {
+    "dev": "node scripts/check-packages.mjs && next dev",
+    "build": "node scripts/check-packages.mjs && next build",
+    "start": "next start",
+    "typecheck": "node scripts/check-packages.mjs && next typegen && tsc -p . --noEmit",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@holakirr/snow-ui": "workspace:*",
+    "@holakirr/snow-ui-charts": "workspace:*",
+    "@holakirr/snow-ui-icons": "workspace:*",
+    "@hookform/resolvers": "^5.9.1",
+    "@phosphor-icons/react": "^2.1.10",
+    "date-fns": "^4.4.0",
+    "next": "16.3.7",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-hook-form": "^7.89.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  }
+}

@@ -11,13 +11,18 @@ type SwitchProps = ComponentProps<typeof SwitchPrimitives.Root>
  * off (40% on hover), Primary on (under White/40% on hover) — and a 12px
  * white thumb with "Drop shadow 2", inset 2px, that travels 12px. `hit-area`
  * makes the pointer target 28×24 (WCAG 2.5.8).
+ *
+ * The off track is `control-border` (hover `control-border-strong`): the
+ * Figma values, or WCAG AA ones with more contrast (see the tokens). With
+ * more contrast the thumb is the per-mode `white` (black on the dark-mode
+ * indigo track, where Figma's white thumb is 2.07:1).
  */
 const Switch: FC<SwitchProps> = ({ className, ...props }) => (
   <SwitchPrimitives.Root
     className={twMerge(
       'peer group relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-80 p-0.5 inset-shadow-inner transition-colors hit-area',
-      'data-[state=unchecked]:bg-black-20 data-[state=checked]:bg-primary',
-      'enabled:hover:data-[state=unchecked]:bg-black-40 enabled:hover:data-[state=checked]:bg-primary-hover-strong',
+      'data-[state=unchecked]:bg-control-border data-[state=checked]:bg-primary',
+      'enabled:hover:data-[state=unchecked]:bg-control-border-strong enabled:hover:data-[state=checked]:bg-primary-hover-strong',
       // Invalid (`aria-invalid`, no Figma state): a 1px Secondary/Red stroke.
       'aria-invalid:inset-ring aria-invalid:inset-ring-red',
       'focus-ring',
@@ -28,7 +33,7 @@ const Switch: FC<SwitchProps> = ({ className, ...props }) => (
     )}
     {...props}
   >
-    <SwitchPrimitives.Thumb className="pointer-events-none block size-3 rounded-full bg-static-white shadow-2 transition-transform data-[state=checked]:translate-x-3 rtl:data-[state=checked]:-translate-x-3 data-[state=unchecked]:translate-x-0 motion-reduce:transition-none" />
+    <SwitchPrimitives.Thumb className="pointer-events-none block size-3 rounded-full bg-static-white shadow-2 transition-transform data-[state=checked]:translate-x-3 rtl:data-[state=checked]:-translate-x-3 data-[state=unchecked]:translate-x-0 motion-reduce:transition-none contrast-more:bg-white" />
   </SwitchPrimitives.Root>
 )
 Switch.displayName = SwitchPrimitives.Root.displayName

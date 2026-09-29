@@ -209,7 +209,9 @@ const SearchButton = (props: ComponentProps<'button'>) => (
     <KBD
       keys={['/']}
       aria-hidden
-      className="inline-flex h-4 items-center rounded-[6px] border-[0.5px] border-black-10 px-1 text-12 text-secondary"
+      // No fill of its own, like Search's hint: KBD's Black/4% on the gray
+      // field took the dark-mode text under 4.5:1 (4.37:1; 3.89:1 hovered).
+      className="inline-flex h-4 items-center rounded-[6px] border-[0.5px] border-black-10 bg-transparent px-1 text-12 text-secondary"
     />
   </button>
 )

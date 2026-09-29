@@ -1,0 +1,96 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Contrast" />
+
+# Contrast
+
+The SnowUI Figma kit draws the boundaries of form controls — the rings of unchecked Checkbox and Radio, the 0.5px strokes of text fields and the Select trigger, the Switch's off track — and the native placeholders in Black/20%: 1.6:1 on white. WCAG 2.2 AA asks for 3:1 for the visual information that identifies a control and its state (1.4.11) and 4.5:1 for text (1.4.3).
+
+The library keeps the Figma look by default and meets AA with **more contrast**. The owner chose this over changing the default: the default stays true to the kit, and people who need more contrast get it from their OS setting or from the app. The default's deviations are listed as known gaps in the package README.
+
+## Turning it on
+
+- **The OS preference** `prefers-contrast: more` (macOS and iOS "Increase contrast", and similar OS or browser settings), unless `<html data-contrast="standard">`.
+- **`data-contrast="more"`** on any element, for an app's own setting. `data-contrast="standard"` switches a subtree back to the Figma look.
+
+Like `data-theme`, it works at any depth, and contrast and theme scopes combine: a dark panel in a high-contrast page gets the dark high-contrast values, whichever element carries which attribute.
+
+```tsx
+<html data-contrast="more">
+  …
+  <aside data-theme="dark">{/* dark, more contrast */}</aside>
+  <div data-contrast="standard">{/* the Figma look again */}</div>
+</html>
+```
+
+Portalled overlays take the contrast of `<html>`, like the theme: set it there for the whole app, or pass `data-contrast` to the `*Content` components.
+
+In this Storybook, the "Contrast" toolbar follows the OS or pins either level on `<html>`; [Foundations › Contrast](?path=/story/foundations--contrast) shows the controls in all four combinations of theme and contrast.
+
+## What changes
+
+Three colour tokens, library additions to the kit, carry the difference:
+
+| Token | Standard (Figma) | More contrast | Used by |
+| --- | --- | --- | --- |
+| `control-border` | Black/20% | Black/50%; White/50% in dark mode | Unchecked Checkbox and Radio rings, text field and Select strokes, the Switch's off track |
+| `control-border-strong` | Black/40% | Black/80%; White/80% in dark mode | Their hover and focus states, the Slider thumb border, the Select chevron, the hovered Search icon |
+| `placeholder` | Black/20% | Black/60%; White/75% in dark mode | Placeholders of `Input`, `InputSmall`, `Textarea` and `Search`, the Search icon |
+
+With more contrast the components also:
+
+- draw the 0.5px strokes of text fields and the Select trigger at 1px (a 0.5px line renders as a half-intensity pixel on standard screens);
+- give the gray `InputSmall` and `Search` fields a stroke: their Black/4% fill alone is 1.1:1;
+- use the per-mode `white` for the Switch thumb: black on the dark-mode indigo track (10.14:1), where Figma's white thumb is 2.06:1;
+- add a 2px `black-80` ring, the colour of `focus-ring`, to the highlighted menu item (DropdownMenu, ContextMenu, Select) and CommandPalette option, whose Black/4% highlight is 1.1:1.
+
+## Measured contrast
+
+Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the pairs are in `src/test/contrast-pairs.ts`), rounded down, on the three surfaces a control sits on: the page (`background-1`: white, or #333 in dark mode), a dashboard block (`background-2` on it) and a popover or dialog (`background-3` on it). The test fails if a pair is under AA with more contrast.
+
+| Pair | Theme | Standard | More contrast |
+| --- | --- | --- | --- |
+| Checkbox / Radio ring (unchecked) vs the surface | light | 1.53–1.6 | 3.79–3.97 |
+| Checkbox / Radio ring (unchecked) vs the surface | dark | 1.84–2.17 | 4.01–4.76 |
+| Text field / Select stroke vs the surface | light | 1.54–1.6 | 3.81–3.97 |
+| Text field / Select stroke vs the surface | dark | 1.99–2.08 | 4.17–4.66 |
+| Text field / Select stroke vs the field fill | light | 1.6 | 3.96–3.97 |
+| Text field / Select stroke vs the field fill | dark | 1.76–1.84 | 3.7–4.12 |
+| Gray field ring vs its Black/4% fill | light | 1.59 (no ring) | 3.86–3.9 |
+| Gray field ring vs its Black/4% fill | dark | 1.68–1.76 (no ring) | 3.3–3.66 |
+| Hover / focus stroke vs the field fill | light | 2.84 | 12.55–12.63 |
+| Hover / focus stroke vs the field fill | dark | 2.94–3.21 | 6.71–7.82 |
+| Switch off track vs the surface | light | 1.6 | 3.93–3.97 |
+| Switch off track vs the surface | dark | 1.81–1.88 | 3.99–4.43 |
+| Switch thumb vs the off track | light | 1.6–1.68 | 3.97–4.14 |
+| Switch thumb vs the off track | dark | 5.81–6.7 | 7.37–7.91 |
+| Switch thumb vs the on track | light | 21 | 21 |
+| Switch thumb vs the on track | dark | 2.06 | 10.14 |
+| Slider thumb border vs the track | light | 2.48–2.6 | 10.99–11.56 |
+| Slider thumb border vs the track | dark | 1.36–1.6 | 4.87–5.74 |
+| Placeholder on the field fill | light | 1.6 | 5.72–5.74 |
+| Placeholder on the field fill | dark | 1.76–1.84 | 6.13–7.1 |
+| Placeholder on the gray field | light | 1.59 | 5.5–5.59 |
+| Placeholder on the gray field | dark | 1.68–1.76 | 5.26–6.05 |
+| Placeholder on the hovered gray field | light | 1.58 | 5.25–5.34 |
+| Placeholder on the hovered gray field | dark | 1.61–1.68 | 4.63–5.28 |
+
+**Why these values.** The smallest alphas that pass on every surface are Black/44% (3.09:1) and White/46% (3.04:1) for boundaries, Black/56% (4.58:1) and White/74% (4.56:1) for placeholders. The tokens round up to Black/White 50% (3.79:1 and 3.3:1 at worst) and Black/60%, White/75% (5.25:1 and 4.63:1), for a margin and values a designer can name; Black/60% is also the light `text-secondary`, which the Select placeholder already uses. The hover and focus stroke has to stay stronger than the rest stroke, so it moves from Black/40% to the kit's next step, Black/80%. In dark mode Figma's white thumb keeps 3:1 on the off track only up to about White/45%, too close to the floor the other boundaries need, so the thumb flips to the per-mode `white` instead of holding the track to a narrow band.
+
+**Not changed.** Disabled controls are exempt (WCAG 1.4.11, 1.4.3). The Link arrow and external icon keep their 40% opacity in both modes (a known gap). The icons inside fields other than the Search icon and the Select chevron are decoration.
+
+**A demo fix.** The Search button of the CommandPalette and Dashboard stories set its shortcut hint in `text-secondary` on a KBD that kept its own Black/4% fill: in dark mode that was 4.37:1 on the gray field (3.9:1 hovered). The hint has no fill now, like `Search`'s own (5.51:1, 4.84:1 hovered).
+
+## How it is built
+
+The values live in the DTCG tokens (`packages/ui/tokens`), the single source of truth. The resolver has a `contrast` modifier next to `theme`: its default context, "standard", is `color.contrast-standard.tokens.json`, which aliases the three tokens to the Figma palette (the same aliases in both themes); the "more" context adds nothing, so the values in `color.light.tokens.json` and `color.dark.tokens.json` apply. Every combination of theme and contrast resolves correctly in any DTCG tool.
+
+`bun run tokens` turns this into CSS scopes (`src/styles/tokens.generated.css`). The theme scopes declare each theme's "more" values (`--color-control-border--more`); a switch, `--contrast-more`, is a space inside a "more" scope and `initial` (invalid) elsewhere; and every scope element (`:root`, `[data-theme]`, `[data-contrast]`) re-declares `--color-control-border: var(--color-control-border--more-on, var(--color-black-20))`, where `--color-control-border--more-on: var(--contrast-more) var(--color-control-border--more)` is only valid when the switch is on. So the value follows the nearest theme and the nearest contrast scope independently, at any depth.
+
+For your own controls, use the tokens for boundaries and placeholders, and the `contrast-more:` variant for other changes: `theme.css` redefines it to follow the same scopes as the tokens (Tailwind's reads only the OS preference; like `dark:`, it sees one level of nesting): `className="inset-ring-[0.5px] contrast-more:inset-ring-1"`.
+
+## Testing
+
+- `contrast.test.ts` asserts every pair above against AA with more contrast, and the known-gap ratios of the standard contrast.
+- `theme.test.ts` checks the compiled scopes and the `contrast-more:` variant on nested `data-contrast` elements.
+- The Storybook tests run every story a third time with `prefers-contrast: more` emulated (the `storybook-prefs` project), so axe checks all text in high contrast; the Foundations › Contrast story checks the computed colours of real controls in all four combinations.

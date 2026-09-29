@@ -6,6 +6,7 @@ import {
   TARGET_SIZE_EXCEPTIONS,
   type TargetSizeParameters,
 } from './targetSize'
+import { withContrast } from './withContrast'
 import { withLocale } from './withLocale'
 import { withTheme } from './withTheme'
 
@@ -41,10 +42,25 @@ const preview: Preview = {
         dynamicTitle: true,
       },
     },
+    contrast: {
+      description:
+        'Contrast of the form controls (<html data-contrast>): the Figma values, or WCAG AA ones',
+      toolbar: {
+        title: 'Contrast',
+        icon: 'contrast',
+        items: [
+          { value: 'auto', title: 'Follow the OS (prefers-contrast)' },
+          { value: 'standard', title: 'Standard (Figma)' },
+          { value: 'more', title: 'More (WCAG AA)' },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   initialGlobals: {
     locale: 'en',
     dir: 'ltr',
+    contrast: 'auto',
   },
 
   parameters: {
@@ -82,6 +98,7 @@ const preview: Preview = {
             'Registry',
             'API conventions',
             'Theming',
+            'Contrast',
             'Localization and RTL',
             'Next.js App Router',
             'Vite',
@@ -109,6 +126,7 @@ const preview: Preview = {
         </StoryWrapper>
       ),
     withLocale,
+    withContrast,
     withTheme,
   ],
 

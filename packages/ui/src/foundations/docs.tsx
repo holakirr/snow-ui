@@ -6,7 +6,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '../components/Accordion'
-import { Switch } from '../components/Input'
+import {
+  Checkbox,
+  Input,
+  RadioGroup,
+  RadioGroupItem,
+  Switch,
+} from '../components/Input'
+import { Search } from '../components/Search'
 import { Skeleton } from '../components/Skeleton'
 import { Typography } from '../components/Text'
 import { twMerge } from '../utils/tw-merge'
@@ -136,12 +143,14 @@ const checkerboard: CSSProperties = {
   backgroundSize: '12px 12px',
 }
 
-const ModeValue = ({
+const ColorValue = ({
   mode,
-  token,
+  color,
+  label,
 }: {
   mode: 'light' | 'dark'
-  token: ColorToken
+  color: string
+  label?: string
 }) => (
   <div className="flex items-center gap-2">
     <span
@@ -150,10 +159,31 @@ const ModeValue = ({
     >
       <span
         className="size-6 rounded-4 border border-[rgb(128_128_128/0.3)]"
-        style={{ background: token.resolved?.[mode] ?? token[mode] }}
+        style={{ background: color }}
       />
     </span>
-    <Code>{token.resolved?.[mode] ?? token[mode]}</Code>
+    <Code>{color}</Code>
+    {label && <span className="text-12 text-secondary">{label}</span>}
+  </div>
+)
+
+/** A token's value in a mode, and its "more" value for the contrast tokens. */
+const ModeValue = ({
+  mode,
+  token,
+}: {
+  mode: 'light' | 'dark'
+  token: ColorToken
+}) => (
+  <div className="flex flex-col gap-1">
+    <ColorValue mode={mode} color={token.resolved?.[mode] ?? token[mode]} />
+    {token.contrastMore && (
+      <ColorValue
+        mode={mode}
+        color={token.contrastMore[mode]}
+        label="more contrast"
+      />
+    )}
   </div>
 )
 
@@ -604,5 +634,67 @@ export const MotionPage = () => (
         </Accordion>
       </div>
     </Section>
+  </Page>
+)
+
+/** One theme, painted, in a contrast scope set by its parent. */
+const ContrastSample = ({ theme }: { theme: 'light' | 'dark' }) => (
+  <div
+    data-theme={theme}
+    data-contrast-sample={theme}
+    className="flex flex-col gap-4 rounded-24 bg-background-1 p-6 text-black"
+  >
+    <Typography size={14} semibold>
+      {theme === 'light' ? 'Light' : 'Dark'}
+    </Typography>
+    <div className="flex items-center gap-4">
+      <Checkbox aria-label={`Checkbox, ${theme}`} />
+      <RadioGroup aria-label={`Radio, ${theme}`}>
+        <RadioGroupItem value="one" aria-label="One" />
+      </RadioGroup>
+      <Switch aria-label={`Switch off, ${theme}`} />
+      <Switch aria-label={`Switch on, ${theme}`} defaultChecked />
+    </div>
+    <Input aria-label={`Input, ${theme}`} placeholder="Placeholder" />
+    <Search aria-label={`Search, ${theme}`} shortcut={[]} />
+  </div>
+)
+
+export const ContrastPage = () => (
+  <Page
+    title="Contrast"
+    intro={
+      <>
+        Form controls follow the SnowUI Figma kit by default, whose unchecked
+        rings, field strokes, Switch track and placeholders are under WCAG AA
+        (1.6:1 for Black/20%). With more contrast — the OS setting{' '}
+        <Code>prefers-contrast: more</Code>, or{' '}
+        <Code>data-contrast="more"</Code> on any element — the{' '}
+        <Code>control-border</Code>, <Code>control-border-strong</Code> and{' '}
+        <Code>placeholder</Code> tokens take WCAG AA values (3:1 for boundaries,
+        4.5:1 for text), strokes get 1px, gray fields get a ring and the Switch
+        thumb flips to the per-mode <Code>white</Code>.{' '}
+        <Code>data-contrast="standard"</Code> switches a subtree back. Contrast
+        and theme scopes combine at any depth.
+      </>
+    }
+  >
+    {(['standard', 'more'] as const).map((contrast) => (
+      <Section
+        key={contrast}
+        title={contrast === 'standard' ? 'Standard (Figma)' : 'More (WCAG AA)'}
+        description={
+          <>
+            <Code>data-contrast="{contrast}"</Code> on the section, the theme on
+            each panel.
+          </>
+        }
+      >
+        <div data-contrast={contrast} className="grid grid-cols-2 gap-6">
+          <ContrastSample theme="light" />
+          <ContrastSample theme="dark" />
+        </div>
+      </Section>
+    ))}
   </Page>
 )

@@ -84,6 +84,11 @@ export const colorGroups: ColorGroup[] = [
     'Library additions, not in the Figma kit, for text that must meet WCAG contrast. Secondary/Indigo text is 2.07:1 on white, so indigo text uses a darker indigo in light mode; Black/40% text is 2.85:1, so secondary text uses text-secondary; Secondary/Red text is 3.36:1, so error text uses red-text.',
     ['indigo-text', 'text-secondary', 'red-text'],
   ),
+  group(
+    'Form controls',
+    'Library additions for the boundaries and placeholders of form controls. With the default contrast they are the Figma colours (Black/20%, Black/40%), under WCAG AA; with more contrast (the OS setting prefers-contrast: more, or data-contrast="more" on any element) they meet it: 3:1 for boundaries, 4.5:1 for placeholder text. See Guides › Contrast.',
+    ['control-border', 'control-border-strong', 'placeholder'],
+  ),
 ]
 
 /**

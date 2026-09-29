@@ -1,0 +1,23 @@
+{
+  "color": {
+    "$type": "color",
+    "control-border": {
+      "$value": "{color.black-20}",
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Black/20%" }
+      }
+    },
+    "control-border-strong": {
+      "$value": "{color.black-40}",
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Black/40%" }
+      }
+    },
+    "placeholder": {
+      "$value": "{color.black-20}",
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Black/20%" }
+      }
+    }
+  }
+}

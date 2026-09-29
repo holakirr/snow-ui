@@ -152,13 +152,36 @@ describe('generated tokens (tokens.generated.css ↔ tokens.generated.ts)', () =
 
     expect(themeNames('--color-').sort()).toEqual(documented.sort())
     for (const name of dark.keys()) {
-      if (name.startsWith('--color-')) expect(documented).toContain(name)
+      // `--color-<name>--more`: the contrast values (next test).
+      if (name.startsWith('--color-') && !name.includes('--', 2)) {
+        expect(documented).toContain(name)
+      }
     }
     expect(
       colorGroups
         .flatMap((group) => group.tokens.map(({ name }) => name))
         .sort(),
     ).toEqual(colorTokens.map(({ name }) => name).sort())
+  })
+
+  it('gives the contrast tokens their "more" values in the theme scopes', () => {
+    const contrasted = colorTokens.filter(({ contrastMore }) => contrastMore)
+    expect(contrasted.map(({ name }) => name)).toEqual([
+      'control-border',
+      'control-border-strong',
+      'placeholder',
+    ])
+    // A "more" value that differs per theme is a variable of the theme
+    // scopes; one alias for both themes (Black/80%) is written in place.
+    const more = [...dark.keys()].filter((name) => name.endsWith('--more'))
+    expect(more).toEqual([
+      '--color-control-border--more',
+      '--color-placeholder--more',
+    ])
+    for (const { name, contrastMore } of contrasted) {
+      const value = dark.get(`--color-${name}--more`)
+      if (value) expect(value).toBe(normalize(contrastMore?.dark ?? ''))
+    }
   })
 
   it.each(deprecatedColors)(

@@ -10,10 +10,12 @@ export const popoverSurfaceClasses =
 /**
  * Figma popover items: 36px high (8px padding), a 12px radius, 14/20 text,
  * 16px icons with an 8px gap, and a Black/4% highlight. Disabled items show
- * the not-allowed cursor (Radix ignores their selection).
+ * the not-allowed cursor (Radix ignores their selection). The highlight marks
+ * the keyboard focus but is 1.1:1, so with more contrast it gets a 2px
+ * `black-80` ring, the colour of `focus-ring` (WCAG 1.4.11).
  */
 export const popoverItemClasses =
-  'relative flex cursor-pointer select-none items-center gap-2 rounded-12 p-2 text-14 text-black outline-none transition-colors focus:bg-black-4 data-[highlighted]:bg-black-4 data-[state=open]:bg-black-4 data-[disabled]:cursor-not-allowed data-[disabled]:text-black-20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+  'relative flex cursor-pointer select-none items-center gap-2 rounded-12 p-2 text-14 text-black outline-none transition-colors focus:bg-black-4 data-[highlighted]:bg-black-4 data-[state=open]:bg-black-4 data-[disabled]:cursor-not-allowed data-[disabled]:text-black-20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 contrast-more:focus:inset-ring-2 contrast-more:focus:inset-ring-black-80 contrast-more:data-[highlighted]:inset-ring-2 contrast-more:data-[highlighted]:inset-ring-black-80'
 
 /** A group title in a popover: 12/16 `text-secondary` (Figma: Black/40%), 28px high. */
 export const popoverLabelClasses = 'px-2 py-1.5 text-12 text-secondary'

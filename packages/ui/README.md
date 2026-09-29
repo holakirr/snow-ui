@@ -124,6 +124,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 - **Spacing:** the Figma spacing and size values are multiples of 4px, so Tailwind's spacing utilities (`p-1` = 4px, `gap-3` = 12px, `size-10` = 40px) cover them.
 - **Cursors:** a base rule gives buttons and ARIA controls (`option`, `menuitem`, `tab`, `radio`, `checkbox`, `switch`, `label[for]`…) the pointer cursor, which Tailwind v4's preflight no longer sets, and disabled elements (`:disabled`, `aria-disabled="true"`, `data-disabled`) the not-allowed cursor. `cursor-*` utilities override it.
 - **Focus:** the `focus-ring` utility is the keyboard focus indicator of every component: on `:focus-visible` it draws the Figma "Focus" ring (`ring-4 ring-focus`) plus a 2px `black-80` outline offset by 2px. Use it on your own focusable elements: `<button className="focus-ring">`.
+- **Contrast:** the form controls' boundaries and placeholders are the `control-border`, `control-border-strong` and `placeholder` tokens: the Figma colours by default, WCAG AA ones with more contrast (see [Contrast](#contrast)). The `contrast-more:` variant follows the same scopes.
 - **Target size:** the `hit-area` utility gives a small control an invisible pointer hit area of at least 24×24px (WCAG 2.5.8), centred on it; the element needs `relative`. Bare `Button`s, `Switch`, the `Slider` thumb, sortable `Table` headers, line tabs and the `Search` clear button use it.
 - **Motion:** with the OS setting `prefers-reduced-motion: reduce`, the overlays fade instead of sliding or zooming, the Accordion opens at once, and the Skeleton pulse, the Button press, the Switch thumb, the Dialog zoom and the Accordion chevron stop moving (WCAG 2.3.3). Storybook's Foundations › Motion page lists the animation tokens.
 - **Effects:** `shadow-1`, `shadow-2`, `shadow-glow`, `shadow-glass-1`, `shadow-glass-2`, `inset-shadow-inner`, the Figma focus ring `ring-4 ring-focus` (or `shadow-focus`), the background blurs `backdrop-blur-bg-40` (20px) and `backdrop-blur-bg-100` (50px), and `glass` / `glass-1` / `glass-2`, which approximate Figma's Glass effects with a fill, a background blur and a shadow.
@@ -150,6 +151,21 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 - Without a mode on `<html>`, the page follows the OS preference; `<html data-theme="light">` or `"dark"` (or `class="light"` / `"dark"`, e.g. from next-themes with `attribute="class"`) pins it. Scopes inside work either way.
 - `dark:` utilities follow the same scopes, with one limit: a dark scope inside a light scope inside a dark scope gets the dark tokens but not `dark:` utilities. Prefer the tokens, which switch at any depth.
 - Overlays are portalled: the content of `Dialog`, `AlertDialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope. A plain `data-theme` attribute leaves it in the theme of `<html>`; a `ThemeScope` (`<ThemeScope theme="dark">`, or `asChild` on your element) scopes the tokens and passes the theme to the overlays opened inside it, as their `data-theme`. `SnowUIProvider`'s `theme` does the same without an element, and a `data-theme` on a `*Content` component wins. Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
+
+### Contrast
+
+The form controls follow the Figma kit by default, and its rings, strokes, Switch track and placeholders are under WCAG AA (see [Known gaps](#accessibility-deviations-from-the-figma-kit)). With more contrast they meet it, in both themes:
+
+- with the OS setting behind `prefers-contrast: more` (macOS and iOS "Increase contrast", and similar OS or browser settings), unless `<html data-contrast="standard">`;
+- inside any element with `data-contrast="more"` (your app's own setting), scoped like `data-theme`: `data-contrast="standard"` inside switches a subtree back, and contrast and theme scopes combine at any depth.
+
+| Token | Standard (Figma) | More contrast | Used by |
+| --- | --- | --- | --- |
+| `control-border` | Black/20% (1.6:1) | Black/50% (≥ 3.79:1); White/50% in dark mode (≥ 3.3:1) | Unchecked Checkbox and Radio rings, text field and Select strokes, the Switch's off track |
+| `control-border-strong` | Black/40% | Black/80% (12.6:1; 8.7:1 in dark mode) | Their hover and focus states, the Slider thumb border, the Select chevron, the hovered Search icon |
+| `placeholder` | Black/20% (1.6:1) | Black/60% (≥ 5.25:1); White/75% in dark mode (≥ 4.63:1) | Placeholders of `Input`, `InputSmall`, `Textarea`, `Search`, and the Search icon |
+
+With more contrast the 0.5px strokes are 1px, the gray `InputSmall` and `Search` fields get a stroke (their Black/4% fill is 1.1:1), the Switch thumb is the per-mode `white` (black on the dark-mode indigo track, 10.14:1), and the highlighted menu item and CommandPalette option get a 2px `black-80` ring. The `contrast-more:` variant (it replaces Tailwind's, which only reads the OS preference) follows the same scopes, for your own controls. The ratios are asserted from the tokens in both themes (`src/foundations/contrast.test.ts`), and Storybook's tests run axe on every story with the OS preference emulated. Storybook's "Contrast" guide has every ratio and the reasoning behind the values.
 
 ## Components
 
@@ -348,7 +364,7 @@ Data, overlay and navigation components:
 - **AlertDialog** (a library extension): the destructive action is `red-text` (#D42020, #FF8080 in dark mode) with the per-mode `white` label, 5.21:1 and 8.65:1; Secondary/Red under a white label would be 3.36:1 (1.4.3).
 - **Toast:** a toast with an `action` stays until it is dismissed (its `duration` defaults to `Number.POSITIVE_INFINITY`, not the Toaster's 3 seconds, unless you set one), so the action doesn't vanish on a timer (2.2.1). Toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer. The Figma toast has no close button.
 
-Known gaps (Figma values kept for now): the Black/20% rings of unchecked Checkbox and Radio and the 0.5px Black/20% Input stroke (1.6:1), the Switch's white thumb on the dark-mode indigo track (2.07:1), the Black/20% placeholders of the native text fields (`Input`, `InputSmall`, `Textarea`, `Search`: axe doesn't check `::placeholder`, and they are never the field's only label), the 40% Link arrow and external icon, and the Black/4% highlight of menu items.
+Known gaps with the default (standard) contrast, which keeps the Figma values: the Black/20% rings of unchecked Checkbox and Radio and the 0.5px Black/20% Input stroke (1.6:1), the Switch's Black/20% off track (1.6:1) and white thumb on the dark-mode indigo track (2.07:1), the Black/20% placeholders of the native text fields (`Input`, `InputSmall`, `Textarea`, `Search`: axe doesn't check `::placeholder`, and they are never the field's only label), the Black/4% fill of the gray `InputSmall` and `Search` fields (1.1:1), the Black/40% Slider thumb border, and the Black/4% highlight of menu items. With more contrast (`prefers-contrast: more` or `data-contrast="more"`, see [Contrast](#contrast)) they all meet WCAG AA. The 40% Link arrow and external icon stay a gap in both.
 
 Storybook demos follow the same rules: the Table and Dashboard status cells colour only the dot (the Secondary colours are 1.7–2.4:1 as text), and avatar initials on Secondary colours are static black, not white.
 

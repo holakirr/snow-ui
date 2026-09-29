@@ -25,15 +25,17 @@ export type SearchSize = 'sm' | 'lg'
 // Outline: Surface/1 with a 0.5px Black/20% stroke → Black/40% on hover. On
 // focus both become Surface/1 + 0.5px Black/40% + the Focus ring. Invalid
 // (the <input> has `aria-invalid="true"`; no Figma state): a 1px
-// Secondary/Red stroke in every state, like Input.
+// Secondary/Red stroke in every state, like Input. The stroke colours are
+// the `control-border*` tokens; with more contrast the stroke is 1px and the
+// gray field gets one too (its fill alone is 1.1:1, WCAG 1.4.11).
 const searchStyles = cva(
-  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-black-40 focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red has-disabled:pointer-events-none has-disabled:opacity-40',
+  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-control-border-strong focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red has-disabled:pointer-events-none has-disabled:opacity-40 contrast-more:inset-ring-1 contrast-more:focus-within:inset-ring-1',
   {
     variants: {
       variant: {
-        gray: 'bg-black-4 hover:bg-black-10',
+        gray: 'bg-black-4 hover:bg-black-10 contrast-more:inset-ring-control-border',
         outline:
-          'bg-surface-1 inset-ring-[0.5px] inset-ring-black-20 hover:inset-ring-black-40',
+          'bg-surface-1 inset-ring-[0.5px] inset-ring-control-border hover:inset-ring-control-border-strong',
       },
       size: {
         // The input is the field's full height (`h-full`), not 20px inside
@@ -196,7 +198,8 @@ const Search: FC<SearchProps> = ({
     >
       <SearchIcon
         size={iconSizes[size]}
-        className="shrink-0 text-black-20 transition-colors group-hover/search:text-black-40 group-focus-within/search:text-primary"
+        // The placeholder's colour, darker on hover (Figma Black/20% and 40%).
+        className="shrink-0 text-placeholder transition-colors group-hover/search:text-control-border-strong group-focus-within/search:text-primary"
       />
       <input
         {...props}
@@ -209,7 +212,7 @@ const Search: FC<SearchProps> = ({
         disabled={disabled}
         readOnly={readOnly}
         className={twMerge(
-          'h-full min-w-0 flex-1 bg-transparent text-black outline-none placeholder:text-black-20 disabled:cursor-not-allowed [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden',
+          'h-full min-w-0 flex-1 bg-transparent text-black outline-none placeholder:text-placeholder disabled:cursor-not-allowed [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden',
           inputClassName,
         )}
       />

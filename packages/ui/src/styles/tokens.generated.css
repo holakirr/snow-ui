@@ -109,6 +109,32 @@
    * background-1 in both).
    */
   --color-red-text: #d42020;
+  /*
+   * Accessibility addition (not in the Figma kit): the boundary of form
+   * controls — the rings of unchecked Checkbox and Radio, the strokes of the
+   * text fields and the Select trigger, the Switch's off track. Contrast
+   * "standard" (the default): the Figma Black/20% (1.6:1 on background-1).
+   * Contrast "more" (prefers-contrast: more, data-contrast="more"): Black/50%,
+   * at least 3.79:1 on every surface and field fill (WCAG 1.4.11).
+   */
+  --color-control-border: var(--color-black-20);
+  /*
+   * Accessibility addition (not in the Figma kit): the hover and focus
+   * boundary of form controls (text field strokes, Checkbox and Radio rings,
+   * the Switch's off track), the Slider thumb's border, the Select chevron and
+   * the hovered Search icon. Contrast "standard" (the default): the Figma
+   * Black/40% (2.85:1). Contrast "more": Black/80% (12.6:1), stronger than
+   * control-border.
+   */
+  --color-control-border-strong: var(--color-black-40);
+  /*
+   * Accessibility addition (not in the Figma kit): the placeholder text of the
+   * native text fields (Input, InputSmall, Textarea, Search) and the Search
+   * icon. Contrast "standard" (the default): the Figma Black/20% (1.6:1).
+   * Contrast "more": Black/60%, at least 5.25:1 on every field fill (WCAG
+   * 1.4.3).
+   */
+  --color-placeholder: var(--color-black-20);
 
   /* Deprecated colour names, kept as aliases of the tokens that replaced them. */
   /* @deprecated Use primary; removed in the next major. */
@@ -234,6 +260,13 @@
     --color-red-text: #d42020;
 
     /*
+     * The values of the contrast colours with contrast "more", in this theme;
+     * the contrast scopes below pick them or the standard ones.
+     */
+    --color-control-border--more: rgb(0 0 0 / 0.5);
+    --color-placeholder--more: rgb(0 0 0 / 0.6);
+
+    /*
      * @deprecated Use the `--color-*` tokens; removed in the next major.
      * Comma-separated channels of the old token system (`rgba(var(--black),
      * 0.5)`): `--black`, `--white`, `--brand`… They follow the theme scopes
@@ -275,6 +308,13 @@
     --color-indigo-text: #adadfb;
     --color-text-secondary: rgb(255 255 255 / 0.7);
     --color-red-text: #ff8080;
+
+    /*
+     * The values of the contrast colours with contrast "more", in this theme;
+     * the contrast scopes below pick them or the standard ones.
+     */
+    --color-control-border--more: rgb(255 255 255 / 0.5);
+    --color-placeholder--more: rgb(255 255 255 / 0.75);
 
     /*
      * @deprecated Use the `--color-*` tokens; removed in the next major.
@@ -321,6 +361,13 @@
       --color-indigo-text: #adadfb;
       --color-text-secondary: rgb(255 255 255 / 0.7);
       --color-red-text: #ff8080;
+
+      /*
+       * The values of the contrast colours with contrast "more", in this
+       * theme; the contrast scopes below pick them or the standard ones.
+       */
+      --color-control-border--more: rgb(255 255 255 / 0.5);
+      --color-placeholder--more: rgb(255 255 255 / 0.75);
 
       /*
        * @deprecated Use the `--color-*` tokens; removed in the next major.
@@ -371,5 +418,56 @@
     --color-ring: var(--color-primary);
     --color-sidebar-border: var(--color-black-10);
     --color-white-border: var(--color-black-10);
+  }
+
+  /*
+   * Contrast scopes. `data-contrast="more"` on any element, or the OS
+   * preference `prefers-contrast: more` unless <html
+   * data-contrast="standard">, gives its subtree the "more" values of the
+   * contrast colours (WCAG AA for form controls), in either theme;
+   * `data-contrast="standard"` switches back to the Figma values.
+   * `--contrast-more` is a switch: a space when on, `initial` (invalid) when
+   * off.
+   */
+  [data-contrast="more"] {
+    --contrast-more: ;
+  }
+
+  [data-contrast="standard"] {
+    --contrast-more: initial;
+  }
+
+  @media (prefers-contrast: more) {
+    :root:not([data-contrast="standard"]) {
+      --contrast-more: ;
+    }
+  }
+
+  /*
+   * `--X--more-on` is the "more" value when the switch is on and invalid when
+   * it is off, so `--X` falls back to the standard value. Re-declared on every
+   * scope element: var() is computed where it is declared.
+   */
+  :root,
+  [data-theme],
+  [data-contrast] {
+    --color-control-border--more-on: var(--contrast-more)
+      var(--color-control-border--more);
+    --color-control-border: var(
+      --color-control-border--more-on,
+      var(--color-black-20)
+    );
+    --color-control-border-strong--more-on: var(--contrast-more)
+      var(--color-black-80);
+    --color-control-border-strong: var(
+      --color-control-border-strong--more-on,
+      var(--color-black-40)
+    );
+    --color-placeholder--more-on: var(--contrast-more)
+      var(--color-placeholder--more);
+    --color-placeholder: var(
+      --color-placeholder--more-on,
+      var(--color-black-20)
+    );
   }
 }

@@ -79,8 +79,10 @@ const Slider: FC<SliderProps> = ({
           aria-labelledby={ariaLabelledBy}
           aria-describedby={ariaDescribedBy}
           aria-invalid={ariaInvalid}
-          // A 16px thumb with a 24px hit area (`hit-area`, WCAG 2.5.8).
-          className="relative block size-4 cursor-grab rounded-full border border-black-40 bg-white shadow-2 transition-colors focus-ring hit-area active:cursor-grabbing aria-invalid:border-red data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40"
+          // A 16px thumb with a 24px hit area (`hit-area`, WCAG 2.5.8). The
+          // Black/40% border is `control-border-strong` (Black/80% with more
+          // contrast).
+          className="relative block size-4 cursor-grab rounded-full border border-control-border-strong bg-white shadow-2 transition-colors focus-ring hit-area active:cursor-grabbing aria-invalid:border-red data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40"
         />
       ))}
     </SliderPrimitive.Root>

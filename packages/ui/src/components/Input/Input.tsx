@@ -16,10 +16,12 @@ import { Label } from '../Label'
 /**
  * The Figma Input field: 12/16 padding, a 16px radius, Surface/1 with a 0.5px
  * Black/20% inside stroke (Black/40% on hover and focus), 14/20 text and a
- * Black/20% placeholder. Shared by `Textarea`.
+ * Black/20% placeholder. Shared by `Textarea`. The stroke and placeholder
+ * colours are the `control-border*` and `placeholder` tokens: the Figma
+ * values, or WCAG AA ones with more contrast, where the stroke is also 1px.
  */
 export const basicInputClasses =
-  'peer rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all placeholder:text-black-20 hover:inset-ring-black-40'
+  'peer rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all placeholder:text-placeholder hover:inset-ring-control-border-strong contrast-more:inset-ring-1'
 
 /** The disabled look (the design has no Disabled state). */
 export const disabledInputClasses =
@@ -31,11 +33,11 @@ export const disabledInputClasses =
  * focus — instead of the `focus-ring` outline other controls use.
  */
 export const focusInputClasses =
-  'focus:inset-ring-black-40 focus:ring-4 focus:ring-focus'
+  'focus:inset-ring-control-border-strong focus:ring-4 focus:ring-focus'
 
 /** Figma "Static" (read-only): the stroke doesn't react to hover or focus. */
 export const staticInputClasses =
-  'read-only:hover:inset-ring-black-20 read-only:focus:inset-ring-black-20'
+  'read-only:hover:inset-ring-control-border read-only:focus:inset-ring-control-border'
 
 /**
  * Invalid, while the field has `aria-invalid="true"` (`FormControl` sets it):
@@ -49,10 +51,10 @@ export const invalidInputClasses =
 // Figma "Focus" state: Black/40% stroke + the 4px Focus ring, while the
 // <input> is focused (by mouse or keyboard, like the design).
 const fieldClasses =
-  'group/input relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all hover:inset-ring-black-40 focus-within:inset-ring-black-40 has-[input:focus]:ring-4 has-[input:focus]:ring-focus'
+  'group/input relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all hover:inset-ring-control-border-strong focus-within:inset-ring-control-border-strong has-[input:focus]:ring-4 has-[input:focus]:ring-focus contrast-more:inset-ring-1'
 
 const fieldStaticClasses =
-  'hover:inset-ring-black-20 focus-within:inset-ring-black-20'
+  'hover:inset-ring-control-border focus-within:inset-ring-control-border'
 
 // Invalid: the `invalidInputClasses` stroke, while the <input> is invalid.
 const fieldInvalidClasses =
@@ -149,7 +151,7 @@ const Input: FC<InputProps> = ({
         {title && <Label htmlFor={inputId}>{title}</Label>}
         <input
           className={twMerge(
-            'w-full min-w-0 bg-transparent text-inherit outline-none placeholder:text-black-20 disabled:cursor-not-allowed',
+            'w-full min-w-0 bg-transparent text-inherit outline-none placeholder:text-placeholder disabled:cursor-not-allowed',
             inputClassName,
           )}
           style={inputStyle}

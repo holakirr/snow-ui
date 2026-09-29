@@ -53,7 +53,7 @@ There is no `title` prop: label it with a [Label](?path=/docs/components-label--
 - Give it an accessible name: a `Label` with `htmlFor` and the same `id`, a `FormLabel` inside a [Form](?path=/docs/components-form--docs) item, or `aria-label` (as the stories do). A placeholder is not a label.
 - `disabled` removes the field from the tab order; a `readOnly` field stays focusable and its text can be selected and copied.
 
-No row of the package README's deviation table applies. Known gaps, kept from Figma for now: the 0.5px Black/20% stroke (1.6:1) and the Black/20% placeholder (it is never the field's only label).
+No row of the package README's deviation table applies. Known gaps with the default contrast, which keeps the Figma values: the 0.5px Black/20% stroke (1.6:1) and the Black/20% placeholder (it is never the field's only label). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border` (Black/50%, at least 3.79:1) and the placeholder Black/60% (at least 5.25:1), White/50% and White/75% in dark mode.
 
 ### Keyboard
 

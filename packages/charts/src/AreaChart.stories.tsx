@@ -55,8 +55,10 @@ export const TotalUsers: Story = {
     const tooltip = await visibleTooltip(canvasElement)
     await waitFor(() => expect(tooltip).toHaveTextContent('Feb'))
     expect(tooltip).toHaveTextContent('This year8,500')
-    // The description is the chart's accessible description.
-    expect(surface).toHaveAccessibleDescription(/peak at 28.5K in May/)
+    // The description is the figure's accessible description.
+    expect(
+      within(canvasElement).getByRole('figure', { name: 'Total Users' }),
+    ).toHaveAccessibleDescription(/peak at 28.5K in May/)
     // Two areas: the second has no fill (opacity 0).
     const stops = canvasElement.querySelectorAll('linearGradient stop')
     expect(stops.length).toBeGreaterThan(0)

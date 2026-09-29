@@ -31,13 +31,15 @@ export interface ChartSeriesConfig {
 export type ChartConfig = Record<string, ChartSeriesConfig>
 
 /**
- * A config key as a CSS identifier: characters other than letters, digits,
- * `-` and `_` become `_<hex code>` (`'United States'` → `United_20States`).
+ * A config key as a CSS identifier: every character other than a letter, a
+ * digit or `-` (`_` included) becomes `_<hex code>_` (`'United States'` →
+ * `United_20_States`). Since `_` only appears in escapes, different keys
+ * never share a property (`'a b'` → `a_20_b`, `'a_20b'` → `a_5f_20b`).
  */
 export const cssIdent = (key: string): string =>
   key.replace(
-    /[^A-Za-z0-9_-]/g,
-    (char) => `_${char.codePointAt(0)?.toString(16)}`,
+    /[^A-Za-z0-9-]/gu,
+    (char) => `_${char.codePointAt(0)?.toString(16)}_`,
   )
 
 /** The custom property that holds the colour of a series: `--chart-<key>`. */

@@ -54,7 +54,9 @@ export const TrafficByLocation: Story = {
     const svg = canvasElement.querySelector('svg.recharts-surface')
     expect(svg).toHaveAttribute('aria-hidden', 'true')
     expect(svg).not.toHaveAttribute('tabindex')
-    const table = canvas.getByRole('table', { name: 'Traffic by Location' })
+    const table = within(
+      canvas.getByRole('figure', { name: 'Traffic by Location' }),
+    ).getByRole('table')
     expect(
       within(table).getByRole('columnheader', { name: 'Visits (%)' }),
     ).toBeInTheDocument()

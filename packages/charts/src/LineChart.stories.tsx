@@ -62,11 +62,13 @@ export const Revenue: Story = {
     const legend = canvasElement.querySelector('[data-slot="chart-legend"]')
     expect(legend).toHaveTextContent('Current week$58,211')
     expect(legend).toHaveTextContent('Previous week$68,768')
-    // The chart is named by the card title.
+    // The chart is named once, by the card title; its focusable plot is
+    // the data points.
     const surface = await chartSurface(canvasElement)
-    expect(surface).toHaveAccessibleName('Revenue')
+    expect(canvas.getByRole('figure', { name: 'Revenue' })).toBeInTheDocument()
+    expect(surface).toHaveAccessibleName('Data points')
     // The data table has every value, formatted.
-    const table = canvas.getByRole('table', { name: 'Revenue' })
+    const table = canvas.getByRole('table')
     expect(within(table).getAllByRole('row')).toHaveLength(7)
     expect(
       within(table).getByRole('cell', { name: '$26,000' }),

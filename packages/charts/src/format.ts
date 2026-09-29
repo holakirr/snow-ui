@@ -52,6 +52,29 @@ export const formatPercent = (share: number, locale: string): string =>
     maximumFractionDigits: 1,
   }).format(share)
 
+const dates = new Map<string, Intl.DateTimeFormat>()
+
+/**
+ * The default text of a category: dates in the locale's medium date style,
+ * in UTC so the server and the browser render the same text; anything else
+ * as its string.
+ */
+export const formatCategory = (value: unknown, locale: string): string => {
+  if (!(value instanceof Date)) return value == null ? '' : String(value)
+  if (Number.isNaN(value.getTime())) return ''
+  let format = dates.get(locale)
+  if (!format) {
+    const options = { dateStyle: 'medium', timeZone: 'UTC' } as const
+    try {
+      format = new Intl.DateTimeFormat(locale, options)
+    } catch {
+      format = new Intl.DateTimeFormat('en-US', options)
+    }
+    dates.set(locale, format)
+  }
+  return format.format(value)
+}
+
 /** A raw data value as a number, or undefined when it isn't one. */
 export const toNumber = (value: unknown): number | undefined => {
   if (typeof value === 'number')

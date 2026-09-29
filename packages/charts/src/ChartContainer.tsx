@@ -1,5 +1,6 @@
 'use client'
 
+import { useSnowUI } from '@holakirr/snow-ui'
 import {
   type ComponentPropsWithoutRef,
   type CSSProperties,
@@ -26,7 +27,7 @@ import {
   useChartLocale,
 } from './context'
 import { warnOnce } from './env'
-import type { ChartValueFormatter } from './format'
+import { type ChartValueFormatter, formatCategory } from './format'
 
 /** Where a chart's legend goes: above, below or beside (after) the plot. */
 export type ChartLegendPosition = 'top' | 'bottom' | 'end'
@@ -41,9 +42,9 @@ export interface ChartContainerProps
   /** A Recharts chart (`<LineChart>`, `<BarChart>`…). It fills the plot area. */
   children?: ReactNode
   /**
-   * The chart's accessible name, also the caption of its data table. Required
-   * unless you pass `aria-label` or `aria-labelledby` (e.g. the id of the
-   * card's visible heading).
+   * The chart's accessible name (of its `<figure>`). Required unless you pass
+   * `aria-label` or `aria-labelledby` (e.g. the id of the card's visible
+   * heading).
    */
   title?: string
   /** A short summary of what the chart shows (the trend, the takeaway) for screen readers. */
@@ -67,6 +68,12 @@ export interface ChartContainerProps
    * @default 'Use the left and right arrow keys to move between data points.'
    */
   keyboardHint?: string | false
+  /**
+   * The name of the chart's focusable plot (Recharts' accessibility layer),
+   * inside the named figure: what the keyboard moves through.
+   * @default 'Data points'
+   */
+  navigationLabel?: string
   /** The rows of the data table (usually the chart's `data`). */
   data?: readonly object[]
   /** The field of a row that names it: the category (x) axis key. */
@@ -82,7 +89,11 @@ export interface ChartContainerProps
   table?: boolean
   /** Formats values in the tooltip, the legend and the table. Defaults to the locale's number format. */
   valueFormatter?: ChartValueFormatter
-  /** Formats categories (x values) in the tooltip and the table. */
+  /**
+   * Formats categories (x values) in the tooltip, the axis and the table.
+   * Defaults to the text of the value; dates are formatted in the locale, in
+   * UTC (the same on the server and in the browser).
+   */
   categoryFormatter?: (value: unknown) => string
   /**
    * BCP 47 language tag for numbers. Defaults to the `SnowUIProvider`
@@ -91,7 +102,9 @@ export interface ChartContainerProps
   locale?: string
   /**
    * Text direction. Defaults to the `SnowUIProvider`'s, else the element's
-   * computed direction. Right-to-left charts mirror their axes.
+   * computed direction. Right-to-left charts mirror their axes; the figure
+   * gets the `dir` you (or the provider) set, so its legend, tooltip and
+   * table follow it too.
    */
   dir?: ChartDirection
   /** A legend (usually `<ChartLegendContent />`), outside the plot area. */
@@ -137,13 +150,14 @@ export const ChartContainer = ({
   emptyMessage = 'No data',
   loadingLabel = 'Loading chart',
   keyboardHint = 'Use the left and right arrow keys to move between data points.',
+  navigationLabel = 'Data points',
   data,
   categoryKey,
   categoryLabel,
   tableSeries,
   table = true,
   valueFormatter,
-  categoryFormatter = String,
+  categoryFormatter,
   locale: localeProp,
   dir: dirProp,
   legend,
@@ -164,6 +178,8 @@ export const ChartContainer = ({
   const rootRef = useRef<HTMLElement | null>(null)
   const locale = useChartLocale(localeProp)
   const dir = useChartDirection(rootRef, dirProp)
+  const { dir: providerDir } = useSnowUI()
+  const explicitDir = dirProp ?? providerDir
   // The live region's text is set on the element itself: announcing the
   // point the keyboard moved to must not re-render the chart.
   const liveRef = useRef<HTMLDivElement>(null)
@@ -199,7 +215,8 @@ export const ChartContainer = ({
       locale,
       dir,
       formatValue: createFormatValue(locale, valueFormatter),
-      formatCategory: categoryFormatter,
+      formatCategory:
+        categoryFormatter ?? ((value) => formatCategory(value, locale)),
       announce,
     }),
     [config, locale, dir, valueFormatter, categoryFormatter, announce],
@@ -225,18 +242,17 @@ export const ChartContainer = ({
   const showTable =
     table && !loading && !empty && data != null && categoryKey != null
 
-  // The chart's own <svg> (Recharts' accessibility layer makes it a
-  // focusable `application`) gets the name and the keyboard hint.
+  // The chart is named once, by the figure. Its <svg>, which Recharts'
+  // accessibility layer makes a focusable `application`, is named for what
+  // it is inside the figure (the data points) and described by the keyboard
+  // hint.
   const interactive = keyboardHint !== false
   const chart =
     isValidElement(children) &&
     !(children.props as Record<string, unknown>)['aria-hidden']
       ? cloneElement(children as ReactElement<Record<string, unknown>>, {
-          ...nameProps,
-          'aria-describedby':
-            [describedBy, interactive ? hintId : undefined]
-              .filter(Boolean)
-              .join(' ') || undefined,
+          'aria-label': navigationLabel,
+          'aria-describedby': interactive ? hintId : undefined,
         })
       : children
 
@@ -251,6 +267,7 @@ export const ChartContainer = ({
         className={['snow-chart', className].filter(Boolean).join(' ')}
         style={{ ...chartConfigStyle(config), ...style }}
         data-slot="chart"
+        dir={explicitDir}
         data-dir={dir}
         data-legend={legendNode ? legendPosition : undefined}
         aria-busy={loading || undefined}
@@ -303,16 +320,15 @@ export const ChartContainer = ({
         </div>
         {legendPosition !== 'top' && legendNode}
         {showTable && (
+          // No caption: the figure already names the chart.
           <ChartTable
-            caption={ariaLabelledBy ? undefined : (title ?? ariaLabel)}
-            labelledBy={ariaLabelledBy}
             data={data}
             categoryKey={categoryKey}
             categoryLabel={categoryLabel}
             series={series}
             config={config}
             formatValue={context.formatValue}
-            formatCategory={categoryFormatter}
+            formatCategory={context.formatCategory}
           />
         )}
         {loading ? (

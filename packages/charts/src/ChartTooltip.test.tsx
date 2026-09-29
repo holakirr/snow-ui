@@ -124,6 +124,34 @@ describe('ChartTooltipContent', () => {
     expect(within(tooltip()).getAllByRole('listitem')).toHaveLength(1)
   })
 
+  it('shows the own value of a stacked series, not its running sum', () => {
+    inChart(
+      <ChartTooltipContent
+        active
+        label="Jan"
+        payload={[
+          {
+            dataKey: '__snow_stack__desktop',
+            name: 'desktop',
+            value: [0, 18600],
+            payload: { desktop: 18600, mobile: 8000 },
+          },
+          {
+            dataKey: '__snow_stack__mobile',
+            name: 'mobile',
+            value: [18600, 26600],
+            payload: { desktop: 18600, mobile: 8000 },
+          },
+        ]}
+      />,
+    )
+    expect(
+      within(tooltip())
+        .getAllByRole('listitem')
+        .map((row) => row.textContent),
+    ).toEqual(['Desktop18,600', 'Mobile8,000'])
+  })
+
   it('hides the label and the indicators on request', () => {
     inChart(
       <ChartTooltipContent

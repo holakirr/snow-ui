@@ -48,10 +48,19 @@ describe('colours', () => {
 describe('config → CSS custom properties', () => {
   it('names a property per series, escaping characters CSS identifiers lack', () => {
     expect(chartColorProperty('desktop')).toBe('--chart-desktop')
-    expect(chartColorProperty('United States')).toBe('--chart-United_20States')
-    expect(cssIdent('a.b/c')).toBe('a_2eb_2fc')
-    expect(cssIdent('kebab-case_ok')).toBe('kebab-case_ok')
-    expect(seriesColor('United States')).toBe('var(--chart-United_20States)')
+    expect(chartColorProperty('United States')).toBe('--chart-United_20_States')
+    expect(cssIdent('a.b/c')).toBe('a_2e_b_2f_c')
+    expect(cssIdent('kebab-case')).toBe('kebab-case')
+    expect(cssIdent('ümlaut 🙂')).toBe('_fc_mlaut_20__1f642_')
+    expect(seriesColor('United States')).toBe('var(--chart-United_20_States)')
+  })
+
+  it('never gives two keys the same property', () => {
+    const keys = ['a b', 'a_20b', 'a_20_b', 'a_b', 'a-b', 'a.b', 'a__b']
+    const idents = keys.map(cssIdent)
+    expect(new Set(idents).size).toBe(keys.length)
+    expect(cssIdent('a b')).toBe('a_20_b')
+    expect(cssIdent('a_20b')).toBe('a_5f_20b')
   })
 
   it('sets every series colour, falling back to the palette by position', () => {

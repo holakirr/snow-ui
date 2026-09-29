@@ -65,9 +65,12 @@ export interface DonutChartProps<TDatum extends object>
  *   config={{ 'United States': { color: 'primary' }, Canada: { color: 'blue' } }}
  * />
  */
+/** The default config: one object, so memoized values stay the same. */
+const NO_CONFIG: ChartConfig = {}
+
 export const DonutChart = <TDatum extends object>({
   data,
-  config = {},
+  config = NO_CONFIG,
   nameKey,
   valueKey,
   valueLabel = 'Value',
@@ -106,15 +109,23 @@ export const DonutChart = <TDatum extends object>({
     return merged
   }, [config, names, valueKey, valueLabel])
 
-  const values = data.map(
-    (row) => toNumber((row as Record<string, unknown>)[valueKey]) ?? 0,
+  const values = useMemo(
+    () =>
+      data.map(
+        (row) => toNumber((row as Record<string, unknown>)[valueKey]) ?? 0,
+      ),
+    [data, valueKey],
   )
   const total = values.reduce((sum, value) => sum + Math.max(0, value), 0)
-  const slices = data.map((row, index) => ({
-    ...(row as Record<string, unknown>),
-    fill: seriesColor(names[index] as string),
-    fillOpacity: fullConfig[names[index] as string]?.opacity ?? 1,
-  }))
+  const slices = useMemo(
+    () =>
+      data.map((row, index) => ({
+        ...(row as Record<string, unknown>),
+        fill: seriesColor(names[index] as string),
+        fillOpacity: fullConfig[names[index] as string]?.opacity ?? 1,
+      })),
+    [data, names, fullConfig],
+  )
 
   const legendValues =
     legend === 'percent' || legend === true

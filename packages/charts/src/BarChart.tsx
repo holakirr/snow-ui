@@ -260,7 +260,10 @@ export const BarChart = <TDatum extends object>({
   'aria-describedby': ariaDescribedBy,
   ...plotProps
 }: BarChartProps<TDatum>) => {
-  const keys = seriesKeys(config, data, series)
+  const keys = useMemo(
+    () => seriesKeys(config, data, series),
+    [config, data, series],
+  )
   const categories = useMemo(
     () =>
       colorBy === 'category'

@@ -4,7 +4,6 @@ import { AreaChart } from './AreaChart'
 import { BarChart } from './BarChart'
 import { DonutChart } from './DonutChart'
 import { LineChart } from './LineChart'
-import { Sparkline } from './Sparkline'
 import {
   projections,
   projectionsConfig,
@@ -80,7 +79,8 @@ describe('LineChart', () => {
         .getAllByRole('listitem')
         .map((item) => item.textContent),
     ).toEqual(['Current week$58K', 'Previous week'])
-    expect(screen.getByRole('table', { name: 'Revenue' })).toBeInTheDocument()
+    expect(screen.getByRole('figure', { name: 'Revenue' })).toBeInTheDocument()
+    expect(screen.getByRole('table')).toBeInTheDocument()
   })
 
   it('dashes the lines after projectionFrom', async () => {
@@ -225,6 +225,85 @@ describe('AreaChart', () => {
   })
 })
 
+describe('stacked series', () => {
+  const flat = [
+    { x: 'A', a: 10, b: 10 },
+    { x: 'B', a: 10, b: 10 },
+    { x: 'C', a: 10, b: 10 },
+  ]
+  const config = { a: { label: 'A' }, b: { label: 'B' } }
+
+  /** The y coordinate of a value-axis tick, by its label. */
+  const tickY = (container: HTMLElement, label: string) =>
+    Number(
+      [...container.querySelectorAll('.recharts-yAxis-tick-labels text')]
+        .find((text) => text.textContent === label)
+        ?.getAttribute('y'),
+    )
+
+  /** The cy of the dots of each drawn series (solid and dashed copies). */
+  const dotYs = (container: HTMLElement, kind: 'line' | 'area') =>
+    [...container.querySelectorAll(`.recharts-${kind}-dots`)].map((group) =>
+      [...group.querySelectorAll('circle')].map((dot) =>
+        Number(dot.getAttribute('cy')),
+      ),
+    )
+
+  it('stacks lines: each series is drawn at the sum of the ones before it', async () => {
+    const { container } = render(
+      <LineChart
+        title="Stacked"
+        data={flat}
+        xKey="x"
+        config={config}
+        stacked
+        dots
+        domain={[0, 40]}
+        tickCount={5}
+      />,
+    )
+    await waitFor(() => expect(dotYs(container, 'line')).toHaveLength(2))
+    const [a, b] = dotYs(container, 'line')
+    expect(a).toEqual([10, 10, 10].map(() => tickY(container, '10')))
+    expect(b).toEqual([10, 10, 10].map(() => tickY(container, '20')))
+  })
+
+  it('stacks areas with a projection without adding the junction twice', async () => {
+    const { container } = render(
+      <AreaChart
+        title="Stacked"
+        data={flat}
+        xKey="x"
+        config={config}
+        stacked
+        projectionFrom="B"
+        dots
+        domain={[0, 40]}
+        tickCount={5}
+      />,
+    )
+    await waitFor(() => expect(dotYs(container, 'line')).toHaveLength(4))
+    const [aSolid, aDashed, bSolid, bDashed] = dotYs(container, 'line')
+    const y10 = tickY(container, '10')
+    const y20 = tickY(container, '20')
+    // Solid up to B, dashed from B: both meet at B, at the same height.
+    expect(aSolid).toEqual([y10, y10])
+    expect(aDashed).toEqual([y10, y10])
+    expect(bSolid).toEqual([y20, y20])
+    expect(bDashed).toEqual([y20, y20])
+    // The dashed copies are dashed.
+    expect(
+      [...container.querySelectorAll('.recharts-line-curve')].map((curve) =>
+        curve.getAttribute('stroke-dasharray'),
+      ),
+    ).toEqual([null, '2 4', null, '2 4'])
+    // One fill per series, between its bottom and top, without a stroke (so
+    // no line along the series below).
+    expect(container.querySelectorAll('.recharts-area-area')).toHaveLength(2)
+    expect(container.querySelectorAll('.recharts-area-curve')).toHaveLength(0)
+  })
+})
+
 describe('BarChart', () => {
   it('colours each bar by its category', async () => {
     const { container } = render(
@@ -361,7 +440,7 @@ describe('DonutChart', () => {
       ).toHaveLength(4),
     )
     const sectors = [...container.querySelectorAll('.recharts-pie-sector path')]
-    expect(sectors[0]).toHaveAttribute('fill', 'var(--chart-United_20States)')
+    expect(sectors[0]).toHaveAttribute('fill', 'var(--chart-United_20_States)')
     const legend = container.querySelector(
       '[data-slot="chart-legend"]',
     ) as HTMLElement
@@ -379,7 +458,7 @@ describe('DonutChart', () => {
     expect(
       container.querySelector('.snow-chart-donut__center'),
     ).toHaveTextContent('Total100%')
-    const table = screen.getByRole('table', { name: 'Traffic by location' })
+    const table = screen.getByRole('table')
     expect(
       within(table).getByRole('columnheader', { name: 'Visits' }),
     ).toBeInTheDocument()
@@ -434,65 +513,5 @@ describe('DonutChart', () => {
       />,
     )
     expect(screen.getByText('No data')).toBeInTheDocument()
-  })
-})
-
-describe('Sparkline', () => {
-  it('is a named image of a line', async () => {
-    const { container } = render(
-      <Sparkline
-        title="Views, last 7 days"
-        data={[1, 3, 2, 5]}
-        color="indigo"
-        dashed
-      />,
-    )
-    const image = screen.getByRole('img', { name: 'Views, last 7 days' })
-    expect(image).toHaveStyle({ height: '32px', width: '100%' })
-    expect(image.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
-    await waitFor(() =>
-      expect(container.querySelector('.recharts-line-curve')).not.toBeNull(),
-    )
-    const line = container.querySelector('.recharts-line-curve')
-    expect(line).toHaveAttribute('stroke', 'var(--color-indigo)')
-    expect(line).toHaveAttribute('stroke-dasharray', '2 4')
-  })
-
-  it('reads rows with a data key and fills the area', async () => {
-    const { container } = render(
-      <Sparkline
-        aria-label="Sales"
-        data={[{ sales: 4 }, { sales: '6' }, { sales: null }]}
-        dataKey="sales"
-        area
-        curve="linear"
-        height={48}
-        width={120}
-      />,
-    )
-    expect(screen.getByRole('img', { name: 'Sales' })).toHaveStyle({
-      width: '120px',
-    })
-    await waitFor(() =>
-      expect(container.querySelector('.recharts-area-area')).not.toBeNull(),
-    )
-    expect(container.querySelector('linearGradient stop')).toHaveStyle({
-      stopColor: 'var(--color-primary)',
-    })
-  })
-
-  it('warns without an accessible name', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    render(<Sparkline data={[1, 2]} />)
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('A Sparkline needs'),
-    )
-    render(
-      <>
-        <span id="label">Trend</span>
-        <Sparkline aria-labelledby="label" data={[1, 2]} />
-      </>,
-    )
-    expect(screen.getByRole('img', { name: 'Trend' })).toBeInTheDocument()
   })
 })

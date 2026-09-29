@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, type ReactElement } from 'react'
+import { Fragment, type ReactElement, useMemo } from 'react'
 import {
   Area,
   CartesianGrid,
@@ -16,6 +16,7 @@ import { ChartTooltip, ChartTooltipContent } from './ChartTooltip'
 import { seriesColor } from './config'
 import { useChart } from './context'
 import { formatCompact } from './format'
+import { seriesData } from './series-data'
 import {
   AXIS_TICK,
   BASELINE,
@@ -53,7 +54,11 @@ export interface SeriesChartProps<TDatum extends object>
    * like the Figma "Total Users" and "Revenue" lines. @default false
    */
   fade?: boolean
-  /** Stacks the series (each line or area on top of the previous ones). @default false */
+  /**
+   * Stacks the series: each line or area is drawn on top of the ones before
+   * it (in `series` / config order), so the top one shows the total. The
+   * tooltip and the table keep each series' own value. @default false
+   */
   stacked?: boolean
 }
 
@@ -64,8 +69,6 @@ const CURVES = {
 } as const
 
 const DASH = '2 4'
-const solidKey = (key: string) => `__snow_solid__${key}`
-const projectionKey = (key: string) => `__snow_projection__${key}`
 
 /**
  * A horizontal gradient from 40% to 100% opacity across the plot area, for
@@ -154,34 +157,23 @@ const Plot = <TDatum extends object>({
   const locale = chart?.locale ?? 'en-US'
   const svgId = useSvgId()
 
-  const projectionIndex =
-    projectionFrom === undefined
-      ? -1
-      : data.findIndex(
-          (row) => (row as Record<string, unknown>)[xKey] === projectionFrom,
-        )
-  const split = (key: string) => projectionIndex >= 0 && !config[key]?.dashed
-  const rows =
-    projectionIndex >= 0
-      ? data.map((row, index) => {
-          const record = { ...(row as Record<string, unknown>) }
-          for (const key of keys) {
-            if (!split(key)) continue
-            record[solidKey(key)] =
-              index <= projectionIndex ? record[key] : null
-            record[projectionKey(key)] =
-              index >= projectionIndex ? record[key] : null
-          }
-          return record
-        })
-      : (data as readonly object[])
+  const { rows, dataKeys } = useMemo(
+    () =>
+      seriesData(data, {
+        keys,
+        config,
+        xKey,
+        projectionFrom,
+        stacked,
+        range: type === 'area',
+      }),
+    [data, keys, config, xKey, projectionFrom, stacked, type],
+  )
 
   const variant = tooltipVariant(tooltip)
-  const Series = type === 'area' ? Area : Line
-
   return (
     <ComposedChart
-      data={rows as Record<string, unknown>[]}
+      data={rows}
       margin={{ top: 8, right: 4, bottom: 0, left: 4 }}
       {...svgLabel}
     >
@@ -237,6 +229,29 @@ const Plot = <TDatum extends object>({
           yTickFormatter ?? ((value: number) => formatCompact(value, locale))
         }
       />
+      {
+        // An area is its fill (an `<Area>` without stroke, over the series'
+        // value or stacked range) under the same lines as a line chart: a
+        // stacked range's lower edge isn't stroked, and the projection only
+        // dashes the line.
+        type === 'area' &&
+          keys.map((key) => (
+            <Area
+              key={`${key}-fill`}
+              name={key}
+              dataKey={dataKeys[key]?.fill ?? key}
+              type={CURVES[curve]}
+              stroke="none"
+              fill={`url(#${svgId}-area-${keys.indexOf(key)})`}
+              fillOpacity={1}
+              dot={false}
+              activeDot={false}
+              tooltipType="none"
+              legendType="none"
+              isAnimationActive={animate}
+            />
+          ))
+      }
       {keys.flatMap((key) => {
         const index = keys.indexOf(key)
         const color = seriesColor(key)
@@ -255,32 +270,28 @@ const Plot = <TDatum extends object>({
             fill: 'var(--color-background-1)',
           },
           isAnimationActive: animate,
-          stackId: stacked ? 'stack' : undefined,
-          ...(type === 'area' && {
-            fill: `url(#${svgId}-area-${index})`,
-            fillOpacity: 1,
-          }),
         }
-        if (!split(key)) {
-          return [
-            <Series
-              key={key}
-              {...common}
-              dataKey={key}
-              strokeDasharray={dashed ? DASH : undefined}
-            />,
-          ] as ReactElement[]
-        }
-        return [
-          <Series key={key} {...common} dataKey={solidKey(key)} />,
-          <Series
-            key={`${key}-projection`}
+        const { solid, projection } = dataKeys[key] ?? { solid: key }
+        const lines: ReactElement[] = [
+          <Line
+            key={key}
             {...common}
-            dataKey={projectionKey(key)}
-            strokeDasharray={DASH}
-            legendType="none"
+            dataKey={solid}
+            strokeDasharray={dashed ? DASH : undefined}
           />,
-        ] as ReactElement[]
+        ]
+        if (projection) {
+          lines.push(
+            <Line
+              key={`${key}-projection`}
+              {...common}
+              dataKey={projection}
+              strokeDasharray={DASH}
+              legendType="none"
+            />,
+          )
+        }
+        return lines
       })}
       {variant && (
         <ChartTooltip
@@ -325,7 +336,10 @@ export const SeriesChart = <TDatum extends object>({
   'aria-describedby': ariaDescribedBy,
   ...plotProps
 }: SeriesChartProps<TDatum> & { type: 'line' | 'area' }) => {
-  const keys = seriesKeys(config, data, series)
+  const keys = useMemo(
+    () => seriesKeys(config, data, series),
+    [config, data, series],
+  )
   const showLegend = legend ?? keys.length > 1
   return (
     <ChartContainer

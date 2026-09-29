@@ -55,6 +55,8 @@ import { LineChart } from '@holakirr/snow-ui-charts'
 
 **Fade.** `fade` makes each line fade in from 40% opacity at its start to 100% at its end, like the Figma lines (it follows the direction in right-to-left charts).
 
+**Stacked.** `stacked` draws each line at the sum of the ones before it (in config or `series` order), so the top line is the total; the tooltip and the table keep each series' own value. The sums are computed by the chart, so a projection's solid and dashed parts meet at the same height.
+
 **Many series** take the palette in order; `tooltip="light"` uses the glass tooltip.
 
 <Canvas of={LineChartStories.ManySeries} />

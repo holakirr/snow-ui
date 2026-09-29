@@ -30,7 +30,10 @@ export interface ChartContextValue {
   announce: (text: string) => void
 }
 
-const ChartContext = createContext<ChartContextValue | null>(null)
+// Pure: bundles that only use the hooks below (Sparkline) drop it.
+const ChartContext = /* @__PURE__ */ createContext<ChartContextValue | null>(
+  null,
+)
 
 export const ChartContextProvider = ChartContext.Provider
 

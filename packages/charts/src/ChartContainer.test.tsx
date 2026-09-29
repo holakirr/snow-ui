@@ -60,10 +60,27 @@ describe('ChartContainer', () => {
     )
     const figure = screen.getByRole('figure', { name: 'Visitors' })
     expect(figure).toHaveAccessibleDescription('Up 20% since January')
-    const surface = screen.getByRole('application', { name: 'Visitors' })
+    // The chart is named once: its focusable plot is named for what it is
+    // inside the figure, and described by the keyboard hint.
+    const surface = screen.getByRole('application', { name: 'Data points' })
     expect(surface).toHaveAccessibleDescription(
-      'Up 20% since January Use the left and right arrow keys to move between data points.',
+      'Use the left and right arrow keys to move between data points.',
     )
+  })
+
+  it('names the focusable plot with navigationLabel', () => {
+    render(
+      <ChartContainer
+        config={config}
+        title="Besucher"
+        navigationLabel="Datenpunkte"
+      >
+        {chart}
+      </ChartContainer>,
+    )
+    expect(
+      screen.getByRole('application', { name: 'Datenpunkte' }),
+    ).toBeInTheDocument()
   })
 
   it('uses aria-labelledby or aria-label instead of a title', () => {
@@ -77,7 +94,7 @@ describe('ChartContainer', () => {
     )
     expect(screen.getByRole('figure', { name: 'Sessions' })).toBeInTheDocument()
     expect(
-      screen.getByRole('application', { name: 'Sessions' }),
+      screen.getByRole('application', { name: 'Data points' }),
     ).toBeInTheDocument()
     rerender(
       <ChartContainer config={config} aria-label="Signups" keyboardHint={false}>
@@ -85,9 +102,9 @@ describe('ChartContainer', () => {
       </ChartContainer>,
     )
     expect(screen.getByRole('figure', { name: 'Signups' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('application', { name: 'Signups' }),
-    ).not.toHaveAttribute('aria-describedby')
+    expect(screen.getByRole('application')).not.toHaveAttribute(
+      'aria-describedby',
+    )
   })
 
   it('warns in development when the chart has no accessible name', () => {
@@ -111,8 +128,11 @@ describe('ChartContainer', () => {
         {chart}
       </ChartContainer>,
     )
-    const table = screen.getByRole('table', { name: 'Visitors' })
+    const table = screen.getByRole('table')
     expect(table).toHaveClass('snow-chart-sr-only')
+    // The figure names the chart; the table doesn't repeat it.
+    expect(table.querySelector('caption')).toBeNull()
+    expect(table).not.toHaveAccessibleName()
     expect(
       within(table)
         .getAllByRole('columnheader')
@@ -291,6 +311,8 @@ describe('direction and locale', () => {
     )
     expect(screen.getByText('ltr en-US')).toBeInTheDocument()
     expect(screen.getByRole('figure')).toHaveAttribute('data-dir', 'ltr')
+    // Inherited: no dir attribute of its own.
+    expect(screen.getByRole('figure')).not.toHaveAttribute('dir')
   })
 
   it('takes the direction and language of SnowUIProvider', () => {
@@ -303,6 +325,45 @@ describe('direction and locale', () => {
     )
     expect(screen.getByText('rtl ar-EG')).toBeInTheDocument()
     expect(screen.getByRole('figure')).toHaveAttribute('data-dir', 'rtl')
+    // The provider's direction goes on the figure, for its legend, tooltip
+    // and table.
+    expect(screen.getByRole('figure')).toHaveAttribute('dir', 'rtl')
+  })
+
+  it('sets its dir prop on the figure, so the legend and the table follow it', () => {
+    render(
+      <div dir="ltr">
+        <ChartContainer
+          config={config}
+          title="Probe"
+          dir="rtl"
+          data={[{ month: 'Jan', desktop: 1 }]}
+          categoryKey="month"
+          legend={<p>Legend</p>}
+        >
+          {chart}
+        </ChartContainer>
+      </div>,
+    )
+    const figure = screen.getByRole('figure')
+    expect(figure).toHaveAttribute('dir', 'rtl')
+    expect(getComputedStyle(screen.getByText('Legend')).direction).toBe('rtl')
+    expect(getComputedStyle(screen.getByRole('table')).direction).toBe('rtl')
+  })
+
+  it('formats date categories in the locale, in UTC', () => {
+    render(
+      <ChartContainer
+        config={config}
+        title="Days"
+        locale="de-DE"
+        data={[{ day: new Date('2025-06-16T00:00:00Z'), desktop: 5 }]}
+        categoryKey="day"
+      >
+        {chart}
+      </ChartContainer>,
+    )
+    expect(screen.getByRole('rowheader')).toHaveTextContent('16.06.2025')
   })
 
   it('prefers its own dir and locale props', () => {

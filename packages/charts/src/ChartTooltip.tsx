@@ -16,6 +16,7 @@ import {
 } from './config'
 import { createFormatValue, useChart } from './context'
 import { type ChartValueFormatter, toNumber } from './format'
+import { isDerivedKey } from './series-data'
 
 /** The props of Recharts' `<Tooltip>`. */
 export type ChartTooltipProps = ComponentProps<typeof Tooltip>
@@ -178,12 +179,15 @@ export const ChartTooltipContent = ({
       config[colorKeyValue] != null
         ? seriesColor(colorKeyValue)
         : (item.color ?? item.fill ?? item.stroke ?? 'currentColor')
+    // Stacked and projected series are drawn from derived fields (a running
+    // sum, a copy): show the series' own value.
+    const value = isDerivedKey(item.dataKey) ? fieldOf(item, key) : item.value
     return {
       key,
       series,
       color,
       name: seriesLabel(config, key),
-      value: valueText(item.value, key, format),
+      value: valueText(value, key, format),
     }
   })
 

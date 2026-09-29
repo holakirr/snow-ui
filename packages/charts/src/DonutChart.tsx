@@ -9,7 +9,7 @@ import { paletteColor } from './colors'
 import { type ChartConfig, seriesColor } from './config'
 import { createFormatValue, useChartLocale } from './context'
 import { formatPercent, toNumber } from './format'
-import { useChartMessages } from './messages'
+import { useChartMessages, withDefault } from './messages'
 import type { ChartFrameProps } from './shared'
 import { tooltipVariant } from './shared'
 
@@ -96,7 +96,7 @@ export const DonutChart = <TDatum extends object>({
 }: DonutChartProps<TDatum>) => {
   const locale = useChartLocale(localeProp)
   const messages = useChartMessages()
-  const valueLabel = valueLabelProp ?? messages.value
+  const valueLabel = withDefault(valueLabelProp, messages.value)
   const format = createFormatValue(locale, valueFormatter)
   const names = useMemo(
     () => data.map((row) => String((row as Record<string, unknown>)[nameKey])),

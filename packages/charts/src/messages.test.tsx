@@ -142,3 +142,28 @@ describe('navigationLabel', () => {
     ).toBeInTheDocument()
   })
 })
+
+describe('null props', () => {
+  it('keep a null emptyMessage empty and a null table header as in 0.1', () => {
+    const { container } = render(
+      <SnowUIProvider messages={german}>
+        <ChartContainer
+          config={config}
+          title="Besucher"
+          empty
+          emptyMessage={null}
+        >
+          {chart}
+        </ChartContainer>
+        <Sparkline title="Views" data={[1, 3, 2]} categoryLabel={null} />
+      </SnowUIProvider>,
+    )
+
+    expect(container.querySelector('.snow-chart__state')).toHaveTextContent('')
+    // The header falls back to the column's key, as before the messages.
+    expect(headers(screen.getByRole('figure', { name: 'Views' }))).toEqual([
+      'point',
+      'Wert',
+    ])
+  })
+})

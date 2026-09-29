@@ -34,6 +34,13 @@ const defaultChartMessages: ChartMessages = {
 }
 
 /**
+ * `value`, or `fallback` when it is missing (`undefined`): like a default
+ * parameter, so an explicit `null` still renders nothing.
+ */
+export const withDefault = <T, F>(value: T | undefined, fallback: F): T | F =>
+  value === undefined ? fallback : value
+
+/**
  * The charts' strings from the nearest `SnowUIProvider` (its `messages.charts`
  * over the English defaults), or the English defaults with a
  * `@holakirr/snow-ui` older than 5.1.

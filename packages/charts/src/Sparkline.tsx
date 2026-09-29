@@ -25,7 +25,7 @@ import {
   formatNumber,
   toNumber,
 } from './format'
-import { useChartMessages } from './messages'
+import { useChartMessages, withDefault } from './messages'
 
 export interface SparklineProps
   extends Omit<
@@ -200,8 +200,8 @@ export const Sparkline = ({
   const dir = useChartDirection(rootRef, dirProp)
   const locale = useChartLocale(localeProp)
   const messages = useChartMessages()
-  const categoryLabel = categoryLabelProp ?? messages.point
-  const valueLabel = valueLabelProp ?? messages.value
+  const categoryLabel = withDefault(categoryLabelProp, messages.point)
+  const valueLabel = withDefault(valueLabelProp, messages.value)
 
   const values = useMemo(
     () =>

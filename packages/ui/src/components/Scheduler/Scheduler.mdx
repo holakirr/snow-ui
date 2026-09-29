@@ -71,10 +71,21 @@ Cells and events have no hover style.
 
 ## Accessibility
 
-- Every hour cell has a `<button type="button">` that fills it, named by the date and time of the start of its hour in the locale (`toLocaleString`). A click, Enter or Space calls `onDateClick`. The default grid has 98 cells (7 days × 14 hours), so a keyboard user tabs through all of them to pass it.
-- Every event is a `div` with `role="button"` in the tab order, next to its cell's button (after it in the tab order); its name is its text (the title and times). An event that runs past midnight is a button on each day. A click, Enter or Space calls `onEventClick` and opens its menu; in the menu the arrow keys move and Escape closes it and returns focus.
+- Every hour cell has a `<button type="button">` that fills it, named by the date and time of the start of its hour in the locale (`toLocaleString`); a click calls `onDateClick`. The default grid has 98 cells (7 days × 14 hours), so a keyboard user tabs through all of them to pass it.
+- Every event is a `div` with `role="button"` in the tab order, next to its cell's button (after it in the tab order); its name is its text (the title and times). An event that runs past midnight is a button on each day. A click calls `onEventClick` and opens its menu (a [DropdownMenu](?path=/docs/components-dropdownmenu--docs)).
 - The events are siblings of the cell buttons, not inside them, so no control is nested in another (a control inside a button isn't exposed to assistive technologies).
 - The grid has no table or grid semantics: the day and hour labels are plain text, and the cells' names carry the date and time.
+
+### Keyboard
+
+Every hour cell and every event is its own tab stop; there are no arrow keys between cells:
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift + Tab | move to the next / previous hour cell or event, in DOM order: day by day, hour by hour, each event after its cell |
+| Enter, Space | on an hour cell: call `onDateClick` with the start of its hour. On an event: call `onEventClick` and open or close its menu |
+| ArrowDown | on an event: open its menu without calling `onEventClick` |
+| Escape | in an event's menu: close it and return focus to the event; the menu's other keys are the [DropdownMenu](?path=/docs/components-dropdownmenu--docs#keyboard)'s |
 
 ### Deviations from the Figma kit
 
@@ -124,5 +135,7 @@ The full table is in the package README.
 - [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the locale of the labels.
 
 ## Props
+
+Scheduler takes the props below, `className` (merged with its classes) and the attributes of the root `<div>`.
 
 <Controls />

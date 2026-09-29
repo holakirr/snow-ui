@@ -134,7 +134,10 @@ const preview: Preview = {
   // story needs a 24×24px hit area (see targetSize.ts). It fails the
   // Storybook tests; in the Storybook UI it only warns.
   afterEach: async ({ parameters, viewMode }) => {
-    if (viewMode !== 'story') return
+    // Unit tests render stories in jsdom (`composeStories`): no layout there.
+    if (viewMode !== 'story' || !('checkVisibility' in HTMLElement.prototype)) {
+      return
+    }
     const { exceptions = [] } = (parameters.targetSize ??
       {}) as TargetSizeParameters
     const failures = findSmallTargets(document.body, [

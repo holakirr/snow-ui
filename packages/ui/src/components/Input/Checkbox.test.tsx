@@ -43,7 +43,7 @@ describe('Checkbox', () => {
       'size-7',
       'rounded-8',
       'inset-ring-2',
-      'inset-ring-black-20',
+      'inset-ring-control-border',
       'bg-background-3',
     )
   })

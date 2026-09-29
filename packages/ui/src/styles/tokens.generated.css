@@ -194,18 +194,20 @@
 
 @layer base {
   /*
-   * Theme scopes. `data-theme="dark"` on any element switches the tokens of
-   * its subtree to the dark mode and `data-theme="light"` switches them back
-   * (a light panel in a dark page); with no data-theme on <html>, the page
-   * follows the OS preference. The tokens are inherited CSS variables, so an
-   * element gets the values of its nearest data-theme ancestor, at any depth.
-   * `color-scheme` follows, for native controls, scrollbars and system
-   * colours. Only the tokens that differ between the modes are listed; the
-   * light values repeat `@theme static` so that a light scope can override a
-   * dark parent.
+   * Theme scopes. `data-theme="dark"` (or the `dark` class, as set by
+   * next-themes and shadcn/ui) on any element switches the tokens of its
+   * subtree to the dark mode and `data-theme="light"` (or the `light` class)
+   * switches them back (a light panel in a dark page); with no mode set on
+   * <html>, the page follows the OS preference. The tokens are inherited CSS
+   * variables, so an element gets the values of its nearest scope ancestor, at
+   * any depth. `color-scheme` follows, for native controls, scrollbars and
+   * system colours. Only the tokens that differ between the modes are listed;
+   * the light values repeat `@theme static` so that a light scope can override
+   * a dark parent.
    */
   :root,
-  [data-theme="light"] {
+  [data-theme="light"],
+  .light {
     color-scheme: light;
 
     --color-primary: #000;
@@ -247,7 +249,8 @@
   }
 
   /* Dark mode. The same values as the OS-preference block below. */
-  [data-theme="dark"] {
+  [data-theme="dark"],
+  .dark {
     color-scheme: dark;
 
     --color-primary: #adadfb;
@@ -288,9 +291,12 @@
     --bg5: 255, 255, 255, 0.04;
   }
 
-  /* No data-theme on <html>: dark when the OS prefers dark. */
+  /*
+   * No mode on <html> (no data-theme, no light / dark class): dark when the OS
+   * prefers dark.
+   */
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
+    :root:not([data-theme], .light, .dark) {
       color-scheme: dark;
 
       --color-primary: #adadfb;
@@ -337,7 +343,9 @@
    * and inherited as a value, so the `@theme static` values built on switching
    * tokens would keep the values of <html>. Each scope re-declares them.
    */
-  [data-theme] {
+  [data-theme],
+  .light,
+  .dark {
     --color-primary-hover: color-mix(
       in srgb,
       var(--color-primary),

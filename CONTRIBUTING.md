@@ -119,7 +119,7 @@ The design tokens live in `packages/ui/tokens/` as [W3C Design Tokens (DTCG 2025
 
 `bun run tokens` runs the [Terrazzo](https://terrazzo.app) CLI (`packages/ui/terrazzo.config.ts`): Terrazzo parses and validates the DTCG files, applies the resolver and resolves aliases, and the repository's plugin (`packages/ui/scripts/terrazzo-plugin-snow-ui.ts`) writes
 
-- `src/styles/tokens.generated.css`: the Tailwind v4 `@theme static` block (light values) and the theme scopes in `@layer base` (`:root, [data-theme="light"]`, `[data-theme="dark"]`, the `prefers-color-scheme: dark` block and the `[data-theme]` re-declarations). `theme.css` imports it;
+- `src/styles/tokens.generated.css`: the Tailwind v4 `@theme static` block (light values) and the theme scopes in `@layer base` (`:root, [data-theme="light"], .light`, `[data-theme="dark"], .dark`, the `prefers-color-scheme: dark` block for `<html>` without a mode and the `[data-theme], .light, .dark` re-declarations). `theme.css` imports it;
 - `src/foundations/tokens.generated.ts`: the data of Storybook's Foundations pages;
 - `src/utils/token-scales.generated.ts`: the scales tailwind-merge needs.
 

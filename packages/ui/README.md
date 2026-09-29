@@ -38,15 +38,14 @@ Then import the styles, in one of two ways.
 import '@holakirr/snow-ui/index.css'
 ```
 
-**With Tailwind CSS v4 in your project:** import the theme into your stylesheet after Tailwind, and let Tailwind scan the package for the classes the components use (the `@source` path is relative to that stylesheet):
+**With Tailwind CSS v4 in your project:** import the theme into your stylesheet after Tailwind. `theme.css` adds the package's components to Tailwind's sources itself (an `@source` relative to its own file, so it works wherever the package is installed), so Tailwind generates the classes they use; with 5.0 or older, also add `@source "../node_modules/@holakirr/snow-ui/dist";` (relative to your stylesheet):
 
 ```css
 @import "tailwindcss";
 @import "@holakirr/snow-ui/theme.css";
-@source "../node_modules/@holakirr/snow-ui/dist";
 ```
 
-`theme.css` is the same theme without Tailwind itself: the design tokens as theme variables (so `bg-black-10`, `text-14` or `rounded-12` work in your own markup), the theme scopes, the `dark` variant, the `glass*` and `focus-ring` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). Your Tailwind generates one set of utilities for your code and the components, instead of two copies of preflight and overlapping utilities. Import one of the two stylesheets, not both. Note that `theme.css` redefines `dark:` to follow [scoped themes](#scoped-themes) (`data-theme`, then the OS preference) and overrides Tailwind's `--font-sans`, `--color-black` and `--color-white`. With a [prefix](https://tailwindcss.com/docs/styling-with-utility-classes#using-the-prefix-option) (`@import "tailwindcss" prefix(tw)`), use `index.css` instead: the components' classes are unprefixed, so your Tailwind wouldn't generate them.
+`theme.css` is the same theme without Tailwind itself: the design tokens as theme variables (so `bg-black-10`, `text-14` or `rounded-12` work in your own markup), the theme scopes, the `dark` variant, the `glass*` and `focus-ring` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). Your Tailwind generates one set of utilities for your code and the components, instead of two copies of preflight and overlapping utilities. Import one of the two stylesheets, not both. Note that `theme.css` redefines `dark:` to follow [scoped themes](#scoped-themes) (`data-theme` or the `light` / `dark` classes, then the OS preference) and overrides Tailwind's `--font-sans`, `--color-black` and `--color-white`. With a [prefix](https://tailwindcss.com/docs/styling-with-utility-classes#using-the-prefix-option) (`@import "tailwindcss" prefix(tw)`), use `index.css` instead: the components' classes are unprefixed, so your Tailwind wouldn't generate them.
 
 **Cascade layers.** Both stylesheets keep every rule in Tailwind's cascade layers (`theme`, `base`, `components`, `utilities`; react-day-picker's stylesheet is in `components`), so your own unlayered CSS overrides them whatever the load order or specificity, and your utilities override the base and component rules.
 
@@ -118,7 +117,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 
 `index.css` and `theme.css` implement the SnowUI Figma tokens (the SnowUI-Light and SnowUI-Dark modes) as Tailwind theme variables. They are generated from [W3C Design Tokens (DTCG)](https://www.designtokens.org/) files in [`tokens/`](https://github.com/holakirr/snow-ui/tree/main/packages/ui/tokens), the source of truth, which other tools (Style Dictionary, Terrazzo, Figma plugins) can read too. Storybook's "Foundations" pages list every token with its Figma name and both mode values.
 
-- **Theme:** light by default; dark with `data-theme="dark"` on `<html>` or on any element (see [Scoped themes](#scoped-themes)), or with the OS dark preference unless `<html data-theme="light">`. `color-scheme` follows, so native controls and scrollbars match.
+- **Theme:** light by default; dark with `data-theme="dark"` or the `dark` class (as next-themes and shadcn/ui set it) on `<html>` or on any element (see [Scoped themes](#scoped-themes)), or with the OS dark preference when `<html>` sets no mode (`data-theme`, `light` or `dark` class). `color-scheme` follows, so native controls and scrollbars match.
 - **Colors:** `primary` (black in light, indigo in dark), `black`, `white` and their Figma alpha steps (`black-80`, `black-40`, `black-20`, `black-10`, `black-4`, same for `white`), `background-1..3`, `surface-1..3`, `color-1`, `color-2`, `static-white`, `static-black`, the secondary colours (`purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`), and three accessible text colours (see below): `indigo-text`, `red-text` and `text-secondary` (the `text-secondary` utility; `var(--color-text-secondary)`) for secondary text, which Figma draws in Black/40%. Use them as `bg-black-10`, `text-secondary`, `border-black-10` or `var(--color-black-10)`. In dark mode, `black-10` and `black-4` get the design's stronger alpha (15% and 10%); the Tailwind modifiers `black/10` and `black/4` keep one alpha in both modes.
 - **Typography:** `text-12` … `text-64` (the Figma text styles: font size and line height), Inter with `font-feature-settings: "ss01" 1, "cv01" 1` and `font-optical-sizing: none`: the Figma kit uses the "Inter" family (text optical size) at every size, not "Inter Display", so large text keeps the text shapes instead of following the variable font's `opsz` axis.
 - **Radius:** `rounded-4` … `rounded-80` (the Figma corner radius scale).
@@ -133,7 +132,7 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 
 ### Scoped themes
 
-`data-theme` works on any element, not only `<html>`: the tokens of an element come from its nearest `data-theme` ancestor, so a subtree can use the other mode, and `data-theme="light"` inside a dark subtree switches back.
+`data-theme` (or the `light` / `dark` class) works on any element, not only `<html>`: the tokens of an element come from its nearest scope ancestor, so a subtree can use the other mode, and `data-theme="light"` inside a dark subtree switches back.
 
 ```tsx
 <html data-theme="light">
@@ -146,7 +145,7 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 ```
 
 - A scope sets the tokens and `color-scheme`, not a background or text colour: give it `bg-background-1 text-black` (or your own) to paint it.
-- Without `data-theme` on `<html>`, the page follows the OS preference; `<html data-theme="light">` or `"dark"` pins it. Scopes inside work either way.
+- Without a mode on `<html>`, the page follows the OS preference; `<html data-theme="light">` or `"dark"` (or `class="light"` / `"dark"`, e.g. from next-themes with `attribute="class"`) pins it. Scopes inside work either way.
 - `dark:` utilities follow the same scopes, with one limit: a dark scope inside a light scope inside a dark scope gets the dark tokens but not `dark:` utilities. Prefer the tokens, which switch at any depth.
 - Overlays are portalled: the content of `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope. A plain `data-theme` attribute leaves it in the theme of `<html>`; a `ThemeScope` (`<ThemeScope theme="dark">`, or `asChild` on your element) scopes the tokens and passes the theme to the overlays opened inside it, as their `data-theme`. `SnowUIProvider`'s `theme` does the same without an element, and a `data-theme` on a `*Content` component wins. Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
 

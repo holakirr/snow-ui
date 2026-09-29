@@ -115,7 +115,7 @@ describe('theme.css (for projects on Tailwind v4)', () => {
 
   it('has the tokens, the dark variant, the utilities and the base rules', () => {
     expect(theme()).toMatch(/@theme static \{[\s\S]*--color-primary: #000;/)
-    expect(theme()).toMatch(/\[data-theme="dark"\] \{/)
+    expect(theme()).toMatch(/\[data-theme="dark"\],\s*\.dark \{/)
     expect(theme()).toMatch(/@custom-variant dark \{/)
     expect(theme()).toMatch(/@utility focus-ring \{/)
     expect(theme()).toMatch(/@utility glass \{/)
@@ -129,36 +129,48 @@ describe('theme.css (for projects on Tailwind v4)', () => {
   })
 })
 
-describe('a Tailwind v4 project using theme.css and @source dist', () => {
+/** Compiles a fixture stylesheet with the Tailwind CLI, as a consumer app. */
+const compileFixture = (fixture: string) => {
+  const out = join(mkdtempSync(join(tmpdir(), 'snow-ui-')), 'app.css')
+  const cli = join(
+    dirname(require.resolve('@tailwindcss/cli/package.json')),
+    'dist/index.mjs',
+  )
+  execFileSync(
+    process.execPath,
+    [cli, '-i', join(import.meta.dirname, 'fixtures', fixture), '-o', out],
+    { cwd: join(import.meta.dirname, 'fixtures'), stdio: 'pipe' },
+  )
+  return readFileSync(out, 'utf8')
+}
+
+/** The utilities of the precompiled index.css used by the built components. */
+const componentUtilities = () => {
+  // index.css also has the classes of stories and docs, which the package
+  // doesn't ship.
+  const js = files(dist)
+    .filter((file) => file.endsWith('.js'))
+    .map((file) => readFileSync(file, 'utf8'))
+    .join('\n')
+  return [...utilities(read('index.css'))].filter((name) =>
+    new RegExp(
+      `(^|[\\s"'\`])${name.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}($|[\\s"'\`])`,
+    ).test(js),
+  )
+}
+
+describe.each([
+  ['app.css', 'theme.css and an @source of dist'],
+  ['app-no-source.css', 'only theme.css (its own @source)'],
+])('a Tailwind v4 project using %s: %s', (fixture) => {
   let output: string
 
   beforeAll(() => {
-    const out = join(mkdtempSync(join(tmpdir(), 'snow-ui-')), 'app.css')
-    const cli = join(
-      dirname(require.resolve('@tailwindcss/cli/package.json')),
-      'dist/index.mjs',
-    )
-    execFileSync(
-      process.execPath,
-      [cli, '-i', join(import.meta.dirname, 'fixtures/app.css'), '-o', out],
-      { cwd: join(import.meta.dirname, 'fixtures'), stdio: 'pipe' },
-    )
-    output = readFileSync(out, 'utf8')
+    output = compileFixture(fixture)
   }, 60_000)
 
   it('generates every class the components use', () => {
-    // The utilities of the precompiled index.css whose class names appear in
-    // the built components (index.css also has the classes of stories and
-    // docs, which the package doesn't ship).
-    const js = files(dist)
-      .filter((file) => file.endsWith('.js'))
-      .map((file) => readFileSync(file, 'utf8'))
-      .join('\n')
-    const inComponents = [...utilities(read('index.css'))].filter((name) =>
-      new RegExp(
-        `(^|[\\s"'\`])${name.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}($|[\\s"'\`])`,
-      ).test(js),
-    )
+    const inComponents = componentUtilities()
     const generated = utilities(output)
 
     expect(inComponents.length).toBeGreaterThan(300)
@@ -170,8 +182,16 @@ describe('a Tailwind v4 project using theme.css and @source dist', () => {
 
   it('gets the tokens, the theme scopes and the layered calendar styles', () => {
     expect(output).toMatch(/--color-primary: #000;/)
-    expect(output).toMatch(/\[data-theme="dark"\] \{\s+color-scheme: dark;/)
+    expect(output).toMatch(
+      /\[data-theme="dark"\],\s*\.dark \{\s+color-scheme: dark;/,
+    )
     expect(output).toMatch(/@layer components \{\s+\.rdp-root \{/)
+  })
+})
+
+describe('theme.css', () => {
+  it('adds the built components to the sources, relative to itself', () => {
+    expect(read('theme.css')).toMatch(/^@source "\.\/\*\*\/\*\.js";$/m)
   })
 })
 

@@ -1,0 +1,7 @@
+/*
+ * A consumer app's stylesheet without an `@source` of the package, for
+ * test/dist.test.ts: theme.css adds the built components to the sources
+ * itself. `source(none)`: nothing else is scanned.
+ */
+@import "tailwindcss" source(none);
+@import "@holakirr/snow-ui/theme.css";

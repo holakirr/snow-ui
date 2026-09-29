@@ -5,7 +5,8 @@ import { compile } from 'tailwindcss'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 // Theme scopes, checked on the compiled CSS: which rules declare the tokens
-// for `data-theme` / the OS preference, and which elements `dark:` matches.
+// for `data-theme`, the `light` / `dark` classes and the OS preference, and
+// which elements `dark:` matches.
 
 const require = createRequire(import.meta.url)
 
@@ -149,15 +150,16 @@ describe('cascade layers (compiled index.css)', () => {
 })
 
 describe('theme scopes (compiled index.css)', () => {
-  const light = () => rule(':root, [data-theme="light"]', ['@layer base'])
-  const dark = () => rule('[data-theme="dark"]', ['@layer base'])
+  const light = () =>
+    rule(':root, [data-theme="light"], .light', ['@layer base'])
+  const dark = () => rule('[data-theme="dark"], .dark', ['@layer base'])
   const osDark = () =>
-    rule(':root:not([data-theme="light"])', ['@layer base', DARK_QUERY])
+    rule(':root:not([data-theme], .light, .dark)', ['@layer base', DARK_QUERY])
   const theme = () => rule(':root, :host', ['@layer theme'])
   const tokens = (scope: Rule) =>
     new Map([...scope.declarations].filter(([name]) => name.startsWith('--')))
 
-  it('declares light values on :root and on data-theme="light"', () => {
+  it('declares light values on :root, data-theme="light" and .light', () => {
     expect(light().declarations.get('color-scheme')).toBe('light')
     const themeValues = theme().declarations
     for (const [name, value] of tokens(light())) {
@@ -165,7 +167,7 @@ describe('theme scopes (compiled index.css)', () => {
     }
   })
 
-  it('declares dark values on any data-theme="dark" element', () => {
+  it('declares dark values on any data-theme="dark" or .dark element', () => {
     expect(dark().declarations.get('color-scheme')).toBe('dark')
     expect([...tokens(dark()).keys()]).toEqual([...tokens(light()).keys()])
     for (const [name, value] of tokens(dark())) {
@@ -173,8 +175,24 @@ describe('theme scopes (compiled index.css)', () => {
     }
   })
 
-  it('follows the OS preference unless <html data-theme="light">', () => {
+  it('follows the OS preference when <html> sets no mode', () => {
     expect(osDark().declarations).toEqual(dark().declarations)
+    const html = document.documentElement
+    const matches = (attribute: string | null, className: string) => {
+      if (attribute) html.setAttribute('data-theme', attribute)
+      else html.removeAttribute('data-theme')
+      html.className = className
+      return html.matches(osDark().selector)
+    }
+    expect(matches(null, '')).toBe(true)
+    expect(matches(null, 'antialiased')).toBe(true)
+    // next-themes (attribute "class") sets `light` / `dark` on <html>.
+    expect(matches(null, 'light')).toBe(false)
+    expect(matches(null, 'dark')).toBe(false)
+    expect(matches('light', '')).toBe(false)
+    expect(matches('dark', '')).toBe(false)
+    html.removeAttribute('data-theme')
+    html.className = ''
   })
 
   it('reads text-secondary on the element, so it follows theme scopes', () => {
@@ -217,7 +235,9 @@ describe('theme scopes (compiled index.css)', () => {
     }
 
     expect(derived.size).toBeGreaterThan(0)
-    expect(rule('[data-theme]', ['@layer base']).declarations).toEqual(derived)
+    expect(
+      rule('[data-theme], .light, .dark', ['@layer base']).declarations,
+    ).toEqual(derived)
   })
 
   describe('dark: variant', () => {
@@ -230,15 +250,22 @@ describe('theme scopes (compiled index.css)', () => {
 
     const html = document.documentElement
 
-    /** Builds nested `data-theme` scopes and returns the innermost element. */
+    /** Sets a scope: `dark` → data-theme="dark", `.dark` → class="dark". */
+    const setScope = (element: Element, value: string | null) => {
+      element.removeAttribute('data-theme')
+      element.className = ''
+      if (value?.startsWith('.')) element.className = value.slice(1)
+      else if (value) element.setAttribute('data-theme', value)
+    }
+
+    /** Builds nested scopes and returns the innermost element. */
     const nest = (root: string | null, ...themes: (string | null)[]) => {
-      if (root) html.setAttribute('data-theme', root)
-      else html.removeAttribute('data-theme')
+      setScope(html, root)
       let parent: HTMLElement = document.body
       parent.replaceChildren()
       for (const value of [...themes, null]) {
         const child = document.createElement('div')
-        if (value) child.setAttribute('data-theme', value)
+        setScope(child, value)
         parent.appendChild(child)
         parent = child
       }
@@ -277,8 +304,19 @@ describe('theme scopes (compiled index.css)', () => {
       [null, ['light', 'dark'], true, true],
       [null, ['dark', 'light'], false, false],
       ['light', ['dark', 'light'], false, false],
+      // The `light` / `dark` classes (next-themes, shadcn/ui) work the same.
+      ['.dark', [], false, true],
+      ['.dark', [], true, true],
+      ['.light', [], true, false],
+      [null, ['.dark'], false, true],
+      ['.light', ['.dark'], true, true],
+      ['.dark', ['.light'], false, false],
+      ['.dark', ['light'], true, false],
+      ['dark', ['.light'], false, false],
+      [null, ['.dark', '.light'], true, false],
+      [null, ['.light', 'dark'], true, true],
     ] as const)(
-      '<html data-theme=%s> > %j (OS dark: %s) → dark: %s',
+      '<html %s> > %j (OS dark: %s) → dark: %s',
       (root, themes, osDark, expected) => {
         expect(isDark(nest(root, ...themes), osDark)).toBe(expected)
       },
@@ -296,7 +334,7 @@ describe('theme scopes (compiled index.css)', () => {
     })
 
     afterAll(() => {
-      html.removeAttribute('data-theme')
+      setScope(html, null)
       document.body.replaceChildren()
     })
   })

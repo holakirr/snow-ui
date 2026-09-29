@@ -33,14 +33,14 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 
 The theme is light by default. It is dark:
 
-- with `data-theme="dark"` on `<html>`, or
-- with the OS dark preference, unless `<html data-theme="light">` pins the light theme.
+- with `data-theme="dark"` or the `dark` class on `<html>` (the class next-themes and shadcn/ui set: `<ThemeProvider attribute="class">`), or
+- with the OS dark preference, when `<html>` sets no mode: `data-theme="light"` or the `light` class pins the light theme.
 
 `color-scheme` follows, so native controls and scrollbars match. Components need no props for it: their colours are tokens.
 
 ## Scoped themes
 
-`data-theme` works on any element: the tokens of an element come from its nearest `data-theme` ancestor, so a subtree can use the other mode, and `data-theme="light"` inside a dark subtree switches back.
+`data-theme` (or the `light` / `dark` class) works on any element: the tokens of an element come from its nearest scope ancestor, so a subtree can use the other mode, and `data-theme="light"` inside a dark subtree switches back.
 
 ```tsx
 <html data-theme="light">
@@ -75,12 +75,13 @@ In this Storybook, the theme toolbar switches every story; stories named "Dark" 
 ```css
 @import "tailwindcss";
 @import "@holakirr/snow-ui/theme.css";
-@source "../node_modules/@holakirr/snow-ui/dist";
 ```
+
+It adds the package's built components to Tailwind's sources itself (`@source`, relative to its own file); with 5.0 or older, add `@source "../node_modules/@holakirr/snow-ui/dist";` yourself.
 
 What it changes in your Tailwind setup:
 
-- `dark:` follows the scoped themes (`data-theme`, then the OS preference) instead of only `prefers-color-scheme`.
+- `dark:` follows the scoped themes (`data-theme` or the `light` / `dark` classes, then the OS preference) instead of only `prefers-color-scheme`.
 - It overrides Tailwind's `--font-sans` (Inter), `--color-black` and `--color-white` (which swap in dark mode).
 - It adds the kit's scales next to Tailwind's: `text-12`…, `rounded-4`…, the colours above.
 
@@ -92,16 +93,18 @@ Redeclare its variable in your own (unlayered) CSS, for each scope it should app
 
 ```css
 :root,
-[data-theme="light"] {
+[data-theme="light"],
+.light {
   --color-primary: #0f62fe;
 }
 
-[data-theme="dark"] {
+[data-theme="dark"],
+.dark {
   --color-primary: #78a9ff;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme], .light, .dark) {
     --color-primary: #78a9ff;
   }
 }

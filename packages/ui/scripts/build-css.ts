@@ -11,7 +11,10 @@ import { fileURLToPath } from 'node:url'
  *   one file: its `@import`s are inlined (react-day-picker's stylesheet in
  *   its `layer()`), so it doesn't depend on how the consumer resolves them.
  *   Its Tailwind directives (`@theme`, `@utility`, `@apply`…) stay as they
- *   are, for the consumer's Tailwind to compile.
+ *   are, for the consumer's Tailwind to compile. It starts with an `@source`
+ *   of the built components, relative to itself, so the consumer's Tailwind
+ *   generates their classes wherever the package is installed (a hoisted
+ *   node_modules, a monorepo, pnpm's store) without an `@source` of its own.
  * - `dist/fonts.css`, `dist/fonts-italic.css` and `dist/fonts/`: the self-hosted
  *   Inter.
  */
@@ -43,6 +46,11 @@ export function bundleCss(file: string): string {
   })
 }
 
+/** The package's own `@source` in `dist/theme.css` (see above). */
+export const THEME_SOURCE = `/* The components' classes: the built modules next to this file. */
+@source "./**/*.js";
+`
+
 export function buildCss(packageDir: string) {
   const src = join(packageDir, 'src')
   const dist = join(packageDir, 'dist')
@@ -50,7 +58,7 @@ export function buildCss(packageDir: string) {
 
   writeFileSync(
     join(dist, 'theme.css'),
-    `/*! @holakirr/snow-ui theme.css | MIT License | react-day-picker/style.css: MIT License */\n${bundleCss(join(src, 'theme.css'))}`,
+    `/*! @holakirr/snow-ui theme.css | MIT License | react-day-picker/style.css: MIT License */\n${THEME_SOURCE}\n${bundleCss(join(src, 'theme.css'))}`,
   )
   for (const file of ['fonts.css', 'fonts-italic.css']) {
     cpSync(join(src, file), join(dist, file))

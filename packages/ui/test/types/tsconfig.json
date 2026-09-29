@@ -1,0 +1,13 @@
+{
+  // Compiled by test/types.test.ts against the built declarations: the
+  // imports of @holakirr/snow-ui resolve through the package's `exports` to
+  // dist/, as in an app. Not part of `bun run typecheck`, which runs before
+  // the build.
+  "extends": "../../../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": [],
+    // List every failing component in the error, not the first few.
+    "noErrorTruncation": true
+  },
+  "include": ["*.tsx"]
+}

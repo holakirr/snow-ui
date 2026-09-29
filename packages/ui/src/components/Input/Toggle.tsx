@@ -1,8 +1,9 @@
 'use client'
 
 import * as TogglePrimitive from '@radix-ui/react-toggle'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import type { Size, ToggleVariant } from '../../types'
+import { warnIfUnnamedIconOnly } from '../../utils/accessible-name'
 import { isIconOnly } from '../../utils/children'
 import { twMerge } from '../../utils/tw-merge'
 import { segmentedItemVariants } from '../Tabs/segmented'
@@ -56,7 +57,8 @@ const toggleVariants = ({
     className,
   )
 
-type ToggleProps = TogglePrimitive.ToggleProps & ToggleVariantProps
+type ToggleProps = ComponentProps<typeof TogglePrimitive.Root> &
+  ToggleVariantProps
 
 const Toggle: FC<ToggleProps> = ({
   className,
@@ -65,19 +67,28 @@ const Toggle: FC<ToggleProps> = ({
   iconOnly,
   children,
   ...props
-}) => (
-  <TogglePrimitive.Root
-    className={toggleVariants({
-      variant,
-      size,
-      iconOnly: iconOnly ?? isIconOnly(children),
-      className,
-    })}
-    {...props}
-  >
-    {children}
-  </TogglePrimitive.Root>
-)
+}) => {
+  warnIfUnnamedIconOnly(
+    'Toggle',
+    'toggle',
+    { ...props, children },
+    { asChild: props.asChild },
+  )
+
+  return (
+    <TogglePrimitive.Root
+      className={toggleVariants({
+        variant,
+        size,
+        iconOnly: iconOnly ?? isIconOnly(children),
+        className,
+      })}
+      {...props}
+    >
+      {children}
+    </TogglePrimitive.Root>
+  )
+}
 
 Toggle.displayName = TogglePrimitive.Root.displayName
 

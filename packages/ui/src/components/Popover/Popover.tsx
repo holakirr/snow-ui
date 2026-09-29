@@ -1,7 +1,7 @@
 'use client'
 
 import * as PopoverPrimitive from '@radix-ui/react-popover'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import { useSnowUI } from '../SnowUIProvider'
 import { popoverSurfaceClasses } from './surface'
@@ -12,7 +12,7 @@ const PopoverTrigger = PopoverPrimitive.Trigger
 
 const PopoverAnchor = PopoverPrimitive.Anchor
 
-type PopoverContentProps = PopoverPrimitive.PopoverContentProps
+type PopoverContentProps = ComponentProps<typeof PopoverPrimitive.Content>
 
 /**
  * The popover, in a portal. It takes the `dir` of a `SnowUIProvider` (the

@@ -66,14 +66,17 @@ A button or a link in the start or end content keeps its own clicks; any other c
 - **Focus:** the Figma "Focus" state while the input has focus, by mouse or keyboard: a Black/40% stroke and the 4px Focus ring. The caret and the stroke mark focus, so text fields don't get the `focus-ring` outline.
 - **Static** (`readOnly`): the stroke stays Black/20% on hover and focus; the 4px Focus ring still shows while the input has focus.
 - **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. The Figma set has no Disabled state, so this look is the library's own.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets while the field has an error): a 1px Secondary/Red stroke, also on hover and focus. The Figma set has no error state, so this look is the library's own; the error text is the `FormMessage`.
 
 <Canvas of={InputStories.Static} />
 
 <Canvas of={InputStories.Disabled} />
 
+<Canvas of={InputStories.Invalid} />
+
 ## Accessibility
 
-- It renders a native `<input>` with an explicit `role="textbox"` inside a `<div>`. Keyboard behaviour is the browser's.
+- It renders a native `<input>` inside a `<div>`, with the role of its `type`: a textbox, `spinbutton` for `number`, `searchbox` for `search`, none for `password`. Keyboard behaviour is the browser's.
 - The accessible name comes from `title`, which renders a `<label for>`. Without a `title`, pass `aria-label`, or render your own [Label](?path=/docs/components-label--docs) with `htmlFor` and give the input the same `id`. A placeholder is not a label.
 - `title` is the visible label, not the native tooltip attribute: the prop replaces it.
 - Give a button in the start or end content its own accessible name. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.

@@ -36,7 +36,7 @@ const tooltipVariants = cva(
   },
 )
 
-type TooltipContentProps = TooltipPrimitive.TooltipContentProps &
+type TooltipContentProps = ComponentProps<typeof TooltipPrimitive.Content> &
   VariantProps<typeof tooltipVariants>
 
 /**

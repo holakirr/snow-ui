@@ -10,7 +10,6 @@ import {
   useId,
   useRef,
 } from 'react'
-import { ROLES } from '../../constants'
 import { twMerge } from '../../utils/tw-merge'
 import { Label } from '../Label'
 
@@ -38,6 +37,14 @@ export const focusInputClasses =
 export const staticInputClasses =
   'read-only:hover:inset-ring-black-20 read-only:focus:inset-ring-black-20'
 
+/**
+ * Invalid, while the field has `aria-invalid="true"` (`FormControl` sets it):
+ * a 1px Secondary/Red stroke (3.36:1 on white) in every state. The design
+ * has no error state; the error text is the `FormMessage`.
+ */
+export const invalidInputClasses =
+  'aria-invalid:inset-ring aria-invalid:inset-ring-red'
+
 // The field shell: the same look, driven by the inner <input>. Focus is the
 // Figma "Focus" state: Black/40% stroke + the 4px Focus ring, while the
 // <input> is focused (by mouse or keyboard, like the design).
@@ -46,6 +53,10 @@ const fieldClasses =
 
 const fieldStaticClasses =
   'hover:inset-ring-black-20 focus-within:inset-ring-black-20'
+
+// Invalid: the `invalidInputClasses` stroke, while the <input> is invalid.
+const fieldInvalidClasses =
+  'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red'
 
 const fieldDisabledClasses =
   'cursor-not-allowed bg-black-4 text-black-20 inset-ring-0 hover:inset-ring-0'
@@ -122,6 +133,7 @@ const Input: FC<InputProps> = ({
     <div
       className={twMerge(
         fieldClasses,
+        fieldInvalidClasses,
         readOnly && fieldStaticClasses,
         disabled && fieldDisabledClasses,
         className,
@@ -143,7 +155,6 @@ const Input: FC<InputProps> = ({
           style={inputStyle}
           id={inputId}
           ref={setRef}
-          role={ROLES.textbox}
           disabled={disabled}
           readOnly={readOnly}
           {...props}

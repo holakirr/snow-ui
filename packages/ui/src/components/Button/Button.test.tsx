@@ -1,8 +1,9 @@
 import { StarIcon } from '@holakirr/snow-ui-icons'
 import { composeStories } from '@storybook/react'
 import { render, screen, within } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ROLES } from '../../constants'
+import { resetUnnamedIconOnlyWarnings } from '../../utils/accessible-name'
 import { Button } from './Button'
 import * as stories from './Button.stories'
 
@@ -297,5 +298,105 @@ describe('Button', () => {
     )
 
     expect(screen.getByTestId('star')).toHaveAttribute('width', '24')
+  })
+})
+
+describe('Button without an accessible name', () => {
+  beforeEach(resetUnnamedIconOnlyWarnings)
+  afterEach(() => vi.restoreAllMocks())
+
+  it('warns once in development about an unnamed icon-only button', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(
+      <>
+        <Button startContent={<StarIcon />} />
+        <Button>
+          <StarIcon />
+        </Button>
+      </>,
+    )
+
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(warn.mock.calls[0][0]).toBe(
+      'Button: an icon-only button needs an `aria-label` or `aria-labelledby`.',
+    )
+  })
+
+  it.each([
+    ['at the end', <Button key="b" endContent={<StarIcon />} />],
+    [
+      'at both ends',
+      <Button key="b" startContent={<StarIcon />} endContent={<StarIcon />} />,
+    ],
+    [
+      'labelled but aria-hidden',
+      <Button key="b">
+        <svg aria-hidden="true" aria-label="Star" />
+      </Button>,
+    ],
+    [
+      'labelled but aria-hidden, at the start',
+      <Button key="b" startContent={<svg aria-hidden aria-label="Star" />} />,
+    ],
+  ])('warns about an unnamed icon %s', (_, button) => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(button)
+
+    expect(warn).toHaveBeenCalledTimes(1)
+  })
+
+  it('warns about an unnamed icon-only asChild element', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(
+      <Button asChild>
+        <a href="/">
+          <StarIcon />
+        </a>
+      </Button>,
+    )
+
+    expect(warn).toHaveBeenCalledTimes(1)
+  })
+
+  it.each([
+    ['a label', <Button key="b" startContent={<StarIcon />} label="Star" />],
+    [
+      'an aria-label',
+      <Button key="b" startContent={<StarIcon />} aria-label="Star" />,
+    ],
+    ['a title', <Button key="b" startContent={<StarIcon />} title="Star" />],
+    [
+      'a labelled icon',
+      <Button key="b" startContent={<StarIcon alt="Star" />} />,
+    ],
+    [
+      'screen-reader text',
+      <Button key="b" startContent={<StarIcon />}>
+        <span className="sr-only">Star</span>
+      </Button>,
+    ],
+    [
+      'a named asChild element',
+      <Button key="b" asChild>
+        <a href="/" aria-label="Home">
+          <StarIcon />
+        </a>
+      </Button>,
+    ],
+    ['text', <Button key="b">Star</Button>],
+    [
+      'an end icon and a label',
+      <Button key="b" endContent={<StarIcon />} label="Next" />,
+    ],
+    ['a text end content', <Button key="b" endContent="Next" />],
+  ])('does not warn with %s', (_, button) => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(button)
+
+    expect(warn).not.toHaveBeenCalled()
   })
 })

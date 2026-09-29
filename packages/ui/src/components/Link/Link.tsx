@@ -3,7 +3,12 @@
 import { ArrowSquareOut } from '@phosphor-icons/react/dist/csr/ArrowSquareOut'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
-import type { ComponentProps, FC, ReactNode } from 'react'
+import {
+  type ComponentProps,
+  type FC,
+  isValidElement,
+  type ReactNode,
+} from 'react'
 import { ROLES } from '../../constants'
 import { slotted } from '../../utils/slot'
 import { twMerge } from '../../utils/tw-merge'
@@ -98,9 +103,13 @@ const Link: FC<LinkProps> = ({
     </>
   )
 
+  // An <a href> is a focusable link already. Without an `href` (on the
+  // link, or on the `asChild` element) `role` and `tabIndex` keep it one.
+  const href = asChild
+    ? isValidElement<{ href?: string }>(children) && children.props.href
+    : props.href
   const linkProps = {
-    role: ROLES.link,
-    tabIndex: 0,
+    ...(href == null && { role: ROLES.link, tabIndex: 0 }),
     ...(isExternal && { target: '_blank', rel: 'noopener noreferrer' }),
     ...props,
   }

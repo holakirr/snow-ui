@@ -1,5 +1,7 @@
+import { StarIcon } from '@holakirr/snow-ui-icons'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { resetUnnamedIconOnlyWarnings } from '../../utils/accessible-name'
 
 import { Toggle } from './Toggle'
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup'
@@ -169,5 +171,70 @@ describe('ToggleGroup', () => {
       'disabled:cursor-not-allowed',
     )
     expect(toggle).not.toHaveClass('disabled:opacity-20')
+  })
+})
+
+describe('Toggle without an accessible name', () => {
+  beforeEach(resetUnnamedIconOnlyWarnings)
+  afterEach(() => vi.restoreAllMocks())
+
+  it('warns once in development about an unnamed icon-only toggle', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(
+      <>
+        <Toggle>
+          <StarIcon />
+        </Toggle>
+        <Toggle>
+          <StarIcon />
+        </Toggle>
+        <Toggle aria-label="Star">
+          <StarIcon />
+        </Toggle>
+      </>,
+    )
+
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(warn.mock.calls[0][0]).toBe(
+      'Toggle: an icon-only toggle needs an `aria-label` or `aria-labelledby`.',
+    )
+  })
+
+  it("doesn't take an aria-hidden icon's label as the toggle's name", () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(
+      <Toggle>
+        <svg aria-hidden="true" aria-label="Star" />
+      </Toggle>,
+    )
+
+    expect(warn).toHaveBeenCalledTimes(1)
+  })
+
+  it('warns about an unnamed icon-only group item, not a named one', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(
+      <ToggleGroup type="single">
+        <ToggleGroupItem value="star" aria-label="Star">
+          <StarIcon />
+        </ToggleGroupItem>
+        <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
+      </ToggleGroup>,
+    )
+    expect(warn).not.toHaveBeenCalled()
+
+    render(
+      <ToggleGroup type="single">
+        <ToggleGroupItem value="star">
+          <StarIcon />
+        </ToggleGroupItem>
+      </ToggleGroup>,
+    )
+    expect(warn).toHaveBeenCalledWith(
+      'ToggleGroupItem: an icon-only toggle needs an `aria-label` or `aria-labelledby`.',
+    )
   })
 })

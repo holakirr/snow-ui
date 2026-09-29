@@ -2,13 +2,7 @@
 
 import { CloseIcon } from '@holakirr/snow-ui-icons'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import type {
-  ComponentProps,
-  ComponentPropsWithoutRef,
-  FC,
-  JSX,
-  ReactNode,
-} from 'react'
+import type { ComponentProps, FC, JSX, ReactNode } from 'react'
 import { warnDeprecated } from '../../utils/deprecation'
 import { twMerge } from '../../utils/tw-merge'
 
@@ -27,9 +21,10 @@ const DialogPortal = DialogPrimitive.Portal
 
 const DialogClose = DialogPrimitive.Close
 
-const DialogOverlay: FC<
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
-> = ({ className, ...props }) => (
+const DialogOverlay: FC<ComponentProps<typeof DialogPrimitive.Overlay>> = ({
+  className,
+  ...props
+}) => (
   <DialogPrimitive.Overlay
     className={twMerge(
       // Figma "Mask": a linear gradient (#CBDDFF 50% → #D7D0FF 20%) and
@@ -49,9 +44,11 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
  * The dialog, in a portal. It takes the `dir` of a `SnowUIProvider` (the
  * portal is outside your layout's `dir` scope).
  */
-const DialogContent: FC<
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
-> = ({ className, children, ...props }) => {
+const DialogContent: FC<ComponentProps<typeof DialogPrimitive.Content>> = ({
+  className,
+  children,
+  ...props
+}) => {
   const { dir } = useSnowUI()
 
   return (

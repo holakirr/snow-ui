@@ -79,7 +79,7 @@ Every variant and size, with the middle item on:
 
 - `type="single"` renders a `radiogroup` of `radio` items (`aria-checked`); `type="multiple"` renders a `toolbar` of toggle buttons (`aria-pressed`).
 - The group is one tab stop, on an item that is on (or the first item). The arrow keys move focus between the items and wrap around; Home and End go to the first and last. Space and Enter turn the focused item on or off: the arrow keys don't select.
-- Name the group with `aria-label` or `aria-labelledby`, and every icon-only item with `aria-label`.
+- Name the group with `aria-label` or `aria-labelledby`, and every icon-only item with `aria-label` (an unnamed one logs a development warning).
 - A single group lets the user turn the last item off (`onValueChange('')`). To keep one item on, control `value` and ignore the empty value.
 
 <Canvas of={ToggleGroupStories.Single} />

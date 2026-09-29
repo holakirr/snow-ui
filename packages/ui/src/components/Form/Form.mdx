@@ -44,9 +44,9 @@ The story below uses the react-hook-form adapter with a zod schema; type one cha
 1. **Form** (`Form`): a plain `<form>`; every prop goes to it.
 2. **Item** (`FormItem`): a `<div>` that stacks its children 8px apart and gives them a shared id and the field's state: `error`, `invalid` and `name`.
 3. **Label** (`FormLabel`, optional): a [Label](?path=/docs/components-label--docs) (12/16, `text-secondary`) linked to the control; `red-text` while the field is invalid.
-4. **Control** (`FormControl`): a Slot around exactly one control. It gives the control the item's `id`, `aria-invalid` and `aria-describedby`.
+4. **Control** (`FormControl`): a Slot around exactly one control. It gives the control the item's `id`, `aria-invalid` and an `aria-describedby` with the ids of the description and the message that are rendered.
 5. **Description** (`FormDescription`, optional): a 12/16 `<p>` in `text-secondary`.
-6. **Message** (`FormMessage`): a 12/16 `<p>` in `red-text`. It shows `error`; without one (or with `error={true}`) it shows its children, and it renders nothing when both are empty.
+6. **Message** (`FormMessage`): a 12/16 `<p role="alert">` in `red-text`. It shows `error`; without one (or with `error={true}`) it shows its children, and it renders nothing when both are empty.
 
 ## Variants
 
@@ -56,8 +56,10 @@ The same parts without a form library: the submit handler validates the value an
 
 ## States
 
-- **Valid:** `aria-invalid="false"`; `aria-describedby` points at the description.
-- **Invalid** (a truthy `error`, or `invalid`): the `FormLabel` turns `red-text`, `FormMessage` shows the error, the control gets `aria-invalid="true"` and the message's id is added to its `aria-describedby`. `invalid` alone marks the field invalid without a message.
+- **Valid:** `aria-invalid="false"`; `aria-describedby` points at the description, or is left out when there is none.
+- **Invalid** (a truthy `error`, or `invalid`): the `FormLabel` turns `red-text`, `FormMessage` shows the error, the control gets `aria-invalid="true"` and the message's id is added to its `aria-describedby`. `invalid` alone marks the field invalid without a message. Every field shows it with a red stroke or ring (see each field's Invalid state):
+
+<Canvas of={FormStories.InvalidFields} />
 
 ## react-hook-form
 
@@ -100,8 +102,9 @@ const form = useForm({ defaultValues: { username: '' } })
 ## Accessibility
 
 - `FormLabel` renders a `<label for>` pointing at the control's id, so a click on it focuses the control and screen readers read it as the name.
-- `aria-describedby` makes screen readers read the description, and the error while the field is invalid, after the name.
-- `FormMessage` is not a live region, so an error isn't announced when it appears. Move the focus to the first invalid field on submit (react-hook-form does; the story's interaction test checks it).
+- `aria-describedby` makes screen readers read the description, and the error while the field is invalid, after the name. It only lists the parts that are rendered (`FormItem` watches its children, so a description you show and hide, or your own part with the ids of `useFormField()`, counts too), and is left out when there are none.
+- `FormMessage` is an alert (`role="alert"`, WCAG technique ARIA19), so screen readers announce an error when it appears; pass `role="status"` for a polite announcement. Still move the focus to the first invalid field on submit (react-hook-form does; the story's interaction test checks it).
+- The Slider passes `aria-describedby` and `aria-invalid` on to its thumbs, and the RadioGroup keeps them on its `role="radiogroup"`.
 - The control must be one element that a `<label for>` can name: Input, Textarea, InputSmall, Search, a `SelectTrigger`, a Checkbox or a Switch. The RadioGroup and Slider roots are `<div>`s: name them with `aria-labelledby` and the id of a visible label instead.
 
 Deviations from the Figma kit (the full table is in the package README):
@@ -110,6 +113,7 @@ Deviations from the Figma kit (the full table is in the package README):
 | --- | --- | --- |
 | Label and description in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
 | Error text (`FormMessage`, an invalid `FormLabel`) in Secondary/Red `#FF4747`: 3.36:1 on white, 3.76:1 on #333 | `red-text`: `#D42020` in light mode, `#FF8080` in dark mode (5.21:1 on `background-1` in both) | 1.4.3 |
+| Invalid fields: no error state | a Secondary/Red stroke or ring on the control while it has `aria-invalid` (3.36:1 on white), next to the error text | 1.4.1, 1.4.11 |
 
 ## Localization and RTL
 

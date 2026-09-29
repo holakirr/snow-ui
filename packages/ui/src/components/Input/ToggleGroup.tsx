@@ -2,6 +2,7 @@
 
 import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group'
 import { type ComponentProps, createContext, type FC, useContext } from 'react'
+import { warnIfUnnamedIconOnly } from '../../utils/accessible-name'
 import { isIconOnly } from '../../utils/children'
 import { twMerge } from '../../utils/tw-merge'
 import { segmentedListVariants } from '../Tabs/segmented'
@@ -57,6 +58,12 @@ const ToggleGroupItem: FC<ToggleGroupItemProps> = ({
   ...props
 }) => {
   const context = useContext(ToggleGroupContext)
+  warnIfUnnamedIconOnly(
+    'ToggleGroupItem',
+    'toggle',
+    { ...props, children },
+    { asChild: props.asChild },
+  )
 
   return (
     <ToggleGroupPrimitive.Item

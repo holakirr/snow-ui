@@ -47,14 +47,18 @@ The number of values in `value` or `defaultValue` sets the number of thumbs: `[5
 - **Hover:** a pointer cursor on the track and a grab cursor on the thumb (grabbing while you drag).
 - **Keyboard focus:** the `focus-ring` utility on the focused thumb (see Accessibility).
 - **Disabled** (`disabled`): the range turns Black/80%, the thumbs 40% opacity, and the cursor not-allowed. The thumbs leave the tab order.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): a 1px Secondary/Red stroke around the track and red thumb borders (no Figma state).
 
 <Canvas of={SliderStories.Disabled} />
+
+<Canvas of={SliderStories.Invalid} />
 
 ## Accessibility
 
 - Each thumb is a `role="slider"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`, and is in the tab order.
 - **Arrow keys** change the value by `step`; **Shift** + an arrow and **Page Up** / **Page Down** by 10 steps; **Home** moves the first thumb to `min` and **End** the last one to `max`.
 - Name the slider with `aria-label` (or `aria-labelledby`): the thumbs get it, because the root has no role. The thumbs of a range get `messages.slider` names built from `aria-label`: "Price, minimum" and "Price, maximum" for two, "Price, 2 of 3" for three or more. `thumbLabels` names each thumb yourself. `aria-labelledby` wins over both, so every thumb of a range gets the same name: name a range with `aria-label` or `thumbLabels`.
+- `aria-describedby` and `aria-invalid` go to the thumbs too, so a `FormControl` around the slider describes each thumb and marks it invalid.
 - Show the value next to the slider when the exact number matters.
 
 Deviations from the Figma kit (the full table is in the package README):

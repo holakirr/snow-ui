@@ -8,6 +8,7 @@ import type {
   Size,
   TextSize,
 } from '../../types'
+import { warnIfUnnamedIconOnly } from '../../utils/accessible-name'
 import { warnAsDeprecated, warnDeprecated } from '../../utils/deprecation'
 import { slotted } from '../../utils/slot'
 import { twMerge } from '../../utils/tw-merge'
@@ -198,6 +199,15 @@ const Button = <C extends ElementType = typeof defaultTag>({
   const buttonSize = size ?? SIZES.sm
   // `children` may be screen-reader-only text, so they don't count here.
   const isIconOnly = !!start && !end && !label
+  // An icon at either end (or both) without a label or a name.
+  if (!label) {
+    warnIfUnnamedIconOnly(
+      'Button',
+      'button',
+      { ...props, children },
+      { asChild, icons: [start, end] },
+    )
+  }
 
   const classes = twMerge(
     buttonVariants({ variant, size }),

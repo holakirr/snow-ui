@@ -345,6 +345,8 @@ export const Stacked: Story = {
         expect(canvas.queryByText('Report exported')).not.toBeInTheDocument(),
       )
       await expect(toastOf('Changes saved')).toHaveAttribute('data-front')
+      // No focus ring in the screenshot.
+      show.blur()
     })
   },
 }

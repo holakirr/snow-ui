@@ -220,6 +220,17 @@ describe('docs pages', () => {
     ).toEqual([])
   })
 
+  it('leave the stories independent of the docgen', () => {
+    // Storybook's implicit actions (`actions.argTypesRegex`) turn every `on*`
+    // prop the docgen finds into an action arg, and Storybook throws when a
+    // play function calls one. The built Storybook runs the docgen but
+    // `bun run test:storybook` doesn't (addon-vitest leaves it out), so such
+    // a story passes there and fails in the visual tests. Stories that check
+    // a handler pass `fn()` from storybook/test instead.
+    const preview = readFileSync(join(repo, '.storybook/preview.tsx'), 'utf8')
+    expect(preview).not.toMatch(/argTypesRegex\s*:/)
+  })
+
   it.each(pages.map((page) => [page.name, page] as const))(
     '%s has the page outline',
     (_, page) => {

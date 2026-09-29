@@ -66,7 +66,9 @@ export const Invalid: Story = {
   play: async ({ canvas }) => {
     for (const input of canvas.getAllByRole('textbox', { name: 'Name' })) {
       await expect(input).toBeInvalid()
-      await expect(await hasInsetRing(input, 'text-red', '1px')).toBe(true)
+      await expect(
+        await hasInsetRing(input, 'text-control-border-invalid', '1px'),
+      ).toBe(true)
     }
   },
 }

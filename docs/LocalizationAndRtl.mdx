@@ -65,7 +65,7 @@ For several languages, pass the language (a string) from the layout and pick the
 
 ## Dates
 
-- `locale` goes to `Calendar` (month and weekday names, day labels; its own `locale` prop wins) and to `Scheduler`'s day, time and cell labels (`locale.code`; `en-US` without a locale, so the server and the browser render the same text).
+- `locale` goes to `Calendar` (month and weekday names, day labels; its own `locale` prop wins) and to `Scheduler`'s day, time and cell labels (`locale.code`; `en-US` without a locale, so the server and the browser render the same text) and its first day of the week (`locale.options.weekStartsOn`: Sunday with the default `enUS`, Monday with `ru`; its `startOfWeek` prop wins, `startOfWeek={1}` keeps the Figma kit's Monday).
 - A react-day-picker locale (`react-day-picker/locale`) also translates the day picker's own labels (day buttons, dropdowns…).
 - `messages.calendar.previousMonth`, `nextMonth` and `navigation` name the month navigation, so it translates with a plain date-fns locale too. Their English defaults give way to a react-day-picker locale's labels; a translated message wins over those, and `Calendar`'s `labels` prop over both.
 

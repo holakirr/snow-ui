@@ -41,7 +41,12 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
     >
       <Typography size={16}>{children}</Typography>
 
-      <ArrowLineRightIcon className="shrink-0 transition-transform rtl:-scale-x-100" />
+      <ArrowLineRightIcon
+        className="shrink-0 transition-transform motion-reduce:transition-none rtl:-scale-x-100"
+        // The icons' inline `transition: all .15s` would beat the classes:
+        // the chevron turns in 150ms, and not at all with reduced motion.
+        style={{ transition: undefined }}
+      />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 )

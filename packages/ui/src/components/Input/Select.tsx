@@ -34,14 +34,15 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
 }) => (
   <SelectPrimitive.Trigger
     className={twMerge(
-      // The Figma Input field with a trailing 16px ArrowLineUpDown.
-      'group flex w-full cursor-pointer items-center justify-between gap-2 whitespace-nowrap rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all data-[placeholder]:text-secondary [&>span]:line-clamp-1',
-      'hover:inset-ring-black-40 data-[state=open]:inset-ring-black-40',
+      // The Figma Input field with a trailing 16px ArrowLineUpDown; the
+      // stroke is the `control-border*` tokens (1px with more contrast).
+      'group flex w-full cursor-pointer items-center justify-between gap-2 whitespace-nowrap rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all data-[placeholder]:text-secondary [&>span]:line-clamp-1 contrast-more:inset-ring-1',
+      'hover:inset-ring-control-border-strong data-[state=open]:inset-ring-control-border-strong',
       'focus-ring data-[state=open]:ring-4 data-[state=open]:ring-focus',
       'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0',
       // Invalid: the red Input stroke, also while the list is open.
       invalidInputClasses,
-      'aria-invalid:data-[state=open]:inset-ring-red',
+      'aria-invalid:data-[state=open]:inset-ring-control-border-invalid',
       className,
     )}
     {...props}
@@ -50,7 +51,7 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
     <SelectPrimitive.Icon asChild>
       <ArrowLineUpDownIcon
         size={16}
-        className="shrink-0 fill-black-40 group-disabled:fill-black-20"
+        className="shrink-0 fill-control-border-strong group-disabled:fill-black-20"
       />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>

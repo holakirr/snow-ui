@@ -43,7 +43,8 @@ export const Default: Story = {
     await step('selects an option with the pointer', async () => {
       await userEvent.click(trigger)
       const listbox = await page.findByRole('listbox')
-      await expect(listbox).toBeVisible()
+      // It fades in (only fades, with reduced motion): wait for it.
+      await waitFor(() => expect(listbox).toBeVisible())
       await userEvent.click(page.getByRole('option', { name: 'Banana' }))
       await waitFor(() =>
         expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
@@ -253,6 +254,8 @@ export const Invalid: Story = {
     const trigger = canvas.getByRole('combobox', { name: 'Fruit' })
 
     await expect(trigger).toBeInvalid()
-    await expect(await hasInsetRing(trigger, 'text-red', '1px')).toBe(true)
+    await expect(
+      await hasInsetRing(trigger, 'text-control-border-invalid', '1px'),
+    ).toBe(true)
   },
 }

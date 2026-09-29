@@ -3,10 +3,12 @@ import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { compile } from 'tailwindcss'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { animations, colorTokens } from './foundations/tokens'
 
-// Theme scopes, checked on the compiled CSS: which rules declare the tokens
-// for `data-theme`, the `light` / `dark` classes and the OS preference, and
-// which elements `dark:` matches.
+// Theme and contrast scopes and reduced motion, checked on the compiled CSS:
+// which rules declare the tokens for `data-theme`, the `light` / `dark`
+// classes, `data-contrast` and the OS preferences, and which elements
+// `dark:` and `contrast-more:` match.
 
 const require = createRequire(import.meta.url)
 
@@ -89,6 +91,9 @@ const parse = (css: string) => {
 }
 
 const DARK_QUERY = '@media (prefers-color-scheme: dark)'
+const MOTION_QUERY = '@media (prefers-reduced-motion: reduce)'
+const CONTRAST_QUERY = '@media (prefers-contrast: more)'
+const CONTRAST_SCOPES = ':root, [data-theme], .light, .dark, [data-contrast]'
 
 let rules: Rule[]
 let css: string
@@ -107,7 +112,12 @@ beforeAll(async () => {
   const base = import.meta.dirname
   const source = await readFile(join(base, 'index.css'), 'utf8')
   const compiler = await compile(source, { base, loadStylesheet })
-  css = compiler.build(['dark:bg-black', 'bg-primary-hover', 'text-secondary'])
+  css = compiler.build([
+    'dark:bg-black',
+    'contrast-more:bg-black',
+    'bg-primary-hover',
+    'text-secondary',
+  ])
   rules = parse(css)
 })
 
@@ -163,7 +173,10 @@ describe('theme scopes (compiled index.css)', () => {
     expect(light().declarations.get('color-scheme')).toBe('light')
     const themeValues = theme().declarations
     for (const [name, value] of tokens(light())) {
-      if (name.startsWith('--color-')) expect(value).toBe(themeValues.get(name))
+      // `--color-<name>--more`: contrast values, only in the scopes.
+      if (name.startsWith('--color-') && !name.endsWith('--more')) {
+        expect(value).toBe(themeValues.get(name))
+      }
     }
   })
 
@@ -232,6 +245,13 @@ describe('theme scopes (compiled index.css)', () => {
           grew = true
         }
       }
+    }
+
+    // The contrast tokens are re-declared with the contrast scopes instead.
+    for (const name of rule(CONTRAST_SCOPES, [
+      '@layer base',
+    ]).declarations.keys()) {
+      derived.delete(name)
     }
 
     expect(derived.size).toBeGreaterThan(0)
@@ -337,5 +357,190 @@ describe('theme scopes (compiled index.css)', () => {
       setScope(html, null)
       document.body.replaceChildren()
     })
+  })
+})
+
+describe('contrast scopes (compiled index.css)', () => {
+  const contrasted = colorTokens.filter(({ contrastMore }) => contrastMore)
+  const scopes = () => rule(CONTRAST_SCOPES, ['@layer base']).declarations
+
+  it('switches on with data-contrast="more" and the OS preference', () => {
+    // A space turns `var(--contrast-more) <value>` into the value; `initial`
+    // (the guaranteed-invalid value) makes it invalid, so the fallback wins.
+    const on = (selector: string, context: string[]) =>
+      rule(selector, ['@layer base', ...context]).declarations.get(
+        '--contrast-more',
+      )
+    expect(on('[data-contrast="more"]', [])).toBe('')
+    expect(on('[data-contrast="standard"]', [])).toBe('initial')
+    expect(on(':root:not([data-contrast="standard"])', [CONTRAST_QUERY])).toBe(
+      '',
+    )
+    // Lightning CSS keeps the space: `--contrast-more:;` would be invalid in
+    // older browsers.
+    expect(css).toMatch(/--contrast-more: ;/)
+  })
+
+  it.each(contrasted)(
+    'picks the standard or the "more" value of --color-$name on every scope element',
+    ({ name, light }) => {
+      const variable = `--color-${name}`
+      expect(scopes().get(variable)).toBe(`var(${variable}--more-on, ${light})`)
+      expect(scopes().get(`${variable}--more-on`)).toMatch(
+        /^var\(--contrast-more\) \S/,
+      )
+      // The default (the Tailwind theme variable) is the Figma value.
+      expect(
+        rule(':root, :host', ['@layer theme']).declarations.get(variable),
+      ).toBe(light)
+    },
+  )
+
+  it('re-declares them on every element that sets a theme or a contrast', () => {
+    // A theme scope (data-theme or the light / dark classes) inside a
+    // contrast scope, or the other way round, recomputes the contrast
+    // tokens with its own theme's values: every theme scope is listed.
+    const themeScopes = new Set(
+      rules
+        .filter(
+          (r) =>
+            r.context.join(' ') === '@layer base' &&
+            r.declarations.get('color-scheme'),
+        )
+        .flatMap((r) => r.selector.split(', ')),
+    )
+    expect([...themeScopes].sort()).toEqual([
+      '.dark',
+      '.light',
+      ':root',
+      '[data-theme="dark"]',
+      '[data-theme="light"]',
+    ])
+    const selectors = CONTRAST_SCOPES.split(', ')
+    for (const scope of [
+      '.light',
+      '.dark',
+      '[data-theme]',
+      '[data-contrast]',
+    ]) {
+      expect(selectors).toContain(scope)
+    }
+  })
+
+  it('comes after the theme scopes, so their values are its input', () => {
+    const base = rules.filter((r) => r.context[0] === '@layer base')
+    expect(
+      base.indexOf(rule(CONTRAST_SCOPES, ['@layer base'])),
+    ).toBeGreaterThan(
+      base.indexOf(rule('[data-theme], .light, .dark', ['@layer base'])),
+    )
+  })
+
+  describe('contrast-more: variant', () => {
+    const variant = (context: string[]) =>
+      rules.find(
+        (r) =>
+          r.selector.startsWith('.contrast-more\\:bg-black') &&
+          r.context.join(' ') === context.join(' '),
+      )?.selector ?? ''
+
+    const html = document.documentElement
+
+    /** Builds nested `data-contrast` scopes and returns the innermost element. */
+    const nest = (root: string | null, ...levels: (string | null)[]) => {
+      if (root) html.setAttribute('data-contrast', root)
+      else html.removeAttribute('data-contrast')
+      let parent: HTMLElement = document.body
+      parent.replaceChildren()
+      for (const value of [...levels, null]) {
+        const child = document.createElement('div')
+        if (value) child.setAttribute('data-contrast', value)
+        parent.appendChild(child)
+        parent = child
+      }
+      parent.className = 'contrast-more:bg-black'
+      return parent
+    }
+
+    const isMore = (element: Element, osMore: boolean) =>
+      element.matches(variant(['@layer utilities'])) ||
+      (osMore && element.matches(variant(['@layer utilities', CONTRAST_QUERY])))
+
+    it('keeps the specificity of a single class', () => {
+      for (const selector of [
+        variant(['@layer utilities']),
+        variant(['@layer utilities', CONTRAST_QUERY]),
+      ]) {
+        expect(selector.replace(/:(where|not)\(.*$/, '')).toBe(
+          '.contrast-more\\:bg-black',
+        )
+      }
+    })
+
+    it.each([
+      // [<html> data-contrast, nested scopes, OS more, expected]
+      [null, [], false, false],
+      [null, [], true, true],
+      ['standard', [], true, false],
+      ['more', [], false, true],
+      [null, ['more'], false, true],
+      ['standard', ['more'], true, true],
+      ['more', ['standard'], false, false],
+      [null, ['standard'], true, false],
+      [null, ['standard', 'more'], true, true],
+      [null, ['more', 'standard'], false, false],
+    ] as const)(
+      '<html data-contrast=%s> > %j (OS more: %s) → contrast-more: %s',
+      (root, levels, osMore, expected) => {
+        expect(isMore(nest(root, ...levels), osMore)).toBe(expected)
+      },
+    )
+
+    afterAll(() => {
+      html.removeAttribute('data-contrast')
+      document.body.replaceChildren()
+    })
+  })
+})
+
+describe('reduced motion (compiled index.css)', () => {
+  it('fades instead of sliding or zooming, and stops the Accordion', async () => {
+    const theme = await readFile(join(import.meta.dirname, 'theme.css'), 'utf8')
+    const block = theme.slice(theme.indexOf('@theme {'))
+    const tokens = new Map(
+      [
+        ...block
+          .slice(0, block.indexOf('}'))
+          .matchAll(/^\s*(--animate-[\w-]+):\s+([\w-]+)\s/gm),
+      ].map(([, name, keyframes]) => [name, keyframes]),
+    )
+    const reduced = rule(':root, :host', [
+      '@layer base',
+      MOTION_QUERY,
+    ]).declarations
+
+    // The Foundations "Motion" page lists every animation token.
+    expect(animations.map(({ utility }) => `--${utility}`).sort()).toEqual(
+      [...tokens.keys()].sort(),
+    )
+    for (const { utility, keyframes, reduced: to, via } of animations) {
+      const name = `--${utility}`
+      expect(tokens.get(name), name).toBe(keyframes)
+      // Fades stay; the rest fade (`var(--animate-in)`) or stop (`none`).
+      // The Spinner and Progress replace their utilities themselves.
+      expect(reduced.get(name), name).toBe(
+        via === 'component' || to === keyframes
+          ? undefined
+          : to === 'none'
+            ? 'none'
+            : `var(--${to})`,
+      )
+    }
+    expect(reduced.size).toBe(
+      animations.filter(
+        ({ keyframes, reduced: to, via }) =>
+          via === 'theme' && to !== keyframes,
+      ).length,
+    )
   })
 })

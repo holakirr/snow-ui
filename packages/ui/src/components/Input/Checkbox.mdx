@@ -83,7 +83,7 @@ The full table is in the package README.
 | "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Checked mark `#FFF` in both modes: 2.07:1 on the dark-mode indigo Primary | the per-mode `white` token: white on black (21:1), black on indigo (10.15:1) | 1.4.3, 1.4.11 |
 
-Known gap, kept from Figma for now: the Black/20% ring of an unchecked checkbox (1.6:1).
+Known gap with the default contrast, which keeps the Figma values: the Black/20% ring of an unchecked checkbox (1.6:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the ring is `control-border`, Black/50% (at least 3.79:1; White/50% in dark mode, at least 4.01:1), and Black/80% on hover.
 
 ## Localization and RTL
 

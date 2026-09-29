@@ -38,7 +38,7 @@ A single `<div>` with `animate-pulse`, a Black/4% fill (`bg-black-4`, White/10% 
 
 ## States
 
-Skeleton has one state: it pulses, fading its opacity in a loop (Tailwind's `animate-pulse`), until you replace it with the content. It doesn't turn off the animation for people who ask for reduced motion; add `motion-reduce:animate-none` to `className` if you need that.
+Skeleton has one state: it pulses, fading its opacity in a loop (Tailwind's `animate-pulse`), until you replace it with the content. For people who ask for reduced motion (`prefers-reduced-motion: reduce`, WCAG 2.3.3) it doesn't pulse: the Black/4% fill alone marks the placeholder.
 
 ## Accessibility
 

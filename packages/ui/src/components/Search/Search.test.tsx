@@ -27,7 +27,7 @@ describe('Search', () => {
     await Outline.run()
 
     const field = screen.getByRole('searchbox').parentElement
-    expect(field).toHaveClass('bg-surface-1', 'inset-ring-black-20')
+    expect(field).toHaveClass('bg-surface-1', 'inset-ring-control-border')
     expect(field).not.toHaveClass('bg-black-4')
   })
 

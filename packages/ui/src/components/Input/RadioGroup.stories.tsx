@@ -114,7 +114,9 @@ export const Invalid: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('radiogroup')).toBeInvalid()
     for (const radio of canvas.getAllByRole('radio')) {
-      await expect(await hasInsetRing(radio, 'text-red', '2px')).toBe(true)
+      await expect(
+        await hasInsetRing(radio, 'text-control-border-invalid', '2px'),
+      ).toBe(true)
     }
   },
 }

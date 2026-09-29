@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 import { playwright } from '@vitest/browser-playwright'
+import type { BrowserContextOptions } from 'playwright'
 import {
   defineConfig,
   type TestProjectInlineConfiguration,
@@ -15,9 +16,14 @@ import {
 //     renders without errors, its `play` function (if any) passes and axe finds
 //     no violations (`parameters.a11y.test: 'error'`, see .storybook/preview).
 //     Stories that pin a theme (`globals: { theme: 'dark' }`) keep it in both.
+//   - `storybook-prefs`: every story once more, in the light theme, with the
+//     OS asking for more contrast and less motion (Playwright emulates
+//     `prefers-contrast: more` and `prefers-reduced-motion: reduce`): axe
+//     checks the WCAG AA colours of the contrast tokens, and the play
+//     functions that test motion check the reduced one.
 //
-// `bun run test:storybook` runs both Storybook projects; `bun run
-// test:coverage` runs the ui and charts unit tests and both Storybook
+// `bun run test:storybook` runs the three Storybook projects; `bun run
+// test:coverage` runs the ui and charts unit tests and the three Storybook
 // projects with coverage (thresholds below).
 
 const configDir = fileURLToPath(new URL('.storybook', import.meta.url))
@@ -30,6 +36,8 @@ export const storybookProject = (
   name: string,
   theme: 'light' | 'dark',
   browser: 'chromium' | 'firefox' | 'webkit' = 'chromium',
+  /** Playwright emulation of OS preferences (media features). */
+  preferences: Pick<BrowserContextOptions, 'contrast' | 'reducedMotion'> = {},
 ): TestProjectInlineConfiguration => ({
   plugins: [
     // Loads .storybook/main.ts (stories globs, addons, `viteFinal`) and the
@@ -39,14 +47,17 @@ export const storybookProject = (
       initialGlobals: {
         // The theme toolbar global (see .storybook/withTheme.tsx).
         theme,
-        // axe is the Chromium projects' job (the gate); in the other
-        // browsers the stories and their play functions run without it.
-        ...(browser !== 'chromium' && { a11y: { manual: true } }),
-      },
-      ...(theme === 'light' &&
-        browser === 'chromium' && {
-          storybookScript: 'bun run storybook --ci',
+        // axe and the target-size check (.storybook/targetSize.ts) are the
+        // Chromium projects' job (the gate); in the other browsers the
+        // stories and their play functions run without them.
+        ...(browser !== 'chromium' && {
+          a11y: { manual: true },
+          targetSize: 'off',
         }),
+      },
+      ...(name === 'storybook' && {
+        storybookScript: 'bun run storybook --ci',
+      }),
     }),
   ],
   test: {
@@ -54,7 +65,7 @@ export const storybookProject = (
     browser: {
       enabled: true,
       headless: true,
-      provider: playwright(),
+      provider: playwright({ contextOptions: preferences }),
       instances: [{ browser }],
       // Storybook's default story viewport. addon-vitest tries to set it per
       // story but imports `@vitest/browser/context`, which Vitest 5 no longer
@@ -71,6 +82,10 @@ export default defineConfig({
       'packages/*/vitest.config.ts',
       storybookProject('storybook', 'light'),
       storybookProject('storybook-dark', 'dark'),
+      storybookProject('storybook-prefs', 'light', 'chromium', {
+        contrast: 'more',
+        reducedMotion: 'reduce',
+      }),
     ],
     // `bun run test:coverage`: the ui and charts unit tests (jsdom) and the
     // Storybook tests (Chromium) merged into one V8 report of the libraries'

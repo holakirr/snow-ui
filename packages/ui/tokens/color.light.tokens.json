@@ -386,6 +386,32 @@
         "hex": "#d42020"
       },
       "$description": "Accessibility addition (not in the Figma kit): Secondary/Red is 3.36:1 on white and 3.76:1 on #333, so error text (FormMessage, an invalid FormLabel) is #D42020 in light mode and #FF8080 in dark mode (5.21:1 on background-1 in both)."
+    },
+    "control-border": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 0],
+        "alpha": 0.5,
+        "hex": "#000000"
+      },
+      "$description": "Accessibility addition (not in the Figma kit): the boundary of form controls — the rings of unchecked Checkbox and Radio, the strokes of the text fields and the Select trigger, the Switch's off track. Contrast \"standard\" (the default): the Figma Black/20% (1.6:1 on background-1). Contrast \"more\" (prefers-contrast: more, data-contrast=\"more\"): Black/50%, at least 3.79:1 on every surface and field fill (WCAG 1.4.11)."
+    },
+    "control-border-strong": {
+      "$value": "{color.black-80}",
+      "$description": "Accessibility addition (not in the Figma kit): the hover and focus boundary of form controls (text field strokes, Checkbox and Radio rings, the Switch's off track), the Slider thumb's border, the Select chevron and the hovered Search icon. Contrast \"standard\" (the default): the Figma Black/40% (2.85:1). Contrast \"more\": Black/80% (12.6:1), stronger than control-border."
+    },
+    "placeholder": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 0],
+        "alpha": 0.6,
+        "hex": "#000000"
+      },
+      "$description": "Accessibility addition (not in the Figma kit): the placeholder text of the native text fields (Input, InputSmall, Textarea, Search) and the Search icon. Contrast \"standard\" (the default): the Figma Black/20% (1.6:1). Contrast \"more\": Black/60%, at least 5.25:1 on every field fill (WCAG 1.4.3)."
+    },
+    "control-border-invalid": {
+      "$value": "{color.red-text}",
+      "$description": "Accessibility addition (not in the Figma kit, which has no error state): the stroke of an invalid form control (`aria-invalid`: text fields, the Select trigger, Checkbox and Radio rings, Switch, Slider). Contrast \"standard\" (the default): Secondary/Red (3.36:1 on white, but 2.92:1 on a gray field on background-2). Contrast \"more\": red-text, at least 4.53:1 on every surface and field fill (WCAG 1.4.11)."
     }
   }
 }

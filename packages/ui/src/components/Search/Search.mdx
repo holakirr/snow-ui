@@ -98,7 +98,9 @@ The full table is in the package README.
 | Shortcut hint in Black/20%: 1.6:1 | `text-secondary`, with no fill of its own (a second Black/4% layer on the hovered dark field took it under 4.5:1) | 1.4.3 |
 | Clear button at 40% opacity: 2.85:1 | 60% (5.74:1), 80% on hover and keyboard focus | 1.4.11 |
 
-Known gap, kept from Figma for now: the Black/20% placeholder (it is never the field's only label).
+Known gaps with the default contrast, which keeps the Figma values: the Black/20% placeholder (it is never the field's only label) and the Black/4% fill of the `gray` field (1.1:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the placeholder and the icon are Black/60% (at least 5.25:1; White/75% in dark mode) and both variants get a 1px `control-border` stroke (at least 3.3:1).
+
+The clear button is a 16px icon with a 24×24px hit area (`hit-area`, WCAG 2.5.8), and the input fills the field's height, so the whole 28px field is its target.
 
 ## Localization and RTL
 

@@ -1,5 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { addDays, setHours, setMinutes, startOfWeek } from 'date-fns'
+import {
+  addDays,
+  setHours,
+  setMinutes,
+  startOfDay,
+  startOfWeek,
+} from 'date-fns'
+import { expect, fn, waitFor, within } from 'storybook/test'
 
 import type { CalendarEvent } from '../../types'
 import { Button } from '../Button'
@@ -10,7 +17,8 @@ import { Scheduler } from './Scheduler'
 
 /**
  * A time in the current week (`day` 0 is its Monday), so the events are in
- * the week the stories show (`currentDate: new Date()`).
+ * the week the stories with events show: they start on Monday like the
+ * Figma kit (`startOfWeek: 1`), with `currentDate: new Date()`.
  */
 const thisWeek = (day: number, hours: number, minutes = 0) =>
   setMinutes(
@@ -39,6 +47,28 @@ const sampleEvents: CalendarEvent[] = [
   },
 ]
 
+/** The name of the slot that starts at `date`: the date and time in en-US. */
+const slotName = (date: Date) => date.toLocaleString('en-US')
+
+/** Ends a play function blurred and scrolled to the top (focus() scrolls). */
+const settle = (canvasElement: HTMLElement) => {
+  const document = canvasElement.ownerDocument
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur()
+  }
+  document.defaultView?.scrollTo(0, 0)
+}
+
+// WCAG 2.5.8 exception for the Storybook target-size check
+// (.storybook/targetSize.ts) in the stories with overlapping events.
+const eventExceptions = [
+  {
+    selector: 'button[data-scheduler-item="slot"]',
+    reason:
+      'An event covers part or all of the slots of its hours by design (Figma), leaving less than 24px of some: the part under an event is no pointer target for the slot, and the grid keys reach every slot.',
+  },
+]
+
 const meta: Meta<typeof Scheduler> = {
   title: 'Components/Scheduler',
   component: Scheduler,
@@ -46,29 +76,192 @@ const meta: Meta<typeof Scheduler> = {
   args: {
     currentDate: new Date(),
     events: sampleEvents,
+    onEventClick: fn(),
+    onDateClick: fn(),
   },
 }
 
 export default meta
 type Story = StoryObj<typeof Scheduler>
 
+/**
+ * Without `startOfWeek` the week starts on the locale's first day: Sunday in
+ * the stories' default English (Monday with the Russian toolbar locale).
+ */
 export const Default: Story = {
   args: {
     events: [],
-    onEventClick: (event) => console.log('Event clicked:', event),
-    onDateClick: (date) => console.log('Date clicked:', date),
+  },
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const now = new Date()
+    const sunday = startOfWeek(now, { weekStartsOn: 0 })
+    const grid = canvas.getByRole('grid')
+
+    await step(
+      "the week starts on the locale's first day: Sunday",
+      async () => {
+        await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
+          sunday.toLocaleDateString('en-US', {
+            weekday: 'short',
+            day: 'numeric',
+          }),
+        )
+      },
+    )
+
+    await step('the grid is named by its week', async () => {
+      await expect(grid).toHaveAccessibleName(
+        new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+          .formatRange(sunday, addDays(sunday, 6))
+          .replace(/\s+/g, ' '),
+      )
+    })
+
+    await step('today and the current hour are marked', async () => {
+      await expect(
+        canvas.getByRole('columnheader', { current: 'date' }),
+      ).toHaveTextContent(
+        now.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' }),
+      )
+      // The grid runs from 7 to 20 without events.
+      const current = grid.querySelectorAll('[aria-current="time"]')
+      if (now.getHours() >= 7 && now.getHours() <= 20) {
+        await expect(current).toHaveLength(1)
+        await expect(current[0]).toHaveAccessibleName(
+          slotName(setHours(startOfDay(now), now.getHours())),
+        )
+      } else {
+        await expect(current).toHaveLength(0)
+      }
+    })
+
+    await step("one tab stop: today's current hour", async () => {
+      await expect(grid.querySelectorAll('[tabindex="0"]')).toHaveLength(1)
+      const hour = Math.min(Math.max(now.getHours(), 7), 20)
+      await userEvent.tab()
+      await expect(
+        canvas.getByRole('button', {
+          name: slotName(setHours(startOfDay(now), hour)),
+        }),
+      ).toHaveFocus()
+      // The next Tab leaves the grid.
+      await userEvent.tab()
+      await expect(grid).not.toContainElement(
+        canvasElement.ownerDocument.activeElement as HTMLElement,
+      )
+    })
+
+    settle(canvasElement)
   },
 }
 
 export const WithEvents: Story = {
-  args: {
-    onEventClick: (event) => console.log('Event clicked:', event),
-    onDateClick: (date) => console.log('Date clicked:', date),
+  args: { startOfWeek: 1 },
+  parameters: { targetSize: { exceptions: eventExceptions } },
+  play: async ({ args, canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const slot = (day: number, hour: number) =>
+      canvas.getByRole('button', { name: slotName(thisWeek(day, hour)) })
+    const lunch = canvas.getByRole('button', { name: /^Lunch Break/ })
+
+    await step(
+      'Tab enters the grid, Ctrl+Home goes to its first slot',
+      async () => {
+        await userEvent.tab()
+        await expect(canvas.getByRole('grid')).toContainElement(
+          canvasElement.ownerDocument.activeElement as HTMLElement,
+        )
+        await userEvent.keyboard('{Control>}{Home}{/Control}')
+        await expect(slot(0, 7)).toHaveFocus()
+      },
+    )
+
+    await step(
+      'ArrowRight / ArrowLeft move a day, without wrapping',
+      async () => {
+        await userEvent.keyboard('{ArrowRight}')
+        await expect(slot(1, 7)).toHaveFocus()
+        await userEvent.keyboard('{ArrowLeft}{ArrowLeft}')
+        await expect(slot(0, 7)).toHaveFocus()
+      },
+    )
+
+    await step('End / Home go to the last / first day of the row', async () => {
+      await userEvent.keyboard('{End}')
+      await expect(slot(6, 7)).toHaveFocus()
+      await userEvent.keyboard('{Home}')
+      await expect(slot(0, 7)).toHaveFocus()
+    })
+
+    await step(
+      'PageDown / PageUp move six hours, up to the last row',
+      async () => {
+        await userEvent.keyboard('{PageDown}')
+        await expect(slot(0, 13)).toHaveFocus()
+        await userEvent.keyboard('{PageDown}{PageDown}')
+        await expect(slot(0, 20)).toHaveFocus()
+        await userEvent.keyboard('{PageUp}')
+        await expect(slot(0, 14)).toHaveFocus()
+      },
+    )
+
+    await step('Ctrl+End / Ctrl+Home go to the last / first slot', async () => {
+      await userEvent.keyboard('{Control>}{End}{/Control}')
+      await expect(slot(6, 20)).toHaveFocus()
+      await userEvent.keyboard('{Control>}{Home}{/Control}')
+      await expect(slot(0, 7)).toHaveFocus()
+    })
+
+    await step(
+      'ArrowDown / ArrowUp go down the day, events included',
+      async () => {
+        // Thursday: Lunch Break starts at 12, after the slot of 12.
+        await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowRight}')
+        await userEvent.keyboard('{PageDown}')
+        await expect(slot(3, 13)).toHaveFocus()
+        await userEvent.keyboard('{ArrowUp}')
+        await expect(lunch).toHaveFocus()
+        // ArrowDown moves on instead of opening the event's menu.
+        await userEvent.keyboard('{ArrowDown}')
+        await expect(slot(3, 13)).toHaveFocus()
+        await expect(page.queryByRole('menu')).not.toBeInTheDocument()
+        await userEvent.keyboard('{ArrowUp}{ArrowUp}')
+        await expect(slot(3, 12)).toHaveFocus()
+        await userEvent.keyboard('{ArrowDown}')
+        await expect(lunch).toHaveFocus()
+      },
+    )
+
+    await step('Enter opens the event, Escape returns to it', async () => {
+      await userEvent.keyboard('{Enter}')
+      await expect(args.onEventClick).toHaveBeenLastCalledWith(
+        expect.objectContaining({ title: 'Lunch Break' }),
+      )
+      await page.findByRole('menu')
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() =>
+        expect(page.queryByRole('menu')).not.toBeInTheDocument(),
+      )
+      await waitFor(() => expect(lunch).toHaveFocus())
+    })
+
+    await step('Enter on a slot calls onDateClick with its hour', async () => {
+      await userEvent.keyboard('{ArrowDown}{Enter}')
+      await expect(args.onDateClick).toHaveBeenLastCalledWith(thisWeek(3, 13))
+    })
+
+    settle(canvasElement)
   },
 }
 
 export const MultipleEventsPerHour: Story = {
+  parameters: { targetSize: { exceptions: eventExceptions } },
   args: {
+    startOfWeek: 1,
     currentDate: new Date(),
     events: [
       ...sampleEvents,
@@ -150,14 +343,34 @@ export const MultipleEventsPerHour: Story = {
         ),
       },
     ],
-    onEventClick: (event) => console.log('Event clicked:', event),
-    onDateClick: (date) => console.log('Date clicked:', date),
   },
 }
 
+/** `startOfWeek` wins over the locale: Sunday first, in Russian. */
 export const WithWeekStartsFromSunday: Story = {
   args: {
     events: [],
     startOfWeek: 0,
+  },
+  globals: { locale: 'ru' },
+  play: async ({ canvas }) => {
+    const sunday = startOfWeek(new Date(), { weekStartsOn: 0 })
+    await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
+      sunday.toLocaleDateString('ru', { weekday: 'short', day: 'numeric' }),
+    )
+  },
+}
+
+/** The Russian locale's week starts on Monday. */
+export const RussianWeek: Story = {
+  args: {
+    events: [],
+  },
+  globals: { locale: 'ru' },
+  play: async ({ canvas }) => {
+    const monday = startOfWeek(new Date(), { weekStartsOn: 1 })
+    await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
+      monday.toLocaleDateString('ru', { weekday: 'short', day: 'numeric' }),
+    )
   },
 }

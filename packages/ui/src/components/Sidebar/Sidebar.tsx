@@ -301,7 +301,7 @@ const Sidebar: FC<SidebarProps> = ({
       {/* This is what handles the sidebar gap on desktop */}
       <div
         className={twMerge(
-          'duration-200 relative h-svh w-(--sidebar-width) bg-transparent transition-[width] ease-linear',
+          'duration-200 relative h-svh w-(--sidebar-width) bg-transparent transition-[width] ease-linear motion-reduce:transition-none',
           'group-data-[collapsible=offcanvas]:w-0',
           'group-data-[side=right]:rotate-180',
           variant === 'floating' || variant === 'inset'
@@ -312,7 +312,7 @@ const Sidebar: FC<SidebarProps> = ({
       <div
         id={sidebarId}
         className={twMerge(
-          'duration-200 fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width,visibility] ease-linear md:flex',
+          'duration-200 fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width,visibility] ease-linear motion-reduce:transition-none md:flex',
           // Collapsed off-canvas, the panel is off-screen: `invisible` takes
           // it out of the tab order and the accessibility tree once it has
           // slid out (visibility switches at the end of the transition when
@@ -406,7 +406,7 @@ const SidebarRail: FC<SidebarRailProps> = ({
       }}
       title={messages.sidebar.toggle}
       className={twMerge(
-        'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-black-10 group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
+        'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear motion-reduce:transition-none after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-black-10 group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
         '[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize',
         '[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize',
         // It stays visible at the screen edge when the sidebar is collapsed
@@ -536,7 +536,7 @@ const SidebarGroupLabel: FC<SidebarGroupLabelProps> = ({
       className={twMerge(
         // Figma section heading: 14 Regular, padding 4/12, radius 12. Black/80%
         // instead of Figma's Black/40% (2.85:1) for a 4.5:1 text contrast.
-        'duration-200 flex h-7 shrink-0 items-center rounded-12 px-3 text-14 font-normal text-black-80 transition-[margin,opacity] ease-linear focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
+        'duration-200 flex h-7 shrink-0 items-center rounded-12 px-3 text-14 font-normal text-black-80 transition-[margin,opacity] ease-linear motion-reduce:transition-none focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
         'group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:-mt-7 group-data-[collapsible=icon]:opacity-0',
         className,
       )}
@@ -613,7 +613,7 @@ SidebarMenuItem.displayName = 'SidebarMenuItem'
  * a Black/4% fill on hover and on the active item.
  */
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-12 p-2 text-start text-black text-14 font-normal transition-[width,height,padding] hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pe-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
+  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-12 p-2 text-start text-black text-14 font-normal transition-[width,height,padding] motion-reduce:transition-none hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pe-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
   {
     variants: {
       variant: {

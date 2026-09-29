@@ -140,7 +140,9 @@ export const Invalid: Story = {
     for (const input of canvas.getAllByRole('searchbox', { name: 'Search' })) {
       await expect(input).toBeInvalid()
       const field = input.parentElement as HTMLElement
-      await expect(await hasInsetRing(field, 'text-red', '1px')).toBe(true)
+      await expect(
+        await hasInsetRing(field, 'text-control-border-invalid', '1px'),
+      ).toBe(true)
     }
   },
 }

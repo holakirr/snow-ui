@@ -25,18 +25,22 @@ export type SearchSize = 'sm' | 'lg'
 // Outline: Surface/1 with a 0.5px Black/20% stroke → Black/40% on hover. On
 // focus both become Surface/1 + 0.5px Black/40% + the Focus ring. Invalid
 // (the <input> has `aria-invalid="true"`; no Figma state): a 1px
-// Secondary/Red stroke in every state, like Input.
+// Secondary/Red stroke in every state, like Input. The stroke colours are
+// the `control-border*` tokens; with more contrast the stroke is 1px and the
+// gray field gets one too (its fill alone is 1.1:1, WCAG 1.4.11).
 const searchStyles = cva(
-  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-black-40 focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red has-disabled:pointer-events-none has-disabled:opacity-40',
+  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-control-border-strong focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-disabled:pointer-events-none has-disabled:opacity-40 contrast-more:inset-ring-1 contrast-more:focus-within:inset-ring-1',
   {
     variants: {
       variant: {
-        gray: 'bg-black-4 hover:bg-black-10',
+        gray: 'bg-black-4 hover:bg-black-10 contrast-more:inset-ring-control-border',
         outline:
-          'bg-surface-1 inset-ring-[0.5px] inset-ring-black-20 hover:inset-ring-black-40',
+          'bg-surface-1 inset-ring-[0.5px] inset-ring-control-border hover:inset-ring-control-border-strong',
       },
       size: {
-        sm: 'h-7 rounded-16 px-2 py-1 text-14',
+        // The input is the field's full height (`h-full`), not 20px inside
+        // 4px paddings, so the whole 28px is its target (WCAG 2.5.8).
+        sm: 'h-7 rounded-16 px-2 text-14',
         // The 48px field at the top of the Figma SearchPopup.
         lg: 'h-12 rounded-16 px-2 text-18',
       },
@@ -194,7 +198,8 @@ const Search: FC<SearchProps> = ({
     >
       <SearchIcon
         size={iconSizes[size]}
-        className="shrink-0 text-black-20 transition-colors group-hover/search:text-black-40 group-focus-within/search:text-primary"
+        // The placeholder's colour, darker on hover (Figma Black/20% and 40%).
+        className="shrink-0 text-placeholder transition-colors group-hover/search:text-control-border-strong group-focus-within/search:text-primary"
       />
       <input
         {...props}
@@ -207,7 +212,7 @@ const Search: FC<SearchProps> = ({
         disabled={disabled}
         readOnly={readOnly}
         className={twMerge(
-          'h-full min-w-0 flex-1 bg-transparent text-black outline-none placeholder:text-black-20 disabled:cursor-not-allowed [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden',
+          'h-full min-w-0 flex-1 bg-transparent text-black outline-none placeholder:text-placeholder disabled:cursor-not-allowed [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden',
           inputClassName,
         )}
       />
@@ -218,8 +223,9 @@ const Search: FC<SearchProps> = ({
           aria-label={clearName}
           title={clearName}
           onClick={clear}
-          // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon (WCAG 1.4.11).
-          className="flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
+          // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon
+          // (WCAG 1.4.11). A 16px icon: `hit-area` makes it 24px (2.5.8).
+          className="relative flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hit-area hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
         >
           <XCircleIcon weight="fill" size={clearIconSizes[size]} />
         </button>

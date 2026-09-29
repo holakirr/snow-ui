@@ -19,17 +19,17 @@ type RadioGroupItemProps = ComponentProps<typeof RadioGroupPrimitive.Item>
 /**
  * Figma "Radio" (Select True / False × State Default / Hover): a 28px circle
  * with a 2px Black/20% ring on Background/3 (a Black 8% fill and a Black/40%
- * ring on hover). Selected, a 14px Primary dot with the Figma inner shadow
+ * ring on hover; the `control-border*` tokens, WCAG AA with more contrast). Selected, a 14px Primary dot with the Figma inner shadow
  * sits in the middle (Primary under White/40% on hover).
  */
 const RadioGroupItem: FC<RadioGroupItemProps> = ({ className, ...props }) => (
   <RadioGroupPrimitive.Item
     className={twMerge(
-      'peer group aspect-square size-7 shrink-0 cursor-pointer rounded-full bg-background-3 text-black inset-ring-2 inset-ring-black-20 transition-all',
-      'enabled:hover:bg-black/8 enabled:hover:inset-ring-black-40',
+      'peer group aspect-square size-7 shrink-0 cursor-pointer rounded-full bg-background-3 text-black inset-ring-2 inset-ring-control-border transition-all',
+      'enabled:hover:bg-black/8 enabled:hover:inset-ring-control-border-strong',
       // Invalid (an `aria-invalid` group, no Figma state): Secondary/Red
       // rings, hovered or not.
-      'group-aria-invalid/radio-group:inset-ring-red enabled:hover:group-aria-invalid/radio-group:inset-ring-red',
+      'group-aria-invalid/radio-group:inset-ring-control-border-invalid enabled:hover:group-aria-invalid/radio-group:inset-ring-control-border-invalid',
       'focus-ring',
       // Disabled (no Figma state): a Black/4% circle with a Black/10% ring
       // and a Black/20% dot. Visible in both modes.

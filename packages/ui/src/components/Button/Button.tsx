@@ -96,7 +96,8 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
 const buttonVariants = cva(
   [
     'group inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal text-black transition-all',
-    'cursor-pointer focus-ring active:scale-95',
+    // The press scale is motion: none with reduced motion.
+    'cursor-pointer focus-ring active:scale-95 motion-reduce:active:scale-100',
     'disabled:cursor-not-allowed disabled:scale-100 disabled:text-black-20',
   ],
   {
@@ -126,7 +127,9 @@ const buttonVariants = cva(
     compoundVariants: [
       {
         variant: 'bare',
-        className: 'min-h-0 min-w-0 rounded-none p-0',
+        // No box, so the element can be smaller than 24px: `hit-area` gives
+        // it an invisible 24×24px hit area (WCAG 2.5.8).
+        className: 'relative min-h-0 min-w-0 rounded-none p-0 hit-area',
       },
     ],
     defaultVariants: {

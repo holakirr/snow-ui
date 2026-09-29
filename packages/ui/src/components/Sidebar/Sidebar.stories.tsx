@@ -259,6 +259,17 @@ export const Offcanvas: Story = {
   // The same picture as the other stories once the play function has
   // reopened the sidebar.
   tags: ['skip-visual'],
+  parameters: {
+    targetSize: {
+      exceptions: [
+        {
+          selector: 'a[href="#offcanvas"]',
+          reason:
+            'A demo text link on its own (spacing exception): it only gives the page a focusable element after the sidebar.',
+        },
+      ],
+    },
+  },
   render: () => (
     <SidebarProvider>
       <Sidebar>

@@ -110,7 +110,7 @@ describe('Input', () => {
     const field = input.closest('[data-slot="input"]')
 
     expect(field).toHaveClass('w-40', 'rounded-16', 'px-4', 'py-3', 'text-14')
-    expect(field).toHaveClass('inset-ring-[0.5px]', 'inset-ring-black-20')
+    expect(field).toHaveClass('inset-ring-[0.5px]', 'inset-ring-control-border')
     expect(input).toHaveClass('uppercase')
   })
 
@@ -130,7 +130,7 @@ describe('Input', () => {
 
     expect(input).toHaveAttribute('readonly')
     expect(field).toHaveAttribute('data-static', 'true')
-    expect(field).toHaveClass('hover:inset-ring-black-20')
+    expect(field).toHaveClass('hover:inset-ring-control-border')
   })
 
   it('renders the disabled state', () => {
@@ -172,7 +172,7 @@ describe('Input', () => {
       .closest('[data-slot="input"]') as HTMLElement
 
     expect(field).toHaveClass(
-      'focus-within:inset-ring-black-40',
+      'focus-within:inset-ring-control-border-strong',
       'has-[input:focus]:ring-4',
       'has-[input:focus]:ring-focus',
     )
@@ -225,7 +225,7 @@ describe('Input', () => {
     expect(screen.getByRole('textbox')).toBeInvalid()
     expect(field).toHaveClass(
       'has-aria-invalid:inset-ring',
-      'has-aria-invalid:inset-ring-red',
+      'has-aria-invalid:inset-ring-control-border-invalid',
     )
   })
 })

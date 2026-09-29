@@ -14,6 +14,7 @@ Every token is a CSS variable (`var(--color-black-10)`) and, through Tailwind, a
 | --- | --- | --- |
 | Colours | `primary`, `black`, `white` and their Figma alpha steps (`black-80`, `black-40`, `black-20`, `black-10`, `black-4`, same for `white`), `background-1…3`, `surface-1…3`, `color-1`, `color-2`, `static-white`, `static-black`, the secondary colours (`purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`) | `primary` is black in light mode and indigo in dark mode; `black` and `white` swap. `static-*` never change. |
 | Accessible text | `text-secondary`, `indigo-text`, `red-text` | Library additions for 4.5:1 text where Figma's Black/40% or indigo fall short. |
+| Form controls | `control-border`, `control-border-strong`, `placeholder` | Library additions: the Figma Black/20% and 40% by default, WCAG AA with more contrast (see [Contrast](?path=/docs/guides-contrast--docs)). |
 | Typography | `text-12` … `text-64` | The Figma text styles (size and line height). Inter with `font-feature-settings: "ss01" 1, "cv01" 1` and `font-optical-sizing: none`. |
 | Radius | `rounded-4` … `rounded-80` | The Figma corner radius scale. |
 | Spacing | Tailwind's (`p-1` = 4px, `gap-3` = 12px) | The Figma spacing values are multiples of 4px. |
@@ -22,9 +23,10 @@ Every token is a CSS variable (`var(--color-black-10)`) and, through Tailwind, a
 
 In dark mode `black-10` and `black-4` use the kit's stronger alphas (15% and 10%). Tailwind's opacity modifiers (`black/10`) keep one alpha in both modes, so prefer the tokens.
 
-Two utilities and a base rule come with the theme:
+Three utilities and a base rule come with the theme:
 
 - `focus-ring`: the keyboard focus indicator of every control. On `:focus-visible` it draws the Figma "Focus" ring (`ring-4 ring-focus`) plus a 2px `black-80` outline offset by 2px. Use it on your own focusable elements: `<button className="focus-ring">`.
+- `hit-area`: an invisible pointer hit area of at least 24×24px centred on a smaller control (WCAG 2.5.8 Target Size), drawn by its `::after`. The element needs a position: `<button className="relative hit-area">`. Bare icon buttons, `Switch`, the `Slider` thumb, sortable `Table` headers, line tabs and the `Search` clear button have one.
 - Cursors: buttons and ARIA controls (`option`, `menuitem`, `tab`, `radio`, `checkbox`, `switch`, `label[for]`…) get the pointer cursor, which Tailwind v4's preflight no longer sets, and disabled elements the not-allowed cursor. `cursor-*` utilities override it.
 
 Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `background`, `foreground`, `muted`, `accent`, `destructive`, `input`, `ring`…) still work as deprecated aliases.
@@ -68,9 +70,17 @@ The theme is light by default. It is dark:
 
 In this Storybook, the theme toolbar switches every story; stories named "Dark" pin the dark theme.
 
+## Contrast
+
+The form controls keep the Figma kit's Black/20% rings, strokes and placeholders (1.6:1) by default and meet WCAG AA with more contrast: with the OS preference `prefers-contrast: more`, or inside `data-contrast="more"` on any element (`data-contrast="standard"` switches back). Contrast and theme scopes combine at any depth. The [Contrast](?path=/docs/guides-contrast--docs) guide lists the tokens, every measured ratio and how the scopes work.
+
+## Motion
+
+With the OS setting `prefers-reduced-motion: reduce` (WCAG 2.3.3), the overlays — Dialog and Sheet backdrops, Sheet, Popover, menus, Select, Tooltip, Toast, CommandPalette — fade instead of sliding or zooming, with the same timing, and the Accordion opens and closes at once: `theme.css` points the `--animate-*` tokens at the fades (see [Foundations › Motion](?path=/story/foundations--motion)). The components' own movements use `motion-reduce:` utilities: a pressed Button doesn't shrink, the Switch thumb and the Accordion chevron jump, a Dialog or AlertDialog only fades, the Skeleton stops pulsing and the Sidebar collapses and expands at once (the Spinner and Progress pulse instead of turning or sliding). State changes stay visible. Use the `animate-*` tokens and `motion-reduce:` in your own components the same way.
+
 ## Tailwind CSS v4 projects: `theme.css`
 
-`theme.css` is the theme without Tailwind itself: the tokens as theme variables, the theme scopes, the `dark` variant, the `glass*` and `focus-ring` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). `index.css` is the same compiled with Tailwind, for projects without it.
+`theme.css` is the theme without Tailwind itself: the tokens as theme variables, the theme and contrast scopes, the `dark` and `contrast-more` variants, the `glass*`, `focus-ring` and `hit-area` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). `index.css` is the same compiled with Tailwind, for projects without it.
 
 ```css
 @import "tailwindcss";
@@ -81,7 +91,8 @@ It adds the package's built components to Tailwind's sources itself (`@source`, 
 
 What it changes in your Tailwind setup:
 
-- `dark:` follows the scoped themes (`data-theme` or the `light` / `dark` classes, then the OS preference) instead of only `prefers-color-scheme`.
+- `dark:` follows the scoped themes (`data-theme` or the `light` / `dark` classes, then the OS preference) instead of only `prefers-color-scheme`, and `contrast-more:` the contrast scopes (`data-contrast`, then `prefers-contrast`) instead of only the OS preference.
+- With `prefers-reduced-motion: reduce`, the theme's `--animate-slide-*` and `--animate-zoom-*` tokens fade and `--animate-accordion-*` don't animate.
 - It overrides Tailwind's `--font-sans` (Inter), `--color-black` and `--color-white` (which swap in dark mode).
 - It adds the kit's scales next to Tailwind's: `text-12`…, `rounded-4`…, the colours above.
 

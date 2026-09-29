@@ -84,6 +84,16 @@ export const colorGroups: ColorGroup[] = [
     'Library additions, not in the Figma kit, for text that must meet WCAG contrast. Secondary/Indigo text is 2.07:1 on white, so indigo text uses a darker indigo in light mode; Black/40% text is 2.85:1, so secondary text uses text-secondary; Secondary/Red text is 3.36:1, so error text uses red-text.',
     ['indigo-text', 'text-secondary', 'red-text'],
   ),
+  group(
+    'Form controls',
+    'Library additions for the boundaries, placeholders and invalid strokes of form controls. With the default contrast they are the Figma colours (Black/20%, Black/40%, Secondary/Red), under WCAG AA in places; with more contrast (the OS setting prefers-contrast: more, or data-contrast="more" on any element) they meet it: 3:1 for boundaries, 4.5:1 for placeholder text. See Guides › Contrast.',
+    [
+      'control-border',
+      'control-border-strong',
+      'placeholder',
+      'control-border-invalid',
+    ],
+  ),
 ]
 
 /**
@@ -135,5 +145,145 @@ export const glass: { utility: string; figma: string; recipe: string }[] = [
     utility: 'glass',
     figma: 'Glass 2',
     recipe: 'Same as glass-2',
+  },
+]
+
+/**
+ * The animation tokens of theme.css (`--animate-*`, `animate-*` utilities)
+ * and what they become with reduced motion (`prefers-reduced-motion:
+ * reduce`); the utilities are written out so Tailwind generates them.
+ * `theme.test.ts` checks the list against theme.css.
+ */
+export const animations: {
+  utility: string
+  /** The keyframes it runs. */
+  keyframes: string
+  /** The keyframes with reduced motion (`none`: it doesn't animate). */
+  reduced: string
+  /**
+   * Where reduced motion is handled: theme.css re-points the token, or the
+   * components replace the utility (`motion-reduce:animate-…`).
+   */
+  via: 'theme' | 'component'
+  usedBy: string
+}[] = [
+  {
+    utility: 'animate-in',
+    keyframes: 'animate-in',
+    reduced: 'animate-in',
+    via: 'theme',
+    usedBy: 'Overlays: fade in',
+  },
+  {
+    utility: 'animate-out',
+    keyframes: 'animate-out',
+    reduced: 'animate-out',
+    via: 'theme',
+    usedBy: 'Overlays: fade out',
+  },
+  {
+    utility: 'animate-slide-in-from-top',
+    keyframes: 'slide-in-from-top',
+    reduced: 'animate-in',
+    via: 'theme',
+    usedBy: 'Sheet, Popover, menus, Select, Tooltip',
+  },
+  {
+    utility: 'animate-slide-out-to-top',
+    keyframes: 'slide-out-to-top',
+    reduced: 'animate-out',
+    via: 'theme',
+    usedBy: 'Sheet',
+  },
+  {
+    utility: 'animate-slide-in-from-right',
+    keyframes: 'slide-in-from-right',
+    reduced: 'animate-in',
+    via: 'theme',
+    usedBy: 'Sheet, Popover, menus, Select, Tooltip',
+  },
+  {
+    utility: 'animate-slide-out-to-right',
+    keyframes: 'slide-out-to-right',
+    reduced: 'animate-out',
+    via: 'theme',
+    usedBy: 'Sheet',
+  },
+  {
+    utility: 'animate-slide-in-from-bottom',
+    keyframes: 'slide-in-from-bottom',
+    reduced: 'animate-in',
+    via: 'theme',
+    usedBy: 'Sheet, Toast, Popover, menus, Select, Tooltip',
+  },
+  {
+    utility: 'animate-slide-out-to-bottom',
+    keyframes: 'slide-out-to-bottom',
+    reduced: 'animate-out',
+    via: 'theme',
+    usedBy: 'Sheet, Toast',
+  },
+  {
+    utility: 'animate-slide-in-from-left',
+    keyframes: 'slide-in-from-left',
+    reduced: 'animate-in',
+    via: 'theme',
+    usedBy: 'Sheet, Popover, menus, Select, Tooltip',
+  },
+  {
+    utility: 'animate-slide-out-to-left',
+    keyframes: 'slide-out-to-left',
+    reduced: 'animate-out',
+    via: 'theme',
+    usedBy: 'Sheet',
+  },
+  {
+    utility: 'animate-zoom-in-95',
+    keyframes: 'zoom-in-95',
+    reduced: 'animate-in',
+    via: 'theme',
+    usedBy: 'Popover, Select, Tooltip',
+  },
+  {
+    utility: 'animate-zoom-out-95',
+    keyframes: 'zoom-out-95',
+    reduced: 'animate-out',
+    via: 'theme',
+    usedBy: 'Popover, Select, Tooltip',
+  },
+  {
+    utility: 'animate-accordion-down',
+    keyframes: 'accordion-down',
+    reduced: 'none',
+    via: 'theme',
+    usedBy: 'Accordion: opens',
+  },
+  {
+    utility: 'animate-accordion-up',
+    keyframes: 'accordion-up',
+    reduced: 'none',
+    via: 'theme',
+    usedBy: 'Accordion: closes',
+  },
+  {
+    utility: 'animate-spinner-turn',
+    keyframes: 'spinner-turn',
+    reduced: 'none',
+    via: 'component',
+    usedBy: 'Spinner, indeterminate ProgressCircle: the ring stops turning',
+  },
+  {
+    utility: 'animate-spinner-arc',
+    keyframes: 'spinner-arc',
+    reduced: 'pulse',
+    via: 'component',
+    usedBy: 'Spinner, indeterminate ProgressCircle: the arc pulses instead',
+  },
+  {
+    utility: 'animate-progress-indeterminate',
+    keyframes: 'progress-indeterminate',
+    reduced: 'pulse',
+    via: 'component',
+    usedBy: 'indeterminate Progress: a full-width pulse instead',
   },
 ]

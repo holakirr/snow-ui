@@ -19,6 +19,10 @@ import type {
  *   .light, .dark)`; plus `[data-theme], .light, .dark`, which re-declares
  *   the tokens whose value refers to a switching token. The `light` / `dark`
  *   classes are the ones next-themes and shadcn/ui set.
+ *   The `contrast` modifier's contexts become contrast scopes: the colours
+ *   that differ between "standard" and "more" follow `prefers-contrast:
+ *   more` and `data-contrast` on any element, in either theme (see
+ *   `renderContrast`).
  * - `ts`: the token data behind Storybook's Foundations pages.
  * - `scales`: the token scales tailwind-merge needs (`src/utils/tw-merge.ts`).
  *
@@ -44,11 +48,19 @@ export interface SnowUIPluginOptions {
   scales: string
   /** The modifier that holds the colour modes. @default "theme" */
   modifier?: string
+  /**
+   * The modifier that holds the contrast levels ("standard", the default,
+   * and "more"). A resolver without it has no contrast scopes.
+   * @default "contrast"
+   */
+  contrastModifier?: string
 }
 
 const EXTENSION = 'com.holakirr.snow-ui'
 const LIGHT = 'light'
 const DARK = 'dark'
+const STANDARD = 'standard'
+const MORE = 'more'
 
 /** Namespaces, in output order. */
 const NAMESPACES = [
@@ -95,18 +107,41 @@ interface ColorDoc {
   dark: string
   swatch: string
   resolved?: { light: string; dark: string }
+  /** Resolved colours with contrast "more", when they differ. */
+  contrastMore?: { light: string; dark: string }
   note?: string
+}
+
+/** A colour that changes with the contrast modifier. */
+interface ContrastColor {
+  /** `--color-<name>`. */
+  name: string
+  /** CSS value with contrast "standard": the same in both themes. */
+  standard: string
+  /** CSS value with contrast "more", per theme. */
+  more: { light: string; dark: string }
+}
+
+/** The token sets of the two themes, at one contrast level. */
+interface Modes {
+  light: TokenNormalizedSet
+  dark: TokenNormalizedSet
 }
 
 export default function snowUI(options: SnowUIPluginOptions): Plugin {
   const modifier = options.modifier ?? 'theme'
+  const contrast = options.contrastModifier ?? 'contrast'
 
   return {
     name: 'snow-ui',
     build({ resolver, outputFile }) {
-      const light = resolver.apply({ [modifier]: LIGHT })
-      const dark = resolver.apply({ [modifier]: DARK })
-      const model = createModel(light, dark)
+      // A resolver without the contrast modifier ignores its input.
+      const apply = (theme: string, level: string) =>
+        resolver.apply({ [modifier]: theme, [contrast]: level })
+      const model = createModel(
+        { light: apply(LIGHT, STANDARD), dark: apply(DARK, STANDARD) },
+        { light: apply(LIGHT, MORE), dark: apply(DARK, MORE) },
+      )
 
       outputFile(options.css, renderCss(model))
       outputFile(options.ts, renderTs(model))
@@ -120,6 +155,7 @@ export default function snowUI(options: SnowUIPluginOptions): Plugin {
 interface Model {
   sections: Section[]
   colors: ColorDoc[]
+  contrastColors: ContrastColor[]
   deprecatedColors: { name: string; use: string }[]
   font: { family: string; featureSettings?: string }
   textStyles: {
@@ -143,13 +179,33 @@ interface EffectDoc {
   note?: string
 }
 
-function createModel(light: TokenNormalizedSet, dark: TokenNormalizedSet) {
+function createModel(standard: Modes, more: Modes) {
+  const { light, dark } = standard
   const ids = Object.keys(light)
   const darkIds = new Set(Object.keys(dark))
   for (const id of ids) {
     if (!darkIds.delete(id)) fail(id, `is missing from the "${DARK}" mode`)
   }
   for (const id of darkIds) fail(id, `is missing from the "${LIGHT}" mode`)
+  // The contrast modifier only changes the values of existing colours.
+  for (const mode of [LIGHT, DARK] as const) {
+    const moreIds = Object.keys(more[mode])
+    if (moreIds.join() !== ids.join()) {
+      fail(
+        moreIds.find((id) => !ids.includes(id)) ?? ids.join(', '),
+        `must be in both contrast contexts ("${STANDARD}" and "${MORE}")`,
+      )
+    }
+    for (const id of ids) {
+      if (
+        id.split('.')[0] !== 'color' &&
+        JSON.stringify(more[mode][id].$value) !==
+          JSON.stringify(standard[mode][id].$value)
+      ) {
+        fail(id, 'differs between the contrast contexts; only color.* can')
+      }
+    }
+  }
 
   const byNamespace = new Map<Namespace, string[]>()
   for (const id of ids) {
@@ -185,6 +241,7 @@ function createModel(light: TokenNormalizedSet, dark: TokenNormalizedSet) {
     shadows: [],
     blurs: [],
     scales: {},
+    contrastColors: [],
   }
   const section = (namespace: Namespace, first?: TokenNormalized) => {
     const created: Section = {
@@ -265,6 +322,22 @@ function createModel(light: TokenNormalizedSet, dark: TokenNormalizedSet) {
   for (const { id, light: lightToken, dark: darkToken } of colors) {
     const name = localName(id)
     const value = colorValues(id, light, dark)
+    const moreValue = colorValues(id, more.light, more.dark)
+    const contrasted =
+      moreValue.light !== value.light || moreValue.dark !== value.dark
+    if (contrasted) {
+      if (value.light !== value.dark) {
+        fail(
+          id,
+          `changes with the contrast, so its "${STANDARD}" value must be the same in both themes (e.g. an alias of a palette colour)`,
+        )
+      }
+      model.contrastColors.push({
+        name: `--color-${name}`,
+        standard: value.light,
+        more: moreValue,
+      })
+    }
     const deprecated = lightToken.$deprecated
     colorSection.variables.push({
       name: `--color-${name}`,
@@ -298,6 +371,14 @@ function createModel(light: TokenNormalizedSet, dark: TokenNormalizedSet) {
       swatch: `bg-${name}`,
       ...(resolved.light !== value.light || resolved.dark !== value.dark
         ? { resolved }
+        : {}),
+      ...(contrasted
+        ? {
+            contrastMore: {
+              light: cssColor(expect(more.light[id], 'color').$value, id),
+              dark: cssColor(expect(more.dark[id], 'color').$value, id),
+            },
+          }
         : {}),
       ...(lightToken.$description ? { note: lightToken.$description } : {}),
     })
@@ -674,8 +755,39 @@ const DARK_SCOPES = ['[data-theme="dark"]', '.dark']
 /** Every element that sets a mode (the OS preference applies to none). */
 const SCOPES = ['[data-theme]', '.light', '.dark']
 
-function renderCss({ sections }: Model) {
-  const all = sections.flatMap((section) => section.variables)
+function renderCss({ sections, contrastColors }: Model) {
+  // The per-theme "more" values of the contrast colours, as scope-only
+  // variables of the theme scopes (see renderContrast).
+  const moreVariables: Variable[] = contrastColors
+    .filter(({ more }) => more.light !== more.dark)
+    .map(({ name, more }, index) => ({
+      name: `${name}--more`,
+      ...more,
+      scopeOnly: true,
+      ...(index === 0
+        ? {
+            groupComment:
+              'The values of the contrast colours with contrast "more", in this theme; the contrast scopes below pick them or the standard ones.',
+          }
+        : {}),
+    }))
+  const all = sections.flatMap((section) =>
+    section.namespace === 'color'
+      ? [...section.variables, ...moreVariables]
+      : section.variables,
+  )
+  const contrastNames = new Set(contrastColors.map(({ name }) => name))
+  for (const variable of all) {
+    const ref = [...variable.light.matchAll(/var\((--[\w-]+)\)/g)].find(
+      ([, name]) => contrastNames.has(name),
+    )
+    if (ref && !contrastNames.has(variable.name)) {
+      fail(
+        variable.name,
+        `refers to ${ref[1]}, which changes with the contrast; tokens built on contrast colours aren't supported yet (renderContrast would have to re-declare them)`,
+      )
+    }
+  }
   const theme = sections
     .map((section) => ({
       ...section,
@@ -692,7 +804,12 @@ function renderCss({ sections }: Model) {
   while (grew) {
     grew = false
     for (const variable of all) {
-      if (derived.has(variable.name) || switchingNames.has(variable.name)) {
+      if (
+        derived.has(variable.name) ||
+        switchingNames.has(variable.name) ||
+        // Re-declared in the contrast scopes instead.
+        contrastNames.has(variable.name)
+      ) {
         continue
       }
       const refs = [...variable.light.matchAll(/var\((--[\w-]+)\)/g)].map(
@@ -761,8 +878,69 @@ function renderCss({ sections }: Model) {
           '  }',
         ]
       : []),
+    ...renderContrast(contrastColors),
     '}',
   ].join('\n')}\n`
+}
+
+/**
+ * Contrast scopes, independent of the theme scopes: `data-contrast="more"`
+ * on any element, or `prefers-contrast: more` unless `<html
+ * data-contrast="standard">`, switches the contrast colours of its subtree
+ * to their "more" values, and `data-contrast="standard"` switches them back.
+ * Theme and contrast can sit on different elements (a dark panel in a
+ * high-contrast page), so no selector can pick the value; custom properties
+ * do, at any depth:
+ *
+ * - `--contrast-more` is the switch: a space ("on") inside a "more" scope,
+ *   `initial` (the guaranteed-invalid value, "off") elsewhere.
+ * - `--X--more-on: var(--contrast-more) <more value>` is the "more" value
+ *   when the switch is on and invalid when it is off, so
+ *   `--X: var(--X--more-on, <standard value>)` falls back to the standard
+ *   value. The per-theme "more" values come from the theme scopes
+ *   (`--X--more`).
+ * - var() is computed where a custom property is declared, so every scope
+ *   element (`:root`, the theme scopes — `[data-theme]` and the `light` /
+ *   `dark` classes — and `[data-contrast]`) re-declares them.
+ */
+function renderContrast(colors: ContrastColor[]) {
+  if (!colors.length) return []
+  const indent = '    '
+  const switchOn = (selector: string, value: string, extra = '') =>
+    [
+      `${extra}  ${selector} {`,
+      `${extra}    --contrast-more: ${value};`,
+      `${extra}  }`,
+    ].join('\n')
+  return [
+    '',
+    comment(
+      'Contrast scopes. `data-contrast="more"` on any element, or the OS preference `prefers-contrast: more` unless <html data-contrast="standard">, gives its subtree the "more" values of the contrast colours (WCAG AA for form controls), in either theme; `data-contrast="standard"` switches back to the Figma values. `--contrast-more` is a switch: a space when on, `initial` (invalid) when off.',
+      '  ',
+    ),
+    switchOn('[data-contrast="more"]', ' '),
+    '',
+    switchOn('[data-contrast="standard"]', 'initial'),
+    '',
+    '  @media (prefers-contrast: more) {',
+    switchOn(':root:not([data-contrast="standard"])', ' ', '  '),
+    '  }',
+    '',
+    comment(
+      '`--X--more-on` is the "more" value when the switch is on and invalid when it is off, so `--X` falls back to the standard value. Re-declared on every scope element: var() is computed where it is declared.',
+      '  ',
+    ),
+    `  ${[':root', ...SCOPES, '[data-contrast]'].join(',\n  ')} {`,
+    ...colors.flatMap(({ name, standard, more }) => [
+      declaration(
+        `${name}--more-on`,
+        `var(--contrast-more) ${more.light === more.dark ? more.light : `var(${name}--more)`}`,
+        indent,
+      ),
+      declaration(name, `var(${name}--more-on, ${standard})`, indent),
+    ]),
+    '  }',
+  ]
 }
 
 function renderTs(model: Model) {
@@ -785,6 +963,11 @@ export interface ColorToken {
   swatch: string
   /** Computed light/dark colours, for tokens whose value is a formula or an alias. */
   resolved?: { light: string; dark: string }
+  /**
+   * Computed light/dark colours with more contrast (\`prefers-contrast:
+   * more\`, \`data-contrast="more"\`), for the tokens that change with it.
+   */
+  contrastMore?: { light: string; dark: string }
   note?: string
 }
 

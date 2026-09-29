@@ -62,7 +62,7 @@ export const Invalid: Story = {
     'aria-invalid': true,
   },
   play: async ({ canvas, canvasElement }) => {
-    const red = colorOf('text-red', canvasElement)
+    const red = colorOf('text-control-border-invalid', canvasElement)
     const thumbs = canvas.getAllByRole('slider')
 
     for (const thumb of thumbs) {

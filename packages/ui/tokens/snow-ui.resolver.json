@@ -25,11 +25,20 @@
         "dark": [{ "$ref": "color.dark.tokens.json" }]
       },
       "default": "light"
+    },
+    "contrast": {
+      "description": "WCAG contrast of the form-control colours (control-border, control-border-strong, placeholder, control-border-invalid). \"standard\" (the default) is the Figma look: color.contrast-standard.tokens.json aliases them to the palette, the same in both themes (the Figma kit has no high-contrast mode). \"more\" adds nothing, so the theme files' values apply: they meet WCAG 2.2 AA (3:1 for boundaries, 4.5:1 for placeholder text). In CSS: \"more\" with prefers-contrast: more and inside data-contrast=\"more\"; data-contrast=\"standard\" switches back.",
+      "contexts": {
+        "standard": [{ "$ref": "color.contrast-standard.tokens.json" }],
+        "more": []
+      },
+      "default": "standard"
     }
   },
   "resolutionOrder": [
     { "$ref": "#/sets/foundation" },
     { "$ref": "#/modifiers/theme" },
+    { "$ref": "#/modifiers/contrast" },
     { "$ref": "#/sets/deprecated" }
   ]
 }

@@ -3,9 +3,12 @@
  * package.
  */
 
-/** Open and close: the mask and the content scale from their centre and fade. */
+/**
+ * Open and close: the mask and the content scale from their centre and fade;
+ * with reduced motion they only fade.
+ */
 export const dialogMotionClasses =
-  'data-[state=open]:scale-100 starting:data-[state=open]:scale-0 data-[state=closed]:scale-0 starting:data-[state=closed]:scale-100 data-[state=closed]:opacity-0 starting:data-[state=closed]:opacity-100 data-[state=open]:opacity-100 starting:data-[state=open]:opacity-0'
+  'data-[state=open]:scale-100 starting:data-[state=open]:scale-0 data-[state=closed]:scale-0 starting:data-[state=closed]:scale-100 data-[state=closed]:opacity-0 starting:data-[state=closed]:opacity-100 data-[state=open]:opacity-100 starting:data-[state=open]:opacity-0 motion-reduce:transition-opacity'
 
 /**
  * Figma "Mask": a linear gradient (#CBDDFF 50% → #D7D0FF 20%) and

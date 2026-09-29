@@ -10,7 +10,8 @@ type CheckboxProps = ComponentProps<typeof CheckboxPrimitive.Root>
  * Figma "Checkbox" (Select True / False / Multiple × State Default / Hover):
  * a 28px box with an 8px radius.
  * - Unchecked: Background/3 with a 2px Black/20% ring; on hover a Black 8%
- *   fill and a Black/40% ring.
+ *   fill and a Black/40% ring (the `control-border*` tokens: WCAG AA values
+ *   with more contrast).
  * - Checked and indeterminate ("Multiple"): Primary with the Figma inner
  *   shadow and a white mark (black in dark mode); on hover Primary under
  *   White/40%.
@@ -20,13 +21,13 @@ const Checkbox: FC<CheckboxProps> = ({ className, ...props }) => (
     className={twMerge(
       // The mark is white on the black Primary and black on the dark-mode
       // indigo Primary (Figma's white mark is 2.07:1 there).
-      'peer group size-7 shrink-0 cursor-pointer rounded-8 bg-background-3 text-white inset-ring-2 inset-ring-black-20 transition-all',
-      'enabled:hover:bg-black/8 enabled:hover:inset-ring-black-40',
+      'peer group size-7 shrink-0 cursor-pointer rounded-8 bg-background-3 text-white inset-ring-2 inset-ring-control-border transition-all',
+      'enabled:hover:bg-black/8 enabled:hover:inset-ring-control-border-strong',
       'data-[state=checked]:bg-primary data-[state=checked]:inset-ring-0 data-[state=checked]:inset-shadow-inner data-[state=checked]:enabled:hover:bg-primary-hover-strong',
       'data-[state=indeterminate]:bg-primary data-[state=indeterminate]:inset-ring-0 data-[state=indeterminate]:inset-shadow-inner data-[state=indeterminate]:enabled:hover:bg-primary-hover-strong',
       // Invalid (`aria-invalid`, no Figma state): a Secondary/Red ring on the
       // unchecked box, hovered or not.
-      'aria-invalid:inset-ring-red enabled:hover:aria-invalid:inset-ring-red',
+      'aria-invalid:inset-ring-control-border-invalid enabled:hover:aria-invalid:inset-ring-control-border-invalid',
       'focus-ring',
       // Disabled (no Figma state): a Black/4% box with a Black/10% ring; when
       // checked, a Black/10% fill with a Black/40% mark. Visible in both modes.

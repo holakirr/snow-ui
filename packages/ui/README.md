@@ -124,6 +124,9 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 - **Spacing:** the Figma spacing and size values are multiples of 4px, so Tailwind's spacing utilities (`p-1` = 4px, `gap-3` = 12px, `size-10` = 40px) cover them.
 - **Cursors:** a base rule gives buttons and ARIA controls (`option`, `menuitem`, `tab`, `radio`, `checkbox`, `switch`, `label[for]`…) the pointer cursor, which Tailwind v4's preflight no longer sets, and disabled elements (`:disabled`, `aria-disabled="true"`, `data-disabled`) the not-allowed cursor. `cursor-*` utilities override it.
 - **Focus:** the `focus-ring` utility is the keyboard focus indicator of every component: on `:focus-visible` it draws the Figma "Focus" ring (`ring-4 ring-focus`) plus a 2px `black-80` outline offset by 2px. Use it on your own focusable elements: `<button className="focus-ring">`.
+- **Contrast:** the form controls' boundaries and placeholders are the `control-border`, `control-border-strong` and `placeholder` tokens: the Figma colours by default, WCAG AA ones with more contrast (see [Contrast](#contrast)). The `contrast-more:` variant follows the same scopes.
+- **Target size:** the `hit-area` utility gives a small control an invisible pointer hit area of at least 24×24px (WCAG 2.5.8), centred on it; the element needs `relative`. Bare `Button`s, `Switch`, the `Slider` thumb, sortable `Table` headers, line tabs and the `Search` clear button use it.
+- **Motion:** with the OS setting `prefers-reduced-motion: reduce`, the overlays fade instead of sliding or zooming, the Accordion opens at once, and the Skeleton pulse, the Button press, the Switch thumb, the Dialog and AlertDialog zoom, the Accordion chevron and the Sidebar's collapse stop moving (WCAG 2.3.3); the Spinner and Progress pulse instead of turning or sliding. Storybook's Foundations › Motion page lists the animation tokens.
 - **Effects:** `shadow-1`, `shadow-2`, `shadow-glow`, `shadow-glass-1`, `shadow-glass-2`, `inset-shadow-inner`, the Figma focus ring `ring-4 ring-focus` (or `shadow-focus`), the background blurs `backdrop-blur-bg-40` (20px) and `backdrop-blur-bg-100` (50px), and `glass` / `glass-1` / `glass-2`, which approximate Figma's Glass effects with a fill, a background blur and a shadow.
 
 Inter itself is opt-in: import `@holakirr/snow-ui/fonts.css` (see [Installation](#installation)) or load a build with the `ss01` / `cv01` features yourself.
@@ -148,6 +151,22 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 - Without a mode on `<html>`, the page follows the OS preference; `<html data-theme="light">` or `"dark"` (or `class="light"` / `"dark"`, e.g. from next-themes with `attribute="class"`) pins it. Scopes inside work either way.
 - `dark:` utilities follow the same scopes, with one limit: a dark scope inside a light scope inside a dark scope gets the dark tokens but not `dark:` utilities. Prefer the tokens, which switch at any depth.
 - Overlays are portalled: the content of `Dialog`, `AlertDialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope. A plain `data-theme` attribute leaves it in the theme of `<html>`; a `ThemeScope` (`<ThemeScope theme="dark">`, or `asChild` on your element) scopes the tokens and passes the theme to the overlays opened inside it, as their `data-theme`. `SnowUIProvider`'s `theme` does the same without an element, and a `data-theme` on a `*Content` component wins. Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
+
+### Contrast
+
+The form controls follow the Figma kit by default, and its rings, strokes, Switch track and placeholders are under WCAG AA (see [Known gaps](#accessibility-deviations-from-the-figma-kit)). With more contrast they meet it, in both themes:
+
+- with the OS setting behind `prefers-contrast: more` (macOS and iOS "Increase contrast", and similar OS or browser settings), unless `<html data-contrast="standard">`;
+- inside any element with `data-contrast="more"` (your app's own setting), scoped like `data-theme`: `data-contrast="standard"` inside switches a subtree back, and contrast and theme scopes combine at any depth.
+
+| Token | Standard (Figma) | More contrast | Used by |
+| --- | --- | --- | --- |
+| `control-border` | Black/20% (1.6:1) | Black/50% (≥ 3.79:1); White/50% in dark mode (≥ 3.3:1) | Unchecked Checkbox and Radio rings, text field and Select strokes, the Switch's off track |
+| `control-border-strong` | Black/40% | Black/80% (12.6:1; 8.7:1 in dark mode) | Their hover and focus states, the Slider thumb border, the Select chevron, the hovered Search icon |
+| `placeholder` | Black/20% (1.6:1) | Black/60% (≥ 5.25:1); White/75% in dark mode (≥ 4.63:1) | Placeholders of `Input`, `InputSmall`, `Textarea`, `Search`, and the Search icon |
+| `control-border-invalid` | Secondary/Red (3.36:1 on white; 2.32:1 at worst, on a dark gray field) | `red-text` (≥ 4.53:1; ≥ 3.22:1 in dark mode) | The stroke of an invalid (`aria-invalid`) text field, Select, Checkbox, Radio, Switch or Slider |
+
+With more contrast the 0.5px strokes are 1px, the gray `InputSmall` and `Search` fields get a stroke (their Black/4% fill is 1.1:1), the Switch thumb is the per-mode `white` (black on the dark-mode indigo track, 10.14:1), and the highlighted menu item and CommandPalette option get a 2px `black-80` ring. The `contrast-more:` variant (it replaces Tailwind's, which only reads the OS preference) follows the same scopes, for your own controls. The ratios are asserted from the tokens in both themes (`src/foundations/contrast.test.ts`), and Storybook's tests run axe on every story with the OS preference emulated. Storybook's "Contrast" guide has every ratio and the reasoning behind the values.
 
 ## Components
 
@@ -328,8 +347,9 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Default Link hover | colour change only | colour change plus an underline | 1.4.1 |
 | External Link | — | `target="_blank"` and `rel="noopener noreferrer"` by default, and a visually hidden "(opens in a new tab)" (`externalLabel`) | 3.2.5 (advisory) |
 | Tag close button | a 12px icon | the same icon with a 24×24px hit area | 2.5.8 |
+| Switch (28×16px), bare Buttons, the Slider thumb (16px), sortable Table headers (16px high), small line tabs (22px), the Search clear button (16px) | their Figma size | the same look with an invisible hit area of at least 24×24px (`hit-area`) | 2.5.8 |
 | Icon-only tabs, buttons and toggles | — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
-| Invalid form fields | no error state | while a field has `aria-invalid` (`FormControl` sets it): a 1px Secondary/Red (`red`) stroke on Input, InputSmall, Textarea, Search, the Select trigger and Switch, a red ring on Checkbox and Radio, a red track stroke and thumb borders on Slider (3.36:1 on white, 3.76:1 on #333); the error text is `FormMessage` | 1.4.1, 1.4.11 |
+| Invalid form fields | no error state | while a field has `aria-invalid` (`FormControl` sets it): a 1px Secondary/Red (`red`) stroke on Input, InputSmall, Textarea, Search, the Select trigger and Switch, a red ring on Checkbox and Radio, a red track stroke and thumb borders on Slider (3.36:1 on white, 3.76:1 on #333; the `control-border-invalid` token, `red-text` with more contrast); the error text is `FormMessage` | 1.4.1, 1.4.11 |
 | Dark Tooltip in dark mode | Black/80% flips to white/80% but the text stays `#FFF` | the text flips with it (black on white/80%) | 1.4.3 |
 
 The colour of those inactive items and Bare buttons is a custom property (`--segment-fg` for segmented items and `Toggle`, `--tab-fg` for Underline tabs, `--button-fg` for Bare buttons) that hover, focus and the selected state change. A `text-*` class passed as `className` sets the colour in every state; to change only the rest colour, set the property: `className="[--button-fg:var(--color-red-text)]"`. The state colours don't depend on `:enabled`, so a `TabsTrigger` or `Toggle` rendered as a link (`asChild`) gets them too.
@@ -339,13 +359,13 @@ Text fields (`Input`, `InputSmall`, `Textarea`, `Search`) keep the Figma "Focus"
 Data, overlay and navigation components:
 
 - **Calendar:** today's date is static black on Secondary/Indigo (10.15:1). Figma uses white, which is 2.07:1 (1.4.3). Outside days (the previous and next month's dates in the grid) are real, selectable dates, not decoration, so they get the full 4.5:1: `text-secondary` instead of Black/40%.
-- **Scheduler:** today's day label is static black on Secondary/Indigo (was white, 2.06:1); event times are 60% static black on Color 2 (5.5:1) instead of 40% (1.4.3).
+- **Scheduler:** today's day label is static black on Secondary/Indigo (was white, 2.06:1) and semibold, with `aria-current="date"`, so today isn't told by colour alone (1.4.1); event times are 60% static black on Color 2 (5.5:1) instead of 40% (1.4.3). The week is a WAI-ARIA grid with one tab stop and arrow keys (see its page).
 - **Sidebar:** group labels (`SidebarGroupLabel`) are `black-80` (12.6:1 light, 8.7:1 dark). Figma's Black/40% is 2.85:1 at 14px (1.4.3).
 - **Alert** (a library extension): the text is black and `text-secondary` on every status tint (at least 5.2:1). The status icons mix the Secondary colours with 40% of `black` (white in dark mode): at least 3.6:1 on the light tints and 5:1 on the dark ones, where Secondary/Green, Yellow and Blue alone are 1.5–2:1 on white (1.4.11). The status is also read out as text, not only shown by colour and icon (1.4.1).
 - **AlertDialog** (a library extension): the destructive action is `red-text` (#D42020, #FF8080 in dark mode) with the per-mode `white` label, 5.21:1 and 8.65:1; Secondary/Red under a white label would be 3.36:1 (1.4.3).
 - **Toast:** a toast with an `action` stays until it is dismissed (its `duration` defaults to `Number.POSITIVE_INFINITY`, not the Toaster's 3 seconds, unless you set one), so the action doesn't vanish on a timer (2.2.1). Toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer. The Figma toast has no close button.
 
-Known gaps (Figma values kept for now): the Black/20% rings of unchecked Checkbox and Radio and the 0.5px Black/20% Input stroke (1.6:1), the Switch's white thumb on the dark-mode indigo track (2.07:1), the Black/20% placeholders of the native text fields (`Input`, `InputSmall`, `Textarea`, `Search`: axe doesn't check `::placeholder`, and they are never the field's only label), the 40% Link arrow and external icon, and the Black/4% highlight of menu items.
+Known gaps with the default (standard) contrast, which keeps the Figma values: the Black/20% rings of unchecked Checkbox and Radio and the 0.5px Black/20% Input stroke (1.6:1), the Switch's Black/20% off track (1.6:1) and white thumb on the dark-mode indigo track (2.07:1), the Black/20% placeholders of the native text fields (`Input`, `InputSmall`, `Textarea`, `Search`: axe doesn't check `::placeholder`, and they are never the field's only label), the Black/4% fill of the gray `InputSmall` and `Search` fields (1.1:1), the Black/40% Slider thumb border, the Secondary/Red invalid stroke on the gray fields and the dark field fill (2.32–2.94:1), and the Black/4% highlight of menu items. The Link arrow and external icon are at 40% opacity (2.85:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`, see [Contrast](#contrast)) they all meet WCAG AA; the Link icons are then fully opaque.
 
 Storybook demos follow the same rules: the Table and Dashboard status cells colour only the dot (the Secondary colours are 1.7–2.4:1 as text), and avatar initials on Secondary colours are static black, not white.
 
@@ -357,7 +377,7 @@ Components are documented in Storybook with examples and props documentation. Vi
 
 ## Testing
 
-- Storybook stories are tests too: every story is rendered in Chromium in both themes, checked with axe, and many have `play` interaction tests (keyboard, focus, selection)
+- Storybook stories are tests too: every story is rendered in Chromium in both themes and once more with the OS asking for more contrast and reduced motion, checked with axe and for 24×24px target sizes, and many have `play` interaction tests (keyboard, focus, selection)
 - Unit tests are written using Vitest and React Testing Library
 - Visual regression tests screenshot every story in both themes with Playwright, in Docker, and compare the shots with the committed Linux baselines (`bun run visual` / `bun run visual:update` from the repository root; see CONTRIBUTING.md)
 - Unit tests cover most components (see the `*.test.tsx` files next to them), the toast store, the date utils and the design tokens; more are welcome

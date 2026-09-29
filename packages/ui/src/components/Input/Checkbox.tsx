@@ -1,10 +1,10 @@
 'use client'
 
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 
-type CheckboxProps = CheckboxPrimitive.CheckboxProps
+type CheckboxProps = ComponentProps<typeof CheckboxPrimitive.Root>
 
 /**
  * Figma "Checkbox" (Select True / False / Multiple × State Default / Hover):

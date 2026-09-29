@@ -2,7 +2,7 @@
 
 import * as LabelPrimitive from '@radix-ui/react-label'
 import { cva, type VariantProps } from 'class-variance-authority'
-import type { ComponentPropsWithoutRef, FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 
 // Figma Input "Title": 12/16 Regular, Black/40% (2.85:1); `text-secondary`
@@ -11,7 +11,7 @@ const labelVariants = cva(
   'text-12 font-normal text-secondary transition-all peer-disabled:cursor-not-allowed',
 )
 
-type LabelProps = ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
+type LabelProps = ComponentProps<typeof LabelPrimitive.Root> &
   VariantProps<typeof labelVariants>
 
 const Label: FC<LabelProps> = ({ className, ...props }) => (

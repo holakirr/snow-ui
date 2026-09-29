@@ -1,10 +1,10 @@
 'use client'
 
 import * as SeparatorPrimitive from '@radix-ui/react-separator'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 
-type SeparatorProps = SeparatorPrimitive.SeparatorProps & {
+type SeparatorProps = ComponentProps<typeof SeparatorPrimitive.Root> & {
   /**
    * Draws the 0.5px hairline that the Figma dashboards use for dividers. It is
    * a 1px line scaled by half, so it stays visible on 1x screens (as a lighter

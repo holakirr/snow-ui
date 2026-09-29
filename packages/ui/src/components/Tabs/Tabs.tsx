@@ -4,6 +4,7 @@ import { Slottable } from '@radix-ui/react-slot'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
 import { cva } from 'class-variance-authority'
 import {
+  type ComponentProps,
   cloneElement,
   createContext,
   type FC,
@@ -41,7 +42,7 @@ const TabsListContext = createContext<TabsListContextValue>({
 
 const Tabs = TabsPrimitive.Root
 
-type TabsListProps = TabsPrimitive.TabsListProps & {
+type TabsListProps = ComponentProps<typeof TabsPrimitive.List> & {
   /**
    * The Figma Tab variant.
    * @default "line"
@@ -113,7 +114,7 @@ const iconToggleInactiveClasses: { [K in Size]: string } = {
   lg: 'data-[state=inactive]:size-12 data-[state=inactive]:p-0',
 }
 
-type TabsTriggerProps = TabsPrimitive.TabsTriggerProps & {
+type TabsTriggerProps = ComponentProps<typeof TabsPrimitive.Trigger> & {
   /**
    * An icon shown before the label. A trigger with an icon and no children
    * is an icon-only tab: give it an `aria-label`.
@@ -253,7 +254,7 @@ const TabsTrigger: FC<TabsTriggerProps> = ({
 }
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-type TabsContentProps = TabsPrimitive.TabsContentProps
+type TabsContentProps = ComponentProps<typeof TabsPrimitive.Content>
 
 const TabsContent: FC<TabsContentProps> = ({ className, ...props }) => (
   <TabsPrimitive.Content

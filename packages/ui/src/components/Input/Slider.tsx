@@ -1,11 +1,11 @@
 'use client'
 
 import * as SliderPrimitive from '@radix-ui/react-slider'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import { type Messages, useMessages } from '../SnowUIProvider'
 
-export type SliderProps = SliderPrimitive.SliderProps & {
+export type SliderProps = ComponentProps<typeof SliderPrimitive.Root> & {
   /**
    * Accessible names of the thumbs, in order. Without them, a single thumb
    * is named by `aria-label` and the thumbs of a range by

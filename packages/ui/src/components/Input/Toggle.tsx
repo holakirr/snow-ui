@@ -1,7 +1,7 @@
 'use client'
 
 import * as TogglePrimitive from '@radix-ui/react-toggle'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import type { Size, ToggleVariant } from '../../types'
 import { isIconOnly } from '../../utils/children'
 import { twMerge } from '../../utils/tw-merge'
@@ -56,7 +56,8 @@ const toggleVariants = ({
     className,
   )
 
-type ToggleProps = TogglePrimitive.ToggleProps & ToggleVariantProps
+type ToggleProps = ComponentProps<typeof TogglePrimitive.Root> &
+  ToggleVariantProps
 
 const Toggle: FC<ToggleProps> = ({
   className,

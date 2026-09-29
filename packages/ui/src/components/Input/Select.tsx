@@ -7,7 +7,7 @@ import {
 } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as SelectPrimitive from '@radix-ui/react-select'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import {
   popoverAnimationClasses,
@@ -23,7 +23,7 @@ const SelectGroup = SelectPrimitive.Group
 
 const SelectValue = SelectPrimitive.Value
 
-type SelectTriggerProps = SelectPrimitive.SelectTriggerProps
+type SelectTriggerProps = ComponentProps<typeof SelectPrimitive.Trigger>
 
 const SelectTrigger: FC<SelectTriggerProps> = ({
   className,
@@ -52,7 +52,9 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
 )
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
 
-type SelectScrollUpButtonProps = SelectPrimitive.SelectScrollUpButtonProps
+type SelectScrollUpButtonProps = ComponentProps<
+  typeof SelectPrimitive.ScrollUpButton
+>
 
 const SelectScrollUpButton: FC<SelectScrollUpButtonProps> = ({
   className,
@@ -70,7 +72,9 @@ const SelectScrollUpButton: FC<SelectScrollUpButtonProps> = ({
 )
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
 
-type SelectScrollDownButtonProps = SelectPrimitive.SelectScrollDownButtonProps
+type SelectScrollDownButtonProps = ComponentProps<
+  typeof SelectPrimitive.ScrollDownButton
+>
 
 const SelectScrollDownButton: FC<SelectScrollDownButtonProps> = ({
   className,
@@ -89,7 +93,7 @@ const SelectScrollDownButton: FC<SelectScrollDownButtonProps> = ({
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName
 
-type SelectContentProps = SelectPrimitive.SelectContentProps
+type SelectContentProps = ComponentProps<typeof SelectPrimitive.Content>
 
 const SelectContent: FC<SelectContentProps> = ({
   className,
@@ -128,7 +132,7 @@ const SelectContent: FC<SelectContentProps> = ({
 )
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
-type SelectLabelProps = SelectPrimitive.SelectLabelProps
+type SelectLabelProps = ComponentProps<typeof SelectPrimitive.Label>
 
 const SelectLabel: FC<SelectLabelProps> = ({ className, ...props }) => (
   <SelectPrimitive.Label
@@ -138,7 +142,7 @@ const SelectLabel: FC<SelectLabelProps> = ({ className, ...props }) => (
 )
 SelectLabel.displayName = SelectPrimitive.Label.displayName
 
-type SelectItemProps = SelectPrimitive.SelectItemProps
+type SelectItemProps = ComponentProps<typeof SelectPrimitive.Item>
 
 const SelectItem: FC<SelectItemProps> = ({ className, children, ...props }) => (
   <SelectPrimitive.Item
@@ -160,7 +164,7 @@ const SelectItem: FC<SelectItemProps> = ({ className, children, ...props }) => (
 )
 SelectItem.displayName = SelectPrimitive.Item.displayName
 
-type SelectSeparatorProps = SelectPrimitive.SelectSeparatorProps
+type SelectSeparatorProps = ComponentProps<typeof SelectPrimitive.Separator>
 
 const SelectSeparator: FC<SelectSeparatorProps> = ({ className, ...props }) => (
   <SelectPrimitive.Separator

@@ -8,6 +8,9 @@
     ".storybook/*.ts",
     ".storybook/*.tsx",
     "vitest.config.ts",
+    "vitest.browsers.config.ts",
+    "ssr/*.ts",
+    "ssr/*.tsx",
     "visual/*.ts",
     "scripts/*.ts"
   ]

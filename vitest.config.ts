@@ -22,18 +22,31 @@ import {
 
 const configDir = fileURLToPath(new URL('.storybook', import.meta.url))
 
-const storybookProject = (
+/**
+ * A Storybook test project: every story rendered in `browser`, in `theme`.
+ * Also used by vitest.browsers.config.ts (Firefox and WebKit).
+ */
+export const storybookProject = (
   name: string,
   theme: 'light' | 'dark',
+  browser: 'chromium' | 'firefox' | 'webkit' = 'chromium',
 ): TestProjectInlineConfiguration => ({
   plugins: [
     // Loads .storybook/main.ts (stories globs, addons, `viteFinal`) and the
     // project annotations from .storybook/preview.tsx.
     storybookTest({
       configDir,
-      // The theme toolbar global (see .storybook/withTheme.tsx).
-      initialGlobals: { theme },
-      ...(theme === 'light' && { storybookScript: 'bun run storybook --ci' }),
+      initialGlobals: {
+        // The theme toolbar global (see .storybook/withTheme.tsx).
+        theme,
+        // axe is the Chromium projects' job (the gate); in the other
+        // browsers the stories and their play functions run without it.
+        ...(browser !== 'chromium' && { a11y: { manual: true } }),
+      },
+      ...(theme === 'light' &&
+        browser === 'chromium' && {
+          storybookScript: 'bun run storybook --ci',
+        }),
     }),
   ],
   test: {
@@ -42,7 +55,7 @@ const storybookProject = (
       enabled: true,
       headless: true,
       provider: playwright(),
-      instances: [{ browser: 'chromium' }],
+      instances: [{ browser }],
       // Storybook's default story viewport. addon-vitest tries to set it per
       // story but imports `@vitest/browser/context`, which Vitest 5 no longer
       // has, so without this every story rendered at Vitest's 414×896 and

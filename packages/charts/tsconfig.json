@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ES2022",
+    "types": ["node"],
+    // Typecheck against the workspace sources of the ui and icons packages,
+    // so a fresh clone doesn't need their dist. tsconfig.build.json resets it.
+    "paths": {
+      "@holakirr/snow-ui": ["../ui/src/index.ts"],
+      "@holakirr/snow-ui-icons": ["../icons/src/main.tsx"]
+    }
+  },
+  "include": ["src", "test", "*.config.ts", "workspace-aliases.ts"],
+  "exclude": ["node_modules", "dist"]
+}

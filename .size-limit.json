@@ -100,5 +100,32 @@
     "import": "{ AddIcon }",
     "ignore": ["react", "react-dom"],
     "limit": "520 B"
+  },
+  {
+    "name": "@holakirr/snow-ui-charts: full import (ESM, Recharts included)",
+    "path": "packages/charts/dist/index.js",
+    "import": "*",
+    "ignore": ["react", "react-dom", "@holakirr/snow-ui"],
+    "limit": "122 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui-charts: { BarChart }",
+    "path": "packages/charts/dist/index.js",
+    "import": "{ BarChart }",
+    "ignore": ["react", "react-dom", "@holakirr/snow-ui"],
+    "limit": "106 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui-charts: { Sparkline }",
+    "path": "packages/charts/dist/index.js",
+    "import": "{ Sparkline }",
+    "ignore": ["react", "react-dom", "@holakirr/snow-ui"],
+    "limit": "94 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui-charts/styles.css",
+    "path": "packages/charts/dist/styles.css",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "limit": "1.8 kB"
   }
 ]

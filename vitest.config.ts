@@ -17,8 +17,8 @@ import {
 //     Stories that pin a theme (`globals: { theme: 'dark' }`) keep it in both.
 //
 // `bun run test:storybook` runs both Storybook projects; `bun run
-// test:coverage` runs the ui unit tests and both Storybook projects with
-// coverage (thresholds below).
+// test:coverage` runs the ui and charts unit tests and both Storybook
+// projects with coverage (thresholds below).
 
 const configDir = fileURLToPath(new URL('.storybook', import.meta.url))
 
@@ -59,20 +59,25 @@ export default defineConfig({
       storybookProject('storybook', 'light'),
       storybookProject('storybook-dark', 'dark'),
     ],
-    // `bun run test:coverage`: the ui unit tests (jsdom) and the Storybook
-    // tests (Chromium) merged into one V8 report of the library source.
+    // `bun run test:coverage`: the ui and charts unit tests (jsdom) and the
+    // Storybook tests (Chromium) merged into one V8 report of the libraries'
+    // source.
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'text', 'html', 'json-summary'],
       reportsDirectory: 'coverage',
-      // The ui source. Vitest matches these globs against a file's path
-      // relative to the first project root that contains it: with `--project`
-      // filters (`test:coverage`) the roots are packages/ui (the ui unit
-      // tests, listed first) and the repository root, so ui files are
-      // `src/…`; without a filter the only root is the repository root and
-      // they are `packages/ui/src/…`. Each pattern alone reports 0 files in
-      // the other case.
-      include: ['src/**/*.{ts,tsx}', 'packages/ui/src/**/*.{ts,tsx}'],
+      // The ui and charts source. Vitest matches these globs against a
+      // file's path relative to the first project root that contains it:
+      // with `--project` filters (`test:coverage`) the roots are packages/ui
+      // and packages/charts (the unit tests, listed first) and the
+      // repository root, so their files are `src/…`; without a filter the
+      // only root is the repository root and they are `packages/*/src/…`.
+      // Each pattern alone reports 0 files in the other case.
+      include: [
+        'src/**/*.{ts,tsx}',
+        'packages/ui/src/**/*.{ts,tsx}',
+        'packages/charts/src/**/*.{ts,tsx}',
+      ],
       exclude: [
         '**/*.stories.{ts,tsx}',
         '**/*.test.{ts,tsx}',

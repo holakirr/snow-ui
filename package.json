@@ -7,14 +7,15 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "bun run build:icons && bun run build:ui",
+    "build": "bun run build:icons && bun run build:ui && bun run build:charts",
     "build:icons": "bun run --filter @holakirr/snow-ui-icons build",
     "build:ui": "bun run --filter @holakirr/snow-ui build",
+    "build:charts": "bun run --filter @holakirr/snow-ui-charts build",
     "tokens": "bun run --filter @holakirr/snow-ui tokens",
     "test": "bun run --filter '*' test",
-    "test:dist": "bun run --filter @holakirr/snow-ui test:dist",
+    "test:dist": "bun run --filter @holakirr/snow-ui --filter @holakirr/snow-ui-charts test:dist",
     "test:storybook": "vitest run --project storybook --project storybook-dark",
-    "test:coverage": "vitest run --coverage --project @holakirr/snow-ui --project storybook --project storybook-dark",
+    "test:coverage": "vitest run --coverage --project @holakirr/snow-ui --project @holakirr/snow-ui-charts --project storybook --project storybook-dark",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
@@ -29,7 +30,7 @@
     "clean": "rm -rf packages/*/dist packages/*/storybook-static packages/*/coverage coverage",
     "changeset": "changeset",
     "version-packages": "changeset version && bun install --lockfile-only",
-    "release": "bun run build && changeset publish"
+    "release": "bun run build && bun scripts/publish.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",

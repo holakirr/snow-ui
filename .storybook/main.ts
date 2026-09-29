@@ -1,5 +1,6 @@
 import type { StorybookConfig } from '@storybook/react-vite'
-import { workspaceAliases } from '../packages/ui/workspace-aliases.ts'
+// The ui and icons packages from source (the charts import `@holakirr/snow-ui`).
+import { workspaceAliases } from '../packages/charts/workspace-aliases.ts'
 
 // One Storybook for every workspace package (deployed to snow-ui.holakirr.com).
 // Run it from the repository root: `bun run storybook` / `bun run build:storybook`.
@@ -13,6 +14,8 @@ const config: StorybookConfig = {
     '../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../packages/icons/src/**/*.mdx',
     '../packages/icons/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../packages/charts/src/**/*.mdx',
+    '../packages/charts/src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
     '@storybook/addon-docs',

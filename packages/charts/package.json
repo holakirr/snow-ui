@@ -1,0 +1,91 @@
+{
+  "name": "@holakirr/snow-ui-charts",
+  "private": false,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "module": "./dist/index.js",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist/**"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "author": {
+    "name": "Kirill Petunin",
+    "email": "kpetunin@icloud.com",
+    "url": "https://holakirr.com"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json",
+    "./styles.css": "./dist/styles.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holakirr/snow-ui.git",
+    "directory": "packages/charts"
+  },
+  "description": "SnowUI charts: line, area, bar, donut and sparkline charts in the SnowUI design, built on Recharts. Companion package of @holakirr/snow-ui.",
+  "homepage": "https://snow-ui.holakirr.com/?path=/docs/charts-chartcontainer--docs",
+  "keywords": [
+    "react",
+    "charts",
+    "recharts",
+    "snow-ui",
+    "snow",
+    "dashboard"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && bun run build:css && tsdown",
+    "build:css": "mkdir -p dist && cp src/styles.css dist/styles.css",
+    "typecheck": "tsc -p . --noEmit",
+    "test": "vitest run",
+    "test:dist": "vitest run -c vitest.dist.config.ts",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "bugs": {
+    "url": "https://github.com/holakirr/snow-ui/issues"
+  },
+  "peerDependencies": {
+    "@holakirr/snow-ui": "^5.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "react-is": "^19.0.0",
+    "recharts": "^3.10.1"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/core": "^0.18.5",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^5.0.2",
+    "jsdom": "^30.1.1",
+    "publint": "^0.3.24",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tsdown": "^0.23.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -33,6 +33,10 @@ const meta = {
   title: 'Components/Group',
   component: Group,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33534-44048',
+    },
     layout: 'centered',
     docs: {
       description: {

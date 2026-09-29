@@ -1,0 +1,129 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as IconBoxStories from './IconBox.stories'
+
+<Meta of={IconBoxStories} />
+
+<Title />
+
+<FigmaLinks page="25559:5626" />
+
+IconBox sets the size of an icon, avatar or image to one of the Figma icon sizes (12–80px). It can put it on a Black/4% tile (`background`) and add a `badge` on the top end corner. It is the Figma "Icon" component.
+
+```tsx
+import { IconBox } from '@holakirr/snow-ui'
+
+<IconBox size={16} background>
+  <BellIcon />
+</IconBox>
+```
+
+<Primary />
+
+## When to use
+
+- Sizing an icon, avatar or image to the kit's icon scale, whatever size the icon was drawn at.
+- An icon on a tile, as in the dashboard's notification list.
+- A dot or a count on an icon: unread notifications, new messages.
+
+## When not to use
+
+- A picture of a person with a fallback: use [Avatar](?path=/docs/components-avatar-avatar--docs) (inside an IconBox to size it).
+- An icon with a label: use [IconText](?path=/docs/components-icontext--docs).
+- A clickable icon: use an icon-only [Button](?path=/docs/components-button--docs) with the IconBox in `startContent`.
+- A count or a status on its own: use [Badge](?path=/docs/components-badge--docs).
+
+## Anatomy
+
+1. **Box:** a `<span>` with `data-size`. With `background` it is the tile: a Black/4% fill with the size's padding and corner radius.
+2. **Icon slot:** a box of exactly `size` pixels. Its child (an icon, an `Avatar`, an `<img>`) is stretched to fill it.
+3. **Badge** (`badge`, optional): a box on the top end corner, with `data-slot="badge"`. `badge` (`true`) draws the Figma dot, a Secondary/Indigo circle; any other node, such as a [Badge](?path=/docs/components-badge--docs) with a count, is centred in the same box.
+
+Icons take the text colour: set a `text-*` token on the IconBox or a parent.
+
+## Sizes
+
+<Canvas of={IconBoxStories.AllSizes} />
+
+| `size` | Icon | With `background`: tile | Padding | Radius | Badge box | Dot |
+| --- | --- | --- | --- | --- | --- | --- |
+| `12` | 12px | 20px | 4px | 8px | 16px | 6px |
+| `16` | 16px | 24px | 4px | 8px | 16px | 6px |
+| `20` | 20px | 28px | 4px | 8px | 16px | 6px |
+| `24` (default) | 24px | 32px | 4px | 12px | 16px | 6px |
+| `28` | 28px | 36px | 4px | 12px | 16px | 6px |
+| `32` | 32px | 40px | 4px | 12px | 16px | 6px |
+| `40` | 40px | 56px | 8px | 16px | 16px | 6px |
+| `48` | 48px | 64px | 8px | 20px | 20px | 7.5px |
+| `80` | 80px | 104px | 12px | 28px | 24px | 9px |
+
+The badge's offset from the corner follows the Figma kit for each size, with and without the tile.
+
+## Variants
+
+<Canvas of={IconBoxStories.Default} />
+
+<Canvas of={IconBoxStories.WithBackground} />
+
+`className` overrides the tile colour, e.g. a Color 1 or Color 2 tint. Keep the icon readable on it (the stories use `text-static-black`):
+
+<Canvas of={IconBoxStories.TintedBackground} />
+
+Avatars are sized the same way:
+
+<Canvas of={IconBoxStories.Avatar24} />
+
+## Badge
+
+<Canvas of={IconBoxStories.WithBadge} />
+
+<Canvas of={IconBoxStories.WithBackgroundAndBadge} />
+
+A node in `badge`, e.g. a count:
+
+<Canvas of={IconBoxStories.CountBadge} />
+
+## Accessibility
+
+- IconBox renders `<span>` elements with no role and no name: what assistive technology gets is the child's. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`; give a meaningful icon a text alternative, or put the text next to it (IconText).
+- A badge is decorative by default (`aria-hidden`). `badgeLabel` adds visually hidden text inside it ("Unread notifications") and exposes it. This applies to a node in `badge` too: a count badge without `badgeLabel` is hidden from screen readers, so describe the count in `badgeLabel` ("3 unread notifications") or elsewhere.
+- The Figma dot is Secondary/Indigo, 2.07:1 on white: don't let it be the only sign of the state. Pair it with `badgeLabel` or visible text.
+
+None of the package's deviations from the Figma kit apply to IconBox.
+
+## Localization and RTL
+
+- The badge sits on the top end corner: top right in left-to-right text, top left in right-to-left text.
+- Mirror directional icons yourself with `rtl:-scale-x-100` (or the icon's `mirrored` prop).
+- `badgeLabel` is yours to translate; IconBox renders no built-in strings.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Size icons with IconBox instead of `width` / `height` on each icon.
+- Use the Figma size of the context: 16 in IconText and next to a `md` button label, 24 for list avatars.
+- Give a meaningful badge a `badgeLabel`.
+- Recolour the tile with a token class (`bg-color-1`), and keep the icon readable on it.
+
+</Do>
+<Dont>
+
+- Don't use sizes outside the scale with arbitrary classes: pick the nearest `size`.
+- Don't make the dot the only sign of an unread or changed state.
+- Don't put an interactive element in the badge: the badge is decorative unless labelled.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [IconText](?path=/docs/components-icontext--docs): an IconBox with text.
+- [Avatar](?path=/docs/components-avatar-avatar--docs): a person's picture or initials, sized by IconBox.
+- [Badge](?path=/docs/components-badge--docs): a count to put in `badge`.
+- [ListItem](?path=/docs/components-listitem--docs): dashboard rows with a 24px icon or avatar.
+
+## Props
+
+<Controls />

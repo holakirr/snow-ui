@@ -8,6 +8,10 @@ const meta: Meta<typeof Separator> = {
   component: Separator,
   tags: ['autodocs'],
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=32792-1923',
+    },
     docs: {
       description: {
         component:

@@ -44,6 +44,10 @@ const meta: Meta<typeof Table> = {
   component: Table,
   tags: ['autodocs'],
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=25596-130955',
+    },
     docs: {
       description: {
         component:

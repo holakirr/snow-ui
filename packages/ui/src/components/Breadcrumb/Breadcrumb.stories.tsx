@@ -17,6 +17,10 @@ const meta: Meta<typeof Breadcrumb> = {
   component: Breadcrumb,
   tags: ['autodocs'],
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=34611-44167',
+    },
     docs: {
       description: {
         component:

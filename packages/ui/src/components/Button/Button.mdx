@@ -1,0 +1,163 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ButtonStories from './Button.stories'
+
+<Meta of={ButtonStories} />
+
+<Title />
+
+<FigmaLinks page="25559:8885" />
+
+Button starts an action: saving, opening a dialog, running a command. It is the Figma "Button" set (Size × Variant × State): five variants, three sizes, optional icons before and after the label. With `asChild` it styles a link instead.
+
+```tsx
+import { Button } from '@holakirr/snow-ui'
+
+<Button variant="filled" size="md" label="Save" onClick={save} />
+```
+
+<Primary />
+
+## When to use
+
+- An action on the current page: save, delete, open a dialog or a menu, submit a form (`type="submit"`).
+- A toolbar action shown as an icon only.
+- A call to action that navigates, rendered as a link with `asChild`.
+
+## When not to use
+
+- A link inside text or a list of links: use [Link](?path=/docs/components-link--docs).
+- An on/off state: [Toggle](?path=/docs/components-input-toggle--docs) for a pressed state, [Switch](?path=/docs/components-input-switch--docs) for a setting, [Checkbox](?path=/docs/components-input-checkbox--docs) in a form.
+- Picking one of a few options: [ToggleGroup](?path=/docs/components-input-togglegroup--docs); switching between views: [Tabs](?path=/docs/components-tabs--docs).
+- A navigation item or a clickable row with an icon: [IconText](?path=/docs/components-icontext--docs) (`interactive`) or [ListItem](?path=/docs/components-listitem--docs).
+
+## Anatomy
+
+1. **Container**: the `<button>` (or the `asChild` element). `variant` sets its fill and `size` its height, padding and radius.
+2. **Start content** (`startContent`, optional): usually an icon, before the label (on the right in right-to-left text).
+3. **Label** (`label`): the text, in the size's text style. On hover it gets 4px of padding on each side, as in Figma.
+4. **Children** (optional): rendered after the label, e.g. visually hidden text.
+5. **End content** (`endContent`, optional): after the label.
+
+## Variants
+
+<Canvas of={ButtonStories.AllVariants} />
+
+| `variant` | Figma | Look | Use for |
+| --- | --- | --- | --- |
+| `borderless` (default) | Borderless | no fill; Black/4% on hover | low-emphasis and toolbar actions |
+| `gray` | Gray | Black/4%; Black/10% on hover | secondary actions |
+| `outline` | Outline | 0.5px Black/10% stroke; Black/4% on hover | secondary actions next to a filled one |
+| `filled` | Filled | Primary (black; indigo in dark mode) with a `white` label | the main action of a view |
+| `bare` | Bare | no box; a `text-secondary` label, black on hover and keyboard focus | text-like actions in dense rows |
+
+A Bare button's colour is the `--button-fg` custom property. A `text-*` class sets it in every state; `[--button-fg:…]` changes only the rest colour.
+
+<Canvas of={ButtonStories.BareCustomColor} />
+
+## Sizes
+
+<Canvas of={ButtonStories.AllSizes} />
+
+| `size` | Min height | Padding (label) | Radius | Label | Icon next to a label | Icon-only glyph |
+| --- | --- | --- | --- | --- | --- | --- |
+| `sm` (default) | 24px | 4 / 12px | 12px | 12/16 | 12px | 16px |
+| `md` | 36px | 8 / 16px | 16px | 14/20 | 16px | 20px |
+| `lg` | 48px | 12 / 20px | 20px | 16/24 | 20px | 24px |
+
+`textSize` overrides the label's text style. The icon sizes apply to an `<svg>` without a `width` attribute or a `size-*` class; icons from `@holakirr/snow-ui-icons` always set `width`, so pass the Figma size through their `size` prop.
+
+The whole Figma set, every variant and size with icons, a label only and an icon only:
+
+<Canvas of={ButtonStories.Matrix} />
+
+## Content
+
+An icon in `startContent` with no `label` and no `endContent` makes a square icon-only button (padding 4, 8 or 12px). `children` don't count, since they may be visually hidden text.
+
+<Canvas of={ButtonStories.WithStartAndEndContent} />
+
+<Canvas of={ButtonStories.IconButton} />
+
+## States
+
+- **Hover:** the variant's hover fill (Bare: a black label), and the label's extra 4px padding.
+- **Pressed:** the button scales to 95%.
+- **Keyboard focus:** the `focus-ring` utility (see Accessibility).
+- **Disabled:** `disabled` gives a Black/20% label and a not-allowed cursor; Gray and Filled keep a Black/4% fill, the others have none. The Figma set has only Default and Hover, so the disabled look is the library's own, built from the same tokens.
+
+<Canvas of={ButtonStories.Disabled} />
+
+## Accessibility
+
+- It renders a native `<button type="button">`: it is in the tab order and Enter and Space activate it. Pass `type="submit"` to submit a form.
+- The accessible name is the label (plus any `children`). An icon-only button has no text, so give it an `aria-label` (the stories use `title`). Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
+- `disabled` removes the button from the tab order; screen readers announce it as unavailable.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| No focus state on Button | `focus-ring`: the Figma "Focus" ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Filled label `#FFF` in both modes: 2.07:1 on the dark-mode indigo Primary | the per-mode `white` token: white on black (21:1), black on indigo (10.15:1) | 1.4.3 |
+| Bare at 40% layer opacity: 2.85:1 | `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus | 1.4.3, 1.4.11 |
+
+## Localization and RTL
+
+- `startContent` and `endContent` follow the text direction: in right-to-left text the start content is on the right. The deprecated `leftContent` / `rightContent` are aliases of them.
+- Mirror directional icons yourself with `rtl:-scale-x-100` (or the icon's `mirrored` prop, set from `useSnowUI().dir`).
+- The label is yours to translate; Button renders no built-in strings.
+
+<Canvas of={ButtonStories.RTL} />
+
+## Composition (asChild)
+
+`asChild` renders the only child instead of a `<button>`, e.g. an `<a>` or a router link. The child gets the button's classes (merged with its own, which win conflicts), props, ref and event handlers (the child's handler runs first), and the `label`, `startContent` and `endContent` are rendered inside it, around its own children.
+
+```tsx
+<Button asChild variant="filled" label="Docs">
+  <RouterLink to="/docs" />
+</Button>
+
+{/* A <button> child needs its own type="button". */}
+<Button asChild variant="outline" label="Settings">
+  <button type="button" className="px-8" onClick={openSettings} />
+</Button>
+```
+
+<Canvas of={ButtonStories.AsLink} />
+
+The `as` prop (`<Button as="a" href="/">`) is deprecated: it logs a one-time development warning and will be removed in the next major version.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Keep one `filled` button per view, for its main action.
+- Label actions with a verb: "Save", "Add data".
+- Give icon-only buttons an `aria-label`.
+- Use `asChild` with a link when the button navigates.
+- Pass the Figma icon size to library icons (`size={16}` next to an `md` label).
+
+</Do>
+<Dont>
+
+- Don't navigate from a `<button>`'s `onClick`: render a link with `asChild`.
+- Don't put links or other controls inside the label or `children`.
+- Don't use `text-*` on a Bare button when you only want a different rest colour: set `[--button-fg:…]`.
+- Don't use the deprecated `as`, `leftContent` or `rightContent` in new code.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Link](?path=/docs/components-link--docs): navigation in text.
+- [Toggle](?path=/docs/components-input-toggle--docs) and [ToggleGroup](?path=/docs/components-input-togglegroup--docs): pressed states and segmented controls built from the same Figma buttons.
+- [Group](?path=/docs/components-group--docs): lays out a row of buttons 8px apart.
+- [Tooltip](?path=/docs/components-tooltip--docs): a hint for an icon-only button.
+
+## Props
+
+<Controls />

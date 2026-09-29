@@ -1,0 +1,137 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ToggleStories from './Toggle.stories'
+
+<Meta of={ToggleStories} />
+
+<Title />
+
+<FigmaLinks label="Tab component set" page="28002:98904" />
+
+Toggle is a button with two states, on and off, built on the Radix Toggle primitive. It is an item of the Figma Tab segmented controls, a Button instance: a Borderless button when off, a Gray button when on (a white, shadowed one for `pill`). It takes the Figma Button sizes. Put several related toggles in a [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+
+```tsx
+import { Toggle } from '@holakirr/snow-ui'
+import { StarIcon } from '@holakirr/snow-ui-icons'
+
+<Toggle aria-label="Star" pressed={starred} onPressedChange={setStarred}>
+  <StarIcon />
+</Toggle>
+```
+
+<Primary />
+
+## When to use
+
+- A single on/off option that takes effect at once, shown as a button: bold text, a favourite, a filter.
+- A toolbar option shown as an icon only.
+
+## When not to use
+
+- A setting that is on or off: [Switch](?path=/docs/components-input-switch--docs); an option in a form: [Checkbox](?path=/docs/components-input-checkbox--docs).
+- Several related options, one or many on at a time: [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+- Switching between panels of content: [Tabs](?path=/docs/components-tabs--docs).
+- An action with no state: [Button](?path=/docs/components-button--docs).
+
+## Anatomy
+
+1. **Container**: the `<button>` (or the `asChild` element). `variant` sets its fill when on and `size` its height, padding and radius.
+2. **Content** (`children`): an icon, a label, or both. A single element without children (an icon) makes a square icon-only toggle; `iconOnly` overrides the detection.
+
+## Variants
+
+<Canvas of={ToggleStories.Variants} />
+
+| `variant` | Figma | Off | On | Use for |
+| --- | --- | --- | --- | --- |
+| `borderless` (default) | Button Borderless, Gray when on | no fill | Black/4% fill | toolbars, standalone toggles |
+| `outline` | Button Outline | 0.5px Black/10% stroke | Black/4% fill and the stroke | a toggle next to outline buttons |
+| `pill` | Tab "Pill" item | no fill | White/80% fill and the `shadow-2` shadow | items of a `ToggleGroup variant="pill"`, on its Black/4% track |
+
+## Sizes
+
+<Canvas of={ToggleStories.Sizes} />
+
+| `size` | Min height | Padding (label) | Radius | Label | Icon next to a label | Icon-only padding / glyph |
+| --- | --- | --- | --- | --- | --- | --- |
+| `sm` | 24px | 4 / 12px | 12px | 12/16 | 12px | 4px / 16px |
+| `md` (default) | 36px | 8 / 16px | 16px | 14/20 | 16px | 8px / 20px |
+| `lg` | 48px | 12 / 20px | 20px | 16/24 | 20px | 12px / 24px |
+
+The icon and the label are 4, 6 or 8px apart. Icons are sized unless they have a `size-*` class.
+
+<Canvas of={ToggleStories.WithText} />
+
+## States
+
+- **Off:** the label and icon are `text-secondary`.
+- **Hover and keyboard focus:** the label and icon turn black; keyboard focus adds the `focus-ring` utility.
+- **On** (`data-state="on"`): a black label and the variant's "on" fill (see Variants).
+- **Disabled:** Black/20% content on a Black/4% tile and a not-allowed cursor. It keeps its pressed state.
+
+<Canvas of={ToggleStories.Pressed} />
+
+<Canvas of={ToggleStories.Disabled} />
+
+<Canvas of={ToggleStories.DisabledPressed} />
+
+The colour is the `--segment-fg` custom property, which hover, focus and the on state change. A `text-*` class sets the colour in every state; `[--segment-fg:…]` changes only the off colour.
+
+## Accessibility
+
+- It renders a native `<button type="button">` with `aria-pressed`: screen readers announce a toggle button, pressed or not. Space and Enter toggle it.
+- The accessible name is the content. An icon-only toggle has no text, so give it an `aria-label`. Keep the name the same in both states: `aria-pressed` conveys the state.
+- `disabled` removes it from the tab order.
+- Toggle renders no built-in strings.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: a 4px Black/4% ring (1.1:1); no focus state on Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Off items at 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus; disabled items keep Black/20% | 1.4.3, 1.4.11 |
+
+## Composition (asChild)
+
+`asChild` (Radix) renders the only child instead of the `<button>`, with the toggle's classes, `aria-pressed` and `data-state`. The state colours don't depend on `:enabled`, so they apply to any element. `aria-pressed` is only valid on a button, so the child should be one (a `<button type="button">` or your own button component).
+
+```tsx
+<Toggle asChild pressed={bold} onPressedChange={setBold}>
+  <MyButton type="button" aria-label="Bold">
+    <TextBoldIcon />
+  </MyButton>
+</Toggle>
+```
+
+The state is `pressed` (controlled) or `defaultPressed` (uncontrolled), with `onPressedChange(pressed)`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Give icon-only toggles an `aria-label`.
+- Use a label or an icon that names the option, not the state.
+- Group related toggles in a `ToggleGroup`.
+- Use `pill` toggles only on the pill track of a `ToggleGroup`.
+
+</Do>
+<Dont>
+
+- Don't change the label or the icon when the toggle is pressed.
+- Don't use a toggle to submit or save: it only switches a state.
+- Don't use a toggle where a form expects a checkbox.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [ToggleGroup](?path=/docs/components-input-togglegroup--docs): several toggles as a segmented control.
+- [Tabs](?path=/docs/components-tabs--docs): the same Figma segmented items, switching panels.
+- [Switch](?path=/docs/components-input-switch--docs): an on/off setting.
+- [Button](?path=/docs/components-button--docs): an action without a state.
+
+## Props
+
+<Controls />

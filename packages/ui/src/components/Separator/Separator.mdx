@@ -1,0 +1,99 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SeparatorStories from './Separator.stories'
+
+<Meta of={SeparatorStories} />
+
+<Title />
+
+<FigmaLinks label="Line component set" page="25559:13253" />
+
+Separator draws a line between blocks of content: the Black/10% divider of the Figma dashboards, 1px thick, or 0.5px with `hairline`. It is built on the Radix Separator primitive and is decorative by default.
+
+```tsx
+import { Separator } from '@holakirr/snow-ui'
+
+<Separator />
+<Separator orientation="vertical" />
+```
+
+<Primary />
+
+## When to use
+
+- A visual break between sections of a card, a panel or a menu.
+- A vertical line between groups of controls in a row.
+
+## When not to use
+
+- Progress or a level: use [Strip](?path=/docs/components-strip--docs).
+- Space alone is enough: prefer a gap or padding, which adds no element.
+- A line inside a menu: use `DropdownMenuSeparator` or `ContextMenuSeparator` ([DropdownMenu](?path=/docs/components-dropdownmenu--docs), [ContextMenu](?path=/docs/components-contextmenu--docs)); in the app's sidebar, `SidebarSeparator` ([Sidebar](?path=/docs/components-sidebar--docs)).
+
+## Anatomy
+
+A single `<div>` with `data-orientation`: a Black/10% fill with fully rounded ends.
+
+- **Horizontal** (default): 1px high, the full width of its container.
+- **Vertical:** 1px wide, the full height of its container, so the container needs a height (the story uses a 100px flex row).
+
+## Variants
+
+<Canvas of={SeparatorStories.Default} />
+
+<Canvas of={SeparatorStories.Vertical} />
+
+| Prop | Look |
+| --- | --- |
+| (default) | a 1px Black/10% line |
+| `hairline` | the same line scaled to half its thickness: one device pixel on a 2x screen; on a 1x screen it stays 1px and looks lighter |
+| `className` | any other colour or size, e.g. `bg-primary` |
+
+<Canvas of={SeparatorStories.Hairline} />
+
+<Canvas of={SeparatorStories.CustomStyles} />
+
+## Accessibility
+
+- `decorative` is `true` by default (unlike Radix's default): the line gets `role="none"` and is ignored by assistive technology. Most separators only repeat a structure that headings or lists already express.
+- `decorative={false}` renders `role="separator"`, with `aria-orientation="vertical"` for a vertical line (horizontal is the implicit orientation). Use it when the break is part of the content's meaning.
+- It isn't focusable: it is not a resizable splitter.
+
+None of the package's deviations from the Figma kit apply to Separator.
+
+## Localization and RTL
+
+Nothing to translate or mirror: Separator renders no text, and a vertical line has no direction.
+
+## Composition (asChild)
+
+Separator passes `asChild` to the Radix primitive, which renders the only child instead of the `<div>`, with the separator's role, `data-orientation` and classes. Radix `Slot` joins the class names instead of merging them, so conflicts are left to stylesheet order: set overrides in Separator's `className`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Keep separators decorative unless the break carries meaning.
+- Give a vertical separator's container a height.
+- Use `hairline` for the Figma dashboards' 0.5px dividers.
+
+</Do>
+<Dont>
+
+- Don't stack separators and borders on the same edge.
+- Don't use a separator to show progress or a value.
+- Don't make it focusable or clickable.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Strip](?path=/docs/components-strip--docs): segments that show progress, documented on the same Figma page.
+- [Group](?path=/docs/components-group--docs): lays out the items a vertical separator sits between.
+- [Card](?path=/docs/components-card--docs): a surface whose sections a separator can divide.
+
+## Props
+
+<Controls />

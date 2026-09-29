@@ -1,0 +1,78 @@
+import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SkeletonStories from './Skeleton.stories'
+
+<Meta of={SkeletonStories} />
+
+<Title />
+
+<FigmaLinks note="A library extension: a loading placeholder built from the kit's Black/4% fill and 8px radius." />
+
+Skeleton is a placeholder for content that is still loading: a pulsing Black/4% block with an 8px radius. You give it the size and shape of the content it stands in for.
+
+```tsx
+import { Skeleton } from '@holakirr/snow-ui'
+
+<Skeleton className="size-12 rounded-full" />
+<Skeleton className="h-4 w-[250px]" />
+```
+
+<Primary />
+
+## When to use
+
+- The layout is known but the data isn't there yet: a list, a card, a profile header.
+- A short wait, where a placeholder of the right shape avoids a layout jump when the content arrives.
+
+## When not to use
+
+- A long or unknown wait, or an action in progress: show a message or a progress indicator with text.
+- Empty data: show an empty state, not a placeholder that never resolves.
+- The app's sidebar menu: use `SidebarMenuSkeleton` ([Sidebar](?path=/docs/components-sidebar--docs)), which is built from Skeleton.
+
+## Anatomy
+
+A single `<div>` with `animate-pulse`, a Black/4% fill (`bg-black-4`, White/10% in dark mode) and an 8px radius (`rounded-8`). It has no size of its own: set it with `className` (`h-4 w-[250px]`, `size-12`), and override the radius the same way (`rounded-full` for an avatar). It takes any `<div>` props.
+
+## States
+
+Skeleton has one state: it pulses, fading its opacity in a loop (Tailwind's `animate-pulse`), until you replace it with the content. It doesn't turn off the animation for people who ask for reduced motion; add `motion-reduce:animate-none` to `className` if you need that.
+
+## Accessibility
+
+- Skeleton is `aria-hidden="true"`: screen readers skip it, so it can't tell anyone that content is loading.
+- Announce the loading state yourself: mark the region that is loading with `aria-busy="true"` and give it a text alternative (visually hidden "Loading…"), then remove both when the content arrives.
+
+None of the package's deviations from the Figma kit apply to Skeleton.
+
+## Localization and RTL
+
+Skeleton renders no text: translate your own loading message. Lay out skeleton rows with the same logical utilities as the content (`ms-`, `ps-`) or a flex `gap`, so they mirror with it in right-to-left text.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Match the size and shape of the content: `rounded-full` for avatars, a text line's height for text.
+- Announce the loading state with `aria-busy` and text.
+- Replace skeletons as soon as the content is ready.
+
+</Do>
+<Dont>
+
+- Don't show a skeleton for content that failed to load: show an error.
+- Don't put interactive elements inside a skeleton.
+- Don't use it for empty data.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Sidebar](?path=/docs/components-sidebar--docs): `SidebarMenuSkeleton`, a menu row built from Skeleton.
+- [Avatar](?path=/docs/components-avatar-avatar--docs) and [ListItem](?path=/docs/components-listitem--docs): content a skeleton often stands in for.
+
+## Props
+
+<Controls />

@@ -1,0 +1,138 @@
+import { Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SelectStories from './Select.stories'
+
+<Meta of={SelectStories} />
+
+<Title />
+
+<FigmaLinks label="Input/Form page" note="The menu is the Figma Popover." />
+
+Select picks one option from a list that opens below a trigger. The trigger is the Figma Input field with a trailing ArrowLineUpDown icon; the list is the Figma [Popover](?path=/docs/components-popover--docs) surface, with a check on the selected item. It is built on the Radix Select.
+
+```tsx
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@holakirr/snow-ui'
+
+<Select value={fruit} onValueChange={setFruit}>
+  <SelectTrigger aria-label="Fruit" className="w-[200px]">
+    <SelectValue placeholder="Select a fruit" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="apple">Apple</SelectItem>
+    <SelectItem value="banana">Banana</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+<Primary />
+
+The menu, open: [Open story](?path=/story/components-input-select--open).
+
+## When to use
+
+- One choice out of a list too long for radio buttons, or in too little room for them.
+- A form field whose value comes from a fixed set: a country, a time zone, a status.
+
+## When not to use
+
+- Two to about five options that should stay visible: use [RadioGroup](?path=/docs/components-input-radiogroup--docs).
+- Actions, not a value: [DropdownMenu](?path=/docs/components-dropdownmenu--docs).
+- Searching a long list or the whole app: [CommandPalette](?path=/docs/components-commandpalette--docs).
+- Free text: [Input](?path=/docs/components-input-input--docs).
+
+## Anatomy
+
+1. **Root** (`Select`): holds the value and the open state; renders no element of its own.
+2. **Trigger** (`SelectTrigger`): a `<button role="combobox">` in the Figma Input field style (12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% stroke, 14/20 text) and a 16px ArrowLineUpDown icon at the end. Full width by default.
+3. **Value** (`SelectValue`): the selected item's text, or `placeholder` in `text-secondary`.
+4. **Content** (`SelectContent`): the list, portalled to the end of `<body>`. The Popover surface: Background/3 with a 1px Surface/1 stroke, a 16px radius, the "Glass 2" blur and shadow, and 12px padding around the items. At least the trigger's width and 128px, at most 384px high, 4px from the trigger.
+5. **Group** and **Label** (`SelectGroup`, `SelectLabel`, optional): a titled group of items; the label is 12/16 `text-secondary`.
+6. **Item** (`SelectItem`): an option, 36px high (8px padding, 14/20 text) with a 12px radius and a Black/4% highlight. The selected item has a 16px check at the end.
+7. **Separator** (`SelectSeparator`, optional): a 0.5px Black/10% line between groups.
+8. **Scroll buttons** (`SelectScrollUpButton`, `SelectScrollDownButton`): arrows at the top and bottom of a list that overflows. `SelectContent` renders them.
+
+## States
+
+- **Trigger hover:** the stroke turns Black/40%.
+- **Trigger keyboard focus:** the `focus-ring` utility (see Accessibility).
+- **Open:** the trigger keeps a Black/40% stroke and the 4px Focus ring (the Figma "Focus").
+- **Placeholder:** no value yet; the placeholder is in `text-secondary`.
+- **Disabled** (`disabled` on `Select`): a Black/4% trigger with no stroke, Black/20% text and icon, and a not-allowed cursor. It doesn't open.
+- **Disabled item** (`disabled` on `SelectItem`): Black/20% text and a not-allowed cursor; it can't be highlighted or selected.
+
+<Canvas of={SelectStories.Disabled} />
+
+<Canvas of={SelectStories.WithDisabledOption} />
+
+<Canvas of={SelectStories.Scrollable} />
+
+## Accessibility
+
+- The trigger is a `combobox` button; the open list is a `listbox` of `option`s. While it is open, focus stays in the list and the rest of the page is hidden from screen readers.
+- **Keyboard** (from the stories' interaction test and the Radix Select): **Enter**, **Space**, **ArrowDown** or **ArrowUp** open the list with the selected option focused. **ArrowUp** / **ArrowDown** move, **Home** / **End** jump to the first or last option, typing jumps to a matching option. **Enter** or **Space** selects and closes, **Escape** closes without a change; the focus returns to the trigger. Typing on the closed trigger selects a matching option without opening the list.
+- A `combobox` isn't named by its content, so name the trigger: `aria-label`, or a [Label](?path=/docs/components-label--docs) (or `FormLabel`) linked to its `id`. The placeholder isn't a name.
+- Inside a `<form>`, pass `name` (and `required`) to `Select`: a hidden native `<select>` submits the value.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Placeholder in Black/20%: 1.6:1 | `text-secondary`; the placeholder is the trigger's visible text, not a native placeholder | 1.4.3 |
+| Group labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
+
+Known gap, kept from Figma for now: the Black/4% highlight of the items.
+
+## Localization and RTL
+
+- Select renders no built-in strings: the placeholder, labels and items are yours to translate.
+- The check mark and the trigger icon are at the end: on the left in right-to-left text. The list is portalled outside your `dir` scope, so it takes the direction from `SnowUIProvider`.
+
+## Theming
+
+The list renders at the end of `<body>`, so it takes the theme of `<html>`. Inside a scoped theme, give it the same scope: `<SelectContent data-theme="dark">`. See [Theming](?path=/docs/guides-theming--docs).
+
+## Controlled and uncontrolled
+
+Pass `defaultValue` to leave the value to the select, or `value` with `onValueChange(value)` to control it; values are strings. The open state works the same way: `defaultOpen`, or `open` with `onOpenChange`.
+
+`SelectContent` defaults to `position="popper"`: the list opens below the trigger, at least as wide as it. `position="item-aligned"` places the selected item over the trigger instead, as a native select does on macOS.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name the trigger with `aria-label` or a linked label.
+- Use a placeholder that says what to pick: "Select a fruit".
+- Group long lists with `SelectGroup` and `SelectLabel`.
+- Set the trigger's width with `className`.
+
+</Do>
+<Dont>
+
+- Don't use Select for actions: use DropdownMenu.
+- Don't use it for two or three options that fit on screen: use RadioGroup.
+- Don't put buttons, links or other interactive content inside an item.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [RadioGroup](?path=/docs/components-input-radiogroup--docs): a few options, all visible.
+- [DropdownMenu](?path=/docs/components-dropdownmenu--docs) and [Popover](?path=/docs/components-popover--docs): the same surface for actions and free content.
+- [Input](?path=/docs/components-input-input--docs): the field the trigger is styled after.
+- [Form](?path=/docs/components-form--docs): a label, description and error message for the select.
+
+## Props
+
+The stories render their own markup, so there are no controls here. The parts take the props of the Radix Select ([API reference](https://www.radix-ui.com/primitives/docs/components/select#api-reference)); `className` merges with their classes.
+
+| Part | Main props |
+| --- | --- |
+| `Select` | `value`, `defaultValue`, `onValueChange`, `open`, `defaultOpen`, `onOpenChange`, `name`, `required`, `disabled`, `dir` |
+| `SelectTrigger` | `aria-label`, `id`, `className` |
+| `SelectValue` | `placeholder` |
+| `SelectContent` | `position` (default `"popper"`), `side`, `sideOffset`, `align` (with `popper`) |
+| `SelectItem` | `value` (required), `disabled`, `textValue` |

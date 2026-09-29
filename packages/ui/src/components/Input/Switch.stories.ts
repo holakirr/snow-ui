@@ -10,6 +10,10 @@ const meta: Meta<typeof Switch> = {
   args: { 'aria-label': 'Airplane mode' },
   argTypes: {},
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33319-52352',
+    },
     docs: {
       description: {
         component: 'Switch component',

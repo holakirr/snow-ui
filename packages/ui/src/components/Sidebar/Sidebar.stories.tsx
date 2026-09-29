@@ -89,6 +89,10 @@ const meta: Meta<typeof Sidebar> = {
   title: 'Components/Sidebar',
   component: Sidebar,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=34611-43783',
+    },
     layout: 'fullscreen',
     docs: {
       description: {

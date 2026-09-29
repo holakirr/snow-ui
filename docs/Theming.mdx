@@ -1,0 +1,106 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Theming" />
+
+# Theming
+
+The styles implement the SnowUI Figma tokens — the SnowUI-Light and SnowUI-Dark modes of the kit's variables, its text styles and its effect styles — as Tailwind CSS v4 theme variables. The source of truth is the [W3C Design Tokens (DTCG)](https://www.designtokens.org/) files in [`packages/ui/tokens`](https://github.com/holakirr/snow-ui/tree/main/packages/ui/tokens); `bun run tokens` generates the CSS from them. The [Foundations](?path=/story/foundations--colors) pages list every token with its Figma name and both mode values.
+
+## Tokens
+
+Every token is a CSS variable (`var(--color-black-10)`) and, through Tailwind, a utility (`bg-black-10`, `text-14`, `rounded-12`).
+
+| Group | Utilities | Notes |
+| --- | --- | --- |
+| Colours | `primary`, `black`, `white` and their Figma alpha steps (`black-80`, `black-40`, `black-20`, `black-10`, `black-4`, same for `white`), `background-1…3`, `surface-1…3`, `color-1`, `color-2`, `static-white`, `static-black`, the secondary colours (`purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`) | `primary` is black in light mode and indigo in dark mode; `black` and `white` swap. `static-*` never change. |
+| Accessible text | `text-secondary`, `indigo-text`, `red-text` | Library additions for 4.5:1 text where Figma's Black/40% or indigo fall short. |
+| Typography | `text-12` … `text-64` | The Figma text styles (size and line height). Inter with `font-feature-settings: "ss01" 1, "cv01" 1` and `font-optical-sizing: none`. |
+| Radius | `rounded-4` … `rounded-80` | The Figma corner radius scale. |
+| Spacing | Tailwind's (`p-1` = 4px, `gap-3` = 12px) | The Figma spacing values are multiples of 4px. |
+| Effects | `shadow-1`, `shadow-2`, `shadow-glow`, `shadow-glass-1`, `shadow-glass-2`, `inset-shadow-inner`, `ring-focus` / `shadow-focus`, `backdrop-blur-bg-40`, `backdrop-blur-bg-100` | The Figma effect styles. |
+| Glass | `glass` (= `glass-2`), `glass-1`, `glass-2` | Approximations of Figma's Glass effects: a fill, a background blur and the effect's shadow. |
+
+In dark mode `black-10` and `black-4` use the kit's stronger alphas (15% and 10%). Tailwind's opacity modifiers (`black/10`) keep one alpha in both modes, so prefer the tokens.
+
+Two utilities and a base rule come with the theme:
+
+- `focus-ring`: the keyboard focus indicator of every control. On `:focus-visible` it draws the Figma "Focus" ring (`ring-4 ring-focus`) plus a 2px `black-80` outline offset by 2px. Use it on your own focusable elements: `<button className="focus-ring">`.
+- Cursors: buttons and ARIA controls (`option`, `menuitem`, `tab`, `radio`, `checkbox`, `switch`, `label[for]`…) get the pointer cursor, which Tailwind v4's preflight no longer sets, and disabled elements the not-allowed cursor. `cursor-*` utilities override it.
+
+Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `background`, `foreground`, `muted`, `accent`, `destructive`, `input`, `ring`…) still work as deprecated aliases.
+
+## Dark mode
+
+The theme is light by default. It is dark:
+
+- with `data-theme="dark"` on `<html>`, or
+- with the OS dark preference, unless `<html data-theme="light">` pins the light theme.
+
+`color-scheme` follows, so native controls and scrollbars match. Components need no props for it: their colours are tokens.
+
+## Scoped themes
+
+`data-theme` works on any element: the tokens of an element come from its nearest `data-theme` ancestor, so a subtree can use the other mode, and `data-theme="light"` inside a dark subtree switches back.
+
+```tsx
+<html data-theme="light">
+  …
+  <aside data-theme="dark" className="bg-background-1 text-black">
+    {/* dark tokens: background-1 is #333, black is white */}
+    <div data-theme="light">{/* light again */}</div>
+  </aside>
+</html>
+```
+
+- A scope sets the tokens and `color-scheme`, not a background or text colour: paint it, e.g. `bg-background-1 text-black`.
+- `dark:` utilities follow the same scopes, with one limit: a dark scope inside a light scope inside a dark scope gets the dark tokens but not `dark:` utilities. Prefer the tokens, which switch at any depth.
+- **Portals:** the content of `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope, so it takes the theme of `<html>`. Set the theme on `<html>` for the whole app, or give the content its own scope: `<PopoverContent data-theme="dark">` (the `*Content` components pass it through). Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
+
+In this Storybook, the theme toolbar switches every story; stories named "Dark" pin the dark theme.
+
+## Tailwind CSS v4 projects: `theme.css`
+
+`theme.css` is the theme without Tailwind itself: the tokens as theme variables, the theme scopes, the `dark` variant, the `glass*` and `focus-ring` utilities, the base rules and react-day-picker's stylesheet (for `Calendar`). `index.css` is the same compiled with Tailwind, for projects without it.
+
+```css
+@import "tailwindcss";
+@import "@holakirr/snow-ui/theme.css";
+@source "../node_modules/@holakirr/snow-ui/dist";
+```
+
+What it changes in your Tailwind setup:
+
+- `dark:` follows the scoped themes (`data-theme`, then the OS preference) instead of only `prefers-color-scheme`.
+- It overrides Tailwind's `--font-sans` (Inter), `--color-black` and `--color-white` (which swap in dark mode).
+- It adds the kit's scales next to Tailwind's: `text-12`…, `rounded-4`…, the colours above.
+
+**Cascade layers.** Both stylesheets keep every rule in Tailwind's layers (`theme`, `base`, `components`, `utilities`; react-day-picker's stylesheet is in `components`). Your unlayered CSS overrides them whatever the load order or specificity, and your utilities override the base and component rules.
+
+## Changing a token
+
+Redeclare its variable in your own (unlayered) CSS, for each scope it should apply to:
+
+```css
+:root,
+[data-theme="light"] {
+  --color-primary: #0f62fe;
+}
+
+[data-theme="dark"] {
+  --color-primary: #78a9ff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-primary: #78a9ff;
+  }
+}
+```
+
+Check the contrast of text and controls on the new colour: the accessibility deviations of the components (see each component's page) were measured with the kit's values.
+
+Styling a single component: pass `className`. It is merged with the component's classes by a token-aware `twMerge`, so `className="rounded-8"` replaces the component's radius instead of fighting it in the stylesheet.
+
+## Fonts
+
+`fonts.css` self-hosts Inter 4.1 with the `ss01` / `cv01` features (see [Getting started](?path=/docs/guides-getting-started--docs#add-the-font-optional)). The stylesheets only set `font-family: Inter, sans-serif`, the feature settings and `font-optical-sizing: none`: the kit uses the "Inter" family (text optical size) at every size, not "Inter Display". If you load Inter yourself, use a build with those features. The italic faces are opt-in (`fonts-italic.css`), since the design has no italic text.

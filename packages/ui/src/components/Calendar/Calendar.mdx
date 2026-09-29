@@ -1,0 +1,176 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as CalendarStories from './Calendar.stories'
+
+<Meta of={CalendarStories} />
+
+<Title />
+
+<FigmaLinks label="DatePicker component set" page="29706:37201" />
+
+Calendar shows a month grid to pick a date, several dates or a range. It is [react-day-picker](https://daypicker.dev) (v10) styled as the Figma DatePicker: a glass surface (Background/3, "Glass 2", a 1px Surface/1 stroke, radius 16), weeks starting on Monday, 12px days, the selected day in Primary and today in Secondary/Indigo. The library adds the Figma toolbar ("Today", "Last selection", the month and its arrows), an optional header row and a year view.
+
+```tsx
+import { Calendar } from '@holakirr/snow-ui'
+
+const [date, setDate] = useState<Date | undefined>()
+
+<Calendar mode="single" selected={date} onSelect={setDate} />
+```
+
+<Primary />
+
+## When to use
+
+- Picking a date, several dates or a date range where seeing the weekdays helps: bookings, reports, deadlines.
+- A date picker in a [Popover](?path=/docs/components-popover--docs), with a date field in `header`.
+
+## When not to use
+
+- A date the user knows by heart, such as a birth date: an [Input](?path=/docs/components-input-input--docs) is faster to type.
+- Events at times of day across a week: [Scheduler](?path=/docs/components-scheduler--docs).
+- Choosing from a few preset periods ("Last 7 days"): a [Select](?path=/docs/components-input-select--docs) or a [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+
+## Anatomy
+
+1. **Surface** (the `Root` slot): the glass container, radius 16. `className` goes here.
+2. **Header** (`header`, optional): your content above the toolbar, e.g. a date field. Padding 16px, a 0.5px Black/10% line below.
+3. **Toolbar** (the month caption, 28px high, 12px text), one per month:
+   - the actions (`showTodayButton`, `lastSelection`, first month only): 20px-high Black/4% chips, radius 8, 4px side padding;
+   - the previous and next buttons: Button Small "Borderless" icon buttons with 16px arrows, in a `nav` landmark;
+   - the caption label: the month name. With `showYearSwitcher` (the default) it is a button that opens the year view; `captionLayout="dropdown"` (react-day-picker) shows month and year dropdowns instead.
+4. **Weekdays**: a 38px row of 12px weekday names in `text-secondary`.
+5. **Days** (the month grid, 16px below the toolbar, 328px wide): seven columns of 38px-high day buttons, radius 12, 12px text.
+6. **Footer** (`footer`, react-day-picker, optional): 12px `black-80` text below the months.
+
+The months have 16px of padding and are 16px apart.
+
+The Figma "Date only" DatePicker, with a header, both actions and a short month caption:
+
+<Canvas of={CalendarStories.DatePicker} />
+
+### Year view
+
+With `showYearSwitcher`, the caption label opens a view of `yearRange` years (12 by default, starting five years before the current year) in four columns. Each year is a 40px button with radius 12; the current year has a Black/4% fill, and years outside `startMonth` / `endMonth` are disabled. The previous and next buttons page through the years ("Go to the previous 12 years"). Picking a year shows it in the days view, in the month of the selection (or the current month).
+
+### Which props are whose
+
+Calendar takes every react-day-picker prop. The library adds:
+
+| Prop | Default | Does |
+| --- | --- | --- |
+| `header` | — | content above the toolbar |
+| `showTodayButton`, `onTodayClick(today)` | `false` | the "Today" action: shows today's month and calls `onTodayClick`, e.g. to select today |
+| `lastSelection`, `onLastSelectionClick(date)` | — | the "Last selection" action, shown when `lastSelection` is set: shows that month and calls the handler |
+| `todayLabel`, `lastSelectionLabel` | from `messages.calendar` | the action labels |
+| `showYearSwitcher` | `true` | the caption label opens the year view |
+| `yearRange` | `12` | years per page in the year view |
+| `monthsClassName`, `monthCaptionClassName`, `dayButtonClassName`… | — | classes per part, merged into the defaults (`captionClassName` is deprecated: use `monthCaptionClassName`) |
+
+It changes these react-day-picker props:
+
+| Prop | Here |
+| --- | --- |
+| `weekStartsOn` | `1` (Monday) by default; it wins over the locale's week start |
+| `showOutsideDays` | `true` for one month, `false` for several |
+| `locale`, `dir` | taken from `SnowUIProvider` when not set |
+| `labels` | merged over the navigation labels from `messages.calendar` |
+| `hideNavigation` | hides the toolbar's previous / next buttons; react-day-picker's own navigation is always replaced by the toolbar |
+| `onPrevClick`, `onNextClick` | called by the toolbar buttons, in the year view too |
+| `today` | also the date the "Today" action goes to |
+| `classNames`, `components` | merged over the library's, slot by slot |
+
+Everything else is react-day-picker's own, unchanged: `mode`, `selected`, `onSelect`, `required`, `month`, `defaultMonth`, `onMonthChange`, `startMonth`, `endMonth`, `disabled`, `numberOfMonths`, `captionLayout`, `showWeekNumber`, `formatters`, `footer` and the rest. See the [react-day-picker docs](https://daypicker.dev).
+
+## Variants
+
+`mode` (react-day-picker) sets the selection: `single`, `multiple` or `range`.
+
+<Canvas of={CalendarStories.RangeSelected} />
+
+<Canvas of={CalendarStories.MultipleSelected} />
+
+With `numberOfMonths`, the months sit side by side; the previous button is in the first caption and the next in the last, and outside days are hidden:
+
+<Canvas of={CalendarStories.TwoMonths} />
+
+`captionLayout="dropdown"` (react-day-picker) replaces the caption label with month and year dropdowns; `startMonth` and `endMonth` bound them:
+
+<Canvas of={CalendarStories.RangeWithDropdowns} />
+
+`weekStartsOn={0}` starts the week on Sunday:
+
+<Canvas of={CalendarStories.WeekStartsOnSunday} />
+
+## States
+
+- **Hover:** a Black/4% fill on a day.
+- **Keyboard focus:** the `focus-ring` utility; the focused day is raised above its neighbours.
+- **Selected:** a Primary fill with the per-mode `white` text (white on black, black on the dark-mode indigo), Primary hover on hover.
+- **Range:** the start, middle and end days form one Primary band; the start and end keep their rounded outer corners.
+- **Today:** a Secondary/Indigo fill with static black text (Indigo at 80% on hover), unless the day is selected.
+- **Outside days:** the previous and next month's days in `text-secondary`. They are real dates and can be selected.
+- **Disabled** (`disabled`, react-day-picker matchers): Black/20% text, no hover fill.
+
+<Canvas of={CalendarStories.States} />
+
+## Accessibility
+
+- react-day-picker renders each month as a `grid` named by the month ("January 2025"), with `gridcell`s that carry `aria-selected` and, with a `mode` (or `onDayClick`), a day button named by its full date. In `multiple` and `range` mode the grid is `aria-multiselectable`.
+- One day is in the tab order. The arrow keys move a day (left / right) or a week (up / down); with Shift they move a month or a year. Page Up and Page Down move a month (with Shift, a year); Home and End go to the start and end of the week. Enter or Space selects the focused day.
+- The previous and next buttons are named "Go to the previous month" and "Go to the next month" and sit in a `navigation` landmark named "Month navigation". With several months there is still one landmark. They are disabled at `startMonth` / `endMonth`.
+- The toolbar actions and the year switcher are native buttons.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Weekdays and outside days in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary` (5.74:1 light, 7.08:1 dark). Outside days are selectable dates, not decoration, so they get the full 4.5:1 | 1.4.3 |
+| Today: white text on Secondary/Indigo, 2.07:1 | static black on Secondary/Indigo, 10.15:1 | 1.4.3 |
+
+## Localization and RTL
+
+- `SnowUIProvider`'s `locale` (a date-fns locale, or a `react-day-picker/locale` one that also translates the day picker's own labels) names the months, weekdays and days; the `locale` prop wins.
+- Built-in strings come from `messages.calendar`: `today` and `lastSelection` (the actions), `previousMonth`, `nextMonth` and `navigation` (the arrows and their landmark), and `previousYears(count)` / `nextYears(count)` (the arrows in the year view). The English defaults of `previousMonth`, `nextMonth` and `navigation` give way to a react-day-picker locale's own labels; a translated message wins over them.
+- `todayLabel` and `lastSelectionLabel` override the action labels, and react-day-picker's `labels` overrides the navigation labels.
+- `SnowUIProvider`'s `dir` (or the `dir` prop) mirrors the calendar: the actions are on the right, the arrows point the other way, a range's rounded ends swap sides, and ArrowLeft moves to the next day.
+
+<Canvas of={CalendarStories.RuLocale} />
+
+<Canvas of={CalendarStories.RTL} />
+
+## Controlled and uncontrolled
+
+Calendar keeps react-day-picker's names: the selection is `selected` / `onSelect` (with `mode`), the shown month `month` / `defaultMonth` / `onMonthChange`. The year view and its page are internal state.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Set `mode` and handle `onSelect`: without a `mode` (or `onDayClick`) the days are not buttons.
+- Bound the dates with `startMonth` / `endMonth`, and disable dates that can't be picked with `disabled`.
+- Put a date field in `header` when users may type the date.
+- Use a `react-day-picker/locale` locale in `SnowUIProvider` to translate the day picker's own labels too.
+
+</Do>
+<Dont>
+
+- Don't use Calendar for a date far in the past, such as a birth date: a text field is faster.
+- Don't show outside days with several months: they repeat the neighbouring month's dates.
+- Don't override the `components` slots the library uses (`MonthCaption`, `CaptionLabel`, `MonthGrid`, `Root`, `Chevron`) unless you replace the toolbar and the year view too.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Popover](?path=/docs/components-popover--docs): to show a Calendar next to a date field.
+- [Scheduler](?path=/docs/components-scheduler--docs): a week of events by hour.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the locale, messages and direction.
+- [Localization and RTL guide](?path=/docs/guides-localization-and-rtl--docs).
+
+## Props
+
+<Controls />

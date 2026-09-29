@@ -20,6 +20,10 @@ const meta = {
   title: 'Components/IconText',
   component: IconText,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33302-438',
+    },
     layout: 'centered',
     docs: {
       description: {

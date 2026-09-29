@@ -1,0 +1,102 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SwitchStories from './Switch.stories'
+
+<Meta of={SwitchStories} />
+
+<Title />
+
+<FigmaLinks page="25559:12043" />
+
+Switch turns a setting on or off, with an immediate effect. It is the Figma "Switch", built on the Radix Switch.
+
+```tsx
+import { Label, Switch } from '@holakirr/snow-ui'
+
+<Switch id="airplane-mode" checked={airplaneMode} onCheckedChange={setAirplaneMode} />
+<Label htmlFor="airplane-mode">Airplane mode</Label>
+```
+
+<Primary />
+
+## When to use
+
+- A setting that applies as soon as it changes: notifications, dark mode, a feature flag.
+
+## When not to use
+
+- An option that is saved with a form's submit button: use [Checkbox](?path=/docs/components-input-checkbox--docs).
+- A pressed state of a toolbar button: [Toggle](?path=/docs/components-input-toggle--docs).
+- A choice between more than two options: [RadioGroup](?path=/docs/components-input-radiogroup--docs) or [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+
+## Anatomy
+
+1. **Track**: the `<button role="switch">`, a 28 × 16px pill with 2px padding and the Figma inner shadow. Every prop goes to it.
+2. **Thumb**: a 12px `static-white` circle (white in both modes) with the "Drop shadow 2" effect. It moves 12px towards the end when the switch is on.
+3. **Label** (yours): a [Label](?path=/docs/components-label--docs) with `htmlFor` set to the switch's `id`.
+
+## States
+
+<Canvas of={SwitchStories.Checked} />
+
+- **Off:** a Black/20% track; Black/40% on hover.
+- **On:** a Primary track; on hover Primary under White/40%.
+- **Keyboard focus:** the `focus-ring` utility (see Accessibility).
+- **Disabled** (`disabled`): a Black/10% track (Black/20% when on), no inner shadow, the white thumb. The Figma component has no Disabled state, so this look is the library's own, visible in both modes.
+
+<Canvas of={SwitchStories.DisabledOff} />
+
+<Canvas of={SwitchStories.Disabled} />
+
+## Accessibility
+
+- It renders a `<button type="button" role="switch">` with `aria-checked`. It is in the tab order, and **Space** and **Enter** toggle it.
+- Give it a name: a `Label` with `htmlFor` and the same `id`, or `aria-label` (as the stories do). Name the setting, not the state: "Airplane mode", not "Turn on airplane mode".
+- Inside a `<form>`, a hidden native checkbox carries `name` and `value` (default `on`), so the form submits it.
+- `disabled` removes it from the tab order.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+
+Known gap, kept from Figma for now: the white thumb on the dark-mode indigo track (2.07:1).
+
+## Localization and RTL
+
+- Switch renders no built-in strings; the label is yours to translate.
+- In right-to-left text the thumb moves the other way: on is to the left.
+
+## Controlled and uncontrolled
+
+Pass `defaultChecked` to leave the state to the switch, or `checked` with `onCheckedChange(checked)` to control it. The value is a boolean.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Apply the change as soon as the switch changes.
+- Give every switch a visible label that names the setting.
+- Put the label next to the switch, linked with `htmlFor`.
+
+</Do>
+<Dont>
+
+- Don't use a switch in a form that is applied with a submit button: use Checkbox.
+- Don't change the label text with the state ("On" / "Off"): the switch shows the state.
+- Don't make a switch trigger a confirmation dialog for routine settings.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Checkbox](?path=/docs/components-input-checkbox--docs): an option submitted with a form.
+- [Toggle](?path=/docs/components-input-toggle--docs): a pressed button in a toolbar.
+- [Label](?path=/docs/components-label--docs): the visible label.
+
+## Props
+
+<Controls />

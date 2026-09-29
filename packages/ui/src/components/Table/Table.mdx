@@ -1,0 +1,156 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as TableStories from './Table.stories'
+
+<Meta of={TableStories} />
+
+<Title />
+
+<FigmaLinks label="Table page" />
+
+Table shows records in rows and columns. It is a styled native `<table>` in the Figma Table style: 12/16 text, 40px rows, a Black/20% line under the header, Black/4% lines between rows and a rounded Black/4% highlight on hovered and selected rows. `TableHead` can be a sort button. Table holds no data or state: pair it with a library such as TanStack Table for sorting, filtering, selection and pages, as the stories do.
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@holakirr/snow-ui'
+
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Order ID</TableHead>
+      <TableHead>Status</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>#CM9801</TableCell>
+      <TableCell>In Progress</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+<Primary />
+
+## When to use
+
+- Records that share fields and are compared across rows: orders, tasks, users.
+- Data the user sorts, filters, selects or pages through.
+
+## When not to use
+
+- A list of people or notifications with one or two lines each: use [ListItem](?path=/docs/components-listitem--docs).
+- Page layout: use CSS grid or flex, never a table.
+- A few key figures: use stat tiles ([Card](?path=/docs/components-card--docs) blocks).
+
+## Anatomy
+
+1. **Scroll container**: a `<div>` with `overflow: auto` around the table, so a wide table scrolls instead of overflowing.
+2. **Table** (`Table`): the `<table>`, full width, 12/16 `text-black`, in the separate border model (cells can't have rounded corners in the collapsed one), so the lines are drawn on the cells.
+3. **Caption** (`TableCaption`, optional): 14/20 semibold, start-aligned, above the table with 4px between them.
+4. **Header** (`TableHeader`, `TableRow`, `TableHead`): `<thead>` and `<th>` cells, `text-secondary`, with a Black/20% line below.
+5. **Body** (`TableBody`, `TableRow`, `TableCell`): `<tbody>` and `<td>` cells with a Black/4% line below each.
+6. **Footer** (`TableFooter`, optional): `<tfoot>`, its cells with a Black/20% line above and none below.
+
+Header and body cells are 40px high, padded 8px top and bottom and 12px at the sides, start-aligned and vertically centred. A cell that holds a `role="checkbox"` element has no end padding.
+
+## Variants
+
+The stories show the two Figma tables. "Table A" (Order List), at the top of this page: sortable headers, selectable rows with a select-all checkbox, a row action on hover and the pagination below.
+
+"Table B": a compact table with a caption and a footer, inside a dashboard block ([Card](?path=/docs/components-card--docs) `variant="block"`).
+
+<Canvas of={TableStories.TableB} />
+
+A filterable list, as in the Figma "Search results" guidance, with an empty state:
+
+<Canvas of={TableStories.Filtered} />
+
+## Sorting
+
+`sortDirection` makes a `TableHead` a sort button with a 16px sort icon, and sets `aria-sort` on the `<th>`. `onSort` is called on click.
+
+| `sortDirection` | Icon | Label | `aria-sort` |
+| --- | --- | --- | --- |
+| `undefined` (default) | none, plain header | `text-secondary` | not set |
+| `false` | up and down arrows | `text-secondary`, black on hover | `none` |
+| `'asc'` | up arrow | black | `ascending` |
+| `'desc'` | down arrow | black | `descending` |
+
+With TanStack Table:
+
+```tsx
+<TableHead
+  sortDirection={column.getCanSort() ? column.getIsSorted() : undefined}
+  onSort={column.getToggleSortingHandler()}
+>
+  {header}
+</TableHead>
+```
+
+## States
+
+- **Row hover:** the row's cells get a Black/4% fill, rounded 12px at the first and last cell. Header rows don't react.
+- **Selected row:** `data-state="selected"` on a `TableRow` gives the same highlight. Selection itself is yours (the stories use checkboxes and TanStack's row selection).
+- **Sort button:** hover turns the label black; keyboard focus shows the `focus-ring`.
+- **Empty:** Table has no empty state of its own; render a row with one cell spanning every column, as the Filtered story does.
+
+## Accessibility
+
+- The parts are native table elements, so screen readers announce rows, columns and headers. `TableCell` also sets `role="cell"`.
+- A sortable header is a `<button type="button">` inside the `<th>`: in the tab order, activated with Enter or Space. The `<th>` carries `aria-sort`; the sort icon is decorative.
+- Name the table: a `TableCaption`, or `aria-label` / `aria-labelledby` on `Table` (they go on the `<table>`).
+- Selection checkboxes need a name per row (the stories use "Select #CM9801" and "Select all"). A focused checkbox toggles with Space, and the select-all checkbox reports `aria-checked="mixed"` when only some rows are selected (the Table A tests check both).
+- Actions that appear on hover (the stories' "More actions" button) must also appear on keyboard focus: the story adds `focus-visible:opacity-100`.
+- Hover and the selected highlight are a fill only; say which rows are selected with the checkboxes' state, not the fill.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Header text in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333) | 1.4.3 |
+| The "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring` on the sort buttons: the ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+
+The stories' status cells colour only the dot: the Secondary colours are 1.7–2.4:1 as text, so the text stays black and carries the meaning.
+
+## Localization and RTL
+
+- Table renders no built-in strings: headers, captions and the names of your checkboxes and actions are yours to translate.
+- The cells are start-aligned and the row highlight rounds the start and end cells (`rounded-s-12`, `rounded-e-12`), so both follow the text direction.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name the table with a caption or `aria-label`.
+- Pass `sortDirection={false}` for sortable columns that aren't sorted, and `undefined` for the others.
+- Mark selected rows with `data-state="selected"` and a checked checkbox.
+- Show hover-only actions on keyboard focus too.
+
+</Do>
+<Dont>
+
+- Don't use a table for layout.
+- Don't colour status text with the Secondary colours: colour a dot next to it.
+- Don't make whole rows clickable without a focusable control in them.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Pagination](?path=/docs/components-pagination--docs): the page links under "Table A".
+- [Checkbox](?path=/docs/components-input-checkbox--docs): row selection.
+- [Card](?path=/docs/components-card--docs): the dashboard block around "Table B".
+- [AvatarGroup](?path=/docs/components-avatar-avatargroup--docs) and [Avatar](?path=/docs/components-avatar-avatar--docs): people in a cell.
+
+## Props
+
+<Controls />

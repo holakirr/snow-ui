@@ -5,6 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from './Avatar'
 const meta: Meta<typeof Avatar> = {
   title: 'Components/Avatar/Avatar',
   component: Avatar,
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33400-47953',
+    },
+  },
   tags: ['autodocs'],
   args: {
     size: SIZES.lg,

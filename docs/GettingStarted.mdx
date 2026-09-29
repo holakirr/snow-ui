@@ -1,0 +1,102 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Getting started" />
+
+# Getting started
+
+`@holakirr/snow-ui` is a React implementation of the [SnowUI design kit](https://snowui.byewind.com) by ByeWind: React 19 components built on Radix UI and styled with Tailwind CSS v4, with the kit's design tokens. `@holakirr/snow-ui-icons` is the icon set they use, also published on its own.
+
+## Install
+
+```bash
+bun add @holakirr/snow-ui react react-dom
+# npm install @holakirr/snow-ui react react-dom
+```
+
+- **Peer dependencies:** `react` and `react-dom` 19. `react-hook-form` (7.60 or later) only if you use the optional `@holakirr/snow-ui/react-hook-form` entry.
+- **Icons:** `@holakirr/snow-ui-icons` is a dependency of the components. Add it to your own `package.json` when you import icons in your code: `bun add @holakirr/snow-ui-icons`.
+
+## Add the styles
+
+Import **one** of the two stylesheets.
+
+**Without Tailwind CSS** — `index.css` is precompiled: Tailwind's preflight, the theme and every class the components use.
+
+```tsx
+import '@holakirr/snow-ui/index.css'
+```
+
+**With Tailwind CSS v4** — import the theme after Tailwind and let Tailwind scan the package for the classes the components use. The `@source` path is relative to your stylesheet.
+
+```css
+@import "tailwindcss";
+@import "@holakirr/snow-ui/theme.css";
+@source "../node_modules/@holakirr/snow-ui/dist";
+```
+
+Your Tailwind then generates one set of utilities for your code and the components, and the kit's tokens work in your own markup (`bg-black-4`, `text-14`, `rounded-12`). With a Tailwind [prefix](https://tailwindcss.com/docs/styling-with-utility-classes#using-the-prefix-option), use `index.css`: the components' classes are unprefixed. See [Theming](?path=/docs/guides-theming--docs) for what `theme.css` changes in your Tailwind setup.
+
+## Add the font (optional)
+
+The kit uses Inter with the `ss01` and `cv01` OpenType features, which the Google Fonts build doesn't have. `fonts.css` self-hosts Inter 4.1 (the rsms build, SIL Open Font License), split by `unicode-range` so a page only downloads the scripts it shows.
+
+```tsx
+import '@holakirr/snow-ui/fonts.css'
+// Only if your app has italic text (the kit has none):
+import '@holakirr/snow-ui/fonts-italic.css'
+```
+
+Import it from JavaScript or through a bundler (Vite, webpack, Next.js), which resolves its `url()`s. Don't `@import` it into a stylesheet built by the Tailwind CLI: the font URLs would point next to your output file and 404. To load Inter yourself, use a build with those features.
+
+## Use a component
+
+```tsx
+import { Button } from '@holakirr/snow-ui'
+import { StarIcon } from '@holakirr/snow-ui-icons'
+
+export const Favorite = () => (
+  <Button
+    variant="filled"
+    size="md"
+    label="Add to favorites"
+    startContent={<StarIcon size={16} />}
+    onClick={addToFavorites}
+  />
+)
+```
+
+- **Composition:** components that render one element take `asChild` to render your element instead, e.g. a router link: `<Button asChild label="Docs"><RouterLink to="/docs" /></Button>`. Each component's page has the details.
+- **State:** controlled and uncontrolled props follow Radix naming: `value` / `defaultValue` / `onValueChange`, `open` / `defaultOpen` / `onOpenChange`, `checked` / `defaultChecked` / `onCheckedChange`, `pressed` / `defaultPressed` / `onPressedChange`.
+- **Forms:** the `Form*` components work with any form library; pass the validation state to `FormItem`. See [Form](?path=/docs/components-form--docs).
+- **Server components:** components with state, effects or context are client components (`'use client'`); layout pieces such as `Button`, `Card`, `Typography` or `Table` have no directive and render on the server too. A Server Component can't pass functions (event handlers, date-fns locales, function messages) to a client component, so create those in a client module.
+
+## Wrap the app (optional)
+
+`SnowUIProvider` sets the built-in strings (accessible names, placeholders, empty states), the date locale and the text direction. Without it, the components use English and left-to-right text. See [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs).
+
+```tsx
+<SnowUIProvider messages={messages} locale={ru} dir="ltr">
+  <App />
+</SnowUIProvider>
+```
+
+Some components need their own provider or a single instance in the app:
+
+- `TooltipProvider` above any `Tooltip` (one for the app is enough).
+- `<Toaster />` once, where toasts should appear; show them with `toast()`.
+- `SidebarProvider` around a `Sidebar` and the content it pushes.
+
+## Accessibility
+
+The library targets WCAG 2.2 AA. Where the Figma kit falls short (contrast, focus indicators, hit areas), accessibility wins: every deviation is listed on the component's page and in the [package README](https://github.com/holakirr/snow-ui/tree/main/packages/ui#accessibility-deviations-from-the-figma-kit). Every story in this Storybook is checked with axe in the light and the dark theme, and many have keyboard interaction tests.
+
+## Figma
+
+Each component page links to its node in the SnowUI Figma kit, and the "Design" panel of every story shows it. The links point to a licensed copy of the kit, so they only open for people with access to it. The public kit is on the [Figma Community](https://www.figma.com/community/file/1301134685302006646).
+
+## Where next
+
+- [Theming](?path=/docs/guides-theming--docs): tokens, dark mode and scoped themes.
+- [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs).
+- [Foundations](?path=/story/foundations--colors): every token with its Figma name.
+- [Icons](?path=/docs/icons--docs).

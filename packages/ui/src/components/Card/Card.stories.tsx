@@ -11,6 +11,10 @@ const meta: Meta<typeof Card> = {
   component: Card,
   tags: ['autodocs', 'a11y'],
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33400-44142',
+    },
     docs: {
       description: {
         component:

@@ -15,6 +15,10 @@ const meta: Meta<typeof Calendar> = {
   argTypes: {},
   args: {},
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33534-89331',
+    },
     docs: {
       description: {
         component:

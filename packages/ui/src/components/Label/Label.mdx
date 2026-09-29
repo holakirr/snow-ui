@@ -1,0 +1,84 @@
+import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as LabelStories from './Label.stories'
+
+<Meta of={LabelStories} />
+
+<Title />
+
+<FigmaLinks label="Input/Form page" />
+
+Label names a form control: a native `<label>` in the Figma Input "Title" style (12/16 Regular, `text-secondary`). It is built on Radix Label. [Input](?path=/docs/components-input-input--docs) renders it for its `title`, and [FormLabel](?path=/docs/components-form--docs) wraps it.
+
+```tsx
+import { Checkbox, Label } from '@holakirr/snow-ui'
+
+<Checkbox id="terms" />
+<Label htmlFor="terms">I accept the terms</Label>
+```
+
+<Primary />
+
+## When to use
+
+- The visible name of a control that has no label of its own: a [Checkbox](?path=/docs/components-input-checkbox--docs), a [Switch](?path=/docs/components-input-switch--docs), a [RadioGroup](?path=/docs/components-input-radiogroup--docs) item.
+
+## When not to use
+
+- A text field: use [Input](?path=/docs/components-input-input--docs)'s `title`, which renders a Label tied to the field.
+- A field in a react-hook-form form: use `FormLabel` from [Form](?path=/docs/components-form--docs), which ties itself to the `FormControl` and turns red when the field is invalid.
+- A heading or a caption that names no control: use [Typography](?path=/docs/components-text-text--docs).
+
+## Anatomy
+
+1. **Label**: a `<label>` with 12/16 regular text in `text-secondary`. `htmlFor` ties it to a control's `id`; `children` is the text.
+
+## States
+
+- **Disabled control:** with the `peer-disabled:cursor-not-allowed` class, the label shows a not-allowed cursor when it comes after a disabled control marked with the `peer` class. It has no other disabled style.
+- **Invalid:** Label has no error style; `FormLabel` adds `red-text` when its field is invalid.
+
+## Accessibility
+
+- It renders a native `<label>`: `htmlFor` (or a control nested inside it) gives the control its accessible name, and clicking the label focuses or toggles the control.
+- Radix Label prevents text selection when the label is double-clicked, unless the double click is on a button, input, select or textarea inside it.
+- The label must be visible text: don't replace it with a placeholder.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Input "Title" in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333) | 1.4.3 |
+
+## Localization and RTL
+
+The text is yours to translate; Label renders no built-in strings. It follows the text direction of its container.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Tie every Label to its control with `htmlFor` and a matching `id`.
+- Keep labels short and specific: "Email", "Remember me".
+- Use `className="text-black"` when the label reads as the option itself, as the RadioGroup stories do.
+
+</Do>
+<Dont>
+
+- Don't use a Label without a control to name.
+- Don't add a second Label to an `Input` that has a `title`.
+- Don't make the label colour lighter than `text-secondary`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Form](?path=/docs/components-form--docs): `FormLabel`, with the error state.
+- [Input](?path=/docs/components-input-input--docs): renders a Label for its `title`.
+- [Checkbox](?path=/docs/components-input-checkbox--docs) and [RadioGroup](?path=/docs/components-input-radiogroup--docs): controls you label with it.
+
+## Props
+
+<Controls />

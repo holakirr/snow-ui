@@ -1,0 +1,159 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as DropdownMenuStories from './DropdownMenu.stories'
+
+<Meta of={DropdownMenuStories} />
+
+<Title />
+
+<FigmaLinks label="Popover component set" page="28002:96385" />
+
+DropdownMenu opens a list of actions or options from a button: an account menu, a "more" menu, view options. The menu is the Figma "Popover" surface with 36px items, check marks, group labels, separators, shortcuts and submenus. It is built on Radix Dropdown Menu.
+
+```tsx
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@holakirr/snow-ui'
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="outline" label="Account" />
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="start" className="w-60">
+    <DropdownMenuItem onSelect={openProfile}>
+      Profile
+      <DropdownMenuShortcut keys={['⌘', 'P']} />
+    </DropdownMenuItem>
+    <DropdownMenuItem onSelect={logOut}>Log out</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+```
+
+<Primary />
+
+## When to use
+
+- A set of actions behind one button, when there isn't room for a button each.
+- Options that change a view: a checkbox item for a setting, a radio group for one of a few choices.
+- Nested actions, in a submenu.
+
+## When not to use
+
+- Picking a value for a form field: [Select](?path=/docs/components-input-select--docs).
+- Actions on right-click: [ContextMenu](?path=/docs/components-contextmenu--docs) (with the same actions reachable elsewhere).
+- Navigation between pages: links, e.g. [Sidebar](?path=/docs/components-sidebar--docs) or [Tabs](?path=/docs/components-tabs--docs).
+- Content that isn't a list of actions (fields, text): [Popover](?path=/docs/components-popover--docs).
+- Searching many commands: [CommandPalette](?path=/docs/components-commandpalette--docs).
+
+## Anatomy
+
+1. **Root** (`DropdownMenu`): holds the open state. It renders nothing itself.
+2. **Trigger** (`DropdownMenuTrigger`): the element that opens the menu, usually a Button (`asChild`).
+3. **Content** (`DropdownMenuContent`): the `role="menu"` panel, in a portal, 4px from the trigger (`sideOffset={4}`), at least 128px wide. The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2.
+4. **Item** (`DropdownMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `inset` adds 32px of start padding to line it up with check items.
+5. **Checkbox item** (`DropdownMenuCheckboxItem`) and **radio item** (`DropdownMenuRadioItem`, in a `DropdownMenuRadioGroup`): a check mark or a dot in a 16px slot, 8px from the start.
+6. **Label** (`DropdownMenuLabel`, optional): a group title, 12/16 `text-secondary`, 28px high; takes `inset`.
+7. **Group** (`DropdownMenuGroup`, optional): groups items, with 4px above and below.
+8. **Separator** (`DropdownMenuSeparator`): a 0.5px `black-10` line, 4px from its neighbours.
+9. **Shortcut** (`DropdownMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`.
+10. **Submenu** (`DropdownMenuSub`): a `DropdownMenuSubTrigger` (an item with an arrow at the end) and a `DropdownMenuSubContent` on the same surface. Wrap the sub content in `DropdownMenuPortal`, as the stories do.
+
+The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdownmenu--open).
+
+## States
+
+- **Highlighted** (hover or keyboard focus): Black/4% fill. A sub trigger keeps it while its submenu is open.
+- **Checked:** a check mark (`checked` on a checkbox item) or a dot (the radio group's `value`).
+- **Disabled** (`disabled`): Black/20% text and a not-allowed cursor; the arrow keys and typeahead skip it.
+- **Open and closed:** `open` / `defaultOpen` / `onOpenChange` on `DropdownMenu`.
+
+## Portal and theme
+
+`DropdownMenuContent` renders in a portal at the end of `<body>`, outside your layout. So it takes the theme of `<html>`, not of a `data-theme` scope around the trigger. Set the theme on `<html>`, or give the menu its own scope: `<DropdownMenuContent data-theme="dark">` (the prop is passed through; give a portalled sub content the same attribute).
+
+## Accessibility
+
+- The trigger gets `aria-haspopup="menu"` and `aria-expanded`. The content is `role="menu"`; items are `menuitem`, `menuitemcheckbox` (with `aria-checked`) or `menuitemradio`, separators `separator`, groups `group`.
+- Keyboard, from the stories' interaction tests and Radix Dropdown Menu:
+
+| Key | Does |
+| --- | --- |
+| Enter, Space, ArrowDown (on the trigger) | open the menu and focus its first item |
+| ArrowDown / ArrowUp | move to the next / previous item (no wrapping; `loop` on the content wraps) |
+| Home / End | move to the first / last item |
+| a character | move to the next item that starts with it |
+| Enter, Space | select the item and close the menu (a checkbox or radio item changes, then closes) |
+| ArrowRight (ArrowLeft in right-to-left text) | on a sub trigger: open the submenu and focus its first item |
+| ArrowLeft (ArrowRight in right-to-left text) | in a submenu: close it and focus its trigger |
+| Escape | close the menu, submenus included, and return focus to the trigger |
+
+- To keep the menu open after a selection, call `event.preventDefault()` in the item's `onSelect`.
+- The menu is modal by default (Radix `modal`): while it is open, focus stays in it, the rest of the page is hidden from assistive technology and ignores the pointer, and the page doesn't scroll. `modal={false}` turns this off.
+- There are no built-in strings. A `DropdownMenuShortcut` is a `<kbd>` with `aria-keyshortcuts`; it only shows the shortcut, so register the shortcut yourself.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Group labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+
+The Black/4% item highlight keeps the Figma value: the README lists it as a known gap.
+
+## Localization and RTL
+
+- The menu renders no text of its own: labels and shortcuts are yours to translate.
+- The content takes `dir` from `SnowUIProvider`; without a provider (or a Radix `DirectionProvider`) it is `ltr`, whatever `<html dir>` says.
+- In right-to-left text the check marks, `inset` padding and shortcuts swap sides, the submenu arrow points left, and ArrowLeft opens a submenu (to the left).
+
+<Canvas of={DropdownMenuStories.RTL} />
+
+## Composition (asChild)
+
+`DropdownMenuTrigger` and the items take `asChild` (Radix): render a Button as the trigger, or a link as an item.
+
+```tsx
+<DropdownMenuItem asChild>
+  <RouterLink to="/settings">Settings</RouterLink>
+</DropdownMenuItem>
+```
+
+With `asChild`, calling `event.preventDefault()` in the child's handler skips the menu's own behaviour: an item doesn't close the menu. Checkbox items take `checked` / `onCheckedChange`, a radio group `value` / `onValueChange`, and the root `open` / `onOpenChange`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Start item labels with a verb for actions: "Invite users", "Log out".
+- Group related items with `DropdownMenuGroup`, a `DropdownMenuLabel` and separators.
+- Use `inset` on plain items in a menu that also has check items, so the labels line up.
+- Wrap `DropdownMenuSubContent` in `DropdownMenuPortal`.
+- Show a shortcut only for a shortcut that works.
+
+</Do>
+<Dont>
+
+- Don't put fields or long text in a menu: use a Popover.
+- Don't use a menu to pick a form value: use Select.
+- Don't nest submenus more than one level deep.
+- Don't navigate from an item's `onSelect`: render a link with `asChild`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [ContextMenu](?path=/docs/components-contextmenu--docs): the same menu parts, opened with a right-click.
+- [Popover](?path=/docs/components-popover--docs): the Figma surface the menu uses.
+- [Select](?path=/docs/components-input-select--docs): a form field with a menu of options.
+- [KBD](?path=/docs/components-text-kbd--docs): the shortcut hint.
+- [Button](?path=/docs/components-button--docs): the trigger.
+
+## Props
+
+<Controls />

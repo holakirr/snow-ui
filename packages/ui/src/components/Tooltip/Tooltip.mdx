@@ -1,0 +1,152 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as TooltipStories from './Tooltip.stories'
+
+<Meta of={TooltipStories} />
+
+<Title />
+
+<FigmaLinks page="30485:133043" />
+
+Tooltip shows a short text hint about an element when the pointer rests on it or it gets keyboard focus: what an icon-only button does, its keyboard shortcut. It is the Figma "Tooltip" set (Dark and Light): a 24px-high label with a background blur. It is built on Radix Tooltip, so it needs a `TooltipProvider` above it.
+
+```tsx
+import { SearchIcon } from '@holakirr/snow-ui-icons'
+import {
+  Button,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipShortcut,
+  TooltipTrigger,
+} from '@holakirr/snow-ui'
+
+// Once, near the root of the app.
+<TooltipProvider>
+  <App />
+</TooltipProvider>
+
+<Tooltip>
+  <TooltipTrigger asChild>
+    <Button aria-label="Search" startContent={<SearchIcon />} />
+  </TooltipTrigger>
+  <TooltipContent>
+    Search <TooltipShortcut>⌘K</TooltipShortcut>
+  </TooltipContent>
+</Tooltip>
+```
+
+<Primary />
+
+## When to use
+
+- The name or a short description of an icon-only button.
+- A keyboard shortcut for a control.
+- A few words that complete a truncated or abbreviated label.
+
+## When not to use
+
+- Information the user needs to complete a task: put it on the page, e.g. as a field description.
+- Content with links, buttons or fields: [Popover](?path=/docs/components-popover--docs); a tooltip can't be interacted with by keyboard.
+- A status message: a toast ([Toaster](?path=/docs/components-toaster--docs)).
+- A hint on an element that can't take focus (plain text, a disabled button): keyboard users never see it.
+
+## Anatomy
+
+1. **Provider** (`TooltipProvider`): required above every `Tooltip` (Radix throws without one). It sets `delayDuration` (700ms before a tooltip opens) and `skipDelayDuration` (300ms in which the next tooltip opens at once) for the tooltips in it. `SnowUIProvider` doesn't include one; `SidebarProvider` has its own.
+2. **Root** (`Tooltip`): the open state of one tooltip.
+3. **Trigger** (`TooltipTrigger`): the element the tooltip describes, usually a Button (`asChild`).
+4. **Content** (`TooltipContent`): the label, in a portal, 4px from the trigger (`sideOffset={4}`), above it by default (`side`). 24px high at least, 4 / 8px padding, a 12px radius, 12/16 text, a 10px background blur; items inside are 4px apart.
+5. **Shortcut** (`TooltipShortcut`, optional): secondary text, e.g. a shortcut, at 70% opacity.
+
+## Variants
+
+The Figma set, open (it opens on load, so it isn't embedded here): [Variants story](?path=/story/components-tooltip--variants).
+
+| `variant` | Figma | Look |
+| --- | --- | --- |
+| `dark` (default) | Dark | Black/80% under a White/10% overlay, `white` text; in dark mode the fill flips to white/80% and the text to black |
+| `light` | Light | Black/4%, `black` text |
+
+<Canvas of={TooltipStories.Light} />
+
+`side` (`top`, `right`, `bottom`, `left`) and `align` are Radix props. Radix flips the tooltip to the other side when there is no room.
+
+<Canvas of={TooltipStories.FromBottom} />
+
+The content has `data-variant` (`dark` or `light`) and `data-side` for your own styles.
+
+## States
+
+- **Closed** and **open:** controlled with `open` / `defaultOpen` / `onOpenChange` on `Tooltip`, or left to Radix: it opens after the provider's delay on hover, at once on keyboard focus.
+- The tooltip has no hover, pressed or disabled state of its own.
+
+## Portal and theme
+
+`TooltipContent` renders in a portal at the end of `<body>`, outside your layout. So it takes the theme of `<html>`, not of a `data-theme` scope around the trigger. Set the theme on `<html>`, or give the tooltip its own scope: `<TooltipContent data-theme="dark">` (the prop is passed through).
+
+## Accessibility
+
+- The content is `role="tooltip"`. While it is open the trigger's `aria-describedby` points at it, so the text is the trigger's accessible description, not its name: an icon-only button still needs an `aria-label`. With `aria-label` on `TooltipContent`, screen readers get that text instead of the content.
+- It opens on hover (after the provider's `delayDuration`) and on keyboard focus, but not when a pointer press focuses the trigger. The pointer can move from the trigger onto the tooltip without closing it.
+- Escape hides it and keeps the focus on the trigger; the next focus shows it again (the Default story's interaction test). Blur, a click or a pointer press on the trigger also close it.
+- The tooltip is not modal and takes no focus: it can't hold interactive content.
+- There are no built-in strings.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| `TooltipShortcut` at 40% opacity: 2.8:1 | 70%: at least 5.5:1 on both variants in both modes | 1.4.3 |
+| Dark Tooltip in dark mode: Black/80% flips to white/80% but the text stays #FFF | the text flips with it: black on white/80% | 1.4.3 |
+
+## Localization and RTL
+
+- The tooltip renders no text of its own: its content is yours to translate.
+- The portalled content takes `dir` from `SnowUIProvider`, since it is outside your layout's `dir` scope. Without a provider it has no `dir` and follows `<html dir>`.
+- `side="left"` and `side="right"` are physical: they don't swap in right-to-left text.
+
+## Composition (asChild)
+
+`TooltipTrigger` takes `asChild` (Radix) to render your own element, which must be focusable (a Button, a link) so keyboard users get the tooltip too. The trigger's handlers compose with the tooltip's.
+
+```tsx
+<Tooltip>
+  <TooltipTrigger asChild>
+    <a href="/docs">Docs</a>
+  </TooltipTrigger>
+  <TooltipContent variant="light">Opens the documentation</TooltipContent>
+</Tooltip>
+```
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Render one `TooltipProvider` near the root of the app.
+- Keep the text to a few words, without links or buttons.
+- Give an icon-only trigger its own `aria-label`; the tooltip only describes it.
+- Put shortcuts in `TooltipShortcut`.
+
+</Do>
+<Dont>
+
+- Don't put essential information only in a tooltip.
+- Don't use a tooltip on an element that can't take focus.
+- Don't put interactive content in a tooltip: use a Popover.
+- Don't repeat the visible label of the trigger in its tooltip.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Button](?path=/docs/components-button--docs): icon-only buttons are the usual trigger.
+- [Popover](?path=/docs/components-popover--docs): rich or interactive content next to a trigger.
+- [KBD](?path=/docs/components-text-kbd--docs): a keyboard shortcut in the page.
+- [Sidebar](?path=/docs/components-sidebar--docs): `tooltip` on `SidebarMenuButton` shows one while the sidebar is collapsed.
+
+## Props
+
+<Controls />

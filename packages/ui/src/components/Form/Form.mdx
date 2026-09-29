@@ -1,0 +1,163 @@
+import { Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as FormStories from './Form.stories'
+
+<Meta of={FormStories} />
+
+<Title />
+
+<FigmaLinks label="Input/Form page" />
+
+The `Form*` parts wire a field to its label, description and error message: the ids, `aria-invalid` and `aria-describedby`. They follow the Figma Input/Form page and don't depend on a form library: pass the validation state to `FormItem`. An optional adapter for react-hook-form is a separate entry point, `@holakirr/snow-ui/react-hook-form`.
+
+```tsx
+import { Form, FormControl, FormItem, FormLabel, FormMessage, Input } from '@holakirr/snow-ui'
+
+<Form onSubmit={handleSubmit}>
+  <FormItem error={errors.email}>
+    <FormLabel>Email</FormLabel>
+    <FormControl>
+      <Input name="email" />
+    </FormControl>
+    <FormMessage />
+  </FormItem>
+</Form>
+```
+
+The story below uses the react-hook-form adapter with a zod schema; type one character and submit to see the error.
+
+<Primary />
+
+## When to use
+
+- Any form field that has a label, a hint or a validation message.
+- With any form library (TanStack Form, Formik, Conform, server actions…), or none: pass `error` or `invalid` to `FormItem`.
+- With react-hook-form, through the adapter's `FormField`.
+
+## When not to use
+
+- A lone field with no description or validation, such as a search field: a [Label](?path=/docs/components-label--docs), an Input `title` or an `aria-label` is enough.
+- A setting that applies at once, like a [Switch](?path=/docs/components-input-switch--docs) in a settings list, doesn't need a form around it.
+
+## Anatomy
+
+1. **Form** (`Form`): a plain `<form>`; every prop goes to it.
+2. **Item** (`FormItem`): a `<div>` that stacks its children 8px apart and gives them a shared id and the field's state: `error`, `invalid` and `name`.
+3. **Label** (`FormLabel`, optional): a [Label](?path=/docs/components-label--docs) (12/16, `text-secondary`) linked to the control; `red-text` while the field is invalid.
+4. **Control** (`FormControl`): a Slot around exactly one control. It gives the control the item's `id`, `aria-invalid` and `aria-describedby`.
+5. **Description** (`FormDescription`, optional): a 12/16 `<p>` in `text-secondary`.
+6. **Message** (`FormMessage`): a 12/16 `<p>` in `red-text`. It shows `error`; without one (or with `error={true}`) it shows its children, and it renders nothing when both are empty.
+
+## Variants
+
+<Canvas of={FormStories.WithoutFormLibrary} />
+
+The same parts without a form library: the submit handler validates the value and passes the message to `FormItem`'s `error`. The label here is Input's `title`, which works because `FormControl` gives the `<input>` the id that the title's label points at.
+
+## States
+
+- **Valid:** `aria-invalid="false"`; `aria-describedby` points at the description.
+- **Invalid** (a truthy `error`, or `invalid`): the `FormLabel` turns `red-text`, `FormMessage` shows the error, the control gets `aria-invalid="true"` and the message's id is added to its `aria-describedby`. `invalid` alone marks the field invalid without a message.
+
+## react-hook-form
+
+Install `react-hook-form` (7.60 or later) yourself: it is an optional peer dependency, and the main entry doesn't import it. The adapter exports `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormDescription`, `FormMessage` and `useFormField`.
+
+```tsx
+import { useForm } from 'react-hook-form'
+import { Input } from '@holakirr/snow-ui'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@holakirr/snow-ui/react-hook-form'
+
+const form = useForm({ defaultValues: { username: '' } })
+
+<Form {...form}>
+  <form onSubmit={form.handleSubmit(onSubmit)}>
+    <FormField
+      control={form.control}
+      name="username"
+      rules={{ required: 'Username is required' }}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Username</FormLabel>
+          <FormControl>
+            <Input {...field} />
+          </FormControl>
+          <FormDescription>Your public name.</FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  </form>
+</Form>
+```
+
+- The adapter's `Form` is react-hook-form's `FormProvider`, not a `<form>`: spread `useForm()` into it and render your own `<form>` inside.
+- `FormField` is react-hook-form's `Controller`. It passes the field's `name`, its error message and `invalid` to the `FormItem` inside it, so you don't pass `error` yourself.
+- react-hook-form focuses the first invalid field on submit when the control gets `field.ref` (Input passes its `ref` to the `<input>`).
+
+**Other libraries:** wrap a `FormItem` in `<FormFieldState value={{ name, error, invalid }}>` (from the main entry) to provide the state from an adapter. Props on `FormItem` win over it. `useFormField()` returns the ids and the state inside a `FormItem`, for your own parts; it throws outside one.
+
+## Accessibility
+
+- `FormLabel` renders a `<label for>` pointing at the control's id, so a click on it focuses the control and screen readers read it as the name.
+- `aria-describedby` makes screen readers read the description, and the error while the field is invalid, after the name.
+- `FormMessage` is not a live region, so an error isn't announced when it appears. Move the focus to the first invalid field on submit (react-hook-form does; the story's interaction test checks it).
+- The control must be one element that a `<label for>` can name: Input, Textarea, InputSmall, Search, a `SelectTrigger`, a Checkbox or a Switch. The RadioGroup and Slider roots are `<div>`s: name them with `aria-labelledby` and the id of a visible label instead.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Label and description in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
+| Error text (`FormMessage`, an invalid `FormLabel`) in Secondary/Red `#FF4747`: 3.36:1 on white, 3.76:1 on #333 | `red-text`: `#D42020` in light mode, `#FF8080` in dark mode (5.21:1 on `background-1` in both) | 1.4.3 |
+
+## Localization and RTL
+
+- The `Form*` parts render no built-in strings: labels, descriptions and error messages are yours to translate, including the ones from a validation schema.
+
+## Composition
+
+`FormControl` is always a Slot: it renders its only child and merges its props into it, the child's winning for the same prop.
+
+- Don't give the control its own `id` or `aria-describedby`: they would replace the ones `FormControl` sets and break the links to the label and the messages.
+- `FormDescription` and `FormMessage` pass their props to the `<p>`; `className` merges with their classes.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Put one control in each `FormControl`.
+- Write errors that say how to fix the value: "Username must be at least 2 characters."
+- Keep a `FormMessage` in every item that can be invalid.
+- Use the react-hook-form entry only in apps that already use react-hook-form.
+
+</Do>
+<Dont>
+
+- Don't set `id` on the control inside `FormControl`.
+- Don't use the placeholder for instructions: use `FormDescription`.
+- Don't use `FormMessage` children for hints: they show in red. Use `FormDescription`.
+- Don't import `@holakirr/snow-ui/react-hook-form` without installing `react-hook-form`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Input](?path=/docs/components-input-input--docs), [Textarea](?path=/docs/components-input-textarea--docs), [Select](?path=/docs/components-input-select--docs), [Checkbox](?path=/docs/components-input-checkbox--docs): the controls to wrap.
+- [Label](?path=/docs/components-label--docs): the label `FormLabel` is built on.
+- [Getting started](?path=/docs/guides-getting-started--docs): installing the package and the optional peer dependencies.
+
+## Props
+
+The stories render a whole form, so there are no controls here. The parts' own props:
+
+| Part | Props |
+| --- | --- |
+| `FormItem` | `error` (a message; truthy marks the field invalid), `invalid` (wins over `error`), `name`, and `<div>` attributes |
+| `FormFieldState` | `value`: `{ name, error, invalid }`, the same fields as `FormItem` |
+| `FormLabel` | the props of [Label](?path=/docs/components-label--docs); `htmlFor` is set for you |
+| `FormControl` | one child; props are merged into it |
+| `FormDescription`, `FormMessage` | `<p>` attributes and children |
+| `FormField` (adapter) | the props of react-hook-form's `Controller`: `control`, `name`, `rules`, `render`, `defaultValue`… |

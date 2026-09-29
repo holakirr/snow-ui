@@ -1,0 +1,115 @@
+import { Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as RadioGroupStories from './RadioGroup.stories'
+
+<Meta of={RadioGroupStories} />
+
+<Title />
+
+<FigmaLinks label="Radio component set" page="25559:12043" />
+
+RadioGroup picks exactly one option out of a few. Each option is a `RadioGroupItem`, the Figma "Radio" (Select True / False × State Default / Hover). Both are built on the Radix Radio Group.
+
+```tsx
+import { Label, RadioGroup, RadioGroupItem } from '@holakirr/snow-ui'
+
+<RadioGroup aria-label="Density" value={density} onValueChange={setDensity}>
+  <div className="flex items-center gap-2">
+    <RadioGroupItem value="comfortable" id="density-comfortable" />
+    <Label htmlFor="density-comfortable">Comfortable</Label>
+  </div>
+  <div className="flex items-center gap-2">
+    <RadioGroupItem value="compact" id="density-compact" />
+    <Label htmlFor="density-compact">Compact</Label>
+  </div>
+</RadioGroup>
+```
+
+<Primary />
+
+## When to use
+
+- One choice out of two to about five options, all visible at once.
+- Options the user should compare before choosing.
+
+## When not to use
+
+- A longer list, or too little room: use [Select](?path=/docs/components-input-select--docs).
+- Options that can be on together: [Checkbox](?path=/docs/components-input-checkbox--docs).
+- A single on/off setting: [Switch](?path=/docs/components-input-switch--docs).
+- Switching between views or a segmented control: [Tabs](?path=/docs/components-tabs--docs) or [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+
+## Anatomy
+
+1. **Group** (`RadioGroup`): a `<div role="radiogroup">`, a grid with an 8px gap between its children.
+2. **Item** (`RadioGroupItem`, one per option): a `<button role="radio">`, a 28px circle. `value` identifies it.
+3. **Dot**: a 14px Primary dot with the Figma inner shadow, in the middle of the selected item.
+4. **Label** (yours): a [Label](?path=/docs/components-label--docs) with `htmlFor` set to the item's `id`, next to the item.
+
+## States
+
+- **Unselected** (Figma False): Background/3 with a 2px Black/20% ring; on hover a Black 8% fill and a Black/40% ring.
+- **Selected** (Figma True): the same circle with the Primary dot; on hover the dot is Primary under White/40%.
+- **Keyboard focus:** the `focus-ring` utility on the focused item (see Accessibility).
+- **Disabled** (`disabled` on an item, or on the group for all of them): a Black/4% circle with a Black/10% ring and a Black/20% dot. The Figma set has no Disabled state, so this look is the library's own, visible in both modes.
+
+See the [With Disabled story](?path=/story/components-input-radiogroup--with-disabled). (It isn't shown here: its items reuse the ids of the example above, so their labels would select the wrong radios on this page.)
+
+## Accessibility
+
+- The group is a `radiogroup`; each item is a `<button type="button" role="radio">` with `aria-checked`.
+- **Tab** moves into the group once, to the selected item (the first item when none is selected), and **Tab** again leaves it. **Arrow keys** move to the next or previous item and select it, wrapping at the ends (`loop`, on by default). **Space** selects the focused item; **Enter** doesn't. Disabled items are skipped.
+- Name the group with `aria-label` or `aria-labelledby` (e.g. the id of a visible heading), and each item with a `Label` (`htmlFor` and the same `id`).
+- Inside a `<form>`, pass `name` (and `required`) to the group: hidden native radios submit the selected `value`.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+
+Known gap, kept from Figma for now: the Black/20% ring of an unselected radio (1.6:1).
+
+## Localization and RTL
+
+- RadioGroup renders no built-in strings; the labels are yours to translate.
+- The arrow keys follow the `dir` of `SnowUIProvider`: in right-to-left text ArrowLeft moves forward. `dir` on the group overrides it.
+
+## Controlled and uncontrolled
+
+Pass `defaultValue` to leave the selection to the group, or `value` with `onValueChange(value)` to control it. `orientation` (`"horizontal"` or `"vertical"`) limits the arrow keys to one axis; the layout is yours (the group is a grid, so add `grid-flow-col` or `flex` for a row).
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name the group and label every item.
+- Select a sensible default with `defaultValue` when there is one.
+- Keep options short and list them in a logical order.
+
+</Do>
+<Dont>
+
+- Don't use a radio group for a single yes/no option: use Checkbox or Switch.
+- Don't use it for more than a handful of options: use Select.
+- Don't reuse item ids between groups on the same page: each `Label` must point at its own item.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Checkbox](?path=/docs/components-input-checkbox--docs): options that can be on together.
+- [Select](?path=/docs/components-input-select--docs): one option out of a long list.
+- [ToggleGroup](?path=/docs/components-input-togglegroup--docs): a segmented control.
+- [Form](?path=/docs/components-form--docs): a label, description and error message for the group.
+
+## Props
+
+The stories render their own markup, so there are no controls here. The parts take the props of the Radix Radio Group ([API reference](https://www.radix-ui.com/primitives/docs/components/radio-group#api-reference)); `className` merges with their classes.
+
+| Part | Main props |
+| --- | --- |
+| `RadioGroup` | `value`, `defaultValue`, `onValueChange`, `name`, `required`, `disabled`, `orientation`, `loop` (default `true`), `dir` |
+| `RadioGroupItem` | `value` (required), `id`, `disabled` |

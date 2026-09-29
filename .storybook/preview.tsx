@@ -64,7 +64,13 @@ const preview: Preview = {
     layout: 'centered',
     options: {
       storySort: {
-        order: ['Foundations', 'Components', 'Icons'],
+        order: [
+          'Guides',
+          ['Getting started', 'Theming', 'Localization and RTL'],
+          'Foundations',
+          'Components',
+          'Icons',
+        ],
       },
     },
   },

@@ -78,18 +78,6 @@ export const TARGET_SIZE_EXCEPTIONS: TargetSizeException[] = [
     selector: '[data-slot="link"]',
     reason: 'text link: the inline or the spacing exception',
   },
-  // TEMPORARY: the Toast close button (16–20px) and the Sidebar group and
-  // menu actions (20px, the hit area turned off from `md` up) get their hit
-  // areas in the layout / Sidebar / Toast branch, which owns those files.
-  // Remove these two entries when it lands.
-  {
-    selector: '[toast-close]',
-    reason: 'TEMPORARY: fixed in the layout/Sidebar/Toast branch',
-  },
-  {
-    selector: '[data-sidebar="menu-action"], [data-sidebar="group-action"]',
-    reason: 'TEMPORARY: fixed in the layout/Sidebar/Toast branch',
-  },
 ]
 
 const isDisabled = (element: Element) =>

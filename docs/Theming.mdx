@@ -76,7 +76,7 @@ The form controls keep the Figma kit's Black/20% rings, strokes and placeholders
 
 ## Motion
 
-With the OS setting `prefers-reduced-motion: reduce` (WCAG 2.3.3), the overlays — Dialog and Sheet backdrops, Sheet, Popover, menus, Select, Tooltip, Toast, CommandPalette — fade instead of sliding or zooming, with the same timing, and the Accordion opens and closes at once: `theme.css` points the `--animate-*` tokens at the fades (see [Foundations › Motion](?path=/story/foundations--motion)). The components' own movements use `motion-reduce:` utilities: a pressed Button doesn't shrink, the Switch thumb and the Accordion chevron jump, a Dialog only fades and the Skeleton stops pulsing. State changes stay visible. Use the `animate-*` tokens and `motion-reduce:` in your own components the same way.
+With the OS setting `prefers-reduced-motion: reduce` (WCAG 2.3.3), the overlays — Dialog and Sheet backdrops, Sheet, Popover, menus, Select, Tooltip, Toast, CommandPalette — fade instead of sliding or zooming, with the same timing, and the Accordion opens and closes at once: `theme.css` points the `--animate-*` tokens at the fades (see [Foundations › Motion](?path=/story/foundations--motion)). The components' own movements use `motion-reduce:` utilities: a pressed Button doesn't shrink, the Switch thumb and the Accordion chevron jump, a Dialog only fades, the Skeleton stops pulsing and the Sidebar collapses and expands at once. State changes stay visible. Use the `animate-*` tokens and `motion-reduce:` in your own components the same way.
 
 ## Tailwind CSS v4 projects: `theme.css`
 

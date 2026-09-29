@@ -15,6 +15,11 @@ import { fileURLToPath } from 'node:url'
  *   of the built components, relative to itself, so the consumer's Tailwind
  *   generates their classes wherever the package is installed (a hoisted
  *   node_modules, a monorepo, pnpm's store) without an `@source` of its own.
+ * - `dist/theme-core.css`: the same theme without that `@source`, for
+ *   projects that don't render the package's components: they copy them
+ *   (the @snow-ui shadcn registry) or only use the tokens. Tailwind then
+ *   generates the classes of their own code only; `@import … source(none)`
+ *   can't switch off an `@source` inside an imported stylesheet.
  * - `dist/fonts.css`, `dist/fonts-italic.css` and `dist/fonts/`: the self-hosted
  *   Inter.
  */
@@ -51,14 +56,23 @@ export const THEME_SOURCE = `/* The components' classes: the built modules next 
 @source "./**/*.js";
 `
 
+/** The licence banner of a published theme stylesheet. */
+const banner = (file: string) =>
+  `/*! @holakirr/snow-ui ${file} | MIT License | react-day-picker/style.css: MIT License */\n`
+
 export function buildCss(packageDir: string) {
   const src = join(packageDir, 'src')
   const dist = join(packageDir, 'dist')
   mkdirSync(dist, { recursive: true })
 
+  const theme = bundleCss(join(src, 'theme.css'))
   writeFileSync(
     join(dist, 'theme.css'),
-    `/*! @holakirr/snow-ui theme.css | MIT License | react-day-picker/style.css: MIT License */\n${THEME_SOURCE}\n${bundleCss(join(src, 'theme.css'))}`,
+    `${banner('theme.css')}${THEME_SOURCE}\n${theme}`,
+  )
+  writeFileSync(
+    join(dist, 'theme-core.css'),
+    `${banner('theme-core.css')}${theme}`,
   )
   for (const file of ['fonts.css', 'fonts-italic.css']) {
     cpSync(join(src, file), join(dist, file))

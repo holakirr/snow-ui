@@ -2,14 +2,23 @@ name: Build Check
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, next]
   push:
-    branches: [main]
+    branches: [main, next]
+  # The release workflow dispatches Build Check on the version PR's branch
+  # (changeset-release/main): the PR is opened with GITHUB_TOKEN, so it
+  # triggers no pull_request run, and a dispatched run reports its checks on
+  # the PR's head commit, where the ruleset's required checks look for them.
+  # Also runnable by hand on any branch (Actions → Build Check → Run workflow),
+  # e.g. before publishing a canary from it.
+  workflow_dispatch:
 
-# A new push to a PR supersedes the running checks; main always runs to the end.
+# A new push to a PR (or a new dispatch on a branch) supersedes the running
+# checks; pushes to main and next always run to the end, because the release
+# workflow publishes only commits whose Build Check passed.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'push' }}
 
 permissions:
   contents: read

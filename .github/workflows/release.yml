@@ -1,50 +1,161 @@
-# Versions and publishes the workspace packages with Changesets.
+# Versions and publishes the workspace packages with Changesets, only from
+# commits that passed Build Check (build-check.yml: build, lint, types, unit
+# and Storybook tests with axe, Firefox and WebKit, SSR and hydration,
+# visual regression, size budgets, the built packages).
 #
-# On every push to main, changesets/action either:
-#   - opens/updates the "chore(release): version packages" PR when there are
-#     pending changesets (runs `bun run version-packages`: bumps versions,
-#     writes CHANGELOG.md, updates bun.lock), or
-#   - publishes every package whose version isn't on npm yet (runs
-#     `bun run release`: builds, then scripts/publish.ts, which runs
-#     `changeset publish`), pushes the `<name>@<version>` git tags and
-#     creates a GitHub release per package.
+#   1. A push to main (or next, the pre-release branch) runs Build Check.
+#   2. When that run succeeds, the `trigger` job below (workflow_run)
+#      dispatches this workflow on the same branch, if the commit is still
+#      the branch's head (otherwise the newer commit's Build Check triggers
+#      the release when it passes). The release runs in the dispatched run,
+#      not in the workflow_run one, because changesets/action and npm
+#      provenance take the branch and the commit from github.ref and
+#      github.sha, which a workflow_run run sets to the default branch.
+#   3. The `gate` job checks that Build Check passed for exactly this commit
+#      (a manual "Run workflow" goes through it too), then the `release` job
+#      runs changesets/action, which either:
+#      - opens/updates the "chore(release): version packages" PR when there
+#        are pending changesets (runs `bun run version-packages`: bumps
+#        versions, writes CHANGELOG.md, updates bun.lock), then dispatches
+#        Build Check on the PR's branch: a PR opened with GITHUB_TOKEN
+#        triggers no workflows, and the ruleset requires Build Check's jobs
+#        on the PR's head commit; or
+#      - publishes every package whose version isn't on npm yet (runs
+#        `bun run release`: builds, then scripts/publish.ts, which runs
+#        `changeset publish`), pushes the `<name>@<version>` git tags,
+#        creates a GitHub release per package and attaches each package's
+#        SBOM (CycloneDX, scripts/sbom.ts) to its release.
+#      On `next`, in Changesets pre-release mode (.changeset/pre.json), the
+#      versions are `X.Y.Z-next.N` and go to the `next` npm dist-tag.
 #
-# GitHub auth: the action uses the job's GITHUB_TOKEN through its
-# `github-token` input (default) and pushes the version commit and tags
-# through the GitHub API, so checkout doesn't need to persist credentials.
-# PRs opened with GITHUB_TOKEN don't trigger other workflows: re-run the
-# checks on the version PR by closing and reopening it (or push to its
-# branch) if you want them before merging.
+# Canary: Actions → Release → Run workflow, on any branch, mode `canary`:
+# publishes `0.0.0-canary-<short sha>` versions of the packages with pending
+# changesets under the `canary` dist-tag, after the same gate (a PR's Build
+# Check counts too). Nothing is committed or tagged.
+#
+# GitHub auth: the job's GITHUB_TOKEN. changesets/action pushes the version
+# commit and tags through the GitHub API (its `github-token` input), so
+# checkout doesn't need to persist credentials.
 #
 # npm auth: Trusted Publishing (OIDC, npm >= 11.5 from Node 24 and
 # `id-token: write`); no NPM_TOKEN. Each package's Trusted Publisher on
-# npmjs.com must point at repo holakirr/snow-ui, workflow file release.yml.
-# A package that isn't on npm yet can't have one: scripts/publish.ts skips it
-# with a warning until the owner publishes its first version by hand
-# (CONTRIBUTING.md, "Publishing a new package").
+# npmjs.com must point at repo holakirr/snow-ui, workflow file release.yml
+# (all three jobs that publish run in this file). A package that isn't on
+# npm yet can't have one: scripts/publish.ts skips it with a warning until
+# the owner publishes its first version by hand (CONTRIBUTING.md,
+# "Publishing a new package").
 
 name: Release
 
-on:
-  push:
-    branches: [main]
-  # Manual re-run, e.g. if a push event was missed
-  workflow_dispatch:
+run-name: >-
+  ${{ github.event_name == 'workflow_run'
+    && format('Release trigger: Build Check passed on {0}', github.event.workflow_run.head_branch)
+    || format('Release ({0}) on {1}', inputs.mode, github.ref_name) }}
 
+on:
+  workflow_run:
+    workflows: [Build Check]
+    types: [completed]
+    branches: [main, next]
+  # Dispatched by the `trigger` job, or by hand (e.g. to retry a release, or
+  # for a canary).
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: >-
+          release: version PR or publish (main and next only). canary:
+          0.0.0-canary-<sha> snapshots of the pending changesets under the
+          `canary` dist-tag (any branch).
+        type: choice
+        options: [release, canary]
+        default: release
+
+# One release at a time per branch; a queued run waits for the running one.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}-${{ inputs.mode }}
   cancel-in-progress: false
 
 permissions: {}
 
 jobs:
-  release:
-    # workflow_dispatch can target any branch; only ever version/publish from main
-    if: github.ref == 'refs/heads/main'
+  # workflow_run: dispatch the release for the commit Build Check passed on.
+  # Only for Build Check runs of pushes to this repository (not of PRs, even
+  # from a fork's `main`); this job checks nothing out.
+  trigger:
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
-      contents: write # version commit/branch, tags, GitHub releases
+      actions: write # dispatch this workflow
+      contents: read # read the branch's head
+    steps:
+      - name: Dispatch the release on the branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          head=$(gh api "repos/$GITHUB_REPOSITORY/branches/$BRANCH" --jq .commit.sha)
+          if [ "$head" != "$SHA" ]; then
+            echo "::notice title=Release skipped::$BRANCH has moved on from $SHA to $head; the release runs once Build Check passes for $head."
+            exit 0
+          fi
+          gh workflow run release.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH" -f mode=release
+          echo "Dispatched the release of $BRANCH at $SHA."
+
+  # Nothing is published unless Build Check passed for exactly this commit:
+  # a run of a push to it or dispatched on it (for a canary, also a PR's
+  # run, which tests the branch's head merged into the base). While Build
+  # Check is still running, nothing happens: for main and next, its success
+  # dispatches the release again.
+  gate:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # list the Build Check runs
+    outputs:
+      passed: ${{ steps.check.outputs.passed }}
+    steps:
+      - name: Require a green Build Check for ${{ github.sha }}
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          events='["push","workflow_dispatch"]'
+          if [ "$MODE" = canary ]; then
+            events='["push","workflow_dispatch","pull_request"]'
+          fi
+          runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/build-check.yml/runs?head_sha=$GITHUB_SHA&per_page=100" \
+            --jq '[.workflow_runs[] | {event, status, conclusion, html_url}]' \
+            | jq -c --argjson events "$events" 'map(select(.event | IN($events[])))')
+          passed=$(jq -r 'map(select(.conclusion == "success"))[0].html_url // empty' <<< "$runs")
+          if [ -n "$passed" ]; then
+            echo "Build Check passed for $GITHUB_SHA: $passed"
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          elif jq -e 'any(.[]; .status != "completed")' <<< "$runs" > /dev/null; then
+            echo "::notice title=Nothing published::Build Check is still running for $GITHUB_SHA. On main and next the release runs by itself when it passes; for a canary, run this workflow again then."
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error title=No green Build Check::Build Check has not passed for $GITHUB_SHA ($(jq -r 'map("\(.event): \(.conclusion)") | join(", ") | if . == "" then "no run" else . end' <<< "$runs")). Fix it or re-run it (Actions → Build Check → Run workflow on this branch), then run this workflow again."
+            exit 1
+          fi
+
+  release:
+    needs: gate
+    # workflow_dispatch can target any branch; only ever version/publish from
+    # main and next.
+    if: >-
+      needs.gate.outputs.passed == 'true' && inputs.mode == 'release' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/next')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # version commit/branch, tags, GitHub releases (+ SBOMs)
       pull-requests: write # open/update the version PR
+      actions: write # dispatch Build Check on the version PR's branch
       id-token: write # npm Trusted Publishing + provenance
     steps:
       - name: Checkout code
@@ -67,19 +178,124 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Lint
-        run: bun run lint
-
-      - name: Typecheck
-        run: bun run typecheck
-
-      - name: Unit tests
-        run: bun run test
-
       - name: Create version PR or publish to npm
+        id: changesets
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           version-script: bun run version-packages
           publish-script: bun run release
           commit-message: "chore(release): version packages"
           pr-title: "chore(release): version packages"
+
+      # The version PR's checks: Build Check on its branch
+      # (changeset-release/<branch>), whose jobs report on the PR's head
+      # commit. Superseded runs are cancelled (build-check.yml concurrency).
+      - name: Run Build Check on the version PR
+        if: steps.changesets.outputs.published != 'true' && steps.changesets.outputs.pr-number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: changeset-release/${{ github.ref_name }}
+          PR: ${{ steps.changesets.outputs.pr-number }}
+        run: |
+          gh workflow run build-check.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
+          echo "Dispatched Build Check on $BRANCH (PR #$PR)." >> "$GITHUB_STEP_SUMMARY"
+
+      # A CycloneDX SBOM of each published package: its production
+      # dependencies at the versions installed from bun.lock. Attached to the
+      # package's GitHub release (tag `<name>@<version>`) and kept as an
+      # artifact.
+      - name: Generate SBOMs
+        id: sbom
+        if: steps.changesets.outputs.published == 'true'
+        env:
+          PUBLISHED: ${{ steps.changesets.outputs.published-packages }}
+        run: |
+          mapfile -t names < <(jq -r '.[].name' <<< "$PUBLISHED")
+          bun scripts/sbom.ts sbom "${names[@]}" | tee sbom.tsv
+
+      - name: Attach SBOMs to the GitHub releases
+        if: steps.sbom.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          while IFS=$'\t' read -r tag file; do
+            gh release upload "$tag" "$file" --clobber --repo "$GITHUB_REPOSITORY"
+          done < sbom.tsv
+
+      - name: Upload SBOMs
+        if: steps.sbom.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sbom
+          path: sbom
+          if-no-files-found: error
+          retention-days: 90
+
+  # `0.0.0-canary-<short sha>` versions of the packages that have pending
+  # changesets (and of the packages that depend on them), under the `canary`
+  # npm dist-tag: `npm install @holakirr/snow-ui@canary`, or the exact
+  # version from the job summary. For trying a change in an app before it is
+  # released. Nothing is committed, tagged or released on GitHub.
+  canary:
+    needs: gate
+    if: needs.gate.outputs.passed == 'true' && inputs.mode == 'canary'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm Trusted Publishing + provenance
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # `.changeset/config.json` names snapshots `0.0.0-{tag}-{commit-short}`.
+      # Snapshots aren't allowed in pre-release mode (the `next` branch).
+      - name: Version the pending changesets as canary snapshots
+        id: version
+        env:
+          # @changesets/changelog-github looks up each changeset's commit.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(find .changeset -name '*.md' ! -name README.md -print -quit)" ]; then
+            echo "::notice title=Nothing to publish::No pending changesets on ${GITHUB_REF_NAME}: a canary publishes the packages that have one."
+            echo "pending=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          bun changeset version --snapshot canary
+          echo "pending=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build packages
+        if: steps.version.outputs.pending == 'true'
+        run: bun run build
+
+      - name: Publish to npm under the canary dist-tag
+        if: steps.version.outputs.pending == 'true'
+        run: bun scripts/publish.ts --tag canary --no-git-tag
+
+      - name: Write the published versions
+        if: steps.version.outputs.pending == 'true'
+        run: |
+          {
+            echo '### Canary'
+            echo '| Package | Install |'
+            echo '| --- | --- |'
+            for manifest in packages/*/package.json; do
+              jq -r 'select(.private != true and (.version | startswith("0.0.0-canary-"))) | "| `\(.name)` | `npm install \(.name)@\(.version)` |"' "$manifest"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"

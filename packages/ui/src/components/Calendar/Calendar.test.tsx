@@ -2,6 +2,7 @@ import { ArrowLineDownIcon } from '@holakirr/snow-ui-icons'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
+import { userEvent } from 'storybook/test'
 import { describe, expect, it, vi } from 'vitest'
 
 import { Calendar } from './Calendar'
@@ -153,6 +154,97 @@ describe('Calendar', () => {
     expect(
       screen.getByRole('button', { name: /january 2026/i }),
     ).toBeInTheDocument()
+  })
+
+  describe('year switcher', () => {
+    // The year view starts five years before the current year (12 years).
+    const from = new Date().getFullYear() - 5
+    const to = from + 11
+
+    it('is a disclosure of the year view', () => {
+      render(<RangeCalendar />)
+      const switcher = screen.getByRole('button', { name: 'January 2025' })
+      expect(switcher).toHaveAttribute('aria-expanded', 'false')
+      expect(switcher).not.toHaveAttribute('aria-controls')
+
+      fireEvent.click(switcher)
+      expect(switcher).toHaveAttribute('aria-expanded', 'true')
+      const yearView = screen.getByRole('group', { name: `${from} - ${to}` })
+      expect(switcher).toHaveAttribute('aria-controls', yearView.id)
+      expect(yearView).toContainElement(
+        screen.getByRole('button', { name: String(from) }),
+      )
+
+      fireEvent.click(switcher)
+      expect(switcher).toHaveAttribute('aria-expanded', 'false')
+      expect(switcher).not.toHaveAttribute('aria-controls')
+      expect(screen.queryByRole('group')).toBeNull()
+    })
+
+    it("doesn't give the year view the day grid's roles and name", () => {
+      render(<RangeCalendar />)
+      fireEvent.click(screen.getByRole('button', { name: 'January 2025' }))
+
+      // A group of buttons, not a multiselectable grid named by the month.
+      expect(screen.queryByRole('grid')).toBeNull()
+      const yearView = screen.getByRole('group', { name: `${from} - ${to}` })
+      expect(yearView).not.toHaveAttribute('aria-multiselectable')
+      expect(yearView).toHaveAccessibleName(`${from} - ${to}`)
+    })
+
+    // The picked year is shown in the month of the selection.
+    const selected = new Date(2025, 0, 20)
+
+    it('takes the focus back when a year is picked with the keyboard', async () => {
+      render(
+        <Calendar
+          mode="single"
+          selected={selected}
+          defaultMonth={new Date(2025, 0, 1)}
+        />,
+      )
+      const user = userEvent.setup()
+
+      screen.getByRole('button', { name: 'January 2025' }).focus()
+      await user.keyboard('{Enter}')
+      // The next years, then the first year.
+      await user.tab()
+      await user.tab()
+      expect(screen.getByRole('button', { name: String(from) })).toHaveFocus()
+
+      await user.keyboard('{Enter}')
+      const switcher = screen.getByRole('button', { name: `January ${from}` })
+      expect(switcher).toHaveFocus()
+      expect(switcher).toHaveAttribute('aria-expanded', 'false')
+    })
+
+    it("gives the focus to the first month's switcher with several months", async () => {
+      const { container } = render(
+        <Calendar
+          mode="single"
+          selected={selected}
+          numberOfMonths={2}
+          defaultMonth={new Date(2025, 0, 1)}
+        />,
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'January 2025' }))
+      const year = screen.getByRole('button', { name: String(to) })
+      year.focus()
+      await act(async () => {
+        fireEvent.click(year)
+      })
+
+      const switchers = Array.from(
+        container.querySelectorAll('[data-slot="calendar-caption"] button'),
+      ).filter((button) => button.hasAttribute('aria-expanded'))
+      expect(switchers.map((button) => button.textContent)).toEqual([
+        `January ${to}`,
+        `February ${to}`,
+      ])
+      expect(switchers[0]).toHaveFocus()
+      expect(document.body).not.toHaveFocus()
+    })
   })
 
   it('renders the Figma DatePicker surface and lets className override it', () => {

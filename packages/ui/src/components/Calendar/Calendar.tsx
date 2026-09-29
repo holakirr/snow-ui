@@ -11,9 +11,13 @@ import {
   createContext,
   type Dispatch,
   type ReactNode,
+  type RefObject,
   type SetStateAction,
   useCallback,
   useContext,
+  useEffect,
+  useId,
+  useRef,
   useState,
 } from 'react'
 import {
@@ -130,6 +134,13 @@ type CalendarContextValue = {
   displayYears: DisplayYears
   setDisplayYears: Dispatch<SetStateAction<DisplayYears>>
   showYearSwitcher: boolean
+  /** The id of the year view, which the year switcher controls. */
+  yearViewId: string
+  /**
+   * Set when a year is picked: the year buttons are gone after the
+   * re-render, so the year switcher takes the focus back.
+   */
+  focusYearSwitcher: RefObject<boolean>
   startMonth?: Date
   endMonth?: Date
   onPrevClick?: (month: Date) => void
@@ -452,8 +463,24 @@ const CalendarCaptionLabel: CustomComponents['CaptionLabel'] = ({
   className,
   ...props
 }) => {
-  const { navView, setNavView, displayYears, showYearSwitcher } =
-    useCalendarContext()
+  const {
+    navView,
+    setNavView,
+    displayYears,
+    showYearSwitcher,
+    yearViewId,
+    focusYearSwitcher,
+  } = useCalendarContext()
+  const ref = useRef<HTMLButtonElement>(null)
+
+  // After a year is picked, focus comes back here instead of falling to
+  // <body> with the removed year button. With several months, the first
+  // month's switcher runs its effect first and takes it.
+  useEffect(() => {
+    if (!focusYearSwitcher.current || !ref.current) return
+    focusYearSwitcher.current = false
+    ref.current.focus()
+  })
 
   if (!showYearSwitcher) {
     return (
@@ -463,9 +490,13 @@ const CalendarCaptionLabel: CustomComponents['CaptionLabel'] = ({
     )
   }
 
+  // A disclosure: it shows and hides the year view.
   return (
     <button
+      ref={ref}
       type="button"
+      aria-expanded={navView === 'years'}
+      aria-controls={navView === 'years' ? yearViewId : undefined}
       className={twMerge(
         'h-7 rounded-8 px-1 transition-colors hover:bg-black-4 focus-ring',
         className,
@@ -484,8 +515,15 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
   children,
   ...props
 }) => {
-  const { navView, setNavView, displayYears, startMonth, endMonth } =
-    useCalendarContext()
+  const {
+    navView,
+    setNavView,
+    displayYears,
+    startMonth,
+    endMonth,
+    yearViewId,
+    focusYearSwitcher,
+  } = useCalendarContext()
   const { goToMonth, selected } = useDayPicker()
 
   if (navView !== 'years') {
@@ -496,10 +534,25 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
     )
   }
 
+  // The day grid's role, `aria-multiselectable` and month name don't fit a
+  // list of year buttons (axe rejects a grid without rows).
+  const {
+    role: _role,
+    'aria-multiselectable': _multiselectable,
+    'aria-label': _monthLabel,
+    ...yearViewProps
+  } = props
   const currentYear = new Date().getFullYear()
 
   return (
-    <div className={twMerge('grid grid-cols-4 gap-y-2', className)} {...props}>
+    // biome-ignore lint/a11y/useSemanticElements: a <fieldset> groups form fields under a <legend>; these are buttons named by the years they show
+    <div
+      id={yearViewId}
+      role="group"
+      aria-label={`${displayYears.from} - ${displayYears.to}`}
+      className={twMerge('grid grid-cols-4 gap-y-2', className)}
+      {...yearViewProps}
+    >
       {Array.from(
         { length: displayYears.to - displayYears.from + 1 },
         (_, i) => {
@@ -522,6 +575,7 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
                 year === currentYear && 'bg-black-4',
               )}
               onClick={() => {
+                focusYearSwitcher.current = true
                 setNavView('days')
                 goToMonth(new Date(year, getSelectedMonth(selected)))
               }}
@@ -678,6 +732,8 @@ function Calendar({
   const snowUI = useSnowUI()
   const locale = localeProp ?? snowUI.locale
   const [navView, setNavView] = useState<NavView>('days')
+  const yearViewId = useId()
+  const focusYearSwitcher = useRef(false)
   const [displayYears, setDisplayYears] = useState<DisplayYears>(() => {
     const currentYear = new Date().getFullYear()
     return {
@@ -703,6 +759,8 @@ function Calendar({
         displayYears,
         setDisplayYears,
         showYearSwitcher,
+        yearViewId,
+        focusYearSwitcher,
         startMonth,
         endMonth,
         onPrevClick,

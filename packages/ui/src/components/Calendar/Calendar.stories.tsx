@@ -243,6 +243,50 @@ export const MultipleSelected: Story = {
       />
     )
   },
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    // The year view shows 12 years from five years before the current one.
+    const currentYear = new Date().getFullYear()
+    const from = currentYear - 5
+    const switcher = canvas.getByRole('button', { name: 'January 2025' })
+
+    await step('Enter on the year switcher opens the year view', async () => {
+      await userEvent.tab()
+      await userEvent.tab()
+      await expect(switcher).toHaveFocus()
+      await expect(switcher).toHaveAttribute('aria-expanded', 'false')
+      await userEvent.keyboard('{Enter}')
+      await expect(switcher).toHaveAttribute('aria-expanded', 'true')
+      const years = canvas.getByRole('group', {
+        name: `${from} - ${from + 11}`,
+      })
+      await expect(switcher).toHaveAttribute('aria-controls', years.id)
+    })
+
+    await step('picking a year returns the focus to the switcher', async () => {
+      // Past the next-years button to the current year.
+      await userEvent.tab()
+      for (let year = from; year <= currentYear; year++) {
+        await userEvent.tab()
+      }
+      await expect(
+        canvas.getByRole('button', { name: String(currentYear) }),
+      ).toHaveFocus()
+      await userEvent.keyboard('{Enter}')
+      // January (the month of the first selected day) of that year.
+      const shown = canvas.getByRole('button', {
+        name: `January ${currentYear}`,
+      })
+      await expect(shown).toHaveFocus()
+      await expect(shown).toHaveAttribute('aria-expanded', 'false')
+      await expect(canvas.queryByRole('group')).not.toBeInTheDocument()
+    })
+
+    // At the pinned clock of the screenshots (2025) this is January 2025
+    // again: the story looks as it did before the play function.
+    const { activeElement, defaultView } = canvasElement.ownerDocument
+    if (activeElement instanceof HTMLElement) activeElement.blur()
+    defaultView?.scrollTo(0, 0)
+  },
 }
 
 /** `weekStartsOn={0}` restores a Sunday start. */

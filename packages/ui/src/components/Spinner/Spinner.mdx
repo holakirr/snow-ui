@@ -58,6 +58,7 @@ Spinner has one state: it turns. The ring turns once every 2 seconds while its a
 
 - It is a `role="status"` live region (polite) with visually hidden "Loading". Screen readers announce a status reliably only when it changes while it is already in the page, so render the spinner in a container that stays, or put the loading text in a region that stays, as in the "With text" story.
 - The ring is `aria-hidden`.
+- It isn't focusable: it is not a tab stop and has no keyboard interaction.
 - When visible text already says that something is loading, make the spinner `aria-hidden` so it isn't read twice: in a busy button, set `aria-busy` (and `disabled`) on the button and pass `aria-hidden` to the spinner.
 - Mark the region that is loading with `aria-busy="true"` until the content arrives.
 
@@ -99,5 +100,7 @@ None of the package's deviations from the Figma kit apply to Spinner.
 - [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the label.
 
 ## Props
+
+Spinner takes the props below, `className` (merged with its classes; a `size-*` class overrides `size`) and the attributes of the `role="status"` element it renders.
 
 <Controls />

@@ -1,5 +1,6 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { AlertDescription, AlertTitle } from './Alert'
 import * as AlertStories from './Alert.stories'
 
 <Meta of={AlertStories} />
@@ -83,6 +84,15 @@ Alert has no states of its own: it is shown or not. The dismiss button has the B
 
 None of the package's deviations from the Figma kit apply to Alert.
 
+### Keyboard
+
+The alert itself isn't focusable; only the controls in it are tab stops:
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift + Tab | move to the next / previous control: the `action` content, then the dismiss button (with `onDismiss`) |
+| Enter, Space | press the focused action or the dismiss button, which calls `onDismiss` |
+
 ## Localization and RTL
 
 - `messages.alert.dismiss` ("Dismiss") names the dismiss button, and `messages.alert.info`, `success`, `warning` and `error` ("Information", "Success", "Warning", "Error") are the status labels; `dismissLabel` and `statusLabel` override them.
@@ -138,4 +148,22 @@ None of the package's deviations from the Figma kit apply to Alert.
 
 ## Props
 
+The parts take the props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### Alert
+
+A `<div>` (or the `asChild` element) with the status's live-region role, `role="alert"` or `role="status"`; a `role` you pass wins.
+
 <Controls />
+
+### AlertTitle
+
+The title, a `<div>` in 14/20 Semibold black; with `asChild`, your heading.
+
+<ArgTypes of={AlertTitle} />
+
+### AlertDescription
+
+The text under the title, a `<div>` in `text-secondary`; with `asChild`, your paragraph.
+
+<ArgTypes of={AlertDescription} />

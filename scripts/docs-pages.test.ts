@@ -32,10 +32,12 @@ const STATIC_PAGES = new Set([
   'Icons',
   'KBD',
   'Label',
+  'Progress',
   'Separator',
   'Skeleton',
   'SnowUIProvider',
   'Sparkline',
+  'Spinner',
   'Strip',
   'Text',
 ])

@@ -1,5 +1,6 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { ProgressCircle } from './ProgressCircle'
 import * as ProgressStories from './Progress.stories'
 
 <Meta of={ProgressStories} />
@@ -88,6 +89,7 @@ The root has Radix's `data-state` (`"loading"`, `"complete"` or `"indeterminate"
 - **Name it:** give every progress bar an `aria-label`, or `aria-labelledby` pointing at its visible label. Without either it is named "Progress" (`messages.progress.label`), which says nothing about the task.
 - Screen readers read the value when the user reaches the bar; they don't announce every change. Announce milestones ("Upload complete") yourself, e.g. in an [Alert](?path=/docs/components-alert--docs) or a toast.
 - The fill is Black/100% on Black/10%: 16.8:1 in light mode, 7.8:1 in dark mode (1.4.11).
+- Neither is focusable: they aren't tab stops and have no keyboard interaction.
 
 <Canvas of={ProgressStories.WithLabel} />
 
@@ -133,4 +135,16 @@ None of the package's deviations from the Figma kit apply to Progress.
 
 ## Props
 
+Both take the props below, `className` (merged with their classes) and the attributes of the element they render, `aria-label` and `aria-labelledby` included.
+
+### Progress
+
+The bar: a `role="progressbar"` `<div>` with the indicator inside.
+
 <Controls />
+
+### ProgressCircle
+
+The ring: a `role="progressbar"` `<div>`, `size` pixels wide, with the ring drawn in an SVG inside it.
+
+<ArgTypes of={ProgressCircle} />

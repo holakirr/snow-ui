@@ -1,0 +1,90 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Registry" />
+
+# Registry (shadcn CLI)
+
+Besides the npm package, every component is available as source code you copy into your project with the [shadcn CLI](https://ui.shadcn.com/docs/cli): the `@snow-ui` registry at `https://snow-ui.holakirr.com/r/`. Each component page shows both ways under "npm package" and "shadcn CLI".
+
+| | npm package | Registry |
+| --- | --- | --- |
+| You get | `@holakirr/snow-ui` in `node_modules` | The components' source in `components/snow-ui/`, yours to edit |
+| Updates | `npm update`, semver, changelog | Re-add an item and merge (`shadcn add … --diff`) |
+| Theme and fonts | `theme.css` / `index.css`, `fonts.css` | The same stylesheets, from the package (CSS only) |
+| Icons, charts | npm packages | npm packages (not copied) |
+
+The registry is generated from the package's sources on every deployment of this site, so it follows the `main` branch; each item's JSON records the package version and commit it was built from (`meta`).
+
+## New project
+
+In a project with Tailwind CSS v4 and React 19 (Next.js, Vite…), initialize with the SnowUI base, then add components:
+
+```bash
+npx shadcn@latest init https://snow-ui.holakirr.com/r/snow-ui.json
+npx shadcn@latest add @snow-ui/button @snow-ui/dialog
+```
+
+`init` writes `components.json` with the Radix UI style (`radix-nova`) and the `@snow-ui` registry, adds `@import "@holakirr/snow-ui/theme.css"` and `@import "@holakirr/snow-ui/fonts.css"` after your `@import "tailwindcss"`, installs `@holakirr/snow-ui` (for those stylesheets) and copies the core utilities and `SnowUIProvider`. Remove the starter styles your template put in the stylesheet (a `body` font, `--background` / `--foreground` and their `@theme inline` colours): they override the SnowUI tokens.
+
+```tsx
+import { Button } from '@/components/snow-ui/components/Button/Button'
+
+<Button variant="filled" size="md" label="Save" />
+```
+
+`@snow-ui/all` adds every component, `@snow-ui/snow-ui-charts` the charts package and its stylesheet. `npx shadcn@latest search @snow-ui` lists the items; the catalog is [`/r/registry.json`](https://snow-ui.holakirr.com/r/registry.json).
+
+## Existing project
+
+Add the registry to `components.json` (or run `npx shadcn@latest registry add @snow-ui=https://snow-ui.holakirr.com/r/{name}.json`):
+
+```json
+{
+  "registries": {
+    "@snow-ui": "https://snow-ui.holakirr.com/r/{name}.json"
+  }
+}
+```
+
+Install the theme — the components only use tokens (`bg-black-4`, `text-14`, `rounded-12`) — and import it after Tailwind:
+
+```bash
+npm install @holakirr/snow-ui
+```
+
+```css
+@import "tailwindcss";
+@import "@holakirr/snow-ui/theme.css";
+@import "@holakirr/snow-ui/fonts.css";
+```
+
+Things to know in an existing shadcn/ui project:
+
+- **Radix UI only.** Keep a `radix-*` style in `components.json`. With a Base UI style (`base-*`, the default of new shadcn projects), the CLI rewrites every `asChild` into Base UI's `render` prop and the copied code no longer compiles.
+- **Shared token names.** SnowUI and shadcn/ui both define some theme variables (`primary`, `background`, `foreground`, `muted`, `accent`, `input`, `ring`, `--font-sans`): the definition that comes later in your stylesheet wins, so for those names one design system takes the other's values. The SnowUI theme also redefines Tailwind's `black` and `white` (they swap in dark mode). Renaming the SnowUI tokens is planned for the next major version; until then the registry is safest in a new project.
+- **Dark mode** follows the `dark` class (next-themes, shadcn/ui) as well as `data-theme="dark"`; see [Theming](?path=/docs/guides-theming--docs).
+- Keep `cssVariables: true`, no Tailwind `prefix`, and `rtl: false` in `components.json`: those options make the CLI rewrite class names (the components already mirror in right-to-left text through `SnowUIProvider`).
+
+## Where the files go
+
+Items keep the package's source layout under your `components` alias: `@snow-ui/button` writes `components/snow-ui/components/Button/Button.tsx` (import it from there, as each component page shows), and the files it uses (`components/snow-ui/utils/tw-merge.ts`, `components/snow-ui/components/Text/Text.tsx`…). They import each other with relative paths, so move them together or not at all. `utils/tw-merge.ts` is SnowUI's `twMerge`, configured with the token scales: the components don't use shadcn's `cn`. Every file carries the MIT notice; the licence text is `components/snow-ui/LICENSE`.
+
+`SnowUIProvider` is optional, as with the package: without it, the components use the English messages and the `enUS` date locale.
+
+## Updating
+
+The shadcn CLI keeps no lockfile of what it installed. To update an item, compare it with the registry and merge the changes you want:
+
+```bash
+npx shadcn@latest add @snow-ui/button --diff     # show what changed
+npx shadcn@latest add @snow-ui/button --overwrite # replace your copy
+```
+
+The [changelog](https://github.com/holakirr/snow-ui/blob/main/packages/ui/CHANGELOG.md) of `@holakirr/snow-ui` describes the changes by version.
+
+## AI assistants
+
+- **MCP:** in a project whose `components.json` lists the registry, `npx shadcn@latest mcp init --client claude` (or `cursor`, `vscode`, `codex`, `opencode`) lets the assistant browse and add `@snow-ui` items.
+- **llms.txt:** [`https://snow-ui.holakirr.com/llms.txt`](https://snow-ui.holakirr.com/llms.txt) lists every component with its install command, import path and docs page.
+
+"Open in v0" isn't supported: v0 ignores the registry's stylesheets, so the components would render without the theme.

@@ -64,7 +64,9 @@ const declarations = (block: string) => {
 
 const theme = declarations(blockAfter(source.indexOf('@theme static {')))
 // The dark scope; `src/theme.test.ts` checks that the other scopes match it.
-const dark = declarations(blockAfter(source.indexOf('[data-theme="dark"] {')))
+const dark = declarations(
+  blockAfter(source.search(/\[data-theme="dark"\],\s*\.dark \{/)),
+)
 
 const themeNames = (prefix: string) =>
   [...theme.keys()].filter(

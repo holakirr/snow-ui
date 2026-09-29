@@ -26,12 +26,11 @@ Import **one** of the two stylesheets.
 import '@holakirr/snow-ui/index.css'
 ```
 
-**With Tailwind CSS v4** — import the theme after Tailwind and let Tailwind scan the package for the classes the components use. The `@source` path is relative to your stylesheet.
+**With Tailwind CSS v4** — import the theme after Tailwind. `theme.css` adds the package's components to Tailwind's sources itself (relative to its own file, so it works wherever the package is installed), so Tailwind generates the classes they use. With 5.0 or older, also add `@source "../node_modules/@holakirr/snow-ui/dist";` (relative to your stylesheet).
 
 ```css
 @import "tailwindcss";
 @import "@holakirr/snow-ui/theme.css";
-@source "../node_modules/@holakirr/snow-ui/dist";
 ```
 
 Your Tailwind then generates one set of utilities for your code and the components, and the kit's tokens work in your own markup (`bg-black-4`, `text-14`, `rounded-12`). With a Tailwind [prefix](https://tailwindcss.com/docs/styling-with-utility-classes#using-the-prefix-option), use `index.css`: the components' classes are unprefixed. See [Theming](?path=/docs/guides-theming--docs) for what `theme.css` changes in your Tailwind setup.

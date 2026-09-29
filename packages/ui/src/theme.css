@@ -6,12 +6,14 @@
  * `focus-ring` utilities, the base rules (border colour, cursors, keyframes)
  * and react-day-picker's stylesheet (the Calendar). It has no
  * `@import "tailwindcss"` and no preflight, so a project that runs Tailwind v4
- * imports it after its own Tailwind and scans the package for the component
- * classes:
+ * imports it after its own Tailwind:
  *
  *   @import "tailwindcss";
  *   @import "@holakirr/snow-ui/theme.css";
- *   @source "../node_modules/@holakirr/snow-ui/dist";
+ *
+ * The published theme.css adds the package's built components to Tailwind's
+ * sources itself (an `@source` relative to the file, so it doesn't depend on
+ * where node_modules is), so the component classes are generated.
  *
  * `index.css` is this file compiled with Tailwind, for projects without it.
  *
@@ -31,28 +33,37 @@
 @import "./styles/tokens.generated.css";
 
 /*
- * `dark:` utilities: on and inside a data-theme="dark" element, or anywhere
- * when the OS prefers dark and <html> is not data-theme="light" — but not on
- * or inside a data-theme="light" element within a dark scope. Selectors can't
- * find the nearest data-theme at any depth, so a dark scope inside a light
- * scope inside a dark scope gets the dark tokens (they follow any depth) but
- * not `dark:` utilities. `:where()` keeps a `dark:` utility at the
- * specificity of one class.
+ * `dark:` utilities: on and inside a dark scope (`data-theme="dark"`, or the
+ * `dark` class that next-themes and shadcn/ui set), or anywhere when the OS
+ * prefers dark and <html> sets no mode (no data-theme, no `light` / `dark`
+ * class) — but not on or inside a light scope (`data-theme="light"` or the
+ * `light` class) within a dark scope. Selectors can't find the nearest scope
+ * at any depth, so a dark scope inside a light scope inside a dark scope gets
+ * the dark tokens (they follow any depth) but not `dark:` utilities.
+ * `:where()` keeps a `dark:` utility at the specificity of one class.
  */
 @custom-variant dark {
-  &:where([data-theme="dark"], [data-theme="dark"] *):not(
+  &:where(
+    :is([data-theme="dark"], .dark),
+    :is([data-theme="dark"], .dark) *
+  ):not(
     :where(
-      [data-theme="dark"] [data-theme="light"],
-      [data-theme="dark"] [data-theme="light"] *
+      :is([data-theme="dark"], .dark) :is([data-theme="light"], .light),
+      :is([data-theme="dark"], .dark) :is([data-theme="light"], .light) *
     )
   ) {
     @slot;
   }
   @media (prefers-color-scheme: dark) {
     &:where(
-        :root:not([data-theme="light"]),
-        :root:not([data-theme="light"]) *
-      ):not(:where([data-theme="light"], [data-theme="light"] *)) {
+        :root:not([data-theme], .light, .dark),
+        :root:not([data-theme], .light, .dark) *
+      ):not(
+        :where(
+          :is([data-theme="light"], .light),
+          :is([data-theme="light"], .light) *
+        )
+      ) {
       @slot;
     }
   }

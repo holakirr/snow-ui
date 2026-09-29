@@ -76,11 +76,11 @@ The sidebar is fixed to the edge of the viewport, so the stories below with a co
 4. **Content** (`SidebarContent`): the middle, which scrolls; groups are 8px apart.
 5. **Group** (`SidebarGroup`): a section, padding 8 / 16px, with:
    - `SidebarGroupLabel`: the heading, 28px high, 12px side padding, radius 12, 14px Regular in `black-80`;
-   - `SidebarGroupAction` (optional): a 20px button at the heading's end;
+   - `SidebarGroupAction` (optional): a 20px button at the heading's end, with a 24px hit area (36px below 768px);
    - `SidebarGroupContent`: the section's menu, 14px text.
 6. **Menu** (`SidebarMenu`, a `<ul>` with 4px gaps, and `SidebarMenuItem`, an `<li>`), with:
    - `SidebarMenuButton`: the Figma nav item ("Frame"), a `<button>` or, with `asChild`, your link. Padding 8px, radius 12, an 8px gap, 14px text and 20px icons. `isActive`, `variant`, `size` and `tooltip` (see below);
-   - `SidebarMenuAction` (optional): a 20px button at the item's end; `showOnHover` hides it on desktop until the item is hovered or focused;
+   - `SidebarMenuAction` (optional): a 20px button at the item's end, with a 24px hit area (36px below 768px); `showOnHover` hides it on desktop until the item is hovered or focused;
    - `SidebarMenuBadge` (optional): a 20px-high count at the item's end, 12px tabular figures;
    - `SidebarMenuSkeleton`: a 36px loading row, with a 20px icon placeholder when `showIcon`.
 7. **Submenu** (`SidebarMenuSub`, `SidebarMenuSubItem`, `SidebarMenuSubButton`): a nested list with a 1px Black/10% line on its start side. Sub buttons are `<a>`s, 36px (`size="md"`, the default) or 28px (`sm`) high, with 16px icons and `isActive`.
@@ -110,11 +110,15 @@ The Figma dashboard sidebar (`Type=Complex`, `Fold=False`), with `collapsible="n
 
 | `collapsible` | Collapsed | Small screens |
 | --- | --- | --- |
-| `offcanvas` (default) | slides off the edge of the screen | a sheet |
+| `offcanvas` (default) | slides off the edge of the screen, then is hidden (`visibility: hidden`): out of the tab order and the accessibility tree | a sheet |
 | `icon` | a 52px column of icons (68px for `floating` and `inset`): group labels, group and item actions, badges and submenus hide, menu buttons become 36px squares | a sheet |
 | `none` | never: a static 212px column | the same column (no sheet) |
 
-Below 768px wide (`useIsMobile`) the sidebar renders in a [Sheet](?path=/docs/components-sheet--docs) from its side: 288px wide, with a `background-1` fill and no close button. `SidebarTrigger` opens it.
+Collapsed off-canvas, Tab goes from the page to the trigger without entering the sidebar (a `SidebarRail` inside it stays at the screen edge to reopen it):
+
+<Canvas of={SidebarStories.Offcanvas} story={{ inline: false, height: '360px' }} />
+
+Below 768px wide (`useIsMobile`) the sidebar renders in a [Sheet](?path=/docs/components-sheet--docs) from its side: 288px wide, with a `background-1` fill and no close button. `SidebarTrigger` opens it. `Sidebar`'s `className`, `style` and other props go on the sheet there, as they go on the panel on larger screens.
 
 ### Menu button
 
@@ -138,8 +142,8 @@ Below 768px wide (`useIsMobile`) the sidebar renders in a [Sheet](?path=/docs/co
 - The desktop sidebar is a set of `<div>`s with no landmark: wrap its navigation in a `<nav>` with an `aria-label`. `SidebarInset` is a `<main>`.
 - Menus are `<ul>` lists. `SidebarMenuButton`, `SidebarGroupAction` and `SidebarMenuAction` render a `<button>` without a `type`, so inside a form pass `type="button"`. With `asChild` the child (a link) is the control.
 - `isActive` only sets `data-active` for the fill: put `aria-current="page"` on the current page's link yourself.
-- Every button and link is in the tab order; there are no arrow-key shortcuts between items. Ctrl+B or ⌘B toggles the sidebar from anywhere on the page: the provider listens on `window` and prevents the browser's default.
-- `SidebarTrigger` is named "Toggle Sidebar" (visually hidden text, `messages.sidebar.toggle`); `aria-label` replaces it. It doesn't set `aria-expanded`.
+- Every button and link is in the tab order; there are no arrow-key shortcuts between items. Collapsed off-canvas, the sidebar is `visibility: hidden` once it has slid out, so Tab skips it and screen readers don't find it. Ctrl+B or ⌘B toggles the sidebar from anywhere on the page (the provider listens on `window` and prevents the browser's default), except in text fields and rich-text editors, where it stays their shortcut (bold), and after a handler has called `preventDefault()`.
+- `SidebarTrigger` is named "Toggle Sidebar" (visually hidden text, `messages.sidebar.toggle`); `aria-label` replaces it. It sets `aria-expanded` (the sidebar is open; on small screens, the sheet) and `aria-controls` (the sidebar's generated `id`).
 - `SidebarRail` is for pointers only (`tabIndex={-1}`), named and titled "Toggle Sidebar"; the trigger is the keyboard path.
 - Collapsed to icons, the menu buttons keep their text in the DOM (clipped), so their names stay; `tooltip` shows the label on hover and keyboard focus.
 - On small screens the sheet is a modal Radix Dialog: focus moves into it and stays there, Escape or a click outside closes it, and its title "Sidebar" and description "Displays the mobile sidebar." are for screen readers only.
@@ -180,7 +184,24 @@ Deviations from the Figma kit (the full table is in the package README):
 
 `SidebarTrigger` and `SidebarRail` run your `onClick` first; `event.preventDefault()` in it skips the toggle.
 
-The desktop state is `open` (controlled) or `defaultOpen` (uncontrolled, `true` by default), with `onOpenChange(open)`, on `SidebarProvider`. Every change is saved in a `sidebar:state` cookie for 7 days, and the cookie wins over `defaultOpen` when the provider mounts in the browser. The small-screen sheet's state isn't a prop: use `useSidebar()`, which returns `state`, `open`, `setOpen`, `openMobile`, `setOpenMobile`, `isMobile` and `toggleSidebar` (and throws outside a `SidebarProvider`).
+The desktop state is `open` (controlled) or `defaultOpen` (uncontrolled, `true` by default), with `onOpenChange(open)`, on `SidebarProvider`. Every change is saved in the `sidebar_state` cookie (`SIDEBAR_COOKIE_NAME`) for 7 days; the pre-5.1 `sidebar:state` cookie is still read. In the browser the saved state wins over `defaultOpen`, after hydration, so server-rendered markup always hydrates without a mismatch. To render the saved state on the server too (no flash of the expanded sidebar), read the cookie there with `readSidebarState`, which isn't a client function, and pass it as `defaultOpen`:
+
+```tsx
+// Next.js App Router: app/layout.tsx (a Server Component)
+import { headers } from 'next/headers'
+import { readSidebarState, SidebarProvider } from '@holakirr/snow-ui'
+
+export default async function Layout({ children }: { children: ReactNode }) {
+  const cookie = (await headers()).get('cookie')
+  return (
+    <SidebarProvider defaultOpen={readSidebarState(cookie) ?? true}>
+      {children}
+    </SidebarProvider>
+  )
+}
+```
+
+The small-screen sheet's state isn't a prop: use `useSidebar()`, which returns `state`, `open`, `setOpen`, `openMobile`, `setOpenMobile`, `isMobile` and `toggleSidebar` (and throws outside a `SidebarProvider`).
 
 ## Do and don't
 

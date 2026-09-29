@@ -10,7 +10,7 @@ How the components' props are named and behave, across the library: what you can
 
 - **`className`** merges with the component's classes through a `twMerge` that knows the kit's tokens, and yours win conflicts: `<Button className="px-8">` replaces the button's padding, `className="text-14"` its text style. Compound components take it on every part (`DialogContent`, `TabsTrigger`…).
 - **Everything else** that the component doesn't use goes to the element it renders: `id`, `aria-*`, `data-*`, event handlers, `style`. The props tables list the component's own props and those of the Radix part it wraps; each page names the element that gets the rest.
-- **`ref`** reaches the element the component renders (React 19 passes it as a prop). A few 5.0 prop types don't list it yet although the ref works (`Checkbox`, `Switch`, `SelectTrigger`, `DialogContent`, `Label`): the types are fixed in 5.x.
+- **`ref`** reaches the element the component renders (React 19 passes it as a prop). Every component that forwards a ref also accepts `ref` in its props type.
 - **Types** are exported next to each component: `ButtonProps`, `TabsListProps`, `CalendarProps`… The cva helpers some components are built with (`buttonVariants`, `toggleVariants`) are exported too, to style your own elements like them.
 - **Required props** are rare and marked with `*` in the tables: a `label` where the component has no other text (`Tag`), a `value` that ties a part to its root (`TabsTrigger`, `SelectItem`, `RadioGroupItem`), the data of a chart.
 
@@ -118,7 +118,11 @@ The styles read these props, not `aria-current` or `aria-selected`: pass both wh
 
 ## Invalid state
 
-`FormItem` takes `error` (a message; truthy marks the field invalid) or `invalid`. `FormControl` then sets `aria-invalid` and `aria-describedby` (the description and the message) on the control, `FormLabel` turns red and `FormMessage` shows the error. Outside a form, set `aria-invalid` yourself. In 5.0 the fields themselves (`Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroup`) have no invalid style; one that reads `aria-invalid` is planned for 5.x.
+The invalid state is `aria-invalid="true"` on the control, and the fields style it themselves: `Input`, `InputSmall`, `Textarea`, `Search`, `SelectTrigger` and `Switch` get a 1px Secondary/Red stroke (kept on hover, focus and while a Select is open), an unchecked `Checkbox` and the radios of an invalid `RadioGroup` a red ring, and the `Slider` passes it on to its thumbs. The Figma kit has no error state, so the look is the library's own, from the Secondary/Red token.
+
+- **In a form:** `FormItem` takes `error` (a message; truthy marks the field invalid) or `invalid`. `FormControl` then sets `aria-invalid` and an `aria-describedby` with the rendered description and message on the control, `FormLabel` turns `red-text`, and `FormMessage` shows the error as an alert (`role="alert"`).
+- **Outside a form:** set `aria-invalid` on the control yourself.
+- **Your own fields:** `invalidInputClasses` is the text fields' invalid stroke, to use on an element of your own.
 
 ## Styling hooks: `data-*` attributes
 
@@ -163,7 +167,7 @@ Every string a component renders on its own comes from the `SnowUIProvider` mess
 
 ## Accessible names you provide
 
-Components without text need a name from you: icon-only buttons and toggles (`aria-label`), icon-only tabs (`TabsTrigger` warns in development without one), `Checkbox`, `Switch`, `Slider` and `Select` without a visible `Label` (use `<Label htmlFor>` or `aria-label`), and several tab lists or groups on one page (`aria-label` on `TabsList`, `Group`). Charts warn in development when they have no `title`, `aria-label` or `aria-labelledby`.
+Components without text need a name from you: icon-only buttons, toggles and tabs (`aria-label` or `aria-labelledby`; `Button`, `Toggle`, `ToggleGroupItem` and `TabsTrigger` warn in development without one), `Checkbox`, `Switch`, `Slider` and `Select` without a visible `Label` (use `<Label htmlFor>` or `aria-label`), and several tab lists or groups on one page (`aria-label` on `TabsList`, `Group`). Charts warn in development when they have no `title`, `aria-label` or `aria-labelledby`.
 
 ## Deprecated in 5.x, removed in 6.0
 

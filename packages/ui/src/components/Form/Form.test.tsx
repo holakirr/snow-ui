@@ -432,4 +432,74 @@ describe('Form describedby and messages', () => {
       'Format: name@company. Visible to admins. Work email. Bad',
     )
   })
+
+  it("doesn't use up an iterator among the children when predicting", () => {
+    function* hints() {
+      yield <span key="a">A</span>
+      yield <span key="b">B</span>
+    }
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    render(
+      <Core.FormItem>
+        <div data-testid="hints">{hints()}</div>
+      </Core.FormItem>,
+    )
+
+    expect(screen.getByTestId('hints')).toHaveTextContent('AB')
+  })
+
+  it("leaves a nested FormItem's parts to it on the server", () => {
+    const html = renderToString(
+      <Core.FormItem>
+        <Core.FormControl>
+          <input />
+        </Core.FormControl>
+        <Core.FormItem>
+          <Core.FormDescription>Inner.</Core.FormDescription>
+        </Core.FormItem>
+      </Core.FormItem>,
+    )
+
+    expect(html).not.toContain('aria-describedby')
+  })
+
+  it('keeps the ids when the control sets aria-describedby to undefined', () => {
+    render(
+      <Core.FormItem>
+        <Core.FormControl>
+          <input aria-label="Email" aria-describedby={undefined} />
+        </Core.FormControl>
+        <Core.FormDescription>Work email.</Core.FormDescription>
+      </Core.FormItem>,
+    )
+
+    expect(screen.getByLabelText('Email')).toHaveAccessibleDescription(
+      'Work email.',
+    )
+  })
+
+  it('drops a removed message at once, whatever data-slot it was given', () => {
+    let hide = () => {}
+    // The part's own parent unmounts it: FormItem doesn't re-render, and the
+    // part's cleanup runs before React removes its <p>.
+    const Message = () => {
+      const [shown, setShown] = useState(true)
+      hide = () => setShown(false)
+      return shown ? <Core.FormMessage data-slot="mine" /> : null
+    }
+    render(
+      <Core.FormItem error="Bad">
+        <Core.FormControl>
+          <input aria-label="Email" />
+        </Core.FormControl>
+        <Message />
+      </Core.FormItem>,
+    )
+    const input = screen.getByLabelText('Email')
+    expect(input).toHaveAccessibleDescription('Bad')
+
+    act(() => hide())
+
+    expect(input).not.toHaveAttribute('aria-describedby')
+  })
 })

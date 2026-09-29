@@ -3,7 +3,6 @@
 import { useComposedRefs } from '@radix-ui/react-compose-refs'
 import { Slot } from '@radix-ui/react-slot'
 import {
-  Children,
   type ComponentProps,
   cloneElement,
   createContext,
@@ -74,8 +73,9 @@ type PartProps = { id?: string; children?: ReactNode }
  * The ids of the description and message that the item's children will
  * render, read from the element tree: what the server renders (no DOM
  * there) and the first client render, so hydration matches. Parts inside
- * your own components aren't visible here; the client adds them after the
- * first render.
+ * your own components, or behind an iterator (which reading would use up),
+ * aren't visible here; the client adds them after the first render. A
+ * nested `FormItem` has parts of its own.
  */
 const predictedIds = (
   children: ReactNode,
@@ -85,24 +85,22 @@ const predictedIds = (
   const description: string[] = []
   const message: string[] = []
   const visit = (node: ReactNode) => {
-    Children.forEach(node, (child) => {
-      if (!isValidElement<PartProps>(child)) return
-      if (child.type === FormDescription) {
-        description.push(child.props.id ?? formDescriptionId)
-      } else if (child.type === FormMessage) {
-        if (messageBody(error, child.props.children)) {
-          message.push(child.props.id ?? formMessageId)
-        }
-      } else {
-        visit(child.props.children)
+    if (Array.isArray(node)) {
+      for (const child of node) visit(child)
+      return
+    }
+    if (!isValidElement<PartProps>(node) || node.type === FormItem) return
+    if (node.type === FormDescription) {
+      description.push(node.props.id ?? formDescriptionId)
+    } else if (node.type === FormMessage) {
+      if (messageBody(error, node.props.children)) {
+        message.push(node.props.id ?? formMessageId)
       }
-    })
+    } else {
+      visit(node.props.children)
+    }
   }
-  try {
-    visit(children)
-  } catch {
-    // Children React can't iterate: leave it to the client.
-  }
+  visit(children)
   return idList(...description, ...message)
 }
 
@@ -193,7 +191,9 @@ const FormItem: FC<FormItemProps> = ({
   const itemError = error ?? fieldState.error
   const itemRef = useRef<HTMLDivElement>(null)
   const setRef = useComposedRefs(itemRef, ref)
-  const parts = useRef(new Map<object, { part: FormPart; id: string }>())
+  const [parts] = useState(
+    () => new Map<object, { part: FormPart; id: string }>(),
+  )
   // `aria-describedby` only lists the parts that are rendered. The server
   // (and hydration) renders the ids predicted from the children; after
   // that, the parts register while they are rendered, and your own parts
@@ -206,28 +206,24 @@ const FormItem: FC<FormItemProps> = ({
   // Sets the state only when the ids change, so a check that finds nothing
   // new (after a registration, say) doesn't render outside `act()`.
   const update = useCallback(() => {
-    const next = renderedIds(
-      itemRef.current,
-      parts.current.values(),
-      formFieldIds(id),
-    )
+    const next = renderedIds(itemRef.current, parts.values(), formFieldIds(id))
     if (next !== current.current) {
       current.current = next
       setDescribedBy(next)
     }
-  }, [id])
+  }, [id, parts])
 
   const registerPart = useCallback(
     (part: FormPart, partId: string) => {
       const key = {}
-      parts.current.set(key, { part, id: partId })
+      parts.set(key, { part, id: partId })
       update()
       return () => {
-        parts.current.delete(key)
+        parts.delete(key)
         update()
       }
     },
-    [update],
+    [parts, update],
   )
 
   // After every render, before paint (your own parts that follow the
@@ -300,8 +296,8 @@ const FormControl: FC<FormControlProps> = ({
 }) => {
   const { invalid, formItemId } = useFormField()
   const describedBy = useContext(FormItemContext)?.describedBy
-  // The child's own value would replace the merged one (Slot lets the
-  // child's props win), so the child gets the merged list.
+  // The child's own value, even `undefined`, would replace the merged one
+  // (Slot lets the child's props win), so the child gets the merged list.
   const child = isValidElement<{ 'aria-describedby'?: string }>(children)
     ? children
     : undefined
@@ -318,7 +314,7 @@ const FormControl: FC<FormControlProps> = ({
       aria-invalid={invalid}
       {...props}
     >
-      {child?.props['aria-describedby']
+      {child && 'aria-describedby' in child.props
         ? cloneElement(child as ReactElement<{ 'aria-describedby'?: string }>, {
             'aria-describedby': merged,
           })
@@ -344,7 +340,7 @@ const FormDescription: FC<FormDescriptionProps> = ({
       asChild
       className={twMerge('text-12 text-secondary', className)}
     >
-      <p id={formDescriptionId} data-slot="form-description" {...props}>
+      <p id={formDescriptionId} {...props} data-slot="form-description">
         {children}
       </p>
     </Typography>
@@ -378,9 +374,9 @@ const FormMessage: FC<FormMessageProps> = ({
     <Typography asChild className={twMerge('text-12 text-red-text', className)}>
       <p
         id={formMessageId}
-        data-slot="form-message"
         role={invalid ? 'alert' : undefined}
         {...props}
+        data-slot="form-message"
       >
         {body}
       </p>

@@ -201,10 +201,14 @@ export const Sparkline = ({
 
   const values = useMemo(
     () =>
-      data.map((row) =>
-        typeof row === 'number' || row === null
-          ? row
-          : (toNumber((row as Record<string, unknown>)[dataKey]) ?? null),
+      // Numbers and row values alike: NaN, Infinity and non-numbers are gaps.
+      data.map(
+        (row) =>
+          toNumber(
+            typeof row === 'object' && row !== null
+              ? (row as Record<string, unknown>)[dataKey]
+              : row,
+          ) ?? null,
       ),
     [data, dataKey],
   )

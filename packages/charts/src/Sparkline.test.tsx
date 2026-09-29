@@ -147,6 +147,23 @@ describe('Sparkline', () => {
     expect(within(table).getAllByRole('cell')[2]).toHaveTextContent('–')
   })
 
+  it('treats NaN and infinite numbers as gaps, like missing row values', () => {
+    const { container } = render(
+      <Sparkline
+        title="Trend"
+        data={[0, Number.NaN, 10, Number.POSITIVE_INFINITY, 5]}
+        curve="linear"
+      />,
+    )
+    // The finite values keep their scale (0 to 10); the others split the line.
+    expect(lines(container)).toEqual(['M0,100h0', 'M50,0h0', 'M100,50h0'])
+    expect(
+      within(screen.getByRole('table'))
+        .getAllByRole('cell')
+        .map((cell) => cell.textContent),
+    ).toEqual(['0', '–', '10', '–', '5'])
+  })
+
   it('renders on the server', () => {
     const html = renderToString(
       <Sparkline title="Trend" data={[1, 2, 3]} table={false} />,

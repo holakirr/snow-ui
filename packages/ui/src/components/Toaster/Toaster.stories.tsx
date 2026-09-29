@@ -335,18 +335,30 @@ export const Stacked: Story = {
       await waitFor(() => expect(viewport()).toHaveAttribute('data-expanded'))
     })
 
-    await step('a fourth toast closes the oldest', async () => {
-      // Focus leaves the stack, which collapses again.
-      await userEvent.click(show)
-      await waitFor(() =>
-        expect(viewport()).not.toHaveAttribute('data-expanded'),
-      )
-      await waitFor(() =>
-        expect(canvas.queryByText('Report exported')).not.toBeInTheDocument(),
-      )
-      await expect(toastOf('Changes saved')).toHaveAttribute('data-front')
-      // No focus ring in the screenshot.
-      show.blur()
-    })
+    await step(
+      'a fourth toast closes the oldest, fading in place',
+      async () => {
+        const oldest = toastOf('Report exported')
+        const top = oldest.getBoundingClientRect().top
+        // Focus leaves the stack, which collapses again.
+        await userEvent.click(show)
+        await expect(oldest).toHaveAttribute('data-state', 'closed')
+        // It fades where it was, behind the others, instead of sliding down
+        // from the front position.
+        await expect(getComputedStyle(oldest).animationName).toBe('animate-out')
+        await expect(oldest.getBoundingClientRect().top).toBeLessThanOrEqual(
+          top + 1,
+        )
+        await waitFor(() =>
+          expect(viewport()).not.toHaveAttribute('data-expanded'),
+        )
+        await waitFor(() =>
+          expect(canvas.queryByText('Report exported')).not.toBeInTheDocument(),
+        )
+        await expect(toastOf('Changes saved')).toHaveAttribute('data-front')
+        // No focus ring in the screenshot.
+        show.blur()
+      },
+    )
   },
 }

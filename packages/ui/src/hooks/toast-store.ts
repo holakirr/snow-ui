@@ -94,11 +94,30 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
-/** The `limit` of each mounted `<Toaster>`, by its `id`. */
-const toasterLimits = new Map<string | undefined, number>()
+/**
+ * How many open toasts a toaster that isn't mounted yet keeps: a `<Toaster>`
+ * mounted later (after the effects that showed them, or lazily) trims them
+ * to its own `limit` when it registers it.
+ */
+const PENDING_TOAST_LIMIT = 20
 
-const limitOf = (toasterId: string | undefined) =>
-  toasterLimits.get(toasterId) ?? DEFAULT_TOAST_LIMIT
+/**
+ * The limits of the mounted `<Toaster>`s, by `id`: one entry per mounted
+ * toaster (two can share an `id`); the last one mounted wins.
+ */
+const toasterLimits = new Map<string | undefined, { limit: number }[]>()
+
+const limitOf = (toasterId: string | undefined) => {
+  const entries = toasterLimits.get(toasterId)
+  return entries?.[entries.length - 1]?.limit ?? PENDING_TOAST_LIMIT
+}
+
+/**
+ * A `limit` prop as a usable limit: a whole number from 1, `Infinity`
+ * allowed; `NaN` (e.g. `Number(undefined)`) is the default, 1.
+ */
+export const normalizeToastLimit = (limit: number): number =>
+  Number.isNaN(limit) ? DEFAULT_TOAST_LIMIT : Math.max(1, Math.floor(limit))
 
 /**
  * Closes the open toasts of a toaster beyond its limit, oldest first
@@ -197,13 +216,16 @@ export function dispatch(action: Action) {
 
 /**
  * Sets the limit of the `<Toaster>` with this `id` while it is mounted and
- * closes its toasts over the new limit. Returns the unregister function.
+ * closes its toasts over the new limit. Returns the unregister function,
+ * which removes only this registration: another mounted toaster with the
+ * same `id` keeps its limit.
  */
 export const registerToasterLimit = (
   toasterId: string | undefined,
   limit: number,
 ): (() => void) => {
-  toasterLimits.set(toasterId, limit)
+  const entry = { limit: normalizeToastLimit(limit) }
+  toasterLimits.set(toasterId, [...(toasterLimits.get(toasterId) ?? []), entry])
   const next = closeOverLimit(memoryState.toasts, toasterId)
   if (next.some((t, index) => t !== memoryState.toasts[index])) {
     memoryState = { ...memoryState, toasts: next }
@@ -212,6 +234,8 @@ export const registerToasterLimit = (
     }
   }
   return () => {
-    if (toasterLimits.get(toasterId) === limit) toasterLimits.delete(toasterId)
+    const entries = toasterLimits.get(toasterId)?.filter((e) => e !== entry)
+    if (entries?.length) toasterLimits.set(toasterId, entries)
+    else toasterLimits.delete(toasterId)
   }
 }

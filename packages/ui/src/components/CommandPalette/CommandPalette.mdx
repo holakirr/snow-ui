@@ -99,19 +99,21 @@ The popup renders in a portal at the end of `<body>`, so it takes the theme of `
 
 - The popup is a `role="dialog"`, named by a visually hidden title (`label`, "Search" by default).
 - The field is a `combobox` (`aria-expanded`, `aria-autocomplete="list"`) that controls a `listbox` named by `label`. Focus stays in the field; the highlighted `option` is `aria-selected` and the field's `aria-activedescendant`. Items are grouped in `group`s named by their heading.
-- Keyboard:
-
-| Key | Does |
-| --- | --- |
-| the `hotkey` | toggle the palette |
-| ↓ / ↑ | move the highlight to the next / previous enabled item, wrapping around |
-| Enter | select the highlighted item |
-| Escape | close the palette |
-| Tab | move between the field and its clear button, shown when the field has text (focus stays in the dialog) |
-
 - The palette is a modal Radix Dialog: opening moves focus to the search field, the rest of the page is hidden from assistive technology and ignores the pointer, and a click outside closes it. Closing returns focus to the trigger.
 - The empty message and the loading text are in a `status` live region, so screen readers announce them; `loading` also sets `aria-busy` on the list.
 - Built-in strings: `label` ("Search"), `placeholder` ("Search"), `emptyMessage` ("No results") and `loadingLabel` ("Loading").
+
+### Keyboard
+
+Focus stays in the search field; the arrow keys move the highlight (the Default story's test and the unit tests):
+
+| Key | Action |
+| --- | --- |
+| the `hotkey` | open the palette, or close it. `mod` is ⌘ or Ctrl (`mod+k`: ⌘ + K or Ctrl + K); a hotkey without `mod`, `meta`, `ctrl` or `alt` (e.g. `/`) is ignored while focus is in a field, so it doesn't close the open palette |
+| ArrowDown / ArrowUp | move the highlight to the next / previous enabled item, wrapping around. Typing highlights the first result again |
+| Enter | select the highlighted item; with `closeOnSelect` (on by default) the palette closes and focus returns to the trigger |
+| Escape | close the palette, even with text in the field (it doesn't clear it first) |
+| Tab / Shift + Tab | move between the field and its clear button, shown when the field has text; focus stays in the dialog |
 
 ### Deviations from the Figma kit
 
@@ -158,5 +160,7 @@ The full table is in the package README.
 - [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the built-in strings.
 
 ## Props
+
+`CommandPalette` takes no other attributes: `className` styles the popup, and the `trigger` is your own element.
 
 <Controls />

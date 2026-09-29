@@ -31,7 +31,7 @@
     "demo": "bun run --filter @holakirr/snow-ui-demo dev",
     "storybook": "storybook dev -p 53741",
     "build:storybook": "storybook build --disable-telemetry && bun run registry:build",
-    "registry": "bun packages/registry/src/cli.ts generate",
+    "registry": "bun run --filter @holakirr/snow-ui-registry generate",
     "registry:build": "bun packages/registry/src/cli.ts build",
     "size": "size-limit",
     "visual": "bash visual/docker.sh",

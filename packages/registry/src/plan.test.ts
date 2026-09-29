@@ -181,7 +181,7 @@ describe('renderRegistry', () => {
         null,
         2,
       )}\n`,
-    ).toMatchFileSnapshot('./__snapshots__/fixture-registry.json')
+    ).toMatchFileSnapshot('./__snapshots__/fixture-registry.snap')
   })
 
   it('references items by URL of the build and resolves version ranges', () => {

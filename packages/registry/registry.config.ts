@@ -102,15 +102,21 @@ export default defineConfig({
     'Design: SnowUI by ByeWind (https://snowui.byewind.com).',
   ],
   docsUrl: (id) => `${SITE}/?path=/docs/${id}--docs`,
-  itemDocs: (item) =>
-    item.type === 'registry:ui' && item.import && item.exports?.length
-      ? [
-          `import { ${item.exports.includes(item.title) ? item.title : item.exports[0]} } from '@/components/snow-ui/${item.import}'`,
-          '',
-          `The components need the SnowUI theme (tokens, fonts, utilities). New project: npx shadcn@latest init ${SITE}/r/snow-ui.json. Existing Tailwind v4 project: npm i @holakirr/snow-ui, then @import "@holakirr/snow-ui/theme.css" and @import "@holakirr/snow-ui/fonts.css" after @import "tailwindcss".`,
-          'Built on Radix UI: keep a radix-* style in components.json (in a base-* project the CLI rewrites asChild for Base UI and the code no longer compiles). React 19.',
-        ].join('\n')
-      : undefined,
+  // Printed by the CLI after an install, for every item it installed: the
+  // import line of each component, the requirements once (every component
+  // depends on snow-core).
+  itemDocs: (item) => {
+    if (item.name === 'snow-core') {
+      return `SnowUI components need the SnowUI theme (npx shadcn@latest init ${SITE}/r/snow-ui.json in a new project; npm i @holakirr/snow-ui and @import "@holakirr/snow-ui/theme.css" and "@holakirr/snow-ui/fonts.css" after Tailwind in an existing one), a radix-* style in components.json (a base-* style rewrites asChild and breaks them) and React 19. Guide: ${SITE}/?path=/docs/guides-registry--docs`
+    }
+    if (item.type !== 'registry:ui' || !item.import || !item.exports?.length) {
+      return undefined
+    }
+    const name = item.exports.includes(item.title)
+      ? item.title
+      : item.exports[0]
+    return `import { ${name} } from '@/components/snow-ui/${item.import}'`
+  },
 
   extraItems: ({ url, namespace, items }) => [
     {

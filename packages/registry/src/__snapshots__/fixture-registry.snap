@@ -10,7 +10,9 @@
         "title": "Button",
         "description": "Button starts an action. It has one variant.",
         "author": "Test",
-        "dependencies": ["@radix-ui/react-slot@^1.3.0"],
+        "dependencies": [
+          "@radix-ui/react-slot@^1.3.0"
+        ],
         "registryDependencies": [
           "http://localhost:4173/r/core.json",
           "http://localhost:4173/r/text.json"
@@ -83,7 +85,9 @@
         "title": "Kbd",
         "description": "A keyboard key.",
         "author": "Test",
-        "registryDependencies": ["http://localhost:4173/r/text.json"],
+        "registryDependencies": [
+          "http://localhost:4173/r/text.json"
+        ],
         "files": [
           {
             "path": "test-ui/components/Text/Kbd.tsx",
@@ -188,7 +192,9 @@
         "title": "Core",
         "description": "Shared utilities.",
         "author": "Test",
-        "dependencies": ["clsx@^2.1.0"],
+        "dependencies": [
+          "clsx@^2.1.0"
+        ],
         "files": [
           {
             "path": "test-ui/utils/cn.ts",
@@ -228,8 +234,12 @@
         "title": "Base",
         "description": "The theme.",
         "author": "Test",
-        "dependencies": ["@test/ui@file:/abs/test-ui.tgz"],
-        "registryDependencies": ["http://localhost:4173/r/core.json"],
+        "dependencies": [
+          "@test/ui@file:/abs/test-ui.tgz"
+        ],
+        "registryDependencies": [
+          "http://localhost:4173/r/core.json"
+        ],
         "meta": {
           "package": "@test/ui",
           "version": "1.2.3",

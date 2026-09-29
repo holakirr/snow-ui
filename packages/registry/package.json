@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Generates the @snow-ui shadcn registry (copy-paste components) from the @holakirr/snow-ui sources.",
   "scripts": {
-    "generate": "bun src/cli.ts generate",
+    "generate": "bun src/cli.ts generate && biome format --write manifest.json",
     "build": "bun src/cli.ts build",
     "smoke": "bun smoke/smoke.ts",
     "test": "vitest run",

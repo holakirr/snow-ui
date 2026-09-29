@@ -65,7 +65,15 @@ async function main() {
       // No manifest yet.
     }
     if (values.check) {
-      if (current !== text) {
+      // Compared as data: the committed file is formatted by Biome.
+      let same = false
+      try {
+        same =
+          JSON.stringify(JSON.parse(current)) === JSON.stringify(plan.manifest)
+      } catch {
+        // Missing or invalid.
+      }
+      if (!same) {
         console.error(
           `${config.manifest} is out of date: run \`bun run registry\` and commit it.`,
         )

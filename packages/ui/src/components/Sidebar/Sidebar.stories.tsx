@@ -11,8 +11,10 @@ import {
   UsersThreeIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 import { expect, waitFor } from 'storybook/test'
 
+import { photos } from '../../test/photos'
 import { Avatar, AvatarFallback, AvatarImage } from '../Avatar'
 import {
   DropdownMenu,
@@ -39,6 +41,7 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from './Sidebar'
+import { SIDEBAR_COOKIE_NAME } from './sidebar-cookie'
 
 // Menu items.
 const items = [
@@ -113,7 +116,7 @@ const Header = () => (
         <SidebarMenuButton>
           <picture>
             <Avatar size="sm" className="group-data-[collapsible=icon]:size-4">
-              <AvatarImage src="https://github.com/shadcn.png" alt="" />
+              <AvatarImage src={photos[3]} alt="" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </picture>
@@ -208,34 +211,40 @@ const rtlItems = [
  */
 export const RTL: Story = {
   globals: { dir: 'rtl' },
-  render: () => (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>التطبيق</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {rtlItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
-                      <a href="#rtl">
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-      <main className="flex flex-1 items-start p-4">
-        <SidebarTrigger size="lg" />
-      </main>
-    </SidebarProvider>
-  ),
+  render: () => {
+    // Controlled, so it starts expanded whatever the sidebar_state cookie
+    // says: on the docs page, the Offcanvas story's play function collapses
+    // the sidebar (and saves that) while this story mounts.
+    const [open, setOpen] = useState(true)
+    return (
+      <SidebarProvider open={open} onOpenChange={setOpen}>
+        <Sidebar>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>التطبيق</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {rtlItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={item.isActive}>
+                        <a href="#rtl">
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+        <main className="flex flex-1 items-start p-4">
+          <SidebarTrigger size="lg" />
+        </main>
+      </SidebarProvider>
+    )
+  },
   play: async ({ canvas, canvasElement }) => {
     const sidebar = canvasElement.querySelector('[data-side]') as HTMLElement
     await expect(sidebar).toHaveAttribute('data-side', 'right')
@@ -259,6 +268,12 @@ export const Offcanvas: Story = {
   // The same picture as the other stories once the play function has
   // reopened the sidebar.
   tags: ['skip-visual'],
+  // The play function starts from the expanded sidebar, whatever state a
+  // reader or another story saved in the sidebar_state cookie.
+  beforeEach: () => {
+    // biome-ignore lint/suspicious/noDocumentCookie: the component's own cookie
+    document.cookie = `${SIDEBAR_COOKIE_NAME}=true; path=/`
+  },
   parameters: {
     targetSize: {
       exceptions: [

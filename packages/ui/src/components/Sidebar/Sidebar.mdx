@@ -277,7 +277,7 @@ The parts render plain elements, or library components (`SidebarTrigger` a Butto
 
 ### SidebarProvider
 
-Holds the state and renders the layout's flex `<div>`. The desktop state is `open` with `onOpenChange` (controlled) or `defaultOpen` (uncontrolled, `true` by default), saved in the `sidebar:state` cookie. It handles Ctrl + B / ⌘ + B.
+Holds the state and renders the layout's flex `<div>`. The desktop state is `open` with `onOpenChange` (controlled) or `defaultOpen` (uncontrolled, `true` by default), saved in the `sidebar_state` cookie (the pre-5.1 `sidebar:state` cookie is still read). It handles Ctrl + B / ⌘ + B.
 
 <ArgTypes of={SidebarProvider} />
 

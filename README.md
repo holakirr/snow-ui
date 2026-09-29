@@ -48,6 +48,7 @@ bun run registry       # regenerate packages/registry/manifest.json (the shadcn 
 bun run test:storybook # every story in headless Chromium, light and dark theme (+ play functions, axe)
 bun run test:storybook:browsers # every story in headless Firefox and WebKit (+ play functions)
 bun run test:ssr       # every ui story rendered on the server (Node) and hydrated in Chromium
+bun run test:docs      # every docs page of the built Storybook in headless Chromium (needs `build:storybook`)
 bun run test:coverage  # ui and charts unit tests + Storybook tests with V8 coverage and thresholds
 bun run size           # bundle-size budgets (needs `bun run build`)
 bun run visual         # visual regression tests in Docker (`visual:update` writes baselines)
@@ -87,6 +88,7 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 | Package checks ([publint](https://publint.dev), [are-the-types-wrong](https://arethetypeswrong.github.io)) | `bun run build` | `build` | a package's `exports`/types would break for some consumers |
 | Built packages | `bun run test:dist` | `build` | a Tailwind v4 project using `theme.css` doesn't get every component class, `index.css` has an unlayered rule, `fonts.css` points at a missing file, or the charts' exports, `'use client'` modules or `styles.css` (layer, ui tokens) break |
 | Docs pages | `bun run test:scripts` | `build` | an exported component has no props table on its docs page, a table would be empty, or a page lacks Figma links, an import, an example, Accessibility (with a keyboard table for interactive components) or Props |
+| Docs pages in the browser | `bun run build:storybook && bun run test:docs` | `docs` | a docs page of the built Storybook, or a story on it, throws or logs a console error, Storybook shows its error display, or a story's render or `play` function fails on the page |
 | Storybook tests ([`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon)) | `bun run test:storybook` | `storybook-tests` | a story throws while rendering or its `play` function (interaction test) fails, in the light or the dark theme |
 | Firefox and WebKit | `bun run test:storybook:browsers` | `storybook-browsers (firefox)`, `storybook-browsers (webkit)` | a story throws or its `play` function fails in Firefox or WebKit (Safari's engine), light theme |
 | Server rendering and hydration | `bun run test:ssr` | `ssr` | a ui story throws when rendered with `react-dom/server` in Node, or React reports a hydration mismatch or an error when it is hydrated in Chromium |

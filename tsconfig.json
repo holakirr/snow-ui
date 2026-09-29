@@ -12,6 +12,7 @@
     "ssr/*.ts",
     "ssr/*.tsx",
     "visual/*.ts",
+    "docs-render/*.ts",
     "scripts/*.ts"
   ]
 }

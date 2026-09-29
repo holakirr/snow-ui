@@ -44,9 +44,15 @@ export const staticInputClasses =
  * a 1px `control-border-invalid` stroke in every state: Secondary/Red (3.36:1
  * on white), `red-text` with more contrast. The design has no error state;
  * the error text is the `FormMessage`.
+ *
+ * The read-only states repeat it, because the Static ones (`read-only:hover:`)
+ * would outweigh `aria-invalid:`.
+ *
+ * Shared by the fields, not exported from the package: for a field of your
+ * own, use these utilities directly.
  */
 export const invalidInputClasses =
-  'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid'
+  'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid aria-invalid:read-only:hover:inset-ring-control-border-invalid aria-invalid:read-only:focus:inset-ring-control-border-invalid'
 
 // The field shell: the same look, driven by the inner <input>. Focus is the
 // Figma "Focus" state: Black/40% stroke + the 4px Focus ring, while the

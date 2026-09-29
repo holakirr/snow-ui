@@ -92,7 +92,7 @@ An icon in `startContent` with no `label` and no `endContent` makes a square ico
 ## Accessibility
 
 - It renders a native `<button type="button">`. Pass `type="submit"` to submit a form.
-- The accessible name is the label (plus any `children`). An icon-only button has no text, so give it an `aria-label` (the stories use `title`); a button whose only content is icons (`startContent`, `endContent` or children) and has no name logs a development warning. The label of an `aria-hidden` icon names nothing. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
+- The accessible name is the label (plus any `children`). An icon-only button has no text, so give it an `aria-label` (the stories use `title`); a button whose only content is icons (`startContent`, `endContent` or children) and has no name logs a development warning. An icon is an `<svg>`, an `<img>` or a component named like one (`StarIcon`); any other element may render text (`<FormattedMessage id="save" />`), so it doesn't warn. The label of an `aria-hidden` icon names nothing. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
 - Screen readers announce a `disabled` button as unavailable.
 
 ### Keyboard

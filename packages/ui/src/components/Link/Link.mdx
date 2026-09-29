@@ -63,7 +63,7 @@ import { Link } from '@holakirr/snow-ui'
 
 ## Accessibility
 
-- It renders an `<a>`. With an `href` it is a native link; without one (on the link, or on the `asChild` element) it gets `role="link"` and `tabIndex={0}`, so it stays in the tab order. Always pass an `href` (with `asChild`, the router link renders it).
+- It renders an `<a>`. With an `href` it is a native link; without one (on the link, or on the `asChild` element) it gets `role="link"` and `tabIndex={0}`, so it stays in the tab order, and Enter clicks it, so its `onClick` runs from the keyboard (Space doesn't, as for any link). Elements that activate themselves (an `<a href>` a router link renders, a `<button>`) are left to the browser. Still pass an `href` when the link goes somewhere (with `asChild`, the router link renders it): it can be opened in a new tab and shows its address.
 - The accessible name is the text. The arrow and the external icon are `aria-hidden`; an `external` link's name ends with "(opens in a new tab)".
 - `external` sets `target="_blank"` and `rel="noopener noreferrer"`. Pass `target` or `rel` to override them.
 

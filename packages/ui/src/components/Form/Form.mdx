@@ -49,7 +49,7 @@ The story below uses the react-hook-form adapter with a zod schema; type one cha
 3. **Label** (`FormLabel`, optional): a [Label](?path=/docs/components-label--docs) (12/16, `text-secondary`) linked to the control; `red-text` while the field is invalid.
 4. **Control** (`FormControl`): a Slot around exactly one control. It gives the control the item's `id`, `aria-invalid` and an `aria-describedby` with the ids of the description and the message that are rendered.
 5. **Description** (`FormDescription`, optional): a 12/16 `<p>` in `text-secondary`.
-6. **Message** (`FormMessage`): a 12/16 `<p role="alert">` in `red-text`. It shows `error`; without one (or with `error={true}`) it shows its children, and it renders nothing when both are empty.
+6. **Message** (`FormMessage`): a 12/16 `<p>` in `red-text`, `role="alert"` while the field is invalid. It shows `error`; without one (or with `error={true}`) it shows its children, and it renders nothing when both are empty.
 
 ## Variants
 
@@ -105,8 +105,8 @@ const form = useForm({ defaultValues: { username: '' } })
 ## Accessibility
 
 - `FormLabel` renders a `<label for>` pointing at the control's id, so a click on it focuses the control and screen readers read it as the name.
-- `aria-describedby` makes screen readers read the description, and the error while the field is invalid, after the name. It only lists the parts that are rendered (`FormItem` watches its children, so a description you show and hide, or your own part with the ids of `useFormField()`, counts too), and is left out when there are none.
-- `FormMessage` is an alert (`role="alert"`, WCAG technique ARIA19), so screen readers announce an error when it appears; pass `role="status"` for a polite announcement. Still move the focus to the first invalid field on submit (react-hook-form does; the story's interaction test checks it).
+- `aria-describedby` makes screen readers read the description, and the error while the field is invalid, after the name. It only lists the parts that are rendered, by their own `id` if you give them one, and is left out when there are none. The server HTML already has it, for the parts `FormItem` finds among its children (inside your own components they are added after hydration). `FormDescription` and `FormMessage` count wherever they render, in a portal too. Your own part with the ids of `useFormField()` counts when it is in the document as `FormItem` renders; inside the item, `FormItem` also notices it appearing, going or getting the id later (after a microtask, so wrap such a change in `await act(…)` in tests). One outside the item that changes on its own counts from the item's next render.
+- While the field is invalid, `FormMessage` is an alert (`role="alert"`, WCAG technique ARIA19), so screen readers announce an error when it appears (a message on a valid field is plain text); pass `role="status"` for a polite announcement. Still move the focus to the first invalid field on submit (react-hook-form does; the story's interaction test checks it).
 - The Slider passes `aria-describedby` and `aria-invalid` on to its thumbs, and the RadioGroup keeps them on its `role="radiogroup"`.
 - The control must be one element that a `<label for>` can name: Input, Textarea, InputSmall, Search, a `SelectTrigger`, a Checkbox or a Switch. The RadioGroup root (a `<div>`) and the Slider root (a `<span>`) can't be: name them with `aria-labelledby` and the id of a visible label instead.
 
@@ -138,7 +138,7 @@ The full table is in the package README.
 
 `FormControl` is always a Slot: it renders its only child and merges its props into it, the child's winning for the same prop.
 
-- Don't give the control its own `id` or `aria-describedby`: they would replace the ones `FormControl` sets and break the links to the label and the messages.
+- Don't give the control its own `id`: it would replace the one `FormControl` sets and break the link to the label. An `aria-describedby` on `FormControl` or on the control is kept, before the description and the message.
 - `FormDescription` and `FormMessage` pass their props to the `<p>`; `className` merges with their classes.
 
 ## Do and don't
@@ -196,7 +196,7 @@ A [Label](?path=/docs/components-label--docs) whose `htmlFor` points at the cont
 
 ### FormControl
 
-A Radix Slot around exactly one control: it renders the child with the item's `id`, `aria-invalid` and an `aria-describedby` that lists the rendered `FormDescription` and `FormMessage` (none when neither is rendered), and merges its own props into it.
+A Radix Slot around exactly one control: it renders the child with the item's `id`, `aria-invalid` and an `aria-describedby` that lists the rendered `FormDescription` and `FormMessage` (none when neither is rendered) after its own and the child's, and merges its own props into it.
 
 <ArgTypes of={FormControl} />
 
@@ -208,7 +208,7 @@ A 12/16 `<p>` in `text-secondary`, linked to the control by `aria-describedby`.
 
 ### FormMessage
 
-A 12/16 `<p>` in `red-text` with `role="alert"` (pass `role="status"` for a polite announcement), linked to the control while the field is invalid. It shows `error`, or its children; it renders nothing when both are empty.
+A 12/16 `<p>` in `red-text`, with `role="alert"` while the field is invalid (pass `role="status"` for a polite announcement), linked to the control while it is rendered. It shows `error`, or its children; it renders nothing when both are empty.
 
 <ArgTypes of={FormMessage} />
 

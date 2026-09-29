@@ -55,3 +55,32 @@ export const Invalid: Story = {
     ).toBe(true)
   },
 }
+
+/**
+ * Invalid and read-only (the Figma "Static"): the red stroke stays on hover
+ * and focus. The same picture as Invalid at rest, so no screenshot.
+ */
+export const InvalidReadOnly: Story = {
+  tags: ['!autodocs', 'skip-visual'],
+  args: {
+    defaultValue: 'Too short',
+    readOnly: true,
+    'aria-invalid': true,
+  },
+  play: async ({ canvas, userEvent, step }) => {
+    const textarea = canvas.getByRole('textbox', { name: 'Message' })
+    const isRed = () =>
+      hasInsetRing(textarea, 'text-control-border-invalid', '1px')
+
+    await expect(await isRed()).toBe(true)
+    await step('hovered', async () => {
+      await userEvent.hover(textarea)
+      await expect(await isRed()).toBe(true)
+    })
+    await step('focused', async () => {
+      await userEvent.click(textarea)
+      await expect(textarea).toHaveFocus()
+      await expect(await isRed()).toBe(true)
+    })
+  },
+}

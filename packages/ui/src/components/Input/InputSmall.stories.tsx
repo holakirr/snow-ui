@@ -72,3 +72,24 @@ export const Invalid: Story = {
     }
   },
 }
+
+/**
+ * Invalid and read-only: the red stroke stays on hover and focus, on both
+ * variants. The same picture as Invalid at rest, so no screenshot.
+ */
+export const InvalidReadOnly: Story = {
+  ...Invalid,
+  tags: ['!autodocs', 'skip-visual'],
+  args: { ...Invalid.args, readOnly: true },
+  play: async ({ canvas, userEvent }) => {
+    for (const input of canvas.getAllByRole('textbox', { name: 'Name' })) {
+      const isRed = () =>
+        hasInsetRing(input, 'text-control-border-invalid', '1px')
+      await userEvent.hover(input)
+      await expect(await isRed()).toBe(true)
+      await userEvent.click(input)
+      await expect(input).toHaveFocus()
+      await expect(await isRed()).toBe(true)
+    }
+  },
+}

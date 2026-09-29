@@ -164,6 +164,18 @@ describe('createPlan problems', () => {
     ).toThrow(/dynamic import\(\) is not supported/)
   })
 
+  it("rejects a group's import that names none of its files", () => {
+    const config = fixtureConfig()
+    const groups = config.groups.map((rule) =>
+      rule.kind === 'group' && rule.name === 'core'
+        ? { ...rule, import: 'utils/renamed-away' }
+        : rule,
+    )
+    expect(() => createPlan({ ...config, groups }, writeFixture())).toThrow(
+      /Item "core" imports from "utils\/renamed-away", which is none of its files/,
+    )
+  })
+
   it('rejects comments before a directive (the CLI would drop them)', () => {
     expect(() =>
       plan({

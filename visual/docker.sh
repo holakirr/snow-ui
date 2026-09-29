@@ -92,10 +92,12 @@ if [[ " $* " != *" --workers"* && " $* " != *" -j"* ]]; then
 fi
 args+=("$@")
 
-# One visual run per machine. The lock is a directory holding the owner's pid;
-# a lock whose owner is gone is taken over.
+# One visual run at a time. The lock is a directory holding the owner's pid;
+# a lock whose owner is gone is taken over. Its path is fixed per user (not
+# under $TMPDIR, which differs between shells, sudo, launchd jobs and
+# sandboxes), so every run of the same user sees it.
 label=org.snow-ui.visual
-lock="${TMPDIR:-/tmp}/snow-ui-visual.lock"
+lock="/tmp/snow-ui-visual-$(id -u).lock"
 container=
 waiting=
 until mkdir "$lock" 2>/dev/null; do
@@ -122,14 +124,18 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-# Holding the lock, any container still labelled as a visual run is left over
-# from a run that was killed (its CLI died, the container kept going).
-stale=$(docker ps -q --filter "label=$label")
-if [[ -n "$stale" ]]; then
-  echo "Stopping visual test containers left over from a killed run..."
-  # shellcheck disable=SC2086
-  docker stop --time 5 $stale >/dev/null
-fi
+# Containers left over from a killed run (its CLI died, the container kept
+# going) are stopped. Each container carries the pid of the script that
+# started it: only those whose script is gone are stopped, never the one of a
+# live run (of another user, or one that didn't see this lock).
+while read -r id owner; do
+  [[ -n "$id" ]] || continue
+  if [[ -n "$owner" ]] && kill -0 "$owner" 2>/dev/null; then
+    continue
+  fi
+  echo "Stopping visual test container ${id}, left over from a killed run (pid ${owner:-?})..."
+  docker stop --time 5 "$id" >/dev/null || true
+done < <(docker ps --filter "label=$label" --format "{{.ID}} {{.Label \"$label.pid\"}}")
 
 container="snow-ui-visual-$$"
 echo "Running visual tests in ${image} (${platform}, ${cpus} CPUs, ${memory})"
@@ -140,6 +146,7 @@ echo "Running visual tests in ${image} (${platform}, ${cpus} CPUs, ${memory})"
 docker run --rm --init --ipc=host \
   --name "$container" \
   --label "$label" \
+  --label "$label.pid=$$" \
   --platform "$platform" \
   --cpus "$cpus" \
   --memory "$memory" \

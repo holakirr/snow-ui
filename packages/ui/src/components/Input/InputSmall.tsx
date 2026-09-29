@@ -29,7 +29,7 @@ const inputVariants = cva(
       variant: {
         gray: 'bg-black-4 hover:bg-black-10 focus:bg-surface-1 focus:inset-ring-[0.5px] focus:inset-ring-control-border-strong read-only:hover:bg-black-4 disabled:bg-black-4 contrast-more:inset-ring-control-border',
         outline:
-          'bg-surface-1 inset-ring-[0.5px] inset-ring-control-border hover:inset-ring-control-border-strong focus:inset-ring-control-border-strong read-only:hover:inset-ring-control-border read-only:focus:inset-ring-control-border disabled:inset-ring-black-10',
+          'bg-surface-1 inset-ring-[0.5px] inset-ring-control-border hover:inset-ring-control-border-strong focus:inset-ring-control-border-strong read-only:not-aria-invalid:hover:inset-ring-control-border read-only:not-aria-invalid:focus:inset-ring-control-border disabled:inset-ring-black-10',
       },
     },
     defaultVariants: {

@@ -35,9 +35,13 @@ export const disabledInputClasses =
 export const focusInputClasses =
   'focus:inset-ring-control-border-strong focus:ring-4 focus:ring-focus'
 
-/** Figma "Static" (read-only): the stroke doesn't react to hover or focus. */
+/**
+ * Figma "Static" (read-only): the stroke doesn't react to hover or focus. An
+ * invalid read-only field keeps its red stroke (these selectors would
+ * outweigh `aria-invalid:`).
+ */
 export const staticInputClasses =
-  'read-only:hover:inset-ring-control-border read-only:focus:inset-ring-control-border'
+  'read-only:not-aria-invalid:hover:inset-ring-control-border read-only:not-aria-invalid:focus:inset-ring-control-border'
 
 /**
  * Invalid, while the field has `aria-invalid="true"` (`FormControl` sets it):

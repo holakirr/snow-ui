@@ -55,6 +55,11 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
+    // Not in the generated table: the props are generic (polymorphic).
+    className: {
+      description: "Merged with the component's classes (yours win conflicts).",
+      table: { type: { summary: 'string' } },
+    },
     variant: {
       options: Object.values(BUTTON_VARIANTS),
       control: { type: 'radio' },

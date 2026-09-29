@@ -35,9 +35,26 @@ const meta = {
     },
   },
   tags: ['autodocs'],
+  // The props come through IconText's generic (polymorphic) props, which the
+  // docs' docgen can't resolve: it types them `any` and has no `className`.
   argTypes: {
-    interactive: { control: { type: 'boolean' } },
-    active: { control: { type: 'boolean' } },
+    className: {
+      description: "Merged with the row's classes (yours win conflicts).",
+      table: { type: { summary: 'string' } },
+    },
+    interactive: {
+      control: { type: 'boolean' },
+      table: { type: { summary: 'boolean' } },
+    },
+    active: {
+      control: { type: 'boolean' },
+      table: { type: { summary: 'boolean' } },
+    },
+    icon: { table: { type: { summary: 'ReactNode' } } },
+    flip: { table: { type: { summary: 'boolean' } } },
+    asChild: { table: { type: { summary: 'boolean' } } },
+    as: { table: { type: { summary: 'ElementType' } } },
+    ref: { table: { type: { summary: 'Ref<HTMLElement>' } } },
   },
   args: {
     icon: tile(<BugBeetleIcon />, 'bg-color-2'),

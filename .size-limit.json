@@ -28,6 +28,13 @@
     "limit": "25 kB"
   },
   {
+    "name": "@holakirr/snow-ui: { Progress, ProgressCircle }",
+    "path": "packages/ui/dist/index.js",
+    "import": "{ Progress, ProgressCircle }",
+    "ignore": ["react", "react-dom", "react-hook-form"],
+    "limit": "13.2 kB"
+  },
+  {
     "name": "@holakirr/snow-ui: { Spinner }",
     "path": "packages/ui/dist/index.js",
     "import": "{ Spinner }",

@@ -76,6 +76,8 @@
   /* Spinner and ProgressCircle: the "Loading A" icon's motion, in CSS. */
   --animate-spinner-turn: spinner-turn 2s linear infinite;
   --animate-spinner-arc: spinner-arc 1.5s ease-in-out infinite;
+  --animate-progress-indeterminate: progress-indeterminate 1.5s ease-in-out
+    infinite;
 }
 
 /*
@@ -307,6 +309,19 @@
     100% {
       stroke-dasharray: 42 150;
       stroke-dashoffset: -59;
+    }
+  }
+  /*
+   * The indeterminate Progress bar (40% of the track) crosses the track from
+   * the start to the end side: `--progress-direction` is -1 in right-to-left
+   * text.
+   */
+  @keyframes progress-indeterminate {
+    from {
+      translate: calc(-100% * var(--progress-direction, 1)) 0;
+    }
+    to {
+      translate: calc(250% * var(--progress-direction, 1)) 0;
     }
   }
 }

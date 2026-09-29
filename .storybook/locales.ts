@@ -63,6 +63,11 @@ export const ruMessages: Messages = {
     next: 'Следующая страница',
     more: 'Другие страницы',
   },
+  progress: {
+    label: 'Ход выполнения',
+    // Russian puts a (narrow no-break) space before the percent sign.
+    value: (value, max) => `${Math.round((value / max) * 100)}\u202f%`,
+  },
   search: {
     placeholder: 'Поиск',
     clear: 'Очистить поиск',

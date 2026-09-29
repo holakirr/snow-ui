@@ -97,6 +97,15 @@ export type Messages = {
     /** Screen-reader text of `PaginationEllipsis`. */
     more: string
   }
+  progress: {
+    /**
+     * Accessible name of a `Progress` or `ProgressCircle` without an
+     * `aria-label` or `aria-labelledby`.
+     */
+    label: string
+    /** The value read out (`aria-valuetext`) of a determinate progress bar. */
+    value: (value: number, max: number) => string
+  }
   search: {
     placeholder: string
     /** The clear button. */
@@ -192,6 +201,10 @@ export const defaultMessages: Required<Messages> = {
     previous: 'Go to previous page',
     next: 'Go to next page',
     more: 'More pages',
+  },
+  progress: {
+    label: 'Progress',
+    value: (value, max) => `${Math.round((value / max) * 100)}%`,
   },
   search: {
     placeholder: 'Search',

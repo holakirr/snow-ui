@@ -1,6 +1,6 @@
 # Contributing
 
-Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook` (or `bun run test:coverage`, which also checks coverage), `bun run build`, `bun run test:dist`, `bun run size` and, if you touched a Code Connect template, `bun run code-connect`; if you changed how anything looks, also `bun run visual` (Docker). The demo app (`apps/demo`, see its [README](apps/demo/README.md)) consumes the built packages: after `bun run build`, `bun run typecheck:demo`, `bun run build:demo` and `bun run test:demo` check that a Next.js app still builds and works with your change.
+Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook` (or `bun run test:coverage`, which also checks coverage), `bun run build`, `bun run test:dist`, `bun run size` and, if you touched a Code Connect template, `bun run code-connect`; if you touched a docs page or a story, `bun run build:storybook` and `bun run test:docs`; if you changed how anything looks, also `bun run visual` (Docker). The demo app (`apps/demo`, see its [README](apps/demo/README.md)) consumes the built packages: after `bun run build`, `bun run typecheck:demo`, `bun run build:demo` and `bun run test:demo` check that a Next.js app still builds and works with your change.
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org) (`feat(ui): …`, `fix(icons): …`, `docs: …`).
 
@@ -108,6 +108,10 @@ Requirements: Docker (on Apple Silicon the amd64 image runs through Rosetta, a f
 ### Docs pages
 
 `scripts/docs-pages.test.ts` (part of `bun run test:scripts`, so of `bun run test` and CI's `build` job) checks the usage pages against the docgen Storybook builds their props tables from (the same options, `.storybook/docgen.ts`): every component exported by `@holakirr/snow-ui`, `@holakirr/snow-ui/react-hook-form`, `@holakirr/snow-ui-charts` and `IconBase` has a props table on a page (`<ArgTypes of={X} />`, or `<Controls />` / `<ArgTypes />` of the stories' `component`), no table is empty, and every page has the [outline](#documentation) (Figma links, an import example, an example, Accessibility with a keyboard table unless the page is in its `STATIC_PAGES`, Props).
+
+### Docs pages in the browser
+
+`bun run test:docs` (after `bun run build:storybook`) opens every docs page of the built Storybook in headless Chromium (`docs-render/pages.spec.ts`: the `docs` entries of `storybook-static/index.json`, i.e. the guides, the usage pages and the automatic docs pages), in docs mode as the site shows them, and fails a page on an uncaught exception, a console error, Storybook's error display (an MDX page that throws, such as a code span evaluated as an expression) or a story on it whose render or `play` function fails. Every story iframe on a page is loaded, not only those in view. Nothing leaves the machine: remote images get a placeholder and any other remote request fails, and its console error fails the page. It needs no Docker (no screenshots); the first run needs `bunx playwright install chromium`. CI runs it in the `docs` job, on the Storybook the `build` job built.
 
 ### Generated token files
 

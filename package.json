@@ -22,6 +22,7 @@
     "test:storybook:browsers": "vitest run -c vitest.browsers.config.ts",
     "test:ssr": "vitest run -c ssr/vitest.config.ts --project ssr-render && vitest run -c ssr/vitest.config.ts --project ssr-hydrate",
     "test:demo": "bun run --filter @holakirr/snow-ui-demo test:e2e",
+    "test:docs": "playwright test -c docs-render/playwright.config.ts",
     "test:coverage": "vitest run --coverage --project @holakirr/snow-ui --project @holakirr/snow-ui-charts --project storybook --project storybook-dark --project storybook-prefs",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",

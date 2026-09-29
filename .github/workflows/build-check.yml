@@ -116,7 +116,8 @@ jobs:
       - name: Build Storybook
         run: bun run build:storybook
 
-      # Consumed by the `size` and `visual` jobs below.
+      # Consumed by the jobs below: the package builds by `size`, `demo` and
+      # `registry-smoke`, the Storybook build by `visual` and `docs`.
       - name: Upload package builds
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -343,6 +344,59 @@ jobs:
 
       - name: Server rendering and hydration of every ui story
         run: bun run test:ssr
+
+  # Every docs page of the Storybook built by the `build` job (guides, usage
+  # pages, automatic docs pages) opened in headless Chromium (`bun run
+  # test:docs`, docs-render/): an uncaught exception, a console error,
+  # Storybook's error display, or a story on the page (inline or in an
+  # iframe) whose render or play function fails, fails the job. No network:
+  # remote images get a placeholder, other remote requests fail.
+  docs:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Get Playwright version
+        id: playwright
+        run: echo "version=$(jq -r .version node_modules/@playwright/test/package.json)" >> "$GITHUB_OUTPUT"
+
+      # The same key as the storybook-tests job: one cached Chromium.
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      - name: Download Storybook build
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: storybook-static
+          path: storybook-static
+
+      - name: Docs pages in the browser
+        run: bun run test:docs
 
   # Screenshot comparison of every story (light + dark) against the committed
   # Linux baselines in visual/__screenshots__, in the same Playwright image

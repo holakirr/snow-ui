@@ -105,6 +105,10 @@ Requirements: Docker (on Apple Silicon the amd64 image runs through Rosetta, a f
 
 `bun run tokens` regenerates the files built from the design tokens (see [Design tokens](#design-tokens)); `bun run build` runs it too. CI runs it first and fails when that changes anything, so commit the generated files with the token change.
 
+### Registry
+
+The `registry` job checks the [shadcn registry](#registry-shadcn-cli): `bun run registry` must leave `packages/registry/manifest.json` unchanged, the registry package's tests must pass (`bun run test` runs them) and the pinned shadcn CLI must validate and build it. The `registry-smoke` job installs every item into fresh apps and builds them (see below).
+
 ## Design tokens
 
 The design tokens live in `packages/ui/tokens/` as [W3C Design Tokens (DTCG 2025.10)](https://www.designtokens.org/) files, the single source of truth for everything the library derives from them:
@@ -152,9 +156,19 @@ The Storybook ([snow-ui.holakirr.com](https://snow-ui.holakirr.com)) is the refe
 
 - Show existing stories with `<Canvas of={XStories.Story} />`; don't write demos in MDX, so every example is also a tested story. Link to other pages with `?path=/docs/<story id>--docs`.
 - Check every claim against the code: sizes from the classes, keyboard behaviour from the Radix primitive and the `play` tests, accessibility deviations from the [ui README](packages/ui/README.md#accessibility-deviations-from-the-figma-kit).
-- `.storybook/blocks.tsx` has the page blocks: `FigmaLinks` (links to the component in Figma, from the stories' `parameters.design`) and `DoDont` / `Do` / `Dont`.
+- `.storybook/blocks.tsx` has the page blocks: `FigmaLinks` (links to the component in Figma, from the stories' `parameters.design`) and `DoDont` / `Do` / `Dont`. `InstallTabs` (`.storybook/InstallTabs.tsx`, available on every page without an import) shows how to install a component: see [Registry](#registry-shadcn-cli).
 - **Figma links:** every stories file sets `parameters.design = { type: 'figma', url }` with the component set's node in the owner's licensed copy of the kit (`https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=<id>`, the node id with `-` for `:`), or the Figma page when there is no component set. [`@storybook/addon-designs`](https://github.com/storybookjs/addon-designs) shows it in the "Design" panel. The file is private, so the links and the embed only open for people with access to it; don't add screenshots of the design.
 - MDX in `packages/ui/src` is excluded from the package's Tailwind scan (`src/index.css`), so class names in the docs don't end up in `index.css`.
+
+## Registry (shadcn CLI)
+
+Every component is also served as copy-paste source for the [shadcn CLI](https://ui.shadcn.com/docs/registry) (`@snow-ui`, https://snow-ui.holakirr.com/r/), generated from `packages/ui/src` by `packages/registry` (its [README](packages/registry/README.md) has the design and the decisions). There is no second copy of the components: the registry is another output of the same sources.
+
+- **When the import graph changes** — a new component, file, export or npm import, a moved file — run `bun run registry` and commit `packages/registry/manifest.json`. A new component directory becomes an item by itself; a new top-level module (outside `components/`, `hooks/`, `utils/`, `constants/`, `types/`) fails until `packages/registry/registry.config.ts` puts it in an item.
+- **Runtime code** may only import runtime modules (not stories, tests, `code-connect/` or `test/` helpers), with static imports; a comment must not precede `'use client'`. The generator fails otherwise.
+- **Usage pages** show the installation block right under the Figma links: `<InstallTabs item="<item name>" />` (the item names are in the manifest: `button`, `checkbox`, `snow-ui-provider`…). A registry test fails when a page lacks it.
+- `bun run registry:build` builds `/r/*.json`, `/r/registry.json` and `llms.txt` into `storybook-static/` (`bun run build:storybook` runs it; Vercel serves them). `bun packages/registry/smoke/smoke.ts --app next|vite|next-shadcn` (after `bun run build`) installs every item into a fresh app from a local copy and builds it, as the `registry-smoke` job does.
+- The shadcn CLI is pinned (`packages/registry/package.json`), like the app scaffolders of the smoke test (`smoke/smoke.ts`): bump them together in one PR and run the smoke test.
 
 ## Figma Code Connect
 

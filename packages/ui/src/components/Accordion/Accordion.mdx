@@ -1,5 +1,6 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { AccordionContent, AccordionItem, AccordionTrigger } from './Accordion'
 import * as AccordionStories from './Accordion.stories'
 
 <Meta of={AccordionStories} />
@@ -67,8 +68,19 @@ import {
 
 - Each trigger is a `<button>` inside an `<h3>` (Radix `Accordion.Header`), with `aria-expanded` and `aria-controls`. The heading level is fixed at 3: check that it fits your page's outline.
 - An open item's content is a `role="region"` labelled by its trigger.
-- Keyboard (Radix): Tab moves through the triggers and the open content; Enter or Space opens and closes the focused item. ArrowDown and ArrowUp move to the next and previous trigger, wrapping at the ends, and Home and End to the first and last; disabled triggers are skipped. With `orientation="horizontal"`, ArrowRight and ArrowLeft move instead.
 - The trigger's name is its text. The arrow icon is decorative.
+
+### Keyboard
+
+Every trigger is a tab stop (Radix Accordion):
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift + Tab | move to the next / previous trigger, or to the focusable elements in an open item's content |
+| Enter, Space | open or close the focused item; in a `single` accordion without `collapsible`, the open item's trigger does nothing |
+| ArrowDown / ArrowUp | move focus to the next / previous trigger, wrapping around at the ends; disabled triggers are skipped |
+| Home / End | move focus to the first / last trigger |
+| ArrowRight / ArrowLeft | with `orientation="horizontal"`, instead of ArrowDown / ArrowUp: move focus to the next / previous trigger. In right-to-left text ArrowLeft moves to the next trigger |
 
 ### Deviations from the Figma kit
 
@@ -123,4 +135,28 @@ const [open, setOpen] = useState<string[]>(['shipping'])
 
 ## Props
 
+The parts are the [Radix Accordion](https://www.radix-ui.com/primitives/docs/components/accordion#api-reference) parts with the library's styles: they take the Radix props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### Accordion
+
+The root, a `<div>`: `type` (required) picks `single` or `multiple`; the open items are controlled with `value` and `onValueChange`, or uncontrolled with `defaultValue`. `orientation` (`vertical` by default) picks the arrow keys that move between triggers, and `disabled` disables every item.
+
 <Controls />
+
+### AccordionItem
+
+A section, a `<div>` identified by its `value`. `disabled` disables its trigger.
+
+<ArgTypes of={AccordionItem} />
+
+### AccordionTrigger
+
+The item's heading: an `<h3>` holding the `<button>` that opens and closes the item. `className` and the other attributes go to the button.
+
+<ArgTypes of={AccordionTrigger} />
+
+### AccordionContent
+
+The item's content, a `role="region"` `<div>` labelled by its trigger. It is not rendered while the item is closed, unless `forceMount` is set.
+
+<ArgTypes of={AccordionContent} />

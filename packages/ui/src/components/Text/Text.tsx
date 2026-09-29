@@ -1,6 +1,9 @@
+import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
-import type { ElementType, ReactNode } from 'react'
+import type { ElementType, ReactNode, Ref } from 'react'
 import type { PolymorphicProps, TextSize } from '../../types'
+import { warnAsDeprecated } from '../../utils/deprecation'
+import { slotted } from '../../utils/slot'
 import { twMerge } from '../../utils/tw-merge'
 
 const defaultTag = 'span'
@@ -21,10 +24,13 @@ const textStyles = cva(['font-sans font-normal transition-all'], {
     semibold: {
       true: 'font-semibold',
     },
+    // `start` / `end` follow the text direction; `left` / `right` don't.
     align: {
+      start: 'text-start',
       left: 'text-left',
       center: 'text-center',
       right: 'text-right',
+      end: 'text-end',
     },
     italic: {
       true: 'italic',
@@ -36,7 +42,7 @@ const textStyles = cva(['font-sans font-normal transition-all'], {
   defaultVariants: {
     // Figma's Text component defaults to "14 Regular".
     size: 14,
-    align: 'left',
+    align: 'start',
   },
 })
 
@@ -44,16 +50,41 @@ const textStyles = cva(['font-sans font-normal transition-all'], {
  * Props for the Text component.
  *
  * @template C - The element type for the Text component.
- * @example <Text as="h1" size={TEXT_SIZES[24]} semibold align="center" italic underline>Example</Text>
+ * @example <Typography asChild size={24} semibold align="center"><h1>Example</h1></Typography>
  */
 export type TextProps<C extends ElementType = typeof defaultTag> =
   PolymorphicProps<C> &
     VariantProps<typeof textStyles> & {
       /**
+       * Render the only child element (a heading, a paragraph, a `<label>`…)
+       * with the text styles instead of a `<span>`. Its own classes are
+       * merged in and win conflicts.
+       * @example <Typography asChild size={24}><h1>Title</h1></Typography>
+       * @default false
+       */
+      asChild?: boolean
+
+      /**
+       * The element to render instead of a `<span>`.
+       * @deprecated Use `asChild`: `<Typography asChild><h1>…</h1></Typography>`.
+       * `as` will be removed in the next major version.
+       */
+      as?: C
+
+      /**
        * The size of the text: a Figma text style (font size / line height).
        * @default 14
        */
       size?: TextSize
+
+      /** The rendered element: the `<span>`, or the child with `asChild`. */
+      ref?: Ref<HTMLElement>
+
+      /**
+       * Text alignment. `start` and `end` follow the text direction.
+       * @default "start"
+       */
+      align?: 'start' | 'left' | 'center' | 'right' | 'end'
     }
 
 /**
@@ -61,6 +92,7 @@ export type TextProps<C extends ElementType = typeof defaultTag> =
  */
 function Typography<C extends ElementType = typeof defaultTag>({
   as,
+  asChild = false,
   size,
   semibold,
   align,
@@ -71,17 +103,31 @@ function Typography<C extends ElementType = typeof defaultTag>({
   ref,
   ...props
 }: TextProps<C>): ReactNode {
+  if (as !== undefined) {
+    warnAsDeprecated(
+      'Typography',
+      '<Typography asChild><h1>…</h1></Typography>',
+    )
+  }
+
+  const classes = twMerge(
+    textStyles({ size, semibold, align, italic, underline }),
+    className,
+  )
+
+  if (asChild) {
+    const slot = slotted(children, classes)
+    return (
+      <Slot ref={ref} {...props} className={slot.className}>
+        {slot.child}
+      </Slot>
+    )
+  }
+
   const Component = as ?? defaultTag
 
   return (
-    <Component
-      ref={ref}
-      className={twMerge(
-        textStyles({ size, semibold, align, italic, underline }),
-        className,
-      )}
-      {...props}
-    >
+    <Component ref={ref} className={classes} {...props}>
       {children}
     </Component>
   )

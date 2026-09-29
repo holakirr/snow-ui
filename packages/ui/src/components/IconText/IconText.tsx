@@ -1,6 +1,9 @@
+import { Slot } from '@radix-ui/react-slot'
 import { cva } from 'class-variance-authority'
-import type { ElementType, ReactNode } from 'react'
+import type { ElementType, ReactNode, Ref } from 'react'
 import type { PolymorphicProps } from '../../types'
+import { warnAsDeprecated } from '../../utils/deprecation'
+import { slotted } from '../../utils/slot'
 import { twMerge } from '../../utils/tw-merge'
 import { Typography } from '../Text'
 
@@ -34,7 +37,19 @@ const iconTextStyles = cva('inline-flex gap-2 rounded-12 text-black', {
 export type IconTextProps<C extends ElementType = typeof defaultTag> =
   PolymorphicProps<C> & {
     /**
+     * Render the only child element instead of a `<div>`, e.g. a link or a
+     * `<button type="button">` for an interactive row (give a button its
+     * `type`: the deprecated `as="button"` set it): the icon and the child's
+     * own children (the text) are rendered inside it.
+     * @example <IconText asChild interactive icon={<HomeIcon />}><a href="/">Home</a></IconText>
+     * @default false
+     */
+    asChild?: boolean
+
+    /**
      * The element type to render, e.g. `a` or `button` for an interactive row.
+     * @deprecated Use `asChild`: `<IconText asChild><a href="/">…</a></IconText>`.
+     * `as` will be removed in the next major version.
      * @default 'div'
      */
     as?: C
@@ -70,6 +85,9 @@ export type IconTextProps<C extends ElementType = typeof defaultTag> =
      * @default false
      */
     active?: boolean
+
+    /** The rendered element: the `<div>`, or the child with `asChild`. */
+    ref?: Ref<HTMLElement>
   }
 
 /**
@@ -79,6 +97,7 @@ export type IconTextProps<C extends ElementType = typeof defaultTag> =
  */
 function IconText<C extends ElementType = typeof defaultTag>({
   as,
+  asChild = false,
   icon,
   vertical = false,
   flip = false,
@@ -88,28 +107,57 @@ function IconText<C extends ElementType = typeof defaultTag>({
   children,
   ...props
 }: IconTextProps<C>): ReactNode {
-  const Component: ElementType = as ?? defaultTag
-  const text =
-    typeof children === 'string' || typeof children === 'number' ? (
-      <Typography size={14} className="min-w-0 text-inherit">
-        {children}
-      </Typography>
-    ) : (
-      children
+  if (as !== undefined) {
+    warnAsDeprecated(
+      'IconText',
+      '<IconText asChild><a href="/">…</a></IconText>',
     )
+  }
+
+  const classes = twMerge(
+    iconTextStyles({ vertical, interactive, active }),
+    className,
+  )
+  const renderContent = (content: ReactNode) => {
+    const text =
+      typeof content === 'string' || typeof content === 'number' ? (
+        <Typography size={14} className="min-w-0 text-inherit">
+          {content}
+        </Typography>
+      ) : (
+        content
+      )
+    return (
+      <>
+        {flip ? text : icon}
+        {flip ? icon : text}
+      </>
+    )
+  }
+
+  if (asChild) {
+    const slot = slotted(children, classes, renderContent)
+    return (
+      <Slot
+        data-active={active || undefined}
+        {...props}
+        className={slot.className}
+      >
+        {slot.child}
+      </Slot>
+    )
+  }
+
+  const Component: ElementType = as ?? defaultTag
 
   return (
     <Component
       type={Component === 'button' ? 'button' : undefined}
       data-active={active || undefined}
-      className={twMerge(
-        iconTextStyles({ vertical, interactive, active }),
-        className,
-      )}
+      className={classes}
       {...props}
     >
-      {flip ? text : icon}
-      {flip ? icon : text}
+      {renderContent(children)}
     </Component>
   )
 }

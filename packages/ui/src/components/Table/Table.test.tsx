@@ -75,8 +75,8 @@ describe('Table', () => {
       expect(row).toHaveClass(
         'hover:[&>td]:bg-black-4',
         'data-[state=selected]:[&>td]:bg-black-4',
-        'data-[state=selected]:[&>td:first-child]:rounded-l-12',
-        'data-[state=selected]:[&>td:last-child]:rounded-r-12',
+        'data-[state=selected]:[&>td:first-child]:rounded-s-12',
+        'data-[state=selected]:[&>td:last-child]:rounded-e-12',
       )
     }
     expect(plain).not.toHaveAttribute('data-state')

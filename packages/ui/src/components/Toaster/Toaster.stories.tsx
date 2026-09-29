@@ -5,7 +5,13 @@ import { expect, waitFor } from 'storybook/test'
 import { toast } from '../../hooks'
 import type { SimpleSize, StatusNotify } from '../../types'
 import { Button } from '../Button'
-import { Toast, ToastProvider, ToastTitle, ToastViewport } from './Toast'
+import {
+  Toast,
+  ToastClose,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from './Toast'
 import { Toaster } from './Toaster'
 
 const meta: Meta<typeof Toaster> = {
@@ -56,6 +62,34 @@ export const AllVariants: Story = {
 export const AllVariantsDark: Story = {
   ...AllVariants,
   globals: { theme: 'dark' },
+}
+
+/**
+ * Right-to-left text: the status icon is on the right, the close button on
+ * the left, and toasts are swiped away to the left.
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => (
+    <ToastProvider duration={Number.POSITIVE_INFINITY}>
+      <Toast size="lg" open>
+        <StatusIcon status="success" size={20} className="shrink-0" />
+        <ToastTitle size="lg">تم الحفظ</ToastTitle>
+        <ToastClose size="lg" />
+      </Toast>
+      <ToastViewport className="static left-auto w-auto translate-x-0 flex-col items-start p-0" />
+    </ToastProvider>
+  ),
+  play: async ({ canvas }) => {
+    const title = canvas.getByText('تم الحفظ')
+    const close = canvas.getByRole('button', { name: 'Close' })
+    await expect(close.getBoundingClientRect().right).toBeLessThanOrEqual(
+      title.getBoundingClientRect().left,
+    )
+    await expect(
+      canvas.getByRole('region', { name: /notifications/i }),
+    ).toBeInTheDocument()
+  },
 }
 
 const ToastExample = () => (

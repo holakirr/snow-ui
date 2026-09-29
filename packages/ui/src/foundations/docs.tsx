@@ -39,11 +39,11 @@ const Page = ({
 }) => (
   <div className="flex max-w-5xl flex-col gap-10 p-8 text-black">
     <header className="flex flex-col gap-2">
-      <Typography as="h1" size={32} semibold>
-        {title}
+      <Typography asChild size={32} semibold>
+        <h1>{title}</h1>
       </Typography>
-      <Typography as="p" className="max-w-3xl text-secondary">
-        {intro}
+      <Typography asChild className="max-w-3xl text-secondary">
+        <p>{intro}</p>
       </Typography>
     </header>
     {children}
@@ -61,12 +61,12 @@ const Section = ({
 }) => (
   <section className="flex flex-col gap-4">
     <div className="flex flex-col gap-1">
-      <Typography as="h2" size={18} semibold>
-        {title}
+      <Typography asChild size={18} semibold>
+        <h2>{title}</h2>
       </Typography>
       {description && (
-        <Typography as="p" className="max-w-3xl text-secondary">
-          {description}
+        <Typography asChild className="max-w-3xl text-secondary">
+          <p>{description}</p>
         </Typography>
       )}
     </div>

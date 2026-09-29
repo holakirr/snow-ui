@@ -73,7 +73,7 @@ describe('IconBox', () => {
     const badge = container.querySelector('[data-slot="badge"]')
 
     expect(badge).toHaveTextContent('3')
-    expect(badge).toHaveClass('top-[-2px]', 'right-[-2px]')
+    expect(badge).toHaveClass('top-[-2px]', 'end-[-2px]')
   })
 
   it('renders no badge for badge={false}', () => {

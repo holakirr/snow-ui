@@ -252,23 +252,117 @@ export const WeekStartsOnSunday: Story = {
   ),
 }
 
+/**
+ * Localized by `SnowUIProvider` (the "Locale" toolbar, pinned to Russian
+ * here): its `locale` (react-day-picker's `ru`) names the months, weekdays
+ * and days, its `messages` the toolbar actions and the navigation landmark.
+ */
 export const RuLocale: Story = {
+  globals: { locale: 'ru' },
   render: () => {
     const [date, setDate] = useState<Date | undefined>(new Date(2025, 0, 20))
 
     return (
       <Calendar
-        locale={ru}
         mode="single"
         selected={date}
         onSelect={setDate}
         defaultMonth={new Date(2025, 0, 1)}
         captionLayout="dropdown"
         showTodayButton
-        todayLabel="Сегодня"
+        lastSelection={new Date(2024, 11, 3)}
         onTodayClick={setDate}
       />
     )
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('grid')).toHaveAccessibleName(/январь 2025/i)
+    await expect(
+      canvas.getByRole('navigation', { name: 'Навигация по месяцам' }),
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Сегодня' }),
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Последний выбор' }),
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Предыдущий месяц' }),
+    ).toBeInTheDocument()
+  },
+}
+
+/**
+ * The `locale`, `todayLabel` (and `dir`) props win over the provider. With
+ * the English default messages, the previous / next buttons and their
+ * landmark take the react-day-picker locale's own labels.
+ */
+export const LocaleProp: Story = {
+  globals: { locale: 'en' },
+  render: () => (
+    <Calendar
+      locale={ru}
+      mode="single"
+      defaultMonth={new Date(2025, 0, 1)}
+      showTodayButton
+      todayLabel="Сегодня!"
+    />
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('grid')).toHaveAccessibleName(/январь 2025/i)
+    await expect(
+      canvas.getByRole('button', { name: 'Сегодня!' }),
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Перейти к предыдущему месяцу' }),
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('navigation', { name: 'Панель навигации' }),
+    ).toBeInTheDocument()
+  },
+}
+
+/**
+ * Right-to-left text: the toolbar actions are on the right, the previous
+ * arrow points right, a range's rounded ends follow the direction and the
+ * arrow keys follow the reading direction (ArrowLeft is the next day).
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => {
+    const [range, setRange] = useState<DateRange | undefined>({
+      from: new Date(2025, 0, 13),
+      to: new Date(2025, 0, 16),
+    })
+
+    return (
+      <Calendar
+        mode="range"
+        selected={range}
+        onSelect={setRange}
+        defaultMonth={new Date(2025, 0, 1)}
+        showTodayButton
+      />
+    )
+  },
+  play: async ({ canvas, userEvent }) => {
+    const previous = canvas.getByRole('button', { name: /previous month/i })
+    const next = canvas.getByRole('button', { name: /next month/i })
+    await expect(previous.getBoundingClientRect().left).toBeGreaterThan(
+      next.getBoundingClientRect().left,
+    )
+
+    const day = (name: RegExp) => canvas.getByRole('button', { name })
+    const start = day(/January 13th, 2025/)
+    const end = day(/January 16th, 2025/)
+    // The range starts on the right.
+    await expect(start.getBoundingClientRect().left).toBeGreaterThan(
+      end.getBoundingClientRect().left,
+    )
+
+    await userEvent.click(day(/January 20th, 2025/))
+    await userEvent.keyboard('{ArrowLeft}')
+    await expect(day(/January 21st, 2025/)).toHaveFocus()
   },
 }
 

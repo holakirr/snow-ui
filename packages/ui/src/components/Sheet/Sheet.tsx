@@ -2,10 +2,13 @@
 
 import { CloseIcon } from '@holakirr/snow-ui-icons'
 import * as SheetPrimitive from '@radix-ui/react-dialog'
+import { useDirection } from '@radix-ui/react-direction'
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
+import { resolveSide } from '../../utils/direction'
 import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
+import { useMessages, useSnowUI } from '../SnowUIProvider'
 
 const Sheet = SheetPrimitive.Root
 
@@ -51,33 +54,60 @@ const sheetVariants = cva(
   },
 )
 
+/** The edge a sheet slides in from; `start` / `end` follow the direction. */
+export type SheetSide = 'top' | 'bottom' | 'left' | 'right' | 'start' | 'end'
+
 type SheetContentProps = SheetPrimitive.DialogContentProps &
-  VariantProps<typeof sheetVariants>
+  Omit<VariantProps<typeof sheetVariants>, 'side'> & {
+    /**
+     * The edge the sheet slides in from. `start` and `end` are the left and
+     * right edges in left-to-right text and the other way round in
+     * right-to-left text (the `dir` of `SnowUIProvider`).
+     * @default "end"
+     */
+    side?: SheetSide
+    /**
+     * Accessible name of the close button.
+     * @default messages.sheet.close: "Close"
+     */
+    closeLabel?: string
+  }
 
 const SheetContent: FC<SheetContentProps> = ({
-  side = 'right',
+  side = 'end',
+  closeLabel,
   className,
   children,
   ...props
-}) => (
-  <SheetPortal>
-    <SheetOverlay />
-    <SheetPrimitive.Content
-      className={twMerge(sheetVariants({ side }), className)}
-      {...props}
-    >
-      <SheetPrimitive.Close
-        asChild
-        className="absolute right-4 top-4 text-black"
+}) => {
+  const messages = useMessages()
+  const { dir } = useSnowUI()
+  const direction = useDirection()
+  const label = closeLabel ?? messages.sheet.close
+  const physicalSide = resolveSide(side, direction)
+
+  return (
+    <SheetPortal>
+      <SheetOverlay />
+      <SheetPrimitive.Content
+        dir={dir}
+        data-side={physicalSide}
+        className={twMerge(sheetVariants({ side: physicalSide }), className)}
+        {...props}
       >
-        <Button aria-label="Close" leftContent={<CloseIcon />}>
-          <span className="sr-only">Close</span>
-        </Button>
-      </SheetPrimitive.Close>
-      {children}
-    </SheetPrimitive.Content>
-  </SheetPortal>
-)
+        <SheetPrimitive.Close
+          asChild
+          className="absolute end-4 top-4 text-black"
+        >
+          <Button aria-label={label} startContent={<CloseIcon />}>
+            <span className="sr-only">{label}</span>
+          </Button>
+        </SheetPrimitive.Close>
+        {children}
+      </SheetPrimitive.Content>
+    </SheetPortal>
+  )
+}
 SheetContent.displayName = SheetPrimitive.Content.displayName
 
 type SheetHeaderProps = ComponentProps<'div'>
@@ -85,7 +115,7 @@ type SheetHeaderProps = ComponentProps<'div'>
 const SheetHeader: FC<SheetHeaderProps> = ({ className, ...props }) => (
   <div
     className={twMerge(
-      'flex flex-col space-y-2 text-center sm:text-left',
+      'flex flex-col space-y-2 text-center sm:text-start',
       className,
     )}
     {...props}

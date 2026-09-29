@@ -52,8 +52,14 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/** A clickable row: `asChild` with a link (or a `<button>`) as the child. */
 export const Interactive: Story = {
-  args: { interactive: true, as: 'a', href: '#notification' },
+  args: {
+    interactive: true,
+    asChild: true,
+    // biome-ignore lint/a11y/useAnchorContent: the ListItem renders its title inside
+    children: <a href="#notification" />,
+  },
 }
 
 export const Active: Story = {
@@ -76,8 +82,8 @@ const Section = ({
   children: ReactNode
 }) => (
   <section aria-label={title} className="flex w-62 flex-col gap-1">
-    <Typography as="h2" size={14} className="px-1 py-2 text-black">
-      {title}
+    <Typography asChild size={14} className="px-1 py-2 text-black">
+      <h2>{title}</h2>
     </Typography>
     <ul className="flex flex-col gap-1">{children}</ul>
   </section>
@@ -164,12 +170,14 @@ const Lists = () => (
       {notifications.map((item) => (
         <ListItem
           key={item.time}
-          as="li"
+          asChild
           interactive
           icon={tile(item.icon, item.tint)}
           title={item.title}
           description={item.time}
-        />
+        >
+          <li />
+        </ListItem>
       ))}
     </Section>
 
@@ -177,20 +185,22 @@ const Lists = () => (
       {activities.map((item, index) => (
         <ListItem
           key={item.time}
-          as="li"
+          asChild
           interactive
           icon={avatar(item.initials, `${item.tint} text-static-black`)}
           title={item.title}
           description={item.time}
           className="relative"
         >
-          {/* The Figma timeline: a Black/10% strip between the avatars. */}
-          {index < activities.length - 1 && (
-            <span
-              aria-hidden
-              className="absolute top-[39px] left-[19.5px] h-[17px] w-px bg-black-10"
-            />
-          )}
+          <li>
+            {/* The Figma timeline: a Black/10% strip between the avatars. */}
+            {index < activities.length - 1 && (
+              <span
+                aria-hidden
+                className="absolute top-[39px] start-[19.5px] h-[17px] w-px bg-black-10"
+              />
+            )}
+          </li>
         </ListItem>
       ))}
     </Section>
@@ -199,11 +209,13 @@ const Lists = () => (
       {contacts.map((name) => (
         <ListItem
           key={name}
-          as="li"
+          asChild
           interactive
           icon={avatar(initialsOf(name))}
           title={name}
-        />
+        >
+          <li />
+        </ListItem>
       ))}
     </Section>
   </div>

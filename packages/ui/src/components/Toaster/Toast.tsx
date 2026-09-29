@@ -8,22 +8,53 @@ import { SIMPLE_SIZES } from '../../constants'
 import type { SimpleSize, StatusNotify } from '../../types'
 import { twMerge } from '../../utils/tw-merge'
 import { buttonVariants } from '../Button'
+import { useMessages, useSnowUI } from '../SnowUIProvider'
 
-const ToastProvider = ToastPrimitives.Provider
+/**
+ * Radix `Toast.Provider`. Its `label` (announced before each toast) defaults
+ * to `messages.toast.label` ("Notification") and, in right-to-left text,
+ * toasts are swiped away to the left.
+ */
+const ToastProvider: FC<ComponentProps<typeof ToastPrimitives.Provider>> = (
+  props,
+) => {
+  const messages = useMessages()
+  const { dir } = useSnowUI()
 
+  return (
+    <ToastPrimitives.Provider
+      label={messages.toast.label}
+      swipeDirection={dir === 'rtl' ? 'left' : 'right'}
+      {...props}
+    />
+  )
+}
+ToastProvider.displayName = 'ToastProvider'
+
+/**
+ * The toast region. Its `label` defaults to `messages.toast.region`
+ * ("Notifications ({hotkey})").
+ */
 const ToastViewport: FC<
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
-> = ({ className, ...props }) => (
-  <ToastPrimitives.Viewport
-    className={twMerge(
-      // `w-max` sizes the viewport to its toasts; with `w-auto` a fixed box at
-      // left: 50% could only use half of the screen and squeezed them.
-      'fixed bottom-0 left-1/2 z-[100] flex max-h-screen w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col-reverse items-center gap-2 p-4 md:max-w-md',
-      className,
-    )}
-    {...props}
-  />
-)
+> = ({ className, ...props }) => {
+  const messages = useMessages()
+  const { dir } = useSnowUI()
+
+  return (
+    <ToastPrimitives.Viewport
+      dir={dir}
+      label={messages.toast.region}
+      className={twMerge(
+        // `w-max` sizes the viewport to its toasts; with `w-auto` a fixed box at
+        // left: 50% could only use half of the screen and squeezed them.
+        'fixed bottom-0 left-1/2 z-[100] flex max-h-screen w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col-reverse items-center gap-2 p-4 md:max-w-md',
+        className,
+      )}
+      {...props}
+    />
+  )
+}
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 /*
@@ -97,16 +128,29 @@ type ToastCloseProps = ComponentProps<typeof ToastPrimitives.Close> &
     size?: SimpleSize
   }
 
-const ToastClose: FC<ToastCloseProps> = ({ className, size, ...props }) => (
-  <ToastPrimitives.Close
-    className={twMerge(toastCloseStyles({ size }), className)}
-    toast-close=""
-    aria-label="Close"
-    {...props}
-  >
-    <CloseIcon size={16} />
-  </ToastPrimitives.Close>
-)
+/**
+ * The close button of a toast, named by `aria-label` (default:
+ * `messages.toast.close`, "Close").
+ */
+const ToastClose: FC<ToastCloseProps> = ({
+  className,
+  size,
+  'aria-label': ariaLabel,
+  ...props
+}) => {
+  const messages = useMessages()
+
+  return (
+    <ToastPrimitives.Close
+      className={twMerge(toastCloseStyles({ size }), className)}
+      toast-close=""
+      aria-label={ariaLabel ?? messages.toast.close}
+      {...props}
+    >
+      <CloseIcon size={16} />
+    </ToastPrimitives.Close>
+  )
+}
 ToastClose.displayName = ToastPrimitives.Close.displayName
 
 const toastTitleStyles = cva('font-normal', {

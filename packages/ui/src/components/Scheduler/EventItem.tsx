@@ -7,8 +7,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '../DropdownMenu'
+import { useSnowUI } from '../SnowUIProvider'
 import { Typography } from '../Text'
-import { HOUR_HEIGHT } from './constants'
+import { DEFAULT_LANG, formatTime, HOUR_HEIGHT } from './constants'
 
 export type EventItemProps = ComponentProps<'div'> & {
   event: CalendarEvent
@@ -21,6 +22,7 @@ export const EventItem: FC<EventItemProps> = ({
   className,
 }) => {
   const { endsAt, date, title, dropdownContentRenderer } = event
+  const lang = useSnowUI().locale?.code ?? DEFAULT_LANG
 
   const duration = endsAt.getTime() - date.getTime()
   const durationInHours = duration / 1000 / 60 / 60
@@ -59,23 +61,13 @@ export const EventItem: FC<EventItemProps> = ({
 
             <div className="flex gap-0.5 text-nowrap opacity-60">
               <Typography size={TEXT_SIZES[12]}>
-                {date
-                  .toLocaleTimeString('ru-RU', {
-                    hour: '2-digit',
-                    minute: 'numeric',
-                  })
-                  .substring(0, 5)}
+                {formatTime(date, lang)}
               </Typography>
 
               <Typography size={TEXT_SIZES[12]}>-</Typography>
 
               <Typography size={TEXT_SIZES[12]}>
-                {endsAt
-                  .toLocaleTimeString('ru-RU', {
-                    hour: '2-digit',
-                    minute: 'numeric',
-                  })
-                  .substring(0, 5)}
+                {formatTime(endsAt, lang)}
               </Typography>
             </div>
           </div>

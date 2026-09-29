@@ -75,7 +75,7 @@ const iconButton = (label: string, icon: ReactNode, onClick?: () => void) => (
     aria-label={label}
     title={label}
     onClick={onClick}
-    leftContent={<IconBox size={20}>{icon}</IconBox>}
+    startContent={<IconBox size={20}>{icon}</IconBox>}
     className="rounded-12 p-1"
   />
 )
@@ -83,8 +83,8 @@ const iconButton = (label: string, icon: ReactNode, onClick?: () => void) => (
 /* ------------------------------ Sidebar ------------------------------ */
 
 const SectionTitle = ({ children }: { children: ReactNode }) => (
-  <Typography as="h2" size={14} className="px-3 py-1 text-secondary">
-    {children}
+  <Typography asChild size={14} className="px-3 py-1 text-secondary">
+    <h2>{children}</h2>
   </Typography>
 )
 
@@ -109,16 +109,14 @@ const NavList = ({ items }: { items: typeof pageItems }) => (
       return (
         <li key={label}>
           <IconText
-            as="a"
-            href={`#${label.toLowerCase()}`}
+            asChild
             interactive
             active={active}
-            aria-current={active ? 'page' : undefined}
             className="flex gap-1"
             icon={
               <span className="flex items-center gap-1">
                 <IconBox size={16} className="text-black-20">
-                  <ArrowLineRightIcon />
+                  <ArrowLineRightIcon className="rtl:-scale-x-100" />
                 </IconBox>
                 <IconBox size={20}>
                   <Icon weight={active ? 'fill' : 'duotone'} />
@@ -126,7 +124,12 @@ const NavList = ({ items }: { items: typeof pageItems }) => (
               </span>
             }
           >
-            {label}
+            <a
+              href={`#${label.toLowerCase()}`}
+              aria-current={active ? 'page' : undefined}
+            >
+              {label}
+            </a>
           </IconText>
         </li>
       )
@@ -138,7 +141,7 @@ const DashboardSidebar = () => (
   <Sidebar
     collapsible="none"
     aria-label="Main"
-    className="h-auto min-h-svh w-53 shrink-0 gap-4 border-r-[0.5px] border-black-10 bg-transparent p-4"
+    className="h-auto min-h-svh w-53 shrink-0 gap-4 border-e-[0.5px] border-black-10 bg-transparent p-4"
   >
     <SidebarHeader className="gap-4 p-0">
       <IconText interactive icon={avatar('BW')}>
@@ -157,8 +160,7 @@ const DashboardSidebar = () => (
         {['Overview', 'Projects'].map((label) => (
           <IconText
             key={label}
-            as="a"
-            href={`#fav-${label.toLowerCase()}`}
+            asChild
             interactive
             className="flex"
             icon={
@@ -167,7 +169,7 @@ const DashboardSidebar = () => (
               </IconBox>
             }
           >
-            {label}
+            <a href={`#fav-${label.toLowerCase()}`}>{label}</a>
           </IconText>
         ))}
       </div>
@@ -303,8 +305,8 @@ const traffic = [
 const DashboardContent = () => (
   <div className="flex flex-col gap-7 p-7">
     <div className="flex items-center justify-between">
-      <Typography as="h1" size={14} semibold>
-        Overview
+      <Typography asChild size={14} semibold>
+        <h1>Overview</h1>
       </Typography>
       <Typography size={12} className="text-secondary">
         Today
@@ -341,14 +343,14 @@ const DashboardContent = () => (
       ))}
     </div>
     <Card className="flex flex-col gap-4 rounded-16 bg-background-2">
-      <Typography as="h2" size={14} semibold>
-        Traffic by Website
+      <Typography asChild size={14} semibold>
+        <h2>Traffic by Website</h2>
       </Typography>
       <dl className="grid grid-cols-[auto_1fr] items-center gap-x-6 gap-y-4">
         {traffic.map(({ site, share }) => (
           <div key={site} className="contents">
-            <Typography as="dt" size={12}>
-              {site}
+            <Typography asChild size={12}>
+              <dt>{site}</dt>
             </Typography>
             <dd>
               <Strip
@@ -421,8 +423,8 @@ const PanelSection = ({
   children: ReactNode
 }) => (
   <section aria-label={title} className="flex flex-col gap-1">
-    <Typography as="h2" size={14} className="px-1 py-2">
-      {title}
+    <Typography asChild size={14} className="px-1 py-2">
+      <h2>{title}</h2>
     </Typography>
     <ul className="flex flex-col gap-1">{children}</ul>
   </section>
@@ -431,13 +433,13 @@ const PanelSection = ({
 const DashboardRightSidebar = () => (
   <aside
     aria-label="Notifications and activity"
-    className="flex w-70 shrink-0 flex-col gap-4 border-l-[0.5px] border-black-10 p-4"
+    className="flex w-70 shrink-0 flex-col gap-4 border-s-[0.5px] border-black-10 p-4"
   >
     <PanelSection title="Notifications">
       {notifications.map((item) => (
         <ListItem
           key={item.time}
-          as="li"
+          asChild
           interactive
           icon={
             <IconBox
@@ -450,26 +452,30 @@ const DashboardRightSidebar = () => (
           }
           title={item.title}
           description={item.time}
-        />
+        >
+          <li />
+        </ListItem>
       ))}
     </PanelSection>
     <PanelSection title="Activities">
       {activities.map((item, index) => (
         <ListItem
           key={item.time}
-          as="li"
+          asChild
           interactive
           icon={avatar(item.initials, `${item.tint} text-static-black`)}
           title={item.title}
           description={item.time}
           className="relative"
         >
-          {index < activities.length - 1 && (
-            <span
-              aria-hidden
-              className="absolute top-[39px] left-[19.5px] h-[17px] w-px bg-black-10"
-            />
-          )}
+          <li>
+            {index < activities.length - 1 && (
+              <span
+                aria-hidden
+                className="absolute top-[39px] start-[19.5px] h-[17px] w-px bg-black-10"
+              />
+            )}
+          </li>
         </ListItem>
       ))}
     </PanelSection>
@@ -477,7 +483,7 @@ const DashboardRightSidebar = () => (
       {contacts.map((name) => (
         <ListItem
           key={name}
-          as="li"
+          asChild
           interactive
           icon={avatar(
             name
@@ -486,7 +492,9 @@ const DashboardRightSidebar = () => (
               .join(''),
           )}
           title={name}
-        />
+        >
+          <li />
+        </ListItem>
       ))}
     </PanelSection>
   </aside>

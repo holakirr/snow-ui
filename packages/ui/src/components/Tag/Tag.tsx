@@ -1,6 +1,10 @@
+'use client'
+
 import { CloseIcon } from '@holakirr/snow-ui-icons'
 import type { ComponentProps, FC, ReactNode } from 'react'
+import { warnDeprecated } from '../../utils/deprecation'
 import { twMerge } from '../../utils/tw-merge'
+import { useMessages } from '../SnowUIProvider'
 import { Typography } from '../Text'
 
 /**
@@ -13,20 +17,36 @@ export type TagState = 'default' | 'active' | 'static'
 
 /**
  * Figma Tag "Type": a rounded tag, or a tag with an arrow tip on one side.
+ * `arrow-start` / `arrow-end` put the tip on the start / end side and point
+ * it that way, so they flip in right-to-left text; `arrow-left` /
+ * `arrow-right` point left / right in both directions.
  */
-export type TagShape = 'default' | 'arrow-left' | 'arrow-right'
+export type TagShape =
+  | 'default'
+  | 'arrow-start'
+  | 'arrow-end'
+  | 'arrow-left'
+  | 'arrow-right'
 
 /**
  * Props for the Tag component.
  */
 export type TagProps = ComponentProps<'div'> & {
   /**
-   * The content to be displayed on the left side of the tag.
+   * Content before the label (on the left in left-to-right text), e.g. a
+   * 12px icon.
+   */
+  startContent?: ReactNode
+
+  /**
+   * @deprecated Use `startContent`, which follows the text direction.
+   * `leftContent` will be removed in the next major version.
    */
   leftContent?: ReactNode
 
   /**
-   * Shows the Figma "Dot" left icon (ignored when `leftContent` is set).
+   * Shows the Figma "Dot" icon before the label (ignored when `startContent`
+   * is set).
    */
   dot?: boolean
 
@@ -36,9 +56,21 @@ export type TagProps = ComponentProps<'div'> & {
   label: string
 
   /**
-   * Callback function to be called when the tag is closed.
+   * Shows a remove button after the label, which calls it.
+   */
+  onRemove?: () => void
+
+  /**
+   * @deprecated Use `onRemove`. `onClose` will be removed in the next major
+   * version.
    */
   onClose?: () => void
+
+  /**
+   * Accessible name of the remove button.
+   * @default messages.tag.remove(label): "Remove tag {label}"
+   */
+  removeLabel?: string
 
   /**
    * The Figma state of the tag.
@@ -64,17 +96,35 @@ const stateClasses: { [K in TagState]: string } = {
   static: 'text-black [--tag-fill:var(--color-black-4)]',
 }
 
+type ArrowShape = Exclude<TagShape, 'default'>
+
+/**
+ * Per arrow shape: the tip (its overlap with the body, its orientation and,
+ * for the physical shapes, its place in right-to-left text) and the body's
+ * padding (12px on the tip side, which the tip overlaps by 8px).
+ */
+const arrowClasses: { [K in ArrowShape]: { tip: string; body: string } } = {
+  'arrow-start': { tip: '-me-2 rtl:-scale-x-100', body: 'ps-1 pe-2' },
+  'arrow-end': { tip: '-ms-2 -scale-x-100 rtl:scale-x-100', body: 'ps-2 pe-1' },
+  // Physical: the tip stays on its side, whatever the direction.
+  'arrow-left': { tip: '-mr-2 rtl:order-last', body: 'pl-1 pr-2' },
+  'arrow-right': {
+    tip: '-ml-2 -scale-x-100 rtl:order-first',
+    body: 'pl-2 pr-1',
+  },
+}
+
 /**
  * The arrow tip from Figma's "Left arrow" tag: the part of the arrow outside
  * the 8px-radius body, which overlaps it by 8px.
  */
-const ArrowTip: FC<{ side: 'left' | 'right' }> = ({ side }) => (
+const ArrowTip: FC<{ className: string }> = ({ className }) => (
   <svg
     aria-hidden
     viewBox="0 0 14.8774 20"
     className={twMerge(
       'h-5 w-[14.8774px] shrink-0 fill-(--tag-fill) transition-all',
-      side === 'left' ? '-mr-2' : '-ml-2 -scale-x-100',
+      className,
     )}
   >
     <path d="M10.7222 20C8.29204 19.9999 5.99322 18.8956 4.4751 16.998L0.876465 12.499C-0.292235 11.0381 -0.292234 8.96185 0.876466 7.50098L4.4751 3.00293C5.99322 1.10528 8.292 0 10.7222 0L14.8774 0C10.4592 0 6.87744 3.58172 6.87744 8L6.87744 12C6.87744 16.4183 10.4592 20 14.8774 20L10.7222 20Z" />
@@ -82,41 +132,62 @@ const ArrowTip: FC<{ side: 'left' | 'right' }> = ({ side }) => (
 )
 
 /**
- * Tag component displays a tag with a label and optional dot and close icon.
- * It has no role of its own. For a list of tags, render them in a
+ * Tag component displays a tag with a label and optional dot and remove
+ * button. It has no role of its own. For a list of tags, render them in a
  * `role="list"` container and pass `role="listitem"` to each tag, or wrap
  * each tag in an `<li>` of a `<ul>` (a `<ul>` can't contain the tags'
  * `<div>`s directly).
  */
 const Tag: FC<TagProps> = ({
+  startContent,
   leftContent,
   dot,
   label,
+  onRemove,
   onClose,
+  removeLabel,
   state = 'default',
   shape = 'default',
   className,
   ref,
   ...props
 }) => {
-  const isArrow = shape !== 'default'
-  const left =
+  const messages = useMessages()
+  if (leftContent !== undefined) {
+    warnDeprecated(
+      'Tag:leftContent',
+      'Tag: `leftContent` is deprecated and will be removed in the next major version. Use `startContent`, which follows the text direction.',
+    )
+  }
+  if (onClose !== undefined) {
+    warnDeprecated(
+      'Tag:onClose',
+      'Tag: `onClose` is deprecated and will be removed in the next major version. Use `onRemove`.',
+    )
+  }
+
+  const remove = onRemove ?? onClose
+  const start =
+    startContent ??
     leftContent ??
     (dot && (
       <span aria-hidden className="flex size-3 items-center justify-center">
         <span className="size-[4.5px] rounded-full bg-current" />
       </span>
     ))
-  const hasLeft = !isArrow && !!left
-  const hasClose = !isArrow && !!onClose
+  const hasStart = shape === 'default' && !!start
+  const hasRemove = shape === 'default' && !!remove
 
   const text = (
-    <Typography as="span" size={12} className="text-inherit">
+    <Typography size={12} className="text-inherit">
       {label}
     </Typography>
   )
 
-  if (isArrow) {
+  if (shape !== 'default') {
+    const { tip, body } = arrowClasses[shape]
+    const tipFirst = shape === 'arrow-start' || shape === 'arrow-left'
+
     return (
       <div
         className={twMerge(
@@ -127,42 +198,44 @@ const Tag: FC<TagProps> = ({
         ref={ref}
         {...props}
       >
-        {shape === 'arrow-left' && <ArrowTip side="left" />}
+        {tipFirst && <ArrowTip className={tip} />}
         <span
           className={twMerge(
             'flex h-5 items-center rounded-8 bg-(--tag-fill) py-0.5 transition-all',
-            shape === 'arrow-left' ? 'pr-2 pl-1' : 'pr-1 pl-2',
+            body,
           )}
         >
           {text}
         </span>
-        {shape === 'arrow-right' && <ArrowTip side="right" />}
+        {!tipFirst && <ArrowTip className={tip} />}
       </div>
     )
   }
+
+  const name = removeLabel ?? messages.tag.remove(label)
 
   return (
     <div
       className={twMerge(
         'group relative inline-flex h-5 shrink-0 items-center justify-center rounded-8 bg-(--tag-fill) py-0.5 transition-all',
-        hasLeft ? 'pl-1' : 'pl-2',
-        hasClose ? 'pr-1' : 'pr-2',
+        hasStart ? 'ps-1' : 'ps-2',
+        hasRemove ? 'pe-1' : 'pe-2',
         stateClasses[state],
         className,
       )}
       ref={ref}
       {...props}
     >
-      {hasLeft && left}
+      {hasStart && start}
 
       {text}
 
-      {hasClose && (
+      {hasRemove && (
         <button
           type="button"
-          onClick={onClose}
-          aria-label={`Remove tag ${label}`}
-          title={`Remove tag ${label}`}
+          onClick={remove}
+          aria-label={name}
+          title={name}
           // The 12px Figma icon, with a 24px hit area (WCAG 2.5.8) drawn by
           // the ::after pseudo-element so the tag keeps its 20px height.
           // Figma: 40% opacity (2.85:1). At 80% the icon meets 3:1 (1.4.11)

@@ -1,7 +1,7 @@
 'use client'
 
 import { SidebarSimple } from '@phosphor-icons/react/dist/csr/SidebarSimple'
-import { Slot } from '@radix-ui/react-slot'
+import { useDirection } from '@radix-ui/react-direction'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
   type ComponentProps,
@@ -15,12 +15,15 @@ import {
   useState,
 } from 'react'
 import { useIsMobile } from '../../hooks'
+import { resolveSide } from '../../utils/direction'
+import { SlotHost } from '../../utils/slot-host'
 import { twMerge } from '../../utils/tw-merge'
 import { Button, type ButtonProps } from '../Button'
 import { Input, type InputProps } from '../Input'
 import { Separator, type SeparatorProps } from '../Separator'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '../Sheet'
 import { Skeleton } from '../Skeleton'
+import { useMessages } from '../SnowUIProvider'
 import {
   Tooltip,
   TooltipContent,
@@ -176,13 +179,20 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
 SidebarProvider.displayName = 'SidebarProvider'
 
 type SidebarProps = ComponentProps<'div'> & {
-  side?: 'left' | 'right'
+  /**
+   * The edge of the screen. `start` and `end` are the left and right edges
+   * in left-to-right text and the other way round in right-to-left text
+   * (the `dir` of `SnowUIProvider`); the rendered element gets the physical
+   * side as `data-side`.
+   * @default "start"
+   */
+  side?: 'start' | 'end' | 'left' | 'right'
   variant?: 'sidebar' | 'floating' | 'inset'
   collapsible?: 'offcanvas' | 'icon' | 'none'
 }
 
 const Sidebar: FC<SidebarProps> = ({
-  side = 'left',
+  side: sideProp = 'start',
   variant = 'sidebar',
   collapsible = 'offcanvas',
   className,
@@ -190,6 +200,8 @@ const Sidebar: FC<SidebarProps> = ({
   ...props
 }) => {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const messages = useMessages()
+  const side = resolveSide(sideProp, useDirection())
 
   if (collapsible === 'none') {
     return (
@@ -220,9 +232,9 @@ const Sidebar: FC<SidebarProps> = ({
           }
           side={side}
         >
-          <SheetTitle className="sr-only">Sidebar</SheetTitle>
+          <SheetTitle className="sr-only">{messages.sidebar.title}</SheetTitle>
           <SheetDescription className="sr-only">
-            Displays the mobile sidebar.
+            {messages.sidebar.description}
           </SheetDescription>
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
@@ -279,25 +291,33 @@ Sidebar.displayName = 'Sidebar'
 
 type SidebarTriggerProps = ButtonProps
 
+/**
+ * Opens and closes the sidebar. Its accessible name is
+ * `messages.sidebar.toggle` ("Toggle Sidebar"); pass `aria-label` to change
+ * it. The icon points the other way in right-to-left text.
+ */
 const SidebarTrigger: FC<SidebarTriggerProps> = ({
   className,
   onClick,
   ...props
 }) => {
   const { toggleSidebar } = useSidebar()
+  const messages = useMessages()
 
   return (
     <Button
       data-sidebar="trigger"
       className={className}
+      // Radix convention: `event.preventDefault()` in your handler skips the
+      // toggle.
       onClick={(event) => {
         onClick?.(event)
-        toggleSidebar()
+        if (!event.defaultPrevented) toggleSidebar()
       }}
-      leftContent={<SidebarSimple />}
+      startContent={<SidebarSimple className="rtl:-scale-x-100" />}
       {...props}
     >
-      <span className="sr-only">Toggle Sidebar</span>
+      <span className="sr-only">{messages.sidebar.toggle}</span>
     </Button>
   )
 }
@@ -305,16 +325,26 @@ SidebarTrigger.displayName = 'SidebarTrigger'
 
 type SidebarRailProps = ComponentProps<'button'>
 
-const SidebarRail: FC<SidebarRailProps> = ({ className, ...props }) => {
+const SidebarRail: FC<SidebarRailProps> = ({
+  className,
+  onClick,
+  ...props
+}) => {
   const { toggleSidebar } = useSidebar()
+  const messages = useMessages()
 
   return (
     <button
+      type="button"
       data-sidebar="rail"
-      aria-label="Toggle Sidebar"
+      aria-label={messages.sidebar.toggle}
       tabIndex={-1}
-      onClick={toggleSidebar}
-      title="Toggle Sidebar"
+      // Your `onClick` runs first; `event.preventDefault()` skips the toggle.
+      onClick={(event) => {
+        onClick?.(event)
+        if (!event.defaultPrevented) toggleSidebar()
+      }}
+      title={messages.sidebar.toggle}
       className={twMerge(
         'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-black-10 group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
         '[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize',
@@ -336,7 +366,9 @@ const SidebarInset: FC<SidebarInsetProps> = ({ className, ...props }) => (
   <main
     className={twMerge(
       'relative flex min-h-svh flex-1 flex-col bg-background-1',
-      'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-12',
+      // Next to an inset sidebar: no margin on the sidebar's side, unless it
+      // is collapsed.
+      'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:peer-data-[side=left]:ml-0 md:peer-data-[variant=inset]:peer-data-[side=right]:mr-0 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:peer-data-[side=left]:ml-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:peer-data-[side=right]:mr-2 md:peer-data-[variant=inset]:rounded-12',
       className,
     )}
     {...props}
@@ -434,10 +466,10 @@ const SidebarGroupLabel: FC<SidebarGroupLabelProps> = ({
   asChild = false,
   ...props
 }) => {
-  const Comp = asChild ? Slot : 'div'
-
   return (
-    <Comp
+    <SlotHost
+      element="div"
+      asChild={asChild}
       data-sidebar="group-label"
       className={twMerge(
         // Figma section heading: 14 Regular, padding 4/12, radius 12. Black/80%
@@ -459,13 +491,13 @@ const SidebarGroupAction: FC<SidebarGroupActionProps> = ({
   asChild = false,
   ...props
 }) => {
-  const Comp = asChild ? Slot : 'button'
-
   return (
-    <Comp
+    <SlotHost
+      element="button"
+      asChild={asChild}
       data-sidebar="group-action"
       className={twMerge(
-        'absolute right-5 top-3 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
+        'absolute end-5 top-3 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'group-data-[collapsible=icon]:hidden',
@@ -518,7 +550,7 @@ SidebarMenuItem.displayName = 'SidebarMenuItem'
  * a Black/4% fill on hover and on the active item.
  */
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-12 p-2 text-left text-black text-14 font-normal transition-[width,height,padding] hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
+  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-12 p-2 text-start text-black text-14 font-normal transition-[width,height,padding] hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pe-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -554,11 +586,13 @@ const SidebarMenuButton: FC<SidebarMenuButtonProps> = ({
   className,
   ...props
 }) => {
-  const Comp = asChild ? Slot : 'button'
   const { isMobile, state } = useSidebar()
+  const direction = useDirection()
 
   const button = (
-    <Comp
+    <SlotHost
+      element="button"
+      asChild={asChild}
       data-sidebar="menu-button"
       data-size={size}
       data-active={isActive}
@@ -584,7 +618,8 @@ const SidebarMenuButton: FC<SidebarMenuButtonProps> = ({
     <Tooltip>
       <TooltipTrigger asChild>{button}</TooltipTrigger>
       <TooltipContent
-        side="right"
+        // Away from the (start-side) sidebar.
+        side={direction === 'rtl' ? 'left' : 'right'}
         align="center"
         hidden={state !== 'collapsed' || isMobile}
         {...tooltip}
@@ -605,13 +640,13 @@ const SidebarMenuAction: FC<SidebarMenuActionProps> = ({
   showOnHover = false,
   ...props
 }) => {
-  const Comp = asChild ? Slot : 'button'
-
   return (
-    <Comp
+    <SlotHost
+      element="button"
+      asChild={asChild}
       data-sidebar="menu-action"
       className={twMerge(
-        'absolute right-2 top-2 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring peer-hover/menu-button:text-black [&>svg]:size-4 [&>svg]:shrink-0',
+        'absolute end-2 top-2 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring peer-hover/menu-button:text-black [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'peer-data-[size=sm]/menu-button:top-1',
@@ -637,7 +672,7 @@ const SidebarMenuBadge: FC<SidebarMenuBadgeProps> = ({
   <div
     data-sidebar="menu-badge"
     className={twMerge(
-      'absolute right-2 flex h-5 min-w-5 items-center justify-center rounded-8 px-1 text-12 font-normal tabular-nums text-black select-none pointer-events-none',
+      'absolute end-2 flex h-5 min-w-5 items-center justify-center rounded-8 px-1 text-12 font-normal tabular-nums text-black select-none pointer-events-none',
       'peer-hover/menu-button:text-black peer-data-[active=true]/menu-button:text-black',
       'peer-data-[size=sm]/menu-button:top-1',
       'peer-data-[size=default]/menu-button:top-2',
@@ -699,7 +734,7 @@ const SidebarMenuSub: FC<SidebarMenuSubProps> = ({ className, ...props }) => (
   <ul
     data-sidebar="menu-sub"
     className={twMerge(
-      'mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-black-10 px-2.5 py-0.5',
+      'mx-3.5 flex min-w-0 translate-x-px rtl:-translate-x-px flex-col gap-1 border-s border-black-10 px-2.5 py-0.5',
       'group-data-[collapsible=icon]:hidden',
       className,
     )}
@@ -728,15 +763,15 @@ const SidebarMenuSubButton: FC<SidebarMenuSubButtonProps> = ({
   className,
   ...props
 }) => {
-  const Comp = asChild ? Slot : 'a'
-
   return (
-    <Comp
+    <SlotHost
+      element="a"
+      asChild={asChild}
       data-sidebar="menu-sub-button"
       data-size={size}
       data-active={isActive}
       className={twMerge(
-        'flex h-9 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-12 px-2 font-normal text-black hover:bg-black-4 hover:text-black focus-ring active:bg-black-4 active:text-black disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-black',
+        'flex h-9 min-w-0 -translate-x-px rtl:translate-x-px items-center gap-2 overflow-hidden rounded-12 px-2 font-normal text-black hover:bg-black-4 hover:text-black focus-ring active:bg-black-4 active:text-black disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-black',
         'data-[active=true]:bg-black-4 data-[active=true]:text-black',
         size === 'sm' && 'h-7 text-12',
         size === 'md' && 'text-14',

@@ -1,6 +1,7 @@
 import { DotIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment } from 'react'
+import { expect } from 'storybook/test'
 import { Typography } from '../Text'
 import { Tag, type TagState } from './Tag'
 
@@ -15,7 +16,13 @@ const meta: Meta<typeof Tag> = {
       control: { type: 'radio' },
     },
     shape: {
-      options: ['default', 'arrow-left', 'arrow-right'],
+      options: [
+        'default',
+        'arrow-start',
+        'arrow-end',
+        'arrow-left',
+        'arrow-right',
+      ],
       control: { type: 'radio' },
     },
   },
@@ -26,20 +33,20 @@ type Story = StoryObj<typeof Tag>
 
 export const Default: Story = {
   args: {
-    onClose: undefined,
+    onRemove: undefined,
   },
 }
 
-export const WithLeftContent: Story = {
+export const WithStartContent: Story = {
   args: {
-    leftContent: <DotIcon size={12} weight="fill" />,
+    startContent: <DotIcon size={12} weight="fill" />,
   },
 }
 
-export const WithDotAndClose: Story = {
+export const WithDotAndRemove: Story = {
   args: {
     dot: true,
-    onClose: () => {},
+    onRemove: () => {},
   },
 }
 
@@ -47,7 +54,7 @@ export const Active: Story = {
   args: {
     dot: true,
     state: 'active',
-    onClose: () => {},
+    onRemove: () => {},
   },
 }
 
@@ -57,15 +64,62 @@ export const Static: Story = {
   },
 }
 
-export const ArrowLeft: Story = {
+/** The Figma "Left arrow" tag: the tip on the start side. */
+export const ArrowStart: Story = {
   args: {
-    shape: 'arrow-left',
+    shape: 'arrow-start',
   },
 }
 
-export const ArrowRight: Story = {
+export const ArrowEnd: Story = {
   args: {
-    shape: 'arrow-right',
+    shape: 'arrow-end',
+  },
+}
+
+/**
+ * Right-to-left text: the start content and the remove button swap sides,
+ * `arrow-start` / `arrow-end` flip with them, and `arrow-left` /
+ * `arrow-right` keep pointing left / right.
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => (
+    <div className="flex flex-col items-start gap-4">
+      <div className="flex items-center gap-2">
+        <Tag label="تصميم" dot onRemove={() => {}} />
+        <Tag label="تصميم" state="active" dot onRemove={() => {}} />
+      </div>
+      <div className="flex items-center gap-2">
+        <Tag label="البداية" shape="arrow-start" />
+        <Tag label="النهاية" shape="arrow-end" />
+        <Tag label="يسار" shape="arrow-left" />
+        <Tag label="يمين" shape="arrow-right" />
+      </div>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const remove = canvas.getAllByRole('button', {
+      name: 'Remove tag تصميم',
+    })[0]
+    const label = canvas.getAllByText('تصميم')[0]
+    // The remove button is at the end: on the left.
+    await expect(remove.getBoundingClientRect().right).toBeLessThanOrEqual(
+      label.getBoundingClientRect().left,
+    )
+
+    const tipOf = (text: string) => {
+      const tag = canvas.getByText(text).closest('div') as HTMLElement
+      const tip = tag.querySelector('svg') as SVGElement
+      return tip.getBoundingClientRect().left <
+        tag.getBoundingClientRect().left + 8
+        ? 'left'
+        : 'right'
+    }
+    await expect(tipOf('البداية')).toBe('right')
+    await expect(tipOf('النهاية')).toBe('left')
+    await expect(tipOf('يسار')).toBe('left')
+    await expect(tipOf('يمين')).toBe('right')
   },
 }
 
@@ -83,12 +137,12 @@ export const Matrix: Story = {
           <Typography size={12} className="text-secondary">
             {state}
           </Typography>
-          <Tag label="Tag" state={state} dot onClose={() => {}} />
+          <Tag label="Tag" state={state} dot onRemove={() => {}} />
           <Tag label="Tag" state={state} dot />
-          <Tag label="Tag" state={state} onClose={() => {}} />
+          <Tag label="Tag" state={state} onRemove={() => {}} />
           <Tag label="Tag" state={state} />
-          <Tag label="Tag" state={state} shape="arrow-left" />
-          <Tag label="Tag" state={state} shape="arrow-right" />
+          <Tag label="Tag" state={state} shape="arrow-start" />
+          <Tag label="Tag" state={state} shape="arrow-end" />
         </Fragment>
       ))}
     </div>

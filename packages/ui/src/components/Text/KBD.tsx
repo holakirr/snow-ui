@@ -42,13 +42,14 @@ const KBD: FC<KBDProps> = ({
 
   return (
     <Typography
-      as="kbd"
       aria-keyshortcuts={shortcut}
       size={size}
       className={twMerge(kbdVariants({ variant }), className)}
       {...props}
+      asChild
     >
-      {shortcut}
+      {/* Shortcuts read left to right, also in right-to-left text. */}
+      <kbd dir="ltr">{shortcut}</kbd>
     </Typography>
   )
 }

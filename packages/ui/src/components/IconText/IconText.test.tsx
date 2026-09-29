@@ -71,8 +71,10 @@ describe('IconText', () => {
   it('passes props and events to the element', () => {
     const onClick = vi.fn()
     render(
-      <IconText as="button" icon={icon} onClick={onClick} aria-label="Star">
-        <span>Custom</span>
+      <IconText asChild icon={icon} onClick={onClick} aria-label="Star">
+        <button type="button">
+          <span>Custom</span>
+        </button>
       </IconText>,
     )
 

@@ -123,7 +123,7 @@ export const AddData: Story = {
     <div className="h-svh w-full bg-background-1">
       <Dialog defaultOpen>
         <DialogContent aria-describedby={undefined}>
-          <DialogHeader leftContent={<AddIcon size={24} />}>
+          <DialogHeader startContent={<AddIcon size={24} />}>
             <DialogTitle>New</DialogTitle>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
@@ -153,6 +153,58 @@ export const AddData: Story = {
       </Typography>
     </div>
   ),
+}
+
+/**
+ * Right-to-left text: the portalled dialog gets `dir` from `SnowUIProvider`;
+ * the start content is on the right, the close button on the left.
+ */
+export const RTL: Story = {
+  args: {},
+  tags: ['!autodocs'],
+  globals: { dir: 'rtl' },
+  parameters: { layout: 'fullscreen', storyWrapper: false },
+  render: () => (
+    <div className="h-svh w-full bg-background-1">
+      <Dialog defaultOpen>
+        <DialogContent aria-describedby={undefined}>
+          <DialogHeader startContent={<AddIcon size={24} />}>
+            <DialogTitle>جديد</DialogTitle>
+          </DialogHeader>
+          <DialogBody className="flex flex-col gap-7">
+            <div className="grid grid-cols-2 gap-4">
+              <Input placeholder="الاسم الأول" />
+              <Input placeholder="اسم العائلة" />
+            </div>
+            <div className="flex gap-4">
+              <DialogClose asChild>
+                <Button variant="gray" size="lg" className="flex-1">
+                  إلغاء
+                </Button>
+              </DialogClose>
+              <Button variant="filled" size="lg" className="flex-1">
+                حفظ
+              </Button>
+            </div>
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const dialog = await page.findByRole('dialog', { name: 'جديد' })
+    await expect(dialog).toHaveAttribute('dir', 'rtl')
+
+    const close = within(dialog).getByRole('button', { name: 'Close' })
+    const title = within(dialog).getByText('جديد')
+    // After the open animation (it scales the dialog up from its centre).
+    await waitFor(() =>
+      expect(close.getBoundingClientRect().right).toBeLessThan(
+        title.getBoundingClientRect().left,
+      ),
+    )
+  },
 }
 
 export const AddDataDark: Story = {

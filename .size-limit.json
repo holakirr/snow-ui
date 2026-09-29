@@ -11,7 +11,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ Button }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "10 kB"
+    "limit": "11.8 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Calendar }",

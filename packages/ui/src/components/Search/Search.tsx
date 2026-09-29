@@ -13,6 +13,7 @@ import {
   useState,
 } from 'react'
 import { twMerge } from '../../utils/tw-merge'
+import { useMessages } from '../SnowUIProvider'
 import { KBD } from '../Text'
 
 export type SearchVariant = 'gray' | 'outline'
@@ -70,14 +71,22 @@ export type SearchProps = Omit<ComponentProps<'input'>, 'size' | 'type'> & {
   shortcut?: string[]
 
   /**
+   * Called with the new value whenever it changes: as the user types and
+   * when the field is cleared. The value-only counterpart of `onChange`,
+   * named like the other components' `onValueChange`.
+   */
+  onValueChange?: (value: string) => void
+
+  /**
    * Called after the clear button (shown while the field has a value) or
-   * Escape clears the field. `onChange` is also called with an empty value.
+   * Escape clears the field. `onChange` and `onValueChange` are also called,
+   * with an empty value.
    */
   onClear?: () => void
 
   /**
    * Accessible name of the clear button.
-   * @default 'Clear search'
+   * @default messages.search.clear: "Clear search"
    */
   clearLabel?: string
 
@@ -117,8 +126,9 @@ const Search: FC<SearchProps> = ({
   variant,
   size = 'sm',
   shortcut,
+  onValueChange,
   onClear,
-  clearLabel = 'Clear search',
+  clearLabel,
   endContent,
   className,
   inputClassName,
@@ -126,13 +136,15 @@ const Search: FC<SearchProps> = ({
   defaultValue,
   onChange,
   onKeyDown,
-  placeholder = 'Search',
+  placeholder,
   disabled,
   readOnly,
   ref,
   ...props
 }) => {
+  const messages = useMessages()
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const clearName = clearLabel ?? messages.search.clear
   const isControlled = value !== undefined
   const [innerValue, setInnerValue] = useState(() =>
     defaultValue === undefined ? '' : String(defaultValue),
@@ -152,6 +164,7 @@ const Search: FC<SearchProps> = ({
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (!isControlled) setInnerValue(event.target.value)
     onChange?.(event)
+    onValueChange?.(event.target.value)
   }
 
   const clear = () => {
@@ -188,7 +201,7 @@ const Search: FC<SearchProps> = ({
         value={isControlled ? value : innerValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder}
+        placeholder={placeholder ?? messages.search.placeholder}
         disabled={disabled}
         readOnly={readOnly}
         className={twMerge(
@@ -200,8 +213,8 @@ const Search: FC<SearchProps> = ({
       {canClear ? (
         <button
           type="button"
-          aria-label={clearLabel}
-          title={clearLabel}
+          aria-label={clearName}
+          title={clearName}
           onClick={clear}
           // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon (WCAG 1.4.11).
           className="flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"

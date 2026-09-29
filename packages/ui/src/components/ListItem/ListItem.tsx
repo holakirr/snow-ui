@@ -1,4 +1,6 @@
 import type { ElementType, ReactNode } from 'react'
+import { warnAsDeprecated } from '../../utils/deprecation'
+import { withSlotContent } from '../../utils/slot'
 import { twMerge } from '../../utils/tw-merge'
 import { IconText, type IconTextProps } from '../IconText'
 import { Typography } from '../Text'
@@ -29,27 +31,29 @@ export type ListItemProps<C extends ElementType = typeof defaultTag> = Omit<
 /**
  * ListItem is a row of the dashboard lists — Notifications, Activities,
  * Contacts: an icon or avatar (24px), a title and an optional description or
- * timestamp. It is an IconText, so `interactive`, `active`, `flip` and `as`
- * work the same way (render it `as="li"` inside a `<ul>`, or `as="a"` /
- * `as="button"` for a clickable row). Children are rendered after the text,
- * e.g. a trailing badge or button.
+ * timestamp. It is an IconText, so `interactive`, `active`, `flip` and
+ * `asChild` work the same way (`<ListItem asChild><li /></ListItem>` inside a
+ * `<ul>`, or an `<a>` / `<button type="button">` child for a clickable
+ * row). Children are rendered after the text, e.g. a trailing badge or
+ * button; with `asChild`, the child element's own children are.
  */
 function ListItem<C extends ElementType = typeof defaultTag>({
+  as,
   title,
   description,
   className,
   children,
   ...props
 }: ListItemProps<C>): ReactNode {
-  return (
-    <IconText
-      {...(props as IconTextProps<C>)}
-      className={twMerge(
-        'flex w-full text-left',
-        description ? 'items-start' : 'items-center',
-        className,
-      )}
-    >
+  if (as !== undefined) {
+    warnAsDeprecated(
+      'ListItem',
+      '<ListItem asChild title="…"><li /></ListItem>',
+    )
+  }
+
+  const renderContent = (extra: ReactNode) => (
+    <>
       <span className="flex min-w-0 flex-1 flex-col">
         <Typography size={14} className="truncate text-black">
           {title}
@@ -60,7 +64,37 @@ function ListItem<C extends ElementType = typeof defaultTag>({
           </Typography>
         )}
       </span>
-      {children}
+      {extra}
+    </>
+  )
+  // The deprecated `as` is rendered as an `asChild` host, so IconText
+  // doesn't warn about it a second time. The host's props win over the
+  // slotted ones, so it gets only the `type` a `<button>` needs, and keeps
+  // the user's (`type="submit"`).
+  const Host: ElementType | undefined = as
+  const host = Host ? (
+    <Host
+      {...(Host === 'button' && {
+        type: (props as { type?: string }).type ?? 'button',
+      })}
+    >
+      {renderContent(children)}
+    </Host>
+  ) : (
+    withSlotContent(props.asChild, children, renderContent)
+  )
+
+  return (
+    <IconText
+      {...(props as IconTextProps<C>)}
+      asChild={Boolean(Host) || props.asChild}
+      className={twMerge(
+        'flex w-full text-start',
+        description ? 'items-start' : 'items-center',
+        className,
+      )}
+    >
+      {host}
     </IconText>
   )
 }

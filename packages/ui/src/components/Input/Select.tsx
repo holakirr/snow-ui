@@ -144,13 +144,13 @@ const SelectItem: FC<SelectItemProps> = ({ className, children, ...props }) => (
   <SelectPrimitive.Item
     className={twMerge(
       popoverItemClasses,
-      'w-full pr-8 hover:bg-black-4',
+      'w-full pe-8 hover:bg-black-4',
       className,
     )}
     {...props}
   >
     {/* Figma: a trailing 16px Check on the selected item. */}
-    <span className="absolute right-2 flex size-4 items-center justify-center">
+    <span className="absolute end-2 flex size-4 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
         <Check />
       </SelectPrimitive.ItemIndicator>

@@ -11,9 +11,10 @@ import {
 } from '../../utils'
 import { twMerge } from '../../utils/tw-merge'
 import { Separator } from '../Separator'
+import { useSnowUI } from '../SnowUIProvider'
 import { Tag } from '../Tag'
 import { Typography } from '../Text'
-import { HOUR_HEIGHT } from './constants'
+import { DEFAULT_LANG, formatTime, HOUR_HEIGHT } from './constants'
 import { EventItem } from './EventItem'
 
 /**
@@ -48,6 +49,8 @@ const Scheduler: FC<SchedulerProps> = ({
   className,
   ...props
 }) => {
+  // Day and hour labels in the `SnowUIProvider` locale (en-US without one).
+  const lang = useSnowUI().locale?.code ?? DEFAULT_LANG
   const weekDates = getWeekDates(currentDate, startOfWeek)
 
   const earliestHour = getEarliestScheduleHour(events)
@@ -72,9 +75,9 @@ const Scheduler: FC<SchedulerProps> = ({
     >
       <div className="col-span-1" />
       {weekDates.map((date, i) => (
-        <Fragment key={date.toLocaleDateString()}>
+        <Fragment key={date.toDateString()}>
           <div
-            key={date.toLocaleDateString()}
+            key={date.toDateString()}
             className="flex justify-center items-center"
           >
             <Typography
@@ -88,7 +91,7 @@ const Scheduler: FC<SchedulerProps> = ({
                   : '',
               )}
             >
-              {date.toLocaleDateString('en-US', {
+              {date.toLocaleDateString(lang, {
                 weekday: 'short',
                 day: 'numeric',
               })}
@@ -97,7 +100,9 @@ const Scheduler: FC<SchedulerProps> = ({
           {i > 0 && (
             <Separator
               style={{
-                right:
+                // From the end edge, so it stays between the days in
+                // right-to-left text.
+                insetInlineEnd:
                   i === 1 ? `calc(108*${i}px)` : `calc(108px + 116*${i - 1}px)`,
               }}
               orientation="vertical"
@@ -110,17 +115,17 @@ const Scheduler: FC<SchedulerProps> = ({
       {hours.map((hour) => (
         <Fragment key={hour}>
           <Typography size={TEXT_SIZES[12]} className="text-secondary">
-            {new Date(new Date().setHours(hour)).toLocaleTimeString('en-US', {
+            {new Date(new Date().setHours(hour)).toLocaleTimeString(lang, {
               hour: 'numeric',
             })}
           </Typography>
           {weekDates.map((date) => (
             // biome-ignore lint/a11y/useSemanticElements: the cell hosts nested interactive events, so it can't be a <button>
             <div
-              key={date.toLocaleDateString() + hour}
+              key={date.toDateString() + hour}
               role="button"
               tabIndex={0}
-              aria-label={getCellDate(date, hour).toLocaleString()}
+              aria-label={getCellDate(date, hour).toLocaleString(lang)}
               onClick={(e) => {
                 e.preventDefault()
                 onDateClick(getCellDate(date, hour))
@@ -160,7 +165,7 @@ const Scheduler: FC<SchedulerProps> = ({
       {/* Current time indicator */}
       {now < latestTime && now > earliestTime && (
         <div
-          className="absolute left-0 w-full px-4 flex justify-center items-center z-10"
+          className="absolute start-0 w-full px-4 flex justify-center items-center z-10"
           style={{
             top: `${
               (1 + (now.getHours() - earliestHour) + now.getMinutes() / 60) *
@@ -169,12 +174,7 @@ const Scheduler: FC<SchedulerProps> = ({
           }}
         >
           <Tag
-            label={now
-              .toLocaleTimeString('ru-RU', {
-                hour: 'numeric',
-                minute: 'numeric',
-              })
-              .substring(0, 5)}
+            label={formatTime(now, lang, 'numeric')}
             className="bg-primary text-white font-normal text-12 text-nowrap"
           />
           <Separator className="bg-primary" />

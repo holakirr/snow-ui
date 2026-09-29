@@ -4,6 +4,7 @@ import {
   XCircleIcon,
 } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 import { KBD } from '../Text'
 import { Input } from './Input'
 
@@ -93,6 +94,38 @@ export const WithEndContent: Story = {
     title: 'Country',
     defaultValue: 'Spain',
     endContent: <ArrowLineUpDownIcon />,
+  },
+}
+
+/**
+ * Right-to-left text: `startContent` is on the right, `endContent` on the
+ * left, and the text starts on the right.
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Input
+        aria-label="بحث"
+        placeholder="بحث"
+        startContent={<SearchIcon />}
+        endContent={<KBD keys={['/']} variant="border" />}
+      />
+      <Input
+        title="البلد"
+        defaultValue="إسبانيا"
+        endContent={<ArrowLineUpDownIcon />}
+      />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const field = canvas.getByRole('textbox', { name: 'بحث' })
+    const shell = field.closest('[data-slot="input"]') as HTMLElement
+    const [start, end] = Array.from(shell.children) as HTMLElement[]
+    await expect(start.getBoundingClientRect().left).toBeGreaterThan(
+      end.getBoundingClientRect().left,
+    )
+    await expect(getComputedStyle(field).direction).toBe('rtl')
   },
 }
 

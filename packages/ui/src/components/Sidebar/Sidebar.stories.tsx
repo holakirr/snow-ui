@@ -11,6 +11,7 @@ import {
   UsersThreeIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 
 import { Avatar, AvatarFallback, AvatarImage } from '../Avatar'
 import {
@@ -112,7 +113,9 @@ const Header = () => (
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </picture>
-          <Typography as="span">Profile</Typography>
+          <Typography asChild>
+            <span>Profile</span>
+          </Typography>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
@@ -154,7 +157,7 @@ const AppSidebar = () => (
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton>
                 <UserIcon /> Username
-                <ArrowLineUpIcon className="ml-auto" />
+                <ArrowLineUpIcon className="ms-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -187,6 +190,58 @@ export const Default: Story = {
       </main>
     </SidebarProvider>
   ),
+}
+
+const rtlItems = [
+  { title: 'نظرة عامة', icon: ChartPieSliceIcon, isActive: true },
+  { title: 'المشاريع', icon: FolderOpenIcon },
+  { title: 'الحساب', icon: IdentificationCardIcon },
+]
+
+/**
+ * Right-to-left text: `side="start"` (the default) puts the sidebar on the
+ * right, its edge line on the left, and the trigger icon is mirrored.
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => (
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>التطبيق</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {rtlItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={item.isActive}>
+                      <a href="#rtl">
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <main className="flex flex-1 items-start p-4">
+        <SidebarTrigger size="lg" />
+      </main>
+    </SidebarProvider>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const sidebar = canvasElement.querySelector('[data-side]') as HTMLElement
+    await expect(sidebar).toHaveAttribute('data-side', 'right')
+
+    const link = canvas.getByRole('link', { name: 'نظرة عامة' })
+    const trigger = canvas.getByRole('button', { name: 'Toggle Sidebar' })
+    await expect(link.getBoundingClientRect().left).toBeGreaterThan(
+      trigger.getBoundingClientRect().right,
+    )
+  },
 }
 
 export const Floating: Story = {

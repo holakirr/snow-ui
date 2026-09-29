@@ -82,15 +82,15 @@ export default defineConfig({
         '**/src/foundations/docs.tsx',
         '**/src/recipes/**',
       ],
-      // Measured with this config (Sept 2026): statements 92.2%, branches
-      // 85.1%, functions 86.9%, lines 93.4%. The thresholds sit about 2 points
+      // Measured with this config (Sept 2026): statements 93.4%, branches
+      // 87.9%, functions 88.0%, lines 94.3%. The thresholds sit about 2 points
       // below, so a PR that drops coverage fails; raise them as coverage
       // grows, never lower them to make a PR pass.
       thresholds: {
-        statements: 90,
-        branches: 83,
-        functions: 84,
-        lines: 91,
+        statements: 91,
+        branches: 85,
+        functions: 86,
+        lines: 92,
       },
     },
   },

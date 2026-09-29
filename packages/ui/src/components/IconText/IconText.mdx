@@ -78,10 +78,20 @@ The examples from the Figma IconText page: a user, a settings row with the text 
 
 ## Accessibility
 
-- Without `asChild` IconText is a `<div>` with no role, and `interactive` only styles it: it isn't focusable and has no keyboard behaviour. For a row that does something, render a link or a `<button type="button">` with `asChild`; they bring the role, the tab stop and Enter (and Space for a button).
+- Without `asChild` IconText is a `<div>` with no role, and `interactive` only styles it. For a row that does something, render a link or a `<button type="button">` with `asChild`; they bring the role and the keyboard behaviour.
 - The accessible name of a link or button row is its text. An icon has no name of its own unless you give it one; icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
 - `active` sets `data-active`, not an ARIA state. Mark the current page with `aria-current="page"` on the link, as the Examples story does.
 - Keyboard focus on any focusable row shows the `focus-ring` utility that Button and the other controls use, on `:focus-visible` only: the Figma "Focus" ring (4px Black/4%, 1.1:1 on its own) plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark; WCAG 2.4.7, 1.4.11). The outline sits outside the row, so the hover and active fills don't hide it. A static `<div>` row isn't focusable, so it never shows it.
+
+### Keyboard
+
+IconText has no key handling of its own; the element you render with `asChild` brings it:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to a link or button row; a `<div>` row is not a tab stop |
+| Enter | follow the link, or activate the button |
+| Space | activate a button row |
 
 ## Localization and RTL
 
@@ -135,5 +145,7 @@ The `as` prop (`<IconText as="a" href="/">`) is deprecated: it logs a one-time d
 - [Sidebar](?path=/docs/components-sidebar--docs): the app's navigation.
 
 ## Props
+
+`className` merges with the row's classes; the other attributes (`href`, `onClick`, `aria-*`…) go to the `<div>`, or to the child with `asChild`.
 
 <Controls />

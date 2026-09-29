@@ -79,9 +79,12 @@ Cells and events have no hover style.
 - Every hour cell has a `<button type="button">` that fills it, named by the date and time of the start of its hour in the locale (`toLocaleString`). A click, Enter or Space calls `onDateClick`.
 - Every event is a `div` with `role="button"` in the cell of its start hour, next to the cell's button; its name is its text (the title and times). An event that runs past midnight is a button on each day. A click, Enter or Space calls `onEventClick` and opens its menu (a [DropdownMenu](?path=/docs/components-dropdownmenu--docs): in the menu the arrow keys move, and Escape closes it and returns focus to the event).
 - The events are siblings of the cell buttons, not inside them, so no control is nested in another (a control inside a button isn't exposed to assistive technologies).
-- The grid is one tab stop (a roving `tabIndex` shared by the hour cells and the events). Keyboard, from the stories' interaction tests:
 
-| Key | Does |
+### Keyboard
+
+The grid is one tab stop (a roving `tabIndex` shared by the hour cells and the events), following the WAI-ARIA grid pattern. From the stories' interaction tests:
+
+| Key | Action |
 | --- | --- |
 | Tab, Shift+Tab | move into the grid, on the last focused hour cell or event (the first time: today's current hour, or the first or last row when the time is outside the grid's hours, or the first cell in a week without today); the next Tab leaves the grid |
 | ArrowRight / ArrowLeft | the same hour of the next / previous day (mirrored in right-to-left text) |
@@ -94,17 +97,6 @@ Cells and events have no hover style.
 
 - The keys don't wrap at the edges of the grid (and don't scroll the page there). Alt and Shift combinations, and Ctrl / ⌘ with the arrows and the page keys, are left to the browser and assistive technology. ArrowDown on an event moves down the day instead of opening its menu.
 - Moving the focus scrolls the item into view. When the focused event disappears (deleted, or moved to another hour), its hour cell takes its place.
-
-### Keyboard
-
-Every hour cell and every event is its own tab stop; there are no arrow keys between cells:
-
-| Key | Action |
-| --- | --- |
-| Tab / Shift + Tab | move to the next / previous hour cell or event, in DOM order: day by day, hour by hour, each event after its cell |
-| Enter, Space | on an hour cell: call `onDateClick` with the start of its hour. On an event: call `onEventClick` and open or close its menu |
-| ArrowDown | on an event: open its menu without calling `onEventClick` |
-| Escape | in an event's menu: close it and return focus to the event; the menu's other keys are the [DropdownMenu](?path=/docs/components-dropdownmenu--docs#keyboard)'s |
 
 ### Deviations from the Figma kit
 

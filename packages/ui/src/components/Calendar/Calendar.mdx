@@ -92,18 +92,6 @@ With `numberOfMonths`, the months sit side by side; the previous button is in th
 - react-day-picker renders each month as a `grid` named by the month ("January 2025"), with `gridcell`s that carry `aria-selected` and, with a `mode` (or `onDayClick`), a day button named by its full date. In `multiple` and `range` mode the grid is `aria-multiselectable`.
 - The previous and next buttons are named "Go to the previous month" and "Go to the next month" and sit in a `navigation` landmark named "Month navigation". With several months there is still one landmark. They are disabled at `startMonth` / `endMonth`.
 - The toolbar actions and the year switcher are native buttons. The year switcher is a disclosure: it has `aria-expanded`, and `aria-controls` pointing to the year view while that is open. The year view is a `group` named by its years ("2021 - 2032") of native buttons.
-- One day is in the tab order: the last focused day, else the selected day, else today, else the first day of the month. Keyboard, from react-day-picker and the stories' interaction tests:
-
-| Key | Does |
-| --- | --- |
-| ArrowLeft / ArrowRight | the previous / next day (mirrored in right-to-left text); with Shift, the previous / next month |
-| ArrowUp / ArrowDown | the same day of the previous / next week; with Shift, of the previous / next year |
-| PageUp / PageDown | the previous / next month; with Shift, the previous / next year |
-| Home / End | the first / last day of the week |
-| Enter, Space | on a day: select it; on the year switcher: open or close the year view |
-| Enter, Space (on a year) | show that year in the days view and return the focus to the year switcher |
-
-- In the year view, Tab moves through the next button and the years (Shift+Tab back to the switcher and the previous button); the arrow keys don't move between years. Escape isn't handled by the year view: in a [Popover](?path=/docs/components-popover--docs) it closes the popover.
 
 ### Keyboard
 
@@ -118,9 +106,10 @@ The days of all the months shown share one tab stop (react-day-picker v10):
 | Shift + ArrowDown / Shift + ArrowUp | move focus a year forward / back |
 | PageDown / PageUp | move focus a month forward / back; with Shift, a year |
 | Home / End | move focus to the first / last day of the week (`weekStartsOn`) |
-| Enter, Space | select the focused day (with a `mode`) and call `onDayClick`; on a toolbar or year button, activate it |
+| Enter, Space | select the focused day (with a `mode`) and call `onDayClick`; on a toolbar button, activate it; on the year switcher, open or close the year view |
+| Enter, Space (on a year) | show that year in the days view and return the focus to the year switcher |
 
-The moves skip disabled days, turn the month when focus leaves the months shown, and stop at `startMonth` / `endMonth`. The arrow keys do nothing in the year view.
+The moves skip disabled days, turn the month when focus leaves the months shown, and stop at `startMonth` / `endMonth`. The arrow keys do nothing in the year view: there, Tab moves through the next button and the years (Shift+Tab back to the switcher and the previous button). Escape isn't handled by the year view: in a [Popover](?path=/docs/components-popover--docs) it closes the popover.
 
 ### Deviations from the Figma kit
 

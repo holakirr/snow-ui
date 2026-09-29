@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite'
+import remarkGfm from 'remark-gfm'
 // The ui and icons packages from source (the charts import `@holakirr/snow-ui`).
 import { workspaceAliases } from '../packages/charts/workspace-aliases.ts'
 
@@ -18,7 +19,14 @@ const config: StorybookConfig = {
     '../packages/charts/src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
-    '@storybook/addon-docs',
+    {
+      name: '@storybook/addon-docs',
+      // GitHub-flavoured Markdown: MDX 3 has no tables without it, and the
+      // usage pages document props, tokens and keyboard support in tables.
+      options: {
+        mdxPluginOptions: { mdxCompileOptions: { remarkPlugins: [remarkGfm] } },
+      },
+    },
     '@storybook/addon-a11y',
     '@storybook/addon-themes',
     // The "Design" panel: the Figma node of `parameters.design` (the owner's

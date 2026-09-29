@@ -14,13 +14,10 @@
       "name": "accordion",
       "type": "registry:ui",
       "title": "Accordion",
-      "files": [
-        "components/Accordion/Accordion.tsx",
-        "components/Accordion/index.ts"
-      ],
+      "files": ["components/Accordion/Accordion.tsx"],
       "dependencies": ["@holakirr/snow-ui-icons", "@radix-ui/react-accordion"],
       "registryDependencies": ["snow-core", "text"],
-      "import": "components/Accordion",
+      "import": "components/Accordion/Accordion",
       "exports": [
         "Accordion",
         "AccordionContent",
@@ -48,7 +45,7 @@
       "title": "AvatarGroup",
       "files": ["components/Avatar/AvatarGroup.tsx"],
       "dependencies": [],
-      "registryDependencies": ["avatar", "snow-core"],
+      "registryDependencies": ["avatar", "snow-core", "snow-ui-provider"],
       "import": "components/Avatar/AvatarGroup",
       "exports": ["AvatarGroup"],
       "types": ["AvatarGroupProps"],
@@ -58,10 +55,10 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "files": ["components/Badge/Badge.tsx", "components/Badge/index.ts"],
+      "files": ["components/Badge/Badge.tsx"],
       "dependencies": [],
       "registryDependencies": ["snow-core", "snow-ui-provider", "text"],
-      "import": "components/Badge",
+      "import": "components/Badge/Badge",
       "exports": ["Badge", "BadgeComponent"],
       "types": ["BadgeComponentProps", "BadgeProps"],
       "docs": "components-badge"
@@ -70,10 +67,7 @@
       "name": "breadcrumb",
       "type": "registry:ui",
       "title": "Breadcrumb",
-      "files": [
-        "components/Breadcrumb/Breadcrumb.tsx",
-        "components/Breadcrumb/index.ts"
-      ],
+      "files": ["components/Breadcrumb/Breadcrumb.tsx"],
       "dependencies": [],
       "registryDependencies": [
         "button",
@@ -81,7 +75,7 @@
         "snow-ui-provider",
         "text"
       ],
-      "import": "components/Breadcrumb",
+      "import": "components/Breadcrumb/Breadcrumb",
       "exports": [
         "Breadcrumb",
         "BreadcrumbEllipsis",
@@ -106,10 +100,10 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "files": ["components/Button/Button.tsx", "components/Button/index.ts"],
+      "files": ["components/Button/Button.tsx"],
       "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
       "registryDependencies": ["snow-core", "text"],
-      "import": "components/Button",
+      "import": "components/Button/Button",
       "exports": ["Button", "buttonVariants"],
       "types": ["ButtonProps"],
       "docs": "components-button"
@@ -118,17 +112,14 @@
       "name": "calendar",
       "type": "registry:ui",
       "title": "Calendar",
-      "files": [
-        "components/Calendar/Calendar.tsx",
-        "components/Calendar/index.ts"
-      ],
+      "files": ["components/Calendar/Calendar.tsx"],
       "dependencies": [
         "@holakirr/snow-ui-icons",
         "date-fns",
         "react-day-picker"
       ],
       "registryDependencies": ["button", "snow-core", "snow-ui-provider"],
-      "import": "components/Calendar",
+      "import": "components/Calendar/Calendar",
       "exports": ["Calendar"],
       "types": ["CalendarProps"],
       "docs": "components-calendar"
@@ -137,10 +128,10 @@
       "name": "card",
       "type": "registry:ui",
       "title": "Card",
-      "files": ["components/Card/Card.tsx", "components/Card/index.ts"],
+      "files": ["components/Card/Card.tsx"],
       "dependencies": ["class-variance-authority"],
       "registryDependencies": ["snow-core"],
-      "import": "components/Card",
+      "import": "components/Card/Card",
       "exports": ["Card"],
       "types": ["CardProps"],
       "docs": "components-card"
@@ -149,10 +140,7 @@
       "name": "command-palette",
       "type": "registry:ui",
       "title": "CommandPalette",
-      "files": [
-        "components/CommandPalette/CommandPalette.tsx",
-        "components/CommandPalette/index.ts"
-      ],
+      "files": ["components/CommandPalette/CommandPalette.tsx"],
       "dependencies": ["@holakirr/snow-ui-icons", "@radix-ui/react-dialog"],
       "registryDependencies": [
         "search",
@@ -160,7 +148,7 @@
         "snow-ui-provider",
         "text"
       ],
-      "import": "components/CommandPalette",
+      "import": "components/CommandPalette/CommandPalette",
       "exports": ["CommandPalette", "defaultCommandPaletteFilter"],
       "types": [
         "CommandPaletteFilter",
@@ -175,17 +163,19 @@
       "name": "context-menu",
       "type": "registry:ui",
       "title": "ContextMenu",
-      "files": [
-        "components/ContextMenu/ContextMenu.tsx",
-        "components/ContextMenu/index.ts"
-      ],
+      "files": ["components/ContextMenu/ContextMenu.tsx"],
       "dependencies": [
         "@holakirr/snow-ui-icons",
         "@phosphor-icons/react",
         "@radix-ui/react-context-menu"
       ],
-      "registryDependencies": ["kbd", "popover", "snow-core"],
-      "import": "components/ContextMenu",
+      "registryDependencies": [
+        "kbd",
+        "popover",
+        "snow-core",
+        "snow-ui-provider"
+      ],
+      "import": "components/ContextMenu/ContextMenu",
       "exports": [
         "ContextMenu",
         "ContextMenuCheckboxItem",
@@ -220,7 +210,7 @@
       "name": "dialog",
       "type": "registry:ui",
       "title": "Dialog",
-      "files": ["components/Dialog/Dialog.tsx", "components/Dialog/index.ts"],
+      "files": ["components/Dialog/Dialog.tsx"],
       "dependencies": ["@holakirr/snow-ui-icons", "@radix-ui/react-dialog"],
       "registryDependencies": [
         "button",
@@ -228,7 +218,7 @@
         "snow-ui-provider",
         "text"
       ],
-      "import": "components/Dialog",
+      "import": "components/Dialog/Dialog",
       "exports": [
         "Dialog",
         "DialogBody",
@@ -248,17 +238,19 @@
       "name": "dropdown-menu",
       "type": "registry:ui",
       "title": "DropdownMenu",
-      "files": [
-        "components/DropdownMenu/DropdownMenu.tsx",
-        "components/DropdownMenu/index.ts"
-      ],
+      "files": ["components/DropdownMenu/DropdownMenu.tsx"],
       "dependencies": [
         "@holakirr/snow-ui-icons",
         "@phosphor-icons/react",
         "@radix-ui/react-dropdown-menu"
       ],
-      "registryDependencies": ["kbd", "popover", "snow-core"],
-      "import": "components/DropdownMenu",
+      "registryDependencies": [
+        "kbd",
+        "popover",
+        "snow-core",
+        "snow-ui-provider"
+      ],
+      "import": "components/DropdownMenu/DropdownMenu",
       "exports": [
         "DropdownMenu",
         "DropdownMenuCheckboxItem",
@@ -295,10 +287,10 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "files": ["components/Form/Form.tsx", "components/Form/index.ts"],
+      "files": ["components/Form/Form.tsx"],
       "dependencies": ["@radix-ui/react-compose-refs", "@radix-ui/react-slot"],
       "registryDependencies": ["label", "snow-core", "text"],
-      "import": "components/Form",
+      "import": "components/Form/Form",
       "exports": [
         "Form",
         "FormControl",
@@ -323,10 +315,10 @@
       "name": "group",
       "type": "registry:ui",
       "title": "Group",
-      "files": ["components/Group/Group.tsx", "components/Group/index.ts"],
+      "files": ["components/Group/Group.tsx"],
       "dependencies": ["class-variance-authority"],
       "registryDependencies": ["snow-core"],
-      "import": "components/Group",
+      "import": "components/Group/Group",
       "exports": ["Group", "groupStyles"],
       "types": ["GroupGap", "GroupProps"],
       "docs": "components-group"
@@ -335,13 +327,10 @@
       "name": "icon-box",
       "type": "registry:ui",
       "title": "IconBox",
-      "files": [
-        "components/IconBox/IconBox.tsx",
-        "components/IconBox/index.ts"
-      ],
+      "files": ["components/IconBox/IconBox.tsx"],
       "dependencies": [],
       "registryDependencies": ["snow-core"],
-      "import": "components/IconBox",
+      "import": "components/IconBox/IconBox",
       "exports": ["ICON_BOX_SIZES", "IconBox"],
       "types": ["IconBoxProps", "IconBoxSize"],
       "docs": "components-iconbox"
@@ -350,13 +339,10 @@
       "name": "icon-text",
       "type": "registry:ui",
       "title": "IconText",
-      "files": [
-        "components/IconText/IconText.tsx",
-        "components/IconText/index.ts"
-      ],
+      "files": ["components/IconText/IconText.tsx"],
       "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
       "registryDependencies": ["snow-core", "text"],
-      "import": "components/IconText",
+      "import": "components/IconText/IconText",
       "exports": ["IconText", "iconTextStyles"],
       "types": ["IconTextProps"],
       "docs": "components-icontext"
@@ -426,7 +412,12 @@
         "@phosphor-icons/react",
         "@radix-ui/react-select"
       ],
-      "registryDependencies": ["input", "popover", "snow-core"],
+      "registryDependencies": [
+        "input",
+        "popover",
+        "snow-core",
+        "snow-ui-provider"
+      ],
       "import": "components/Input/Select",
       "exports": [
         "Select",
@@ -515,10 +506,10 @@
       "name": "label",
       "type": "registry:ui",
       "title": "Label",
-      "files": ["components/Label/Label.tsx", "components/Label/index.ts"],
+      "files": ["components/Label/Label.tsx"],
       "dependencies": ["@radix-ui/react-label", "class-variance-authority"],
       "registryDependencies": ["snow-core"],
-      "import": "components/Label",
+      "import": "components/Label/Label",
       "exports": ["Label"],
       "types": ["LabelProps"],
       "docs": "components-label"
@@ -527,14 +518,14 @@
       "name": "link",
       "type": "registry:ui",
       "title": "Link",
-      "files": ["components/Link/Link.tsx", "components/Link/index.ts"],
+      "files": ["components/Link/Link.tsx"],
       "dependencies": [
         "@phosphor-icons/react",
         "@radix-ui/react-slot",
         "class-variance-authority"
       ],
       "registryDependencies": ["snow-core", "snow-ui-provider"],
-      "import": "components/Link",
+      "import": "components/Link/Link",
       "exports": ["Link", "linkVariants"],
       "types": ["LinkProps"],
       "docs": "components-link"
@@ -543,13 +534,10 @@
       "name": "list-item",
       "type": "registry:ui",
       "title": "ListItem",
-      "files": [
-        "components/ListItem/ListItem.tsx",
-        "components/ListItem/index.ts"
-      ],
+      "files": ["components/ListItem/ListItem.tsx"],
       "dependencies": [],
       "registryDependencies": ["icon-text", "snow-core", "text"],
-      "import": "components/ListItem",
+      "import": "components/ListItem/ListItem",
       "exports": ["ListItem"],
       "types": ["ListItemProps"],
       "docs": "components-listitem"
@@ -558,17 +546,14 @@
       "name": "pagination",
       "type": "registry:ui",
       "title": "Pagination",
-      "files": [
-        "components/Pagination/Pagination.tsx",
-        "components/Pagination/index.ts"
-      ],
+      "files": ["components/Pagination/Pagination.tsx"],
       "dependencies": [
         "@holakirr/snow-ui-icons",
         "@radix-ui/react-slot",
         "class-variance-authority"
       ],
       "registryDependencies": ["snow-core", "snow-ui-provider"],
-      "import": "components/Pagination",
+      "import": "components/Pagination/Pagination",
       "exports": [
         "Pagination",
         "PaginationContent",
@@ -578,7 +563,11 @@
         "PaginationNext",
         "PaginationPrevious"
       ],
-      "types": ["PaginationEllipsisProps", "PaginationLinkProps"],
+      "types": [
+        "PaginationEllipsisProps",
+        "PaginationLinkProps",
+        "PaginationProps"
+      ],
       "docs": "components-pagination"
     },
     {
@@ -587,12 +576,11 @@
       "title": "Popover",
       "files": [
         "components/Popover/Popover.tsx",
-        "components/Popover/index.ts",
         "components/Popover/surface.ts"
       ],
       "dependencies": ["@radix-ui/react-popover"],
       "registryDependencies": ["snow-core", "snow-ui-provider"],
-      "import": "components/Popover",
+      "import": "components/Popover/Popover",
       "exports": [
         "Popover",
         "PopoverAnchor",
@@ -609,8 +597,7 @@
       "files": [
         "components/Scheduler/EventItem.tsx",
         "components/Scheduler/Scheduler.tsx",
-        "components/Scheduler/constants.ts",
-        "components/Scheduler/index.ts"
+        "components/Scheduler/constants.ts"
       ],
       "dependencies": ["date-fns"],
       "registryDependencies": [
@@ -622,7 +609,7 @@
         "tag",
         "text"
       ],
-      "import": "components/Scheduler",
+      "import": "components/Scheduler/Scheduler",
       "exports": ["Scheduler"],
       "types": ["SchedulerProps"],
       "docs": "components-scheduler"
@@ -631,10 +618,10 @@
       "name": "search",
       "type": "registry:ui",
       "title": "Search",
-      "files": ["components/Search/Search.tsx", "components/Search/index.ts"],
+      "files": ["components/Search/Search.tsx"],
       "dependencies": ["@holakirr/snow-ui-icons", "class-variance-authority"],
       "registryDependencies": ["kbd", "snow-core", "snow-ui-provider"],
-      "import": "components/Search",
+      "import": "components/Search/Search",
       "exports": ["Search", "searchStyles"],
       "types": ["SearchProps", "SearchSize", "SearchVariant"],
       "docs": "components-search"
@@ -643,13 +630,10 @@
       "name": "separator",
       "type": "registry:ui",
       "title": "Separator",
-      "files": [
-        "components/Separator/Separator.tsx",
-        "components/Separator/index.ts"
-      ],
+      "files": ["components/Separator/Separator.tsx"],
       "dependencies": ["@radix-ui/react-separator"],
       "registryDependencies": ["snow-core"],
-      "import": "components/Separator",
+      "import": "components/Separator/Separator",
       "exports": ["Separator"],
       "types": ["SeparatorProps"],
       "docs": "components-separator"
@@ -658,7 +642,7 @@
       "name": "sheet",
       "type": "registry:ui",
       "title": "Sheet",
-      "files": ["components/Sheet/Sheet.tsx", "components/Sheet/index.ts"],
+      "files": ["components/Sheet/Sheet.tsx"],
       "dependencies": [
         "@holakirr/snow-ui-icons",
         "@radix-ui/react-dialog",
@@ -666,7 +650,7 @@
         "class-variance-authority"
       ],
       "registryDependencies": ["button", "snow-core", "snow-ui-provider"],
-      "import": "components/Sheet",
+      "import": "components/Sheet/Sheet",
       "exports": [
         "Sheet",
         "SheetClose",
@@ -696,7 +680,7 @@
       "title": "Sidebar",
       "files": [
         "components/Sidebar/Sidebar.tsx",
-        "components/Sidebar/index.ts"
+        "components/Sidebar/sidebar-cookie.ts"
       ],
       "dependencies": [
         "@phosphor-icons/react",
@@ -715,7 +699,7 @@
         "tooltip",
         "use-is-mobile"
       ],
-      "import": "components/Sidebar",
+      "import": "components/Sidebar/Sidebar",
       "exports": [
         "Sidebar",
         "SidebarContent",
@@ -773,13 +757,10 @@
       "name": "skeleton",
       "type": "registry:ui",
       "title": "Skeleton",
-      "files": [
-        "components/Skeleton/Skeleton.tsx",
-        "components/Skeleton/index.ts"
-      ],
+      "files": ["components/Skeleton/Skeleton.tsx"],
       "dependencies": [],
       "registryDependencies": ["snow-core"],
-      "import": "components/Skeleton",
+      "import": "components/Skeleton/Skeleton",
       "exports": ["Skeleton"],
       "types": ["SkeletonProps"],
       "docs": "components-skeleton"
@@ -790,36 +771,42 @@
       "title": "SnowUIProvider",
       "files": [
         "components/SnowUIProvider/SnowUIProvider.tsx",
-        "components/SnowUIProvider/index.ts",
         "components/SnowUIProvider/messages.ts"
       ],
       "license": true,
       "dependencies": ["@radix-ui/react-direction", "date-fns"],
       "registryDependencies": [],
-      "import": "components/SnowUIProvider",
-      "exports": [
-        "SnowUIProvider",
-        "defaultMessages",
-        "useMessages",
-        "useSnowUI"
-      ],
+      "import": "components/SnowUIProvider/SnowUIProvider",
+      "exports": ["SnowUIProvider", "useMessages", "useSnowUI"],
       "types": [
-        "Messages",
-        "MessagesOverrides",
         "SnowUIContextValue",
         "SnowUIProviderProps",
+        "SnowUITheme",
         "TextDirection"
       ],
+      "docs": "components-snowuiprovider"
+    },
+    {
+      "name": "theme-scope",
+      "type": "registry:ui",
+      "title": "ThemeScope",
+      "files": ["components/SnowUIProvider/ThemeScope.tsx"],
+      "license": true,
+      "dependencies": ["@radix-ui/react-slot"],
+      "registryDependencies": ["snow-ui-provider"],
+      "import": "components/SnowUIProvider/ThemeScope",
+      "exports": ["ThemeScope"],
+      "types": ["ThemeScopeProps"],
       "docs": "components-snowuiprovider"
     },
     {
       "name": "strip",
       "type": "registry:ui",
       "title": "Strip",
-      "files": ["components/Strip/Strip.tsx", "components/Strip/index.ts"],
+      "files": ["components/Strip/Strip.tsx"],
       "dependencies": [],
       "registryDependencies": ["snow-core"],
-      "import": "components/Strip",
+      "import": "components/Strip/Strip",
       "exports": ["Strip"],
       "types": ["StripProps", "StripThickness"],
       "docs": "components-strip"
@@ -828,10 +815,10 @@
       "name": "table",
       "type": "registry:ui",
       "title": "Table",
-      "files": ["components/Table/Table.tsx", "components/Table/index.ts"],
+      "files": ["components/Table/Table.tsx"],
       "dependencies": ["@holakirr/snow-ui-icons"],
       "registryDependencies": ["snow-core"],
-      "import": "components/Table",
+      "import": "components/Table/Table",
       "exports": [
         "Table",
         "TableBody",
@@ -859,18 +846,14 @@
       "name": "tabs",
       "type": "registry:ui",
       "title": "Tabs",
-      "files": [
-        "components/Tabs/Tabs.tsx",
-        "components/Tabs/index.ts",
-        "components/Tabs/segmented.ts"
-      ],
+      "files": ["components/Tabs/Tabs.tsx", "components/Tabs/segmented.ts"],
       "dependencies": [
         "@radix-ui/react-slot",
         "@radix-ui/react-tabs",
         "class-variance-authority"
       ],
       "registryDependencies": ["snow-core"],
-      "import": "components/Tabs",
+      "import": "components/Tabs/Tabs",
       "exports": ["Tabs", "TabsContent", "TabsList", "TabsTrigger"],
       "types": [
         "TabsContentProps",
@@ -884,10 +867,10 @@
       "name": "tag",
       "type": "registry:ui",
       "title": "Tag",
-      "files": ["components/Tag/Tag.tsx", "components/Tag/index.ts"],
+      "files": ["components/Tag/Tag.tsx"],
       "dependencies": ["@holakirr/snow-ui-icons"],
       "registryDependencies": ["snow-core", "snow-ui-provider", "text"],
-      "import": "components/Tag",
+      "import": "components/Tag/Tag",
       "exports": ["Tag"],
       "types": ["TagProps", "TagShape", "TagState"],
       "docs": "components-tag"
@@ -953,7 +936,7 @@
       "title": "Toaster",
       "files": ["components/Toaster/Toaster.tsx"],
       "dependencies": ["@holakirr/snow-ui-icons"],
-      "registryDependencies": ["toast", "use-toast"],
+      "registryDependencies": ["toast", "toast-store", "use-toast"],
       "import": "components/Toaster/Toaster",
       "exports": ["Toaster"],
       "types": ["ToasterProps"],
@@ -963,13 +946,10 @@
       "name": "tooltip",
       "type": "registry:ui",
       "title": "Tooltip",
-      "files": [
-        "components/Tooltip/Tooltip.tsx",
-        "components/Tooltip/index.ts"
-      ],
+      "files": ["components/Tooltip/Tooltip.tsx"],
       "dependencies": ["@radix-ui/react-tooltip", "class-variance-authority"],
       "registryDependencies": ["snow-core", "snow-ui-provider"],
-      "import": "components/Tooltip",
+      "import": "components/Tooltip/Tooltip",
       "exports": [
         "Tooltip",
         "TooltipContent",
@@ -980,6 +960,27 @@
       ],
       "types": ["TooltipContentProps", "TooltipShortcutProps"],
       "docs": "components-tooltip"
+    },
+    {
+      "name": "toast-store",
+      "type": "registry:hook",
+      "title": "toast-store",
+      "files": ["hooks/toast-store.ts"],
+      "dependencies": [],
+      "registryDependencies": ["toast"],
+      "import": "hooks/toast-store",
+      "exports": [
+        "ACTION_TYPES",
+        "DEFAULT_TOAST_LIMIT",
+        "TOAST_REMOVE_DELAY",
+        "dispatch",
+        "genId",
+        "getState",
+        "listeners",
+        "reduce",
+        "registerToasterLimit"
+      ],
+      "types": ["Action", "State", "ToasterToast"]
     },
     {
       "name": "use-is-mobile",
@@ -998,7 +999,7 @@
       "title": "useToast",
       "files": ["hooks/use-toast.ts"],
       "dependencies": [],
-      "registryDependencies": ["toast"],
+      "registryDependencies": ["snow-core", "toast-store"],
       "import": "hooks/use-toast",
       "exports": ["reducer", "toast", "useToast"]
     },
@@ -1105,7 +1106,7 @@
           "@import \"@holakirr/snow-ui/theme.css\"": {},
           "@import \"@holakirr/snow-ui/fonts.css\"": {}
         },
-        "docs": "SnowUI: the theme and fonts come from the @holakirr/snow-ui package (its CSS only); add components with npx shadcn@latest add @snow-ui/<name>.\nWrap the app in <SnowUIProvider> (components/snow-ui/components/SnowUIProvider) for locale, direction and messages. Dark mode: data-theme=\"dark\" or the .dark class on <html>, else the OS preference.\nRemove the starter styles your template put in the global stylesheet (body font-family, --background/--foreground and their @theme inline colors): they override the SnowUI tokens."
+        "docs": "SnowUI: the theme and fonts come from the @holakirr/snow-ui package (its CSS only); add components with npx shadcn@latest add @snow-ui/<name>.\nWrap the app in <SnowUIProvider> (components/snow-ui/components/SnowUIProvider/SnowUIProvider) for locale, direction and messages. Dark mode: data-theme=\"dark\" or the .dark class on <html>, else the OS preference.\nRemove the starter styles your template put in the global stylesheet (body font-family, --background/--foreground and their @theme inline colors): they override the SnowUI tokens."
       }
     },
     {
@@ -1152,6 +1153,7 @@
         "sidebar",
         "skeleton",
         "snow-ui-provider",
+        "theme-scope",
         "strip",
         "table",
         "tabs",
@@ -1161,6 +1163,7 @@
         "toast",
         "toaster",
         "tooltip",
+        "toast-store",
         "use-is-mobile",
         "use-toast",
         "react-hook-form",

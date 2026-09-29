@@ -138,7 +138,7 @@ export default defineConfig({
       },
       docs: [
         'SnowUI: the theme and fonts come from the @holakirr/snow-ui package (its CSS only); add components with npx shadcn@latest add @snow-ui/<name>.',
-        'Wrap the app in <SnowUIProvider> (components/snow-ui/components/SnowUIProvider) for locale, direction and messages. Dark mode: data-theme="dark" or the .dark class on <html>, else the OS preference.',
+        'Wrap the app in <SnowUIProvider> (components/snow-ui/components/SnowUIProvider/SnowUIProvider) for locale, direction and messages. Dark mode: data-theme="dark" or the .dark class on <html>, else the OS preference.',
         'Remove the starter styles your template put in the global stylesheet (body font-family, --background/--foreground and their @theme inline colors): they override the SnowUI tokens.',
       ].join('\n'),
     },
@@ -174,7 +174,7 @@ export default defineConfig({
         '## Install',
         '',
         '- npm package: `npm install @holakirr/snow-ui`; in a Tailwind CSS v4 stylesheet `@import "tailwindcss"; @import "@holakirr/snow-ui/theme.css"; @import "@holakirr/snow-ui/fonts.css";` (without Tailwind: `@import "@holakirr/snow-ui/index.css";`). Import components from `@holakirr/snow-ui`, the React Hook Form adapter from `@holakirr/snow-ui/react-hook-form`.',
-        `- shadcn registry (copy the source): new project \`npx shadcn@latest init ${baseUrl}/snow-ui.json\`, then \`npx shadcn@latest add @snow-ui/<name>\`. Existing project: \`npx shadcn@latest registry add @snow-ui=${baseUrl}/{name}.json\` and the theme imports above. Files land in \`components/snow-ui/\` with the source layout of the package, e.g. \`import { Button } from "@/components/snow-ui/components/Button"\`. Needs a radix-* style in components.json.`,
+        `- shadcn registry (copy the source): new project \`npx shadcn@latest init ${baseUrl}/snow-ui.json\`, then \`npx shadcn@latest add @snow-ui/<name>\`. Existing project: \`npx shadcn@latest registry add @snow-ui=${baseUrl}/{name}.json\` and the theme imports above. Files land in \`components/snow-ui/\` with the source layout of the package, e.g. \`import { Button } from "@/components/snow-ui/components/Button/Button"\`. Needs a radix-* style in components.json.`,
         `- Catalog: ${baseUrl}/registry.json; item JSON: ${baseUrl}/<name>.json.`,
         '- MCP: `npx shadcn@latest mcp init --client claude` (or cursor, vscode, codex, opencode) in a project whose components.json lists the @snow-ui registry.',
         '- Theming: tokens as Tailwind theme variables (`bg-black-4`, `text-14`, `rounded-12`); dark mode with `data-theme="dark"` or the `.dark` class on <html> (else the OS preference); scoped themes with `data-theme` on any element.',

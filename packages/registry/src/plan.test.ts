@@ -30,21 +30,18 @@ describe('createPlan', () => {
     )
   })
 
-  it('ships a directory barrel with its only component, not a shared one', () => {
-    expect(items.button.files).toEqual([
-      'components/Button/Button.tsx',
-      'components/Button/index.ts',
-    ])
-    expect(items.button.import).toBe('components/Button')
+  it('makes every component module an item, without directory barrels', () => {
+    expect(items.button.files).toEqual(['components/Button/Button.tsx'])
+    expect(items.button.import).toBe('components/Button/Button')
     // Text/index.ts re-exports two items: each ships its own module.
     expect(items.text.files).toEqual(['components/Text/Text.tsx'])
     expect(items.kbd.files).toEqual(['components/Text/Kbd.tsx'])
     expect(items.kbd.import).toBe('components/Text/Kbd')
     expect(items.menu.files).toEqual([
       'components/Menu/Menu.tsx',
-      'components/Menu/index.ts',
       'components/Menu/surface.ts',
     ])
+    expect(items.menu.import).toBe('components/Menu/Menu')
     expect(items['use-thing'].files).toEqual(['hooks/use-thing.ts'])
   })
 
@@ -53,6 +50,7 @@ describe('createPlan', () => {
     expect(shipped).not.toContain('index.ts')
     expect(shipped).not.toContain('components/index.ts')
     expect(shipped).not.toContain('components/Text/index.ts')
+    expect(shipped).not.toContain('components/Button/index.ts')
     expect(shipped).not.toContain('hooks/index.ts')
     expect(shipped.filter((file) => file.includes('.stories.'))).toEqual([])
   })
@@ -83,6 +81,18 @@ describe('createPlan', () => {
       "import { Kbd } from '../Text/Kbd'\nimport type { TextProps } from '../Text/Text'",
     ])
     expect(rewrites.has('components/Text/Kbd.tsx')).toBe(false)
+  })
+
+  it('rewrites re-exports through a barrel too', () => {
+    const { rewrites: edits } = plan({
+      'pkg/src/components/Menu/Menu.tsx':
+        "import { surface } from './surface'\nexport { Kbd, type TextProps } from '../Text'\nexport const Menu = () => surface\n",
+    })
+    expect(
+      (edits.get('components/Menu/Menu.tsx') ?? []).map((edit) => edit.text),
+    ).toEqual([
+      "export { Kbd } from '../Text/Kbd'\nexport type { TextProps } from '../Text/Text'",
+    ])
   })
 
   it('ships the licence with the items that reach no other copy of it', () => {

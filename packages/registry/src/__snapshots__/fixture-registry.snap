@@ -22,11 +22,6 @@
             "path": "test-ui/components/Button/Button.tsx",
             "type": "registry:ui",
             "target": "@components/test-ui/components/Button/Button.tsx"
-          },
-          {
-            "path": "test-ui/components/Button/index.ts",
-            "type": "registry:ui",
-            "target": "@components/test-ui/components/Button/index.ts"
           }
         ],
         "meta": {
@@ -34,7 +29,7 @@
           "version": "1.2.3",
           "license": "MIT",
           "source": "https://example.test/blob/main/pkg/src/components/Button",
-          "import": "components/Button",
+          "import": "components/Button/Button",
           "docs": "https://ui.example.test/?path=/docs/components-button--docs"
         }
       },
@@ -56,11 +51,6 @@
             "target": "@components/test-ui/components/Menu/Menu.tsx"
           },
           {
-            "path": "test-ui/components/Menu/index.ts",
-            "type": "registry:ui",
-            "target": "@components/test-ui/components/Menu/index.ts"
-          },
-          {
             "path": "test-ui/components/Menu/surface.ts",
             "type": "registry:ui",
             "target": "@components/test-ui/components/Menu/surface.ts"
@@ -76,7 +66,7 @@
           "version": "1.2.3",
           "license": "MIT",
           "source": "https://example.test/blob/main/pkg/src/components/Menu",
-          "import": "components/Menu"
+          "import": "components/Menu/Menu"
         }
       },
       {
@@ -271,9 +261,7 @@
   },
   "files": {
     "test-ui/components/Button/Button.tsx": "import { Slot } from '@radix-ui/react-slot'\nimport type { ReactNode } from 'react'\nimport { cn } from '../../utils/cn'\nimport { Text } from '../Text/Text'\n\n/*\n * Test UI\n * https://example.test/blob/main/pkg/src/components/Button/Button.tsx\n * MIT License\n */\n\n/** Button runs an action. */\nexport const Button = ({ asChild, children }: { asChild?: boolean; children?: ReactNode }) => {\n  const Component = asChild ? Slot : 'button'\n  return <Component className={cn('px-2')}><Text>{children}</Text></Component>\n}\n",
-    "test-ui/components/Button/index.ts": "export * from './Button'\n\n/*\n * Test UI\n * https://example.test/blob/main/pkg/src/components/Button/index.ts\n * MIT License\n */\n",
     "test-ui/components/Menu/Menu.tsx": "'use client'\n\nimport { useThing } from '../../hooks/use-thing'\nimport { Kbd } from '../Text/Kbd'\nimport type { TextProps } from '../Text/Text'\nimport { surface } from './surface'\n\n/*\n * Test UI\n * https://example.test/blob/main/pkg/src/components/Menu/Menu.tsx\n * MIT License\n */\n\nexport const Menu = (props: TextProps) => {\n  useThing()\n  return <div className={surface}><Kbd keys=\"K\" />{props.children}</div>\n}\n",
-    "test-ui/components/Menu/index.ts": "export * from './Menu'\n\n/*\n * Test UI\n * https://example.test/blob/main/pkg/src/components/Menu/index.ts\n * MIT License\n */\n",
     "test-ui/components/Menu/surface.ts": "export const surface = 'rounded-12'\n\n/*\n * Test UI\n * https://example.test/blob/main/pkg/src/components/Menu/surface.ts\n * MIT License\n */\n",
     "test-ui/LICENSE": "MIT License\n\nCopyright (c) 2024 Test\n",
     "test-ui/components/Text/Kbd.tsx": "import { Text } from './Text'\n\n/*\n * Test UI\n * https://example.test/blob/main/pkg/src/components/Text/Kbd.tsx\n * MIT License\n */\n\n/** A keyboard key. */\nexport const Kbd = ({ keys }: { keys: string }) => <kbd><Text>{keys}</Text></kbd>\n",

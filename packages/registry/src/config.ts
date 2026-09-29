@@ -18,18 +18,20 @@ export type ItemType =
  * file goes to the first rule that matches it; a runtime file that no rule
  * matches fails the generation (so a new top-level module needs a decision),
  * while a new component directory is picked up by its `components` rule.
- * Re-export-only files (`index.ts` barrels) are never matched: a barrel is
- * shipped with the item that holds everything it re-exports, and imports
- * through any other barrel are rewritten to the module that declares them.
+ * Re-export-only files (`index.ts` barrels) are never matched: a barrel of
+ * a library group ships with the item that holds everything it re-exports;
+ * imports through any other barrel (component directories, entry points)
+ * are rewritten to the module that declares them.
  */
 export type GroupRule =
   | {
       /**
-       * Each subdirectory of `dir` is a component: one item, named after the
-       * directory in kebab case, with every file of the directory. When the
-       * directory's `index.ts` re-exports several component modules
-       * (PascalCase `.tsx` files), each module is its own item (named after
-       * the module) with the private files it imports.
+       * Components in the subdirectories of `dir`: every component module
+       * (a PascalCase `.tsx` file the directory's `index.ts` re-exports, or
+       * any PascalCase `.tsx` without an index) is an item, named after the
+       * module in kebab case, with the private files of the directory it
+       * imports. The directory's `index.ts` never ships, so adding a
+       * component to a directory leaves the other items as they are.
        */
       kind: 'components'
       dir: string

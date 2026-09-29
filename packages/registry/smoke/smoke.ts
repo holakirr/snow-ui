@@ -240,8 +240,8 @@ function smokePage(manifest: Manifest, clientDirective: boolean) {
     (item, i) => `import * as m${i} from '@/components/snow-ui/${item.import}'`,
   )
   return `${clientDirective ? "'use client'\n\n" : ''}${imports.join('\n')}
-import { Button } from '@/components/snow-ui/components/Button'
-import { SnowUIProvider } from '@/components/snow-ui/components/SnowUIProvider'
+import { Button } from '@/components/snow-ui/components/Button/Button'
+import { SnowUIProvider } from '@/components/snow-ui/components/SnowUIProvider/SnowUIProvider'
 import { Typography } from '@/components/snow-ui/components/Text/Text'
 import { Sparkline } from '@holakirr/snow-ui-charts'
 
@@ -374,7 +374,7 @@ async function smokeNext(ctx: Context) {
   writeFileSync(join(app, 'src/smoke.tsx'), smokePage(ctx.manifest, true))
   writeFileSync(
     join(app, 'src/app/page.tsx'),
-    `import { Button } from '@/components/snow-ui/components/Button'
+    `import { Button } from '@/components/snow-ui/components/Button/Button'
 import { Smoke } from '@/smoke'
 
 // A server component: Button has no 'use client'.

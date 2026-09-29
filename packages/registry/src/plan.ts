@@ -222,8 +222,6 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
     files: Set<string>
     /** The module whose docs describe the item. */
     main?: string
-    /** The component directory, when the item is a whole directory. */
-    dir?: string
     import?: string
   }
   const drafts = new Map<string, Draft>()
@@ -244,7 +242,8 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
   const nonBarrels = files.filter((file) => !mod(file).barrel)
   const unassigned = (file: string) => !owners.has(file)
 
-  const componentDir = (path: string, dir: string, type: ItemType) => {
+  const componentBarrels = new Set<string>()
+  const componentDir = (path: string, type: ItemType) => {
     const members = files.filter((file) => file.startsWith(`${path}/`))
     const barrel = members.find(
       (file) =>
@@ -271,20 +270,10 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
       )
       return
     }
-    if (components.length === 1) {
-      const draft = addDraft({
-        name: kebabCase(dir),
-        type,
-        title: baseName(components[0]),
-        files: new Set(),
-        main: components[0],
-        dir: path,
-        import: withoutExtension(components[0]),
-      })
-      for (const file of local) own(draft, file)
-      return
-    }
-    // Several components: one item each, with the private files it reaches.
+    // One item per component module, with the private files it reaches. The
+    // directory's index.ts never ships: a directory that gains a component
+    // must not change the files (and import paths) of the items it had.
+    if (barrel) componentBarrels.add(barrel)
     const componentSet = new Set(components)
     const localSet = new Set(local)
     for (const component of components) {
@@ -333,7 +322,7 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
           .map((parts) => parts[0]),
       )
       for (const dir of dirs) {
-        componentDir(`${prefix}${dir}`, dir, rule.type ?? 'registry:ui')
+        componentDir(`${prefix}${dir}`, rule.type ?? 'registry:ui')
       }
     } else if (rule.kind === 'each') {
       for (const file of nonBarrels) {
@@ -343,8 +332,7 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
           addDraft({
             name,
             type: rule.type,
-            title:
-              rule.type === 'registry:hook' ? camelCase(name) : baseName(file),
+            title: name.startsWith('use-') ? camelCase(name) : baseName(file),
             files: new Set(),
             main: file,
             import: withoutExtension(file),
@@ -386,9 +374,10 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
 
   // --- Barrels ----------------------------------------------------------
 
-  // A barrel ships with the item that holds everything it re-exports (e.g.
-  // components/Button/index.ts with the Button item); the others (package
-  // entry points, directories of several components) are rewritten away.
+  // A barrel of a library group ships with the item that holds everything
+  // it re-exports (constants/index.ts with snow-core); the others (package
+  // entry points, component directories) are rewritten away: imports through
+  // them point at the module that declares the name.
   const shipped = new Set<string>()
   const barrels = files.filter((file) => mod(file).barrel)
   const decided = new Set<string>()
@@ -403,6 +392,7 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
       if (targets.some((t) => mod(t).barrel && !decided.has(t))) continue
       decided.add(barrel)
       progress = true
+      if (componentBarrels.has(barrel)) continue
       let common: Set<string> | undefined
       for (const target of targets) {
         const targetOwners = owners.get(target) ?? new Set<string>()
@@ -415,21 +405,31 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
       if (draft) {
         shipped.add(barrel)
         own(draft, barrel)
-        if (draft.dir === posix.dirname(barrel)) draft.import = draft.dir
       }
     }
   }
 
   // --- Rewrites, dependencies --------------------------------------------
 
+  /** `import`/`export … from` a barrel, as one declaration per module. */
   const rewriteImport = (file: string, edge: Edge): TextEdit => {
+    const q = edge.quote
+    if (!edge.bindings) {
+      // `export * from` a barrel: every module it re-exports.
+      const text = edgeTargets(edge, shipped)
+        .map(
+          (target) =>
+            `export * from ${q}${relativeSpecifier(file, target)}${q}`,
+        )
+        .join('\n')
+      return { start: edge.start, end: edge.end, text }
+    }
     const groups = new Map<string, Binding[]>()
     for (const binding of edge.bindings ?? []) {
       const target = resolveThrough(edge.file ?? '', binding.name, shipped)
       if (!groups.has(target)) groups.set(target, [])
       groups.get(target)?.push(binding)
     }
-    const q = edge.quote
     const text = [...groups]
       .map(([target, bindings]) => {
         // `import type { A }` rather than `import { type A }`, which leaves
@@ -441,7 +441,7 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
               `${b.typeOnly && !typeOnly ? 'type ' : ''}${b.name}${b.alias ? ` as ${b.alias}` : ''}`,
           )
           .join(', ')
-        return `import ${typeOnly ? 'type ' : ''}{ ${names} } from ${q}${relativeSpecifier(file, target)}${q}`
+        return `${edge.kind} ${typeOnly ? 'type ' : ''}{ ${names} } from ${q}${relativeSpecifier(file, target)}${q}`
       })
       .join('\n')
     return { start: edge.start, end: edge.end, text }
@@ -465,10 +465,9 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
         let targets: string[]
         if (mod(edge.file).barrel && !shipped.has(edge.file)) {
           if (
-            edge.kind === 'export' ||
             edge.namespace ||
             edge.defaultImport ||
-            !edge.bindings
+            (!edge.bindings && edge.kind === 'import')
           ) {
             problems.push(
               `${file}: "${edge.specifier}" is a barrel that ships with no single item; import the modules it re-exports by name`,

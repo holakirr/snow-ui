@@ -27,7 +27,7 @@ npx shadcn@latest add @snow-ui/button @snow-ui/dialog
 `init` writes `components.json` with the Radix UI style (`radix-nova`) and the `@snow-ui` registry, adds `@import "@holakirr/snow-ui/theme.css"` and `@import "@holakirr/snow-ui/fonts.css"` after your `@import "tailwindcss"`, installs `@holakirr/snow-ui` (for those stylesheets) and copies the core utilities and `SnowUIProvider`. Remove the starter styles your template put in the stylesheet (a `body` font, `--background` / `--foreground` and their `@theme inline` colours): they override the SnowUI tokens.
 
 ```tsx
-import { Button } from '@/components/snow-ui/components/Button'
+import { Button } from '@/components/snow-ui/components/Button/Button'
 
 <Button variant="filled" size="md" label="Save" />
 ```
@@ -67,7 +67,7 @@ Things to know in an existing shadcn/ui project:
 
 ## Where the files go
 
-Items keep the package's source layout under your `components` alias: `@snow-ui/button` writes `components/snow-ui/components/Button/Button.tsx` and `index.ts`, and the files it uses (`components/snow-ui/utils/tw-merge.ts`, `components/snow-ui/components/Text/Text.tsx`…). They import each other with relative paths, so move them together or not at all. `utils/tw-merge.ts` is SnowUI's `twMerge`, configured with the token scales: the components don't use shadcn's `cn`. Every file carries the MIT notice; the licence text is `components/snow-ui/LICENSE`.
+Items keep the package's source layout under your `components` alias: `@snow-ui/button` writes `components/snow-ui/components/Button/Button.tsx` (import it from there, as each component page shows), and the files it uses (`components/snow-ui/utils/tw-merge.ts`, `components/snow-ui/components/Text/Text.tsx`…). They import each other with relative paths, so move them together or not at all. `utils/tw-merge.ts` is SnowUI's `twMerge`, configured with the token scales: the components don't use shadcn's `cn`. Every file carries the MIT notice; the licence text is `components/snow-ui/LICENSE`.
 
 `SnowUIProvider` is optional, as with the package: without it, the components use the English messages and the `enUS` date locale.
 

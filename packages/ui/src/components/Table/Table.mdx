@@ -1,5 +1,15 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './Table'
 import * as TableStories from './Table.stories'
 
 <Meta of={TableStories} />
@@ -104,11 +114,21 @@ With TanStack Table:
 ## Accessibility
 
 - The parts are native table elements, so screen readers announce rows, columns and headers. `TableCell` also sets `role="cell"`.
-- A sortable header is a `<button type="button">` inside the `<th>`: in the tab order, activated with Enter or Space. The `<th>` carries `aria-sort`; the sort icon is decorative.
+- A sortable header is a `<button type="button">` inside the `<th>`. The `<th>` carries `aria-sort`; the sort icon is decorative.
 - Name the table: a `TableCaption`, or `aria-label` / `aria-labelledby` on `Table` (they go on the `<table>`).
-- Selection checkboxes need a name per row (the stories use "Select #CM9801" and "Select all"). A focused checkbox toggles with Space, and the select-all checkbox reports `aria-checked="mixed"` when only some rows are selected (the Table A tests check both).
+- Selection checkboxes need a name per row (the stories use "Select #CM9801" and "Select all"). The select-all checkbox reports `aria-checked="mixed"` when only some rows are selected (the Table A tests check it).
 - Actions that appear on hover (the stories' "More actions" button) must also appear on keyboard focus: the story adds `focus-visible:opacity-100`.
 - Hover and the selected highlight are a fill only; say which rows are selected with the checkboxes' state, not the fill.
+
+### Keyboard
+
+The table itself isn't focusable and has no arrow-key navigation; its sort buttons and whatever you put in the cells are ordinary tab stops:
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift + Tab | move to the next / previous control: sort buttons, then the controls in the cells, row by row |
+| Enter, Space | on a sort button: call `onSort`, which changes the sort |
+| Space | on a selection [Checkbox](?path=/docs/components-input-checkbox--docs): toggle the row (the Table A tests check it) |
 
 ### Deviations from the Figma kit
 
@@ -155,4 +175,52 @@ The stories' status cells colour only the dot: the Secondary colours are 1.7–2
 
 ## Props
 
-<Controls />
+The parts are the native table elements with the Figma styles: each takes the props below, `className` (merged with the part's classes) and the attributes of its element.
+
+### Table
+
+The `<table>`, inside a `<div>` that scrolls it horizontally when it is wider than its container. `aria-label` and `aria-labelledby` go to the `<table>`.
+
+<ArgTypes of={Table} />
+
+### TableHeader
+
+The `<thead>`.
+
+<ArgTypes of={TableHeader} />
+
+### TableBody
+
+The `<tbody>`.
+
+<ArgTypes of={TableBody} />
+
+### TableFooter
+
+The `<tfoot>`, for totals: a Black/20% line above its cells.
+
+<ArgTypes of={TableFooter} />
+
+### TableRow
+
+A `<tr>`: the hover highlight, and the selected one with `data-state="selected"`.
+
+<ArgTypes of={TableRow} />
+
+### TableHead
+
+A header cell, `<th>`. With `sortDirection` (`'asc'`, `'desc'` or `false`) it renders a sort button and sets `aria-sort`; `onSort` is the button's click handler.
+
+<ArgTypes of={TableHead} />
+
+### TableCell
+
+A data cell, `<td>`.
+
+<ArgTypes of={TableCell} />
+
+### TableCaption
+
+The `<caption>`, which names the table.
+
+<ArgTypes of={TableCaption} />

@@ -8,13 +8,14 @@
  * component's own label prop (`closeLabel`, `clearLabel`, `aria-label`…)
  * wins over the provider.
  *
- * The namespaces added in 5.1 (`avatarGroup`, `charts`) are optional, so a
- * translation typed as `Messages` before they existed still compiles; the
- * English defaults fill them in, and `useMessages()` always returns every
- * namespace (`Required<Messages>`). They become required in 6.0.
+ * The namespaces added in 5.1 (`alert`, `alertDialog`, `avatarGroup`,
+ * `charts`, `progress`, `spinner`) are optional, so a translation typed as
+ * `Messages` before they existed still compiles; the English defaults fill
+ * them in, and `useMessages()` always returns every namespace
+ * (`Required<Messages>`). They become required in 6.0.
  */
 export type Messages = {
-  alert: {
+  alert?: {
     /** The dismiss button of an `Alert` with `onDismiss`. */
     dismiss: string
     /** Screen-reader text before the content of an `info` alert. */
@@ -26,7 +27,7 @@ export type Messages = {
     /** Screen-reader text before the content of an `error` alert. */
     error: string
   }
-  alertDialog: {
+  alertDialog?: {
     /** The label of an `AlertDialogCancel` without children. */
     cancel: string
   }
@@ -113,7 +114,7 @@ export type Messages = {
     /** Screen-reader text of `PaginationEllipsis`. */
     more: string
   }
-  progress: {
+  progress?: {
     /**
      * Accessible name of a `Progress` or `ProgressCircle` without an
      * `aria-label` or `aria-labelledby`.
@@ -147,7 +148,7 @@ export type Messages = {
     /** A thumb of a slider with three or more thumbs (`position` from 1). */
     thumb: (label: string, position: number, count: number) => string
   }
-  spinner: {
+  spinner?: {
     /** The screen-reader text of a `Spinner`. */
     label: string
   }

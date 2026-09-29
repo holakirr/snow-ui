@@ -47,7 +47,9 @@ describe('package exports', () => {
         typeof (esm as Record<string, unknown>)[name],
       )
     }
-  })
+    // Loading Recharts and all of @holakirr/snow-ui twice (CJS and ESM) is
+    // slow on a busy machine.
+  }, 30_000)
 
   it('re-exports the Recharts it depends on as ./recharts', async () => {
     const recharts = await import('recharts')

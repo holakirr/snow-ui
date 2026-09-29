@@ -25,7 +25,6 @@ import {
 } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import {
-  popoverAnimationClasses,
   popoverItemClasses,
   popoverLabelClasses,
   popoverSurfaceClasses,
@@ -684,7 +683,12 @@ export const ComboboxPopup = ({
           popoverSurfaceClasses,
           // The padding is on the list, so it scrolls inside it.
           'p-0',
-          popoverAnimationClasses,
+          // The popover's zoom in, and no exit animation: like the Select
+          // menu, the list goes away at once when an option is picked or
+          // the list is dismissed, so it never covers the picked value
+          // while it fades, and Radix doesn't keep it mounted waiting for an
+          // animation to end.
+          'data-[state=open]:animate-zoom-in-95',
           className,
         )}
       >

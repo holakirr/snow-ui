@@ -952,7 +952,11 @@ function renderContrast(colors: ContrastColor[]) {
         `var(--contrast-more) var(${name}--more)`,
         indent,
       ),
-      declaration(name, `var(${name}--more-on, var(${name}--standard))`, indent),
+      declaration(
+        name,
+        `var(${name}--more-on, var(${name}--standard))`,
+        indent,
+      ),
     ]),
     '  }',
   ]

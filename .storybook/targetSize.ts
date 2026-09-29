@@ -37,9 +37,14 @@ const MIN_SIZE = 24
 
 /**
  * Elements that receive the clicks of a text field: a hit on them counts for
- * it. The Input shell focuses its `<input>` on pointer-down (padding, icons).
+ * it. The Input, Combobox and MultiSelect shells focus their `<input>` on
+ * pointer-down (padding, icons, tags).
  */
-const HIT_AREA_OWNERS = ['[data-slot="input"]']
+const HIT_AREA_OWNERS = [
+  '[data-slot="input"]',
+  '[data-slot="combobox"]',
+  '[data-slot="multi-select"]',
+]
 
 const INTERACTIVE = [
   'a[href]',

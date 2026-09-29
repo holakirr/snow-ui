@@ -183,6 +183,51 @@
       "docs": "components-card"
     },
     {
+      "name": "combobox",
+      "type": "registry:ui",
+      "title": "Combobox",
+      "files": [
+        "components/Combobox/Combobox.tsx",
+        "components/Combobox/listbox.tsx"
+      ],
+      "dependencies": [
+        "@holakirr/snow-ui-icons",
+        "@phosphor-icons/react",
+        "@radix-ui/react-compose-refs",
+        "@radix-ui/react-popover"
+      ],
+      "registryDependencies": ["popover", "snow-core", "snow-ui-provider"],
+      "import": "components/Combobox/Combobox",
+      "exports": ["Combobox"],
+      "types": ["ComboboxProps"],
+      "docs": "components-combobox"
+    },
+    {
+      "name": "multi-select",
+      "type": "registry:ui",
+      "title": "MultiSelect",
+      "files": [
+        "components/Combobox/MultiSelect.tsx",
+        "components/Combobox/listbox.tsx"
+      ],
+      "dependencies": [
+        "@holakirr/snow-ui-icons",
+        "@phosphor-icons/react",
+        "@radix-ui/react-compose-refs",
+        "@radix-ui/react-popover"
+      ],
+      "registryDependencies": [
+        "popover",
+        "snow-core",
+        "snow-ui-provider",
+        "tag"
+      ],
+      "import": "components/Combobox/MultiSelect",
+      "exports": ["MultiSelect"],
+      "types": ["MultiSelectProps"],
+      "docs": "components-multiselect"
+    },
+    {
       "name": "command-palette",
       "type": "registry:ui",
       "title": "CommandPalette",
@@ -251,6 +296,60 @@
         "ContextMenuSubTriggerProps"
       ],
       "docs": "components-contextmenu"
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "DatePicker",
+      "files": [
+        "components/DatePicker/DatePicker.tsx",
+        "components/DatePicker/field.tsx"
+      ],
+      "dependencies": [
+        "@holakirr/snow-ui-icons",
+        "@phosphor-icons/react",
+        "@radix-ui/react-compose-refs",
+        "@radix-ui/react-popover",
+        "date-fns",
+        "react-day-picker"
+      ],
+      "registryDependencies": [
+        "calendar",
+        "popover",
+        "snow-core",
+        "snow-ui-provider"
+      ],
+      "import": "components/DatePicker/DatePicker",
+      "exports": ["DatePicker"],
+      "types": ["DatePickerProps"],
+      "docs": "components-datepicker"
+    },
+    {
+      "name": "date-range-picker",
+      "type": "registry:ui",
+      "title": "DateRangePicker",
+      "files": [
+        "components/DatePicker/DateRangePicker.tsx",
+        "components/DatePicker/field.tsx"
+      ],
+      "dependencies": [
+        "@holakirr/snow-ui-icons",
+        "@phosphor-icons/react",
+        "@radix-ui/react-compose-refs",
+        "@radix-ui/react-popover",
+        "date-fns",
+        "react-day-picker"
+      ],
+      "registryDependencies": [
+        "calendar",
+        "popover",
+        "snow-core",
+        "snow-ui-provider"
+      ],
+      "import": "components/DatePicker/DateRangePicker",
+      "exports": ["DateRangePicker"],
+      "types": ["DateRange", "DateRangePickerProps"],
+      "docs": "components-daterangepicker"
     },
     {
       "name": "dialog",
@@ -1216,8 +1315,12 @@
         "button",
         "calendar",
         "card",
+        "combobox",
+        "multi-select",
         "command-palette",
         "context-menu",
+        "date-picker",
+        "date-range-picker",
         "dialog",
         "dropdown-menu",
         "form",

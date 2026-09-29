@@ -59,9 +59,11 @@ export type CalendarProps = DayPickerProps & {
   showOutsideDays?: boolean
 
   /**
-   * The first day of the week: 0 for Sunday, 1 for Monday. The Figma
-   * DatePicker starts on Monday. It wins over the `locale`'s week start.
-   * @default 1
+   * The first day of the week: 0 for Sunday, 1 for Monday. It wins over
+   * the `locale`'s week start. The Figma DatePicker starts on Monday: pass
+   * `1` for that whatever the locale.
+   * @default the locale's first day of the week (`locale.options.weekStartsOn`:
+   * Sunday in en-US, Monday in ru)
    */
   weekStartsOn?: DayPickerProps['weekStartsOn']
 
@@ -673,16 +675,16 @@ const mergeClassNames = (
 
 /**
  * A calendar built on react-day-picker, styled like the Figma DatePicker:
- * the week starts on Monday, the selected day is Primary, today is
- * Secondary/Indigo and days outside the month are `text-secondary` (Figma:
- * Black/40%, 2.85:1).
+ * the selected day is Primary, today is Secondary/Indigo and days outside
+ * the month are `text-secondary` (Figma: Black/40%, 2.85:1).
  *
  * Localized by `SnowUIProvider`: its `locale` (a date-fns or
- * react-day-picker locale) names the months and weekdays and its `messages`
- * the toolbar ("Today", "Last selection", the previous / next month buttons
- * and their "Month navigation" landmark; the English defaults of the last
- * three give way to a react-day-picker locale's own labels); its `dir` flips
- * the arrows and the arrow keys. The `locale`, `dir`, `labels`,
+ * react-day-picker locale) names the months and weekdays and sets the first
+ * day of the week (unless `weekStartsOn` is set); its `messages` name the
+ * toolbar ("Today", "Last selection", the previous / next month buttons and
+ * their "Month navigation" landmark; the English defaults of the last three
+ * give way to a react-day-picker locale's own labels); its `dir` flips the
+ * arrows and the arrow keys. The `locale`, `weekStartsOn`, `dir`, `labels`,
  * `todayLabel` and `lastSelectionLabel` props win over the provider.
  */
 function Calendar({
@@ -692,7 +694,7 @@ function Calendar({
   showWeekNumber,
   yearRange = 12,
   numberOfMonths,
-  weekStartsOn = 1,
+  weekStartsOn,
   header,
   showTodayButton = false,
   onTodayClick,
@@ -787,7 +789,8 @@ function Calendar({
         // would repeat the neighbouring month's dates.
         showOutsideDays={showOutsideDays ?? columnsDisplayed === 1}
         showWeekNumber={showWeekNumber}
-        weekStartsOn={weekStartsOn}
+        // The locale's first day of the week unless `weekStartsOn` is set.
+        weekStartsOn={weekStartsOn ?? locale?.options?.weekStartsOn}
         locale={locale}
         dir={dir ?? snowUI.dir}
         labels={{

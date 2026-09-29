@@ -1,0 +1,176 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as DatePickerStories from './DatePicker.stories'
+
+<Meta of={DatePickerStories} />
+
+<Title />
+
+<FigmaLinks label="DatePicker component set" page="29706:37201" note="The field is the Figma Input; the calendar is the Figma DatePicker." />
+<InstallTabs item="date-picker" />
+
+DatePicker is a form field for a date: it shows the picked date and opens a [Calendar](?path=/docs/components-calendar--docs) in a popover to pick another. The field looks like the Select trigger (the Figma Input field, with a calendar icon at the end); the calendar is the Figma DatePicker. For a range, use [DateRangePicker](?path=/docs/components-daterangepicker--docs).
+
+```tsx
+import { DatePicker, Label } from '@holakirr/snow-ui'
+
+const [due, setDue] = useState<Date | null>(null)
+
+<Label htmlFor="due">Due date</Label>
+<DatePicker id="due" value={due} onValueChange={setDue} minDate={new Date()} />
+```
+
+<Primary />
+
+## When to use
+
+- A date in a form, where seeing the weekdays helps: a deadline, a booking, a report date.
+- A date limited to a period (`minDate`, `maxDate`) or with days that can't be picked (`disabledDates`).
+
+## When not to use
+
+- A date far in the past that users know by heart, such as a birth date: an [Input](?path=/docs/components-input-input--docs) is faster to type (the field doesn't take typed dates).
+- A range: [DateRangePicker](?path=/docs/components-daterangepicker--docs).
+- A calendar that is always visible: [Calendar](?path=/docs/components-calendar--docs).
+
+## Anatomy
+
+1. **Field**: the Figma Input field as in the Select trigger (12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% inside stroke, 14/20 text), full width. `className` and `style` style it.
+2. **Trigger**: a `<button role="combobox">` that fills the field, with the picked date (in the `dateFormat`, "Jan 20, 2025" by default) or the placeholder ("Pick a date") in `text-secondary`. `id`, `aria-*`, `onBlur`, `ref` and other button props go to it.
+3. **Clear button** (`clearable`, on by default, while there is a date): the Search clear button, a 16px filled XCircle at 60% opacity.
+4. **Calendar icon**: a 16px calendar in Black/40%.
+5. **Popover**: the [Calendar](?path=/docs/components-calendar--docs) (the Figma DatePicker surface) 4px below the field, aligned to its start. `contentClassName` styles the popover; `calendarProps` passes more Calendar props.
+
+## States
+
+- **Hover:** the stroke turns Black/40%.
+- **Keyboard focus:** the `focus-ring` utility, as on the Select trigger.
+- **Open:** a Black/40% stroke and the 4px Focus ring.
+- **Placeholder:** no date yet; the placeholder is the trigger's text, in `text-secondary`.
+- **Invalid** (`aria-invalid`, set by `FormControl` when the field has an error): a Red stroke.
+- **Disabled** (`disabled`): a Black/4% field with no stroke, Black/20% text and icon, a not-allowed cursor. It doesn't open.
+- **Disabled days** (`minDate`, `maxDate`, `disabledDates`): Black/20% and not selectable; the calendar doesn't go past the months of `minDate` and `maxDate`.
+
+<Canvas of={DatePickerStories.Open} />
+
+<Canvas of={DatePickerStories.States} />
+
+<Canvas of={DatePickerStories.MinMaxAndDisabledDates} />
+
+Dark theme, open: [OpenDark story](?path=/story/components-datepicker--open-dark).
+
+## Calendar options
+
+`calendarProps` takes any other [Calendar](?path=/docs/components-calendar--docs) prop: `captionLayout="dropdown"` for month and year dropdowns, `showTodayButton`, `showYearSwitcher`, `today`, `footer`, `modifiers`… The picker owns the selection (`mode`, `selected`, `onSelect`) and the disabled days (use `minDate`, `maxDate` and `disabledDates`). The calendar opens on the picked date's month (or today's); `calendarProps.defaultMonth` changes that.
+
+<Canvas of={DatePickerStories.CalendarOptions} />
+
+## Accessibility
+
+- The trigger is a `<button role="combobox">` with `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls`: the label names it, its text is its value (like the Select trigger). The popover is a `dialog` named "Choose a date".
+- The popover is modal: focus moves into it, stays there (Tab cycles through the calendar's buttons), and the rest of the page is hidden from assistive technology until it closes; then focus returns to the trigger.
+- Clicking the picked day again keeps it (react-day-picker would unselect it) and closes the calendar.
+- Name the field with a [Label](?path=/docs/components-label--docs) (or `FormLabel`) linked to its `id`, or `aria-label`: a combobox isn't named by its text. `required` sets `aria-required`.
+- `name` adds a hidden input with the date as `yyyy-MM-dd` for native form submission.
+
+### Keyboard
+
+On the field, then in the calendar (the Default story's test and the unit tests):
+
+| Key | Action |
+| --- | --- |
+| Enter, Space, ArrowDown | on the field: open the calendar, with focus on the picked day (or today, or the first day of the month) |
+| Backspace, Delete | on the field: clear the date (`clearable`) |
+| Arrow keys, Page Up / Page Down, Home / End | in the calendar: move between days, weeks and months (react-day-picker; see [Calendar](?path=/docs/components-calendar--docs#keyboard)) |
+| Enter, Space | in the calendar: pick the focused day and close the calendar; focus returns to the field |
+| Tab / Shift + Tab | in the calendar: move between its buttons (focus stays in the popover) |
+| Escape | close the calendar without a change |
+
+### Deviations from the Figma kit
+
+The full table is in the package README; the calendar has the deviations listed on the [Calendar](?path=/docs/components-calendar--docs#accessibility) page.
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px | 2.4.7, 1.4.11 |
+| Placeholder in Black/20%: 1.6:1 | `text-secondary`: it is the trigger's visible text, as in Select | 1.4.3 |
+| The clear icon at 40% opacity (2.85:1) | 60% (the 3:1 of a control's icon) | 1.4.11 |
+
+Known gap with the default contrast, which keeps the Figma value, as in [Select](?path=/docs/components-input-select--docs#accessibility): the 0.5px Black/20% stroke (1.6:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border`, the invalid stroke `control-border-invalid` and the calendar icon `control-border-strong`. The clear button is a 16px icon with a 24×24px hit area (2.5.8).
+
+## Localization and RTL
+
+- `SnowUIProvider`'s `locale` formats the date ("20 янв. 2025 г." in Russian with the default `"PP"`) and localizes the calendar; the `locale` prop wins. `dateFormat` takes any date-fns `format` pattern.
+- The week starts on the locale's first day, as in Calendar: Sunday with the default English locale, Monday in Russian. `weekStartsOn` wins: `weekStartsOn={1}` starts on Monday, as the Figma DatePicker, whatever the locale.
+- `messages.datePicker` holds the built-in strings: `placeholder` ("Pick a date"), `dialog` ("Choose a date", the popover's name) and `clear` ("Clear date"). The `placeholder` and `clearLabel` props override them. The calendar's own strings come from `messages.calendar`.
+- In right-to-left text the icon and the clear button are on the left and the calendar mirrors; the popover takes `dir` from `SnowUIProvider`.
+
+<Canvas of={DatePickerStories.Localized} />
+
+<Canvas of={DatePickerStories.RTL} />
+
+## Theming
+
+The calendar renders in a portal at the end of `<body>`, outside your layout. It takes the theme of the nearest `ThemeScope` or `SnowUIProvider` `theme` (see [Theming](?path=/docs/guides-theming--docs)), else the theme of `<html>`; the same goes for DateRangePicker.
+
+## Forms
+
+Bind `value` and `onValueChange` (a `Date`, or `null` once cleared). With react-hook-form, pass `field.ref` to `ref` (it reaches the trigger, so the form focuses the field on an error) and `field.onBlur`, `field.name` and `field.disabled` as they are. `FormControl` gives the trigger its `id`, `aria-invalid` and `aria-describedby`. With zod: `z.date({ error: 'Pick a date.' })`.
+
+```tsx
+<FormField
+  control={form.control}
+  name="due"
+  render={({ field: { value, onChange, ...field } }) => (
+    <FormItem>
+      <FormLabel>Due date</FormLabel>
+      <FormControl>
+        <DatePicker value={value ?? null} onValueChange={onChange} {...field} />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+<Canvas of={DatePickerStories.InForm} />
+
+## Controlled and uncontrolled
+
+Pass `defaultValue` to leave the date to the picker, or `value` with `onValueChange(date)` to control it; `null` is no date. The popover: `defaultOpen`, or `open` with `onOpenChange`.
+
+## Composition
+
+DatePicker has no `asChild`: it renders a field with a trigger and a clear button, and a portalled popover. `className` and `style` go to the field, the button props to the trigger, `contentClassName` to the popover and `calendarProps` to the Calendar.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Label the field; set `minDate` and `maxDate` when only some dates make sense.
+- Keep the default `"PP"` format, or use one that spells the month, so "01/02" isn't ambiguous.
+- Disable dates that can't be picked instead of rejecting them after the fact.
+
+</Do>
+<Dont>
+
+- Don't use it for birth dates and other far-away dates: an Input is faster.
+- Don't pass `mode`, `selected` or `onSelect` in `calendarProps`: the picker owns the selection.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [DateRangePicker](?path=/docs/components-daterangepicker--docs): the same field for a range.
+- [Calendar](?path=/docs/components-calendar--docs): the calendar in the popover, and its keyboard.
+- [Select](?path=/docs/components-input-select--docs): the trigger the field is styled after.
+- [Form](?path=/docs/components-form--docs): label, description and error message.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the locale, messages and direction.
+
+## Props
+
+Everything not listed goes to the trigger, a `<button role="combobox">` (`id`, `aria-*`, `onBlur`, `ref`…); `className` and `style` go to the field, `contentClassName` to the popover, `calendarProps` to the [Calendar](?path=/docs/components-calendar--docs#props).
+
+<Controls />

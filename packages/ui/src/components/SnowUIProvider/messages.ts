@@ -9,10 +9,10 @@
  * wins over the provider.
  *
  * The namespaces added in 5.1 (`alert`, `alertDialog`, `avatarGroup`,
- * `charts`, `progress`, `spinner`) are optional, so a translation typed as
- * `Messages` before they existed still compiles; the English defaults fill
- * them in, and `useMessages()` always returns every namespace
- * (`Required<Messages>`). They become required in 6.0.
+ * `charts`, `combobox`, `datePicker`, `progress`, `spinner`) are optional,
+ * so a translation typed as `Messages` before they existed still compiles;
+ * the English defaults fill them in, and `useMessages()` always returns
+ * every namespace (`Required<Messages>`). They become required in 6.0.
  */
 export type Messages = {
   alert?: {
@@ -89,6 +89,21 @@ export type Messages = {
     /** Header of the first column of `Sparkline`'s data table (`categoryLabel`). */
     point: string
   }
+  /** `Combobox` and `MultiSelect` (5.1 and later). */
+  combobox?: {
+    /** Shown and announced when no option matches. */
+    empty: string
+    /** Shown and announced while `loading`. */
+    loading: string
+    /** The clear button. */
+    clear: string
+    /** The option that creates one from the query (`creatable`). */
+    create: (query: string) => string
+    /** `MultiSelect`: describes the field with the labels of the picked options. */
+    selected: (labels: string[]) => string
+    /** `MultiSelect`: announced when a tag is removed. */
+    removed: (label: string) => string
+  }
   commandPalette: {
     /** Accessible name of the dialog, the search field and the list. */
     label: string
@@ -97,6 +112,21 @@ export type Messages = {
     empty: string
     /** Announced while `loading`. */
     loading: string
+  }
+  /** `DatePicker` and `DateRangePicker` (5.1 and later). */
+  datePicker?: {
+    /** The field's text while no date is picked (`DatePicker`). */
+    placeholder: string
+    /** The field's text while no range is picked (`DateRangePicker`). */
+    rangePlaceholder: string
+    /** The popover with the calendar (`DatePicker`). */
+    dialog: string
+    /** The popover with the calendar (`DateRangePicker`). */
+    rangeDialog: string
+    /** The clear button. */
+    clear: string
+    /** A picked range, from its two formatted dates (`DateRangePicker`). */
+    range: (start: string, end: string) => string
   }
   dialog: {
     /** The close button of `DialogHeader`. */
@@ -211,11 +241,27 @@ export const defaultMessages: Required<Messages> = {
     value: 'Value',
     point: 'Point',
   },
+  combobox: {
+    empty: 'No results',
+    loading: 'Loading',
+    clear: 'Clear',
+    create: (query) => `Create "${query}"`,
+    selected: (labels) => `Selected: ${labels.join(', ')}`,
+    removed: (label) => `${label} removed`,
+  },
   commandPalette: {
     label: 'Search',
     placeholder: 'Search',
     empty: 'No results',
     loading: 'Loading',
+  },
+  datePicker: {
+    placeholder: 'Pick a date',
+    rangePlaceholder: 'Pick a date range',
+    dialog: 'Choose a date',
+    rangeDialog: 'Choose a date range',
+    clear: 'Clear date',
+    range: (start, end) => `${start} – ${end}`,
   },
   dialog: {
     close: 'Close',

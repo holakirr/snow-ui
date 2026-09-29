@@ -56,7 +56,7 @@ The theme is light by default. It is dark:
 
 - A scope sets the tokens and `color-scheme`, not a background or text colour: paint it, e.g. `bg-background-1 text-black`.
 - `dark:` utilities follow the same scopes, with one limit: a dark scope inside a light scope inside a dark scope gets the dark tokens but not `dark:` utilities. Prefer the tokens, which switch at any depth.
-- **Portals:** the content of `Dialog`, `AlertDialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope. With a plain `data-theme` attribute it takes the theme of `<html>`. Make the scope a `ThemeScope` instead: it renders the element with `data-theme` (or sets it on its child with `asChild`) and passes the theme to the overlays opened inside it, which get it as their own `data-theme`:
+- **Portals:** the content of `Dialog`, `AlertDialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, the lists of `Combobox` and `MultiSelect` and the calendars of `DatePicker` and `DateRangePicker` renders at the end of `<body>`, outside your scope. With a plain `data-theme` attribute it takes the theme of `<html>`. Make the scope a `ThemeScope` instead: it renders the element with `data-theme` (or sets it on its child with `asChild`) and passes the theme to the overlays opened inside it, which get it as their own `data-theme`:
 
   ```tsx
   import { ThemeScope } from '@holakirr/snow-ui'

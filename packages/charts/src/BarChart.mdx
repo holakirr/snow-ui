@@ -1,0 +1,101 @@
+import { ArgTypes, Canvas, Meta, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../.storybook/blocks'
+import * as BarChartStories from './BarChart.stories'
+
+<Meta of={BarChartStories} />
+
+<Title />
+
+<FigmaLinks page="25596:130956" pageLabel="Chart page" label="Vertical bars" />
+
+A bar chart compares amounts across categories. SnowUI bars are 28px wide with an 8px radius on every corner; the dashboards colour each bar by its category ("Traffic by Device") and stack a faded projection on top of the actual value ("Projections vs Actuals").
+
+```tsx
+import { BarChart } from '@holakirr/snow-ui-charts'
+
+<BarChart
+  title="Traffic by device"
+  data={data} // [{ device: 'Linux', users: 15000 }, …]
+  xKey="device"
+  colorBy="category"
+  config={{
+    users: { label: 'Users' },
+    Linux: { color: 'cyan' },
+    Mac: { color: 'mint' },
+    iOS: { color: 'primary' },
+  }}
+/>
+```
+
+<Canvas of={BarChartStories.TrafficByDevice} />
+
+## When to use
+
+- Amounts per category (devices, channels, months).
+- Two or three series side by side (grouped), or the parts of each total (`stacked`).
+- Long category names or many categories: `horizontal`.
+
+## When not to use
+
+- A continuous trend with many points: [LineChart](?path=/docs/charts-linechart--docs).
+- Shares of one whole: [DonutChart](?path=/docs/charts-donutchart--docs).
+
+## Variants
+
+**Per-category colours.** `colorBy="category"` colours each bar by the config entry named after its category (`Linux: { color: 'cyan' }`); categories without one take the palette. The config can hold both the series and the categories: the series are the keys found in the data.
+
+**Stacked.** `stacked` stacks the series; the stack is rounded as one bar (`radius`). A series' `opacity` fades it, like the Figma projection at 20%.
+
+<Canvas of={BarChartStories.ProjectionsVsActuals} />
+
+**Grouped.** Two or more series side by side, 4px apart, with a legend.
+
+<Canvas of={BarChartStories.Grouped} />
+
+**Horizontal.** `horizontal` puts the categories on the vertical axis and grows the bars along the horizontal one.
+
+<Canvas of={BarChartStories.Horizontal} />
+
+## Sizes
+
+| Prop | Default | Figma |
+| --- | --- | --- |
+| `barSize` | 28 (a maximum: bars get thinner when there's no room) | 28px bars |
+| `radius` | 8 | radius 8 (the stacked "Projections vs Actuals" rounds the whole column) |
+| `height` | 240 | 168–196px in the dashboards |
+
+## Accessibility
+
+- A named figure with a visually hidden data table (see [ChartContainer](?path=/docs/charts-chartcontainer--docs#accessibility)).
+- Tab focuses the chart and shows the first category; ← / → move between categories and announce their values.
+- The tooltip's dot takes the bar's colour with `colorBy="category"`.
+- Pastel bars (Cyan, Mint, Blue…) are below 3:1 on light backgrounds: the values are also in the tooltip and the table; label the chart well and keep the category labels visible.
+
+## Localization and RTL
+
+Numbers follow the provider's locale. In right-to-left text the first category is on the right and the value axis on the right; horizontal bars grow from right to left.
+
+<Canvas of={BarChartStories.HorizontalRTL} />
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Start bars at 0 (the default `domain`).
+- Use `colorBy="category"` only when the colours help (a legend elsewhere, a dashboard convention).
+
+</Do>
+<Dont>
+
+- Don't stack more than a few series: compare the parts with grouped bars instead.
+- Don't use per-category colours and a series legend together; they would disagree.
+
+</Dont>
+</DoDont>
+
+## Props
+
+Besides the props below, every ready-made chart takes the frame props of [ChartContainer](?path=/docs/charts-chartcontainer--docs): `title`, `description`, `aria-label`, `aria-labelledby`, `aria-describedby`, `height`, `loading`, `emptyMessage`, `loadingLabel`, `keyboardHint`, `table`, `categoryLabel`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`, `legendPosition`, `className`, `style`, `id` and `ref`.
+
+<ArgTypes of={BarChartStories} />

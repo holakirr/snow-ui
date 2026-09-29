@@ -69,6 +69,7 @@ const preview: Preview = {
           ['Getting started', 'Theming', 'Localization and RTL'],
           'Foundations',
           'Components',
+          'Charts',
           'Icons',
         ],
       },

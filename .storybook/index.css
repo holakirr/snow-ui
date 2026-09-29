@@ -5,10 +5,13 @@
  */
 @import "tailwindcss";
 @import "../packages/ui/src/theme.css";
+/* The charts' own stylesheet (@holakirr/snow-ui-charts/styles.css). */
+@import "../packages/charts/src/styles.css";
 
 /* Scan every package rendered in this Storybook for Tailwind classes. */
 @source "../packages/ui/src";
 @source "../packages/icons/src";
+@source "../packages/charts/src";
 
 .docs-story,
 .sb-show-main {

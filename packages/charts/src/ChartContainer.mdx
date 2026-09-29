@@ -1,0 +1,157 @@
+import { ArgTypes, Canvas, Meta, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../.storybook/blocks'
+import * as ChartContainerStories from './ChartContainer.stories'
+
+<Meta of={ChartContainerStories} />
+
+<Title />
+
+<FigmaLinks page="25596:130956" pageLabel="Chart page" label="Chart kit" />
+
+`@holakirr/snow-ui-charts` draws charts in the SnowUI design with [Recharts](https://recharts.github.io) 3. `ChartContainer` is the frame of every chart: it turns a `ChartConfig` into CSS custom properties, sizes the plot, gives the tooltip and the legend their labels, colours and number formats, and makes the chart accessible. Use it around your own Recharts charts, or use the ready-made [LineChart](?path=/docs/charts-linechart--docs), [AreaChart](?path=/docs/charts-areachart--docs), [BarChart](?path=/docs/charts-barchart--docs), [DonutChart](?path=/docs/charts-donutchart--docs) and [Sparkline](?path=/docs/charts-sparkline--docs), which are built on it.
+
+```bash
+bun add @holakirr/snow-ui-charts @holakirr/snow-ui react react-dom
+```
+
+```tsx
+import '@holakirr/snow-ui/index.css' // or theme.css in a Tailwind v4 project
+import '@holakirr/snow-ui-charts/styles.css'
+
+import { Bar, BarChart, XAxis } from '@holakirr/snow-ui-charts/recharts'
+import { ChartContainer, ChartTooltip, type ChartConfig, seriesColor } from '@holakirr/snow-ui-charts'
+
+const config = {
+  desktop: { label: 'Desktop', color: 'primary' },
+  mobile: { label: 'Mobile', color: 'mint' },
+} satisfies ChartConfig
+
+<ChartContainer config={config} title="Visitors" data={data} categoryKey="month">
+  <BarChart data={data}>
+    <XAxis dataKey="month" />
+    <Bar dataKey="desktop" fill={seriesColor('desktop')} radius={8} />
+    <Bar dataKey="mobile" fill={seriesColor('mobile')} radius={8} />
+    <ChartTooltip />
+  </BarChart>
+</ChartContainer>
+```
+
+<Canvas of={ChartContainerStories.Composable} />
+
+Import the Recharts parts from `@holakirr/snow-ui-charts/recharts`: it re-exports the Recharts this package depends on (the whole API), so your parts and `ChartContainer` / `ChartTooltip` share one copy (Recharts keeps the chart size and the tooltip state per copy). Importing `recharts` directly works only when it resolves to that same copy, i.e. the same version, deduplicated by your package manager.
+
+## When to use
+
+- A chart that the ready-made components don't cover: a composed chart, reference lines, a brush, two axes. Build it from Recharts parts inside `ChartContainer` and keep the SnowUI tooltip, legend, colours and accessibility.
+- Otherwise use a ready-made chart: they are `ChartContainer` plus the SnowUI axes, gridlines, bars, lines and tooltip.
+
+## When not to use
+
+- One number or a progress towards a target: text, a `Strip` (segmented progress) or a `Sparkline` next to the number.
+- A small table of exact values: a `Table` shows them better than a chart.
+
+## Anatomy
+
+1. **Figure** (`<figure>`): the whole chart, named by `title` (or your `aria-label` / `aria-labelledby`) and described by `description`.
+2. **Legend** (`legend`, optional): above the plot, below it or beside it (`legendPosition`: `top`, `bottom`, `end`).
+3. **Plot** (`height`, `width`): the Recharts chart, as wide as the container by default (it follows resizes).
+4. **Overlay** (`overlay`, optional): content over the plot, such as a donut's centre label.
+5. **Data table** (visually hidden): every value, for screen readers.
+6. **Live region** (visually hidden): announces the values the keyboard moves to.
+
+## Colours and config
+
+A `ChartConfig` maps each data key to a `label`, a `color` and optionally an `icon` (shown instead of the colour dot), `dashed` (lines and areas) and `opacity` (bar, slice and area fills).
+
+- `color` takes a SnowUI token name: `primary` (black, indigo in dark mode), `black` and `black-80` … `black-10` (they flip to white), or a secondary colour: `purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`. Any CSS colour works too (`'#7dbbff'`, `'var(--brand)'`).
+- Without a colour a series takes the palette in order: Primary, Blue, Green, Cyan, Purple, Mint, Indigo, Orange, Yellow, Red (`chartPalette`).
+- `ChartContainer` sets `--chart-<key>` on the figure (`--chart-desktop: var(--color-primary)`); `seriesColor('desktop')` returns `var(--chart-desktop)` for your Recharts elements. The values are CSS variables, so a chart follows the theme of wherever it is: dark mode and `data-theme` scopes work without re-rendering. Characters a CSS identifier can't hold are escaped (`'United States'` → `--chart-United_20_States`).
+
+## Tooltip and legend
+
+`ChartTooltip` is Recharts' `Tooltip` with the SnowUI content (`ChartTooltipContent`), a Black/20% cursor line (Black/4% band for bars) and, in right-to-left charts, the tooltip on the left of the pointer. `ChartTooltipContent` shows the category and, for each series, its dot, label and formatted value; `variant="dark"` (default) is the Figma chart tooltip (Black/80%, background blur, white text; white/80% with black text in dark mode, like `Tooltip`), `variant="light"` the popover glass. `hideLabel`, `hideIndicator`, `labelFormatter`, `valueFormatter`, `nameKey` and `colorKey` adjust it.
+
+`ChartLegendContent` lists the series with their dots. Put it in `legend` (an HTML list outside the plot), or in Recharts' legend: `<ChartLegend content={<ChartLegendContent />} />`. `values` adds text after each label, `layout="vertical"` makes a column with the values at the end.
+
+<Canvas of={ChartContainerStories.RechartsLegend} />
+
+## States
+
+- **Loading** (`loading`): bar placeholders, `aria-busy="true"` and the `loadingLabel` ("Loading chart") in the live region. The placeholders pulse unless the user prefers reduced motion.
+- **Empty** (`empty`): the `emptyMessage` ("No data") instead of the chart; the ready-made charts set it when `data` is empty.
+
+<Canvas of={ChartContainerStories.Loading} />
+
+<Canvas of={ChartContainerStories.Empty} />
+
+## Accessibility
+
+A chart is a picture of numbers, so its text alternative is the numbers:
+
+- **Named figure.** The container is a `<figure>` named by `title` (a visually hidden `<figcaption>`), by `aria-label`, or by `aria-labelledby` pointing at the card's visible heading (the stories do this). `description` is its accessible description: say what the chart shows ("Revenue grew 20% since January"). Without a name, a development warning is logged.
+- **Named once.** Only the figure carries the chart's name; the data table inside has no caption, and the focusable plot is named for what it is (`navigationLabel`, "Data points").
+- **Data table.** With `data` and `categoryKey`, the values are also a visually hidden `<table>`: the categories as row headers and the series as column headers, the values formatted like the tooltip. It is the text alternative screen reader users browse (WCAG 1.1.1, 1.3.1). `table={false}` turns it off, e.g. when the page already has the same table.
+- **Keyboard.** Recharts' accessibility layer makes the chart's `<svg>` a focusable `application`: Tab focuses it and shows the tooltip for the first point, ← and → move between points (mirrored in right-to-left charts), Enter toggles the tooltip. Inside the named figure, the svg is named by `navigationLabel` ("Data points") and described by the `keyboardHint` ("Use the left and right arrow keys to move between data points"). While the chart has focus, the tooltip's text is announced through a polite live region (2.1.1, 4.1.3). Charts without keyboard navigation (the donut) pass `keyboardHint={false}`.
+- **Focus.** The focused chart gets the library's focus ring: the Figma "Focus" ring plus a 2px Black/80% outline, offset by 2px (2.4.7).
+- **Contrast.** Axis labels are `text-secondary` (Figma: Black/40%, 2.85:1) like every secondary text of the library (1.4.3). Most secondary colours (Cyan, Mint, Blue, Green…) are below 3:1 against the light backgrounds; every value they draw is also text (the table, the tooltip, and a donut's legend), so the lines and bars aren't the only way to get the information (1.4.11). Use `primary` for the series that matters most, and don't tell series apart by colour alone: labels in the legend, a dashed style (`dashed`) for comparisons (1.4.1).
+- **Motion.** Recharts animates series on mount unless the user prefers reduced motion (`animate="auto"`).
+
+## Fonts and first paint
+
+Recharts measures text when it first draws (the value axis fits its widest label, overlapping labels are skipped) and doesn't measure again when a web font arrives, so a chart drawn with the fallback font would keep its widths. `ChartContainer` therefore draws the plot once the font of its text has loaded for the digits, the locale's number formats and the categories (`document.fonts.load`), or after 3 seconds; the figure, its legend and its table render right away (and on the server). When the chart is drawn at its size, the figure gets `data-chart-ready`: tests and screenshots can wait for it.
+
+## Localization and RTL
+
+- **Numbers** follow the `locale` prop, else the language of the nearest `SnowUIProvider` (its date-fns locale's `code`), else `en-US` (so the server and the browser render the same text). `valueFormatter` formats the tooltip, the legend values and the table; `categoryFormatter` the categories (by default their text; dates in the locale's medium date style, in UTC, so the server and the browser agree); the ready-made charts take `xTickFormatter` and `yTickFormatter` for the axes (compact numbers by default: `10K`).
+- **Strings**: `emptyMessage`, `loadingLabel`, `keyboardHint` and `navigationLabel` are props; translate them with your messages.
+- **Direction** follows the `dir` prop, else the `SnowUIProvider`'s, else the computed direction of the chart's element (`<html dir="rtl">`). Right-to-left cartesian charts mirror: the category axis runs from right to left (`reversed`), the value axis moves to the right, the tooltip opens to the left, ← moves forward. The figure gets the `dir` you pass (or the provider's), so its HTML parts (legend, tooltip, table) follow it even inside a left-to-right page; the SVG keeps left-to-right text layout.
+
+<Canvas of={ChartContainerStories.Formatters} />
+
+## Figma mapping
+
+The SnowUI kit draws charts from blocks ("Chart" page: `Vertical Bar` / `Horizontal Bar` with 1–12 bars, `Horizontal Line` / `Vertical Line` gridlines, `Left Text` / `Bottom Text` labels, `ChartDot`, `ChartMotion`) and uses them in the dashboards. The library takes their values:
+
+| Figma | Library |
+| --- | --- |
+| Axis labels: 12 Regular, Black/40%, values right-aligned 16px before the plot | 12px `text-secondary` ticks, `tickMargin` 16 (values) / 12 (categories), compact numbers |
+| Gridlines: 0.5px Black/4% (Black/10% alpha in dark mode), round caps; the baseline 0.5px Black/20% | `grid` (default on): the same strokes; the dashboards hide them |
+| Bars: 28px wide, radius 8, per-category colours | `BarChart`: `barSize` 28 (a maximum), `radius` 8, `colorBy="category"` |
+| Lines: 1px Primary, the previous period 1px Cyan dashed `2 4`, round caps, smooth; strokes fading in from 40% | `LineChart`: 1px, `dashed`, monotone curves, `fade` |
+| Area under "Total Users": Primary from 10% to transparent | `AreaChart`: a vertical gradient from `opacity` (0.1) to 0 |
+| Donut: 120px, 30px ring, rounded slices with gaps, clockwise from 12 o'clock | `DonutChart`: `size` 120, `thickness` 30, `cornerRadius` 4, `padAngle` 3° |
+| Tooltip: the dark Tooltip (Black/80% + White/10%, blur 20, radius 12, 12px white text) | `ChartTooltipContent variant="dark"` |
+| Hover dot: 12px, white fill, 2px stroke | the active dot: radius 5, `background-1` fill, 2px stroke in the series colour |
+
+The kit's blocks are drawings with a fixed number of bars, not data-driven components, so there is no Figma Code Connect template for them.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name every chart (`title`, or `aria-labelledby` on the card heading) and describe its takeaway in `description`.
+- Pass `data` and `categoryKey` to `ChartContainer` so screen readers get the table.
+- Use `seriesColor(key)` for fills and strokes, so the config stays the one source of colours.
+- Format values once with `valueFormatter`; the tooltip, the legend and the table share it.
+
+</Do>
+<Dont>
+
+- Don't hard-code hex colours in the Recharts elements: they won't follow dark mode.
+- Don't tell series apart by colour alone; label them and dash the comparison series.
+- Don't put a chart in a scrolling container without a height: the plot takes `height` (240px by default).
+- Don't turn off the table unless the same data is on the page.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Card](?path=/docs/components-card--docs) (`variant="block"`): the dashboard block around a chart.
+- [Strip](?path=/docs/components-strip--docs): a segmented progress bar.
+- [Table](?path=/docs/components-table--docs): exact values.
+
+## Props
+
+<ArgTypes of={ChartContainerStories} />

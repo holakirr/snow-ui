@@ -1,0 +1,299 @@
+/*
+ * @holakirr/snow-ui-charts/styles.css
+ *
+ * The chart surfaces (tooltip, legend, empty and loading states, focus ring,
+ * donut centre, the visually hidden data table). Plain CSS, no Tailwind: it
+ * reads the design tokens of @holakirr/snow-ui (`var(--color-*)`,
+ * `var(--text-*)`, `var(--radius-*)`…), so load `@holakirr/snow-ui/index.css`
+ * (or `theme.css`) before it. Every rule is in the `components` cascade
+ * layer, like the library's own styles, so your utilities and unlayered CSS
+ * override it.
+ */
+
+@layer components {
+  .snow-chart {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+    margin: 0;
+    color: var(--color-black);
+    font-family: var(--font-sans);
+    font-size: var(--text-12);
+    line-height: var(--text-12--line-height);
+  }
+
+  .snow-chart[data-legend="end"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 40px;
+  }
+
+  .snow-chart__plot {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .snow-chart[data-legend="end"] .snow-chart__plot {
+    flex: none;
+  }
+
+  /*
+   * Recharts lays out the SVG for left-to-right text (text-anchor, tick
+   * positions); right-to-left charts mirror their axes instead.
+   */
+  .snow-chart .recharts-surface {
+    direction: ltr;
+    overflow: visible;
+  }
+
+  /* The keyboard focus of the chart (Recharts' accessibility layer). */
+  .snow-chart .recharts-surface:focus {
+    outline: none;
+  }
+
+  .snow-chart .recharts-surface:focus-visible {
+    border-radius: var(--radius-8);
+    outline: 2px solid var(--color-black-80);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--ring-color-focus);
+  }
+
+  .snow-chart__state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-14);
+    line-height: var(--text-14--line-height);
+    text-align: center;
+  }
+
+  .snow-chart__skeleton {
+    position: absolute;
+    inset: 16px 0 28px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 8px;
+  }
+
+  .snow-chart__skeleton-bar {
+    width: 28px;
+    border-radius: var(--radius-8);
+    background-color: var(--color-black-4);
+    animation: snow-chart-pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes snow-chart-pulse {
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .snow-chart__skeleton-bar {
+      animation: none;
+    }
+  }
+
+  .snow-chart-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Tooltip: the Figma chart Tooltip (dark) or the popover glass (light). */
+  .snow-chart-tooltip {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    padding: 4px 8px;
+    border-radius: var(--radius-12);
+    font-family: var(--font-sans);
+    font-size: var(--text-12);
+    line-height: var(--text-12--line-height);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .snow-chart-tooltip[data-variant="dark"] {
+    background-color: var(--color-black-80);
+    background-image: linear-gradient(
+      var(--color-white-10),
+      var(--color-white-10)
+    );
+    color: var(--color-white);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .snow-chart-tooltip[data-variant="light"] {
+    padding: 8px 12px;
+    background-color: var(--color-background-3);
+    color: var(--color-black);
+    box-shadow: var(--shadow-glass-2);
+    -webkit-backdrop-filter: blur(var(--blur-bg-40));
+    backdrop-filter: blur(var(--blur-bg-40));
+  }
+
+  .snow-chart-tooltip__label {
+    font-weight: 600;
+  }
+
+  .snow-chart-tooltip__list {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .snow-chart-tooltip__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* 70%: at least 5.5:1 on both variants in both modes (as TooltipShortcut). */
+  .snow-chart-tooltip__name {
+    opacity: 0.7;
+  }
+
+  .snow-chart-tooltip__value {
+    margin-inline-start: auto;
+    padding-inline-start: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .snow-chart-tooltip__item:only-child .snow-chart-tooltip__value {
+    padding-inline-start: 0;
+  }
+
+  /* Series marker: a dot in the series colour (or its icon). */
+  .snow-chart-swatch {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background-color: var(--snow-chart-swatch, currentColor);
+  }
+
+  .snow-chart-swatch[data-dashed="true"] {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--snow-chart-swatch, currentColor);
+  }
+
+  .snow-chart-icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--snow-chart-swatch, currentColor);
+  }
+
+  /* Legend: the Figma "Tag" with a dot, in a row or a column with values. */
+  .snow-chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-black);
+    font-size: var(--text-12);
+    line-height: var(--text-12--line-height);
+  }
+
+  /* Beside the plot (a donut's legend): it takes the rest of the row. */
+  .snow-chart[data-legend="end"] .snow-chart-legend {
+    flex: 1 1 0;
+    min-width: 160px;
+  }
+
+  .snow-chart-legend[data-layout="vertical"] {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .snow-chart-legend__item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 20px;
+  }
+
+  /* Figma: 184px rows, the value at the end (at least 16px after the name). */
+  .snow-chart-legend[data-layout="vertical"] .snow-chart-legend__item {
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .snow-chart-legend__name {
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+    gap: 3px;
+    padding-block: 2px;
+    padding-inline: 7px 8px;
+  }
+
+  .snow-chart-legend__value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* In a row, a total after the label is Semibold ("Current Week  $58,211"). */
+  .snow-chart-legend[data-layout="horizontal"] .snow-chart-legend__value {
+    padding-inline-start: 4px;
+    font-weight: 600;
+  }
+
+  /* Sparkline: an SVG stretched to the figure; the line may overflow it. */
+  .snow-chart-sparkline {
+    position: relative;
+    display: block;
+    margin: 0;
+  }
+
+  .snow-chart-sparkline > svg {
+    display: block;
+    overflow: visible;
+  }
+
+  /* Donut: the centre label (Figma SemicircleChart "Percentage 58%"). */
+  .snow-chart-donut__center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    text-align: center;
+  }
+
+  .snow-chart-donut__center-label {
+    color: var(--color-text-secondary);
+  }
+
+  .snow-chart-donut__center-value {
+    color: var(--color-black);
+    font-size: var(--text-24);
+    font-weight: 600;
+    line-height: var(--text-24--line-height);
+  }
+}

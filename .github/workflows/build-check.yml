@@ -65,19 +65,24 @@ jobs:
       - name: Check Code Connect templates
         run: bun run code-connect
 
-      # The ui unit tests run with coverage in the storybook-tests job
-      # (`bun run test:coverage`), so only the icons tests run here.
+      # The ui and charts unit tests run with coverage in the storybook-tests
+      # job (`bun run test:coverage`), so only the icons tests run here.
       - name: Unit tests (icons)
         run: bun run --filter @holakirr/snow-ui-icons test
 
-      # Builds icons first, then ui (ui's type declarations import icons' dist).
-      # tsdown runs publint and are-the-types-wrong on both packages.
+      # The release step's decisions (scripts/publish-plan.ts).
+      - name: Unit tests (scripts)
+        run: bun run test:scripts
+
+      # Builds icons, then ui (ui's type declarations import icons' dist), then
+      # charts. tsdown runs publint and are-the-types-wrong on every package.
       - name: Build packages
         run: bun run build
 
-      # The published stylesheets: theme.css compiled by a Tailwind v4
+      # The published packages: ui's theme.css compiled by a Tailwind v4
       # project (with `@source` on dist) must generate every component class;
-      # index.css layering, fonts.css files, package exports.
+      # index.css layering, fonts.css files, package exports; the charts'
+      # exports, 'use client' modules and styles.css (layer, ui tokens).
       - name: Check the built stylesheets
         run: bun run test:dist
 
@@ -148,8 +153,8 @@ jobs:
   # Every story rendered in headless Chromium through Vitest browser mode
   # (@storybook/addon-vitest), in the light and the dark theme: render errors,
   # failing play functions and axe violations fail the job. The same run
-  # collects coverage of the ui source (with the ui unit tests) and fails
-  # under the thresholds in vitest.config.ts.
+  # collects coverage of the ui and charts source (with their unit tests)
+  # and fails under the thresholds in vitest.config.ts.
   storybook-tests:
     runs-on: ubuntu-latest
 
@@ -199,7 +204,7 @@ jobs:
         run: |
           if [ -f coverage/coverage-summary.json ]; then
             {
-              echo '### Coverage (ui unit tests + Storybook tests)'
+              echo '### Coverage (ui and charts unit tests + Storybook tests)'
               echo '| Metric | Covered |'
               echo '| --- | --- |'
               jq -r '.total | to_entries[] | select(.key != "branchesTrue") | "| \(.key) | \(.value.pct)% (\(.value.covered)/\(.value.total)) |"' coverage/coverage-summary.json

@@ -126,6 +126,36 @@ async function gotoStory(page: Page, id: string, theme: Theme) {
       Array.from(document.fonts, (font) => font.load().catch(() => undefined)),
     )
     await document.fonts.ready
+    // Charts (@holakirr/snow-ui-charts) draw once their font has loaded and
+    // their size is known, and flag it with data-chart-ready.
+    // Bounded: a chart that never gets a size or its font fails the test with
+    // its name instead of hanging page.evaluate.
+    await new Promise<void>((resolve, reject) => {
+      const deadline = performance.now() + 15_000
+      const pending = () =>
+        Array.from(document.querySelectorAll('[data-slot="chart"]')).filter(
+          (chart) => !chart.hasAttribute('data-chart-ready'),
+        )
+      const check = () => {
+        const notReady = pending()
+        if (notReady.length === 0) return resolve()
+        if (performance.now() > deadline) {
+          const names = notReady.map(
+            (chart) =>
+              chart.getAttribute('aria-label') ??
+              chart.querySelector('figcaption')?.textContent ??
+              '(unnamed chart)',
+          )
+          return reject(
+            new Error(
+              `Charts not ready after 15 s (no data-chart-ready): ${names.join(', ')}`,
+            ),
+          )
+        }
+        requestAnimationFrame(check)
+      }
+      check()
+    })
     // Images (the placeholders above) must be decoded before the shot.
     await Promise.all(
       Array.from(document.images, (image) =>

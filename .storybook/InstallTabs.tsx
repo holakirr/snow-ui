@@ -12,6 +12,7 @@ import {
 import chartsPackage from '../packages/charts/package.json'
 import manifest from '../packages/registry/manifest.json'
 import uiPackage from '../packages/ui/package.json'
+import { addedIn } from './added-in'
 
 /*
  * `<InstallTabs item="button" />`: how to install a component, from the
@@ -399,8 +400,15 @@ export const InstallTabs = ({ item: itemName, name }: InstallTabsProps) => {
     ),
   }
 
+  const since = addedIn[item.name]
+
   return (
     <section style={box} aria-label={`Install ${item.title}`}>
+      {since && (
+        <p style={{ ...note, marginTop: 0 }}>
+          Added in {uiPackage.name} {since}.
+        </p>
+      )}
       <div style={bar}>
         <div role="tablist" aria-label="Installation method">
           {TABS.map(([key, label], index) => (

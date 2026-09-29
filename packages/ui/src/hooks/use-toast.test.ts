@@ -169,24 +169,39 @@ describe('toast store', () => {
     unregister()
   })
 
-  it('keeps the toasts shown before their toaster mounts, until it trims them', () => {
+  it('keeps one toast without a toaster, as in 5.0, and reopens the others when one mounts', () => {
     const { result } = renderHook(() => useToast())
     act(() => {
       toast({ title: 'First', toasterId: 'late' })
       toast({ title: 'Second', toasterId: 'late' })
       toast({ title: 'Third', toasterId: 'late' })
     })
-    expect(openTitles(result.current.toasts)).toEqual([
-      'Third',
-      'Second',
-      'First',
-    ])
+    // No <Toaster> yet: the limit of 1 (a custom renderer sees one toast).
+    expect(openTitles(result.current.toasts)).toEqual(['Third'])
 
+    // A toaster mounting while they are still in the store brings them back,
+    // up to its own limit.
     let unregister = () => {}
     act(() => {
       unregister = registerToasterLimit('late', 2)
     })
     expect(openTitles(result.current.toasts)).toEqual(['Third', 'Second'])
+    unregister()
+  })
+
+  it("doesn't reopen a toast dismissed before its toaster mounts", () => {
+    const { result } = renderHook(() => useToast())
+    let first = { dismiss: () => {} }
+    act(() => {
+      first = toast({ title: 'First', toasterId: 'gone' })
+      toast({ title: 'Second', toasterId: 'gone' })
+      first.dismiss()
+    })
+    let unregister = () => {}
+    act(() => {
+      unregister = registerToasterLimit('gone', 3)
+    })
+    expect(openTitles(result.current.toasts)).toEqual(['Second'])
     unregister()
   })
 

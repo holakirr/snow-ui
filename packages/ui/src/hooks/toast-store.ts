@@ -95,13 +95,6 @@ const addToRemoveQueue = (toastId: string) => {
 }
 
 /**
- * How many open toasts a toaster that isn't mounted yet keeps: a `<Toaster>`
- * mounted later (after the effects that showed them, or lazily) trims them
- * to its own `limit` when it registers it.
- */
-const PENDING_TOAST_LIMIT = 20
-
-/**
  * The limits of the mounted `<Toaster>`s, by `id`: one entry per mounted
  * toaster (two can share an `id`); the last one mounted wins.
  */
@@ -109,8 +102,16 @@ const toasterLimits = new Map<string | undefined, { limit: number }[]>()
 
 const limitOf = (toasterId: string | undefined) => {
   const entries = toasterLimits.get(toasterId)
-  return entries?.[entries.length - 1]?.limit ?? PENDING_TOAST_LIMIT
+  return entries?.[entries.length - 1]?.limit ?? DEFAULT_TOAST_LIMIT
 }
+
+/**
+ * The toasts closed by the default limit of 1 while no `<Toaster>` had
+ * registered theirs (as in 5.0, for toasts rendered without `<Toaster>`). A
+ * `<Toaster>` that mounts while they are still in the store (after the
+ * effects that showed them, or lazily) reopens them, up to its own limit.
+ */
+const closedBeforeRegistration = new Set<string>()
 
 /**
  * A `limit` prop as a usable limit: a whole number from 1, `Infinity`
@@ -129,15 +130,32 @@ const closeOverLimit = (
   toasterId: string | undefined,
 ): ToasterToast[] => {
   const limit = limitOf(toasterId)
+  const registered = toasterLimits.has(toasterId)
   let open = 0
   return toasts.map((t) => {
     if (t.toasterId !== toasterId || t.open === false) return t
     open += 1
     if (open <= limit) return t
     addToRemoveQueue(t.id)
+    if (!registered) closedBeforeRegistration.add(t.id)
     return { ...t, open: false }
   })
 }
+
+/** Reopens the toasts of a toaster closed before it registered its limit. */
+const reopenClosedBeforeRegistration = (
+  toasts: ToasterToast[],
+  toasterId: string | undefined,
+): ToasterToast[] =>
+  toasts.map((t) => {
+    if (t.toasterId !== toasterId || !closedBeforeRegistration.has(t.id)) {
+      return t
+    }
+    closedBeforeRegistration.delete(t.id)
+    clearTimeout(toastTimeouts.get(t.id))
+    toastTimeouts.delete(t.id)
+    return { ...t, open: true }
+  })
 
 /**
  * The reducer of the shared store. `ADD_TOAST` closes the toaster's oldest
@@ -169,10 +187,13 @@ export const reduce = (state: State, action: Action): State => {
       // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
+        // Dismissed: a toaster that mounts later doesn't bring it back.
+        closedBeforeRegistration.delete(toastId)
       } else {
         for (const toast of state.toasts) {
           addToRemoveQueue(toast.id)
         }
+        closedBeforeRegistration.clear()
       }
 
       return {
@@ -189,11 +210,13 @@ export const reduce = (state: State, action: Action): State => {
     }
     case ACTION_TYPES.REMOVE_TOAST:
       if (action.toastId === undefined) {
+        closedBeforeRegistration.clear()
         return {
           ...state,
           toasts: [],
         }
       }
+      closedBeforeRegistration.delete(action.toastId)
       return {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
@@ -226,7 +249,10 @@ export const registerToasterLimit = (
 ): (() => void) => {
   const entry = { limit: normalizeToastLimit(limit) }
   toasterLimits.set(toasterId, [...(toasterLimits.get(toasterId) ?? []), entry])
-  const next = closeOverLimit(memoryState.toasts, toasterId)
+  const next = closeOverLimit(
+    reopenClosedBeforeRegistration(memoryState.toasts, toasterId),
+    toasterId,
+  )
   if (next.some((t, index) => t !== memoryState.toasts[index])) {
     memoryState = { ...memoryState, toasts: next }
     for (const listener of listeners) {

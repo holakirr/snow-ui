@@ -235,6 +235,8 @@ const StackedToast = ({
         // down of `Toast`, whose keyframes would move it from the front
         // position to below the stack.
         '[&[data-behind][data-state=closed]]:animate-out',
+        // A hidden one just goes: fading from opacity 1 would flash it.
+        '[&[data-hidden][data-behind][data-state=closed]]:animate-none',
         className,
       ]
         .filter(Boolean)
@@ -288,6 +290,8 @@ export function Toaster({
   const [focused, setFocused] = useState(false)
   const [sizes, setSizes] = useState<Record<string, Size>>({})
   const viewportRef = useRef<HTMLOListElement>(null)
+  /** Focus is in the stack, from the keyboard or a click. */
+  const focusInside = useRef(false)
   /** Where each toast was last drawn open: a closing toast stays there. */
   const lastLayouts = useRef(new Map<string, StackedToastProps['layout']>())
 
@@ -319,10 +323,13 @@ export function Toaster({
     // Keyboard focus only: after a click on a toast's close button or
     // action, Radix moves focus to the viewport, which mustn't keep the
     // stack spread once the pointer has left.
-    const onFocusIn = (event: FocusEvent) =>
+    const onFocusIn = (event: FocusEvent) => {
+      focusInside.current = true
       setFocused(isFocusVisible(event.target))
+    }
     const onFocusOut = (event: FocusEvent) => {
       if (!viewport.contains(event.relatedTarget as Node | null)) {
+        focusInside.current = false
         setFocused(false)
       }
     }
@@ -366,12 +373,16 @@ export function Toaster({
   }, [openCount])
 
   // A focused toast removed by the store (over the limit, `dismiss(id)`)
-  // takes the focus with it without a focusout: tell Radix (which paused
-  // the timers) and ourselves that it has left.
-  useEffect(() => {
+  // takes the focus with it, and some browsers fire no focusout: tell Radix
+  // (which paused the timers on any focus) and ourselves that it has left.
+  // A layout effect, so it runs before Radix drops its listeners when the
+  // last toast goes; the active element of the viewport's own root, so it
+  // works in a shadow root.
+  useLayoutEffect(() => {
     const viewport = viewportRef.current
-    if (!focused || !viewport) return
-    const active = viewport.ownerDocument.activeElement
+    if (!focusInside.current || !viewport) return
+    const root = viewport.getRootNode() as Document | ShadowRoot
+    const active = root.activeElement
     if (!active || !viewport.contains(active)) {
       viewport.dispatchEvent(
         new FocusEvent('focusout', { bubbles: true, relatedTarget: active }),

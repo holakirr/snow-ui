@@ -709,6 +709,7 @@
         "PaginationPrevious"
       ],
       "types": [
+        "PaginationButtonProps",
         "PaginationEllipsisProps",
         "PaginationLinkProps",
         "PaginationProps"

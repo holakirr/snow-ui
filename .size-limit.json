@@ -120,12 +120,12 @@
     "path": "packages/charts/dist/index.js",
     "import": "{ Sparkline }",
     "ignore": ["react", "react-dom", "@holakirr/snow-ui"],
-    "limit": "94 kB"
+    "limit": "2.6 kB"
   },
   {
     "name": "@holakirr/snow-ui-charts/styles.css",
     "path": "packages/charts/dist/styles.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "1.9 kB"
+    "limit": "2 kB"
   }
 ]

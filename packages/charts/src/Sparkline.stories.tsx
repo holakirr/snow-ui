@@ -31,7 +31,7 @@ type Story = StoryObj<typeof Sparkline>
 
 export const Default: Story = {
   play: async ({ canvasElement }) => {
-    const image = within(canvasElement).getByRole('img', {
+    const image = within(canvasElement).getByRole('figure', {
       name: 'Views, last 7 days',
     })
     // The graphic inside is hidden; the name describes it.
@@ -99,9 +99,9 @@ export const KpiCards: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(canvas.getAllByRole('img')).toHaveLength(4)
+    expect(canvas.getAllByRole('figure')).toHaveLength(4)
     expect(
-      canvas.getByRole('img', { name: 'Visits, last 7 days' }),
+      canvas.getByRole('figure', { name: 'Visits, last 7 days' }),
     ).toBeVisible()
   },
 }
@@ -110,4 +110,19 @@ export const KpiCardsDark: Story = {
   ...KpiCards,
   globals: { theme: 'dark' },
   play: undefined,
+}
+
+/** Right-to-left: the line runs from right to left (the latest value on the left). */
+export const RTL: Story = {
+  args: { area: true },
+  globals: { dir: 'rtl' },
+  play: async ({ canvasElement }) => {
+    const figure = within(canvasElement).getByRole('figure', {
+      name: 'Views, last 7 days',
+    })
+    expect(figure).toHaveAttribute('data-dir', 'rtl')
+    expect(figure.querySelector('svg')).toHaveStyle({
+      transform: 'matrix(-1, 0, 0, 1, 0, 0)',
+    })
+  },
 }

@@ -27,13 +27,17 @@ import { Sparkline } from '@holakirr/snow-ui-charts'
 
 ## Props at a glance
 
-- `data`: numbers, oldest first, or rows with a `dataKey` field.
+- `data`: numbers (`null` for a gap), oldest first, or rows with a `dataKey` field.
 - `color`: a SnowUI token or any CSS colour (default `primary`); `area` adds a gradient fill (20% to transparent); `dashed`, `strokeWidth` (1.5), `curve` (`smooth` or `linear`).
 - `height` (32) and `width` (`100%`, it follows resizes).
 
 ## Accessibility
 
-A sparkline is an image (`role="img"`) named by `title` (or `aria-label` / `aria-labelledby`); the graphic inside is hidden. It has no data table and no keyboard navigation: it illustrates a number that should be text next to it ("7,265, +11.01%"). Without a name a development warning is logged.
+Like the other charts, a sparkline is a `<figure>` named by `title` (or `aria-label` / `aria-labelledby`) and described by `description`, with its values in a visually hidden table (`table={false}` leaves it out; `categoryKey`, `categoryLabel` and `valueLabel` shape it). The graphic itself is hidden. It has no tooltip or keyboard navigation: it illustrates a number that should be text next to it ("7,265, +11.01%"). Without a name a development warning is logged.
+
+## Rendering and RTL
+
+A sparkline is plain SVG, without Recharts (about 2.3 kB, its data table included): a 100 × 100 `viewBox` stretched to the element (`preserveAspectRatio="none"`) with a `non-scaling-stroke` line, so it renders on the server, needs no measuring and keeps its line width at any size. The line is the same monotone curve as the other charts (`curve="linear"` for straight segments); `null` values leave gaps. In right-to-left text (the `dir` prop, the provider's, or the element's) it runs from right to left.
 
 ## Props
 

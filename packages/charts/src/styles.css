@@ -262,6 +262,18 @@
     font-weight: 600;
   }
 
+  /* Sparkline: an SVG stretched to the figure; the line may overflow it. */
+  .snow-chart-sparkline {
+    position: relative;
+    display: block;
+    margin: 0;
+  }
+
+  .snow-chart-sparkline > svg {
+    display: block;
+    overflow: visible;
+  }
+
   /* Donut: the centre label (Figma SemicircleChart "Percentage 58%"). */
   .snow-chart-donut__center {
     position: absolute;

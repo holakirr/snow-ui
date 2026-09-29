@@ -587,7 +587,8 @@ type ComboboxPopupProps = {
 /**
  * The popup: a Radix Popover anchored to the field (it takes the field's
  * width), with the listbox, the "Create" option and the empty or loading
- * message.
+ * message. It takes the `dir` and the `theme` of a `SnowUIProvider` or
+ * `ThemeScope` (the portal is outside your `dir` and `data-theme` scopes).
  */
 export const ComboboxPopup = ({
   state,
@@ -600,7 +601,7 @@ export const ComboboxPopup = ({
   createLabel,
   className,
 }: ComboboxPopupProps) => {
-  const { dir } = useSnowUI()
+  const { dir, theme } = useSnowUI()
   const {
     listId,
     baseId,
@@ -659,6 +660,9 @@ export const ComboboxPopup = ({
       {/* biome-ignore lint/a11y/useValidAriaRole: `undefined` removes Radix's default role="dialog": the popup only wraps the listbox, and the field keeps the focus */}
       <PopoverPrimitive.Content
         dir={dir}
+        // The portal is outside your `data-theme` scope: a `ThemeScope`'s
+        // theme follows it.
+        data-theme={theme}
         side="bottom"
         align="start"
         sideOffset={4}

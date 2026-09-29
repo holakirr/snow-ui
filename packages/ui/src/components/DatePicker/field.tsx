@@ -185,7 +185,8 @@ type DatePickerFieldProps = {
  * The field and the popover of `DatePicker` and `DateRangePicker`. The field
  * looks like the Select trigger (the Figma Input field, with a 16px calendar
  * icon at the end); it is a `<button role="combobox">` that opens the
- * calendar in a modal Radix Popover (`aria-haspopup="dialog"`).
+ * calendar in a modal Radix Popover (`aria-haspopup="dialog"`). The popover
+ * takes the `dir` and the `theme` of a `SnowUIProvider` or `ThemeScope`.
  */
 export const DatePickerField = ({
   open,
@@ -210,7 +211,7 @@ export const DatePickerField = ({
     ...triggerProps
   },
 }: DatePickerFieldProps) => {
-  const { dir } = useSnowUI()
+  const { dir, theme } = useSnowUI()
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const setTriggerRef = useComposedRefs(triggerRef, ref)
   const contentRef = useRef<HTMLDivElement | null>(null)
@@ -305,6 +306,9 @@ export const DatePickerField = ({
         <PopoverPrimitive.Content
           ref={contentRef}
           dir={dir}
+          // The portal is outside your `data-theme` scope: a `ThemeScope`'s
+          // theme follows it.
+          data-theme={theme}
           align="start"
           sideOffset={4}
           collisionPadding={8}

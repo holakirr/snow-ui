@@ -6,6 +6,7 @@ import {
   AlertDialogContent,
   AlertDialogTitle,
 } from './AlertDialog'
+import { Combobox, MultiSelect } from './Combobox'
 import { CommandPalette } from './CommandPalette'
 import {
   ContextMenu,
@@ -13,6 +14,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from './ContextMenu'
+import { DatePicker, DateRangePicker } from './DatePicker'
 import { Dialog, DialogContent, DialogTitle } from './Dialog'
 import {
   DropdownMenu,
@@ -150,6 +152,40 @@ describe('portalled content in a ThemeScope', () => {
       'data-theme',
       'dark',
     )
+  })
+
+  it('takes the scope theme: combobox, multi-select and date pickers', () => {
+    const options = [{ value: 'a', label: 'Apple' }]
+    render(
+      <ThemeScope theme="dark" data-testid="scope">
+        <Combobox aria-label="Fruit" options={options} defaultOpen />
+        <MultiSelect aria-label="Fruits" options={options} defaultOpen />
+        <DatePicker
+          aria-label="Due"
+          defaultValue={new Date(2025, 0, 20)}
+          defaultOpen
+        />
+        <DateRangePicker
+          aria-label="Stay"
+          defaultValue={{
+            from: new Date(2025, 0, 13),
+            to: new Date(2025, 0, 16),
+          }}
+          defaultOpen
+        />
+      </ThemeScope>,
+    )
+    const scope = screen.getByTestId('scope')
+    const lists = screen.getAllByRole('listbox', { hidden: true })
+    const calendars = screen.getAllByRole('dialog', { hidden: true })
+
+    expect(lists).toHaveLength(2)
+    expect(calendars).toHaveLength(2)
+    for (const popup of [...lists, ...calendars]) {
+      const themed = popup.closest('[data-theme]') as HTMLElement
+      expect(scope).not.toContainElement(themed)
+      expect(themed).toHaveAttribute('data-theme', 'dark')
+    }
   })
 
   it('follows the nearest scope, a provider theme, and yields to data-theme', () => {

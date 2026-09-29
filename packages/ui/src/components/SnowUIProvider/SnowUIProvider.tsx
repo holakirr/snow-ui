@@ -52,7 +52,8 @@ export type SnowUIProviderProps = {
   dir?: TextDirection
   /**
    * The theme of portalled content (dialogs, sheets, popovers, menus,
-   * selects, tooltips, the command palette): it renders at the end of
+   * selects, comboboxes, date pickers, tooltips, the command palette): it
+   * renders at the end of
    * `<body>`, outside a `data-theme` scope, and gets this as its
    * `data-theme`. Set the same `data-theme` on the element you scope it to,
    * or use `ThemeScope`, which does both.

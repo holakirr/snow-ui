@@ -129,7 +129,7 @@ Deviations from the Figma kit (the full table is in the package README):
 
 ## Theming
 
-The list renders in a portal at the end of `<body>`, so it takes the theme of `<html>`; unlike `SelectContent`, it doesn't take a `data-theme` of its own. Set the theme on `<html>` (see [Theming](?path=/docs/guides-theming--docs)).
+The list renders in a portal at the end of `<body>`, outside your layout. It takes the theme of the nearest `ThemeScope` or `SnowUIProvider` `theme` (see [Theming](?path=/docs/guides-theming--docs)), else the theme of `<html>`.
 
 ## Forms
 

@@ -1,0 +1,188 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/React Router 7" />
+
+# React Router 7
+
+React Router 7 in framework mode (`bunx create-react-router@latest`): Vite, server rendering and route modules. The setup is the [Vite guide](?path=/docs/guides-vite--docs)'s, with the theme, the language and the direction read from a cookie in the root loader, so the server renders them and the first paint is right. In library mode (`<BrowserRouter>` or `createBrowserRouter` in a Vite app) there is no server: follow the Vite guide and use the [links](#links) section below.
+
+## Styles and fonts
+
+The template has Tailwind CSS v4 (`@tailwindcss/vite`) and `app/app.css`. Add the theme and the package's classes to it; the `@source` path is relative to the stylesheet.
+
+```css
+/* app/app.css */
+@import "tailwindcss";
+@import "@holakirr/snow-ui/theme.css";
+@source "../node_modules/@holakirr/snow-ui/dist";
+
+/* With the charts: */
+@import "@holakirr/snow-ui-charts/styles.css";
+```
+
+Without Tailwind, import `@holakirr/snow-ui/index.css` instead (see [Getting started](?path=/docs/guides-getting-started--docs#add-the-styles)). Import the fonts from the root route, where Vite resolves their `url()`s:
+
+```tsx
+// app/root.tsx
+import '@holakirr/snow-ui/fonts.css'
+import './app.css'
+```
+
+## Preferences in a cookie
+
+```ts
+// app/prefs.server.ts
+import { createCookie } from 'react-router'
+
+export type Prefs = { theme?: 'light' | 'dark'; lang?: 'en' | 'ar' }
+
+export const prefs = createCookie('prefs', {
+  path: '/',
+  sameSite: 'lax',
+  maxAge: 60 * 60 * 24 * 365,
+})
+
+export const readPrefs = async (request: Request): Promise<Prefs> =>
+  (await prefs.parse(request.headers.get('Cookie'))) ?? {}
+```
+
+## The root route
+
+The root `loader` reads the preferences; `Layout` renders them on `<html>` and wraps the app in the providers. `Layout` also renders the error boundary, where the loader data may be missing, so it reads it with `useRouteLoaderData` and falls back to the defaults.
+
+```tsx
+// app/root.tsx
+import '@holakirr/snow-ui/fonts.css'
+import './app.css'
+
+import { SnowUIProvider, Toaster, TooltipProvider } from '@holakirr/snow-ui'
+import type { ReactNode } from 'react'
+import { ar, enUS } from 'react-day-picker/locale'
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useRouteLoaderData,
+} from 'react-router'
+import type { Route } from './+types/root'
+import { arMessages } from './messages/ar'
+import { readPrefs } from './prefs.server'
+
+export const loader = async ({ request }: Route.LoaderArgs) => readPrefs(request)
+
+const translations = {
+  en: { locale: enUS, messages: undefined, dir: 'ltr' },
+  ar: { locale: ar, messages: arMessages, dir: 'rtl' },
+} as const
+
+export function Layout({ children }: { children: ReactNode }) {
+  const prefs = useRouteLoaderData<typeof loader>('root')
+  const lang = prefs?.lang === 'ar' ? 'ar' : 'en'
+  const theme = prefs?.theme === 'light' || prefs?.theme === 'dark' ? prefs.theme : undefined
+  const { locale, messages, dir } = translations[lang]
+
+  return (
+    // No data-theme: the OS preference, in CSS.
+    <html lang={lang} dir={dir} data-theme={theme}>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body className="bg-background-1 text-black">
+        <SnowUIProvider locale={locale} messages={messages} dir={dir}>
+          <TooltipProvider>{children}</TooltipProvider>
+          <Toaster />
+        </SnowUIProvider>
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  )
+}
+
+export default function App() {
+  return <Outlet />
+}
+```
+
+Route modules can pass functions (function messages, a date-fns locale) to the components: unlike Next.js's Server Components, they render the same code on the server and in the browser.
+
+## Changing a preference
+
+An action saves the new value in the cookie; the loaders run again after it, so `<html>` and the provider update without a reload. Submit it with a fetcher to stay on the page:
+
+```tsx
+// app/routes/prefs.ts, registered as route('prefs', 'routes/prefs.ts') in app/routes.ts
+import { data } from 'react-router'
+import { prefs, readPrefs } from '../prefs.server'
+import type { Route } from './+types/prefs'
+
+export const action = async ({ request }: Route.ActionArgs) => {
+  const current = await readPrefs(request)
+  const form = await request.formData()
+  const theme = form.get('theme')
+  const next = {
+    ...current,
+    theme: theme === 'light' || theme === 'dark' ? theme : undefined,
+  }
+  return data(null, { headers: { 'Set-Cookie': await prefs.serialize(next) } })
+}
+```
+
+```tsx
+// A theme switch anywhere in the app
+import { Button, Group } from '@holakirr/snow-ui'
+import { useFetcher } from 'react-router'
+
+export const ThemeSwitch = () => {
+  const fetcher = useFetcher()
+  return (
+    <fetcher.Form method="post" action="/prefs">
+      <Group aria-label="Theme">
+        <Button type="submit" name="theme" value="light" label="Light" />
+        <Button type="submit" name="theme" value="dark" label="Dark" />
+        <Button type="submit" name="theme" value="system" label="System" />
+      </Group>
+    </fetcher.Form>
+  )
+}
+```
+
+## Links
+
+Render router links with `asChild`, so the component's styles and behaviour go on the `<a>` the router renders:
+
+```tsx
+import { Button, Link, SidebarMenuButton } from '@holakirr/snow-ui'
+import { NavLink, Link as RouterLink } from 'react-router'
+
+<Button asChild variant="filled" label="New report">
+  <RouterLink to="/reports/new" />
+</Button>
+
+<Link asChild>
+  <RouterLink to="/docs">Documentation</RouterLink>
+</Link>
+
+{/* NavLink sets aria-current="page" on the current route. */}
+<SidebarMenuButton asChild>
+  <NavLink to="/reports">Reports</NavLink>
+</SidebarMenuButton>
+```
+
+For the Figma "current item" look, pass `isActive` (`SidebarMenuButton`, `PaginationLink`) or `active` (`IconText`, `ListItem`) from `useMatch('/reports')` or `useLocation()`: the styles read those props, not `aria-current`.
+
+## Sidebar state
+
+`SidebarProvider` saves whether the sidebar is open in its own cookie. To server-render the saved state, read that cookie in the root loader and pass it to `SidebarProvider` as `defaultOpen`; the [Sidebar](?path=/docs/components-sidebar--docs) page names the cookie.
+
+## Checklist
+
+- `theme.css` with `@source` in `app/app.css` (or `index.css` without Tailwind); `fonts.css` imported in `app/root.tsx`.
+- Preferences read in the root loader and rendered on `<html>` by `Layout`.
+- `SnowUIProvider`, `TooltipProvider` and `<Toaster />` in `Layout`.
+- Router links through `asChild`.

@@ -12,7 +12,9 @@ import {
   useContext,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
 } from 'react'
@@ -33,6 +35,7 @@ import {
   TooltipTrigger,
 } from '../Tooltip'
 import {
+  LEGACY_SIDEBAR_COOKIE_NAME,
   readSidebarState,
   SIDEBAR_COOKIE_MAX_AGE,
   SIDEBAR_COOKIE_NAME,
@@ -53,11 +56,19 @@ type SidebarContext = {
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
   toggleSidebar: () => void
-  /** The id of the sidebar panel, for `SidebarTrigger`'s `aria-controls`. */
-  sidebarId: string
 }
 
 const SidebarContext = createContext<SidebarContext | null>(null)
+
+/**
+ * The ids of the provider's sidebars, for `SidebarTrigger`'s
+ * `aria-controls`: each `Sidebar` registers its own (your `id`, or a
+ * generated one) while it is mounted.
+ */
+const SidebarIdsContext = createContext<{
+  ids: readonly string[]
+  register: (id: string) => () => void
+}>({ ids: [], register: () => () => {} })
 
 function useSidebar() {
   const context = useContext(SidebarContext)
@@ -68,10 +79,15 @@ function useSidebar() {
   return context
 }
 
-// The cookie only changes through `setOpen`, which also updates the state.
+// The saved state is read once, when the provider mounts: a cookie changed
+// later (by another tab, or another provider) doesn't move this sidebar.
 const subscribeToCookie = () => () => {}
-const readClientCookie = () => readSidebarState()
 const readServerCookie = () => undefined
+
+const writeCookie = (name: string, open: boolean) => {
+  // biome-ignore lint/suspicious/noDocumentCookie: the saved sidebar state
+  document.cookie = `${name}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}; samesite=lax`
+}
 
 /**
  * Whether the shortcut was pressed in an editable element (a text field, a
@@ -93,6 +109,10 @@ type SidebarProviderProps = ComponentProps<'div'> & {
   defaultOpen?: boolean
   /** Whether the sidebar is open (controlled). */
   open?: boolean
+  /**
+   * Called when the sidebar opens or closes (the trigger, the rail, ⌘B /
+   * Ctrl+B, `setOpen`). Without `open`, the sidebar still toggles itself.
+   */
   onOpenChange?: (open: boolean) => void
 }
 
@@ -107,14 +127,19 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
 }) => {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = useState(false)
-  const sidebarId = useId()
+  const [sidebarIds, setSidebarIds] = useState<readonly string[]>([])
 
-  // The state saved in the cookie. The server (and hydration) renders
-  // `defaultOpen`; the browser then switches to the saved state, so the
-  // markup matches during hydration.
+  // The state saved in the cookie, read once when the provider mounts. The
+  // server (and hydration) renders `defaultOpen`; the browser then switches
+  // to the saved state, so the markup matches during hydration.
+  const saved = useRef<{ open: boolean | undefined }>(undefined)
+  const readSavedOpen = useCallback(() => {
+    saved.current ??= { open: readSidebarState() }
+    return saved.current.open
+  }, [])
   const savedOpen = useSyncExternalStore(
     subscribeToCookie,
-    readClientCookie,
+    readSavedOpen,
     readServerCookie,
   )
 
@@ -125,17 +150,30 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
   const setOpen = useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === 'function' ? value(open) : value
-      if (setOpenProp) {
-        setOpenProp(openState)
-      } else {
-        _setOpen(openState)
-      }
+      // Uncontrolled (no `open`), the sidebar keeps its own state, with or
+      // without `onOpenChange`.
+      if (openProp === undefined) _setOpen(openState)
+      setOpenProp?.(openState)
 
-      // This sets the cookie to keep the sidebar state.
-      // biome-ignore lint/suspicious/noDocumentCookie: it's necessary to set the cookie
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}; samesite=lax`
+      // Saves the state, under the pre-5.1 name too, for servers that read
+      // that cookie themselves.
+      writeCookie(SIDEBAR_COOKIE_NAME, openState)
+      writeCookie(LEGACY_SIDEBAR_COOKIE_NAME, openState)
     },
-    [setOpenProp, open],
+    [openProp, setOpenProp, open],
+  )
+
+  const registerSidebar = useCallback((id: string) => {
+    setSidebarIds((ids) => [...ids, id])
+    return () =>
+      setSidebarIds((ids) => {
+        const index = ids.indexOf(id)
+        return index === -1 ? ids : ids.filter((_, i) => i !== index)
+      })
+  }, [])
+  const sidebarIdsValue = useMemo(
+    () => ({ ids: sidebarIds, register: registerSidebar }),
+    [sidebarIds, registerSidebar],
   )
 
   // Helper to toggle the sidebar.
@@ -176,40 +214,32 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
       openMobile,
       setOpenMobile,
       toggleSidebar,
-      sidebarId,
     }),
-    [
-      state,
-      open,
-      setOpen,
-      isMobile,
-      openMobile,
-      setOpenMobile,
-      toggleSidebar,
-      sidebarId,
-    ],
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
   )
 
   return (
     <SidebarContext.Provider value={contextValue}>
-      <TooltipProvider delayDuration={0}>
-        <div
-          style={
-            {
-              '--sidebar-width': SIDEBAR_WIDTH,
-              '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
-              ...style,
-            } as CSSProperties
-          }
-          className={twMerge(
-            'group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-background-2',
-            className,
-          )}
-          {...props}
-        >
-          {children}
-        </div>
-      </TooltipProvider>
+      <SidebarIdsContext.Provider value={sidebarIdsValue}>
+        <TooltipProvider delayDuration={0}>
+          <div
+            style={
+              {
+                '--sidebar-width': SIDEBAR_WIDTH,
+                '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
+                ...style,
+              } as CSSProperties
+            }
+            className={twMerge(
+              'group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-background-2',
+              className,
+            )}
+            {...props}
+          >
+            {children}
+          </div>
+        </TooltipProvider>
+      </SidebarIdsContext.Provider>
     </SidebarContext.Provider>
   )
 }
@@ -234,10 +264,17 @@ const Sidebar: FC<SidebarProps> = ({
   collapsible = 'offcanvas',
   className,
   style,
+  id: idProp,
   children,
   ...props
 }) => {
-  const { isMobile, state, openMobile, setOpenMobile, sidebarId } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  // Its own id (yours, or a generated one): each sidebar of a provider has
+  // one, and the trigger's `aria-controls` lists them.
+  const generatedId = useId()
+  const sidebarId = idProp ?? generatedId
+  const { register } = useContext(SidebarIdsContext)
+  useLayoutEffect(() => register(sidebarId), [register, sidebarId])
   const messages = useMessages()
   const side = resolveSide(sideProp, useDirection())
 
@@ -359,14 +396,15 @@ const SidebarTrigger: FC<SidebarTriggerProps> = ({
   onClick,
   ...props
 }) => {
-  const { toggleSidebar, isMobile, open, openMobile, sidebarId } = useSidebar()
+  const { toggleSidebar, isMobile, open, openMobile } = useSidebar()
+  const { ids } = useContext(SidebarIdsContext)
   const messages = useMessages()
 
   return (
     <Button
       data-sidebar="trigger"
       aria-expanded={isMobile ? openMobile : open}
-      aria-controls={sidebarId}
+      aria-controls={ids.length ? ids.join(' ') : undefined}
       className={className}
       // Radix convention: `event.preventDefault()` in your handler skips the
       // toggle.

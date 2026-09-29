@@ -168,7 +168,7 @@ Below 768px wide (`useIsMobile`) the sidebar renders in a [Sheet](?path=/docs/co
 - The desktop sidebar is a set of `<div>`s with no landmark: wrap its navigation in a `<nav>` with an `aria-label`. `SidebarInset` is a `<main>`.
 - Menus are `<ul>` lists. `SidebarMenuButton`, `SidebarGroupAction` and `SidebarMenuAction` render a `<button>` without a `type`, so inside a form pass `type="button"`. With `asChild` the child (a link) is the control.
 - `isActive` only sets `data-active` for the fill: put `aria-current="page"` on the current page's link yourself.
-- `SidebarTrigger` is named "Toggle Sidebar" (visually hidden text, `messages.sidebar.toggle`); `aria-label` replaces it. It sets `aria-expanded` (the sidebar is open; on small screens, the sheet) and `aria-controls` (the sidebar's generated `id`).
+- `SidebarTrigger` is named "Toggle Sidebar" (visually hidden text, `messages.sidebar.toggle`); `aria-label` replaces it. It sets `aria-expanded` (the sidebar is open; on small screens, the sheet) and `aria-controls`: the `id` of each `Sidebar` of the provider (yours, or a generated one; several sidebars get different ids).
 - `SidebarRail` is for pointers only (`tabIndex={-1}`), named and titled "Toggle Sidebar"; the trigger is the keyboard path.
 - Collapsed to icons, the menu buttons keep their text in the DOM (clipped), so their names stay; `tooltip` shows the label on hover and keyboard focus.
 - On small screens the sheet is a modal Radix Dialog: focus moves into it, a click outside closes it, and its title "Sidebar" and description "Displays the mobile sidebar." are for screen readers only. It has no close button.
@@ -222,7 +222,7 @@ The full table is in the package README.
 
 `SidebarTrigger` and `SidebarRail` run your `onClick` first; `event.preventDefault()` in it skips the toggle.
 
-The desktop state is `open` (controlled) or `defaultOpen` (uncontrolled, `true` by default), with `onOpenChange(open)`, on `SidebarProvider`. Every change is saved in the `sidebar_state` cookie (`SIDEBAR_COOKIE_NAME`) for 7 days; the pre-5.1 `sidebar:state` cookie is still read. In the browser the saved state wins over `defaultOpen`, after hydration, so server-rendered markup always hydrates without a mismatch. To render the saved state on the server too (no flash of the expanded sidebar), read the cookie there with `readSidebarState`, which isn't a client function, and pass it as `defaultOpen`:
+The desktop state is `open` (controlled) or `defaultOpen` (uncontrolled, `true` by default), with `onOpenChange(open)`, on `SidebarProvider`; without `open`, the sidebar toggles itself and `onOpenChange` only reports it. Every change is saved in the `sidebar_state` cookie (`SIDEBAR_COOKIE_NAME`) for 7 days, and in the pre-5.1 `sidebar:state` cookie too, for servers that read that one by name (until 6.0: move them to `readSidebarState`, which reads both). In the browser the saved state wins over `defaultOpen`, after hydration, so server-rendered markup always hydrates without a mismatch. It is read once, when the provider mounts: a cookie saved later by another tab or another provider doesn't move this sidebar. To render the saved state on the server too (no flash of the expanded sidebar), read the cookie there with `readSidebarState`, which isn't a client function, and pass it as `defaultOpen`:
 
 ```tsx
 // Next.js App Router: app/layout.tsx (a Server Component)
@@ -277,7 +277,7 @@ The parts render plain elements, or library components (`SidebarTrigger` a Butto
 
 ### SidebarProvider
 
-Holds the state and renders the layout's flex `<div>`. The desktop state is `open` with `onOpenChange` (controlled) or `defaultOpen` (uncontrolled, `true` by default), saved in the `sidebar_state` cookie (the pre-5.1 `sidebar:state` cookie is still read). It handles Ctrl + B / ⌘ + B.
+Holds the state and renders the layout's flex `<div>`. The desktop state is `open` with `onOpenChange` (controlled) or `defaultOpen` (uncontrolled, `true` by default), saved in the `sidebar_state` cookie (and the pre-5.1 `sidebar:state` one, which is still read) and read once, when it mounts. It handles Ctrl + B / ⌘ + B.
 
 <ArgTypes of={SidebarProvider} />
 

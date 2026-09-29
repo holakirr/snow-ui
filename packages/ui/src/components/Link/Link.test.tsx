@@ -68,4 +68,43 @@ describe('Link', () => {
     expect(link).toHaveClass('inline-flex')
     expect(link).toHaveTextContent('More↗')
   })
+
+  it('leaves a link with an href its native role and tab order', () => {
+    render(<Link href="/docs">Docs</Link>)
+
+    const link = screen.getByRole('link', { name: 'Docs' })
+
+    expect(link).not.toHaveAttribute('role')
+    expect(link).not.toHaveAttribute('tabindex')
+  })
+
+  it('keeps a link without an href a focusable link', () => {
+    render(<Link>Docs</Link>)
+
+    const link = screen.getByRole('link', { name: 'Docs' })
+
+    expect(link).toHaveAttribute('tabindex', '0')
+    expect(link).toHaveAttribute('role', 'link')
+  })
+
+  it('looks at the href of the asChild element', () => {
+    render(
+      <>
+        <Link asChild>
+          <a href="/docs">Docs</a>
+        </Link>
+        <Link asChild>
+          <span>Home</span>
+        </Link>
+      </>,
+    )
+
+    expect(screen.getByRole('link', { name: 'Docs' })).not.toHaveAttribute(
+      'tabindex',
+    )
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+      'tabindex',
+      '0',
+    )
+  })
 })

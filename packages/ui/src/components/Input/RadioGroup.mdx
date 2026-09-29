@@ -52,8 +52,11 @@ import { Label, RadioGroup, RadioGroupItem } from '@holakirr/snow-ui'
 - **Selected** (Figma True): the same circle with the Primary dot; on hover the dot is Primary under White/40%.
 - **Keyboard focus:** the `focus-ring` utility on the focused item (see Accessibility).
 - **Disabled** (`disabled` on an item, or on the group for all of them): a Black/4% circle with a Black/10% ring and a Black/20% dot. The Figma set has no Disabled state, so this look is the library's own, visible in both modes.
+- **Invalid** (`aria-invalid` on the group, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): every circle gets a Secondary/Red ring, also on hover (no Figma state).
 
 See the [With Disabled story](?path=/story/components-input-radiogroup--with-disabled). (It isn't shown here: its items reuse the ids of the example above, so their labels would select the wrong radios on this page.)
+
+<Canvas of={RadioGroupStories.Invalid} />
 
 ## Accessibility
 

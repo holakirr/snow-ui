@@ -18,3 +18,20 @@ export const settledColor = async (element: HTMLElement): Promise<string> => {
   await Promise.all(element.getAnimations().map(({ finished }) => finished))
   return getComputedStyle(element).color
 }
+
+/**
+ * Whether `element` has an inset ring (Tailwind `inset-ring-*`, a stroke) of
+ * `width` in the colour of `colorClass` (e.g. `text-red`), once its CSS
+ * transitions have ended.
+ */
+export const hasInsetRing = async (
+  element: Element,
+  colorClass: string,
+  width: string,
+): Promise<boolean> => {
+  await Promise.all(element.getAnimations().map(({ finished }) => finished))
+  const color = colorOf(colorClass, element.ownerDocument.body)
+  return getComputedStyle(element).boxShadow.includes(
+    `${color} 0px 0px 0px ${width} inset`,
+  )
+}

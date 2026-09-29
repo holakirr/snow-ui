@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
+import { hasInsetRing } from '../../test/colors'
 
 import { Textarea } from './Textarea'
 
@@ -32,5 +34,22 @@ export const Default: Story = {
 export const Disabled: Story = {
   args: {
     disabled: true,
+  },
+}
+
+/**
+ * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
+ * error (no Figma state). The Input stroke in Secondary/Red, 1px. Pair it with the error text: see Form.
+ */
+export const Invalid: Story = {
+  args: {
+    defaultValue: 'Too short',
+    'aria-invalid': true,
+  },
+  play: async ({ canvas }) => {
+    const textarea = canvas.getByRole('textbox', { name: 'Message' })
+
+    await expect(textarea).toBeInvalid()
+    await expect(await hasInsetRing(textarea, 'text-red', '1px')).toBe(true)
   },
 }

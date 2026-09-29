@@ -8,7 +8,7 @@ type RadioGroupProps = ComponentProps<typeof RadioGroupPrimitive.Root>
 
 const RadioGroup: FC<RadioGroupProps> = ({ className, ...props }) => (
   <RadioGroupPrimitive.Root
-    className={twMerge('grid gap-2', className)}
+    className={twMerge('group/radio-group grid gap-2', className)}
     {...props}
   />
 )
@@ -27,6 +27,9 @@ const RadioGroupItem: FC<RadioGroupItemProps> = ({ className, ...props }) => (
     className={twMerge(
       'peer group aspect-square size-7 shrink-0 cursor-pointer rounded-full bg-background-3 text-black inset-ring-2 inset-ring-black-20 transition-all',
       'enabled:hover:bg-black/8 enabled:hover:inset-ring-black-40',
+      // Invalid (an `aria-invalid` group, no Figma state): Secondary/Red
+      // rings, hovered or not.
+      'group-aria-invalid/radio-group:inset-ring-red enabled:hover:group-aria-invalid/radio-group:inset-ring-red',
       'focus-ring',
       // Disabled (no Figma state): a Black/4% circle with a Black/10% ring
       // and a Black/20% dot. Visible in both modes.

@@ -197,4 +197,35 @@ describe('Input', () => {
     expect(node).toBe(screen.getByRole('textbox'))
     expect(node).toHaveFocus()
   })
+
+  it('keeps the native role of each input type', () => {
+    render(
+      <>
+        <Input aria-label="Name" />
+        <Input type="number" aria-label="Age" />
+        <Input type="search" aria-label="Find" />
+        <Input type="password" aria-label="Password" />
+      </>,
+    )
+
+    expect(screen.getByRole('textbox', { name: 'Name' })).not.toHaveAttribute(
+      'role',
+    )
+    expect(screen.getByRole('spinbutton', { name: 'Age' })).toBeInTheDocument()
+    expect(screen.getByRole('searchbox', { name: 'Find' })).toBeInTheDocument()
+    // A password field has no role.
+    expect(screen.getByLabelText('Password')).not.toHaveAttribute('role')
+  })
+
+  it('shows the red stroke while the input is invalid', () => {
+    render(<Input aria-label="Email" aria-invalid />)
+
+    const field = screen.getByRole('textbox').closest('[data-slot="input"]')
+
+    expect(screen.getByRole('textbox')).toBeInvalid()
+    expect(field).toHaveClass(
+      'has-aria-invalid:inset-ring',
+      'has-aria-invalid:inset-ring-red',
+    )
+  })
 })

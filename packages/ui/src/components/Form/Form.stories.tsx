@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { expect, waitFor } from 'storybook/test'
 import { z } from 'zod'
@@ -13,7 +13,21 @@ import {
   FormMessage,
 } from '../../react-hook-form'
 import { Button } from '../Button'
-import { Input } from '../Input'
+import {
+  Checkbox,
+  Input,
+  RadioGroup,
+  RadioGroupItem,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Slider,
+  Switch,
+  Textarea,
+} from '../Input'
+import { Label } from '../Label'
 import * as Plain from './Form'
 
 const formSchema = z.object({
@@ -155,5 +169,119 @@ export const WithoutFormLibrary: Story = {
         canvas.queryByText('Enter a valid email.'),
       ).not.toBeInTheDocument(),
     )
+  },
+}
+
+const InvalidFieldsExample = () => {
+  const id = useId()
+
+  return (
+    <Plain.Form className="grid w-80 gap-6">
+      <Plain.FormItem error="Enter a valid email.">
+        <Plain.FormLabel>Email</Plain.FormLabel>
+        <Plain.FormControl>
+          <Input defaultValue="name@" />
+        </Plain.FormControl>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+      <Plain.FormItem error="Write at least 20 characters.">
+        <Plain.FormLabel>Bio</Plain.FormLabel>
+        <Plain.FormControl>
+          <Textarea defaultValue="Hi" />
+        </Plain.FormControl>
+        <Plain.FormDescription>Shown on your profile.</Plain.FormDescription>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+      <Plain.FormItem error="Pick a plan.">
+        <Plain.FormLabel>Plan</Plain.FormLabel>
+        <Select>
+          <Plain.FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a plan" />
+            </SelectTrigger>
+          </Plain.FormControl>
+          <SelectContent>
+            <SelectItem value="free">Free</SelectItem>
+            <SelectItem value="pro">Pro</SelectItem>
+          </SelectContent>
+        </Select>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+      <Plain.FormItem error="Choose a size.">
+        <Plain.FormLabel id={`${id}-size`}>Size</Plain.FormLabel>
+        <Plain.FormControl>
+          <RadioGroup aria-labelledby={`${id}-size`} className="flex gap-4">
+            {['S', 'M', 'L'].map((size) => (
+              <div key={size} className="flex items-center gap-2">
+                <RadioGroupItem value={size} id={`${id}-${size}`} />
+                <Label className="text-black" htmlFor={`${id}-${size}`}>
+                  {size}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </Plain.FormControl>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+      <Plain.FormItem error="Keep the volume under 80.">
+        <Plain.FormLabel id={`${id}-volume`}>Volume</Plain.FormLabel>
+        <Plain.FormControl>
+          <Slider aria-labelledby={`${id}-volume`} defaultValue={[90]} />
+        </Plain.FormControl>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+      <Plain.FormItem error="Accept the terms to continue.">
+        <div className="flex items-center gap-2">
+          <Plain.FormControl>
+            <Checkbox />
+          </Plain.FormControl>
+          <Plain.FormLabel>Accept the terms</Plain.FormLabel>
+        </div>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+      <Plain.FormItem error="Turn on email alerts to continue.">
+        <div className="flex items-center gap-2">
+          <Plain.FormControl>
+            <Switch />
+          </Plain.FormControl>
+          <Plain.FormLabel>Email alerts</Plain.FormLabel>
+        </div>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+    </Plain.Form>
+  )
+}
+
+/**
+ * Every form control in an invalid `FormItem`: `FormControl` gives it
+ * `aria-invalid` (the red stroke or ring), and `aria-describedby` with the
+ * rendered description and error. The RadioGroup and the Slider are named
+ * with `aria-labelledby`; the Slider passes the description and
+ * `aria-invalid` on to its thumb.
+ */
+export const InvalidFields: Story = {
+  render: () => <InvalidFieldsExample />,
+  play: async ({ canvas }) => {
+    const fields = [
+      ['textbox', 'Email', 'Enter a valid email.'],
+      [
+        'textbox',
+        'Bio',
+        'Shown on your profile. Write at least 20 characters.',
+      ],
+      ['combobox', 'Plan', 'Pick a plan.'],
+      ['radiogroup', 'Size', 'Choose a size.'],
+      ['slider', 'Volume', 'Keep the volume under 80.'],
+      ['checkbox', 'Accept the terms', 'Accept the terms to continue.'],
+      ['switch', 'Email alerts', 'Turn on email alerts to continue.'],
+    ] as const
+
+    for (const [role, name, description] of fields) {
+      const control = canvas.getByRole(role, { name })
+      await expect(control).toBeInvalid()
+      await expect(control).toHaveAccessibleDescription(description)
+    }
+    // The errors are alerts, announced when they appear.
+    await expect(canvas.getAllByRole('alert')).toHaveLength(fields.length)
   },
 }

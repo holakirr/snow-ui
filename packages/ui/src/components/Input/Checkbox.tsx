@@ -1,10 +1,10 @@
 'use client'
 
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 
-type CheckboxProps = CheckboxPrimitive.CheckboxProps
+type CheckboxProps = ComponentProps<typeof CheckboxPrimitive.Root>
 
 /**
  * Figma "Checkbox" (Select True / False / Multiple × State Default / Hover):
@@ -24,6 +24,9 @@ const Checkbox: FC<CheckboxProps> = ({ className, ...props }) => (
       'enabled:hover:bg-black/8 enabled:hover:inset-ring-black-40',
       'data-[state=checked]:bg-primary data-[state=checked]:inset-ring-0 data-[state=checked]:inset-shadow-inner data-[state=checked]:enabled:hover:bg-primary-hover-strong',
       'data-[state=indeterminate]:bg-primary data-[state=indeterminate]:inset-ring-0 data-[state=indeterminate]:inset-shadow-inner data-[state=indeterminate]:enabled:hover:bg-primary-hover-strong',
+      // Invalid (`aria-invalid`, no Figma state): a Secondary/Red ring on the
+      // unchecked box, hovered or not.
+      'aria-invalid:inset-ring-red enabled:hover:aria-invalid:inset-ring-red',
       'focus-ring',
       // Disabled (no Figma state): a Black/4% box with a Black/10% ring; when
       // checked, a Black/10% fill with a Black/40% mark. Visible in both modes.

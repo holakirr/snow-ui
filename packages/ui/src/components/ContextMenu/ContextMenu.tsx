@@ -3,7 +3,7 @@
 import { ArrowRightIcon } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as CtxMenuPrimitive from '@radix-ui/react-context-menu'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import {
   popoverItemClasses,
@@ -25,10 +25,11 @@ const ContextMenuSub = CtxMenuPrimitive.Sub
 
 const ContextMenuRadioGroup = CtxMenuPrimitive.RadioGroup
 
-type ContextMenuSubTriggerProps =
-  CtxMenuPrimitive.ContextMenuSubTriggerProps & {
-    inset?: boolean
-  }
+type ContextMenuSubTriggerProps = ComponentProps<
+  typeof CtxMenuPrimitive.SubTrigger
+> & {
+  inset?: boolean
+}
 
 const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
   className,
@@ -52,7 +53,9 @@ const contentClasses = twMerge(
   'data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom',
 )
 
-type ContextMenuSubContentProps = CtxMenuPrimitive.ContextMenuSubContentProps
+type ContextMenuSubContentProps = ComponentProps<
+  typeof CtxMenuPrimitive.SubContent
+>
 
 const ContextMenuSubContent: FC<ContextMenuSubContentProps> = ({
   className,
@@ -65,7 +68,7 @@ const ContextMenuSubContent: FC<ContextMenuSubContentProps> = ({
 )
 ContextMenuSubContent.displayName = CtxMenuPrimitive.SubContent.displayName
 
-type ContextMenuContentProps = CtxMenuPrimitive.ContextMenuContentProps
+type ContextMenuContentProps = ComponentProps<typeof CtxMenuPrimitive.Content>
 
 const ContextMenuContent: FC<ContextMenuContentProps> = ({
   className,
@@ -82,7 +85,7 @@ ContextMenuContent.displayName = CtxMenuPrimitive.Content.displayName
 
 const itemClasses = popoverItemClasses
 
-type ContextMenuItemProps = CtxMenuPrimitive.ContextMenuItemProps & {
+type ContextMenuItemProps = ComponentProps<typeof CtxMenuPrimitive.Item> & {
   inset?: boolean
 }
 
@@ -98,8 +101,9 @@ const ContextMenuItem: FC<ContextMenuItemProps> = ({
 )
 ContextMenuItem.displayName = CtxMenuPrimitive.Item.displayName
 
-type ContextMenuCheckboxItemProps =
-  CtxMenuPrimitive.ContextMenuCheckboxItemProps
+type ContextMenuCheckboxItemProps = ComponentProps<
+  typeof CtxMenuPrimitive.CheckboxItem
+>
 
 const ContextMenuCheckboxItem: FC<ContextMenuCheckboxItemProps> = ({
   className,
@@ -122,7 +126,9 @@ const ContextMenuCheckboxItem: FC<ContextMenuCheckboxItemProps> = ({
 )
 ContextMenuCheckboxItem.displayName = CtxMenuPrimitive.CheckboxItem.displayName
 
-type ContextMenuRadioItemProps = CtxMenuPrimitive.ContextMenuRadioItemProps
+type ContextMenuRadioItemProps = ComponentProps<
+  typeof CtxMenuPrimitive.RadioItem
+>
 
 const ContextMenuRadioItem: FC<ContextMenuRadioItemProps> = ({
   className,
@@ -143,7 +149,7 @@ const ContextMenuRadioItem: FC<ContextMenuRadioItemProps> = ({
 )
 ContextMenuRadioItem.displayName = CtxMenuPrimitive.RadioItem.displayName
 
-type ContextMenuLabelProps = CtxMenuPrimitive.ContextMenuLabelProps & {
+type ContextMenuLabelProps = ComponentProps<typeof CtxMenuPrimitive.Label> & {
   inset?: boolean
 }
 
@@ -159,7 +165,9 @@ const ContextMenuLabel: FC<ContextMenuLabelProps> = ({
 )
 ContextMenuLabel.displayName = CtxMenuPrimitive.Label.displayName
 
-type ContextMenuSeparatorProps = CtxMenuPrimitive.ContextMenuSeparatorProps
+type ContextMenuSeparatorProps = ComponentProps<
+  typeof CtxMenuPrimitive.Separator
+>
 
 const ContextMenuSeparator: FC<ContextMenuSeparatorProps> = ({
   className,

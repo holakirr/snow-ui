@@ -80,7 +80,7 @@ The colour is the `--segment-fg` custom property, which hover, focus and the on 
 ## Accessibility
 
 - It renders a native `<button type="button">` with `aria-pressed`: screen readers announce a toggle button, pressed or not. Space and Enter toggle it.
-- The accessible name is the content. An icon-only toggle has no text, so give it an `aria-label`. Keep the name the same in both states: `aria-pressed` conveys the state.
+- The accessible name is the content. An icon-only toggle has no text, so give it an `aria-label`; without a name, it logs a development warning. Keep the name the same in both states: `aria-pressed` conveys the state.
 - `disabled` removes it from the tab order.
 - Toggle renders no built-in strings.
 
@@ -90,6 +90,7 @@ Deviations from the Figma kit (the full table is in the package README):
 | --- | --- | --- |
 | "Focus" effect: a 4px Black/4% ring (1.1:1); no focus state on Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Off items at 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus; disabled items keep Black/20% | 1.4.3, 1.4.11 |
+| Icon-only toggles: — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
 
 ## Composition (asChild)
 

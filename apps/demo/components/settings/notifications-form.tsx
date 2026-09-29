@@ -101,8 +101,14 @@ export const NotificationsForm = () => {
             value={volume}
             onValueChange={setVolume}
             aria-label={t.volume}
+            // Slider passes it on to the thumb, so the hint is read with it.
+            aria-describedby={id('volume-hint')}
           />
-          <Typography size={12} className="text-secondary">
+          <Typography
+            id={id('volume-hint')}
+            size={12}
+            className="text-secondary"
+          >
             {t.volumeHint(volume[0])}
           </Typography>
         </div>

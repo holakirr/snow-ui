@@ -94,6 +94,7 @@ test.describe('settings', () => {
     await page.keyboard.press('ArrowRight')
     await expect(slider).toHaveAttribute('aria-valuenow', '4')
     await expect(page.getByText('At most 4 emails a week')).toBeVisible()
+    await expect(slider).toHaveAccessibleDescription('At most 4 emails a week')
     const push = page.getByRole('switch', { name: 'Push notifications' })
     await push.click()
     await expect(push).toBeChecked()

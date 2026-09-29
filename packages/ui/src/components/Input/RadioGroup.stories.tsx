@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useId } from 'react'
+import { expect } from 'storybook/test'
+import { hasInsetRing } from '../../test/colors'
 
 import { Label } from '../Label'
 import { RadioGroup, RadioGroupItem } from './RadioGroup'
@@ -84,5 +86,35 @@ export const WithDisabled: Story = {
         </div>
       </RadioGroup>
     )
+  },
+}
+
+/**
+ * Invalid: `aria-invalid` on the group (the `role="radiogroup"`), which
+ * `FormControl` sets while the field has an error (no Figma state). Every
+ * circle gets a Secondary/Red ring. Pair it with the error text: see Form.
+ */
+export const Invalid: Story = {
+  render: function Render() {
+    const id = useId()
+    return (
+      <RadioGroup aria-invalid aria-labelledby={`${id}-label`}>
+        <Label id={`${id}-label`}>Density</Label>
+        {['Default', 'Comfortable', 'Compact'].map((name) => (
+          <div key={name} className="flex items-center space-x-2">
+            <RadioGroupItem value={name} id={`${id}-${name}`} />
+            <Label className="text-black" htmlFor={`${id}-${name}`}>
+              {name}
+            </Label>
+          </div>
+        ))}
+      </RadioGroup>
+    )
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('radiogroup')).toBeInvalid()
+    for (const radio of canvas.getAllByRole('radio')) {
+      await expect(await hasInsetRing(radio, 'text-red', '2px')).toBe(true)
+    }
   },
 }

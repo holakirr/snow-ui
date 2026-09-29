@@ -4,6 +4,7 @@ import {
   basicInputClasses,
   disabledInputClasses,
   focusInputClasses,
+  invalidInputClasses,
   staticInputClasses,
 } from './Input'
 
@@ -22,6 +23,7 @@ const Textarea: FC<TextareaProps> = ({ className, ...props }) => (
       staticInputClasses,
       disabledInputClasses,
       focusInputClasses,
+      invalidInputClasses,
       className,
     )}
     {...props}

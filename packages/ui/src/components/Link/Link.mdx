@@ -62,7 +62,7 @@ import { Link } from '@holakirr/snow-ui'
 
 ## Accessibility
 
-- It renders an `<a>` with `role="link"` and `tabIndex={0}` set explicitly, so it is in the tab order even without an `href`. Enter follows a link only when it has an `href`: always pass one (with `asChild`, the router link renders it).
+- It renders an `<a>`. With an `href` it is a native link; without one (on the link, or on the `asChild` element) it gets `role="link"` and `tabIndex={0}`, so it stays in the tab order. Enter follows a link only when it has an `href`: always pass one (with `asChild`, the router link renders it).
 - The accessible name is the text. The arrow and the external icon are `aria-hidden`; an `external` link's name ends with "(opens in a new tab)".
 - `external` sets `target="_blank"` and `rel="noopener noreferrer"`. Pass `target` or `rel` to override them.
 
@@ -84,7 +84,7 @@ A known gap: the arrow and the external icon keep the Figma 40% opacity at rest.
 
 ## Composition (asChild)
 
-`asChild` renders the only child instead of an `<a>`, e.g. a router link. The child gets the link's classes (merged with its own, which win conflicts), props (`role`, `tabIndex`, and for `external` `target` and `rel`), ref and event handlers, and the arrow or the external icon and text are rendered inside it, after its own children.
+`asChild` renders the only child instead of an `<a>`, e.g. a router link. The child gets the link's classes (merged with its own, which win conflicts), props (`role` and `tabIndex` when it has no `href`, and for `external` `target` and `rel`), ref and event handlers, and the arrow or the external icon and text are rendered inside it, after its own children.
 
 ```tsx
 <Link asChild variant="arrow">

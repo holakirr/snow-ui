@@ -18,7 +18,7 @@ const SheetClose = SheetPrimitive.Close
 
 const SheetPortal = SheetPrimitive.Portal
 
-type SheetOverlayProps = SheetPrimitive.DialogOverlayProps
+type SheetOverlayProps = ComponentProps<typeof SheetPrimitive.Overlay>
 
 const SheetOverlay: FC<SheetOverlayProps> = ({ className, ...props }) => (
   <SheetPrimitive.Overlay
@@ -57,7 +57,7 @@ const sheetVariants = cva(
 /** The edge a sheet slides in from; `start` / `end` follow the direction. */
 export type SheetSide = 'top' | 'bottom' | 'left' | 'right' | 'start' | 'end'
 
-type SheetContentProps = SheetPrimitive.DialogContentProps &
+type SheetContentProps = ComponentProps<typeof SheetPrimitive.Content> &
   Omit<VariantProps<typeof sheetVariants>, 'side'> & {
     /**
      * The edge the sheet slides in from. `start` and `end` are the left and
@@ -136,7 +136,7 @@ const SheetFooter: FC<SheetFooterProps> = ({ className, ...props }) => (
 )
 SheetFooter.displayName = 'SheetFooter'
 
-type SheetTitleProps = SheetPrimitive.DialogTitleProps
+type SheetTitleProps = ComponentProps<typeof SheetPrimitive.Title>
 
 const SheetTitle: FC<SheetTitleProps> = ({ className, ...props }) => (
   <SheetPrimitive.Title
@@ -146,7 +146,7 @@ const SheetTitle: FC<SheetTitleProps> = ({ className, ...props }) => (
 )
 SheetTitle.displayName = SheetPrimitive.Title.displayName
 
-type SheetDescriptionProps = SheetPrimitive.DialogDescriptionProps
+type SheetDescriptionProps = ComponentProps<typeof SheetPrimitive.Description>
 
 const SheetDescription: FC<SheetDescriptionProps> = ({
   className,

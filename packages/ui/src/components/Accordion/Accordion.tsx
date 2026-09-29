@@ -1,16 +1,13 @@
 'use client'
 
 import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
-import type {
-  AccordionContentProps,
-  AccordionItemProps,
-  AccordionTriggerProps,
-} from '@radix-ui/react-accordion'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import type { FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 
 import { Typography } from '../Text'
+
+type AccordionContentProps = ComponentProps<typeof AccordionPrimitive.Content>
 
 const AccordionContent: FC<AccordionContentProps> = ({
   className,
@@ -24,6 +21,8 @@ const AccordionContent: FC<AccordionContentProps> = ({
     {...props}
   />
 )
+
+type AccordionTriggerProps = ComponentProps<typeof AccordionPrimitive.Trigger>
 
 const AccordionTrigger: FC<AccordionTriggerProps> = ({
   children,
@@ -47,14 +46,13 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
   </AccordionPrimitive.Header>
 )
 
+type AccordionItemProps = ComponentProps<typeof AccordionPrimitive.Item>
+
 const AccordionItem: FC<AccordionItemProps> = (props) => (
   <AccordionPrimitive.Item {...props} />
 )
 
-type AccordionProps = (
-  | AccordionPrimitive.AccordionSingleProps
-  | AccordionPrimitive.AccordionMultipleProps
-) & {}
+type AccordionProps = ComponentProps<typeof AccordionPrimitive.Root>
 
 const Accordion = ({ className, ...props }: AccordionProps) => (
   <AccordionPrimitive.Root

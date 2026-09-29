@@ -1,5 +1,14 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from './Pagination'
 import * as PaginationStories from './Pagination.stories'
 
 <Meta of={PaginationStories} />
@@ -119,11 +128,21 @@ Keep an `href` next to the `page` when the page also has a URL (the table footer
 ## Accessibility
 
 - `Pagination` is a `navigation` landmark named "Pagination" (`messages.pagination.label`). A page with several paginations needs a distinct `aria-label` on each.
-- Page links are `<a href>` links in the tab order; Enter follows them. In client-side paging, items without `href` are buttons (Enter or Space). The current page has `aria-current="page"`. Announce the new page yourself if the content that changes is far from the pagination (the ClientSide story uses a `status`).
+- Page links are `<a href>` links; in client-side paging (`onPageChange` without `href`) the items are buttons. The current page has `aria-current="page"`. Announce the new page yourself if the content that changes is far from the pagination (the ClientSide story uses a `status`).
 - Previous and next are named by `aria-label`: "Go to previous page" and "Go to next page". The name replaces any visible text, so keep the text's words in it if you pass your own (a "Prev" label read as "Go to previous page" doesn't match what a speech-input user says).
-- A disabled link has no `href`, `role="link"` and `aria-disabled="true"`: it is announced as an unavailable link and skipped by Tab.
+- A disabled link has no `href`, `role="link"` and `aria-disabled="true"`: it is announced as an unavailable link.
 - The ellipsis glyph is hidden from assistive technology; screen readers read "More pages" (`messages.pagination.more`) instead.
 - Arrows are decorative icons; the links' names carry the meaning.
+
+### Keyboard
+
+Pagination has no key handling of its own: every link with an `href`, and every button of client-side paging, is a tab stop.
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift + Tab | move to the next / previous link or button; disabled items (a link without `href`, a `disabled` button; with `asChild`, give the child no destination) and the ellipsis are skipped |
+| Enter | follow the focused link (with `page` and `onPageChange`, a plain press calls `onPageChange` instead of navigating), or press the focused button |
+| Space | press the focused button (client-side paging) |
 
 ### Deviations from the Figma kit
 
@@ -183,4 +202,46 @@ Pagination holds no state: pass `isActive` and `disabled` from your current page
 
 ## Props
 
-<Controls />
+The parts render plain elements with the Figma styles: each takes the props below, `className` (merged with the part's classes) and the attributes of the element it renders.
+
+### Pagination
+
+The `<nav>` landmark, named by `aria-label` ("Pagination" by default, from `messages.pagination.label`).
+
+<ArgTypes of={Pagination} />
+
+### PaginationContent
+
+The `<ul>` that lays out the items 8px apart.
+
+<ArgTypes of={PaginationContent} />
+
+### PaginationItem
+
+An `<li>` for a link or the ellipsis.
+
+<ArgTypes of={PaginationItem} />
+
+### PaginationLink
+
+A page link: an `<a>` that takes `href`, `onClick` and the other `<a>` attributes, or with `asChild` the only child (a router link). `isActive` marks the current page and `disabled` removes its `href` and `onClick`.
+
+<ArgTypes of={PaginationLink} />
+
+### PaginationPrevious
+
+A `PaginationLink` with an arrow before its optional text, named "Go to previous page" by default (`aria-label`).
+
+<ArgTypes of={PaginationPrevious} />
+
+### PaginationNext
+
+A `PaginationLink` with an arrow after its optional text, named "Go to next page" by default (`aria-label`).
+
+<ArgTypes of={PaginationNext} />
+
+### PaginationEllipsis
+
+A `<span>` in place of skipped pages: "…" on screen, `label` for screen readers.
+
+<ArgTypes of={PaginationEllipsis} />

@@ -138,6 +138,13 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: { onSelect: fn() },
+  parameters: {
+    // Inline on the docs page: the trigger, and the palette opens over the
+    // page. Storybook doesn't run an inline story's play function in docs;
+    // in an iframe it ran, next to the iframes of the stories that open the
+    // palette on load, which took the focus it checks.
+    docs: { story: { inline: true, height: 'auto' } },
+  },
   play: async ({ args, canvas, canvasElement, userEvent, step }) => {
     const page = within(canvasElement.ownerDocument.body)
     const trigger = canvas.getByRole('button', { name: 'Search' })

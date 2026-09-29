@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "holakirr/snow-ui" }],
+  "changelog": ["./changelog.mjs", { "repo": "holakirr/snow-ui" }],
   "commit": false,
   "fixed": [],
   "linked": [],

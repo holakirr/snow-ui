@@ -23,7 +23,7 @@
 
   **New**
 
-  - `text-secondary` (`--color-text-secondary`): the colour for secondary text, which the Figma kit draws in Black/40% (2.85:1 on white). Black/60% in light mode (5.74:1 on `background-1`) and White/70% in dark mode (7.08:1 on `[#333](https://github.com/holakirr/snow-ui/issues/333)`); at least 4.5:1 on every library surface. Use it instead of `text-black-40` for text.
+  - `text-secondary` (`--color-text-secondary`): the colour for secondary text, which the Figma kit draws in Black/40% (2.85:1 on white). Black/60% in light mode (5.74:1 on `background-1`) and White/70% in dark mode (7.08:1 on `#333`); at least 4.5:1 on every library surface. Use it instead of `text-black-40` for text.
   - `red-text` (`--color-red-text`): error text. Secondary/Red is 3.36:1 on white; `red-text` is `#D42020` in light mode and `#FF8080` in dark mode (5.21:1 on `background-1` in both).
   - `TabsTrigger` supports `asChild` (a router link as the tab): the icon, the label and the Underline line are rendered inside the child.
 
@@ -204,7 +204,7 @@
   - Secondary colours use the Figma values: purple `#B899EB`, indigo `#ADADFB`, blue `#7DBBFF`, cyan `#A0BCE8`, mint `#6BE6D3`, green `#71DD8C`, yellow `#FFCC00`.
   - Dark mode:
     - `primary` is `#ADADFB`.
-    - `background-1` is `[#333](https://github.com/holakirr/snow-ui/issues/333)` (was `#2A2A2A`).
+    - `background-1` is `#333` (was `#2A2A2A`).
     - `background-2` is translucent white at 4% (was opaque white).
   - `bg5` now points to `surface-1`: white at 80% in light mode and white at 4% in dark mode (was light grey `#E5E5E5`). This affects `Card`, the `Select` trigger and `InputSmall`.
   - The shadcn-style aliases point to Figma tokens:

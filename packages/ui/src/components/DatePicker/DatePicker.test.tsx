@@ -159,28 +159,41 @@ describe('DatePicker', () => {
     expect(screen.getByRole('button', { name: /next month/i })).toBeDisabled()
   })
 
-  it('starts the week on the locale’s first day; weekStartsOn wins', () => {
+  it('starts the week on Monday; the provider can follow the locale', () => {
     // react-day-picker hides the weekday row from assistive technology.
     const firstWeekday = () =>
       screen.getAllByRole('columnheader', { hidden: true })[0]
     const open = { defaultValue: new Date(2025, 0, 15), defaultOpen: true }
 
-    // en-US (no locale): Sunday.
+    // Monday by default, whatever the locale.
     const { unmount } = render(<DatePicker aria-label="Due" {...open} />)
-    expect(firstWeekday()).toHaveAccessibleName('Sunday')
+    expect(firstWeekday()).toHaveAccessibleName('Monday')
     unmount()
 
-    // Russian, from the provider: Monday.
+    // The provider's `weekStartsOn="locale"`: Sunday in en-US …
+    const { unmount: unmountLocale } = render(
+      <SnowUIProvider weekStartsOn="locale">
+        <DatePicker aria-label="Due" {...open} />
+      </SnowUIProvider>,
+    )
+    expect(firstWeekday()).toHaveAccessibleName('Sunday')
+    unmountLocale()
+
+    // … Monday in Russian.
     const { unmount: unmountRu } = render(
-      <SnowUIProvider locale={ru}>
+      <SnowUIProvider locale={ru} weekStartsOn="locale">
         <DatePicker aria-label="Срок" {...open} />
       </SnowUIProvider>,
     )
     expect(firstWeekday()).toHaveAccessibleName(/понедельник/i)
     unmountRu()
 
-    // The prop wins over the locale.
-    render(<DatePicker aria-label="Due" weekStartsOn={1} {...open} />)
+    // The prop wins over the provider.
+    render(
+      <SnowUIProvider weekStartsOn="locale">
+        <DatePicker aria-label="Due" weekStartsOn={1} {...open} />
+      </SnowUIProvider>,
+    )
     expect(firstWeekday()).toHaveAccessibleName('Monday')
   })
 

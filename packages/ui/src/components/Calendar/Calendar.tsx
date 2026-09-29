@@ -29,6 +29,7 @@ import {
   getDefaultClassNames,
   useDayPicker,
 } from 'react-day-picker'
+import { resolveWeekStart } from '../../utils/date'
 import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
 import {
@@ -59,11 +60,10 @@ export type CalendarProps = DayPickerProps & {
   showOutsideDays?: boolean
 
   /**
-   * The first day of the week: 0 for Sunday, 1 for Monday. It wins over
-   * the `locale`'s week start. The Figma DatePicker starts on Monday: pass
-   * `1` for that whatever the locale.
-   * @default the locale's first day of the week (`locale.options.weekStartsOn`:
-   * Sunday in en-US, Monday in ru)
+   * The first day of the week: 0 for Sunday, 1 for Monday. The Figma
+   * DatePicker starts on Monday. Without it, `SnowUIProvider`'s
+   * `weekStartsOn` (`'locale'` follows the locale), else Monday.
+   * @default 1, or the provider's `weekStartsOn`
    */
   weekStartsOn?: DayPickerProps['weekStartsOn']
 
@@ -675,17 +675,19 @@ const mergeClassNames = (
 
 /**
  * A calendar built on react-day-picker, styled like the Figma DatePicker:
- * the selected day is Primary, today is Secondary/Indigo and days outside
- * the month are `text-secondary` (Figma: Black/40%, 2.85:1).
+ * the week starts on Monday, the selected day is Primary, today is
+ * Secondary/Indigo and days outside the month are `text-secondary` (Figma:
+ * Black/40%, 2.85:1).
  *
  * Localized by `SnowUIProvider`: its `locale` (a date-fns or
- * react-day-picker locale) names the months and weekdays and sets the first
- * day of the week (unless `weekStartsOn` is set); its `messages` name the
- * toolbar ("Today", "Last selection", the previous / next month buttons and
- * their "Month navigation" landmark; the English defaults of the last three
- * give way to a react-day-picker locale's own labels); its `dir` flips the
- * arrows and the arrow keys. The `locale`, `weekStartsOn`, `dir`, `labels`,
- * `todayLabel` and `lastSelectionLabel` props win over the provider.
+ * react-day-picker locale) names the months and weekdays; its `weekStartsOn`
+ * sets the first day of the week (`'locale'`: the locale's); its `messages`
+ * name the toolbar ("Today", "Last selection", the previous / next month
+ * buttons and their "Month navigation" landmark; the English defaults of the
+ * last three give way to a react-day-picker locale's own labels); its `dir`
+ * flips the arrows and the arrow keys. The `locale`, `weekStartsOn`, `dir`,
+ * `labels`, `todayLabel` and `lastSelectionLabel` props win over the
+ * provider.
  */
 function Calendar({
   className,
@@ -789,8 +791,10 @@ function Calendar({
         // would repeat the neighbouring month's dates.
         showOutsideDays={showOutsideDays ?? columnsDisplayed === 1}
         showWeekNumber={showWeekNumber}
-        // The locale's first day of the week unless `weekStartsOn` is set.
-        weekStartsOn={weekStartsOn ?? locale?.options?.weekStartsOn}
+        // Monday unless `weekStartsOn`, or the provider's, says otherwise.
+        weekStartsOn={
+          weekStartsOn ?? resolveWeekStart(snowUI.weekStartsOn, locale)
+        }
         locale={locale}
         dir={dir ?? snowUI.dir}
         labels={{

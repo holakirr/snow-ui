@@ -85,9 +85,9 @@ export type DatePickerSharedProps = Omit<
 
   /**
    * The first day of the week in the calendar: 0 for Sunday, 1 for Monday.
-   * Wins over the locale's.
-   * @default the locale's first day of the week, as in `Calendar` (Sunday in
-   * en-US, Monday in ru)
+   * Without it, `SnowUIProvider`'s `weekStartsOn` (`'locale'` follows the
+   * locale), else Monday, as in `Calendar`.
+   * @default 1, or the provider's `weekStartsOn`
    */
   weekStartsOn?: CalendarProps['weekStartsOn']
 

@@ -20,6 +20,7 @@ import {
   getLatestScheduleHour,
   getScheduleHours,
   getWeekDates,
+  resolveWeekStart,
 } from '../../utils'
 import { twMerge } from '../../utils/tw-merge'
 import { Separator } from '../Separator'
@@ -46,10 +47,10 @@ type SchedulerProps = ComponentProps<'div'> & {
   events?: CalendarEvent[]
   /**
    * The first day of the week: 0 for Sunday … 6 for Saturday. Without it,
-   * the `SnowUIProvider` locale's (`locale.options.weekStartsOn`): Sunday
-   * with the default English, Monday with `ru`. The Figma kit starts on
-   * Monday: pass `1` for that whatever the locale.
-   * @default the locale's first day of the week (Sunday without a locale)
+   * `SnowUIProvider`'s `weekStartsOn` (`'locale'` follows the locale: Sunday
+   * with the default English, Monday with `ru`), else Monday, as in the
+   * Figma kit.
+   * @default 1, or the provider's `weekStartsOn`
    */
   startOfWeek?: StartOfWeek
   /** Called with the event when an event is clicked. */
@@ -179,12 +180,12 @@ const Scheduler: FC<SchedulerProps> = ({
   onKeyDownCapture,
   ...props
 }) => {
-  // Day and hour labels in the `SnowUIProvider` locale (en-US without one),
-  // and its first day of the week unless `startOfWeek` is set (Sunday for
-  // en-US), like Calendar.
-  const { locale } = useSnowUI()
+  // Day and hour labels in the `SnowUIProvider` locale (en-US without one).
+  // The week starts on Monday unless `startOfWeek`, or the provider's
+  // `weekStartsOn`, says otherwise, as in Calendar.
+  const { locale, weekStartsOn } = useSnowUI()
   const lang = locale?.code ?? DEFAULT_LANG
-  const weekStart = startOfWeek ?? locale?.options?.weekStartsOn ?? 0
+  const weekStart = startOfWeek ?? resolveWeekStart(weekStartsOn, locale)
   // The `dir` prop, else the provider's: the arrow keys follow the reading
   // direction.
   const rtl =

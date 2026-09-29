@@ -99,18 +99,19 @@ beforeAll(() => {
 describe('SnowUIProvider', () => {
   it('provides the English defaults without a provider', () => {
     const Probe = () => {
-      const { messages, locale, dir } = useSnowUI()
+      const { messages, locale, dir, weekStartsOn } = useSnowUI()
       return (
         <output>
           {messages === defaultMessages ? 'defaults' : 'custom'}{' '}
-          {String(locale)} {String(dir)}
+          {String(locale)} {String(dir)} {String(weekStartsOn)}
         </output>
       )
     }
     render(<Probe />)
 
+    // No week start: the date components start on Monday.
     expect(screen.getByRole('status')).toHaveTextContent(
-      'defaults undefined undefined',
+      'defaults undefined undefined undefined',
     )
   })
 
@@ -137,11 +138,11 @@ describe('SnowUIProvider', () => {
 
   it('nests: an inner provider overrides the outer one for its subtree', () => {
     const Probe = () => {
-      const { messages, locale, dir } = useSnowUI()
+      const { messages, locale, dir, weekStartsOn } = useSnowUI()
       return (
         <output>
           {messages.tag.remove('A')} | {messages.dialog.close} | {locale?.code}{' '}
-          | {dir}
+          | {dir} | {weekStartsOn}
         </output>
       )
     }
@@ -150,6 +151,7 @@ describe('SnowUIProvider', () => {
         messages={{ dialog: { close: 'Schließen' } }}
         locale={ru}
         dir="rtl"
+        weekStartsOn="locale"
       >
         <SnowUIProvider messages={{ tag: { remove: (l) => `x ${l}` } }}>
           <Probe />
@@ -158,7 +160,7 @@ describe('SnowUIProvider', () => {
     )
 
     expect(screen.getByRole('status')).toHaveTextContent(
-      'x A | Schließen | ru | rtl',
+      'x A | Schließen | ru | rtl | locale',
     )
   })
 

@@ -2,7 +2,7 @@ import { ArrowLineDownIcon } from '@holakirr/snow-ui-icons'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
-import { ru } from 'react-day-picker/locale'
+import { enUS, ru } from 'react-day-picker/locale'
 import { userEvent } from 'storybook/test'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -268,63 +268,97 @@ describe('Calendar', () => {
   const firstWeekday = () =>
     screen.getAllByRole('columnheader', { hidden: true })[0]
 
-  it('starts the week on the locale’s first day: Sunday in en-US', () => {
-    render(<Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />)
+  it('starts the week on Monday by default, whatever the locale', () => {
+    const { unmount } = render(
+      <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />,
+    )
 
     const weekdays = screen.getAllByRole('columnheader', { hidden: true })
-    expect(weekdays[0]).toHaveAccessibleName('Sunday')
-    expect(weekdays[6]).toHaveAccessibleName('Saturday')
-    // 29 to 31 December 2024 fill the first week of January 2025.
-    expect(screen.getAllByRole('gridcell')[0]).toHaveAttribute(
-      'data-day',
-      '2024-12-29',
-    )
-  })
-
-  it('starts on Monday in Russian, from the provider or the locale prop', () => {
-    const { unmount } = render(
-      <SnowUIProvider locale={ru}>
-        <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
-      </SnowUIProvider>,
-    )
-    expect(firstWeekday()).toHaveAccessibleName(/понедельник/i)
+    expect(weekdays[0]).toHaveAccessibleName('Monday')
+    expect(weekdays[6]).toHaveAccessibleName('Sunday')
+    // 30 and 31 December 2024 fill the first week of January 2025.
     expect(screen.getAllByRole('gridcell')[0]).toHaveAttribute(
       'data-day',
       '2024-12-30',
     )
     unmount()
 
+    // An en-US locale (Sunday first) doesn't change it.
     render(
-      <Calendar
-        mode="single"
-        locale={ru}
-        defaultMonth={new Date(2025, 0, 1)}
-      />,
-    )
-    expect(firstWeekday()).toHaveAccessibleName(/понедельник/i)
-  })
-
-  it('lets weekStartsOn win over the locale', () => {
-    const { unmount } = render(
-      <Calendar
-        mode="single"
-        weekStartsOn={1}
-        defaultMonth={new Date(2025, 0, 1)}
-      />,
+      <SnowUIProvider locale={enUS}>
+        <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
+      </SnowUIProvider>,
     )
     expect(firstWeekday()).toHaveAccessibleName('Monday')
+  })
+
+  it('follows the locale with the provider’s weekStartsOn="locale"', () => {
+    // No locale: en-US, Sunday.
+    const { unmount } = render(
+      <SnowUIProvider weekStartsOn="locale">
+        <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
+      </SnowUIProvider>,
+    )
+    expect(firstWeekday()).toHaveAccessibleName('Sunday')
+    expect(screen.getAllByRole('gridcell')[0]).toHaveAttribute(
+      'data-day',
+      '2024-12-29',
+    )
     unmount()
 
+    // Russian, from a nested provider: Monday.
+    const { unmount: unmountRu } = render(
+      <SnowUIProvider weekStartsOn="locale">
+        <SnowUIProvider locale={ru}>
+          <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
+        </SnowUIProvider>
+      </SnowUIProvider>,
+    )
+    expect(firstWeekday()).toHaveAccessibleName(/понедельник/i)
+    unmountRu()
+
+    // The calendar's own `locale` prop counts too.
     render(
-      <SnowUIProvider locale={ru}>
+      <SnowUIProvider weekStartsOn="locale">
         <Calendar
           mode="single"
-          weekStartsOn={0}
+          locale={enUS}
           defaultMonth={new Date(2025, 0, 1)}
         />
       </SnowUIProvider>,
     )
-    expect(firstWeekday()).toHaveAccessibleName(/воскресенье/i)
+    expect(firstWeekday()).toHaveAccessibleName('Sunday')
+  })
+
+  it('takes a day from the provider; weekStartsOn wins', () => {
+    const { unmount } = render(
+      <SnowUIProvider weekStartsOn={0}>
+        <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
+      </SnowUIProvider>,
+    )
+    expect(firstWeekday()).toHaveAccessibleName('Sunday')
+    unmount()
+
+    const { unmount: unmountLocale } = render(
+      <SnowUIProvider weekStartsOn="locale">
+        <Calendar
+          mode="single"
+          weekStartsOn={1}
+          defaultMonth={new Date(2025, 0, 1)}
+        />
+      </SnowUIProvider>,
+    )
+    expect(firstWeekday()).toHaveAccessibleName('Monday')
+    unmountLocale()
+
+    render(
+      <Calendar
+        mode="single"
+        weekStartsOn={0}
+        defaultMonth={new Date(2025, 0, 1)}
+      />,
+    )
+    expect(firstWeekday()).toHaveAccessibleName('Sunday')
   })
 
   it('styles the selected day as Primary and today as Secondary/Indigo', () => {

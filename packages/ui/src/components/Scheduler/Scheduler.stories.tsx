@@ -12,13 +12,13 @@ import type { CalendarEvent } from '../../types'
 import { Button } from '../Button'
 import { Input } from '../Input'
 import { Sheet, SheetContent, SheetTrigger } from '../Sheet'
+import { SnowUIProvider } from '../SnowUIProvider'
 import { Typography } from '../Text'
 import { Scheduler } from './Scheduler'
 
 /**
  * A time in the current week (`day` 0 is its Monday), so the events are in
- * the week the stories with events show: they start on Monday like the
- * Figma kit (`startOfWeek: 1`), with `currentDate: new Date()`.
+ * the week the stories show (`currentDate: new Date()`).
  */
 const thisWeek = (day: number, hours: number, minutes = 0) =>
   setMinutes(
@@ -84,30 +84,24 @@ const meta: Meta<typeof Scheduler> = {
 export default meta
 type Story = StoryObj<typeof Scheduler>
 
-/**
- * Without `startOfWeek` the week starts on the locale's first day: Sunday in
- * the stories' default English (Monday with the Russian toolbar locale).
- */
+/** The week starts on Monday, as in the Figma kit. */
 export const Default: Story = {
   args: {
     events: [],
   },
   play: async ({ canvas, canvasElement, userEvent, step }) => {
     const now = new Date()
-    const sunday = startOfWeek(now, { weekStartsOn: 0 })
+    const monday = startOfWeek(now, { weekStartsOn: 1 })
     const grid = canvas.getByRole('grid')
 
-    await step(
-      "the week starts on the locale's first day: Sunday",
-      async () => {
-        await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
-          sunday.toLocaleDateString('en-US', {
-            weekday: 'short',
-            day: 'numeric',
-          }),
-        )
-      },
-    )
+    await step('the week starts on Monday', async () => {
+      await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
+        monday.toLocaleDateString('en-US', {
+          weekday: 'short',
+          day: 'numeric',
+        }),
+      )
+    })
 
     await step('the grid is named by its week', async () => {
       await expect(grid).toHaveAccessibleName(
@@ -116,7 +110,7 @@ export const Default: Story = {
           month: 'long',
           day: 'numeric',
         })
-          .formatRange(sunday, addDays(sunday, 6))
+          .formatRange(monday, addDays(monday, 6))
           .replace(/\s+/g, ' '),
       )
     })
@@ -160,7 +154,6 @@ export const Default: Story = {
 }
 
 export const WithEvents: Story = {
-  args: { startOfWeek: 1 },
   parameters: { targetSize: { exceptions: eventExceptions } },
   play: async ({ args, canvas, canvasElement, userEvent, step }) => {
     const page = within(canvasElement.ownerDocument.body)
@@ -261,7 +254,6 @@ export const WithEvents: Story = {
 export const MultipleEventsPerHour: Story = {
   parameters: { targetSize: { exceptions: eventExceptions } },
   args: {
-    startOfWeek: 1,
     currentDate: new Date(),
     events: [
       ...sampleEvents,
@@ -346,31 +338,40 @@ export const MultipleEventsPerHour: Story = {
   },
 }
 
-/** `startOfWeek` wins over the locale: Sunday first, in Russian. */
+/** `startOfWeek={0}` starts the week on Sunday. */
 export const WithWeekStartsFromSunday: Story = {
   args: {
     events: [],
     startOfWeek: 0,
   },
-  globals: { locale: 'ru' },
   play: async ({ canvas }) => {
     const sunday = startOfWeek(new Date(), { weekStartsOn: 0 })
     await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
-      sunday.toLocaleDateString('ru', { weekday: 'short', day: 'numeric' }),
+      sunday.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' }),
     )
   },
 }
 
-/** The Russian locale's week starts on Monday. */
-export const RussianWeek: Story = {
+/**
+ * `SnowUIProvider`'s `weekStartsOn="locale"` starts the week on the
+ * locale's first day: Sunday in the stories' English (Monday with the
+ * Russian "Locale" toolbar). `startOfWeek` still wins.
+ */
+export const LocaleWeekStart: Story = {
   args: {
     events: [],
   },
-  globals: { locale: 'ru' },
+  decorators: [
+    (Story) => (
+      <SnowUIProvider weekStartsOn="locale">
+        <Story />
+      </SnowUIProvider>
+    ),
+  ],
   play: async ({ canvas }) => {
-    const monday = startOfWeek(new Date(), { weekStartsOn: 1 })
+    const sunday = startOfWeek(new Date(), { weekStartsOn: 0 })
     await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
-      monday.toLocaleDateString('ru', { weekday: 'short', day: 'numeric' }),
+      sunday.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' }),
     )
   },
 }

@@ -9,6 +9,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import type { StartOfWeek } from '../../types'
 import {
   defaultMessages,
   type Messages,
@@ -30,6 +31,12 @@ export type SnowUITheme = 'light' | 'dark'
  */
 export type SnowUIContrast = 'standard' | 'more'
 
+/**
+ * The first day of the week: 0 for Sunday … 6 for Saturday, or `'locale'`
+ * for the locale's (`locale.options.weekStartsOn`).
+ */
+export type WeekStart = StartOfWeek | 'locale'
+
 export type SnowUIProviderProps = {
   /**
    * Translations of the components' built-in strings, merged over the
@@ -40,12 +47,21 @@ export type SnowUIProviderProps = {
   /**
    * The date-fns locale (or a react-day-picker locale, which adds its own
    * labels) for dates: `Calendar` (and `DatePicker`, `DateRangePicker`)
-   * month and weekday names, day labels and the first day of the week
-   * (unless their `weekStartsOn` is set), and `Scheduler` headers, times
-   * and first day of the week (unless its `startOfWeek` is set).
+   * month and weekday names and day labels, and `Scheduler` headers and
+   * times. It sets their first day of the week only with
+   * `weekStartsOn="locale"`.
    * @default enUS (date-fns)
    */
   locale?: Locale
+  /**
+   * The first day of the week of `Calendar`, `DatePicker`,
+   * `DateRangePicker` and `Scheduler` when their own `weekStartsOn` /
+   * `startOfWeek` isn't set: a day (0 for Sunday … 6 for Saturday), or
+   * `'locale'` for the locale's (Sunday for `enUS`, Monday for `ru`). 6.0
+   * makes `'locale'` the default.
+   * @default inherited, else 1 (Monday, as in the Figma kit)
+   */
+  weekStartsOn?: WeekStart
   /**
    * The text direction. Radix-based components follow it for keyboard
    * navigation (Tabs, Slider, menus, RadioGroup, ToggleGroup, Accordion),
@@ -82,6 +98,8 @@ export type SnowUIContextValue = {
   locale?: Locale
   /** Undefined unless a provider sets it, so portals inherit `<html dir>`. */
   dir?: TextDirection
+  /** Undefined unless a provider sets it: then Monday. */
+  weekStartsOn?: WeekStart
   /**
    * Undefined unless a provider (or a `ThemeScope`) sets it, so portals
    * inherit `<html data-theme>`.
@@ -126,6 +144,7 @@ export const SnowUIProvider = ({
   dir,
   theme,
   contrast,
+  weekStartsOn,
   children,
 }: SnowUIProviderProps) => {
   const parent = useContext(SnowUIContext)
@@ -144,8 +163,9 @@ export const SnowUIProvider = ({
       dir: dir ?? parent.dir,
       theme: theme ?? parent.theme,
       contrast: contrast ?? parent.contrast,
+      weekStartsOn: weekStartsOn ?? parent.weekStartsOn,
     }),
-    [parent, messages, locale, dir, theme, contrast],
+    [parent, messages, locale, dir, theme, contrast, weekStartsOn],
   )
 
   return (
@@ -167,7 +187,8 @@ export const useMessages = (): Required<Messages> =>
   useContext(SnowUIContext).messages
 
 /**
- * Everything the nearest `SnowUIProvider` sets: `messages`, `locale`, `dir`
- * `theme` and `contrast` (`undefined` when no provider sets them).
+ * Everything the nearest `SnowUIProvider` sets: `messages`, `locale`, `dir`,
+ * `theme`, `contrast` and `weekStartsOn` (`undefined` when no provider sets
+ * them).
  */
 export const useSnowUI = (): SnowUIContextValue => useContext(SnowUIContext)

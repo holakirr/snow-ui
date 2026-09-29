@@ -180,9 +180,7 @@ describe('Calendar', () => {
       fireEvent.click(switcher)
       expect(switcher).toHaveAttribute('aria-expanded', 'false')
       expect(switcher).not.toHaveAttribute('aria-controls')
-      expect(
-        screen.queryByRole('grid', { name: `${from} - ${to}` }),
-      ).toBeNull()
+      expect(screen.queryByRole('grid', { name: `${from} - ${to}` })).toBeNull()
     })
 
     it("is a grid of its own, not the day grid's", () => {

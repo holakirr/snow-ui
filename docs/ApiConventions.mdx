@@ -8,7 +8,7 @@ How the components' props are named and behave, across the library: what you can
 
 ## Props in general
 
-- **`className`** merges with the component's classes through a `twMerge` that knows the kit's tokens, and yours win conflicts: `<Button className="px-8">` replaces the button's padding, `className="text-14"` its text style. Compound components take it on every part (`DialogContent`, `TabsTrigger`…).
+- **`className`** merges with the component's classes through a `twMerge` that knows the kit's tokens, and yours win conflicts: `<Button className="px-8">` replaces the button's padding, `className="text-14"` its text style. It goes on the component's outer element; compound components take it on every part (`DialogContent`, `TabsTrigger`…), and an inner element that needs its own classes has a named prop (`inputClassName` on `Input` and `Search`, `badgeClassName` on `Badge`).
 - **Everything else** that the component doesn't use goes to the element it renders: `id`, `aria-*`, `data-*`, event handlers, `style`. The props tables list the component's own props and those of the Radix part it wraps; each page names the element that gets the rest.
 - **`ref`** reaches the element the component renders (React 19 passes it as a prop). Every component that forwards a ref also accepts `ref` in its props type.
 - **Types** are exported next to each component: `ButtonProps`, `TabsListProps`, `CalendarProps`… The cva helpers some components are built with (`buttonVariants`, `toggleVariants`) are exported too, to style your own elements like them.
@@ -37,7 +37,8 @@ Components that differ, on purpose or for now:
 | `Calendar` | react-day-picker's `selected` / `onSelect` and `month` / `defaultMonth` / `onMonthChange` | The props of the underlying day picker, kept as they are. |
 | `Scheduler` | `currentDate` is controlled only; `onDateClick` and `onEventClick` are required | 6.0: a `defaultDate` and optional handlers (a breaking change). |
 | `Sidebar` | the mobile open state isn't controllable | Planned. |
-| `Toaster` | driven by `toast()` / `useToast()`, not by props | By design: one queue for the app. |
+| `Pagination` | no state: `isActive` and `disabled` on the items, and `onPageChange(page)` on the root with a `page` on each item for client-side paging | The current page is yours (the URL or your state). |
+| `Toaster` | driven by `toast()` / `useToast()`, not by props; a toaster with an `id` shows the toasts created with that `toasterId` | By design: the toasts are a queue, shown up to the toaster's `limit`. |
 
 ## Composition: `asChild`
 
@@ -156,6 +157,7 @@ The library adds its own:
 | `data-static` | present | a read-only `Input` |
 | `data-slot` | `input`, `checkbox-mark`, `badge`, `calendar-caption`, `calendar-header` | inner elements of `Input`, `Checkbox`, `IconBox`, `Calendar` |
 | `data-sidebar` | the part's name | every `Sidebar*` part |
+| `data-theme` | `light` / `dark` | `ThemeScope`, and the portalled content of overlays opened inside it (or under a `SnowUIProvider` with a `theme`) |
 
 The attributes in these tables are part of the public API: renaming or removing one is a breaking change. Classes and the DOM structure inside a component are not.
 

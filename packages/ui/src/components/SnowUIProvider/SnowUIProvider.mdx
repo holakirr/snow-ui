@@ -1,6 +1,7 @@
 import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
 import { SnowUIProvider } from './SnowUIProvider'
+import { ThemeScope } from './ThemeScope'
 import * as SnowUIProviderStories from './SnowUIProvider.stories'
 
 <Meta of={SnowUIProviderStories} />
@@ -163,6 +164,14 @@ const NextButton = ({ onClick }: { onClick: () => void }) => {
 
 ## Props
 
-SnowUIProvider renders no element: it takes the props below and `children`, the subtree they apply to. `locale` translates the dates of `Calendar` and `Scheduler` but doesn't set the first day of the week: both start on Monday unless you set their `weekStartsOn` / `startOfWeek`.
+### SnowUIProvider
+
+It renders no element: it takes the props below and `children`, the subtree they apply to. `locale` translates the dates of `Calendar` and `Scheduler` but doesn't set the first day of the week: both start on Monday unless you set their `weekStartsOn` / `startOfWeek`.
 
 <ArgTypes of={SnowUIProvider} />
+
+### ThemeScope
+
+A `<div data-theme>` (or, with `asChild`, `data-theme` on its only child) inside a `SnowUIProvider` with the same `theme`, so the subtree and the overlays opened from it share the theme. It sets tokens, not a background: paint it with `className`. The other attributes go to the `<div>`.
+
+<ArgTypes of={ThemeScope} />

@@ -11,6 +11,10 @@ import { useSnowUI } from '../SnowUIProvider'
 import { Typography } from '../Text'
 import { DEFAULT_LANG, formatTime, HOUR_HEIGHT } from './constants'
 
+/**
+ * The other `div` props (the Scheduler's roving `tabIndex`, `ref`, `data-*`…)
+ * go to the event block, the menu's trigger.
+ */
 export type EventItemProps = ComponentProps<'div'> & {
   event: CalendarEvent
   /**
@@ -29,6 +33,10 @@ export const EventItem: FC<EventItemProps> = ({
   end,
   onEventClick,
   className,
+  style,
+  onClick,
+  onKeyDown,
+  ...props
 }) => {
   const { endsAt, date, title, dropdownContentRenderer } = event
   const lang = useSnowUI().locale?.code ?? DEFAULT_LANG
@@ -40,15 +48,18 @@ export const EventItem: FC<EventItemProps> = ({
         <div
           role="button"
           tabIndex={0}
+          {...props}
           className={twMerge(
             'w-full bg-color-2 flex flex-col gap-2 p-2 rounded-8 absolute z-[1] focus-ring',
             className,
           )}
           onClick={(e) => {
+            onClick?.(e)
             e.stopPropagation()
             onEventClick(event)
           }}
           onKeyDown={(e) => {
+            onKeyDown?.(e)
             if (e.key === 'Enter' || e.key === ' ') {
               e.stopPropagation()
               onEventClick(event)
@@ -58,6 +69,7 @@ export const EventItem: FC<EventItemProps> = ({
             height: `${(end - start) * HOUR_HEIGHT}px`,
             top: `${(start - Math.floor(start)) * 100}%`,
             minHeight: `${HOUR_HEIGHT}px`,
+            ...style,
           }}
         >
           <div className="flex flex-col text-nowrap text-static-black">

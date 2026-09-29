@@ -1,4 +1,13 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
+import { ru } from 'date-fns/locale'
+import { userEvent } from 'storybook/test'
 import {
   afterAll,
   afterEach,
@@ -10,21 +19,28 @@ import {
 } from 'vitest'
 
 import type { CalendarEvent } from '../../types'
-import { HOUR_HEIGHT } from './constants'
+import { SnowUIProvider } from '../SnowUIProvider'
+import { HOUR_HEIGHT, PAGE_HOURS } from './constants'
 import { Scheduler, type SchedulerProps } from './Scheduler'
 
 const renderScheduler = (props: Partial<SchedulerProps> = {}) => {
   const onDateClick = vi.fn()
   const onEventClick = vi.fn()
-  render(
+  const scheduler = (next: Partial<SchedulerProps>) => (
     <Scheduler
       currentDate={new Date(2026, 8, 29, 10, 37, 12, 345)}
       onDateClick={onDateClick}
       onEventClick={onEventClick}
-      {...props}
-    />,
+      {...next}
+    />
   )
-  return { onDateClick, onEventClick }
+  const { rerender } = render(scheduler(props))
+  return {
+    onDateClick,
+    onEventClick,
+    /** Renders again with other props (instead of the first ones). */
+    rerender: (next: Partial<SchedulerProps>) => rerender(scheduler(next)),
+  }
 }
 
 /** The hour cells, in DOM order (row by row). */
@@ -41,12 +57,40 @@ const getDays = () =>
 
 /** The hour labels of the rows ("7 AM"…), with a regular space. */
 const getHourLabels = () =>
-  Array.from(
-    screen.getByText(/^7\sAM$/).parentElement?.children ?? [],
-    (child) => child.textContent ?? '',
+  screen
+    .getAllByRole('rowheader')
+    .map((header) => (header.textContent ?? '').replace(/\s/, ' '))
+
+/**
+ * The slot (hour cell button) that starts at `date`: its name is the date
+ * in en-US, the same string, narrow spaces included.
+ */
+const slotAt = (date: Date) => {
+  const slot = document.querySelector<HTMLElement>(
+    `button[aria-label="${date.toLocaleString('en-US')}"]`,
   )
-    .filter((text) => /^\d+\s[AP]M$/.test(text))
-    .map((text) => text.replace(/\s/, ' '))
+  if (!slot) throw new Error(`No slot at ${date.toLocaleString('en-US')}`)
+  return slot
+}
+
+/** The items in the tab order: a single tab stop. */
+const getTabStops = () =>
+  Array.from(
+    screen.getByRole('grid').querySelectorAll<HTMLElement>('[tabindex]'),
+  ).filter((item) => item.tabIndex === 0)
+
+/**
+ * Presses a key on the focused element; false when the grid prevented its
+ * default (it moved the focus or swallowed the key at an edge).
+ */
+const press = (key: string, init: Partial<KeyboardEventInit> = {}) =>
+  fireEvent.keyDown(document.activeElement ?? document.body, { key, ...init })
+
+/** 2026-09-29 (a Tuesday) at 10:15: today is in the default week. */
+const TODAY = new Date(2026, 8, 29, 10, 15)
+/** September 2026 (or `month`) on the clock. */
+const at = (day: number, hour: number, month = 8) =>
+  new Date(2026, month, day, hour)
 
 /** The blocks rendered for an event (one per day it covers). */
 const getEventBlocks = (title: string) =>
@@ -359,6 +403,606 @@ describe('Scheduler', () => {
       renderScheduler()
 
       expect(screen.queryByText('22:15')).toBeNull()
+    })
+
+    it('tells today and the current hour to assistive technology', () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(TODAY)
+      renderScheduler()
+
+      const headers = screen.getAllByRole('columnheader')
+      const today = screen.getByRole('columnheader', { current: 'date' })
+      expect(today).toHaveTextContent('29 Tue')
+      expect(headers.filter((h) => h.hasAttribute('aria-current'))).toEqual([
+        today,
+      ])
+      // Semibold too: today isn't told by its colour alone (WCAG 1.4.1).
+      expect(within(today).getByText('29 Tue')).toHaveClass('font-semibold')
+      expect(screen.getByText('30 Wed')).not.toHaveClass('font-semibold')
+
+      const now = slotAt(at(29, 10))
+      expect(now).toHaveAttribute('aria-current', 'time')
+      expect(
+        screen.getByRole('grid').querySelectorAll('[aria-current="time"]'),
+      ).toHaveLength(1)
+    })
+
+    it('keeps the current-time tag out of the way of the slots', () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(TODAY)
+      renderScheduler()
+
+      const indicator = screen.getByText('10:15').closest('[aria-hidden]')
+      expect(indicator).toHaveAttribute('aria-hidden', 'true')
+      // Clicks reach the slot below it.
+      expect(indicator).toHaveClass('pointer-events-none')
+    })
+
+    it('marks no date or time in other weeks', () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(TODAY)
+      renderScheduler({ currentDate: new Date(2026, 9, 6) })
+
+      expect(screen.getByRole('grid').querySelector('[aria-current]')).toBe(
+        null,
+      )
+    })
+  })
+
+  describe('grid semantics', () => {
+    it('is a grid named by its week in the locale', () => {
+      renderScheduler()
+      expect(screen.getByRole('grid')).toHaveAccessibleName(
+        /^September 28\s–\sOctober 4, 2026$/,
+      )
+    })
+
+    it('names the week in the SnowUIProvider language', () => {
+      render(
+        <SnowUIProvider locale={ru}>
+          <Scheduler
+            currentDate={new Date(2026, 8, 29)}
+            onDateClick={() => {}}
+            onEventClick={() => {}}
+          />
+        </SnowUIProvider>,
+      )
+      expect(screen.getByRole('grid')).toHaveAccessibleName(
+        /^28 сентября\s–\s4 октября 2026/,
+      )
+    })
+
+    it('lets aria-label or aria-labelledby replace the name', () => {
+      const { unmount } = render(
+        <Scheduler
+          aria-label="Team week"
+          currentDate={new Date(2026, 8, 29)}
+          onDateClick={() => {}}
+          onEventClick={() => {}}
+        />,
+      )
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Team week')
+      unmount()
+
+      render(
+        <>
+          <h2 id="week-title">Bookings</h2>
+          <Scheduler
+            aria-labelledby="week-title"
+            currentDate={new Date(2026, 8, 29)}
+            onDateClick={() => {}}
+            onEventClick={() => {}}
+          />
+        </>,
+      )
+      const grid = screen.getByRole('grid')
+      expect(grid).toHaveAccessibleName('Bookings')
+      expect(grid).not.toHaveAttribute('aria-label')
+    })
+
+    it('has a header row of days and a row per hour', () => {
+      renderScheduler()
+      const [header, ...rows] = screen.getAllByRole('row')
+
+      // An empty corner cell (axe fails an empty column header), then the
+      // days.
+      const corner = within(header).getByRole('gridcell')
+      expect(corner).toBeEmptyDOMElement()
+      expect(
+        within(header)
+          .getAllByRole('columnheader')
+          .map((day) => day.textContent),
+      ).toEqual([
+        '28 Mon',
+        '29 Tue',
+        '30 Wed',
+        '1 Thu',
+        '2 Fri',
+        '3 Sat',
+        '4 Sun',
+      ])
+
+      expect(rows).toHaveLength(14)
+      for (const row of rows) {
+        expect(within(row).getAllByRole('rowheader')).toHaveLength(1)
+        const cells = within(row).getAllByRole('gridcell')
+        expect(cells).toHaveLength(7)
+        // Each cell holds its slot.
+        for (const cell of cells) {
+          expect(
+            cell.querySelector('button[data-scheduler-item="slot"]'),
+          ).not.toBeNull()
+        }
+      }
+      expect(within(rows[0]).getByRole('rowheader')).toHaveTextContent(
+        /^7\sAM$/,
+      )
+    })
+
+    it('lays the rows out on the grid columns (CSS subgrid)', () => {
+      renderScheduler()
+      for (const row of screen.getAllByRole('row')) {
+        expect(row).toHaveClass('grid', 'grid-cols-subgrid', 'col-span-full')
+      }
+    })
+
+    it('puts the events of an hour in its cell, after the slot', () => {
+      renderScheduler({
+        events: [
+          event('1', at(29, 9, 8), at(29, 10, 8), 'Standup'),
+          event('2', at(29, 9, 8), at(29, 9, 8), 'Check-in'),
+        ],
+      })
+      const cell = slotAt(at(29, 9)).parentElement as HTMLElement
+      expect(cell).toHaveAttribute('role', 'gridcell')
+      expect(
+        Array.from(cell.querySelectorAll('[data-scheduler-item]'), (item) =>
+          item.getAttribute('data-scheduler-item'),
+        ),
+      ).toEqual(['slot', 'event', 'event'])
+      expect(within(cell).getByRole('button', { name: /^Standup/ })).toBe(
+        getEventBlocks('Standup')[0],
+      )
+    })
+
+    it('raises a focused slot above the events', () => {
+      renderScheduler()
+      expect(slotAt(at(29, 9))).toHaveClass('focus-visible:z-[2]')
+    })
+  })
+
+  describe('keyboard', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    const renderAt = (
+      now: Date,
+      props: Partial<SchedulerProps> = {},
+    ): ReturnType<typeof renderScheduler> => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(now)
+      return renderScheduler(props)
+    }
+
+    describe('tab stop', () => {
+      it("is today's current hour, the only item in the tab order", () => {
+        renderAt(TODAY)
+        expect(getTabStops()).toEqual([slotAt(at(29, 10))])
+        // 98 slots, 97 of them out of the tab order.
+        expect(
+          screen
+            .getAllByRole('button')
+            .filter((button) => button.tabIndex === -1),
+        ).toHaveLength(97)
+      })
+
+      it('is on the last row after the grid’s hours', () => {
+        renderAt(new Date(2026, 8, 29, 22, 15))
+        expect(getTabStops()).toEqual([slotAt(at(29, 20))])
+      })
+
+      it('is on the first row before the grid’s hours', () => {
+        renderAt(new Date(2026, 8, 29, 3, 15))
+        expect(getTabStops()).toEqual([slotAt(at(29, 7))])
+      })
+
+      it('is the first slot in a week without today', () => {
+        renderAt(TODAY, { currentDate: new Date(2026, 9, 7) })
+        expect(getTabStops()).toEqual([slotAt(at(5, 7, 9))])
+      })
+
+      it('follows the focus, and Tab comes back to the last focused item', async () => {
+        vi.useFakeTimers({ toFake: ['Date'] })
+        vi.setSystemTime(TODAY)
+        render(
+          <>
+            <button type="button">Before</button>
+            <Scheduler
+              currentDate={TODAY}
+              onDateClick={() => {}}
+              onEventClick={() => {}}
+            />
+            <button type="button">After</button>
+          </>,
+        )
+        const user = userEvent.setup()
+        const before = screen.getByRole('button', { name: 'Before' })
+        const after = screen.getByRole('button', { name: 'After' })
+
+        before.focus()
+        await user.tab()
+        expect(slotAt(at(29, 10))).toHaveFocus()
+
+        await user.keyboard('{ArrowRight}')
+        expect(slotAt(at(30, 10))).toHaveFocus()
+        expect(getTabStops()).toEqual([slotAt(at(30, 10))])
+
+        // One Tab leaves the grid, Shift+Tab comes back to the same slot.
+        await user.tab()
+        expect(after).toHaveFocus()
+        await user.tab({ shift: true })
+        expect(slotAt(at(30, 10))).toHaveFocus()
+        await user.tab({ shift: true })
+        expect(before).toHaveFocus()
+
+        // A click moves it too.
+        await user.click(slotAt(at(2, 15, 9)))
+        expect(getTabStops()).toEqual([slotAt(at(2, 15, 9))])
+      })
+    })
+
+    describe('keys', () => {
+      it('ArrowRight / ArrowLeft move a day at the same hour', () => {
+        renderAt(TODAY)
+        slotAt(at(29, 10)).focus()
+
+        expect(press('ArrowRight')).toBe(false)
+        expect(slotAt(at(30, 10))).toHaveFocus()
+        press('ArrowLeft')
+        press('ArrowLeft')
+        expect(slotAt(at(28, 10))).toHaveFocus()
+      })
+
+      it('ArrowDown / ArrowUp move an hour down / up the day', () => {
+        renderAt(TODAY)
+        slotAt(at(29, 10)).focus()
+
+        press('ArrowDown')
+        expect(slotAt(at(29, 11))).toHaveFocus()
+        press('ArrowUp')
+        press('ArrowUp')
+        expect(slotAt(at(29, 9))).toHaveFocus()
+      })
+
+      it('Home / End go to the first / last day of the row', () => {
+        renderAt(TODAY)
+        slotAt(at(29, 10)).focus()
+
+        expect(press('End')).toBe(false)
+        expect(slotAt(at(4, 10, 9))).toHaveFocus()
+        press('Home')
+        expect(slotAt(at(28, 10))).toHaveFocus()
+      })
+
+      it('Ctrl / ⌘ + Home / End go to the first / last slot of the grid', () => {
+        renderAt(TODAY)
+        slotAt(at(29, 10)).focus()
+
+        press('End', { ctrlKey: true })
+        expect(slotAt(at(4, 20, 9))).toHaveFocus()
+        press('Home', { metaKey: true })
+        expect(slotAt(at(28, 7))).toHaveFocus()
+      })
+
+      it(`PageDown / PageUp move ${PAGE_HOURS} hours and stop at the first / last row`, () => {
+        renderAt(TODAY)
+        slotAt(at(29, 10)).focus()
+
+        expect(press('PageDown')).toBe(false)
+        expect(slotAt(at(29, 16))).toHaveFocus()
+        press('PageDown')
+        expect(slotAt(at(29, 20))).toHaveFocus()
+        press('PageUp')
+        expect(slotAt(at(29, 14))).toHaveFocus()
+        press('PageUp')
+        press('PageUp')
+        expect(slotAt(at(29, 7))).toHaveFocus()
+      })
+
+      it("doesn't wrap at the edges, and the page doesn't scroll", () => {
+        renderAt(TODAY)
+
+        slotAt(at(28, 7)).focus()
+        for (const key of ['ArrowLeft', 'ArrowUp', 'PageUp', 'Home']) {
+          expect(press(key)).toBe(false)
+          expect(slotAt(at(28, 7))).toHaveFocus()
+        }
+
+        slotAt(at(4, 20, 9)).focus()
+        for (const key of ['ArrowRight', 'ArrowDown', 'PageDown', 'End']) {
+          expect(press(key)).toBe(false)
+          expect(slotAt(at(4, 20, 9))).toHaveFocus()
+        }
+      })
+
+      it('leaves Alt / Shift combos and Ctrl / ⌘ + arrows and pages to the browser', () => {
+        renderAt(TODAY)
+        const start = slotAt(at(29, 10))
+        start.focus()
+
+        for (const [key, init] of [
+          ['ArrowDown', { altKey: true }],
+          ['ArrowRight', { shiftKey: true }],
+          ['Home', { shiftKey: true }],
+          ['ArrowDown', { ctrlKey: true }],
+          ['ArrowLeft', { metaKey: true }],
+          ['PageDown', { ctrlKey: true }],
+          ['a', {}],
+          ['Tab', {}],
+        ] as const) {
+          expect(press(key, init)).toBe(true)
+          expect(start).toHaveFocus()
+        }
+      })
+
+      it('Enter and Space call onDateClick with the slot’s hour', async () => {
+        const { onDateClick } = renderAt(TODAY)
+        const user = userEvent.setup()
+        slotAt(at(29, 10)).focus()
+
+        // The grid leaves them to the <button>.
+        expect(press('Enter')).toBe(true)
+        await user.keyboard('{Enter}')
+        expect(onDateClick).toHaveBeenLastCalledWith(at(29, 10))
+        await user.keyboard('{ArrowRight}')
+        await user.keyboard(' ')
+        expect(onDateClick).toHaveBeenLastCalledWith(at(30, 10))
+      })
+
+      it('keeps calling the onFocus and onKeyDownCapture props', () => {
+        const onFocus = vi.fn()
+        const onKeyDownCapture = vi.fn()
+        renderAt(TODAY, { onFocus, onKeyDownCapture })
+
+        slotAt(at(29, 10)).focus()
+        expect(onFocus).toHaveBeenCalledTimes(1)
+        press('ArrowDown')
+        expect(onKeyDownCapture).toHaveBeenCalledWith(
+          expect.objectContaining({ key: 'ArrowDown' }),
+        )
+        expect(slotAt(at(29, 11))).toHaveFocus()
+        expect(onFocus).toHaveBeenCalledTimes(2)
+      })
+
+      it('lets an onKeyDownCapture that prevents the default keep the key', () => {
+        renderAt(TODAY, {
+          onKeyDownCapture: (e) => {
+            if (e.key === 'ArrowDown') e.preventDefault()
+          },
+        })
+        slotAt(at(29, 10)).focus()
+
+        press('ArrowDown')
+        expect(slotAt(at(29, 10))).toHaveFocus()
+        press('ArrowUp')
+        expect(slotAt(at(29, 9))).toHaveFocus()
+      })
+    })
+
+    describe('right-to-left', () => {
+      const scheduler = (props: Partial<SchedulerProps> = {}) => (
+        <Scheduler
+          currentDate={TODAY}
+          onDateClick={() => {}}
+          onEventClick={() => {}}
+          {...props}
+        />
+      )
+
+      it('mirrors ArrowLeft / ArrowRight in a SnowUIProvider dir="rtl"', () => {
+        vi.useFakeTimers({ toFake: ['Date'] })
+        vi.setSystemTime(TODAY)
+        render(<SnowUIProvider dir="rtl">{scheduler()}</SnowUIProvider>)
+        slotAt(at(29, 10)).focus()
+
+        press('ArrowLeft')
+        expect(slotAt(at(30, 10))).toHaveFocus()
+        press('ArrowRight')
+        press('ArrowRight')
+        expect(slotAt(at(28, 10))).toHaveFocus()
+        // Home / End are logical: the first / last day of the week.
+        press('End')
+        expect(slotAt(at(4, 10, 9))).toHaveFocus()
+        press('Home')
+        expect(slotAt(at(28, 10))).toHaveFocus()
+      })
+
+      it('follows the dir prop, which wins over the provider', () => {
+        vi.useFakeTimers({ toFake: ['Date'] })
+        vi.setSystemTime(TODAY)
+        const { rerender } = render(scheduler({ dir: 'rtl' }))
+        expect(screen.getByRole('grid')).toHaveAttribute('dir', 'rtl')
+        slotAt(at(29, 10)).focus()
+        press('ArrowLeft')
+        expect(slotAt(at(30, 10))).toHaveFocus()
+
+        rerender(
+          <SnowUIProvider dir="rtl">
+            {scheduler({ dir: 'ltr' })}
+          </SnowUIProvider>,
+        )
+        slotAt(at(29, 10)).focus()
+        press('ArrowRight')
+        expect(slotAt(at(30, 10))).toHaveFocus()
+      })
+    })
+
+    describe('events', () => {
+      // Tuesday: two events start at 9, one at noon.
+      const standup = event('1', at(29, 9, 8), at(29, 10, 8), 'Standup')
+      const checkIn = event('2', at(29, 9, 8), at(29, 9, 8), 'Check-in')
+      const lunch = event('3', at(29, 12, 8), at(29, 13, 8), 'Lunch')
+      const block = (title: string) => getEventBlocks(title)[0] as HTMLElement
+
+      it('are reached down the day after the slot of their hour', () => {
+        renderAt(TODAY, { events: [standup, checkIn, lunch] })
+        slotAt(at(29, 8)).focus()
+
+        press('ArrowDown')
+        expect(slotAt(at(29, 9))).toHaveFocus()
+        press('ArrowDown')
+        expect(block('Standup')).toHaveFocus()
+        press('ArrowDown')
+        expect(block('Check-in')).toHaveFocus()
+        press('ArrowDown')
+        expect(slotAt(at(29, 10))).toHaveFocus()
+
+        press('ArrowUp')
+        expect(block('Check-in')).toHaveFocus()
+        press('ArrowUp')
+        expect(block('Standup')).toHaveFocus()
+        press('ArrowUp')
+        expect(slotAt(at(29, 9))).toHaveFocus()
+
+        // Up from a slot goes to the last event of the hour above.
+        slotAt(at(29, 13)).focus()
+        press('ArrowUp')
+        expect(block('Lunch')).toHaveFocus()
+      })
+
+      it('take the tab stop when focused, one at a time', () => {
+        renderAt(TODAY, { events: [standup, checkIn] })
+        act(() => block('Standup').focus())
+        expect(getTabStops()).toEqual([block('Standup')])
+        press('ArrowDown')
+        expect(getTabStops()).toEqual([block('Check-in')])
+        for (const item of document.querySelectorAll(
+          '[data-scheduler-item="event"]',
+        )) {
+          expect(item).toHaveAttribute('role', 'button')
+        }
+      })
+
+      it('move to slots with the other keys', () => {
+        renderAt(TODAY, { events: [standup, checkIn] })
+
+        block('Check-in').focus()
+        press('ArrowRight')
+        expect(slotAt(at(30, 9))).toHaveFocus()
+
+        block('Check-in').focus()
+        press('ArrowLeft')
+        expect(slotAt(at(28, 9))).toHaveFocus()
+
+        block('Standup').focus()
+        press('Home')
+        expect(slotAt(at(28, 9))).toHaveFocus()
+
+        block('Standup').focus()
+        press('PageDown')
+        expect(slotAt(at(29, 15))).toHaveFocus()
+
+        block('Standup').focus()
+        press('PageUp')
+        expect(slotAt(at(29, 7))).toHaveFocus()
+
+        block('Standup').focus()
+        press('End', { ctrlKey: true })
+        expect(slotAt(at(4, 20, 9))).toHaveFocus()
+      })
+
+      it("PageUp on the first row goes up to the slot; PageDown on the last row doesn't move", () => {
+        renderAt(TODAY, {
+          events: [
+            event('1', at(29, 7, 8), at(29, 8, 8), 'Early'),
+            event('2', at(29, 20, 8), at(29, 21, 8), 'Late'),
+          ],
+        })
+
+        block('Early').focus()
+        expect(press('PageUp')).toBe(false)
+        expect(slotAt(at(29, 7))).toHaveFocus()
+
+        block('Late').focus()
+        expect(press('PageDown')).toBe(false)
+        expect(block('Late')).toHaveFocus()
+        expect(press('ArrowDown')).toBe(false)
+        expect(block('Late')).toHaveFocus()
+      })
+
+      it("ArrowDown moves on instead of opening the event's menu", () => {
+        renderAt(TODAY, { events: [standup] })
+        block('Standup').focus()
+
+        press('ArrowDown')
+        expect(slotAt(at(29, 10))).toHaveFocus()
+        expect(screen.queryByRole('menu')).toBeNull()
+      })
+
+      it('Enter calls onEventClick and opens the menu; Escape closes it and returns focus', async () => {
+        const { onEventClick } = renderAt(TODAY, { events: [standup] })
+        const standupBlock = block('Standup')
+        standupBlock.focus()
+
+        expect(press('Enter')).toBe(false)
+        expect(onEventClick).toHaveBeenCalledWith(standup)
+        const menu = await screen.findByRole('menu')
+        await waitFor(() =>
+          expect(menu).toContainElement(document.activeElement as HTMLElement),
+        )
+
+        // The menu's keys aren't the grid's.
+        fireEvent.keyDown(document.activeElement as Element, {
+          key: 'ArrowRight',
+        })
+        expect(screen.getByRole('menu')).toBeInTheDocument()
+
+        fireEvent.keyDown(document.activeElement as Element, { key: 'Escape' })
+        await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+        await waitFor(() => expect(standupBlock).toHaveFocus())
+        expect(getTabStops()).toEqual([standupBlock])
+      })
+
+      it('gives the place of a focused event that disappears to its slot', () => {
+        const { rerender } = renderAt(TODAY, { events: [standup, checkIn] })
+        block('Check-in').focus()
+
+        rerender({ events: [standup] })
+        expect(slotAt(at(29, 9))).toHaveFocus()
+        expect(getTabStops()).toEqual([slotAt(at(29, 9))])
+      })
+
+      it('moves the tab stop to the nearest row when its row disappears', () => {
+        const early = event('1', at(29, 5, 8), at(29, 6, 8), 'Early')
+        const { rerender } = renderAt(TODAY, { events: [early] })
+        slotAt(at(29, 5)).focus()
+
+        rerender({ events: [] })
+        expect(slotAt(at(29, 7))).toHaveFocus()
+      })
+
+      it("doesn't take the focus back from elsewhere on the page", () => {
+        vi.useFakeTimers({ toFake: ['Date'] })
+        vi.setSystemTime(TODAY)
+        const grid = (events: CalendarEvent[]) => (
+          <>
+            <button type="button">Elsewhere</button>
+            <Scheduler
+              currentDate={TODAY}
+              events={events}
+              onDateClick={() => {}}
+              onEventClick={() => {}}
+            />
+          </>
+        )
+        const { rerender } = render(grid([standup]))
+        block('Standup').focus()
+        screen.getByRole('button', { name: 'Elsewhere' }).focus()
+
+        rerender(grid([]))
+        expect(screen.getByRole('button', { name: 'Elsewhere' })).toHaveFocus()
+      })
     })
   })
 

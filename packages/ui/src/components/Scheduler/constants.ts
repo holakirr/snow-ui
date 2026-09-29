@@ -1,5 +1,11 @@
 export const HOUR_HEIGHT = 48
 
+/**
+ * How many hours PageDown / PageUp move in a day. A fixed step: the grid has
+ * no scroll area of its own whose visible rows could set it.
+ */
+export const PAGE_HOURS = 6
+
 /** The language of the day and hour labels without a `SnowUIProvider` locale. */
 export const DEFAULT_LANG = 'en-US'
 

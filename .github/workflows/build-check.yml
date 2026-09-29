@@ -50,6 +50,13 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
+      # Figma Code Connect templates (packages/ui/src/components/**/*.figma.ts):
+      # `figma connect parse` bundles them as `figma connect publish` would,
+      # offline and without a Figma token. Typecheck (above) checks their prop
+      # mappings against the components; the ui unit tests run them.
+      - name: Check Code Connect templates
+        run: bun run code-connect
+
       # The ui unit tests run with coverage in the storybook-tests job
       # (`bun run test:coverage`), so only the icons tests run here.
       - name: Unit tests (icons)

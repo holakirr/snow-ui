@@ -81,6 +81,9 @@ export default defineConfig({
         // Storybook-only pages, not part of the published package.
         '**/src/foundations/docs.tsx',
         '**/src/recipes/**',
+        // Figma Code Connect templates and their helpers (not in the package).
+        '**/*.figma.ts',
+        '**/src/code-connect/**',
       ],
       // Measured with this config (Sept 2026): statements 93.4%, branches
       // 87.9%, functions 88.0%, lines 94.3%. The thresholds sit about 2 points

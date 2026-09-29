@@ -1,6 +1,6 @@
 # Contributing
 
-Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook` (or `bun run test:coverage`, which also checks coverage), `bun run build`, `bun run test:dist` and `bun run size`; if you changed how anything looks, also `bun run visual` (Docker).
+Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook` (or `bun run test:coverage`, which also checks coverage), `bun run build`, `bun run test:dist`, `bun run size` and, if you touched a Code Connect template, `bun run code-connect`; if you changed how anything looks, also `bun run visual` (Docker).
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org) (`feat(ui): …`, `fix(icons): …`, `docs: …`).
 
@@ -74,6 +74,10 @@ In CI, the `visual` job runs the same image as a job container against the Story
 
 `bun run test:dist` (after `bun run build`) checks the published stylesheets of `@holakirr/snow-ui` (`packages/ui/test/dist.test.ts`): it compiles a Tailwind v4 project stylesheet that imports `@holakirr/snow-ui/theme.css` with `@source` on `dist` (`packages/ui/test/fixtures/app.css`, resolved through the package's `exports`) and fails if it misses any class the built components use; it also checks that every rule of `index.css` is in a cascade layer and that `fonts.css` points at existing files.
 
+### Code Connect templates
+
+`bun run code-connect` runs `figma connect parse` on the Figma Code Connect templates (see [Figma Code Connect](#figma-code-connect)): it bundles each `*.figma.ts` the way `figma connect publish` would and fails on an unsupported import or a missing `// url=`. It needs no Figma token and no network, so CI runs it on every PR. `bun run typecheck` checks the templates' prop names and values against the components, and `packages/ui/src/code-connect/templates.test.ts` (part of `bun run test`) runs them against a stand-in for Figma's runtime and checks the snippets they render.
+
 ### Generated token files
 
 `bun run tokens` regenerates the files built from the design tokens (see [Design tokens](#design-tokens)); `bun run build` runs it too. CI runs it first and fails when that changes anything, so commit the generated files with the token change.
@@ -128,6 +132,34 @@ The Storybook ([snow-ui.holakirr.com](https://snow-ui.holakirr.com)) is the refe
 - `.storybook/blocks.tsx` has the page blocks: `FigmaLinks` (links to the component in Figma, from the stories' `parameters.design`) and `DoDont` / `Do` / `Dont`.
 - **Figma links:** every stories file sets `parameters.design = { type: 'figma', url }` with the component set's node in the owner's licensed copy of the kit (`https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=<id>`, the node id with `-` for `:`), or the Figma page when there is no component set. [`@storybook/addon-designs`](https://github.com/storybookjs/addon-designs) shows it in the "Design" panel. The file is private, so the links and the embed only open for people with access to it; don't add screenshots of the design.
 - MDX in `packages/ui/src` is excluded from the package's Tailwind scan (`src/index.css`), so class names in the docs don't end up in `index.css`.
+
+## Figma Code Connect
+
+[Code Connect](https://github.com/figma/code-connect) shows the library's code for a component in Figma's Dev Mode. The templates are ready but **not published**: publishing needs a Figma plan with Code Connect (Organization or Enterprise), which the owner's plan doesn't include.
+
+- `figma.config.json` (repository root) points the CLI at `packages/ui/src/components/**/*.figma.ts`: one template per connected component (Button, Input, Checkbox, RadioGroup, Switch, Tabs, Tag, Badge, KBD, Tooltip, Card, Table, Toaster, IconBox, IconText, Search, Link, Select, Toggle).
+- They are Code Connect 2 templates (`@figma/code-connect` 2 dropped the parser-based `figma.connect()` `.figma.tsx` files): the first comment lines are directives (`// url=` the Figma component, `// source=` the component's source, `// component=`), and the default export renders the snippet from the selected instance's variants (`figma.selectedInstance.getEnum('Size', …)`). `packages/ui/src/code-connect/helpers.ts` has the shared helpers; the CLI bundles it into each template.
+- Map every Figma value to a prop value with `satisfies` against the component's props (`satisfies Record<string, ButtonProps['size']>`, `satisfies AttrsOf<ButtonProps>`), so `bun run typecheck` catches a renamed prop or value. A template may only import `figma`, relative helpers and types (`import type`).
+- Checks: `bun run code-connect`, `bun run typecheck` and the template tests (see [Code Connect templates](#code-connect-templates)).
+
+The Figma property names come from an audit of the kit. Before the first publish, check these in Figma:
+
+- **Where the components live.** The URLs point to the component sets in the licensed copy (`ZiRnYjr5N29yTkcIXihZUx`). If they are library components there (the Button set's documentation link points to the SnowUI library file), publish against the file that defines them: map the file key with `documentUrlSubstitutions` in `figma.config.json` instead of editing every URL.
+- **Table** has no component set: its template points to the Table page, which Code Connect rejects. Point it to the table component you use (e.g. the "Table title" header cell).
+- **Switch:** the name of its on/off variant wasn't recorded; the template reads `Select` (as on Checkbox and Radio), then `Checked`, `On` or `Active`.
+- **Tab sizes** were recorded as both Small / Medium / Large and S / M / L; the Tabs and Toggle templates accept both.
+- **Shared sets:** Select is connected to the Popover set (its options menu), Toggle to the Tab set (a segmented item, next to Tabs).
+
+To publish, with a personal access token that has the **Code Connect: Write** and **File content: Read** scopes:
+
+```bash
+export FIGMA_ACCESS_TOKEN=…            # never commit it
+bunx figma connect publish --dry-run   # validates against Figma, uploads nothing
+bunx figma connect publish
+bunx figma connect unpublish           # removes the published mappings
+```
+
+In CI, store the token as a secret and run `figma connect publish --exit-on-unreadable-files` on pushes to `main`.
 
 ## Changesets
 

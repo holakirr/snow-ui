@@ -132,9 +132,12 @@ type RefTargets = {
   PaginationContent: HTMLUListElement
   PaginationEllipsis: HTMLSpanElement
   PaginationItem: HTMLLIElement
-  PaginationLink: HTMLAnchorElement
-  PaginationNext: HTMLAnchorElement
-  PaginationPrevious: HTMLAnchorElement
+  // The <a>, or the <button> of a client-side item.
+  PaginationLink: HTMLAnchorElement | HTMLButtonElement
+  // The <a>, or the <button> of a client-side item.
+  PaginationNext: HTMLAnchorElement | HTMLButtonElement
+  // The <a>, or the <button> of a client-side item.
+  PaginationPrevious: HTMLAnchorElement | HTMLButtonElement
   Popover: null
   PopoverAnchor: HTMLDivElement
   PopoverContent: HTMLDivElement

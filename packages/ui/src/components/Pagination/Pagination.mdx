@@ -117,14 +117,14 @@ const [page, setPage] = useState(1)
 
 <Canvas of={PaginationStories.ClientSide} />
 
-Keep an `href` next to the `page` when the page also has a URL (the table footer above): the items stay links, so they open in a new tab and work without JavaScript, and a plain click calls `onPageChange` instead of navigating. A click with ⌘, Ctrl, Shift or Alt, or with the middle button, navigates as usual, and an `onClick` that calls `event.preventDefault()` skips `onPageChange`.
+Keep an `href` next to the `page` when the page also has a URL (the table footer above): the items stay links, so they open in a new tab and work without JavaScript, and a plain click calls `onPageChange` instead of navigating. A click with ⌘, Ctrl, Shift or Alt, or with the middle button, and a link with a `target` (other than `_self`) or `download`, navigate as usual, and an `onClick` that calls `event.preventDefault()` skips `onPageChange`.
 
 ## States
 
 - **Hover:** a Black/4% fill.
 - **Keyboard focus:** the `focus-ring` utility.
 - **Current page** (`isActive`): a Black/4% fill and `aria-current="page"`.
-- **Disabled** (`disabled`): Black/20% text, no pointer events, and no `href` (a button is `disabled`), so it neither navigates nor takes focus. Use it for "previous" on the first page and "next" on the last.
+- **Disabled** (`disabled`): Black/20% text and no pointer events. A link loses its `href`, so it neither navigates nor takes focus. A client-side button gets `aria-disabled` and ignores clicks, but stays focusable: "next" disabled under the keyboard's focus on the last page keeps it. Use it for "previous" on the first page and "next" on the last.
 
 ## Accessibility
 
@@ -141,7 +141,7 @@ Pagination has no key handling of its own: every link with an `href`, and every 
 
 | Key | Action |
 | --- | --- |
-| Tab / Shift + Tab | move to the next / previous link or button; disabled items (a link without `href`, a `disabled` button; with `asChild`, give the child no destination) and the ellipsis are skipped |
+| Tab / Shift + Tab | move to the next / previous link or button; disabled links (without `href`; with `asChild`, give the child no destination) and the ellipsis are skipped; a disabled client-side button stays in the order, announced as unavailable |
 | Enter | follow the focused link (with `page` and `onPageChange`, a plain press calls `onPageChange` instead of navigating), or press the focused button |
 | Space | press the focused button (client-side paging) |
 

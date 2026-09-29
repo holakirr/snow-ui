@@ -9,7 +9,9 @@ import {
   type FC,
   isValidElement,
   type MouseEvent,
+  type MouseEventHandler,
   type ReactNode,
+  type Ref,
   useContext,
 } from 'react'
 import type { Size } from '../../types'
@@ -78,7 +80,7 @@ PaginationItem.displayName = 'PaginationItem'
  * Black/4% fill. `sm` is the Figma size.
  */
 const paginationLinkVariants = cva(
-  'inline-flex shrink-0 items-center justify-center gap-1 border-[0.5px] border-black-10 font-normal text-black transition-colors hover:bg-black-4 focus-ring aria-disabled:pointer-events-none aria-disabled:text-black-20 disabled:pointer-events-none disabled:text-black-20',
+  'inline-flex shrink-0 items-center justify-center gap-1 border-[0.5px] border-black-10 font-normal text-black transition-colors hover:bg-black-4 focus-ring aria-disabled:pointer-events-none aria-disabled:text-black-20',
   {
     variants: {
       size: {
@@ -108,14 +110,17 @@ type PaginationLinkProps = {
   size?: Size
   /**
    * Disables the item, e.g. "previous" on the first page: a link loses its
-   * `href` and gets `aria-disabled`, a button (see `page`) gets `disabled`.
+   * `href` and gets `aria-disabled`; a button (see `page`) gets
+   * `aria-disabled` and ignores clicks, but keeps focus, so "next" that
+   * becomes disabled on the last page doesn't drop the keyboard's place.
    */
   disabled?: boolean
   /**
    * The page this item goes to, passed to `Pagination`'s `onPageChange`.
    * Without `href`, the item is a `<button>` (client-side paging); with
    * `href`, a link whose plain clicks call `onPageChange` instead of
-   * navigating (modified clicks still open it in a new tab or window).
+   * navigating. Modified and middle clicks, and links with a `target` or
+   * `download`, still navigate.
    */
   page?: number
   /**
@@ -126,7 +131,11 @@ type PaginationLinkProps = {
    * @default false
    */
   asChild?: boolean
-} & ComponentProps<'a'>
+  /** The `<a>`, or the `<button>` of a client-side item (`page` without `href`). */
+  ref?: Ref<HTMLAnchorElement | HTMLButtonElement>
+  /** On the `<a>`, or the `<button>` of a client-side item. */
+  onClick?: MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>
+} & Omit<ComponentProps<'a'>, 'ref' | 'onClick'>
 
 const PaginationLink: FC<PaginationLinkProps> = ({
   className,
@@ -137,6 +146,7 @@ const PaginationLink: FC<PaginationLinkProps> = ({
   href,
   page,
   onClick,
+  ref,
   children,
   ...props
 }) => {
@@ -144,34 +154,44 @@ const PaginationLink: FC<PaginationLinkProps> = ({
   const classes = twMerge(paginationLinkVariants({ size, isActive }), className)
   const isButton = !asChild && href === undefined && page !== undefined
 
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+  const handleClick = (
+    event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>,
+  ) => {
+    if (isButton && disabled) return
     onClick?.(event)
     if (page === undefined || !onPageChange || event.defaultPrevented) return
-    // A link opened in a new tab or window (a modified or middle click)
-    // navigates as usual.
-    const newContext =
-      event.button !== 0 ||
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey
     if (!isButton) {
-      if (newContext) return
+      // The browser's own navigation, as a router link lets it: a new tab
+      // or window (a modified or middle click, `target`) or a download.
+      const link = event.currentTarget
+      const elsewhere =
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        (link.hasAttribute('target') &&
+          !['', '_self'].includes(link.getAttribute('target') ?? '')) ||
+        link.hasAttribute('download')
+      if (elsewhere) return
       event.preventDefault()
     }
     onPageChange(page)
   }
 
   if (isButton) {
-    // Client-side paging without a URL: a button, natively disabled.
+    // Client-side paging without a URL: a button. Disabled, it keeps focus
+    // (`aria-disabled`): a disabled button under the keyboard's focus would
+    // drop it on the page.
     return (
       <button
         type="button"
-        disabled={disabled}
         aria-current={isActive ? 'page' : undefined}
+        aria-disabled={disabled || undefined}
         data-active={isActive || undefined}
         {...(props as ComponentProps<'button'>)}
-        onClick={handleClick as unknown as ComponentProps<'button'>['onClick']}
+        ref={ref as Ref<HTMLButtonElement>}
+        onClick={handleClick}
         className={classes}
       >
         {children}
@@ -189,6 +209,7 @@ const PaginationLink: FC<PaginationLinkProps> = ({
     'aria-disabled': disabled || undefined,
     'data-active': isActive || undefined,
     ...props,
+    ref: ref as Ref<HTMLAnchorElement>,
   }
 
   if (asChild) {

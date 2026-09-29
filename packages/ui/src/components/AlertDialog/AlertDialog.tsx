@@ -42,19 +42,22 @@ AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName
 /**
  * The `role="alertdialog"` card, in a portal over the Dialog's mask: the
  * Dialog's popup (Background/3, "Background blur 40", radius 32) with 32px
- * padding, 448px wide at most. It takes the `dir` of a `SnowUIProvider`.
- * Opening focuses `AlertDialogCancel`; a click on the mask doesn't close it.
+ * padding, 448px wide at most. It takes the `dir` and the `theme` of a
+ * `SnowUIProvider` or `ThemeScope` (the portal is outside your layout's
+ * `dir` and `data-theme` scopes). Opening focuses `AlertDialogCancel`; a
+ * click on the mask doesn't close it.
  */
 const AlertDialogContent: FC<
   ComponentProps<typeof AlertDialogPrimitive.Content>
 > = ({ className, ...props }) => {
-  const { dir } = useSnowUI()
+  const { dir, theme } = useSnowUI()
 
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Content
         dir={dir}
+        data-theme={theme}
         className={twMerge(
           dialogPositionClasses,
           dialogPopupClasses,

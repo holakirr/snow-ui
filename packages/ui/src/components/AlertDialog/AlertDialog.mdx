@@ -104,7 +104,7 @@ Deviations from the Figma kit (the full table is in the package README): the but
 
 ## Portal and theme
 
-`AlertDialogContent` renders its mask and card in a portal at the end of `<body>`, so it takes the theme of `<html>`. Pass `data-theme` to `AlertDialogContent` to give it its own. The mask keeps the same colours in both themes, as the Dialog's does.
+`AlertDialogContent` renders its mask and card in a portal at the end of `<body>`, outside your layout. It takes the theme of the nearest `ThemeScope` or `SnowUIProvider` `theme` (see [Theming](?path=/docs/guides-theming--docs)), else the theme of `<html>`; a `data-theme` prop on `AlertDialogContent` wins over both. The mask keeps the same colours in both themes, as the Dialog's does.
 
 ## Localization and RTL
 

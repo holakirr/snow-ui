@@ -1,0 +1,241 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Next.js App Router" />
+
+# Next.js App Router
+
+The library works in the App Router with React Server Components. The build has one module per component and keeps each module's `'use client'` directive, so the components with state, effects or context are client components wherever you import them, and layout pieces (`Button`, `Card`, `Typography`, `Table`…) also render on the server. This guide sets up a Next.js 15 or 16 app: styles, fonts, the providers, and the theme, language and direction without a flash on the first paint.
+
+The repository's [demo app](https://github.com/holakirr/snow-ui/tree/main/apps/demo) is a working example of everything below: a Next.js 16 App Router app with the Figma kit's dashboard, sign-in and settings pages, built against the packages the way an app installs them. Its README says where each piece lives.
+
+## Styles
+
+Import **one** of the two stylesheets (see [Getting started](?path=/docs/guides-getting-started--docs#add-the-styles) for the difference).
+
+**Without Tailwind CSS:**
+
+```tsx
+// app/layout.tsx
+import '@holakirr/snow-ui/index.css'
+```
+
+**With Tailwind CSS v4** (`create-next-app` sets it up with `@tailwindcss/postcss`): add the theme and the package's classes to your global stylesheet. The `@source` path is relative to the stylesheet.
+
+```css
+/* app/globals.css */
+@import "tailwindcss";
+@import "@holakirr/snow-ui/theme.css";
+@source "../node_modules/@holakirr/snow-ui/dist";
+
+/* With the charts: */
+@import "@holakirr/snow-ui-charts/styles.css";
+
+@layer base {
+  body {
+    @apply bg-background-1 text-black;
+  }
+}
+```
+
+Without Tailwind, import the charts' stylesheet in the layout too: `import '@holakirr/snow-ui-charts/styles.css'`.
+
+## Fonts
+
+The kit's Inter needs the `ss01` and `cv01` features, which `next/font/google` doesn't ship. Import the package's font stylesheet in the root layout instead; Next.js bundles the font files its `url()`s point to.
+
+```tsx
+// app/layout.tsx
+import '@holakirr/snow-ui/fonts.css'
+```
+
+The faces use `font-display: swap` and `unicode-range`, so a page only downloads the scripts it shows.
+
+## Server and client components
+
+- **Import from the package root** in both Server and Client Components: `import { Button, Dialog } from '@holakirr/snow-ui'`. The client modules carry their own `'use client'`, so you don't need a wrapper file per component.
+- **Functions don't cross the boundary.** A Server Component can render `<Button label="Save" />`, but not `<Button onClick={save} />`: event handlers, render functions, formatters, date-fns locales and function messages are functions, which Next.js can't pass to a client component ("Functions cannot be passed directly to Client Components"). Put the interactive part in a `'use client'` module.
+- **Hooks** (`useSnowUI`, `useMessages`, `useToast`) and `toast()` run in client modules only.
+- **Charts** from `@holakirr/snow-ui-charts` are client components (Recharts measures the DOM), and their formatters are functions: render them from a client module. `Sparkline` is plain SVG and renders on the server too.
+
+## The providers
+
+Put `SnowUIProvider`, `TooltipProvider` and `<Toaster />` in one client module and render it from the root layout. Pass it strings only (the language, the direction); it imports the date locale and the messages itself.
+
+```tsx
+// app/providers.tsx
+'use client'
+
+import {
+  type MessagesOverrides,
+  SnowUIProvider,
+  type TextDirection,
+  Toaster,
+  TooltipProvider,
+} from '@holakirr/snow-ui'
+import type { Locale } from 'date-fns'
+import { enUS } from 'date-fns/locale/en-US'
+import { ru } from 'date-fns/locale/ru'
+import type { ReactNode } from 'react'
+import { ruMessages } from './messages/ru'
+
+export type Lang = 'en' | 'ru'
+
+// Module scope: the same objects on every render.
+const translations: Record<Lang, { locale: Locale; messages?: MessagesOverrides }> = {
+  en: { locale: enUS }, // the library's default messages
+  ru: { locale: ru, messages: ruMessages },
+}
+
+export const Providers = ({
+  lang,
+  dir,
+  children,
+}: {
+  lang: Lang
+  dir: TextDirection
+  children: ReactNode
+}) => (
+  <SnowUIProvider
+    locale={translations[lang].locale}
+    messages={translations[lang].messages}
+    dir={dir}
+  >
+    <TooltipProvider>{children}</TooltipProvider>
+    <Toaster />
+  </SnowUIProvider>
+)
+```
+
+## Language and direction without a flash
+
+`lang` and `dir` go on `<html>` and on the provider: the layout follows the DOM `dir`, the keyboard and the portals follow the provider (see [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs)). Keep them in cookies and render them from the root layout, so the server sends the right language and direction and hydration has nothing to change.
+
+```tsx
+// app/layout.tsx (a Server Component)
+import '@holakirr/snow-ui/fonts.css'
+import './globals.css'
+
+import { cookies } from 'next/headers'
+import type { ReactNode } from 'react'
+import { type Lang, Providers } from './providers'
+import { themeScript } from './theme'
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const store = await cookies()
+  const lang: Lang = store.get('lang')?.value === 'ru' ? 'ru' : 'en'
+  const dir = store.get('dir')?.value === 'rtl' ? 'rtl' : 'ltr'
+
+  return (
+    // The theme script sets data-theme before hydration.
+    <html lang={lang} dir={dir} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body>
+        <Providers lang={lang} dir={dir}>
+          {children}
+        </Providers>
+      </body>
+    </html>
+  )
+}
+```
+
+A Server Action changes them; setting a cookie in an action re-renders the route, so `<html>`, the provider and every translated Server Component update in one round trip:
+
+```ts
+// app/actions.ts
+'use server'
+
+import { cookies } from 'next/headers'
+
+const options = { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' } as const
+
+export async function setLanguage(lang: 'en' | 'ru') {
+  if (lang !== 'en' && lang !== 'ru') return
+  ;(await cookies()).set('lang', lang, options)
+}
+```
+
+Reading `cookies()` makes the layout dynamic, which is what lets the server render the user's language.
+
+## Theme without a flash
+
+Without `data-theme` on `<html>`, the tokens follow `prefers-color-scheme` in CSS, before any JavaScript runs, and `color-scheme` (native controls, scrollbars) follows too: the OS theme needs no code. A theme the user picked is `data-theme="light"` or `"dark"` on `<html>`. The server doesn't need to know it, since only CSS reads it: save it in `localStorage` and apply it with an inline script in `<head>`, which runs before the page paints (the reason for `suppressHydrationWarning` above).
+
+```ts
+// app/theme.ts
+// A literal, with no interpolated values, run before the first paint.
+export const themeScript =
+  '(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()'
+```
+
+```tsx
+// A theme switch (a client component)
+'use client'
+
+import { ToggleGroup, ToggleGroupItem } from '@holakirr/snow-ui'
+
+type Theme = 'light' | 'dark' | 'system'
+
+const setTheme = (theme: Theme) => {
+  const root = document.documentElement
+  try {
+    if (theme === 'system') localStorage.removeItem('theme')
+    else localStorage.setItem('theme', theme)
+  } catch {
+    // Storage can be unavailable (private mode): the theme still applies.
+  }
+  if (theme === 'system') root.removeAttribute('data-theme')
+  else root.setAttribute('data-theme', theme)
+}
+
+export const ThemeSwitch = () => (
+  <ToggleGroup
+    type="single"
+    aria-label="Theme"
+    onValueChange={(value) => value && setTheme(value as Theme)}
+  >
+    <ToggleGroupItem value="light">Light</ToggleGroupItem>
+    <ToggleGroupItem value="dark">Dark</ToggleGroupItem>
+    <ToggleGroupItem value="system">System</ToggleGroupItem>
+  </ToggleGroup>
+)
+```
+
+To render the theme on the server instead (no inline script, e.g. under a strict Content Security Policy), keep it in a cookie like the language and set `data-theme` from the layout.
+
+## Sidebar state
+
+`SidebarProvider` saves whether the sidebar is open in a cookie and reads it in the browser. Read that cookie in the layout too and pass it as `defaultOpen`, so the server renders the saved state and hydration matches; the [Sidebar](?path=/docs/components-sidebar--docs) page names the cookie, and the demo's `app/(app)/layout.tsx` does this.
+
+## Links
+
+Render Next.js links with `asChild`, so the component's styles and behaviour go on the `<a>` that `next/link` renders:
+
+```tsx
+import { Button, Link, SidebarMenuButton } from '@holakirr/snow-ui'
+import NextLink from 'next/link'
+
+<Button asChild variant="filled" label="New report">
+  <NextLink href="/reports/new" />
+</Button>
+
+<Link asChild>
+  <NextLink href="/docs">Documentation</NextLink>
+</Link>
+
+<SidebarMenuButton asChild isActive={pathname === '/reports'}>
+  <NextLink href="/reports">Reports</NextLink>
+</SidebarMenuButton>
+```
+
+`usePathname()` (from `next/navigation`) is a client hook, so the menu that marks the current page is a client component.
+
+## Checklist
+
+- One stylesheet: `index.css`, or `theme.css` with `@source` in a Tailwind v4 stylesheet.
+- `fonts.css` imported in the root layout.
+- Providers in a `'use client'` module that gets strings only.
+- `lang` and `dir` rendered on `<html>` by the server; a saved theme applied before the first paint.
+- Interactive pieces with handlers in client components.

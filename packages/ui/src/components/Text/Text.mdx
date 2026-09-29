@@ -80,6 +80,7 @@ Prefer `start` and `end`: they follow the text direction.
 
 - Without `asChild` it renders a `<span>`, which has no role. A large `size` doesn't make a heading: render the heading element with `asChild` (`<h1>` … `<h6>`), and choose its level by the page structure, its size by the design.
 - The accessible text is the content; Typography adds no attributes.
+- It isn't focusable: the `<span>` is not a tab stop, and an `asChild` child keeps its own focus behaviour.
 - Pick a colour token that passes contrast. Figma draws secondary text in Black/40%; use `text-secondary`.
 
 ### Deviations from the Figma kit
@@ -139,5 +140,7 @@ The `as` prop (`<Typography as="h1">`) is deprecated: it logs a one-time develop
 - [Theming](?path=/docs/guides-theming--docs): the colour tokens for text.
 
 ## Props
+
+Typography renders a `<span>`, or its only child with `asChild`, and takes that element's attributes; `className` merges with the text classes (with `asChild`, the child's own classes win conflicts).
 
 <Controls />

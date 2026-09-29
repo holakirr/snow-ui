@@ -88,6 +88,7 @@ A node in `badge`, e.g. a count:
 - IconBox renders `<span>` elements with no role and no name: what assistive technology gets is the child's. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`; give a meaningful icon a text alternative, or put the text next to it (IconText).
 - A badge is decorative by default (`aria-hidden`). `badgeLabel` adds visually hidden text inside it ("Unread notifications") and exposes it. This applies to a node in `badge` too: a count badge without `badgeLabel` is hidden from screen readers, so describe the count in `badgeLabel` ("3 unread notifications") or elsewhere.
 - The Figma dot is Secondary/Indigo, 2.07:1 on white: don't let it be the only sign of the state. Pair it with `badgeLabel` or visible text.
+- IconBox isn't focusable and is not a tab stop. To make an icon interactive, put it in a [Button](?path=/docs/components-button--docs).
 
 None of the package's deviations from the Figma kit apply to IconBox.
 
@@ -125,5 +126,7 @@ None of the package's deviations from the Figma kit apply to IconBox.
 - [ListItem](?path=/docs/components-listitem--docs): dashboard rows with a 24px icon or avatar.
 
 ## Props
+
+IconBox renders a `<span>` (with `data-size`) around the icon slot and the badge, and takes the `<span>` attributes; `className` merges with the outer `<span>`'s classes.
 
 <Controls />

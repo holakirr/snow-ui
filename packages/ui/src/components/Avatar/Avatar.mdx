@@ -1,5 +1,6 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { AvatarFallback, AvatarImage } from './Avatar'
 import * as AvatarStories from './Avatar.stories'
 
 <Meta of={AvatarStories} />
@@ -63,6 +64,7 @@ The fallback text grows with the avatar: 12/16 at `sm` and `md`, 24/32 at `lg`. 
 - The frame is a `<span>` with no role. The image is an `<img>`; its `alt` is the accessible name. Use the person's name, or `alt=""` when the name is already in the text next to the avatar.
 - The fallback is plain text: screen readers read the initials. When the name is next to the avatar, hide the fallback with `aria-hidden`; when it isn't, the initials alone may not identify the person, so add the name as visually hidden text.
 - The fallback's `color-2` is the same in both modes, so its initials are static black in both (the Storybook demos also use black, not white, for initials on the Secondary colours).
+- The avatar isn't focusable: it is not a tab stop and has no keyboard interaction.
 
 No row of the README's table of deviations from the Figma kit applies to Avatar.
 
@@ -93,4 +95,22 @@ No row of the README's table of deviations from the Figma kit applies to Avatar.
 
 ## Props
 
+The parts are the [Radix Avatar](https://www.radix-ui.com/primitives/docs/components/avatar#api-reference) parts with the Figma styles: they take the Radix props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### Avatar
+
+The frame, a round `<span>` that clips its content; `size` sets its diameter (`lg`, 64px, by default).
+
 <Controls />
+
+### AvatarImage
+
+The `<img>`, rendered only once it has loaded; it takes the `<img>` attributes (`src`, `alt`…). `onLoadingStatusChange` reports `idle`, `loading`, `loaded` or `error`.
+
+<ArgTypes of={AvatarImage} />
+
+### AvatarFallback
+
+The initials, a `<span>` shown until the image loads and when it fails; `delayMs` waits that many milliseconds before showing it.
+
+<ArgTypes of={AvatarFallback} />

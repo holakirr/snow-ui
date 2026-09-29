@@ -1,5 +1,6 @@
-import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { Skeleton } from './Skeleton'
 import * as SkeletonStories from './Skeleton.stories'
 
 <Meta of={SkeletonStories} />
@@ -41,6 +42,7 @@ Skeleton has one state: it pulses, fading its opacity in a loop (Tailwind's `ani
 ## Accessibility
 
 - Skeleton is `aria-hidden="true"`: screen readers skip it, so it can't tell anyone that content is loading.
+- It isn't focusable and is not a tab stop.
 - Announce the loading state yourself: mark the region that is loading with `aria-busy="true"` and give it a text alternative (visually hidden "Loading…"), then remove both when the content arrives.
 
 None of the package's deviations from the Figma kit apply to Skeleton.
@@ -75,4 +77,6 @@ Skeleton renders no text: translate your own loading message. Lay out skeleton r
 
 ## Props
 
-<Controls />
+Skeleton renders a `<div aria-hidden="true">` and takes the `<div>` attributes. Give it its size and shape with `className`, which merges with its classes.
+
+<ArgTypes of={Skeleton} />

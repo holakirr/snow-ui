@@ -1,5 +1,6 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { SnowUIProvider } from './SnowUIProvider'
 import * as SnowUIProviderStories from './SnowUIProvider.stories'
 
 <Meta of={SnowUIProviderStories} />
@@ -46,16 +47,6 @@ export const Providers = ({ children }: { children: ReactNode }) => (
 - Translating your own text: that is your i18n library's job. The provider only holds the library's strings.
 - One label on one component: pass the component's own prop (`closeLabel`, `aria-label`…), which wins over the provider.
 - Switching the theme: use `data-theme` (see the [Theming guide](?path=/docs/guides-theming--docs)).
-
-## What it sets
-
-| Prop | Type | Default | Sets |
-| --- | --- | --- | --- |
-| `messages` | `MessagesOverrides` | English `defaultMessages` | the built-in strings, merged over the defaults (and over an outer provider's) |
-| `locale` | a date-fns `Locale` | `enUS` | `Calendar` month and weekday names, week start and day labels; `Scheduler` headers and times |
-| `dir` | `'ltr'` or `'rtl'` | inherited, else `ltr` | keyboard direction, `start` / `end` sides and the `dir` of portalled content |
-| `theme` | `'light'` or `'dark'` | inherited, else none | the `data-theme` of portalled content (dialogs, sheets, popovers, menus, selects, tooltips, the command palette); `ThemeScope` sets it together with the scope's element |
-| `children` | `ReactNode` | | the subtree it applies to |
 
 ## Messages
 
@@ -140,6 +131,7 @@ const NextButton = ({ onClick }: { onClick: () => void }) => {
 
 - Most built-in strings are accessible names and screen-reader text: close buttons, the navigation landmarks, the remove button of a `Tag`, the "(opens in a new tab)" of external links. Translate every namespace your app uses; a missing message falls back to English.
 - `dir` makes arrow keys match the reading direction, which keyboard users expect in right-to-left languages.
+- The provider renders no element, so it adds nothing to the tab order.
 
 ## Do and don't
 
@@ -171,4 +163,6 @@ const NextButton = ({ onClick }: { onClick: () => void }) => {
 
 ## Props
 
-<Controls />
+SnowUIProvider renders no element: it takes the props below and `children`, the subtree they apply to. `locale` translates the dates of `Calendar` and `Scheduler` but doesn't set the first day of the week: both start on Monday unless you set their `weekStartsOn` / `startOfWeek`.
+
+<ArgTypes of={SnowUIProvider} />

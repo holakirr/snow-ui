@@ -1,5 +1,17 @@
-import { Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from './Select'
 import * as SelectStories from './Select.stories'
 
 <Meta of={SelectStories} />
@@ -72,9 +84,23 @@ The menu, open: [Open story](?path=/story/components-input-select--open).
 ## Accessibility
 
 - The trigger is a `combobox` button; the open list is a `listbox` of `option`s. While it is open, focus stays in the list and the rest of the page is hidden from screen readers.
-- **Keyboard** (from the stories' interaction test and the Radix Select): **Enter**, **Space**, **ArrowDown** or **ArrowUp** open the list with the selected option focused. **ArrowUp** / **ArrowDown** move, **Home** / **End** jump to the first or last option, typing jumps to a matching option. **Enter** or **Space** selects and closes, **Escape** closes without a change; the focus returns to the trigger. Typing on the closed trigger selects a matching option without opening the list.
 - A `combobox` isn't named by its content, so name the trigger: `aria-label`, or a [Label](?path=/docs/components-label--docs) (or `FormLabel`) linked to its `id`. The placeholder isn't a name.
 - Inside a `<form>`, pass `name` (and `required`) to `Select`: a hidden native `<select>` submits the value.
+- When the list closes, focus returns to the trigger.
+
+### Keyboard
+
+From the Default story's interaction test and Radix Select:
+
+| Key | Action |
+| --- | --- |
+| Enter, Space, ArrowDown, ArrowUp | on the trigger: open the list, with focus on the selected option (or the first one) |
+| a character | on the closed trigger: select the next option whose text starts with the typed characters, without opening the list; in the open list: move to that option. Once typing has started, Space is part of the text |
+| ArrowDown / ArrowUp | move to the next / previous enabled option; they stop at the first and last options |
+| Home / End | move to the first / last enabled option |
+| Enter, Space | select the focused option and close the list |
+| Escape | close the list without changing the value |
+| Tab, Shift + Tab | nothing while the list is open: focus stays in it |
 
 ### Deviations from the Figma kit
 
@@ -132,12 +158,64 @@ Pass `defaultValue` to leave the value to the select, or `value` with `onValueCh
 
 ## Props
 
-The stories render their own markup, so there are no controls here. The parts take the props of the Radix Select ([API reference](https://www.radix-ui.com/primitives/docs/components/select#api-reference)); `className` merges with their classes.
+The parts are the [Radix Select](https://www.radix-ui.com/primitives/docs/components/select#api-reference) parts with the Figma styles: they take the Radix props below, `className` (merged with the part's classes) and the attributes of the element they render.
 
-| Part | Main props |
-| --- | --- |
-| `Select` | `value`, `defaultValue`, `onValueChange`, `open`, `defaultOpen`, `onOpenChange`, `name`, `required`, `disabled`, `dir` |
-| `SelectTrigger` | `aria-label`, `id`, `className` |
-| `SelectValue` | `placeholder` |
-| `SelectContent` | `position` (default `"popper"`), `side`, `sideOffset`, `align` (with `popper`) |
-| `SelectItem` | `value` (required), `disabled`, `textValue` |
+### Select
+
+The root: it holds the value (controlled with `value` and `onValueChange`, or uncontrolled with `defaultValue`) and the open state, and renders nothing but the hidden native `<select>` a form submits (`name`, `required`, `form`, `autoComplete`).
+
+<ArgTypes of={Select} />
+
+### SelectTrigger
+
+The `combobox` button, styled as the Figma Input field with the ArrowLineUpDown icon. Name it with `aria-label` or a `Label` linked to its `id`.
+
+<ArgTypes of={SelectTrigger} />
+
+### SelectValue
+
+The selected option's text inside the trigger, or `placeholder` while nothing is selected.
+
+<ArgTypes of={SelectValue} />
+
+### SelectContent
+
+The `listbox`, in a portal, on the Figma Popover surface, with the scroll buttons. `position` is `popper` here (below the trigger and at least as wide as it; Radix's default is `item-aligned`), so `side`, `sideOffset` and `align` apply.
+
+<ArgTypes of={SelectContent} />
+
+### SelectItem
+
+An `option` with a check when it is selected. `value` is required and must not be an empty string; `textValue` sets the typeahead text when the children aren't plain text.
+
+<ArgTypes of={SelectItem} />
+
+### SelectGroup
+
+Groups options under a `SelectLabel` (`role="group"`).
+
+<ArgTypes of={SelectGroup} />
+
+### SelectLabel
+
+The name of a `SelectGroup`, in `text-secondary`; not selectable.
+
+<ArgTypes of={SelectLabel} />
+
+### SelectSeparator
+
+A line between options or groups.
+
+<ArgTypes of={SelectSeparator} />
+
+### SelectScrollUpButton
+
+Scrolls a long list up while the pointer is over it; `SelectContent` renders it for you.
+
+<ArgTypes of={SelectScrollUpButton} />
+
+### SelectScrollDownButton
+
+Scrolls a long list down; `SelectContent` renders it for you.
+
+<ArgTypes of={SelectScrollDownButton} />

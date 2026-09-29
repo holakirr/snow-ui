@@ -101,6 +101,10 @@ Requirements: Docker (on Apple Silicon the amd64 image runs through Rosetta, a f
 
 `bun run code-connect` runs `figma connect parse` on the Figma Code Connect templates (see [Figma Code Connect](#figma-code-connect)): it bundles each `*.figma.ts` the way `figma connect publish` would and fails on an unsupported import or a missing `// url=`. It needs no Figma token and no network, so CI runs it on every PR. `bun run typecheck` checks the templates' prop names and values against the components, and `packages/ui/src/code-connect/templates.test.ts` (part of `bun run test`) runs them against a stand-in for Figma's runtime and checks the snippets they render.
 
+### Docs pages
+
+`scripts/docs-pages.test.ts` (part of `bun run test:scripts`, so of `bun run test` and CI's `build` job) checks the usage pages against the docgen Storybook builds their props tables from (the same options, `.storybook/docgen.ts`): every component exported by `@holakirr/snow-ui`, `@holakirr/snow-ui/react-hook-form`, `@holakirr/snow-ui-charts` and `IconBase` has a props table on a page (`<ArgTypes of={X} />`, or `<Controls />` / `<ArgTypes />` of the stories' `component`), no table is empty, and every page has the [outline](#documentation) (Figma links, an import example, an example, Accessibility with a keyboard table unless the page is in its `STATIC_PAGES`, Props).
+
 ### Generated token files
 
 `bun run tokens` regenerates the files built from the design tokens (see [Design tokens](#design-tokens)); `bun run build` runs it too. CI runs it first and fails when that changes anything, so commit the generated files with the token change.

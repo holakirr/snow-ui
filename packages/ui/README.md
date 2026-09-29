@@ -150,14 +150,98 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 The components that map to the SnowUI Figma base components:
 
 - **`IconBox`** — the Figma "Icon": sizes an icon, avatar or image (`size` 12–80), optionally on a Black/4% tile (`background`) with a `badge` (a dot, or any node such as a count).
-- **`IconText`** — an icon or avatar plus text (`vertical`, `flip`). `interactive` adds the Figma "Frame" hover fill (Black/4%), `active` keeps it on; render it `as="a"` or `as="button"` for navigation items and rows.
+- **`IconText`** — an icon or avatar plus text (`vertical`, `flip`). `interactive` adds the Figma "Frame" hover fill (Black/4%), `active` keeps it on; with `asChild` a link or a `<button>` child is the row (navigation items, clickable rows).
 - **`Group`** — lays out items in a row or column, 8px apart (`vertical`, `reverse`, `gap`), with `role="group"`.
 - **`Strip`** — a row or column of equal segments (`count`, `vertical`, `thickness`, `rounded`); with `value` it is a segmented progress bar (`role="progressbar"`, or `role="meter"`).
 - **`Search`** — the 28px search field (`gray` / `outline`, `sm` / `lg`) with a search icon, a keyboard shortcut hint (`shortcut={['/']}`) and a clear button (also Escape) that calls `onChange` with an empty value and `onClear`.
 - **`CommandPalette`** — the Figma "SearchPopup": a dialog with a search combobox and a grouped listbox. Pass `groups` of items (`label`, `icon`, `keywords`, `disabled`, `onSelect`); ↑ / ↓ move the highlight, Enter or a click selects (`onSelect(item, event)` — check `event.metaKey` to open in a new tab), Escape closes. `hotkey` (`'/'`, `'mod+k'`) opens it, `filter={false}` + `onQueryChange` + `loading` serve results from a server, `emptyMessage` replaces "No results".
-- **`ListItem`** — a row of the dashboard Notifications / Activities / Contacts lists: `icon`, `title` and a `text-secondary` `description` or timestamp (Figma: Black/40%); an `IconText`, so `interactive`, `active` and `as` work too.
+- **`ListItem`** — a row of the dashboard Notifications / Activities / Contacts lists: `icon`, `title` and a `text-secondary` `description` or timestamp (Figma: Black/40%); an `IconText`, so `interactive`, `active` and `asChild` work too.
 
 Storybook's "Recipes/Dashboard" composes them with `Sidebar`, `Breadcrumb`, `Card` and `Button` into the SnowUI dashboard layout (sidebar, header, content, right sidebar).
+
+## Composition (asChild)
+
+Components that render a single element take `asChild` (Radix [`Slot`](https://www.radix-ui.com/primitives/docs/utilities/slot)) to render their only child instead, e.g. a router link:
+
+```tsx
+<Button asChild variant="filled" label="Docs" startContent={<BookIcon />}>
+  <RouterLink to="/docs" />
+</Button>
+
+<Typography asChild size={24} semibold>
+  <h1>Settings</h1>
+</Typography>
+
+<BreadcrumbLink asChild>
+  <RouterLink to="/">Home</RouterLink>
+</BreadcrumbLink>
+```
+
+- **Where:** `Button`, `Typography`, `IconText`, `ListItem`, `Link`, `BreadcrumbLink`, `PaginationLink`, `PaginationPrevious`, `PaginationNext`, the `Sidebar*` parts that had it, and every Radix-based part (`DialogTrigger`, `DialogClose`, `TabsTrigger`, `DropdownMenuTrigger`, `TooltipTrigger`…).
+- **Props:** the component's props go on the child; for the same prop the child's wins (`href`, `type`…), except event handlers, which compose (the child's runs first, then the component's) and `style`, which merges.
+- **Classes:** merged with the token-aware `twMerge`, the child's last: `<Button asChild><a className="px-8" /></Button>` replaces the button's `px-3` instead of fighting it in the stylesheet.
+- **Refs:** a `ref` on the component and a `ref` on the child both get the element.
+- **Content:** the component's own content goes inside the child, around the child's children: Button's `label`, `startContent` and `endContent`, IconText's icon, ListItem's title and description, Link's arrow and external text, the pagination arrows.
+- **Deprecated `as`:** `Button`, `Typography`, `IconText` and `ListItem` still accept `as` (`<Button as="a" href="/">`), with a one-time development warning. It will be removed in the next major version; migrate to `asChild` and move element-specific props (`href`, `type`) to the child: `<Button asChild><a href="/">…</a></Button>`.
+
+### Controlled and uncontrolled props
+
+State follows the Radix naming everywhere: `value` / `defaultValue` / `onValueChange` (`Tabs`, `Accordion`, `Select`, `RadioGroup`, `ToggleGroup`, `Slider`), `open` / `defaultOpen` / `onOpenChange` (`Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, `SidebarProvider`), `checked` / `defaultChecked` / `onCheckedChange` (`Checkbox`, `Switch`, menu checkbox items) and `pressed` / `defaultPressed` / `onPressedChange` (`Toggle`). Aligned in this release, with the old names kept as deprecated aliases (one development warning each, removal in the next major):
+
+| Component | Deprecated | Use |
+| --- | --- | --- |
+| `Button`, `Tag`, `DialogHeader` | `leftContent`, `rightContent` | `startContent`, `endContent` (as `Input` and `Search`; they follow the text direction) |
+| `Tag` | `onClose` | `onRemove` (the button is "Remove tag …") |
+| `Button`, `Typography`, `IconText`, `ListItem` | `as` | `asChild` |
+
+`Search` also gained `onValueChange(value)` next to the native `onChange(event)`. Kept as they are, and documented: `CommandPalette`'s search text is `query` / `defaultQuery` / `onQueryChange` (the same pattern for a second value); `Calendar` keeps react-day-picker's `selected` / `onSelect` and `month` / `defaultMonth` / `onMonthChange`; `Scheduler`'s `currentDate` is controlled only and its `onDateClick` / `onEventClick` are required (a `defaultDate` and optional handlers need a breaking change, planned for the next major); the mobile open state of `Sidebar` isn't controllable; `Toaster` is driven by `toast()`; `Input`, `Textarea` and `InputSmall` are native fields (`value` / `onChange`).
+
+## Localization
+
+Every string the components render on their own — accessible names, screen-reader text, placeholders, empty states — comes from a typed `Messages` object. `SnowUIProvider` sets it (English `defaultMessages` without one), along with the date-fns locale for dates:
+
+```tsx
+import { SnowUIProvider, type Messages } from '@holakirr/snow-ui'
+import { ru } from 'react-day-picker/locale' // a date-fns locale plus day-picker labels
+
+const messages: Messages = {
+  /* every namespace: badge, breadcrumb, calendar, commandPalette, dialog, link,
+     pagination, search, sheet, sidebar, slider, tag, toast */
+}
+
+<SnowUIProvider messages={messages} locale={ru}>
+  <App />
+</SnowUIProvider>
+```
+
+- **Typed:** `Messages` is grouped by component (`messages.pagination.previous`, `messages.dialog.close`…). Strings with values are functions, so a translation can order and inflect them: `tag: { remove: (label) => \`Удалить тег ${label}\` }`, `calendar: { previousYears: (count) => … }`.
+- **Partial:** `messages` takes any subset (`MessagesOverrides`) and merges it over the defaults, namespace by namespace. Providers nest: an inner one overrides the outer one for its subtree.
+- **Component props win:** `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` and `placeholder` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `label` (`BreadcrumbEllipsis`, `PaginationEllipsis`), `label` / `placeholder` / `emptyMessage` / `loadingLabel` (`CommandPalette`), `thumbLabels` (`Slider`), `todayLabel` / `lastSelectionLabel` / `labels` (`Calendar`) and `aria-label` (`Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger`, `Badge`) override the provider.
+- **Dates:** `locale` goes to `Calendar` (month and weekday names, day labels; its own `locale` prop wins) and to `Scheduler`'s day and time labels (`locale.code`). A react-day-picker locale (`react-day-picker/locale`) also translates the day picker's own labels ("Go to the next month"…).
+- **Your components:** `useMessages()` returns the current messages, `useSnowUI()` the messages, `locale` and `dir`.
+
+The package ships English only: translations belong to the app. Storybook's "Locale" toolbar switches every story to an example Russian set (`.storybook/locales.ts`), a starting point for your own.
+
+## RTL
+
+For right-to-left languages, set the direction on the document and on the provider:
+
+```tsx
+<html lang="ar" dir="rtl">
+  …
+  <SnowUIProvider dir="rtl" locale={arSA} messages={arMessages}>
+    <App />
+  </SnowUIProvider>
+</html>
+```
+
+- **Layout** follows the DOM `dir`: the components use logical utilities (`ps-` / `pe-`, `ms-` / `me-`, `start-` / `end-`, `text-start`, `rounded-s-` / `rounded-e-`, `border-s` / `border-e`), so paddings, icons, check marks, badges, the remove button of a `Tag` and the rounded ends of a `Calendar` range swap sides. `dir` on any element scopes it to a subtree, like `data-theme`.
+- **Directional icons** point the other way: pagination and calendar arrows, the `Accordion`, menu and submenu arrows, the `Link` arrow and external icon, `SidebarTrigger` and icon separators of `BreadcrumbSeparator` get `rtl:-scale-x-100` (for your own icons: the same class, or the icons' `mirrored` prop). `Switch` moves its thumb the other way.
+- **Keyboard** follows the provider's `dir` (wrapped Radix `DirectionProvider`): in `Tabs`, `RadioGroup`, `ToggleGroup`, `Slider` and horizontal `Accordion` ArrowLeft moves forward, menus open submenus to the left with ArrowLeft, and `Calendar` passes `dir` to react-day-picker's arrow keys.
+- **Portals** (`Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, the toast viewport) render outside your `dir` scope, so they take `dir` from the provider.
+- **Sides:** `Sheet` and `Sidebar` take `side="start"` / `"end"` (defaults: `Sheet` `end`, `Sidebar` `start`), resolved with the provider's `dir`; `left` / `right` stay physical. `Tag`'s `arrow-start` / `arrow-end` shapes flip, `arrow-left` / `arrow-right` don't. `Typography`'s `align` takes `start` (the default) and `end`. In right-to-left text toasts are swiped away to the left.
+
+Storybook's "Direction" toolbar renders any story right-to-left; the `RTL` stories of Button, Input, Tabs, Breadcrumb, Pagination, Sidebar, Dialog, DropdownMenu, Calendar, Tag and Toaster pin it and check the layout and keyboard in their interaction tests.
 
 ## Accessibility deviations from the Figma kit
 

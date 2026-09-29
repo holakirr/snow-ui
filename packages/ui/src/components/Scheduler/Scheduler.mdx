@@ -98,7 +98,7 @@ The grid is one tab stop (a roving `tabIndex` shared by the hour cells and the e
 | Escape | in an event's menu: close it and return focus to the event |
 
 - The keys don't wrap at the edges of the grid (and don't scroll the page there). Alt and Shift combinations, and Ctrl / ⌘ with the arrows and the page keys, are left to the browser and assistive technology. ArrowDown on an event moves down the day instead of opening its menu.
-- Moving the focus scrolls the item into view. When the focused event disappears (deleted, or moved to another hour), its hour cell takes its place.
+- Moving the focus scrolls the item into view. When the focused event disappears (deleted, also from its own menu, or moved to another hour), its hour cell takes the focus. The events of an hour come in the order they start (ties keep the order of `events`), on screen, with the arrows and with Tab.
 
 ### Deviations from the Figma kit
 
@@ -114,7 +114,7 @@ The full table is in the package README.
 
 ## Localization and RTL
 
-- Scheduler uses no `Messages` keys. The grid's name, the day labels, hour labels and cell names use the language of `SnowUIProvider`'s `locale` (`locale.code`), and `en-US` without one, so the server and the browser render the same text.
+- Scheduler uses no `Messages` keys. The grid's name, the day labels, hour labels and cell names use the language of `SnowUIProvider`'s `locale` (`locale.code`), and `en-US` without one, so the server and the browser render the same text. Today, the current hour and the current-time line come from the browser's clock once the page is hydrated (the server's time zone can differ), and move on every minute.
 - Event times (`09:30`) and the current time (`9:30`) use a 24-hour clock in every locale; the hour labels follow the locale's clock.
 - In right-to-left text the grid runs from the right: the hour column is on the right, and the day separators are placed from the end edge so they stay between the days. ArrowLeft moves to the next day and ArrowRight to the previous one; Home and End still go to the first and last day of the week. The direction is the `dir` prop's, else `SnowUIProvider`'s.
 

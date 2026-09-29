@@ -25,6 +25,11 @@ export type EventItemProps = ComponentProps<'div'> & {
   start: number
   end: number
   onEventClick: (event: CalendarEvent) => void
+  /**
+   * Called when the event's menu has closed and would give the focus back to
+   * the event; `preventDefault()` keeps it from doing so.
+   */
+  onMenuCloseAutoFocus?: (event: Event) => void
 }
 
 export const EventItem: FC<EventItemProps> = ({
@@ -32,6 +37,7 @@ export const EventItem: FC<EventItemProps> = ({
   start,
   end,
   onEventClick,
+  onMenuCloseAutoFocus,
   className,
   style,
   onClick,
@@ -91,7 +97,7 @@ export const EventItem: FC<EventItemProps> = ({
           </div>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent onCloseAutoFocus={onMenuCloseAutoFocus}>
         {dropdownContentRenderer ? (
           dropdownContentRenderer(event)
         ) : (

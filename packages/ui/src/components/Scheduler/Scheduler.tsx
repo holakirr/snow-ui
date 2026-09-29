@@ -10,6 +10,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react'
 import { TEXT_SIZES } from '../../constants'
 import type { CalendarEvent, StartOfWeek } from '../../types'
@@ -78,8 +79,38 @@ type Position = {
 const keyOf = ({ day, hour, eventId }: Position): string =>
   eventId === undefined ? `${day}:${hour}` : `${day}:${hour}:${eventId}`
 
-/** A row of the grid: a subgrid of its columns, so the layout is the grid's. */
-const ROW_CLASSES = 'grid grid-cols-subgrid col-span-full'
+/**
+ * The day columns, shared by the grid and its rows (`--scheduler-columns`).
+ * The rows repeat them, and are subgrids of the grid where `subgrid` is
+ * supported (Chrome and Edge 117+): the same layout, and a `grid-cols-*`
+ * of yours on the grid reaches them there.
+ */
+const GRID_CLASSES =
+  'grid [--scheduler-columns:59px_repeat(7,100px)] grid-cols-(--scheduler-columns) gap-x-4'
+const ROW_CLASSES = `col-span-full ${GRID_CLASSES} supports-[grid-template-columns:subgrid]:grid-cols-subgrid`
+
+/**
+ * The current time, to the minute, for "today" and the current-time line:
+ * `null` while hydrating (the server's clock and time zone may differ from
+ * the browser's, and React doesn't patch attributes such as `tabindex` and
+ * `aria-current` on hydration), then the browser's. It moves on every
+ * minute.
+ */
+const subscribeToMinutes = (onChange: () => void) => {
+  const interval = setInterval(onChange, 15_000)
+  return () => clearInterval(interval)
+}
+const getMinutes = () => Math.floor(Date.now() / 60_000)
+const getServerMinutes = () => null
+
+const useNow = (): Date | null => {
+  const minutes = useSyncExternalStore(
+    subscribeToMinutes,
+    getMinutes,
+    getServerMinutes,
+  )
+  return minutes === null ? null : new Date(minutes * 60_000)
+}
 
 type Navigation = {
   /** The ids of the events that start in the hour of that day, in order. */
@@ -206,24 +237,33 @@ const Scheduler: FC<SchedulerProps> = ({
   const clampHour = (hour: number) =>
     Math.min(Math.max(hour, earliestHour), latestHour)
 
-  const now = new Date()
-  const nowHours = getClockHours(now)
-  const todayIndex = week.findIndex(({ date }) => isSameDay(date, now))
+  const now = useNow()
+  const nowHours = now ? getClockHours(now) : 0
+  const todayIndex = now
+    ? week.findIndex(({ date }) => isSameDay(date, now))
+    : -1
   // The grid includes the whole latest hour, so it ends at latestHour + 1.
   const showNow =
-    todayIndex !== -1 && nowHours >= earliestHour && nowHours < latestHour + 1
+    now !== null &&
+    todayIndex !== -1 &&
+    nowHours >= earliestHour &&
+    nowHours < latestHour + 1
 
   // The grid's name: its week in the locale ("September 28 – October 4,
   // 2026"), so a screen reader says which week it is on entering.
   // Plain spaces: ICU versions differ on the thin spaces around the dash
-  // (Node's and the browser's would give a hydration mismatch).
-  const weekLabel = new Intl.DateTimeFormat(lang, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-    .formatRange(week[0].date, week[6].date)
-    .replace(/\s+/g, ' ')
+  // (Node's and the browser's would give a hydration mismatch). An invalid
+  // `currentDate` (a bad date in a URL) renders "Invalid Date" labels, as
+  // 5.0 did, instead of throwing.
+  const weekLabel = Number.isNaN(week[0].date.getTime())
+    ? String(week[0].date)
+    : new Intl.DateTimeFormat(lang, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+        .formatRange(week[0].date, week[6].date)
+        .replace(/\s+/g, ' ')
 
   // The last focused item; the tab stop is there.
   const [focused, setFocused] = useState<Position | null>(null)
@@ -233,7 +273,7 @@ const Scheduler: FC<SchedulerProps> = ({
   // moved, in another week) to the slot of its hour.
   const active: Position = (() => {
     if (!focused) {
-      return todayIndex === -1
+      return now === null || todayIndex === -1
         ? { day: 0, hour: earliestHour }
         : { day: todayIndex, hour: clampHour(now.getHours()) }
     }
@@ -272,6 +312,17 @@ const Scheduler: FC<SchedulerProps> = ({
   // (a deleted event, a row that is gone): that sends focus to <body>
   // without a blur React dispatches, so the new tab stop takes it.
   const hasFocus = useRef(false)
+  const activeKeyRef = useRef(activeKey)
+  activeKeyRef.current = activeKey
+
+  // An event's menu gives the focus back to the event when it closes. If the
+  // event is gone (deleted from its own menu), the tab stop takes it instead
+  // of <body>: the event's slot, or the nearest row's.
+  const menuCloseAutoFocus = (eventKey: string) => (e: Event) => {
+    if (items.current.has(eventKey)) return
+    e.preventDefault()
+    items.current.get(activeKeyRef.current)?.node.focus()
+  }
   useEffect(() => {
     const { activeElement } = document
     if (hasFocus.current && (!activeElement || activeElement === document.body))
@@ -327,10 +378,7 @@ const Scheduler: FC<SchedulerProps> = ({
         gridAutoRows: `${HOUR_HEIGHT}px`,
         ...style,
       }}
-      className={twMerge(
-        'grid grid-cols-[59px_repeat(7,100px)] gap-x-4 relative',
-        className,
-      )}
+      className={twMerge(GRID_CLASSES, 'relative', className)}
       {...props}
       onFocus={handleFocus}
       onBlur={handleBlur}
@@ -341,7 +389,9 @@ const Scheduler: FC<SchedulerProps> = ({
         <div role="gridcell" className="col-span-1" />
         {week.map(({ date }, day) => (
           <div
-            key={date.toDateString()}
+            // By position: invalid dates would all have the same string.
+            // biome-ignore lint/suspicious/noArrayIndexKey: the seven days of the week, in order
+            key={day}
             role="columnheader"
             aria-current={day === todayIndex ? 'date' : undefined}
             className="flex justify-center items-center"
@@ -364,11 +414,11 @@ const Scheduler: FC<SchedulerProps> = ({
         ))}
       </div>
 
-      {week.slice(1).map(({ date }, index) => {
+      {week.slice(1).map((_, index) => {
         const i = index + 1
         return (
           <Separator
-            key={date.toDateString()}
+            key={i}
             style={{
               // From the end edge, so it stays between the days in
               // right-to-left text.
@@ -395,7 +445,8 @@ const Scheduler: FC<SchedulerProps> = ({
             const cellDate = setHours(date, hour)
             return (
               <div
-                key={date.toDateString() + hour}
+                // biome-ignore lint/suspicious/noArrayIndexKey: one cell per day of the row
+                key={day}
                 role="gridcell"
                 className="relative"
               >
@@ -409,7 +460,7 @@ const Scheduler: FC<SchedulerProps> = ({
                   {...itemProps({ day, hour })}
                   aria-label={cellDate.toLocaleString(lang)}
                   aria-current={
-                    day === todayIndex && hour === now.getHours()
+                    day === todayIndex && hour === now?.getHours()
                       ? 'time'
                       : undefined
                   }
@@ -423,6 +474,9 @@ const Scheduler: FC<SchedulerProps> = ({
                     {...itemProps({ day, hour, eventId: event.id })}
                     className="bg-color-2 text-static-black p-1 text-14 rounded-4"
                     onEventClick={onEventClick}
+                    onMenuCloseAutoFocus={menuCloseAutoFocus(
+                      keyOf({ day, hour, eventId: event.id }),
+                    )}
                     event={event}
                     start={start}
                     end={end}
@@ -436,7 +490,7 @@ const Scheduler: FC<SchedulerProps> = ({
 
       {/* Current time indicator: the slot's aria-current="time" tells it
           to assistive technology, and clicks go through to the slots. */}
-      {showNow && (
+      {now && showNow && (
         <div
           aria-hidden
           className="pointer-events-none absolute start-0 w-full px-4 flex justify-center items-center z-10"

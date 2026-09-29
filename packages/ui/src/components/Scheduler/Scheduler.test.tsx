@@ -7,6 +7,9 @@ import {
   within,
 } from '@testing-library/react'
 import { enUS, ru } from 'date-fns/locale'
+import { useState } from 'react'
+import { hydrateRoot } from 'react-dom/client'
+import { renderToString } from 'react-dom/server'
 import { userEvent } from 'storybook/test'
 import {
   afterAll,
@@ -19,6 +22,7 @@ import {
 } from 'vitest'
 
 import type { CalendarEvent } from '../../types'
+import { DropdownMenuItem } from '../DropdownMenu'
 import { SnowUIProvider } from '../SnowUIProvider'
 import { HOUR_HEIGHT, PAGE_HOURS } from './constants'
 import { Scheduler, type SchedulerProps } from './Scheduler'
@@ -610,13 +614,6 @@ describe('Scheduler', () => {
       )
     })
 
-    it('lays the rows out on the grid columns (CSS subgrid)', () => {
-      renderScheduler()
-      for (const row of screen.getAllByRole('row')) {
-        expect(row).toHaveClass('grid', 'grid-cols-subgrid', 'col-span-full')
-      }
-    })
-
     it('puts the events of an hour in its cell, after the slot', () => {
       renderScheduler({
         events: [
@@ -1163,6 +1160,139 @@ describe('Scheduler', () => {
         'aria-label',
         expect.stringMatching(/^3\/8\/2026, 7:00:00\sAM$/),
       )
+    })
+  })
+
+  describe('robustness (5.1 review)', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+      vi.unstubAllEnvs()
+      vi.restoreAllMocks()
+    })
+
+    it('renders "Invalid Date" labels for an invalid currentDate, like 5.0', () => {
+      renderScheduler({ currentDate: new Date('not a date') })
+      expect(screen.getByRole('grid')).toHaveAccessibleName('Invalid Date')
+      expect(screen.getAllByRole('columnheader')[0]).toHaveTextContent(
+        'Invalid Date',
+      )
+    })
+
+    it('brings focus back to the slot when an event is deleted from its menu', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(TODAY)
+      const Harness = () => {
+        const [deleted, setDeleted] = useState(false)
+        const standup: CalendarEvent = {
+          ...event('1', at(29, 9), at(29, 10), 'Standup'),
+          dropdownContentRenderer: () => (
+            <DropdownMenuItem onSelect={() => setDeleted(true)}>
+              Delete
+            </DropdownMenuItem>
+          ),
+        }
+        return (
+          <Scheduler
+            currentDate={TODAY}
+            startOfWeek={1}
+            events={deleted ? [] : [standup]}
+            onDateClick={() => {}}
+            onEventClick={() => {}}
+          />
+        )
+      }
+      render(<Harness />)
+      const [block] = getEventBlocks('Standup')
+      act(() => block?.focus())
+      fireEvent.keyDown(block as HTMLElement, { key: 'Enter' })
+      const item = await screen.findByRole('menuitem', { name: 'Delete' })
+      await waitFor(() => expect(item).toHaveFocus())
+      fireEvent.keyDown(item, { key: 'Enter' })
+      await waitFor(() => expect(screen.queryByText('Standup')).toBeNull())
+      await waitFor(() => expect(slotAt(at(29, 9))).toHaveFocus())
+      expect(getTabStops()).toEqual([slotAt(at(29, 9))])
+    })
+
+    it('has one tab stop after hydrating in another time zone than the server', async () => {
+      const app = () => (
+        <Scheduler
+          currentDate={new Date(2026, 8, 29, 12)}
+          startOfWeek={1}
+          onDateClick={() => {}}
+          onEventClick={() => {}}
+        />
+      )
+      vi.useFakeTimers({ toFake: ['Date'] })
+      // 22:30 on Tuesday in New York is 02:30 on Wednesday in UTC.
+      vi.setSystemTime(new Date('2026-09-30T02:30:00Z'))
+      vi.stubEnv('TZ', 'UTC')
+      const html = renderToString(app())
+      vi.stubEnv('TZ', 'America/New_York')
+      const errors: string[] = []
+      vi.spyOn(console, 'error').mockImplementation((...args) => {
+        errors.push(String(args[0]))
+      })
+      const container = document.createElement('div')
+      container.innerHTML = html
+      document.body.append(container)
+      await act(async () => {
+        hydrateRoot(container, app(), {
+          onRecoverableError: (error) => errors.push(String(error)),
+        })
+      })
+      const stops = () =>
+        Array.from(container.querySelectorAll<HTMLElement>('[tabindex]'))
+          .filter((node) => node.tabIndex === 0)
+          .map((node) => node.getAttribute('aria-label'))
+      // Today and its current hour are the browser's: Tuesday, 22:00 is past
+      // the grid's rows, so the last row.
+      expect(errors).toEqual([])
+      expect(
+        container.querySelector('[aria-current="date"]'),
+      ).toHaveTextContent('29')
+      expect(stops()).toEqual([at(29, 20).toLocaleString('en-US')])
+      const monday = container.querySelector<HTMLElement>(
+        `button[aria-label="${at(28, 9).toLocaleString('en-US')}"]`,
+      )
+      await act(async () => monday?.focus())
+      expect(stops()).toEqual([at(28, 9).toLocaleString('en-US')])
+      container.remove()
+    })
+
+    it('lays the rows out without subgrid where it is missing (Chrome and Edge 111–116)', () => {
+      renderScheduler()
+      for (const row of screen.getAllByRole('row')) {
+        // The grid's own column template, and subgrid only where supported.
+        expect(row).toHaveClass(
+          'grid-cols-(--scheduler-columns)',
+          'supports-[grid-template-columns:subgrid]:grid-cols-subgrid',
+        )
+        expect(row).not.toHaveClass('grid-cols-subgrid')
+      }
+    })
+
+    it('orders the events of an hour by start time, for the arrows and Tab', () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(TODAY)
+      renderScheduler({
+        currentDate: TODAY,
+        events: [
+          event('late', new Date(2026, 8, 29, 9, 45), at(29, 10), 'Late'),
+          event('early', at(29, 9), new Date(2026, 8, 29, 9, 30), 'Early'),
+        ],
+      })
+      const [early] = getEventBlocks('Early')
+      const [late] = getEventBlocks('Late')
+      // DOM (and Tab) order: the earlier event first.
+      expect(
+        (early as HTMLElement).compareDocumentPosition(late as HTMLElement) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy()
+      act(() => slotAt(at(29, 9)).focus())
+      press('ArrowDown')
+      expect(early).toHaveFocus()
+      press('ArrowDown')
+      expect(late).toHaveFocus()
     })
   })
 })

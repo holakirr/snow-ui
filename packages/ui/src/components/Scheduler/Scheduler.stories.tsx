@@ -6,10 +6,12 @@ import {
   startOfDay,
   startOfWeek,
 } from 'date-fns'
+import { useState } from 'react'
 import { expect, fn, waitFor, within } from 'storybook/test'
 
 import type { CalendarEvent } from '../../types'
 import { Button } from '../Button'
+import { DropdownMenuItem } from '../DropdownMenu'
 import { Input } from '../Input'
 import { Sheet, SheetContent, SheetTrigger } from '../Sheet'
 import { SnowUIProvider } from '../SnowUIProvider'
@@ -373,5 +375,57 @@ export const LocaleWeekStart: Story = {
     await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
       sunday.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' }),
     )
+  },
+}
+
+/** An event menu with a "Delete" action, which removes the event. */
+const DeletableEvents = (args: Parameters<typeof Scheduler>[0]) => {
+  const [events, setEvents] = useState(sampleEvents)
+  return (
+    <Scheduler
+      {...args}
+      events={events.map((event) => ({
+        ...event,
+        dropdownContentRenderer: () => (
+          <DropdownMenuItem
+            onSelect={() =>
+              setEvents((all) => all.filter(({ id }) => id !== event.id))
+            }
+          >
+            Delete
+          </DropdownMenuItem>
+        ),
+      }))}
+    />
+  )
+}
+
+/**
+ * Deleting an event from its own menu: the focus goes to the event's hour
+ * cell (the grid's tab stop), not to the page.
+ */
+export const DeleteFromTheMenu: Story = {
+  // The same picture as With Events.
+  tags: ['skip-visual'],
+  args: { startOfWeek: 1 },
+  parameters: { targetSize: { exceptions: eventExceptions } },
+  render: (args) => <DeletableEvents {...args} />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const lunch = canvas.getByRole('button', { name: /^Lunch Break/ })
+    lunch.focus()
+    await userEvent.keyboard('{Enter}')
+    const remove = await page.findByRole('menuitem', { name: 'Delete' })
+    await waitFor(() => expect(remove).toHaveFocus())
+    await userEvent.keyboard('{Enter}')
+    await waitFor(() =>
+      expect(canvas.queryByRole('button', { name: /^Lunch Break/ })).toBeNull(),
+    )
+    await waitFor(() =>
+      expect(
+        canvas.getByRole('button', { name: slotName(thisWeek(3, 12)) }),
+      ).toHaveFocus(),
+    )
+    settle(canvasElement)
   },
 }

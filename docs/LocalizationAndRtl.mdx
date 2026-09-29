@@ -23,8 +23,9 @@ import { ru } from 'react-day-picker/locale' // a date-fns locale plus day-picke
 
 // Module scope: the same object on every render.
 const messages: Messages = {
-  /* avatarGroup, badge, breadcrumb, calendar, charts, commandPalette,
-     dialog, link, pagination, search, sheet, sidebar, slider, tag, toast */
+  /* alert, alertDialog, avatarGroup, badge, breadcrumb, calendar, charts,
+     commandPalette, dialog, link, pagination, progress, search, sheet,
+     sidebar, slider, spinner, tag, toast */
 }
 
 export const Providers = ({ children }: { children: ReactNode }) => (
@@ -53,11 +54,11 @@ For several languages, pass the language (a string) from the layout and pick the
 
 ## Messages
 
-- **Typed and grouped by component:** `messages.pagination.previous`, `messages.dialog.close`… The namespaces are `avatarGroup`, `badge`, `breadcrumb`, `calendar`, `charts` (the `@holakirr/snow-ui-charts` package), `commandPalette`, `dialog`, `link`, `pagination`, `search`, `sheet`, `sidebar`, `slider`, `tag` and `toast`.
+- **Typed and grouped by component:** `messages.pagination.previous`, `messages.dialog.close`… The namespaces are `alert`, `alertDialog`, `avatarGroup`, `badge`, `breadcrumb`, `calendar`, `charts` (the `@holakirr/snow-ui-charts` package), `commandPalette`, `dialog`, `link`, `pagination`, `progress`, `search`, `sheet`, `sidebar`, `slider`, `spinner`, `tag` and `toast`.
 - **Functions for values:** strings with values are functions, so a translation can order and inflect them: ``tag: { remove: (label) => `Удалить тег ${label}` }``, `calendar: { previousYears: (count) => … }`.
 - **Partial:** `messages` takes any subset (`MessagesOverrides`) and merges it over the defaults, namespace by namespace; a message set to `undefined` keeps the default. Providers nest: an inner one overrides the outer one for its subtree.
 - **Stable:** define `messages` at module scope (or `useMemo` it). Inline function messages are new functions on every render, which re-renders every component that reads the messages.
-- **Component props win** over the provider: `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` and `placeholder` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `label` (`BreadcrumbEllipsis`, `PaginationEllipsis`), `label` / `placeholder` / `emptyMessage` / `loadingLabel` (`CommandPalette`), `thumbLabels` (`Slider`), `todayLabel` / `lastSelectionLabel` / `labels` (`Calendar`) and `aria-label` (`Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger`, `Badge`).
+- **Component props win** over the provider: `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` and `placeholder` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `label` (`BreadcrumbEllipsis`, `PaginationEllipsis`), `label` / `placeholder` / `emptyMessage` / `loadingLabel` (`CommandPalette`), `thumbLabels` (`Slider`), `todayLabel` / `lastSelectionLabel` / `labels` (`Calendar`), `statusLabel` / `dismissLabel` (`Alert`), the children or `label` of `AlertDialogCancel`, `getValueLabel` (`Progress`, `ProgressCircle`), `label` (`Spinner`) and `aria-label` (`Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger`, `Badge`, `Progress`, `ProgressCircle`).
 - **Your components:** `useMessages()` returns the current messages; `useSnowUI()` returns the messages, the `locale` and the `dir`.
 
 <Canvas of={ProviderStories.NestedOverrides} />
@@ -100,7 +101,7 @@ export const Providers = ({ children }: { children: ReactNode }) => (
 - **Layout** follows the DOM `dir`. The components use logical utilities (`ps-` / `pe-`, `ms-` / `me-`, `start-` / `end-`, `text-start`, `rounded-s-` / `rounded-e-`, `border-s` / `border-e`), so paddings, icons, check marks, badges, a `Tag`'s remove button and the rounded ends of a `Calendar` range swap sides. `dir` on any element scopes it to a subtree, like `data-theme`. Use the same logical utilities in your own layout.
 - **Directional icons** point the other way: the pagination and calendar arrows, the `Accordion`, menu and submenu arrows, the `Link` arrow and external icon, `SidebarTrigger` and icon separators of `BreadcrumbSeparator` get `rtl:-scale-x-100`. For your own icons use the same class (or the icons' `mirrored` prop). `Switch` moves its thumb the other way.
 - **Keyboard** follows the provider's `dir` (it wraps Radix's `DirectionProvider`): in `Tabs`, `RadioGroup`, `ToggleGroup`, `Slider` and a horizontal `Accordion` ArrowLeft moves forward, menus open submenus to the left with ArrowLeft, and `Calendar` passes `dir` to react-day-picker's arrow keys.
-- **Portals** (`Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, the toast viewport) render outside your `dir` scope, so they take `dir` from the provider.
+- **Portals** (`Dialog`, `AlertDialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, the toast viewport) render outside your `dir` scope, so they take `dir` from the provider.
 - **Sides:** `Sheet` and `Sidebar` take `side="start"` / `"end"` (defaults: `Sheet` `end`, `Sidebar` `start`), resolved with the provider's `dir`; `left` / `right` stay physical. `Tag`'s `arrow-start` / `arrow-end` shapes flip, `arrow-left` / `arrow-right` don't. `Typography`'s `align` takes `start` (the default) and `end`. In right-to-left text toasts are swiped away to the left.
 - **Keyboard shortcuts** (`KBD`) always read left to right.
 
@@ -108,4 +109,4 @@ export const Providers = ({ children }: { children: ReactNode }) => (
 
 ## In this Storybook
 
-The "Locale" toolbar switches every story to an example Russian translation (`.storybook/locales.ts`, a starting point for your own), and the "Direction" toolbar renders any story right-to-left. The `RTL` stories of Button, Input, Tabs, Breadcrumb, Pagination, Sidebar, Dialog, DropdownMenu, Calendar, Tag and Toaster pin the direction and check the layout and the keyboard in their interaction tests.
+The "Locale" toolbar switches every story to an example Russian translation (`.storybook/locales.ts`, a starting point for your own), and the "Direction" toolbar renders any story right-to-left. The `RTL` stories of Button, Input, Tabs, Breadcrumb, Pagination, Sidebar, Dialog, AlertDialog, Alert, Progress, DropdownMenu, Calendar, Tag and Toaster pin the direction and check the layout and the keyboard in their interaction tests.

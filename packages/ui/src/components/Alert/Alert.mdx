@@ -1,0 +1,141 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as AlertStories from './Alert.stories'
+
+<Meta of={AlertStories} />
+
+<Title />
+
+<FigmaLinks note="A library extension built from the kit's Card shape, Secondary colours and Phosphor icons." />
+
+Alert (a callout) is a message in the page flow: what happened, or what the user should know, next to the content it is about. It is a tinted card with a status icon, a title, a description, optional actions and an optional dismiss button, in five statuses: `default` (neutral), `info`, `success`, `warning` and `error`.
+
+```tsx
+import { Alert, AlertDescription, AlertTitle, Button } from '@holakirr/snow-ui'
+
+<Alert status="error" action={<Button variant="outline" label="Retry" />}>
+  <AlertTitle>Payment failed</AlertTitle>
+  <AlertDescription>Your card was declined.</AlertDescription>
+</Alert>
+```
+
+<Primary />
+
+## When to use
+
+- The result of an action that the user needs to see where they are: a form that didn't submit, a payment that failed, settings that were saved.
+- A condition of the page or the account: storage almost full, a trial ending, a maintenance window.
+- A note or a tip in the content (`default` or `info`).
+
+## When not to use
+
+- A short confirmation that can disappear on its own ("Saved"): a toast ([Toaster](?path=/docs/components-toaster--docs)).
+- A question the user must answer before going on ("Delete this project?"): [AlertDialog](?path=/docs/components-alertdialog--docs).
+- A form field's error: `FormMessage` next to the field ([Form](?path=/docs/components-form--docs)).
+- Loading: [Spinner](?path=/docs/components-spinner--docs) or [Progress](?path=/docs/components-progress--docs).
+
+## Anatomy
+
+1. **Container** (`Alert`): the Figma "Card" shape, radius 16 and padding 12/16, filled with the status's tint. A `<div>` (or the `asChild` element) with the status's live-region role.
+2. **Status label**: visually hidden text naming the status ("Error"), read before the title.
+3. **Icon** (`icon`, optional): a 20px status icon on the title's line, 12px before the text. `null` hides it; any node replaces it.
+4. **Title** (`AlertTitle`): 14/20 Semibold, black.
+5. **Description** (`AlertDescription`): 14/20 Regular, `text-secondary`, 4px under the title.
+6. **Actions** (`action`, optional): after the text, 16px from it, or under it (12px) when the alert is too narrow for both (the text keeps at least 256px).
+7. **Dismiss button** (`onDismiss`, optional): a 24×24px Borderless button with a 16px close icon, at the end.
+
+## Statuses
+
+<Canvas of={AlertStories.Statuses} />
+
+| `status` | Fill | Icon | Role |
+| --- | --- | --- | --- |
+| `default` (default) | Black/4% (the kit's neutral fill) | Info, black | `status` |
+| `info` | Secondary/Blue at 16% | Info, blue mixed with 40% black | `status` |
+| `success` | Secondary/Green at 16% | CheckCircle, green mixed with 40% black | `status` |
+| `warning` | Secondary/Yellow at 16% | Warning, yellow mixed with 40% black | `alert` |
+| `error` | Secondary/Red at 16% | WarningCircle, red mixed with 40% black | `alert` |
+
+The fill and the icon colour are the `--alert-fill` and `--alert-icon` custom properties, so a class can change them: `className="[--alert-fill:var(--color-color-2)]"`. In dark mode the icon mixes the colour with white instead (the `black` token flips), so it stays readable in both themes. The icons are the "fill" weight of Phosphor's Info, CheckCircle, Warning and WarningCircle, the kit's icon set.
+
+## Content and actions
+
+<Canvas of={AlertStories.Compact} />
+
+<Canvas of={AlertStories.WithActions} />
+
+## States
+
+Alert has no states of its own: it is shown or not. The dismiss button has the Borderless button states (Black/4% on hover, 95% scale when pressed, the `focus-ring` on keyboard focus). Dismissing is yours: `onDismiss` is called, and you remove the alert.
+
+## Accessibility
+
+- **Role:** `warning` and `error` are `role="alert"` (assertive: announced at once, interrupting), the other statuses `role="status"` (polite: announced when the screen reader is idle). Pass `role` to change it, e.g. `role="note"` or a named `role="region"` for a static callout that is part of the page and shouldn't be announced.
+- **Announcements:** screen readers announce an `alert` when it is added to the page. A `status` is announced reliably only when its content changes while it is already in the page: to announce a success message, render the `Alert` up front and fill it in, or use a toast.
+- **Status:** the status is read before the content, as visually hidden text ("Error", then "Payment failed…"), so it doesn't depend on the colour or the icon (WCAG 1.4.1). `statusLabel` changes it; an empty string turns it off. `default` has none.
+- **Icon:** `aria-hidden`; the status label says what it shows.
+- **Dismiss button:** a native button named "Dismiss" (`dismissLabel`). When it removes the alert, the focus is lost with it: move it somewhere useful in `onDismiss` (the Dismissible story focuses the section heading).
+- **Contrast:** the title is black and the description `text-secondary` on every tint: at least 5.2:1 in both modes (1.4.3). The icons are at least 3.6:1 on the light tints and 5:1 on the dark ones (1.4.11); the Figma Secondary colours alone would be 1.5–3.4:1 on white.
+
+<Canvas of={AlertStories.Dismissible} />
+
+<Canvas of={AlertStories.Live} />
+
+None of the package's deviations from the Figma kit apply to Alert.
+
+## Localization and RTL
+
+- `messages.alert.dismiss` ("Dismiss") names the dismiss button, and `messages.alert.info`, `success`, `warning` and `error` ("Information", "Success", "Warning", "Error") are the status labels; `dismissLabel` and `statusLabel` override them.
+- The layout uses flex and logical margins: in right-to-left text the icon is on the right and the dismiss button on the left. The status icons aren't mirrored.
+- Right-to-left: [RTL story](?path=/story/components-alert--rtl).
+
+## Composition (asChild)
+
+`Alert`, `AlertTitle` and `AlertDescription` take `asChild`. On `Alert` the child (a `<section>`, an `<aside>`) gets the classes, the role and the props, and the icon, the actions and the dismiss button go around its own children; the child's `role` wins. On `AlertTitle` it makes the title a heading, on `AlertDescription` a paragraph.
+
+```tsx
+<Alert asChild status="info" role="region">
+  <section aria-labelledby="release-notes">
+    <AlertTitle asChild>
+      <h2 id="release-notes">Release notes</h2>
+    </AlertTitle>
+    <AlertDescription asChild>
+      <p>Version 5.1 adds Alert, AlertDialog, Progress and Spinner.</p>
+    </AlertDescription>
+  </section>
+</Alert>
+```
+
+<Canvas of={AlertStories.AsChild} />
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Say what happened and what to do next: "Your card was declined. Use another card."
+- Put the alert next to what it is about: above the form, at the top of the section.
+- Keep one action, or two at most.
+- Move the focus after a dismiss.
+
+</Do>
+<Dont>
+
+- Don't use `warning` or `error` for information: they interrupt screen-reader users.
+- Don't stack several alerts: merge them, or show the most important one.
+- Don't use an alert for something that needs an answer before going on: use an AlertDialog.
+- Don't colour the text with the status colours: the title and the description stay black and `text-secondary`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [AlertDialog](?path=/docs/components-alertdialog--docs): a question that blocks the page until it is answered.
+- [Toaster](?path=/docs/components-toaster--docs): a short message that closes on its own.
+- [Card](?path=/docs/components-card--docs): the shape the alert borrows.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the status labels and the dismiss button.
+
+## Props
+
+<Controls />

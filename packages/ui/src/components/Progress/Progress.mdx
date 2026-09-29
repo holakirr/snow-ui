@@ -1,0 +1,136 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ProgressStories from './Progress.stories'
+
+<Meta of={ProgressStories} />
+
+<Title />
+
+<FigmaLinks note="A library extension: the continuous sibling of the Figma “Strip”, and the ring of the “Loading A” icon." />
+
+Progress shows how much of a task is done: an upload, an import, the steps of a setup. `Progress` is a linear bar, `ProgressCircle` a ring. Without a value both are indeterminate: they show that the task is running without saying how much is left. They are built on Radix Progress.
+
+```tsx
+import { Progress, ProgressCircle } from '@holakirr/snow-ui'
+
+<Progress value={40} aria-label="Uploading report.pdf" />
+<Progress aria-label="Preparing the export" /> {/* indeterminate */}
+<ProgressCircle value={75} size={32} aria-label="Syncing" />
+```
+
+<Primary />
+
+## When to use
+
+- A task that takes more than a moment and whose progress you can measure: files uploaded, rows imported, steps done.
+- A task that has started but can't report progress yet: an indeterminate bar in the place the determinate one will take.
+- `ProgressCircle` where a bar doesn't fit: a list row, a table cell, next to a file name.
+
+## When not to use
+
+- A few discrete steps, a quota or a password strength shown as segments: use [Strip](?path=/docs/components-strip--docs) (`value`, `role="meter"`).
+- A value the user sets: use [Slider](?path=/docs/components-input-slider--docs).
+- A wait with no progress at all, in a small place: use [Spinner](?path=/docs/components-spinner--docs).
+- A measurement that isn't a task's progress (disk usage, a score): it is a meter. Use Strip with `role="meter"`, or Progress with `role="meter"` and `aria-valuetext`.
+
+## Anatomy
+
+**Progress**
+
+1. **Track** (the root, `role="progressbar"`): full width, rounded ends, Black/10% (the Strip's empty segments). Its height is `thickness`.
+2. **Fill** (the indicator): Black/100% (the Strip's filled segments; white in dark mode), rounded, as wide as the value. Indeterminate, a 40% bar that crosses the track.
+
+**ProgressCircle**
+
+1. **Root** (`role="progressbar"`): an `inline-flex` box of `size`.
+2. **Track**: the "Loading A" ring (radius 9.5, a 3px stroke in a 24px box) in Black/10%.
+3. **Arc**: the value, Black/100% with round caps, clockwise from 12 o'clock. Indeterminate, the Spinner's turning arc.
+
+## Thickness and size
+
+<Canvas of={ProgressStories.Thicknesses} />
+
+`Progress` takes the Strip's thicknesses: 2, 4 (the default), 6 and 8px (`thickness`). It is as wide as its container; set a width with `className`.
+
+<Canvas of={ProgressStories.CircleSizes} />
+
+`ProgressCircle` takes the kit's icon sizes: 12, 16, 20, 24 (the default), 32, 40 and 48px (`size`); its ring is always an eighth of the size wide. A `size-*` class overrides it.
+
+## Colors
+
+The fill and the track are the `--progress-fill` (Black/100%) and `--progress-track` (Black/10%) custom properties, on both components:
+
+```tsx
+<Progress value={72} className="[--progress-fill:var(--color-indigo-text)]" />
+```
+
+Keep the fill at 3:1 or more against the track and the background (WCAG 1.4.11). The Figma Secondary colours are too light for that on white: Secondary/Indigo is 2.07:1 on white and 1.66:1 on the track. Their text versions work in both modes: `indigo-text` is 4.3:1 on the light track, `red-text` for an error.
+
+<Canvas of={ProgressStories.CustomColor} />
+
+## States
+
+- **Determinate** (`value` from 0 to `max`, 100 by default): the fill's width (Progress) or the arc's length (ProgressCircle) follows the value, with a 300ms transition. Values outside 0–`max` are clamped, not turned indeterminate (Radix's behaviour).
+- **Indeterminate** (`value` `null` or not set): Progress's 40% bar crosses the track from the start side every 1.5 seconds; ProgressCircle turns like the Spinner.
+- **Complete** (`value` equals `max`): a full bar or ring.
+
+The root has Radix's `data-state` (`"loading"`, `"complete"` or `"indeterminate"`), `data-value` and `data-max` for your own styles.
+
+<Canvas of={ProgressStories.Indeterminate} />
+
+**Reduced motion:** with `prefers-reduced-motion: reduce` the value changes without the transition; the indeterminate bar becomes a full bar that pulses its opacity, and the circle's arc stops turning and pulses, so both still show that something is happening without moving.
+
+<Canvas of={ProgressStories.Controlled} />
+
+## Accessibility
+
+- Both are `role="progressbar"` with `aria-valuemin` 0, `aria-valuemax` and, when determinate, `aria-valuenow` and `aria-valuetext`. The value text is a percentage ("40%", `messages.progress.value`); `getValueLabel` replaces it, e.g. `(value, max) => \`${value} of ${max} files\``. Indeterminate, they have no value, which screen readers announce as busy.
+- **Name it:** give every progress bar an `aria-label`, or `aria-labelledby` pointing at its visible label. Without either it is named "Progress" (`messages.progress.label`), which says nothing about the task.
+- Screen readers read the value when the user reaches the bar; they don't announce every change. Announce milestones ("Upload complete") yourself, e.g. in an [Alert](?path=/docs/components-alert--docs) or a toast.
+- The fill is Black/100% on Black/10%: 16.8:1 in light mode, 7.8:1 in dark mode (1.4.11).
+
+<Canvas of={ProgressStories.WithLabel} />
+
+None of the package's deviations from the Figma kit apply to Progress.
+
+## Localization and RTL
+
+- `messages.progress.label` ("Progress") and `messages.progress.value` (a function of the value and the maximum, "40%") translate the default name and the value text; `aria-label`, `aria-labelledby` and `getValueLabel` override them. The Russian example writes "40 %".
+- In right-to-left text the bar fills from the right, and the indeterminate bar crosses from right to left (`--progress-direction` is -1).
+- ProgressCircle fills clockwise in both directions, like a clock.
+
+<Canvas of={ProgressStories.RTL} />
+
+## ProgressCircle
+
+<Canvas of={ProgressStories.Circle} />
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name every bar after its task: "Uploading report.pdf".
+- Show the value as text next to the bar when the number matters ("86 of 100 GB").
+- Switch from indeterminate to determinate as soon as you know the progress.
+
+</Do>
+<Dont>
+
+- Don't use Progress for a value the user sets or for a score: use Slider, or a meter.
+- Don't leave a bar at 100% forever: replace it with the result.
+- Don't animate the value back and forth; progress moves forward.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Strip](?path=/docs/components-strip--docs): segmented progress and meters, 2–8px like Progress.
+- [Spinner](?path=/docs/components-spinner--docs): a wait with no progress, as a status.
+- [Slider](?path=/docs/components-input-slider--docs): a value the user sets.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the name and the value text.
+
+## Props
+
+<Controls />

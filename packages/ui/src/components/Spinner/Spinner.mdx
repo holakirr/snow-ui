@@ -1,0 +1,103 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SpinnerStories from './Spinner.stories'
+
+<Meta of={SpinnerStories} />
+
+<Title />
+
+<FigmaLinks note="A library extension: the ring of the kit's “Loading A” icon, animated in CSS." />
+
+Spinner shows that something is loading when you can't say how long it will take. It is the ring of the kit's "Loading A" icon (`LoadingAIcon` in `@holakirr/snow-ui-icons`): it turns while its arc grows and shrinks, in the current text colour. It is a `role="status"` region that reads "Loading".
+
+```tsx
+import { Spinner } from '@holakirr/snow-ui'
+
+<Spinner />
+<Spinner size={32} label="Loading the report" className="text-secondary" />
+```
+
+<Primary />
+
+## When to use
+
+- A short wait whose length you don't know: fetching a list, submitting a form, loading more results.
+- Inside a control that is busy (a button while it saves), next to its label.
+
+## When not to use
+
+- A task whose progress you know (an upload, an import): use [Progress](?path=/docs/components-progress--docs), linear or circular, with a value.
+- Content whose layout you know while it loads: use [Skeleton](?path=/docs/components-skeleton--docs) placeholders of the right shape.
+- A result that needs the user's attention: use an [Alert](?path=/docs/components-alert--docs) or a toast ([Toaster](?path=/docs/components-toaster--docs)).
+
+## Anatomy
+
+1. **Root**: a `<span role="status">`, `inline-flex`, sized by `size`. It takes any `<span>` props.
+2. **Ring**: an `aria-hidden` SVG, the "Loading A" ring (radius 9.5 and a 3px stroke with round caps in a 24px box, so the stroke is an eighth of the size) in `currentColor`.
+3. **Label**: visually hidden text, "Loading" by default (`label`).
+
+## Sizes
+
+<Canvas of={SpinnerStories.Sizes} />
+
+`size` takes the kit's icon sizes: 12, 16, 20 (the default), 24, 32, 40 and 48px. Match the text or the icon it stands next to: 16 in a `md` button or next to 14px text, 20 on a 20px line. A `size-*` class overrides it.
+
+## Color
+
+The ring is the current text colour, so it takes the colour of the text around it or a `text-*` class. Keep it at 3:1 or more against the background (WCAG 1.4.11): `text-black` (21:1), `text-secondary` (5.74:1), `text-indigo-text` or `text-red-text`, or the `white` label of a Filled button. Black/40% (2.85:1) is too faint.
+
+<Canvas of={SpinnerStories.Colors} />
+
+## States
+
+Spinner has one state: it turns. The ring turns once every 2 seconds while its arc grows to 70% of the ring and shrinks again every 1.5 seconds: the motion of the "Loading A" icon, which animates with SMIL. Spinner uses CSS keyframes instead (`spinner-turn` and `spinner-arc` in `theme.css`), which can be turned off.
+
+**Reduced motion:** with `prefers-reduced-motion: reduce` the ring stops turning and its arc pulses its opacity instead, so it still shows that something is happening without moving (WCAG 2.3.3). With animations off (as in the visual tests) it is a still 70% arc with the gap at the top right.
+
+## Accessibility
+
+- It is a `role="status"` live region (polite) with visually hidden "Loading". Screen readers announce a status reliably only when it changes while it is already in the page, so render the spinner in a container that stays, or put the loading text in a region that stays, as in the "With text" story.
+- The ring is `aria-hidden`.
+- When visible text already says that something is loading, make the spinner `aria-hidden` so it isn't read twice: in a busy button, set `aria-busy` (and `disabled`) on the button and pass `aria-hidden` to the spinner.
+- Mark the region that is loading with `aria-busy="true"` until the content arrives.
+
+<Canvas of={SpinnerStories.InButton} />
+
+<Canvas of={SpinnerStories.WithText} />
+
+None of the package's deviations from the Figma kit apply to Spinner.
+
+## Localization and RTL
+
+- The label is `messages.spinner.label` ("Loading"); `label` overrides it.
+- The ring turns clockwise in both directions, like the kit's icon.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Say what is loading when it isn't obvious: `label="Loading comments"`.
+- Hide it from screen readers when text next to it says the same.
+- Replace it with the content, or an error, as soon as the wait is over.
+
+</Do>
+<Dont>
+
+- Don't show a spinner for a task whose progress you know: use Progress.
+- Don't put several spinners on a screen for one wait.
+- Don't colour it Black/40% or lighter: it drops under 3:1.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Progress](?path=/docs/components-progress--docs): linear and circular progress; `ProgressCircle` without a value turns like the Spinner, as a `progressbar`.
+- [Skeleton](?path=/docs/components-skeleton--docs): placeholders for content of a known shape.
+- [Button](?path=/docs/components-button--docs): a spinner in `startContent` for a busy button.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the label.
+
+## Props
+
+<Controls />

@@ -99,7 +99,8 @@ Dark theme, open: [OpenDark story](?path=/story/components-combobox--open-dark).
 - Emptying the text and leaving the field clears the value (with `clearable`, the default).
 - Name the field with a [Label](?path=/docs/components-label--docs) (or `FormLabel`) linked to its `id`, or `aria-label`. The list takes the same name.
 - The empty and loading messages are also in a visually hidden `status` region, so screen readers announce them.
-- `name` adds a hidden input with the value (not the label) for native form submission.
+- `name` adds a hidden input with the value (not the label) for native form submission; `required` blocks it until an option is picked (see [Native forms](#native-forms)).
+- `readOnly` shows the value and opens no list; `disabled` (or `readOnly`) set while the list is open closes it, with `onOpenChange(false)` and `onQueryChange('')`.
 
 ### Keyboard
 
@@ -159,6 +160,19 @@ Bind the value with `value` and `onValueChange`, not `onChange`: `onChange` woul
 ```
 
 <Canvas of={ComboboxStories.InForm} />
+
+### Native forms
+
+Without a form library, give the Combobox a `name` and it takes part in the `<form>` like a native `<select>`:
+
+| | What happens |
+| --- | --- |
+| Submits | `name=<value>`: the picked option's `value` (not its label, not the typed text), or `name=` (empty) with nothing picked, from a hidden input |
+| `required` | the form doesn't submit while nothing is picked, also when text was typed: the browser shows "Select an item in the list." (`messages.combobox.required`) for typed text, its own message for an empty field |
+| Enter | picks the highlighted option while the list is open, and never submits the form then; with the list closed it submits, as in a text field |
+| `form="id"` | associates the field (and its hidden input) with a form elsewhere in the page |
+| Reset | `form.reset()`, a reset button and React 19's reset after a `<form action>` bring back the value the field had on mount (a controlled field gets `onValueChange` with it) |
+| `disabled` | nothing is submitted |
 
 ## Controlled and uncontrolled
 

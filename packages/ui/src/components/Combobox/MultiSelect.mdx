@@ -70,7 +70,7 @@ Dark theme, open: [OpenDark story](?path=/story/components-multiselect--open-dar
 - The picked options describe the field ("Selected: React, TypeScript", through `aria-describedby`, next to `FormControl`'s description), so screen readers read them when the field gets focus.
 - Removing a tag is announced ("React removed") in a visually hidden `status` region, like the empty and loading messages.
 - Each tag's remove button is a tab stop named "Remove tag React" (`messages.tag.remove`).
-- `required` sets `aria-required` on the input, not the native `required` (the text stays empty while tags are picked).
+- `required` sets `aria-required` on the input, not the native `required` (the text stays empty while tags are picked); the form still doesn't submit without a tag (see [Native forms](#native-forms)).
 - `name` adds one hidden input per value for native form submission.
 
 ### Keyboard
@@ -106,6 +106,17 @@ As in Combobox: the list renders in a portal at the end of `<body>` and takes th
 Bind `value` (an array of strings) and `onValueChange`; pass `field.ref`, `field.onBlur`, `field.name` and `field.disabled` as they are. With a schema, require a count: `z.array(z.string()).min(1)`.
 
 <Canvas of={MultiSelectStories.InForm} />
+
+### Native forms
+
+| | What happens |
+| --- | --- |
+| Submits | one `name=<value>` per picked option, in the order they were picked (read them with `formData.getAll(name)`); nothing with no tag |
+| `required` | the form doesn't submit while no tag is picked: the browser shows "Select at least one item in the list." (`messages.combobox.requiredMultiple`); assistive technology hears `aria-required` |
+| Enter | toggles the highlighted option while the list is open, and never submits the form then |
+| `form="id"` | associates the field and its hidden inputs with a form elsewhere in the page |
+| Reset | a form reset brings back the values the field had on mount |
+| `disabled` | nothing is submitted |
 
 ## Controlled and uncontrolled
 

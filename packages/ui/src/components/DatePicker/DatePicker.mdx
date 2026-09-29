@@ -69,9 +69,10 @@ Dark theme, open: [OpenDark story](?path=/story/components-datepicker--open-dark
 
 - The trigger is a `<button role="combobox">` with `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls`: the label names it, its text is its value (like the Select trigger). The popover is a `dialog` named "Choose a date".
 - The popover is modal: focus moves into it, stays there (Tab cycles through the calendar's buttons), and the rest of the page is hidden from assistive technology until it closes; then focus returns to the trigger.
-- Clicking the picked day again keeps it (react-day-picker would unselect it) and closes the calendar.
+- Clicking the picked day again keeps it (react-day-picker would unselect it), calls nothing and closes the calendar.
+- A month with no day to pick (every day disabled) puts the focus on the month navigation, so it is still in the dialog.
 - Name the field with a [Label](?path=/docs/components-label--docs) (or `FormLabel`) linked to its `id`, or `aria-label`: a combobox isn't named by its text. `required` sets `aria-required`.
-- `name` adds a hidden input with the date as `yyyy-MM-dd` for native form submission.
+- `name` adds a hidden input with the date as `yyyy-MM-dd` for native form submission (see [Native forms](#native-forms)).
 
 ### Keyboard
 
@@ -134,6 +135,18 @@ Bind `value` and `onValueChange` (a `Date`, or `null` once cleared). With react-
 ```
 
 <Canvas of={DatePickerStories.InForm} />
+
+### Native forms
+
+| | What happens |
+| --- | --- |
+| Submits | `name=yyyy-MM-dd` (e.g. `2025-01-20`, whatever the `dateFormat` and the locale), or `name=` (empty) with no date, from a hidden input |
+| `required` | the form doesn't submit while there is no date: an invisible required stand-in shows the browser's message, and the focus goes to the field; assistive technology hears `aria-required` |
+| `form="id"` | associates the field and its hidden input with a form elsewhere in the page |
+| Reset | a form reset (`form.reset()`, a reset button, React 19's reset after a `<form action>`) closes the calendar and brings back the date the field had on mount |
+| `disabled` | nothing is submitted; disabling an open calendar closes it with `onOpenChange(false)` |
+
+An `Invalid Date` value (say `new Date('')` from a bad string) counts as no date.
 
 ## Controlled and uncontrolled
 

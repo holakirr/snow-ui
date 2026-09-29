@@ -40,7 +40,9 @@ As in [DatePicker](?path=/docs/components-datepicker--docs#anatomy). The field s
 - Every time the calendar opens, a new range starts: the first click (or Enter) picks the start, the second the end, and the calendar closes. If the end comes before the start, the two are swapped. The same day twice is a one-day range.
 - While the end is being picked, the range follows the pointer.
 - Closing the calendar after the first pick (Escape, a click outside) keeps the range the field had.
-- `onValueChange` is called once, with the complete range `{ from, to }`, or with `null` when the field is cleared.
+- `onValueChange` is called once, with the complete range `{ from, to }`, or with `null` when the field is cleared. Picking the range the field already has calls nothing.
+- With a controlled `open` that stays `true` (an "Apply" button closes it, say), each range still starts anew after the previous one's end.
+- **`excludeDisabled`:** a range can't cover a day that can't be picked (`minDate`, `maxDate`, `disabledDates`): an end past one starts a new range there, and the preview stops before it. Use it for bookings, where a taken night splits the calendar.
 
 <Canvas of={DateRangePickerStories.Open} />
 
@@ -60,7 +62,7 @@ As in [DatePicker](?path=/docs/components-datepicker--docs#states). In the calen
 
 - As in [DatePicker](?path=/docs/components-datepicker--docs#accessibility): a `<button role="combobox">` that opens a modal `dialog`, here named "Choose a date range", with focus on the range's start (or today).
 - The calendar is a `grid` with `aria-multiselectable`; the days of the range are `aria-selected`.
-- `name` adds a hidden input with the range as an ISO 8601 interval: `2025-01-13/2025-01-16`.
+- `name` adds a hidden input with the range as an ISO 8601 interval: `2025-01-13/2025-01-16` (see [Native forms](#native-forms)).
 
 ### Keyboard
 
@@ -91,6 +93,16 @@ As in [DatePicker](?path=/docs/components-datepicker--docs#deviations-from-the-f
 Bind `value` and `onValueChange` (a `DateRange`, or `null`); pass `field.ref`, `field.onBlur`, `field.name` and `field.disabled` as they are. With zod: `z.object({ from: z.date(), to: z.date() }, { error: 'Pick your dates.' })`.
 
 <Canvas of={DateRangePickerStories.InForm} />
+
+### Native forms
+
+| | What happens |
+| --- | --- |
+| Submits | `name=yyyy-MM-dd/yyyy-MM-dd`, an ISO 8601 interval (e.g. `2025-01-13/2025-01-16`), or `name=` (empty) with no range or a range without an end |
+| `required` | the form doesn't submit until both ends are set |
+| `form="id"`, reset, `disabled` | as in [DatePicker](?path=/docs/components-datepicker--docs#native-forms): a form reset brings back the range the field had on mount |
+
+A controlled `value` without an end (`{ from }`) shows as "Jan 20, 2025 – …" (`messages.datePicker.range(start, '…')`) and isn't submitted. An `Invalid Date` start counts as no range.
 
 ## Controlled and uncontrolled
 

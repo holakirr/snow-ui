@@ -2,7 +2,6 @@
 
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
-import { ROLES } from '../../constants'
 import { twMerge } from '../../utils/tw-merge'
 
 /**
@@ -39,7 +38,6 @@ type InputSmallProps = ComponentProps<'input'> &
 const InputSmall: FC<InputSmallProps> = ({ className, variant, ...props }) => (
   <input
     className={twMerge(inputVariants({ variant }), className)}
-    role={ROLES.textbox}
     {...props}
   />
 )

@@ -87,7 +87,7 @@ Collapsed middle items:
 - The trail is an ordered list. Separators are `aria-hidden` with `role="presentation"`, so they are neither read nor counted as items.
 - Links are `<a href>` in the tab order. `BreadcrumbPage` is a `<span>` with `role="link"`, `aria-disabled="true"` and `aria-current="page"`: announced as an unavailable link that is the current page, and not focusable. A current page rendered as `BreadcrumbLink` needs `aria-current="page"` from you.
 - `BreadcrumbEllipsis` shows "..." to sighted users (hidden from assistive technology) and reads "More pages" (`messages.breadcrumb.more`).
-- A disabled link has `aria-disabled` and `tabIndex={-1}`; it keeps its `href`.
+- A disabled link loses its `href`: it is a `<span role="link" aria-disabled="true">`, announced as an unavailable link and out of the tab order. With `asChild` the child keeps its own `href`, so it gets `aria-disabled` and `tabIndex={-1}` instead.
 
 Deviations from the Figma kit (the full table is in the package README):
 

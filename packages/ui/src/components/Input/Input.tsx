@@ -10,7 +10,6 @@ import {
   useId,
   useRef,
 } from 'react'
-import { ROLES } from '../../constants'
 import { twMerge } from '../../utils/tw-merge'
 import { Label } from '../Label'
 
@@ -143,7 +142,6 @@ const Input: FC<InputProps> = ({
           style={inputStyle}
           id={inputId}
           ref={setRef}
-          role={ROLES.textbox}
           disabled={disabled}
           readOnly={readOnly}
           {...props}

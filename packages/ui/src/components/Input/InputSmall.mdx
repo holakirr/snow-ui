@@ -55,7 +55,7 @@ import { InputSmall } from '@holakirr/snow-ui'
 
 ## Accessibility
 
-- It renders a native `<input>` with an explicit `role="textbox"`. Keyboard behaviour is the browser's.
+- It renders a native `<input>`, with the role of its `type` (a textbox, `spinbutton` for `number`, `searchbox` for `search`). Keyboard behaviour is the browser's.
 - It has no label of its own: pass `aria-label`, or render a [Label](?path=/docs/components-label--docs) with `htmlFor` and give the input the same `id`. A placeholder is not a label.
 - `disabled` removes the field from the tab order; a `readOnly` field stays focusable.
 

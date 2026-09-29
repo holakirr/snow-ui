@@ -345,8 +345,7 @@ Components are documented in Storybook with examples and props documentation. Vi
 
 - Storybook stories are tests too: every story is rendered in Chromium in both themes, checked with axe, and many have `play` interaction tests (keyboard, focus, selection)
 - Unit tests are written using Vitest and React Testing Library
-- E2E tests are written using Playwright; `bun run e2e` starts Storybook automatically (or reuses one already running on port 53741)
-- E2E visual snapshots are generated on macOS (`*-chromium-darwin.png`), so run `bun run e2e` / `bun run e2e:update` on macOS; other platforms need their own baselines
+- Visual regression tests screenshot every story in both themes with Playwright, in Docker, and compare the shots with the committed Linux baselines (`bun run visual` / `bun run visual:update` from the repository root; see CONTRIBUTING.md)
 - Unit tests cover most components (see the `*.test.tsx` files next to them), the toast store, the date utils and the design tokens; more are welcome
 
 ## Usage

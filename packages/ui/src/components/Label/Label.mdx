@@ -41,11 +41,13 @@ import { Checkbox, Label } from '@holakirr/snow-ui'
 
 ## Accessibility
 
-- It renders a native `<label>`: `htmlFor` (or a control nested inside it) gives the control its accessible name, and clicking the label focuses or toggles the control.
+- It renders a native `<label>`: `htmlFor` (or a control nested inside it) gives the control its accessible name, and clicking the label focuses or toggles the control. The label itself is not a tab stop.
 - Radix Label prevents text selection when the label is double-clicked, unless the double click is on a button, input, select or textarea inside it.
 - The label must be visible text: don't replace it with a placeholder.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -81,5 +83,7 @@ The text is yours to translate; Label renders no built-in strings. It follows th
 - [Checkbox](?path=/docs/components-input-checkbox--docs) and [RadioGroup](?path=/docs/components-input-radiogroup--docs): controls you label with it.
 
 ## Props
+
+Label is the [Radix Label](https://www.radix-ui.com/primitives/docs/components/label#api-reference) root with the Figma style: it renders a `<label>` and takes its attributes (`htmlFor`…); `className` merges with its classes.
 
 <Controls />

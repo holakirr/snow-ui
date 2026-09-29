@@ -1,0 +1,144 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Guides/Vite" />
+
+# Vite
+
+A single-page app with Vite and React 19 (`bun create vite my-app --template react-ts`). Everything renders in the browser, so the only thing to take care of beyond the imports is the first paint: the theme, the language and the direction go on `<html>` before the app starts.
+
+## Styles
+
+Import **one** of the two stylesheets (see [Getting started](?path=/docs/guides-getting-started--docs#add-the-styles) for the difference).
+
+**Without Tailwind CSS:**
+
+```tsx
+// src/main.tsx
+import '@holakirr/snow-ui/index.css'
+```
+
+**With Tailwind CSS v4**, through its Vite plugin:
+
+```ts
+// vite.config.ts
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
+```
+
+```css
+/* src/index.css, imported from src/main.tsx */
+@import "tailwindcss";
+@import "@holakirr/snow-ui/theme.css";
+@source "../node_modules/@holakirr/snow-ui/dist";
+
+/* With the charts: */
+@import "@holakirr/snow-ui-charts/styles.css";
+```
+
+The `@source` path is relative to the stylesheet. Without Tailwind, import the charts' stylesheet from `main.tsx`: `import '@holakirr/snow-ui-charts/styles.css'`.
+
+## Fonts
+
+```tsx
+// src/main.tsx
+import '@holakirr/snow-ui/fonts.css'
+```
+
+Vite resolves the stylesheet's `url()`s and copies the font files into the build; the faces use `font-display: swap` and `unicode-range`, so a page only downloads the scripts it shows. Import it from JavaScript, not with `@import` in a stylesheet that the Tailwind CLI builds (the CLI would keep the relative URLs, which then 404).
+
+## The entry point
+
+```tsx
+// src/main.tsx
+import '@holakirr/snow-ui/fonts.css'
+import './index.css'
+
+import { SnowUIProvider, Toaster, TooltipProvider } from '@holakirr/snow-ui'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { App } from './App'
+
+const root = document.getElementById('root')
+if (!root) throw new Error('No #root element')
+
+createRoot(root).render(
+  <StrictMode>
+    <SnowUIProvider dir={document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr'}>
+      <TooltipProvider>
+        <App />
+      </TooltipProvider>
+      <Toaster />
+    </SnowUIProvider>
+  </StrictMode>,
+)
+```
+
+`SnowUIProvider` takes the translated messages and the date-fns locale too; see [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs). In a single-page app there is no server boundary, so you can pass functions (function messages, a locale) directly.
+
+## Theme without a flash
+
+Without a mode on `<html>` (no `data-theme`, no `light` / `dark` class), the tokens follow the OS preference in CSS, before any JavaScript runs: nothing to do for "system". A theme the user picked is `data-theme="light"` or `"dark"` (the `light` / `dark` class works too, see [Theming](?path=/docs/guides-theming--docs#dark-mode)). Save it in `localStorage` and apply it with a small inline script in `index.html`, which runs before the page paints:
+
+```html
+<!-- index.html -->
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      try {
+        const theme = localStorage.getItem('theme')
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.dataset.theme = theme
+        }
+      } catch {}
+    </script>
+    <!-- … -->
+  </head>
+  <body class="bg-background-1 text-black">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+A theme switch updates the attribute and the saved value:
+
+```tsx
+type Theme = 'light' | 'dark' | 'system'
+
+export const setTheme = (theme: Theme) => {
+  const root = document.documentElement
+  if (theme === 'system') delete root.dataset.theme
+  else root.dataset.theme = theme
+  try {
+    if (theme === 'system') localStorage.removeItem('theme')
+    else localStorage.setItem('theme', theme)
+  } catch {
+    // Storage can be unavailable (private mode): the theme still applies.
+  }
+}
+```
+
+A [Content Security Policy](https://developer.mozilla.org/docs/Web/HTTP/Guides/CSP) without `'unsafe-inline'` needs the script's hash in `script-src`.
+
+## Language and direction
+
+Set `lang` and `dir` on `<html>` in `index.html` for a single-language app. When the user can switch languages, set them in the same inline script (from the saved language) and pass the direction to `SnowUIProvider`, as the entry point above does: the layout follows the DOM `dir`, the keyboard and the portalled content (dialogs, menus, tooltips) follow the provider. After a switch, set `document.documentElement.lang` and `dir` and re-render the provider with the new `dir`, `messages` and `locale`.
+
+## Bundle size
+
+- Import components and icons by name (`import { Button } from '@holakirr/snow-ui'`, `import { StarIcon } from '@holakirr/snow-ui-icons'`). The packages are ES modules with one file per component and `sideEffects` limited to their stylesheets, so Vite ships only what you use.
+- Load heavy, rarely used components (`Calendar`, `CommandPalette`, the charts) with `React.lazy` when they aren't on the first screen.
+
+## Checklist
+
+- One stylesheet: `index.css`, or `theme.css` with `@source` in a Tailwind v4 stylesheet.
+- `fonts.css` imported from `main.tsx`.
+- `SnowUIProvider`, `TooltipProvider` and `<Toaster />` around the app.
+- A saved theme applied by an inline script in `index.html`; `lang` and `dir` on `<html>`.

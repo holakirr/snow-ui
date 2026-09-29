@@ -94,7 +94,9 @@ jobs:
       - name: Unit tests (icons)
         run: bun run --filter @holakirr/snow-ui-icons test
 
-      # The release step's decisions (scripts/publish-plan.ts).
+      # The release step's decisions (scripts/publish-plan.ts) and the docs
+      # pages: a non-empty props table for every exported component, and the
+      # page outline (scripts/docs-pages.test.ts).
       - name: Unit tests (scripts)
         run: bun run test:scripts
 

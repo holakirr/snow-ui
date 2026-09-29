@@ -56,7 +56,7 @@ A single key:
 
 - It renders a `<kbd>` element, the HTML element for keyboard input. Screen readers read its text, so write the keys as people see them on their keyboard.
 - The `<kbd>` also gets `aria-keyshortcuts` with the same text. That attribute describes a shortcut of the element it is on; to announce the shortcut of the control it triggers, set `aria-keyshortcuts` on that control, with the key names ARIA uses (`Meta+K`, `Control+C`).
-- KBD doesn't listen for the keys: register the shortcut yourself.
+- KBD doesn't listen for the keys: register the shortcut yourself. It isn't focusable and is not a tab stop.
 - A shortcut that is only a visual hint, repeated elsewhere, can be hidden with `aria-hidden` (Search does this for its hint).
 
 ## Localization and RTL
@@ -90,5 +90,7 @@ A single key:
 - [Search](?path=/docs/components-search--docs): a field with a shortcut hint.
 
 ## Props
+
+KBD renders its `<kbd>` through [Typography](?path=/docs/components-text-text--docs) with `asChild`, so it takes the Typography props below and the `<kbd>` attributes; `className` merges with the key cap's classes. It always passes `asChild` itself, so `as` and `asChild` have no effect on it (`as` only logs Typography's deprecation warning in development), and its children are always the joined `keys`.
 
 <Controls />

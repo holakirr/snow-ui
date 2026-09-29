@@ -1,5 +1,17 @@
-import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from './Dialog'
 import * as DialogStories from './Dialog.stories'
 
 <Meta of={DialogStories} />
@@ -94,12 +106,23 @@ The dialog has no disabled or loading state of its own.
 - `DialogContent` is a `role="dialog"` element. `DialogTitle` names it (`aria-labelledby`) and `DialogDescription` describes it (`aria-describedby`). Always render a `DialogTitle`.
 - The dialog is modal (Radix `modal`, on by default):
   - Opening moves focus into the dialog, to its first focusable element (the close button of `DialogHeader`).
-  - Tab and Shift+Tab stay inside the dialog.
   - The rest of the page is hidden from assistive technology (`aria-hidden`) and ignores the pointer; the mask locks the page scroll.
 - Escape, the close button, a `DialogClose` or a click on the mask outside the content closes it. Focus then returns to the trigger.
 - The close button's accessible name is "Close" (`messages.dialog.close`), as visually hidden text; `closeLabel` replaces it. It is the only built-in string.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+The dialog's own keys (Radix Dialog, checked by the Default story's test); the fields and buttons inside keep theirs:
+
+| Key | Action |
+| --- | --- |
+| Enter, Space | on the trigger: open the dialog and move focus to its first focusable element; on the close button or a `DialogClose`: close it |
+| Tab / Shift + Tab | move to the next / previous focusable element in the dialog; after the last one focus wraps to the first (and back), so it doesn't leave the dialog |
+| Escape | close the dialog and return focus to the trigger; a menu, Select or Popover open inside the dialog takes Escape first |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -182,4 +205,64 @@ const [open, setOpen] = useState(false)
 
 ## Props
 
-<Controls />
+`Dialog`, `DialogTrigger`, `DialogPortal`, `DialogOverlay`, `DialogContent`, `DialogTitle`, `DialogDescription` and `DialogClose` are the [Radix Dialog](https://www.radix-ui.com/primitives/docs/components/dialog#api-reference) parts with the Figma styles; `DialogHeader` and `DialogBody` are this library's `<div>`s. They take the props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### Dialog
+
+The root: it holds the open state and renders nothing. Controlled with `open` and `onOpenChange`, or uncontrolled with `defaultOpen`; `modal` is `true` by default.
+
+<ArgTypes of={Dialog} />
+
+### DialogTrigger
+
+A `<button>` with `aria-haspopup="dialog"` and `aria-expanded` that opens the dialog; with `asChild` your element (usually a Button) is the trigger.
+
+<ArgTypes of={DialogTrigger} />
+
+### DialogPortal
+
+Renders its children in a portal, in `container` (`<body>` by default). `DialogContent` already renders one; use it for a custom composition.
+
+<ArgTypes of={DialogPortal} />
+
+### DialogOverlay
+
+The mask, a fixed `<div>` over the page. `DialogContent` already renders one; use it inside a `DialogPortal` for a custom composition.
+
+<ArgTypes of={DialogOverlay} />
+
+### DialogContent
+
+The `role="dialog"` element, in a portal with the mask, centred in the viewport. `onOpenAutoFocus` and `onCloseAutoFocus` can prevent the focus moves; `onEscapeKeyDown` and `onInteractOutside` can keep the dialog open.
+
+<ArgTypes of={DialogContent} />
+
+### DialogHeader
+
+The title row, a `<div>`: `startContent` in a 40px slot, the title (its children), and a close button named by `closeLabel`.
+
+<ArgTypes of={DialogHeader} />
+
+### DialogBody
+
+The popup card, a `<div>` padded by `--dialog-padding` (see Padding).
+
+<ArgTypes of={DialogBody} />
+
+### DialogTitle
+
+An `<h2>` that names the dialog (`aria-labelledby`).
+
+<ArgTypes of={DialogTitle} />
+
+### DialogDescription
+
+A `<p>` that describes the dialog (`aria-describedby`).
+
+<ArgTypes of={DialogDescription} />
+
+### DialogClose
+
+A `<button>` that closes the dialog; with `asChild` your element (e.g. a Cancel Button) is the close button.
+
+<ArgTypes of={DialogClose} />

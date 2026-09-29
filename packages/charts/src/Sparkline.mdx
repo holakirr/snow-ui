@@ -34,7 +34,7 @@ import { Sparkline } from '@holakirr/snow-ui-charts'
 
 ## Accessibility
 
-Like the other charts, a sparkline is a `<figure>` named by `title` (or `aria-label` / `aria-labelledby`) and described by `description`, with its values in a visually hidden table (`table={false}` leaves it out; `categoryKey`, `categoryLabel` and `valueLabel` shape it). The graphic itself is hidden. It has no tooltip or keyboard navigation: it illustrates a number that should be text next to it ("7,265, +11.01%"). Without a name a development warning is logged.
+Like the other charts, a sparkline is a `<figure>` named by `title` (or `aria-label` / `aria-labelledby`) and described by `description`, with its values in a visually hidden table (`table={false}` leaves it out; `categoryKey`, `categoryLabel` and `valueLabel` shape it). The graphic itself is hidden. It has no tooltip or keyboard navigation and isn't a tab stop: it illustrates a number that should be text next to it ("7,265, +11.01%"). Without a name a development warning is logged.
 
 ## Rendering and RTL
 

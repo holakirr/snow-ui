@@ -1,5 +1,6 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { Calendar } from './Calendar'
 import * as CalendarStories from './Calendar.stories'
 
 <Meta of={CalendarStories} />
@@ -54,35 +55,6 @@ The Figma "Date only" DatePicker, with a header, both actions and a short month 
 
 With `showYearSwitcher`, the caption label opens a view of `yearRange` years (12 by default, starting five years before the current year) in four columns. Each year is a 40px button with radius 12; the current year has a Black/4% fill, and years outside `startMonth` / `endMonth` are disabled. The previous and next buttons page through the years ("Go to the previous 12 years"). Picking a year shows it in the days view, in the month of the selection (or the current month).
 
-### Which props are whose
-
-Calendar takes every react-day-picker prop. The library adds:
-
-| Prop | Default | Does |
-| --- | --- | --- |
-| `header` | — | content above the toolbar |
-| `showTodayButton`, `onTodayClick(today)` | `false` | the "Today" action: shows today's month and calls `onTodayClick`, e.g. to select today |
-| `lastSelection`, `onLastSelectionClick(date)` | — | the "Last selection" action, shown when `lastSelection` is set: shows that month and calls the handler |
-| `todayLabel`, `lastSelectionLabel` | from `messages.calendar` | the action labels |
-| `showYearSwitcher` | `true` | the caption label opens the year view |
-| `yearRange` | `12` | years per page in the year view |
-| `monthsClassName`, `monthCaptionClassName`, `dayButtonClassName`… | — | classes per part, merged into the defaults (`captionClassName` is deprecated: use `monthCaptionClassName`) |
-
-It changes these react-day-picker props:
-
-| Prop | Here |
-| --- | --- |
-| `weekStartsOn` | `1` (Monday) by default; it wins over the locale's week start |
-| `showOutsideDays` | `true` for one month, `false` for several |
-| `locale`, `dir` | taken from `SnowUIProvider` when not set |
-| `labels` | merged over the navigation labels from `messages.calendar` |
-| `hideNavigation` | hides the toolbar's previous / next buttons; react-day-picker's own navigation is always replaced by the toolbar |
-| `onPrevClick`, `onNextClick` | called by the toolbar buttons, in the year view too |
-| `today` | also the date the "Today" action goes to |
-| `classNames`, `components` | merged over the library's, slot by slot |
-
-Everything else is react-day-picker's own, unchanged: `mode`, `selected`, `onSelect`, `required`, `month`, `defaultMonth`, `onMonthChange`, `startMonth`, `endMonth`, `disabled`, `numberOfMonths`, `captionLayout`, `showWeekNumber`, `formatters`, `footer` and the rest. See the [react-day-picker docs](https://daypicker.dev).
-
 ## Variants
 
 `mode` (react-day-picker) sets the selection: `single`, `multiple` or `range`.
@@ -118,11 +90,29 @@ With `numberOfMonths`, the months sit side by side; the previous button is in th
 ## Accessibility
 
 - react-day-picker renders each month as a `grid` named by the month ("January 2025"), with `gridcell`s that carry `aria-selected` and, with a `mode` (or `onDayClick`), a day button named by its full date. In `multiple` and `range` mode the grid is `aria-multiselectable`.
-- One day is in the tab order. The arrow keys move a day (left / right) or a week (up / down); with Shift they move a month or a year. Page Up and Page Down move a month (with Shift, a year); Home and End go to the start and end of the week. Enter or Space selects the focused day.
 - The previous and next buttons are named "Go to the previous month" and "Go to the next month" and sit in a `navigation` landmark named "Month navigation". With several months there is still one landmark. They are disabled at `startMonth` / `endMonth`.
 - The toolbar actions and the year switcher are native buttons.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+The days of all the months shown share one tab stop (react-day-picker v10):
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift + Tab | move through the header, the toolbar buttons (the actions, previous, the year switcher, next) and the days. The days' tab stop is the last focused day, else the selected day, else today, else the first enabled day. In the year view each year is a tab stop of its own |
+| ArrowRight / ArrowLeft | move focus to the next / previous day; in right-to-left text ArrowLeft moves to the next day |
+| ArrowDown / ArrowUp | move focus to the same day of the next / previous week |
+| Shift + ArrowRight / Shift + ArrowLeft | move focus a month forward / back (the other way round in right-to-left text) |
+| Shift + ArrowDown / Shift + ArrowUp | move focus a year forward / back |
+| PageDown / PageUp | move focus a month forward / back; with Shift, a year |
+| Home / End | move focus to the first / last day of the week (`weekStartsOn`) |
+| Enter, Space | select the focused day (with a `mode`) and call `onDayClick`; on a toolbar or year button, activate it |
+
+The moves skip disabled days, turn the month when focus leaves the months shown, and stop at `startMonth` / `endMonth`. The arrow keys do nothing in the year view.
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -174,4 +164,23 @@ Calendar keeps react-day-picker's names: the selection is `selected` / `onSelect
 
 ## Props
 
-<Controls />
+Calendar is react-day-picker's `DayPicker` with the Figma styles, toolbar and year view. `className` goes to the surface (the `Root` slot), merged with its classes; of the other attributes, the surface gets `style`, `id`, `title`, `lang`, `role`, `aria-label`, `aria-labelledby` and `data-*`.
+
+### Calendar
+
+The table shows the library's own props and the react-day-picker props used most (`mode`, `selected`, `onSelect`, `month`, `disabled`…). Calendar takes every other [react-day-picker prop](https://daypicker.dev/api/type-aliases/DayPickerProps) too, such as `formatters`, `labels`, `classNames`, `components`, `hideNavigation` and `onPrevClick`. The `…ClassName` props add classes to one part each, merged with its defaults (`captionClassName` is deprecated: use `monthCaptionClassName`).
+
+<ArgTypes of={Calendar} />
+
+### react-day-picker props Calendar changes
+
+| Prop | Here |
+| --- | --- |
+| `weekStartsOn` | `1` (Monday) by default; it wins over the locale's week start |
+| `showOutsideDays` | `true` for one month, `false` for several |
+| `locale`, `dir` | taken from `SnowUIProvider` when not set |
+| `labels` | merged over the navigation labels from `messages.calendar` |
+| `hideNavigation` | hides the toolbar's previous / next buttons; react-day-picker's own navigation is always replaced by the toolbar |
+| `onPrevClick`, `onNextClick` | called by the toolbar buttons, in the year view too |
+| `today` | also the date the "Today" action goes to |
+| `classNames`, `components` | merged over the library's, slot by slot |

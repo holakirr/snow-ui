@@ -34,6 +34,11 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
+    // Not in the generated table: the props are generic (polymorphic).
+    className: {
+      description: "Merged with the component's classes (yours win conflicts).",
+      table: { type: { summary: 'string' } },
+    },
     vertical: { control: { type: 'boolean' } },
     flip: { control: { type: 'boolean' } },
     interactive: { control: { type: 'boolean' } },

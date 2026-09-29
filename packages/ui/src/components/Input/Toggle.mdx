@@ -80,12 +80,21 @@ The colour is the `--segment-fg` custom property, which hover, focus and the on 
 
 ## Accessibility
 
-- It renders a native `<button type="button">` with `aria-pressed`: screen readers announce a toggle button, pressed or not. Space and Enter toggle it.
+- It renders a native `<button type="button">` with `aria-pressed`: screen readers announce a toggle button, pressed or not.
 - The accessible name is the content. An icon-only toggle has no text, so give it an `aria-label`; without a name, it logs a development warning. Keep the name the same in both states: `aria-pressed` conveys the state.
 - `disabled` removes it from the tab order.
 - Toggle renders no built-in strings.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the toggle |
+| Space, Enter | turn it on or off |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -135,5 +144,7 @@ The state is `pressed` (controlled) or `defaultPressed` (uncontrolled), with `on
 - [Button](?path=/docs/components-button--docs): an action without a state.
 
 ## Props
+
+Toggle is the [Radix Toggle](https://www.radix-ui.com/primitives/docs/components/toggle#api-reference) root with the Figma styles. It takes the props below, `className` (merged with its classes) and the attributes of the `<button>` it renders. `toggleVariants({ variant, size, iconOnly, className })` returns the same classes for an element of your own.
 
 <Controls />

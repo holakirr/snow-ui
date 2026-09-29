@@ -1,5 +1,15 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  Toast,
+  ToastAction,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from './Toast'
+import { Toaster } from './Toaster'
 import * as ToasterStories from './Toaster.stories'
 
 <Meta of={ToasterStories} />
@@ -95,13 +105,26 @@ The toast stays dark in both themes: the Figma component pins its colours to Sno
 
 ## Accessibility
 
-- The viewport is a `region` landmark named "Notifications (F8)" (`messages.toast.region`, where `{hotkey}` becomes the shortcut). F8 moves focus to the viewport.
+- The viewport is a `region` landmark named "Notifications (F8)" (`messages.toast.region`, where `{hotkey}` becomes the shortcut).
 - Each toast is announced in a live region when it appears, after "Notification" (`messages.toast.label`): assertively for the default `type="foreground"`, politely for `type="background"`.
-- A toast is focusable (in the viewport list), and Escape closes it. Focus in a stack spreads it, so the toasts behind the front one are visible while you move through them.
+- A toast is a focusable `<li>` in the viewport list. While focus or the pointer is in the region, the toasts don't close by themselves. Focus in a stack spreads it, so the toasts behind the front one are visible while you move through them.
 - The close button is named "Close" (`messages.toast.close`); `aria-label` on `ToastClose` overrides it. It has the `focus-ring` and a 24px hit area (WCAG 2.5.8) around its 16px (`sm`) or 20px (`lg`) box.
 - For an action, use `ToastAction` with `altText`: Radix requires it, and it tells screen-reader users how to do the action another way, since they hear the toast without moving to it (and a toast with its own `duration` may close before they reach it). `ToastAction` closes the toast when clicked.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+Radix Toast (no interaction test covers these keys):
+
+| Key | Action |
+| --- | --- |
+| F8 | move focus to the notifications region (`hotkey` on `ToastViewport`) |
+| Tab / Shift + Tab | move through the toasts and the buttons in them; the region is in the tab order where `<Toaster />` (or `ToastViewport`) is rendered |
+| Enter, Space | on a `ToastAction` or a `ToastClose`: run it and close the toast |
+| Escape | close the focused toast. With focus elsewhere, close the newest toast, unless a layer opened after it (a dialog, a menu, a tooltip) takes Escape first |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -167,4 +190,52 @@ Pass the same `size` to `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction`
 
 ## Props
 
-<Controls />
+`Toaster` is this library's; the other parts are the [Radix Toast](https://www.radix-ui.com/primitives/docs/components/toast#api-reference) parts with the Figma styles. They take the props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### Toaster
+
+Renders the toasts from `toast()` in a `ToastProvider` and a `ToastViewport`. `duration` (3000ms) applies to toasts without an `action` or a `duration` of their own; `id` shows only the toasts created with the same `toasterId`.
+
+<ArgTypes of={Toaster} />
+
+### ToastProvider
+
+Holds the toasts of a hand-composed layout; it renders nothing. `duration` is 5000ms by default (Radix), `label` defaults to `messages.toast.label`, and `swipeDirection` to `right` (`left` in right-to-left text).
+
+<ArgTypes of={ToastProvider} />
+
+### ToastViewport
+
+The `region` and the `<ol>` of toasts, fixed at the bottom centre. `label` defaults to `messages.toast.region`; `hotkey` (`["F8"]` by default) is the shortcut that focuses it.
+
+<ArgTypes of={ToastViewport} />
+
+### Toast
+
+One toast, an `<li>`: `open` / `defaultOpen` / `onOpenChange`, its `duration`, `type` (`foreground` or `background`, for the announcement) and `size`. The status icon is drawn by `Toaster` only: a hand-composed `Toast` with `status` shows no icon.
+
+<ArgTypes of={Toast} />
+
+### ToastTitle
+
+The title, a `<div>`; pass the toast's `size`.
+
+<ArgTypes of={ToastTitle} />
+
+### ToastDescription
+
+The description, a `<div>` at 80% opacity; pass the toast's `size`.
+
+<ArgTypes of={ToastDescription} />
+
+### ToastAction
+
+A Filled `<button>` that closes the toast when clicked. `altText` is required: the toast's announcement reads it in place of the button.
+
+<ArgTypes of={ToastAction} />
+
+### ToastClose
+
+The close `<button>`, a 16px close icon named "Close" (`messages.toast.close`) unless you pass `aria-label`.
+
+<ArgTypes of={ToastClose} />

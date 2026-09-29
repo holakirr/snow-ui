@@ -1,5 +1,17 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetOverlay,
+  SheetPortal,
+  SheetTitle,
+  SheetTrigger,
+} from './Sheet'
 import * as SheetStories from './Sheet.stories'
 
 <Meta of={SheetStories} />
@@ -95,12 +107,23 @@ Open, to compare the mask and the glass panel in both themes: [Open story](?path
 - `SheetContent` is a `role="dialog"` element. `SheetTitle` names it and `SheetDescription` describes it. Always render a `SheetTitle`; hide it with `className="sr-only"` if the design has no visible title, as the mobile Sidebar does.
 - The sheet is modal (Radix `modal`, on by default):
   - Opening moves focus into the panel, to its first focusable element: the close button.
-  - Tab and Shift+Tab stay inside the panel.
   - The rest of the page is hidden from assistive technology (`aria-hidden`) and ignores the pointer; the mask locks the page scroll.
 - Escape, the close button, a `SheetClose` or a click on the mask closes it. Focus then returns to the trigger.
 - The close button's accessible name is "Close" (`messages.sheet.close`); `closeLabel` replaces it. It is the only built-in string.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+The sheet's own keys (Radix Dialog); the fields and buttons inside keep theirs:
+
+| Key | Action |
+| --- | --- |
+| Enter, Space | on the trigger: open the sheet and move focus to the close button; on the close button or a `SheetClose`: close it |
+| Tab / Shift + Tab | move to the next / previous focusable element in the panel; after the last one focus wraps to the first (and back), so it doesn't leave the sheet |
+| Escape | close the sheet and return focus to the trigger; a menu, Select or Popover open inside the sheet takes Escape first |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -168,4 +191,64 @@ const [open, setOpen] = useState(false)
 
 ## Props
 
-<Controls />
+`Sheet`, `SheetTrigger`, `SheetPortal`, `SheetOverlay`, `SheetContent`, `SheetTitle`, `SheetDescription` and `SheetClose` are the [Radix Dialog](https://www.radix-ui.com/primitives/docs/components/dialog#api-reference) parts with the Figma styles; `SheetHeader` and `SheetFooter` are this library's `<div>`s. They take the props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### Sheet
+
+The root: it holds the open state and renders nothing. Controlled with `open` and `onOpenChange`, or uncontrolled with `defaultOpen`; `modal` is `true` by default.
+
+<ArgTypes of={Sheet} />
+
+### SheetTrigger
+
+A `<button>` with `aria-haspopup="dialog"` and `aria-expanded` that opens the sheet; with `asChild` your element (usually a Button) is the trigger.
+
+<ArgTypes of={SheetTrigger} />
+
+### SheetPortal
+
+Renders its children in a portal, in `container` (`<body>` by default). `SheetContent` already renders one; use it for a custom composition.
+
+<ArgTypes of={SheetPortal} />
+
+### SheetOverlay
+
+The mask, a fixed `<div>` over the page. `SheetContent` already renders one; use it inside a `SheetPortal` for a custom composition.
+
+<ArgTypes of={SheetOverlay} />
+
+### SheetContent
+
+The `role="dialog"` panel, in a portal with the mask, on the `side` edge, with the close button first (named by `closeLabel`). `onOpenAutoFocus` and `onCloseAutoFocus` can prevent the focus moves; `onEscapeKeyDown` and `onInteractOutside` can keep the sheet open.
+
+<ArgTypes of={SheetContent} />
+
+### SheetHeader
+
+A `<div>` for the title and the description.
+
+<ArgTypes of={SheetHeader} />
+
+### SheetFooter
+
+A `<div>` for the actions: a column on small screens, a row from `sm`.
+
+<ArgTypes of={SheetFooter} />
+
+### SheetTitle
+
+An `<h2>` that names the sheet (`aria-labelledby`).
+
+<ArgTypes of={SheetTitle} />
+
+### SheetDescription
+
+A `<p>` that describes the sheet (`aria-describedby`).
+
+<ArgTypes of={SheetDescription} />
+
+### SheetClose
+
+A `<button>` that closes the sheet; with `asChild` your element (e.g. a Cancel Button) is the close button.
+
+<ArgTypes of={SheetClose} />

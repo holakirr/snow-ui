@@ -67,6 +67,7 @@ Segments have `data-state`, so you can recolour them: `[&>[data-state=filled]]:b
 
 - Without `value`, Strip is decorative: `aria-hidden="true"`.
 - With `value`, it is a `progressbar` with `aria-valuemin` 0, `aria-valuemax` = `count` and `aria-valuenow` = the filled segments. Give it a name with `aria-label` or `aria-labelledby`.
+- It isn't focusable and is not a tab stop, with or without `value`.
 - For a measurement rather than progress (password strength, disk usage), pass `role="meter"`, and `aria-valuetext` when the number means little on its own ("Weak").
 - Filled segments are Black/100% against Black/10% empty ones. If you recolour them, keep the filled ones distinguishable, and show the value in text too, as the Figma examples do ("86 of 100 Used").
 
@@ -104,5 +105,7 @@ None of the package's deviations from the Figma kit apply to Strip.
 - [Typography](?path=/docs/components-text-text--docs): the label and value text next to the strip.
 
 ## Props
+
+Strip renders a `<div>` of `<span>` segments and takes the `<div>` attributes (`role`, `aria-label`, `aria-valuetext`…), but no `children`; `className` merges with its classes.
 
 <Controls />

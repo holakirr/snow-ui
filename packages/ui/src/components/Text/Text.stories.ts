@@ -13,7 +13,13 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  argTypes: {},
+  argTypes: {
+    // Not in the generated table: the props are generic (polymorphic).
+    className: {
+      description: "Merged with the component's classes (yours win conflicts).",
+      table: { type: { summary: 'string' } },
+    },
+  },
   args: {
     children: 'Text',
     className: 'text-black',

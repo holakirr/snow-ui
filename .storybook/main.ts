@@ -2,6 +2,7 @@ import type { StorybookConfig } from '@storybook/react-vite'
 import remarkGfm from 'remark-gfm'
 // The ui and icons packages from source (the charts import `@holakirr/snow-ui`).
 import { workspaceAliases } from '../packages/charts/workspace-aliases.ts'
+import { reactDocgenTypescriptOptions } from './docgen.ts'
 
 // One Storybook for every workspace package (deployed to snow-ui.holakirr.com).
 // Run it from the repository root: `bun run storybook` / `bun run build:storybook`.
@@ -37,7 +38,10 @@ const config: StorybookConfig = {
   ],
   framework: '@storybook/react-vite',
   typescript: {
-    reactDocgen: 'react-docgen',
+    // The props tables: react-docgen-typescript, which follows Radix, cva
+    // and shared prop types (react-docgen left half the tables empty).
+    reactDocgen: 'react-docgen-typescript',
+    reactDocgenTypescriptOptions,
   },
   viteFinal: async (viteConfig) => {
     const { default: react } = await import('@vitejs/plugin-react')

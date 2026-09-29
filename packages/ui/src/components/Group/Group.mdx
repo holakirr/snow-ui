@@ -70,7 +70,8 @@ import { Group } from '@holakirr/snow-ui'
 ## Accessibility
 
 - It renders `role="group"`. Give the group a name with `aria-label` (or `aria-labelledby`) when the items need context, e.g. "Toolbar" or "Text formatting".
-- `role` can be changed, e.g. to `role="toolbar"`. Group adds no keyboard behaviour: a toolbar is expected to move focus with the arrow keys, which you'd have to add yourself. Without that, keep `group`, where each item is its own tab stop.
+- The group itself isn't focusable and is not a tab stop; each focusable item in it is its own tab stop.
+- `role` can be changed, e.g. to `role="toolbar"`. Group adds no keyboard behaviour: a toolbar is expected to move focus with the arrow keys, which you'd have to add yourself. Without that, keep `group`.
 - `reverse` changes only the visual order. Screen readers and the Tab key follow the DOM order, so a reversed group reads and tabs in the opposite order to what is seen. Prefer ordering the children in the DOM when the order matters.
 
 None of the package's deviations from the Figma kit apply to Group itself; its items keep their own.
@@ -107,5 +108,7 @@ None of the package's deviations from the Figma kit apply to Group itself; its i
 - [Separator](?path=/docs/components-separator--docs): a line between groups.
 
 ## Props
+
+Group renders a `<div role="group">` and takes its attributes (`aria-label`, `role`…); `className` merges with its classes.
 
 <Controls />

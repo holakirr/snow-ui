@@ -61,7 +61,7 @@ The group has no size of its own: set `size` on the avatars, all the same.
 
 - The row is a `<div>` and the wrappers are `<span>`s, with no roles: screen readers read each avatar in turn (the image `alt` or the fallback initials), then "N more" (`messages.avatarGroup.more`; the visible "+N" is `aria-hidden`).
 - "N more" alone doesn't say what it counts. Name the group, e.g. `role="group"` with `aria-label="Assigned to 5 people"`, or put the full list of names in visually hidden text and hide the row with `aria-hidden`.
-- The avatars aren't interactive. To show who is hidden behind "+N", add a control next to the group (a [Button](?path=/docs/components-button--docs) that opens a [Popover](?path=/docs/components-popover--docs) with the list).
+- The group and its avatars aren't focusable: none of them is a tab stop. To show who is hidden behind "+N", add a control next to the group (a [Button](?path=/docs/components-button--docs) that opens a [Popover](?path=/docs/components-popover--docs) with the list).
 
 No row of the README's table of deviations from the Figma kit applies to AvatarGroup.
 
@@ -90,5 +90,7 @@ No row of the README's table of deviations from the Figma kit applies to AvatarG
 - [ListItem](?path=/docs/components-listitem--docs): people with names and details.
 
 ## Props
+
+AvatarGroup renders a `<div>` and takes its attributes (`role`, `aria-label`…); `className` merges with the row's classes.
 
 <Controls />

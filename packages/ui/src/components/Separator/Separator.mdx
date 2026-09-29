@@ -58,7 +58,7 @@ A single `<div>` with `data-orientation`: a Black/10% fill with fully rounded en
 
 - `decorative` is `true` by default (unlike Radix's default): the line gets `role="none"` and is ignored by assistive technology. Most separators only repeat a structure that headings or lists already express.
 - `decorative={false}` renders `role="separator"`, with `aria-orientation="vertical"` for a vertical line (horizontal is the implicit orientation). Use it when the break is part of the content's meaning.
-- It isn't focusable: it is not a resizable splitter.
+- It isn't focusable and is not a tab stop: it is not a resizable splitter.
 
 None of the package's deviations from the Figma kit apply to Separator.
 
@@ -96,5 +96,7 @@ Separator passes `asChild` to the Radix primitive, which renders the only child 
 - [Card](?path=/docs/components-card--docs): a surface whose sections a separator can divide.
 
 ## Props
+
+Separator is the [Radix Separator](https://www.radix-ui.com/primitives/docs/components/separator#api-reference) root with the Figma styles: a `<div>` (or the `asChild` child) that takes the `<div>` attributes, with `className` merged with its classes. Unlike Radix, `decorative` is `true` by default.
 
 <Controls />

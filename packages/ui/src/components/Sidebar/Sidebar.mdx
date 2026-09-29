@@ -1,5 +1,30 @@
-import { Canvas, Controls, Meta, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInput,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+} from './Sidebar'
 import * as SidebarStories from './Sidebar.stories'
 
 <Meta of={SidebarStories} />
@@ -143,14 +168,26 @@ Below 768px wide (`useIsMobile`) the sidebar renders in a [Sheet](?path=/docs/co
 - The desktop sidebar is a set of `<div>`s with no landmark: wrap its navigation in a `<nav>` with an `aria-label`. `SidebarInset` is a `<main>`.
 - Menus are `<ul>` lists. `SidebarMenuButton`, `SidebarGroupAction` and `SidebarMenuAction` render a `<button>` without a `type`, so inside a form pass `type="button"`. With `asChild` the child (a link) is the control.
 - `isActive` only sets `data-active` for the fill: put `aria-current="page"` on the current page's link yourself.
-- Every button and link is in the tab order; there are no arrow-key shortcuts between items. Collapsed off-canvas, the sidebar is `visibility: hidden` once it has slid out, so Tab skips it and screen readers don't find it. Ctrl+B or ⌘B toggles the sidebar from anywhere on the page (the provider listens on `window` and prevents the browser's default), except in text fields and rich-text editors, where it stays their shortcut (bold), and after a handler has called `preventDefault()`.
 - `SidebarTrigger` is named "Toggle Sidebar" (visually hidden text, `messages.sidebar.toggle`); `aria-label` replaces it. It sets `aria-expanded` (the sidebar is open; on small screens, the sheet) and `aria-controls` (the sidebar's generated `id`).
 - `SidebarRail` is for pointers only (`tabIndex={-1}`), named and titled "Toggle Sidebar"; the trigger is the keyboard path.
 - Collapsed to icons, the menu buttons keep their text in the DOM (clipped), so their names stay; `tooltip` shows the label on hover and keyboard focus.
-- On small screens the sheet is a modal Radix Dialog: focus moves into it and stays there, Escape or a click outside closes it, and its title "Sidebar" and description "Displays the mobile sidebar." are for screen readers only.
+- On small screens the sheet is a modal Radix Dialog: focus moves into it, a click outside closes it, and its title "Sidebar" and description "Displays the mobile sidebar." are for screen readers only. It has no close button.
 - `showOnHover` actions become visible when their item has keyboard focus.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+Every button, link and field is a tab stop; there are no arrow keys between items:
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift + Tab | move to the next / previous button, link or field, in DOM order. `SidebarRail` is not a tab stop. A collapsed `offcanvas` sidebar is `visibility: hidden` once it has slid out, so Tab skips it (and screen readers don't find it). In the small-screen sheet, focus stays inside the sheet |
+| Enter, Space | activate the focused button (`SidebarTrigger` opens and closes the sidebar); Enter follows a link |
+| Ctrl + B / ⌘ + B | open or close the sidebar (the sheet on small screens) from anywhere on the page: `SidebarProvider` listens for a lowercase `b` on `window` and prevents the browser's default. Not in text fields and rich-text editors, where it stays their shortcut (bold), nor after a handler has called `preventDefault()` |
+| Escape | close the small-screen sheet |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -236,4 +273,142 @@ The small-screen sheet's state isn't a prop: use `useSidebar()`, which returns `
 
 ## Props
 
-<Controls />
+The parts render plain elements, or library components (`SidebarTrigger` a Button, `SidebarInput` an Input, `SidebarSeparator` a Separator), with the Figma styles: each takes the props below, `className` (merged with the part's classes) and the attributes of the element it renders. The parts with `asChild` render the only child instead. `useSidebar()` returns the state inside a `SidebarProvider` (see Composition).
+
+### SidebarProvider
+
+Holds the state and renders the layout's flex `<div>`. The desktop state is `open` with `onOpenChange` (controlled) or `defaultOpen` (uncontrolled, `true` by default), saved in the `sidebar:state` cookie. It handles Ctrl + B / ⌘ + B.
+
+<ArgTypes of={SidebarProvider} />
+
+### Sidebar
+
+The panel: `side` (`start` by default), `variant` (`sidebar`) and `collapsible` (`offcanvas`) set its edge, look and collapsed form. `className` and the other attributes go to the panel's `<div>`, or to the sheet on small screens.
+
+<ArgTypes of={Sidebar} />
+
+### SidebarTrigger
+
+A [Button](?path=/docs/components-button--docs) (`borderless` and `sm` by default) with the sidebar icon, named "Toggle Sidebar", that opens and closes the sidebar. It takes the Button props; your `onClick` runs first.
+
+<ArgTypes of={SidebarTrigger} />
+
+### SidebarRail
+
+A `<button>` strip on the sidebar's inner edge that toggles it on click. It is not a tab stop.
+
+<ArgTypes of={SidebarRail} />
+
+### SidebarInset
+
+The `<main>` next to the sidebar, rendered after `Sidebar`.
+
+<ArgTypes of={SidebarInset} />
+
+### SidebarInput
+
+An [Input](?path=/docs/components-input-input--docs), 32px high and full width. `className` styles the field; the other attributes go to the `<input>`.
+
+<ArgTypes of={SidebarInput} />
+
+### SidebarHeader
+
+The `<div>` column at the top of the sidebar.
+
+<ArgTypes of={SidebarHeader} />
+
+### SidebarFooter
+
+The `<div>` column at the bottom of the sidebar.
+
+<ArgTypes of={SidebarFooter} />
+
+### SidebarSeparator
+
+A [Separator](?path=/docs/components-separator--docs) with 16px side margins, decorative by default.
+
+<ArgTypes of={SidebarSeparator} />
+
+### SidebarContent
+
+The `<div>` between the header and the footer, which scrolls.
+
+<ArgTypes of={SidebarContent} />
+
+### SidebarGroup
+
+A section, a `<div>`.
+
+<ArgTypes of={SidebarGroup} />
+
+### SidebarGroupLabel
+
+The section heading, a `<div>` (or the only child with `asChild`). It hides when the sidebar collapses to icons.
+
+<ArgTypes of={SidebarGroupLabel} />
+
+### SidebarGroupAction
+
+A `<button>` at the heading's end (or the only child with `asChild`). It has no `type`: pass `type="button"` inside a form.
+
+<ArgTypes of={SidebarGroupAction} />
+
+### SidebarGroupContent
+
+The `<div>` that holds the section's menu.
+
+<ArgTypes of={SidebarGroupContent} />
+
+### SidebarMenu
+
+The `<ul>` of menu items.
+
+<ArgTypes of={SidebarMenu} />
+
+### SidebarMenuItem
+
+An `<li>` with a menu button and its optional action, badge and submenu.
+
+<ArgTypes of={SidebarMenuItem} />
+
+### SidebarMenuButton
+
+The nav item: a `<button>` (no `type`) or, with `asChild`, your link. `isActive` sets the fill (`data-active`), `variant` and `size` (both `default` by default) the look, and `tooltip` the label shown while the sidebar is collapsed to icons.
+
+<ArgTypes of={SidebarMenuButton} />
+
+### SidebarMenuAction
+
+A `<button>` at the item's end (or the only child with `asChild`); `showOnHover` hides it on desktop until the item is hovered or focused.
+
+<ArgTypes of={SidebarMenuAction} />
+
+### SidebarMenuBadge
+
+A `<div>` with a count at the item's end.
+
+<ArgTypes of={SidebarMenuBadge} />
+
+### SidebarMenuSkeleton
+
+A `<div>` loading row, with an icon placeholder when `showIcon` is set.
+
+<ArgTypes of={SidebarMenuSkeleton} />
+
+### SidebarMenuSub
+
+The `<ul>` of a submenu, inside a `SidebarMenuItem`.
+
+<ArgTypes of={SidebarMenuSub} />
+
+### SidebarMenuSubItem
+
+An `<li>` in a submenu.
+
+<ArgTypes of={SidebarMenuSubItem} />
+
+### SidebarMenuSubButton
+
+A submenu link: an `<a>` (give it an `href`) or, with `asChild`, your link. `size` is `md` (36px, the default) or `sm` (28px); `isActive` sets the fill.
+
+<ArgTypes of={SidebarMenuSubButton} />

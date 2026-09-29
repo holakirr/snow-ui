@@ -91,11 +91,20 @@ An icon in `startContent` with no `label` and no `endContent` makes a square ico
 
 ## Accessibility
 
-- It renders a native `<button type="button">`: it is in the tab order and Enter and Space activate it. Pass `type="submit"` to submit a form.
+- It renders a native `<button type="button">`. Pass `type="submit"` to submit a form.
 - The accessible name is the label (plus any `children`). An icon-only button has no text, so give it an `aria-label` (the stories use `title`); a button whose only content is icons (`startContent`, `endContent` or children) and has no name logs a development warning. The label of an `aria-hidden` icon names nothing. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
-- `disabled` removes the button from the tab order; screen readers announce it as unavailable.
+- Screen readers announce a `disabled` button as unavailable.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the button; a `disabled` button is skipped |
+| Enter, Space | activate the button (with `type="submit"`, submit its form). With `asChild` and a link, Enter follows the link and Space does nothing |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -161,5 +170,7 @@ The `as` prop (`<Button as="a" href="/">`) is deprecated: it logs a one-time dev
 - [Tooltip](?path=/docs/components-tooltip--docs): a hint for an icon-only button.
 
 ## Props
+
+`className` merges with the button's classes (yours win conflicts); the other attributes (`type`, `disabled`, `onClick`, `aria-label`…) go to the `<button>`, or to the child with `asChild`.
 
 <Controls />

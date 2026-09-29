@@ -1,0 +1,141 @@
+diff --git a/lib/parser.js b/lib/parser.js
+index 3e83fdc9f6cb975b025aa6875723f7cd5652376e..cd1d440d401620907113bcd1ae4c0d106bfdabf0 100644
+--- a/lib/parser.js
++++ b/lib/parser.js
+@@ -19,7 +19,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.getDefaultExportForFile = exports.Parser = exports.withCompilerOptions = exports.withCustomConfig = exports.withDefaultConfig = exports.parse = exports.defaultOptions = exports.defaultParserOpts = void 0;
+ var fs = require("fs");
+ var path = require("path");
+-var ts = require("typescript");
++// snow-ui: TypeScript 7 has no JavaScript API; use TypeScript 6 (see CONTRIBUTING.md).
++var ts = require("@typescript/typescript6");
+ var buildFilter_1 = require("./buildFilter");
+ var trimFileName_1 = require("./trimFileName");
+ exports.defaultParserOpts = {};
+@@ -503,7 +504,11 @@ var Parser = /** @class */ (function () {
+         propertiesOfProps.forEach(function (prop) {
+             var propName = prop.getName();
+             var parent = getParentType(prop);
+-            var cacheKey = (parent === null || parent === void 0 ? void 0 : parent.fileName) + "_" + propName;
++            // snow-ui: key the cache by every declaration (file and interface), not
++            // only the first one's file: same-named props of different interfaces in
++            // one file (Radix `TabsProps.value`, `TabsTriggerProps.value`) or merged
++            // with a DOM attribute (Badge's own `content`) shared one entry.
++            var cacheKey = (getDeclarations(prop) || []).map(function (d) { return d.fileName + "#" + d.name; }).join("|") + "_" + propName;
+             if (_this.propertiesOfPropsCache.has(cacheKey)) {
+                 result[propName] = _this.propertiesOfPropsCache.get(cacheKey);
+             }
+@@ -542,7 +547,7 @@ var Parser = /** @class */ (function () {
+                 var propItem = __assign({ defaultValue: defaultValue, description: description, name: propName, parent: parent, declarations: parents, required: required,
+                     type: type }, propTags);
+                 if (parent === null || parent === void 0 ? void 0 : parent.fileName.includes('node_modules')) {
+-                    _this.propertiesOfPropsCache.set(parent.fileName + "_" + propName, propItem);
++                    _this.propertiesOfPropsCache.set(cacheKey, propItem);
+                 }
+                 result[propName] = propItem;
+             }
+@@ -626,7 +631,28 @@ var Parser = /** @class */ (function () {
+             .filter(function (stmt) { return !!stmt.name; })
+             .filter(function (stmt) {
+             return _this.checker.getSymbolAtLocation(stmt.name) === symbol;
+-        })), source.statements.filter(function (stmt) { return ts.isExpressionStatement(stmt) || ts.isVariableStatement(stmt); }));
++        })), source.statements.filter(function (stmt) {
++            // snow-ui: only this component's statements (`const X = …`,
++            // `X.defaultProps = …`), not every statement of the file: otherwise the
++            // defaults destructured by the other components of a file (a compound
++            // component's parts) end up in this one's table.
++            var isComponent = function (node) {
++                return !!node && (_this.checker.getSymbolAtLocation(node) === symbol ||
++                    (ts.isIdentifier(node) && node.text === symbol.getName()));
++            };
++            if (ts.isVariableStatement(stmt)) {
++                return stmt.declarationList.declarations.some(function (declaration) {
++                    return isComponent(declaration.name);
++                });
++            }
++            if (ts.isExpressionStatement(stmt)) {
++                var expression = stmt.expression;
++                return (ts.isBinaryExpression(expression) &&
++                    ts.isPropertyAccessExpression(expression.left) &&
++                    isComponent(expression.left.expression));
++            }
++            return false;
++        }));
+         return possibleStatements.reduce(function (res, statement) {
+             if (statementIsClassDeclaration(statement) && statement.members.length) {
+                 var possibleDefaultProps = statement.members.filter(function (member) {
+@@ -869,58 +895,24 @@ function getTextValueOfClassMember(classDeclaration, memberName) {
+     return textValue || '';
+ }
+ function getTextValueOfFunctionProperty(exp, source, propertyName) {
+-    var identifierStatements = source.statements
+-        .filter(function (statement) { return ts.isExpressionStatement(statement); })
+-        .filter(function (statement) {
+-        var _a, _b, _c, _d;
+-        var expr = statement
+-            .expression;
+-        var locals = Array.from(source.locals);
+-        var hasOneLocalExport = locals.filter(function (local) { return !!local[1].exports; }).length === 1;
+-        if (hasOneLocalExport) {
+-            return (expr.left &&
+-                expr.left.name &&
+-                expr.left.name.escapedText ===
+-                    propertyName);
++    // snow-ui: match `X.displayName = "…"` by the object it is set on. The
++    // original matched through TypeScript's internal flow nodes and otherwise
++    // fell back to the file's first `displayName`, so in a file of several
++    // components (Accordion) one took another's name and, as the docs are
++    // deduplicated by name, the other's table disappeared.
++    var statement = source.statements.find(function (statement) {
++        if (!ts.isExpressionStatement(statement)) {
++            return false;
+         }
+-        /**
+-         * Ensure the .displayName is for the currently processing function.
+-         *
+-         * This avoids the following situations:
+-         *
+-         *  - A file has multiple functions, one has `.displayName`, and all
+-         *    functions ends up with that same `.displayName` value.
+-         *
+-         *  - A file has multiple functions, each with a different
+-         *    `.displayName`, but the first is applied to all of them.
+-         */
+-        var flowNodeNameEscapedText = (_d = (_c = (_b = (_a = statement) === null || _a === void 0 ? void 0 : _a.flowNode) === null || _b === void 0 ? void 0 : _b.node) === null || _c === void 0 ? void 0 : _c.name) === null || _d === void 0 ? void 0 : _d.escapedText;
+-        return (expr.left &&
+-            expr.left.name &&
+-            expr.left.name.escapedText ===
+-                propertyName &&
+-            flowNodeNameEscapedText === exp.escapedName);
+-    })
+-        .filter(function (statement) {
+-        return ts.isStringLiteral(statement
+-            .expression.right);
+-    })
+-        .map(function (statement) {
+-        var expressionStatement = statement
+-            .expression;
+-        var name = expressionStatement.left
+-            .expression.escapedText;
+-        var value = expressionStatement.right.text;
+-        return [name, value];
++        var expr = statement.expression;
++        return (ts.isBinaryExpression(expr) &&
++            ts.isPropertyAccessExpression(expr.left) &&
++            ts.isIdentifier(expr.left.expression) &&
++            expr.left.expression.escapedText === exp.escapedName &&
++            expr.left.name.escapedText === propertyName &&
++            ts.isStringLiteral(expr.right));
+     });
+-    if (identifierStatements.length > 0) {
+-        var locatedStatement = identifierStatements.find(function (statement) { return statement[0] === exp.escapedName; });
+-        if (locatedStatement) {
+-            return locatedStatement[1];
+-        }
+-        return identifierStatements[0][1] || '';
+-    }
+-    return '';
++    return statement ? statement.expression.right.text : '';
+ }
+ function computeComponentName(exp, source, customComponentTypes) {
+     if (customComponentTypes === void 0) { customComponentTypes = []; }

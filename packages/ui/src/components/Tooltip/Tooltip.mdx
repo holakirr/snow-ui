@@ -1,5 +1,12 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipShortcut,
+  TooltipTrigger,
+} from './Tooltip'
 import * as TooltipStories from './Tooltip.stories'
 
 <Meta of={TooltipStories} />
@@ -90,11 +97,23 @@ The content has `data-variant` (`dark` or `light`) and `data-side` for your own 
 
 - The content is `role="tooltip"`. While it is open the trigger's `aria-describedby` points at it, so the text is the trigger's accessible description, not its name: an icon-only button still needs an `aria-label`. With `aria-label` on `TooltipContent`, screen readers get that text instead of the content.
 - It opens on hover (after the provider's `delayDuration`) and on keyboard focus, but not when a pointer press focuses the trigger. The pointer can move from the trigger onto the tooltip without closing it.
-- Escape hides it and keeps the focus on the trigger; the next focus shows it again (the Default story's interaction test). Blur, a click or a pointer press on the trigger also close it.
+- Blur, a click or a pointer press on the trigger close it.
 - The tooltip is not modal and takes no focus: it can't hold interactive content.
 - There are no built-in strings.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+Radix Tooltip, checked by the Default story's test; the trigger keeps its own keys:
+
+| Key | Action |
+| --- | --- |
+| Tab, Shift + Tab | focusing the trigger shows the tooltip at once, without the hover delay; moving focus away hides it |
+| Escape | hide the tooltip; focus stays on the trigger, and the next focus shows it again |
+| Enter, Space | activate a button trigger; its click also hides the tooltip |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -150,4 +169,34 @@ Deviations from the Figma kit (the full table is in the package README):
 
 ## Props
 
-<Controls />
+`TooltipProvider`, `Tooltip`, `TooltipTrigger` and `TooltipContent` are the [Radix Tooltip](https://www.radix-ui.com/primitives/docs/components/tooltip#api-reference) parts with the Figma styles; `TooltipShortcut` is a `<span>`. They take the props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### TooltipProvider
+
+Required above every `Tooltip`; it renders nothing. `delayDuration` (700ms by default) is the hover delay before a tooltip opens and `skipDelayDuration` (300ms) the time in which the next one opens without it. `disableHoverableContent` closes the tooltip as soon as the pointer leaves the trigger.
+
+<ArgTypes of={TooltipProvider} />
+
+### Tooltip
+
+The root of one tooltip: it holds the open state and renders nothing. Controlled with `open` and `onOpenChange`, or uncontrolled with `defaultOpen`; `delayDuration` and `disableHoverableContent` override the provider's for this tooltip.
+
+<ArgTypes of={Tooltip} />
+
+### TooltipTrigger
+
+A `<button>` described by the tooltip while it is open (`aria-describedby`); with `asChild` your focusable element (a Button, a link) is the trigger.
+
+<ArgTypes of={TooltipTrigger} />
+
+### TooltipContent
+
+The `role="tooltip"` label, in a portal: `variant` (`dark` by default) picks the Figma variant. Here `sideOffset` is 4 by default; `side` is `top` (Radix), and it flips when there isn't room (`avoidCollisions`). `aria-label` replaces the text screen readers get.
+
+<ArgTypes of={TooltipContent} />
+
+### TooltipShortcut
+
+A `<span>` for secondary text, e.g. a shortcut, at 70% opacity.
+
+<ArgTypes of={TooltipShortcut} />

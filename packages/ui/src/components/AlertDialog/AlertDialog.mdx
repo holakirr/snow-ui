@@ -1,5 +1,17 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  AlertDialogPortal,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './AlertDialog'
 import * as AlertDialogStories from './AlertDialog.stories'
 
 <Meta of={AlertDialogStories} />
@@ -92,12 +104,19 @@ When the two buttons don't fit side by side at 160px each (a phone, or long labe
 ## Accessibility
 
 - `AlertDialogContent` is a `role="alertdialog"` element. `AlertDialogTitle` names it and `AlertDialogDescription` describes it: render both (Radix warns in development without them). Screen readers read the description when it opens.
-- It is modal:
-  - Opening moves the focus to `AlertDialogCancel`, the choice that changes nothing.
-  - Tab and Shift+Tab stay inside the dialog.
-  - The rest of the page is hidden from assistive technology and ignores the pointer; the page doesn't scroll.
-- Escape and `AlertDialogCancel` close it without the action; `AlertDialogAction` closes it after its `onClick`. A click on the mask does nothing and keeps the focus in the dialog. The focus then returns to the trigger.
+- It is modal: opening moves the focus to `AlertDialogCancel`, the choice that changes nothing; the rest of the page is hidden from assistive technology and ignores the pointer, and the page doesn't scroll.
+- `AlertDialogCancel` closes it without the action; `AlertDialogAction` closes it after its `onClick`. A click on the mask does nothing and keeps the focus in the dialog. When it closes, the focus returns to the trigger.
 - Label the action with what it does ("Delete", not "OK"), so the buttons make sense without the description.
+
+### Keyboard
+
+From the Default story's interaction test and Radix Alert Dialog:
+
+| Key | Action |
+| --- | --- |
+| Enter, Space | on the trigger: open the dialog, with the focus on `AlertDialogCancel`. On `AlertDialogCancel`: close it without the action. On `AlertDialogAction`: run its `onClick` and close it |
+| Tab / Shift + Tab | move between the dialog's buttons (and any other focusable element in it); focus wraps around and doesn't leave the dialog |
+| Escape | close the dialog without the action and return the focus to the trigger |
 
 <Canvas of={AlertDialogStories.Default} />
 
@@ -173,4 +192,70 @@ const [open, setOpen] = useState(false)
 
 ## Props
 
+The parts are the [Radix Alert Dialog](https://www.radix-ui.com/primitives/docs/components/alert-dialog#api-reference) parts with the Dialog's styles; `AlertDialogHeader` and `AlertDialogFooter` are this library's `<div>`s, and the two buttons are [Buttons](?path=/docs/components-button--docs). They take the props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### AlertDialog
+
+The root: it holds the open state (controlled with `open` and `onOpenChange`, or uncontrolled with `defaultOpen`) and renders nothing.
+
 <Controls />
+
+### AlertDialogTrigger
+
+The `<button>` that opens the dialog, with `aria-haspopup="dialog"` and `aria-expanded`; with `asChild`, your element (usually a Button) is the trigger.
+
+<ArgTypes of={AlertDialogTrigger} />
+
+### AlertDialogPortal
+
+Renders its children in a portal, in `container` (`<body>` by default). `AlertDialogContent` already renders one; use it for a custom composition.
+
+<ArgTypes of={AlertDialogPortal} />
+
+### AlertDialogOverlay
+
+The mask. `AlertDialogContent` already renders one; use it inside an `AlertDialogPortal` for a custom composition.
+
+<ArgTypes of={AlertDialogOverlay} />
+
+### AlertDialogContent
+
+The `role="alertdialog"` card, in a portal with the mask. `onOpenAutoFocus` and `onCloseAutoFocus` can prevent the focus moves; `onEscapeKeyDown` can keep the dialog open on Escape.
+
+<ArgTypes of={AlertDialogContent} />
+
+### AlertDialogHeader
+
+A `<div>` that stacks the title and the description, centred.
+
+<ArgTypes of={AlertDialogHeader} />
+
+### AlertDialogTitle
+
+An `<h2>` that names the dialog (`aria-labelledby`).
+
+<ArgTypes of={AlertDialogTitle} />
+
+### AlertDialogDescription
+
+A `<p>` that describes the dialog (`aria-describedby`).
+
+<ArgTypes of={AlertDialogDescription} />
+
+### AlertDialogFooter
+
+A `<div>` that lays out the buttons side by side at equal widths.
+
+<ArgTypes of={AlertDialogFooter} />
+
+### AlertDialogCancel
+
+A Gray `lg` [Button](?path=/docs/components-button--docs) that closes the dialog without the action; it takes the Button's props, and reads "Cancel" (`messages.alertDialog.cancel`) without a `label` or children.
+
+<ArgTypes of={AlertDialogCancel} />
+
+### AlertDialogAction
+
+A Filled `lg` Button that closes the dialog after its `onClick`; `variant="destructive"` makes it red for an action that deletes something or can't be undone.
+
+<ArgTypes of={AlertDialogAction} />

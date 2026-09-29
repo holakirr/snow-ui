@@ -1,0 +1,28 @@
+{
+  // The TypeScript program react-docgen-typescript builds the docs pages'
+  // props tables from (see `typescript` in main.ts). Only docgen reads it:
+  // `bun run typecheck` uses the packages' own tsconfigs.
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "types": [],
+    // The workspace sources, as Storybook's Vite aliases resolve them, so the
+    // charts' props that come from the ui package are read from its source.
+    "paths": {
+      "@holakirr/snow-ui": ["../packages/ui/src/index.ts"],
+      "@holakirr/snow-ui-icons": ["../packages/icons/src/main.tsx"]
+    }
+  },
+  "include": [
+    "../packages/ui/src",
+    "../packages/charts/src",
+    "../packages/icons/src"
+  ],
+  "exclude": [
+    "../**/node_modules",
+    "../**/*.stories.tsx",
+    "../**/*.test.ts",
+    "../**/*.test.tsx",
+    "../**/*.figma.ts",
+    "../packages/*/src/test"
+  ]
+}

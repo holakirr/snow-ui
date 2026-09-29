@@ -1,7 +1,8 @@
 import { defineConfig } from 'vitest/config'
 
 // `bun run test:scripts`: unit tests of the repository scripts (the release
-// step's decisions). Part of `bun run test`.
+// step's decisions) and the docs pages check (docs-pages.test.ts). Part of
+// `bun run test`.
 export default defineConfig({
   test: {
     name: 'scripts',

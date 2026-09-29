@@ -87,11 +87,22 @@ Padding is 8px on each side, 4px on the side with start content or a remove butt
 ## Accessibility
 
 - The tag is a `<div>` with no role, so it is valid on its own. For a list of tags, render them in a `role="list"` container and pass `role="listitem"` to each, or wrap each in an `<li>` of a `<ul>`.
-- The remove button is a native `<button type="button">`: in the tab order, activated with Enter or Space. Its accessible name, also shown as a `title` tooltip, is "Remove tag" followed by the label; `removeLabel` replaces it.
+- The remove button is a native `<button type="button">`. Its accessible name, also shown as a `title` tooltip, is "Remove tag" followed by the label; `removeLabel` replaces it.
 - The close icon and the dot are `aria-hidden`. Icons from `@holakirr/snow-ui-icons` in `startContent` are too, unless they get an `alt`.
 - After a removal, move focus somewhere sensible (the next tag's remove button, or the field that adds tags): the focused button is gone.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+The tag itself is not focusable; only its remove button is a tab stop. Backspace and Delete don't remove a tag:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the remove button (a `default`-shape tag with `onRemove`) |
+| Enter, Space | call `onRemove` |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -138,5 +149,7 @@ The deprecated `onClose` is an alias of `onRemove`. Both `leftContent` and `onCl
 - [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the remove button's name.
 
 ## Props
+
+`className` merges with the tag's classes; the other attributes (`role`, `aria-*`…) go to the tag's `<div>`, not to the remove button.
 
 <Controls />

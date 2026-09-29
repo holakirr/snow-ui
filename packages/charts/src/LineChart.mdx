@@ -1,5 +1,6 @@
 import { ArgTypes, Canvas, Meta, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../.storybook/blocks'
+import { LineChart } from './LineChart'
 import * as LineChartStories from './LineChart.stories'
 
 <Meta of={LineChartStories} />
@@ -71,8 +72,18 @@ import { LineChart } from '@holakirr/snow-ui-charts'
 ## Accessibility
 
 - The chart is a named figure with a visually hidden table of every value (see [ChartContainer](?path=/docs/charts-chartcontainer--docs#accessibility)). Name it with `title` or `aria-labelledby` (the card heading), and summarise it in `description`.
-- Tab focuses the chart and shows the first point; ← / → move between points and the values are announced.
 - Tell series apart by more than colour: labels in the legend, `dashed` for the comparison series.
+
+### Keyboard
+
+The plot is one tab stop (Recharts' accessibility layer); the tooltip's values are announced as it moves:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the chart and show the first point's tooltip (on a later visit, an arrow key or Enter brings it back at the last point); moving focus away hides it |
+| ArrowRight / ArrowLeft | move to the next / previous point; they stop at the first and last points. In right-to-left charts ArrowLeft moves to the next point |
+| Enter | hide / show the tooltip of the current point |
+| Escape | hide the tooltip, also one shown on hover, until it moves to another point |
 
 <Canvas of={LineChartStories.KeyboardNavigation} />
 
@@ -109,6 +120,6 @@ Numbers follow the `SnowUIProvider` locale (or `locale`); the axes mirror in rig
 
 ## Props
 
-Besides the props below, every ready-made chart takes the frame props of [ChartContainer](?path=/docs/charts-chartcontainer--docs): `title`, `description`, `aria-label`, `aria-labelledby`, `aria-describedby`, `height`, `loading`, `emptyMessage`, `loadingLabel`, `keyboardHint`, `navigationLabel`, `table`, `categoryLabel`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`, `legendPosition`, `className`, `style`, `id` and `ref`.
+The table has the chart's own props and the frame props it passes to [ChartContainer](?path=/docs/charts-chartcontainer--docs) (`title`, `description`, `height`, `loading`…). The chart renders a `<figure>`: `className` is added to its class, `ref` points at it, and `aria-label`, `aria-labelledby`, `aria-describedby`, `id` and `style` go to it too.
 
-<ArgTypes of={LineChartStories} />
+<ArgTypes of={LineChart} />

@@ -77,13 +77,24 @@ A button or a link in the start or end content keeps its own clicks; any other c
 
 ## Accessibility
 
-- It renders a native `<input>` inside a `<div>`, with the role of its `type`: a textbox, `spinbutton` for `number`, `searchbox` for `search`, none for `password`. Keyboard behaviour is the browser's.
+- It renders a native `<input>` inside a `<div>`, with the role of its `type`: a textbox, `spinbutton` for `number`, `searchbox` for `search`, none for `password`.
 - The accessible name comes from `title`, which renders a `<label for>`. Without a `title`, pass `aria-label`, or render your own [Label](?path=/docs/components-label--docs) with `htmlFor` and give the input the same `id`. A placeholder is not a label.
 - `title` is the visible label, not the native tooltip attribute: the prop replaces it.
 - Give a button in the start or end content its own accessible name. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
 - `disabled` removes the field from the tab order. A `readOnly` field stays focusable and its value can be selected and copied.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Keyboard
+
+Keyboard behaviour is the browser's:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the input; a button or a link in the start or end content is a tab stop of its own |
+| Enter | submit the form the input is in, when the form has a submit button or this is its only text field (the browser's implicit submission) |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
@@ -131,5 +142,7 @@ Input is a native field: pass `value` with `onChange` to control it, or `default
 - [Label](?path=/docs/components-label--docs): a label outside the field.
 
 ## Props
+
+Input takes the props below and the attributes of the native `<input>`, which gets every other prop, `ref` included. `className` and `style` go to the field `<div>`; `inputClassName` and `inputStyle` to the `<input>`. The Figma field's class strings that Textarea uses (`basicInputClasses`, `focusInputClasses`, `staticInputClasses`, `disabledInputClasses`) are exported too, for fields of your own.
 
 <Controls />

@@ -54,7 +54,10 @@ const preview: Preview = {
     backgrounds: {
       disabled: true,
     },
-    actions: { argTypesRegex: '^on[A-Z].*' },
+    // No implicit actions (`argTypesRegex`): they turned every `on*` prop the
+    // docgen finds into an action arg, so what a story ran depended on the
+    // docgen, and Storybook throws when a play function calls one. Stories
+    // that check a handler pass `fn()` from storybook/test.
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -69,7 +72,16 @@ const preview: Preview = {
       storySort: {
         order: [
           'Guides',
-          ['Getting started', 'Registry', 'Theming', 'Localization and RTL'],
+          [
+            'Getting started',
+            'Registry',
+            'API conventions',
+            'Theming',
+            'Localization and RTL',
+            'Next.js App Router',
+            'Vite',
+            'React Router 7',
+          ],
           'Foundations',
           'Components',
           'Charts',

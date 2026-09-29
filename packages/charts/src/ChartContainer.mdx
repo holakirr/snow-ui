@@ -1,6 +1,10 @@
 import { ArgTypes, Canvas, Meta, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../.storybook/blocks'
+import { ChartContainer } from './ChartContainer'
 import * as ChartContainerStories from './ChartContainer.stories'
+import { ChartLegend, ChartLegendContent } from './ChartLegend'
+import { ChartTable } from './ChartTable'
+import { ChartTooltip, ChartTooltipContent } from './ChartTooltip'
 
 <Meta of={ChartContainerStories} />
 
@@ -92,10 +96,21 @@ A chart is a picture of numbers, so its text alternative is the numbers:
 - **Named figure.** The container is a `<figure>` named by `title` (a visually hidden `<figcaption>`), by `aria-label`, or by `aria-labelledby` pointing at the card's visible heading (the stories do this). `description` is its accessible description: say what the chart shows ("Revenue grew 20% since January"). Without a name, a development warning is logged.
 - **Named once.** Only the figure carries the chart's name; the data table inside has no caption, and the focusable plot is named for what it is (`navigationLabel`, "Data points").
 - **Data table.** With `data` and `categoryKey`, the values are also a visually hidden `<table>`: the categories as row headers and the series as column headers, the values formatted like the tooltip. It is the text alternative screen reader users browse (WCAG 1.1.1, 1.3.1). `table={false}` turns it off, e.g. when the page already has the same table.
-- **Keyboard.** Recharts' accessibility layer makes the chart's `<svg>` a focusable `application`: Tab focuses it and shows the tooltip for the first point, ← and → move between points (mirrored in right-to-left charts), Enter toggles the tooltip. Inside the named figure, the svg is named by `navigationLabel` ("Data points") and described by the `keyboardHint` ("Use the left and right arrow keys to move between data points"). While the chart has focus, the tooltip's text is announced through a polite live region (2.1.1, 4.1.3). Charts without keyboard navigation (the donut) pass `keyboardHint={false}`.
+- **Keyboard.** Recharts' accessibility layer (on by default) makes the chart's `<svg>` a focusable `application`. Inside the named figure, the svg is named by `navigationLabel` ("Data points") and described by the `keyboardHint` ("Use the left and right arrow keys to move between data points"). While the chart has focus, the text of `ChartTooltipContent` is announced through a polite live region (2.1.1, 4.1.3). Charts without keyboard navigation (the donut) pass `keyboardHint={false}`.
 - **Focus.** The focused chart gets the library's focus ring: the Figma "Focus" ring plus a 2px Black/80% outline, offset by 2px (2.4.7).
 - **Contrast.** Axis labels are `text-secondary` (Figma: Black/40%, 2.85:1) like every secondary text of the library (1.4.3). Most secondary colours (Cyan, Mint, Blue, Green…) are below 3:1 against the light backgrounds; every value they draw is also text (the table, the tooltip, and a donut's legend), so the lines and bars aren't the only way to get the information (1.4.11). Use `primary` for the series that matters most, and don't tell series apart by colour alone: labels in the legend, a dashed style (`dashed`) for comparisons (1.4.1).
 - **Motion.** Recharts animates series on mount unless the user prefers reduced motion (`animate="auto"`).
+
+### Keyboard
+
+Recharts handles the keys; they move the tooltip, whose values `ChartTooltipContent` announces:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the chart and show the first point's tooltip (on a later visit, an arrow key or Enter brings it back at the last point); moving focus away hides it |
+| ArrowRight / ArrowLeft | move to the next / previous point; they stop at the first and last points. They flip when your category axis is `reversed` (`<XAxis reversed />`, as in a right-to-left chart): ArrowLeft moves to the next point. In a `layout="vertical"` chart (horizontal bars) ArrowLeft always moves to the next category and ArrowRight to the previous one |
+| Enter | hide / show the tooltip of the current point |
+| Escape | hide the tooltip, also one shown on hover, until it moves to another point |
 
 ## Fonts and first paint
 
@@ -105,7 +120,7 @@ Recharts measures text when it first draws (the value axis fits its widest label
 
 - **Numbers** follow the `locale` prop, else the language of the nearest `SnowUIProvider` (its date-fns locale's `code`), else `en-US` (so the server and the browser render the same text). `valueFormatter` formats the tooltip, the legend values and the table; `categoryFormatter` the categories (by default their text; dates in the locale's medium date style, in UTC, so the server and the browser agree); the ready-made charts take `xTickFormatter` and `yTickFormatter` for the axes (compact numbers by default: `10K`).
 - **Strings** come from `messages.charts` of `SnowUIProvider` (`@holakirr/snow-ui` 5.1 and later; English before): `empty`, `loading`, `keyboardHint`, `navigation` (the focusable plot's name), `value` and `point` (the table headers of `DonutChart` and `Sparkline`). The props `emptyMessage`, `loadingLabel`, `keyboardHint`, `navigationLabel`, `valueLabel` and `categoryLabel` win over them. The line, area and bar charts take `navigationLabel` too.
-- **Direction** follows the `dir` prop, else the `SnowUIProvider`'s, else the computed direction of the chart's element (`<html dir="rtl">`). Right-to-left cartesian charts mirror: the category axis runs from right to left (`reversed`), the value axis moves to the right, the tooltip opens to the left, ← moves forward. The figure gets the `dir` you pass (or the provider's), so its HTML parts (legend, tooltip, table) follow it even inside a left-to-right page; the SVG keeps left-to-right text layout.
+- **Direction** follows the `dir` prop, else the `SnowUIProvider`'s, else the computed direction of the chart's element (`<html dir="rtl">`). The ready-made cartesian charts mirror in right-to-left text: the category axis runs from right to left (`reversed`), the value axis moves to the right, the tooltip opens to the left, ArrowLeft moves forward. In your own composition `ChartTooltip` flips by itself but the axes don't: reverse the category axis (`<XAxis reversed />`) and move the value axis (`<YAxis orientation="right" />`) yourself; the arrow keys follow the reversed axis. The figure gets the `dir` you pass (or the provider's), so its HTML parts (legend, tooltip, table) follow it even inside a left-to-right page; the SVG keeps left-to-right text layout.
 
 <Canvas of={ChartContainerStories.Formatters} />
 
@@ -155,4 +170,40 @@ The kit's blocks are drawings with a fixed number of bars, not data-driven compo
 
 ## Props
 
-<ArgTypes of={ChartContainerStories} />
+`ChartContainer` is the frame; `ChartTooltip` and `ChartLegend` are Recharts components (they take all of [Recharts' props](https://recharts.github.io/en-US/api)); `ChartTooltipContent`, `ChartLegendContent` and `ChartTable` take only the props in their tables.
+
+### ChartContainer
+
+The `<figure>` around your Recharts chart. It also takes the `<figure>` attributes (`aria-label`, `aria-labelledby`, `aria-describedby`, `id`, `style`…); `className` is added to its `snow-chart` class and `ref` points at it.
+
+<ArgTypes of={ChartContainer} />
+
+### ChartTooltip
+
+Recharts' `Tooltip` with the SnowUI defaults, which your props override: `ChartTooltipContent` as its `content`, a Black/20% cursor line (a Black/4% band for bars), and in right-to-left charts the tooltip on the left of the pointer.
+
+<ArgTypes of={ChartTooltip} />
+
+### ChartTooltipContent
+
+The tooltip's `<div>`: the category, then each series' dot, label and formatted value. Recharts sets `active`, `payload` and `label`.
+
+<ArgTypes of={ChartTooltipContent} />
+
+### ChartLegend
+
+Recharts' `Legend`, unchanged: pass it `content={<ChartLegendContent />}`.
+
+<ArgTypes of={ChartLegend} />
+
+### ChartLegendContent
+
+The legend's `<ul>`: each series' dot (or icon), label and optional value. Use it in `ChartContainer`'s `legend`, inside `ChartLegend` (Recharts sets `payload`), or anywhere with `config`.
+
+<ArgTypes of={ChartLegendContent} />
+
+### ChartTable
+
+The visually hidden data `<table>` that `ChartContainer` renders when it has `data` and `categoryKey`: render it yourself only for a chart drawn without `ChartContainer`.
+
+<ArgTypes of={ChartTable} />

@@ -1,5 +1,6 @@
 import { ArgTypes, Canvas, Meta, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../.storybook/blocks'
+import { BarChart } from './BarChart'
 import * as BarChartStories from './BarChart.stories'
 
 <Meta of={BarChartStories} />
@@ -68,9 +69,19 @@ import { BarChart } from '@holakirr/snow-ui-charts'
 ## Accessibility
 
 - A named figure with a visually hidden data table (see [ChartContainer](?path=/docs/charts-chartcontainer--docs#accessibility)).
-- Tab focuses the chart and shows the first category; ← / → move between categories and announce their values.
 - The tooltip's dot takes the bar's colour with `colorBy="category"`.
 - Pastel bars (Cyan, Mint, Blue…) are below 3:1 on light backgrounds: the values are also in the tooltip and the table; label the chart well and keep the category labels visible.
+
+### Keyboard
+
+The plot is one tab stop (Recharts' accessibility layer); the tooltip's values are announced as it moves:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the chart and show the first category's tooltip (on a later visit, an arrow key or Enter brings it back at the last category); moving focus away hides it |
+| ArrowRight / ArrowLeft | move to the next / previous category; they stop at the first and last categories. In right-to-left charts ArrowLeft moves to the next category. With `horizontal` bars ArrowLeft moves to the next category (down) and ArrowRight to the previous one, in both directions |
+| Enter | hide / show the tooltip of the current category |
+| Escape | hide the tooltip, also one shown on hover, until it moves to another category |
 
 ## Localization and RTL
 
@@ -97,6 +108,6 @@ Numbers follow the provider's locale. In right-to-left text the first category i
 
 ## Props
 
-Besides the props below, every ready-made chart takes the frame props of [ChartContainer](?path=/docs/charts-chartcontainer--docs): `title`, `description`, `aria-label`, `aria-labelledby`, `aria-describedby`, `height`, `loading`, `emptyMessage`, `loadingLabel`, `keyboardHint`, `navigationLabel`, `table`, `categoryLabel`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`, `legendPosition`, `className`, `style`, `id` and `ref`.
+The table has the chart's own props and the frame props it passes to [ChartContainer](?path=/docs/charts-chartcontainer--docs) (`title`, `description`, `height`, `loading`…). The chart renders a `<figure>`: `className` is added to its class, `ref` points at it, and `aria-label`, `aria-labelledby`, `aria-describedby`, `id` and `style` go to it too.
 
-<ArgTypes of={BarChartStories} />
+<ArgTypes of={BarChart} />

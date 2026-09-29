@@ -222,8 +222,9 @@ import { ru } from 'react-day-picker/locale' // a date-fns locale plus day-picke
 
 // Module scope: the same object on every render (see below).
 const messages: Messages = {
-  /* every namespace: badge, breadcrumb, calendar, commandPalette, dialog, link,
-     pagination, search, sheet, sidebar, slider, tag, toast */
+  /* every namespace: avatarGroup, badge, breadcrumb, calendar, charts,
+     commandPalette, dialog, link, pagination, search, sheet, sidebar,
+     slider, tag, toast */
 }
 
 export const Providers = ({ children }: { children: ReactNode }) => (

@@ -9,7 +9,8 @@ import { twMerge } from '../../utils/tw-merge'
 import { Typography } from '../Text'
 
 const avatarStyles = cva(
-  'brightness-100 hover:brightness-105 rounded-full transition-all overflow-hidden aspect-square flex items-center justify-center',
+  // `@container`: the fallback's initials are sized by the avatar's width.
+  '@container brightness-100 hover:brightness-105 rounded-full transition-all overflow-hidden aspect-square flex items-center justify-center',
   {
     variants: {
       size: {
@@ -64,7 +65,15 @@ const AvatarFallback: FC<AvatarFallbackProps> = ({
     )}
     {...props}
   >
-    <Typography size={12}>{children}</Typography>
+    {/* The initials grow with the avatar: 37.5% of its width (24px text in
+        the 64px `lg` avatar), never below 12px (`sm`, `md` and 24px icon
+        slots), on a 16/12 line height like the 12px text style. */}
+    <Typography
+      size={12}
+      className="text-[length:max(0.75rem,37.5cqi)] leading-[1.3333]"
+    >
+      {children}
+    </Typography>
   </AvatarPrimitive.Fallback>
 )
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName

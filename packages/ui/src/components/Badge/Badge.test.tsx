@@ -27,4 +27,25 @@ describe('Badge', () => {
     // White on indigo is 2.07:1; black is 10.15:1.
     expect(badge).toHaveClass('bg-indigo', 'text-static-black', 'rounded-80')
   })
+
+  it('puts className on the wrapper and badgeClassName on the badge', () => {
+    render(
+      <Badge
+        content="3"
+        className="inline-block"
+        badgeClassName="bg-red"
+        data-testid="wrapper"
+      >
+        <button type="button">Inbox</button>
+      </Badge>,
+    )
+
+    const wrapper = screen.getByTestId('wrapper')
+    const badge = screen.getByRole('status', { name: '3' })
+    expect(wrapper).toHaveClass('relative', 'inline-block')
+    expect(wrapper).not.toHaveClass('bg-red')
+    expect(badge).toHaveClass('absolute', 'bg-red')
+    expect(badge).not.toHaveClass('bg-indigo')
+    expect(badge).not.toHaveClass('inline-block')
+  })
 })

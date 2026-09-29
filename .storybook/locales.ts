@@ -18,6 +18,9 @@ const YEAR_FORMS: Partial<Record<Intl.LDMLPluralRule, string>> = {
 const years = (count: number) => YEAR_FORMS[ruPlural.select(count)] ?? 'лет'
 
 export const ruMessages: Messages = {
+  avatarGroup: {
+    more: (count) => `Ещё ${count}`,
+  },
   badge: {
     label: 'Значок уведомления',
   },
@@ -33,6 +36,14 @@ export const ruMessages: Messages = {
     lastSelection: 'Последний выбор',
     previousYears: (count) => `Предыдущие ${count} ${years(count)}`,
     nextYears: (count) => `Следующие ${count} ${years(count)}`,
+  },
+  charts: {
+    empty: 'Нет данных',
+    loading: 'Загрузка диаграммы',
+    keyboardHint: 'Стрелки влево и вправо переходят между точками данных.',
+    navigation: 'Точки данных',
+    value: 'Значение',
+    point: 'Точка',
   },
   commandPalette: {
     label: 'Поиск',

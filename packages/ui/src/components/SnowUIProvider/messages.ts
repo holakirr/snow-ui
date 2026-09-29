@@ -9,6 +9,10 @@
  * wins over the provider.
  */
 export type Messages = {
+  avatarGroup: {
+    /** Screen-reader text of the "+N" avatar: the avatars not shown. */
+    more: (count: number) => string
+  }
   badge: {
     /** Accessible name of a `Badge` dot without content. */
     label: string
@@ -38,6 +42,30 @@ export type Messages = {
     previousYears: (count: number) => string
     /** The next button in the year view. */
     nextYears: (count: number) => string
+  }
+  /**
+   * The charts of `@holakirr/snow-ui-charts` (5.1 and later). Each has a
+   * prop that wins over it.
+   */
+  charts: {
+    /** Shown instead of a chart without data (`emptyMessage`). */
+    empty: string
+    /** Announced while a chart loads (`loadingLabel`). */
+    loading: string
+    /**
+     * How to move between data points with the keyboard, the description
+     * of a chart's plot for screen readers (`keyboardHint`).
+     */
+    keyboardHint: string
+    /** The name of a chart's focusable plot (`navigationLabel`). */
+    navigation: string
+    /**
+     * Header of the value column of the data table of `DonutChart` and
+     * `Sparkline` (`valueLabel`).
+     */
+    value: string
+    /** Header of the first column of `Sparkline`'s data table (`categoryLabel`). */
+    point: string
   }
   commandPalette: {
     /** Accessible name of the dialog, the search field and the list. */
@@ -110,6 +138,9 @@ export type MessagesOverrides = {
 
 /** The English messages, used where no `SnowUIProvider` sets others. */
 export const defaultMessages: Messages = {
+  avatarGroup: {
+    more: (count) => `${count} more`,
+  },
   badge: {
     label: 'Notification badge',
   },
@@ -125,6 +156,15 @@ export const defaultMessages: Messages = {
     lastSelection: 'Last selection',
     previousYears: (count) => `Go to the previous ${count} years`,
     nextYears: (count) => `Go to the next ${count} years`,
+  },
+  charts: {
+    empty: 'No data',
+    loading: 'Loading chart',
+    keyboardHint:
+      'Use the left and right arrow keys to move between data points.',
+    navigation: 'Data points',
+    value: 'Value',
+    point: 'Point',
   },
   commandPalette: {
     label: 'Search',

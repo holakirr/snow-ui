@@ -23,8 +23,8 @@ import { ru } from 'react-day-picker/locale' // a date-fns locale plus day-picke
 
 // Module scope: the same object on every render.
 const messages: Messages = {
-  /* badge, breadcrumb, calendar, commandPalette, dialog, link,
-     pagination, search, sheet, sidebar, slider, tag, toast */
+  /* avatarGroup, badge, breadcrumb, calendar, charts, commandPalette,
+     dialog, link, pagination, search, sheet, sidebar, slider, tag, toast */
 }
 
 export const Providers = ({ children }: { children: ReactNode }) => (
@@ -53,7 +53,7 @@ For several languages, pass the language (a string) from the layout and pick the
 
 ## Messages
 
-- **Typed and grouped by component:** `messages.pagination.previous`, `messages.dialog.close`… The namespaces are `badge`, `breadcrumb`, `calendar`, `commandPalette`, `dialog`, `link`, `pagination`, `search`, `sheet`, `sidebar`, `slider`, `tag` and `toast`.
+- **Typed and grouped by component:** `messages.pagination.previous`, `messages.dialog.close`… The namespaces are `avatarGroup`, `badge`, `breadcrumb`, `calendar`, `charts` (the `@holakirr/snow-ui-charts` package), `commandPalette`, `dialog`, `link`, `pagination`, `search`, `sheet`, `sidebar`, `slider`, `tag` and `toast`.
 - **Functions for values:** strings with values are functions, so a translation can order and inflect them: ``tag: { remove: (label) => `Удалить тег ${label}` }``, `calendar: { previousYears: (count) => … }`.
 - **Partial:** `messages` takes any subset (`MessagesOverrides`) and merges it over the defaults, namespace by namespace; a message set to `undefined` keeps the default. Providers nest: an inner one overrides the outer one for its subtree.
 - **Stable:** define `messages` at module scope (or `useMemo` it). Inline function messages are new functions on every render, which re-renders every component that reads the messages.

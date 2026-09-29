@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useId } from 'react'
 
 import { Button } from '../Button'
 import { Input } from '../Input'
@@ -15,6 +16,27 @@ import {
 } from './Sheet'
 
 const SHEET_SIDES = ['top', 'right', 'bottom', 'left'] as const
+
+/** The form of the examples; `useId` keeps the ids of its fields unique. */
+const ProfileFields = () => {
+  const id = useId()
+  return (
+    <div className="grid gap-4 py-4">
+      <div className="grid gap-4">
+        <Label htmlFor={`${id}-name`} className="text-right">
+          Name
+        </Label>
+        <Input id={`${id}-name`} defaultValue="Pedro Duarte" />
+      </div>
+      <div className="grid gap-4">
+        <Label htmlFor={`${id}-username`} className="text-right">
+          Username
+        </Label>
+        <Input id={`${id}-username`} defaultValue="@peduarte" />
+      </div>
+    </div>
+  )
+}
 
 const meta: Meta<typeof Sheet> = {
   title: 'Components/Sheet',
@@ -44,20 +66,7 @@ export const Default: Story = {
             Make changes to your profile here. Click save when you're done.
           </SheetDescription>
         </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" value="Pedro Duarte" />
-          </div>
-          <div className="grid gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input id="username" value="@peduarte" />
-          </div>
-        </div>
+        <ProfileFields />
         <SheetFooter>
           <SheetClose asChild>
             <Button type="submit">Save changes</Button>
@@ -83,20 +92,7 @@ export const Side: Story = {
                 Make changes to your profile here. Click save when you're done.
               </SheetDescription>
             </SheetHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
-                </Label>
-                <Input id="name" value="Pedro Duarte" />
-              </div>
-              <div className="grid gap-4">
-                <Label htmlFor="username" className="text-right">
-                  Username
-                </Label>
-                <Input id="username" value="@peduarte" />
-              </div>
-            </div>
+            <ProfileFields />
             <SheetFooter>
               <SheetClose asChild>
                 <Button type="submit">Save changes</Button>

@@ -47,8 +47,9 @@ const meta = {
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
           <div className="flex justify-between gap-2">
-            <Input id="name" title="Name" defaultValue="Pedro Duarte" />
-            <Input id="username" title="Username" defaultValue="@peduarte" />
+            {/* With a `title`, Input labels itself with a generated id. */}
+            <Input title="Name" defaultValue="Pedro Duarte" />
+            <Input title="Username" defaultValue="@peduarte" />
           </div>
           <Button type="submit" variant="filled" size="md">
             Save changes

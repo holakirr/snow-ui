@@ -96,6 +96,10 @@ A chart is a picture of numbers, so its text alternative is the numbers:
 - **Contrast.** Axis labels are `text-secondary` (Figma: Black/40%, 2.85:1) like every secondary text of the library (1.4.3). Most secondary colours (Cyan, Mint, Blue, Green…) are below 3:1 against the light backgrounds; every value they draw is also text (the table, the tooltip, and a donut's legend), so the lines and bars aren't the only way to get the information (1.4.11). Use `primary` for the series that matters most, and don't tell series apart by colour alone: labels in the legend, a dashed style (`dashed`) for comparisons (1.4.1).
 - **Motion.** Recharts animates series on mount unless the user prefers reduced motion (`animate="auto"`).
 
+## Fonts and first paint
+
+Recharts measures text when it first draws (the value axis fits its widest label, overlapping labels are skipped) and doesn't measure again when a web font arrives, so a chart drawn with the fallback font would keep its widths. `ChartContainer` therefore draws the plot once the font of its text has loaded for the digits, the locale's number formats and the categories (`document.fonts.load`), or after 3 seconds; the figure, its legend and its table render right away (and on the server). When the chart is drawn at its size, the figure gets `data-chart-ready`: tests and screenshots can wait for it.
+
 ## Localization and RTL
 
 - **Numbers** follow the `locale` prop, else the language of the nearest `SnowUIProvider` (its date-fns locale's `code`), else `en-US` (so the server and the browser render the same text). `valueFormatter` formats the tooltip, the legend values and the table; `categoryFormatter` the categories (by default their text; dates in the locale's medium date style, in UTC, so the server and the browser agree); the ready-made charts take `xTickFormatter` and `yTickFormatter` for the axes (compact numbers by default: `10K`).

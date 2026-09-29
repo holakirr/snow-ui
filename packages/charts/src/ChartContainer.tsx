@@ -14,6 +14,7 @@ import {
   useId,
   useMemo,
   useRef,
+  useState,
 } from 'react'
 import { ResponsiveContainer } from 'recharts'
 import { ChartTable } from './ChartTable'
@@ -27,7 +28,13 @@ import {
   useChartLocale,
 } from './context'
 import { warnOnce } from './env'
-import { type ChartValueFormatter, formatCategory } from './format'
+import { useFontsReady } from './fonts'
+import {
+  type ChartValueFormatter,
+  formatCategory,
+  formatCompact,
+  formatNumber,
+} from './format'
 
 /** Where a chart's legend goes: above, below or beside (after) the plot. */
 export type ChartLegendPosition = 'top' | 'bottom' | 'end'
@@ -209,6 +216,35 @@ export const ChartContainer = ({
     }
   }, [])
 
+  // The text the chart measures, so every script it needs is loaded:
+  // numbers as the locale writes them (`10 тыс.`, `1,5 млн`), the formatted
+  // values and the categories.
+  const fontSample = useMemo(() => {
+    const format =
+      categoryFormatter ?? ((value: unknown) => formatCategory(value, locale))
+    const categories =
+      categoryKey && data
+        ? data
+            .slice(0, 60)
+            .map((row) => format((row as Record<string, unknown>)[categoryKey]))
+        : []
+    const numbers = [1e4, 1.5e6, 2e9].map((value) =>
+      formatCompact(value, locale),
+    )
+    let value = formatNumber(1234.5, locale)
+    try {
+      value = valueFormatter?.(1234.5, Object.keys(config)[0] ?? '') ?? value
+    } catch {
+      // A formatter that can't handle a sample value: the digits will do.
+    }
+    return ['0123456789.,%', ...numbers, value, ...categories].join(' ')
+  }, [data, categoryKey, categoryFormatter, valueFormatter, config, locale])
+  const fontsReady = useFontsReady(rootRef, fontSample)
+  const [sized, setSized] = useState(false)
+  const onResize = useCallback((width: number, height: number) => {
+    if (width > 0 && height > 0) setSized(true)
+  }, [])
+
   const context = useMemo<ChartContextValue>(
     () => ({
       config,
@@ -267,6 +303,11 @@ export const ChartContainer = ({
         className={['snow-chart', className].filter(Boolean).join(' ')}
         style={{ ...chartConfigStyle(config), ...style }}
         data-slot="chart"
+        // Set once the chart is drawn with its final font and size (or has
+        // nothing to draw): screenshot tests wait for it.
+        data-chart-ready={
+          loading || empty || (fontsReady && sized) ? '' : undefined
+        }
         dir={explicitDir}
         data-dir={dir}
         data-legend={legendNode ? legendPosition : undefined}
@@ -311,9 +352,15 @@ export const ChartContainer = ({
             <p className="snow-chart__state">{emptyMessage}</p>
           ) : (
             <>
-              <ResponsiveContainer width="100%" height="100%">
-                {chart}
-              </ResponsiveContainer>
+              {fontsReady && (
+                <ResponsiveContainer
+                  width="100%"
+                  height="100%"
+                  onResize={onResize}
+                >
+                  {chart}
+                </ResponsiveContainer>
+              )}
               {overlay}
             </>
           )}

@@ -103,6 +103,8 @@ Import the Recharts parts from `@holakirr/snow-ui-charts/recharts`: it re-export
 - Axis labels use `text-secondary` (Figma: Black/40%), like all secondary text of the library. The pastel secondary colours are below 3:1 on light backgrounds; every value is also text (table, tooltip, donut legend), so colour is never the only way to read the chart.
 - Animations respect `prefers-reduced-motion`.
 
+The plot is drawn once the web font of its text has loaded (Recharts measures labels only when it first draws), at most 3 seconds after mount; the figure then gets `data-chart-ready`, which screenshot tests can wait for.
+
 ## Localization and RTL
 
 Numbers follow the `locale` prop, else the language of the nearest `SnowUIProvider` (`locale.code`), else `en-US`. Right-to-left charts (the `dir` prop, the provider's `dir`, or the element's computed direction) mirror their axes: categories run from right to left, the value axis is on the right, the tooltip opens to the left. `emptyMessage`, `loadingLabel` and `keyboardHint` are props for your translations.

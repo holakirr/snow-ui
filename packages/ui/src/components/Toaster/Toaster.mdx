@@ -100,7 +100,9 @@ The toast stays dark in both themes: the Figma component pins its colours to Sno
 - The close button is named "Close" (`messages.toast.close`); `aria-label` on `ToastClose` overrides it. It has the `focus-ring` and a 24px hit area (WCAG 2.5.8) around its 16px (`sm`) or 20px (`lg`) box.
 - For an action, use `ToastAction` with `altText`: Radix requires it, and it tells screen-reader users how to do the action another way, since they hear the toast without moving to it (and a toast with its own `duration` may close before they reach it). `ToastAction` closes the toast when clicked.
 
-Deviations from the Figma kit (the full table is in the package README):
+### Deviations from the Figma kit
+
+The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |

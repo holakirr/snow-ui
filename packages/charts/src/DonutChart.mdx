@@ -66,6 +66,6 @@ Percentages and values follow the provider's locale. In right-to-left text the l
 
 ## Props
 
-Besides the props below, every ready-made chart takes the frame props of [ChartContainer](?path=/docs/charts-chartcontainer--docs): `title`, `description`, `aria-label`, `aria-labelledby`, `aria-describedby`, `loading`, `emptyMessage`, `loadingLabel`, `table`, `categoryLabel`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`, `legendPosition`, `className`, `style`, `id` and `ref`.
+The table has the chart's own props and the frame props it passes to [ChartContainer](?path=/docs/charts-chartcontainer--docs) (`title`, `description`, `loading`…). The chart renders a `<figure>`: `className` is added to its class, `ref` points at it, and `aria-label`, `aria-labelledby`, `aria-describedby`, `id` and `style` go to it too.
 
 <ArgTypes of={DonutChartStories} />

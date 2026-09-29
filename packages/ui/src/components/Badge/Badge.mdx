@@ -1,0 +1,111 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as BadgeStories from './Badge.stories'
+
+<Meta of={BadgeStories} />
+
+<Title />
+
+<FigmaLinks page="25559:12884" />
+
+Badge marks something that needs attention: a dot for "there is something new", a number for "how many". It is the Figma "Badge" set (Dot and Number). `Badge` places the badge on the top end corner of its children; `BadgeComponent` is the badge alone, for your own layout.
+
+```tsx
+import { Badge, BadgeComponent } from '@holakirr/snow-ui'
+
+<Badge content="8">
+  <Button variant="filled" label="Inbox" />
+</Badge>
+
+<BadgeComponent content="24" />
+```
+
+<Primary />
+
+## When to use
+
+- An unread or pending count on a button, an icon or a navigation item.
+- A dot that says "new" or "changed" without a count.
+
+## When not to use
+
+- A badge on an icon tile: [IconBox](?path=/docs/components-iconbox--docs) has its own `badge` and `badgeLabel`, with the Figma offsets for each icon size.
+- A label, category or filter: use [Tag](?path=/docs/components-tag--docs).
+- A status in a table row: a coloured dot next to the status text, as in the [Table](?path=/docs/components-table--docs) stories.
+
+## Anatomy
+
+1. **Wrapper** (`Badge` only): a `relative` `<div>` around `children`. Its props (other than `content` and `className`) go on this `<div>`.
+2. **Children** (`Badge` only): the element the badge marks.
+3. **Badge**: a `<span>` with `role="status"`, on the top end corner (top right; top left in right-to-left text). `className` on `Badge` goes here, not on the wrapper.
+4. **Content** (`content`, optional): the number or short text. Without it the badge is a dot.
+
+## Variants
+
+<Canvas of={BadgeStories.Types} />
+
+| `content` | Figma | Look | Use for |
+| --- | --- | --- | --- |
+| none | Dot | a 6px Secondary/Indigo dot, fully rounded | "something new" |
+| `'8'`, `'10+'` | Number | 12/16 text on Secondary/Indigo, at least 18px wide, 1 / 6px padding, fully rounded | a count |
+
+The dot sits just inside the top end corner of the children. The number is centred on their end edge, 6px above the top.
+
+<Canvas of={BadgeStories.WithContent} />
+
+<Canvas of={BadgeStories.WithLongContent} />
+
+The wrapper is a block `<div>` with no width of its own: in normal flow it fills its parent, and the badge lands on the parent's end edge. Put `Badge` in a flex row (as the stories do) or around an element that sets the width.
+
+## States
+
+A badge has no interactive states: it isn't focusable and has no hover. It changes only when you change `content`.
+
+## Accessibility
+
+- The badge is a `<span>` with `role="status"`, a polite live region: screen readers announce its name when it changes.
+- Its name is `content` or, for a dot, the built-in "Notification badge". `BadgeComponent` takes `aria-label` to replace it (e.g. "3 unread messages"), which is clearer than a bare number.
+- `Badge` passes `aria-label` and its other props to the wrapper `<div>`, not to the badge. To name the badge of a `Badge`, set `messages.badge.label` on the provider, or build the layout with `BadgeComponent`.
+- The badge doesn't label the element it sits on. Say the count in that element's accessible name too, e.g. an icon button's `aria-label="Inbox, 8 unread"`.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Badge number `#FFF` on indigo: 2.07:1 | black on indigo (`text-static-black`): 10.15:1 | 1.4.3 |
+
+## Localization and RTL
+
+- A dot's name is `messages.badge.label` ("Notification badge"). `aria-label` on `BadgeComponent` overrides the provider.
+- `content` is yours to translate and format (digits, "10+").
+- In right-to-left text `Badge` puts the badge on the top left corner.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Keep `content` short: one or two digits, or a capped count like "10+".
+- Say the count in the marked element's name as well.
+- Use a dot when the count doesn't matter.
+
+</Do>
+<Dont>
+
+- Don't put words in a badge: use a [Tag](?path=/docs/components-tag--docs).
+- Don't pass `aria-label` to `Badge` expecting it to name the badge: it lands on the wrapper.
+- Don't put a badge on every item of a list: it stops drawing attention.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [IconBox](?path=/docs/components-iconbox--docs): the Figma "Icon" with its own badge slot.
+- [Tag](?path=/docs/components-tag--docs): documented on the same Figma page.
+- [Button](?path=/docs/components-button--docs): the usual child of a badge.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the dot's name.
+
+## Props
+
+<Controls />

@@ -110,6 +110,10 @@ const meta = {
   title: 'Components/CommandPalette',
   component: CommandPalette,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33509-104723',
+    },
     layout: 'centered',
     docs: {
       description: {

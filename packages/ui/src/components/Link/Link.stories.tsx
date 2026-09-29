@@ -4,6 +4,12 @@ import { Link } from './Link'
 const meta: Meta<typeof Link> = {
   title: 'Components/Link',
   component: Link,
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33400-239816',
+    },
+  },
   tags: ['autodocs'],
   argTypes: {
     href: {

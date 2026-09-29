@@ -1,0 +1,124 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as AccordionStories from './Accordion.stories'
+
+<Meta of={AccordionStories} />
+
+<Title />
+
+<FigmaLinks note="A library extension. The trigger borrows the Figma Sidebar collapsible item: radius 12, Black/4% on hover." />
+
+Accordion is a stack of sections whose content opens and closes under a heading. It is built on Radix Accordion: `Accordion` is the stack, `AccordionItem` a section, `AccordionTrigger` its heading button and `AccordionContent` its content. `type="single"` keeps one section open at a time; `type="multiple"` lets any number stay open.
+
+```tsx
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@holakirr/snow-ui'
+
+<Accordion type="single" collapsible>
+  <AccordionItem value="shipping">
+    <AccordionTrigger>Shipping</AccordionTrigger>
+    <AccordionContent>Orders ship within two days.</AccordionContent>
+  </AccordionItem>
+</Accordion>
+```
+
+<Primary />
+
+## When to use
+
+- Long pages of sections that users scan by heading and open as needed: FAQs, settings groups, details.
+- Secondary content that would crowd the page if it were always visible.
+
+## When not to use
+
+- Switching between views of the same area: use [Tabs](?path=/docs/components-tabs--docs).
+- Navigation with nested items: use the [Sidebar](?path=/docs/components-sidebar--docs) menu parts (`SidebarMenuSub`).
+- Content most users need: show it, don't hide it behind a trigger.
+- A panel over the page: use [Sheet](?path=/docs/components-sheet--docs) or [Popover](?path=/docs/components-popover--docs).
+
+## Anatomy
+
+1. **Stack** (`Accordion`): a column of items 4px apart, `text-black`. `type` is required.
+2. **Item** (`AccordionItem`): one section, identified by its `value`. It has no style of its own.
+3. **Heading and trigger** (`AccordionTrigger`): an `<h3>` holding a full-width `<button>`: the `children` in 16/24 text, then an arrow that points to the end side and turns down when the item is open. The button has a 12px radius and 8 / 16px padding, with 8px between the text and the arrow.
+4. **Content** (`AccordionContent`): padded 16px, 4px at the top. It slides open and closed in 0.3s, and isn't rendered while closed.
+
+## Variants
+
+<Canvas of={AccordionStories.Multiple} />
+
+| `type` | Behaviour | Extra props |
+| --- | --- | --- |
+| `single` | opening an item closes the open one | `collapsible`: the open item can be closed too; without it one item always stays open once opened |
+| `multiple` | items open and close independently | none |
+
+## States
+
+- **Hover and keyboard focus:** the trigger gets a Black/4% fill; keyboard focus adds the `focus-ring`.
+- **Open:** the trigger has `data-state="open"` and `aria-expanded="true"`, and the arrow turns down.
+- **Disabled:** `disabled` on `Accordion` or on an `AccordionItem` disables the triggers; there is no disabled style.
+- In a `single` accordion without `collapsible`, the open item's trigger has `aria-disabled` because it can't close it.
+
+## Accessibility
+
+- Each trigger is a `<button>` inside an `<h3>` (Radix `Accordion.Header`), with `aria-expanded` and `aria-controls`. The heading level is fixed at 3: check that it fits your page's outline.
+- An open item's content is a `role="region"` labelled by its trigger.
+- Keyboard (Radix): Tab moves through the triggers and the open content; Enter or Space opens and closes the focused item. ArrowDown and ArrowUp move to the next and previous trigger, wrapping at the ends, and Home and End to the first and last; disabled triggers are skipped. With `orientation="horizontal"`, ArrowRight and ArrowLeft move instead.
+- The trigger's name is its text. The arrow icon is decorative.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| The "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark), over the Black/4% fill | 2.4.7, 1.4.11 |
+
+## Localization and RTL
+
+- Accordion renders no built-in strings.
+- In right-to-left text the arrow is mirrored to point to the end side (left), and still turns down when open.
+- With `orientation="horizontal"`, the arrow keys follow the provider's `dir`: in right-to-left text ArrowLeft moves forward.
+
+## Controlled and uncontrolled
+
+`defaultValue` sets the open items once; `value` and `onValueChange` control them. With `type="single"` the value is a string (an item's `value`, or `''` for none); with `type="multiple"` it is an array of strings.
+
+```tsx
+const [open, setOpen] = useState<string[]>(['shipping'])
+
+<Accordion type="multiple" value={open} onValueChange={setOpen}>
+  …
+</Accordion>
+```
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Write triggers as short, scannable headings.
+- Use `collapsible` with `type="single"`, so users can close what they opened.
+- Keep each item's content short; split long content into more items.
+
+</Do>
+<Dont>
+
+- Don't put interactive controls inside `AccordionTrigger`: it is a `<button>`.
+- Don't nest accordions.
+- Don't hide the only copy of required information or of a form's errors in a closed item.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Tabs](?path=/docs/components-tabs--docs): switching between views.
+- [Sidebar](?path=/docs/components-sidebar--docs): nested navigation; the trigger's style comes from its Figma items.
+- [Card](?path=/docs/components-card--docs): a surface to hold an accordion.
+
+## Props
+
+<Controls />

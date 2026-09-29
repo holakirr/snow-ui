@@ -14,3 +14,9 @@
 /* Token sources and build scripts: not component markup. */
 @source not "../tokens";
 @source not "../scripts";
+
+/*
+ * Storybook usage pages: they mention class names in prose and examples,
+ * which must not end up in the stylesheet.
+ */
+@source not "./**/*.mdx";

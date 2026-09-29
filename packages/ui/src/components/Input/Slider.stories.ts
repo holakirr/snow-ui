@@ -13,6 +13,10 @@ const meta: Meta<typeof Slider> = {
   },
   argTypes: {},
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33509-205091',
+    },
     docs: {
       description: {
         component: 'Slider component',

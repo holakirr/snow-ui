@@ -7,6 +7,10 @@ const meta = {
   title: 'Components/Search',
   component: Search,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33509-43630',
+    },
     layout: 'centered',
     docs: {
       description: {

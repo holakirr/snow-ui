@@ -1,0 +1,96 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as AvatarStories from './Avatar.stories'
+
+<Meta of={AvatarStories} />
+
+<Title />
+
+<FigmaLinks label="Image component set" />
+
+Avatar shows a person as a round picture, with initials while the picture loads or when it fails. Its Figma counterpart is the "Image" component set. It is built on Radix Avatar: `Avatar` is the frame, `AvatarImage` the picture and `AvatarFallback` the initials.
+
+```tsx
+import { Avatar, AvatarFallback, AvatarImage } from '@holakirr/snow-ui'
+
+<Avatar size="md">
+  <AvatarImage src={user.photoUrl} alt={user.name} />
+  <AvatarFallback>KP</AvatarFallback>
+</Avatar>
+```
+
+<Primary />
+
+## When to use
+
+- A person or an account next to their name: in a list, a table, a comment, a header.
+- A person on their own, where the picture is the main identification (a profile).
+
+## When not to use
+
+- Several people in a row: use [AvatarGroup](?path=/docs/components-avatar-avatargroup--docs).
+- An avatar with a name and details: [ListItem](?path=/docs/components-listitem--docs) or [IconText](?path=/docs/components-icontext--docs), which lay out the avatar and the text.
+- An icon, a logo or an image at another size: [IconBox](?path=/docs/components-iconbox--docs) sizes any of them from 12 to 80px.
+
+## Anatomy
+
+1. **Frame** (`Avatar`): a round `<span>`, sized by `size`, that clips its content.
+2. **Image** (`AvatarImage`, optional): the `<img>`, rendered only once it has loaded.
+3. **Fallback** (`AvatarFallback`): the initials, 12/16 text on a `color-2` circle, shown until the image loads and when it fails. Its `delayMs` waits before showing it, so fast images don't flash the initials.
+
+## Sizes
+
+<Canvas of={AvatarStories.Sizes} />
+
+| `size` | Diameter | Use for |
+| --- | --- | --- |
+| `sm` | 24px | table rows, dense lists, avatar groups in a row |
+| `md` | 32px | lists and headers |
+| `lg` (default) | 64px | profiles |
+
+The fallback text is 12/16 at every size, `lg` included.
+
+## States
+
+- **Loading and error:** the fallback shows until the image loads, and stays when the image fails or has no `src`.
+- **Hover:** the avatar's brightness goes up to 105%.
+- There is no focus, pressed or disabled state: the avatar isn't interactive. Wrap it in a link or a button to make it one.
+
+<Canvas of={AvatarStories.FallbackOnly} />
+
+## Accessibility
+
+- The frame is a `<span>` with no role. The image is an `<img>`; its `alt` is the accessible name. Use the person's name, or `alt=""` when the name is already in the text next to the avatar.
+- The fallback is plain text: screen readers read the initials. When the name is next to the avatar, hide the fallback with `aria-hidden`; when it isn't, the initials alone may not identify the person, so add the name as visually hidden text.
+- The fallback's `color-2` is the same in both modes, so its initials are static black in both (the Storybook demos also use black, not white, for initials on the Secondary colours).
+
+No row of the README's table of deviations from the Figma kit applies to Avatar.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Always add an `AvatarFallback`, so a slow or broken image still shows something.
+- Give the image an `alt` with the person's name, or `alt=""` next to the name.
+- Use two letters for the initials.
+
+</Do>
+<Dont>
+
+- Don't use Avatar for icons or logos: use [IconBox](?path=/docs/components-iconbox--docs).
+- Don't make the avatar the only way to identify a person to screen readers without a name.
+- Don't put a `size` class on the frame: use `size`, so [AvatarGroup](?path=/docs/components-avatar-avatargroup--docs) can size its overflow count to match.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [AvatarGroup](?path=/docs/components-avatar-avatargroup--docs): overlapping avatars with a "+N" count.
+- [ListItem](?path=/docs/components-listitem--docs) and [IconText](?path=/docs/components-icontext--docs): an avatar with a name and details.
+- [Table](?path=/docs/components-table--docs): the user column of the Table stories uses `sm` avatars.
+
+## Props
+
+<Controls />

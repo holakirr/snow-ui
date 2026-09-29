@@ -6,6 +6,10 @@ const meta = {
   title: 'Components/Strip',
   component: Strip,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=32792-9423',
+    },
     layout: 'centered',
     docs: {
       description: {

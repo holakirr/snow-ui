@@ -17,6 +17,10 @@ const meta: Meta<typeof Tooltip> = {
   args: {},
   argTypes: {},
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33400-45026',
+    },
     docs: {
       description: {
         component: 'Tooltip component',

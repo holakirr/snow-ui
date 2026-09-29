@@ -5,13 +5,22 @@ import { workspaceAliases } from '../packages/ui/workspace-aliases.ts'
 // Run it from the repository root: `bun run storybook` / `bun run build:storybook`.
 const config: StorybookConfig = {
   stories: [
+    // Guides: Getting started, Theming, Localization and RTL.
+    '../docs/**/*.mdx',
+    // A component's usage page (`<Meta of={…Stories} />`) sits next to its
+    // stories and replaces its automatic docs page.
+    '../packages/ui/src/**/*.mdx',
     '../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../packages/icons/src/**/*.mdx',
     '../packages/icons/src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
     '@storybook/addon-docs',
     '@storybook/addon-a11y',
     '@storybook/addon-themes',
+    // The "Design" panel: the Figma node of `parameters.design` (the owner's
+    // licensed copy of the SnowUI kit; it only loads for people with access).
+    '@storybook/addon-designs',
     // Runs the story tests (root vitest.config.ts) from Storybook's sidebar.
     '@storybook/addon-vitest',
   ],

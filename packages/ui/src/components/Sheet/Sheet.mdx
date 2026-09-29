@@ -1,0 +1,170 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SheetStories from './Sheet.stories'
+
+<Meta of={SheetStories} />
+
+<Title />
+
+<FigmaLinks note="A library extension: the kit has no sheet. It reuses the Dialog mask and the popup glass, with the 0.5px Black/10% edge of the dashboard side panels." />
+
+Sheet is a modal panel that slides in from an edge of the screen: details, filters, settings, or navigation on small screens. It is the same Radix Dialog as [Dialog](?path=/docs/components-dialog--docs), laid out as a side panel: a glass panel over the Dialog mask, with a built-in close button.
+
+```tsx
+import {
+  Button,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@holakirr/snow-ui'
+
+<Sheet>
+  <SheetTrigger asChild>
+    <Button variant="outline" label="Filters" />
+  </SheetTrigger>
+  <SheetContent>
+    <SheetHeader>
+      <SheetTitle>Filters</SheetTitle>
+      <SheetDescription>Narrow down the list.</SheetDescription>
+    </SheetHeader>
+    {/* content */}
+  </SheetContent>
+</Sheet>
+```
+
+<Primary />
+
+## When to use
+
+- Details or settings for something on the page, in a panel from the side.
+- Filters or a secondary form that can be longer than a dialog.
+- Navigation on small screens: the mobile [Sidebar](?path=/docs/components-sidebar--docs) is a sheet.
+
+## When not to use
+
+- A short task or a confirmation that needs the user's full attention: [Dialog](?path=/docs/components-dialog--docs).
+- A few controls anchored to a button, without blocking the page: [Popover](?path=/docs/components-popover--docs).
+- A list of actions: [DropdownMenu](?path=/docs/components-dropdownmenu--docs).
+- A permanent side panel that stays open next to the content: [Sidebar](?path=/docs/components-sidebar--docs).
+
+## Anatomy
+
+1. **Root** (`Sheet`): holds the open state. It renders nothing itself.
+2. **Trigger** (`SheetTrigger`, optional): the element that opens the sheet, usually a Button (`asChild`).
+3. **Mask** (`SheetOverlay`, rendered by `SheetContent`): the Dialog mask, a gradient from #CBDDFF at 50% to #D7D0FF at 20% with a 20px background blur.
+4. **Panel** (`SheetContent`): the `role="dialog"` element, in a portal, on the `side` edge. `background-3` (Figma Background/3) with a 20px background blur, 16px padding and a 0.5px `black-10` border on its inner edge.
+5. **Close button** (built into `SheetContent`): 16px from the top and end edges; a Borderless `sm` icon button with a 24px close icon.
+6. **Header** (`SheetHeader`): the title and the description, 8px apart; centred on small screens, start-aligned from the `sm` breakpoint.
+7. **Title** (`SheetTitle`): 18/28 semibold, `black`. It names the sheet.
+8. **Description** (`SheetDescription`, optional): 14/20 `text-secondary`. It describes the sheet.
+9. **Footer** (`SheetFooter`, optional): the actions. On small screens a column with the last child on top; from `sm` a row aligned to the end, 8px apart.
+10. **Close** (`SheetClose`, optional): closes the sheet from your own button.
+
+`SheetPortal` and `SheetOverlay` are exported for custom compositions; `SheetContent` already renders both.
+
+## Sides
+
+<Canvas of={SheetStories.Side} />
+
+| `side` | Edge | Size |
+| --- | --- | --- |
+| `end` (default) | right in left-to-right text, left in right-to-left text | full height; 75% of the width, at most 384px from `sm` |
+| `start` | left in left-to-right text, right in right-to-left text | as `end` |
+| `left`, `right` | that edge, in any direction | as `end` |
+| `top`, `bottom` | that edge | full width; as tall as its content |
+
+The panel's `data-side` attribute holds the physical edge (`left`, `right`, `top` or `bottom`). The side panels are `w-3/4` with `sm:max-w-sm`: to make one wider, replace the cap too, e.g. `<SheetContent className="sm:max-w-[540px]">`.
+
+## States
+
+- **Open and closed:** `open` / `defaultOpen` / `onOpenChange` on `Sheet`. The panel slides in from its edge and out to it; the mask fades.
+- **Close button:** the Borderless button states: Black/4% on hover, scaled to 95% when pressed, the `focus-ring` on keyboard focus.
+
+Open, to compare the mask and the glass panel in both themes: [Open story](?path=/story/components-sheet--open) ([dark](?path=/story/components-sheet--open-dark)).
+
+## Portal and theme
+
+`SheetContent` renders its mask and panel in a portal at the end of `<body>`, outside your layout. So it takes the theme of `<html>`, not of a `data-theme` scope around the sheet. Set the theme on `<html>`, or give the sheet its own scope: `<SheetContent data-theme="dark">` (the prop is passed through). The mask keeps the same colours in both themes.
+
+## Accessibility
+
+- `SheetContent` is a `role="dialog"` element. `SheetTitle` names it and `SheetDescription` describes it. Always render a `SheetTitle`; hide it with `className="sr-only"` if the design has no visible title, as the mobile Sidebar does.
+- The sheet is modal (Radix `modal`, on by default):
+  - Opening moves focus into the panel, to its first focusable element: the close button.
+  - Tab and Shift+Tab stay inside the panel.
+  - The rest of the page is hidden from assistive technology (`aria-hidden`) and ignores the pointer; the mask locks the page scroll.
+- Escape, the close button, a `SheetClose` or a click on the mask closes it. Focus then returns to the trigger.
+- The close button's accessible name is "Close" (`messages.sheet.close`); `closeLabel` replaces it. It is the only built-in string.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: 4px ring, black 4% (1.1:1); no focus state on Button | the close button's `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Description in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+
+## Localization and RTL
+
+- `messages.sheet.close` ("Close") names the close button; `closeLabel` on `SheetContent` overrides it.
+- `side="start"` and `side="end"` resolve with the direction of `SnowUIProvider`: `end` is the right edge in left-to-right text and the left edge in right-to-left text. Without a provider (or a Radix `DirectionProvider`) they resolve as left-to-right, whatever `<html dir>` says. `left` and `right` stay physical.
+- The portalled panel takes `dir` from the provider. The close button sits at the top end corner (top left in right-to-left text), and the header aligns to the start.
+
+## Composition (asChild)
+
+`SheetTrigger` and `SheetClose` take `asChild` (Radix) to render your own button. Control the sheet with `open` and `onOpenChange`:
+
+```tsx
+const [open, setOpen] = useState(false)
+
+<Sheet open={open} onOpenChange={setOpen}>
+  <SheetTrigger asChild>
+    <Button variant="outline" label="Edit profile" />
+  </SheetTrigger>
+  <SheetContent side="start">
+    <SheetHeader>
+      <SheetTitle>Edit profile</SheetTitle>
+    </SheetHeader>
+    {/* fields */}
+    <SheetFooter>
+      <SheetClose asChild>
+        <Button variant="gray" label="Cancel" />
+      </SheetClose>
+      <Button variant="filled" label="Save" onClick={() => save().then(() => setOpen(false))} />
+    </SheetFooter>
+  </SheetContent>
+</Sheet>
+```
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Always render a `SheetTitle`, visible or `sr-only`.
+- Use `start` and `end` for side panels, so they follow the text direction.
+- Keep the sheet about one thing on the page, with its actions in `SheetFooter`.
+- Set `data-theme` on `SheetContent` when it needs a theme other than the one on `<html>`.
+
+</Do>
+<Dont>
+
+- Don't add your own close button in the top corner: `SheetContent` has one.
+- Don't use a sheet for a short confirmation: use a Dialog.
+- Don't widen a side panel with a `w-*` class alone: `sm:max-w-sm` still caps it at 384px.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Dialog](?path=/docs/components-dialog--docs): the same modal primitive, centred.
+- [Sidebar](?path=/docs/components-sidebar--docs): shows its navigation in a sheet on small screens.
+- [Popover](?path=/docs/components-popover--docs): non-modal content anchored to a trigger.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the close button and sets the direction for `start` / `end`.
+
+## Props
+
+<Controls />

@@ -11,7 +11,7 @@ Monorepo for the React implementation of the [SnowUI design kit](https://snowui.
 
 `@holakirr/snow-ui` is the component library (React 19, Tailwind CSS v4, Radix UI). `@holakirr/snow-ui-icons` is the icon set it uses; it is also published on its own.
 
-Both packages are documented in one Storybook — [snow-ui.holakirr.com](https://snow-ui.holakirr.com) — with components under "Components" and icons under "Icons". Its config lives in the root `.storybook/`.
+Both packages are documented in one Storybook — [snow-ui.holakirr.com](https://snow-ui.holakirr.com) — with guides (Getting started, Theming, Localization and RTL) under "Guides", a usage page for every component under "Components" (when to use it, anatomy, variants, states, accessibility, a link to its Figma component) and icons under "Icons". Its config lives in the root `.storybook/`, the guides in `docs/`; see [Documentation](CONTRIBUTING.md#documentation).
 
 ## Development
 

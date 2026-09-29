@@ -1,0 +1,107 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as StripStories from './Strip.stories'
+
+<Meta of={StripStories} />
+
+<Title />
+
+<FigmaLinks page="25559:13253" />
+
+Strip draws a row or a column of equal segments, 8px apart. It is the Figma "Strip" (`Count`, `Vertical`): 2px thick and Black/100% by default. With `value` it becomes a segmented progress bar: that many segments stay Black/100% and the rest are Black/10%.
+
+```tsx
+import { Strip } from '@holakirr/snow-ui'
+
+<Strip count={7} value={4} thickness={4} rounded aria-label="Storage used" />
+```
+
+<Primary />
+
+## When to use
+
+- Progress in steps: storage used, onboarding steps, a quota.
+- A strength meter, e.g. for a password (`role="meter"`).
+- Decorative bars, such as the simple bar chart of the Figma examples.
+
+## When not to use
+
+- A line between content: use [Separator](?path=/docs/components-separator--docs).
+- A value people set: use [Slider](?path=/docs/components-input-slider--docs).
+- An exact percentage: Strip fills whole segments only.
+
+## Anatomy
+
+1. **Track:** a `<div>`, 160px wide in a row or 134px high in a column by default, with `data-orientation`. Set another length with `className` (`w-full`) or `style`.
+2. **Segments:** `count` equal `<span>`s, 8px apart, with `data-state="filled"` or `"empty"`. `thickness` sets their height (their width in a column); `rounded` rounds their ends.
+
+## Variants
+
+<Canvas of={StripStories.Default} />
+
+<Canvas of={StripStories.Vertical} />
+
+<Canvas of={StripStories.AllCounts} />
+
+| Prop | Figma | Values |
+| --- | --- | --- |
+| `count` | Count | the number of segments, 1 by default |
+| `vertical` | Vertical | a column instead of a row |
+| `thickness` | (the examples' 4, 6 and 8) | `2` (default), `4`, `6`, `8` px |
+| `rounded` | (the examples' round ends) | fully rounded segment ends |
+
+## States
+
+Without `value` every segment is filled. With `value`, the first `value` segments are filled (Black/100%) and the rest empty (Black/10%):
+
+<Canvas of={StripStories.Progress} />
+
+`count` is rounded down and is at least 1; `value` is clamped between 0 and `count`. Pass a whole number: a fraction is rounded up on screen (2.5 fills 3 segments) but not in `aria-valuenow`.
+
+Segments have `data-state`, so you can recolour them: `[&>[data-state=filled]]:bg-…`, or `[&>:first-child]:bg-indigo` for the first one. The examples from the Figma Strip page (a quota, a password strength meter and a bar chart):
+
+<Canvas of={StripStories.Examples} />
+
+## Accessibility
+
+- Without `value`, Strip is decorative: `aria-hidden="true"`.
+- With `value`, it is a `progressbar` with `aria-valuemin` 0, `aria-valuemax` = `count` and `aria-valuenow` = the filled segments. Give it a name with `aria-label` or `aria-labelledby`.
+- For a measurement rather than progress (password strength, disk usage), pass `role="meter"`, and `aria-valuetext` when the number means little on its own ("Weak").
+- Filled segments are Black/100% against Black/10% empty ones. If you recolour them, keep the filled ones distinguishable, and show the value in text too, as the Figma examples do ("86 of 100 Used").
+
+None of the package's deviations from the Figma kit apply to Strip.
+
+## Localization and RTL
+
+- A row follows the text direction: in right-to-left text the segments fill from the right.
+- Strip renders no built-in strings; translate `aria-label` and `aria-valuetext`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name every Strip that has a `value`.
+- Use `role="meter"` and `aria-valuetext` for a strength or a level.
+- Show the value in text next to the strip.
+- Use `thickness` and `rounded` for the Figma examples' heavier bars.
+
+</Do>
+<Dont>
+
+- Don't use Strip as a divider.
+- Don't pass a fraction as `value`.
+- Don't rely on a custom colour alone to show which segments are filled.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Separator](?path=/docs/components-separator--docs): a divider line, documented on the same Figma page.
+- [Slider](?path=/docs/components-input-slider--docs): a value people can change.
+- [Typography](?path=/docs/components-text-text--docs): the label and value text next to the strip.
+
+## Props
+
+<Controls />

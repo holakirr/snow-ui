@@ -1,0 +1,110 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as GroupStories from './Group.stories'
+
+<Meta of={GroupStories} />
+
+<Title />
+
+<FigmaLinks page="25559:7996" />
+
+Group lays out related items in a row or a column, 8px apart by default: icon buttons in a toolbar, IconText rows, tags. It is the Figma "Group" (`Vertical`, `Reverse`). It renders a `<div role="group">`, so the items are announced as a set.
+
+```tsx
+import { Group } from '@holakirr/snow-ui'
+
+<Group aria-label="View">
+  <Button aria-label="Theme" startContent={<IconBox size={16}><SunIcon /></IconBox>} />
+  <Button aria-label="Notifications" startContent={<IconBox size={16}><BellIcon /></IconBox>} />
+</Group>
+```
+
+<Primary />
+
+## When to use
+
+- A set of related controls: the icon buttons of a header, the actions of a card.
+- A short row or column of IconText rows or tags that belong together.
+
+## When not to use
+
+- Picking one option from a set: use [ToggleGroup](?path=/docs/components-input-togglegroup--docs), which has the selection state and keyboard behaviour.
+- A list of navigation links or records: use a `<nav>` or a `<ul>`, or [ListItem](?path=/docs/components-listitem--docs) rows in a list.
+- Page layout: use your own flex or grid containers. Group adds `role="group"`, which only suits related items.
+
+## Anatomy
+
+1. **Container:** a `<div role="group">`, `inline-flex` with the items centred on the cross axis and a 12px corner radius (visible when you give it a fill).
+2. **Items** (children): any nodes, `gap` pixels apart.
+
+## Variants
+
+<Canvas of={GroupStories.AllVariants} />
+
+| Props | Figma | Direction |
+| --- | --- | --- |
+| (none) | Group | a row, in DOM order |
+| `vertical` | Vertical | a column |
+| `reverse` | Reverse | a row in reverse order, packed to the end (the right in left-to-right text) |
+| `vertical` + `reverse` | Vertical + Reverse | a column, bottom to top |
+
+<Canvas of={GroupStories.Vertical} />
+
+<Canvas of={GroupStories.Reverse} />
+
+<Canvas of={GroupStories.VerticalReverse} />
+
+## Sizes
+
+`gap` sets the space between the items:
+
+| `gap` | Class | Space |
+| --- | --- | --- |
+| `0` | `gap-0` | 0px |
+| `4` | `gap-1` | 4px |
+| `8` (default) | `gap-2` | 8px |
+| `12` | `gap-3` | 12px |
+| `16` | `gap-4` | 16px |
+
+## Accessibility
+
+- It renders `role="group"`. Give the group a name with `aria-label` (or `aria-labelledby`) when the items need context, e.g. "Toolbar" or "Text formatting".
+- `role` can be changed, e.g. to `role="toolbar"`. Group adds no keyboard behaviour: a toolbar is expected to move focus with the arrow keys, which you'd have to add yourself. Without that, keep `group`, where each item is its own tab stop.
+- `reverse` changes only the visual order. Screen readers and the Tab key follow the DOM order, so a reversed group reads and tabs in the opposite order to what is seen. Prefer ordering the children in the DOM when the order matters.
+
+None of the package's deviations from the Figma kit apply to Group itself; its items keep their own.
+
+## Localization and RTL
+
+- A row follows the text direction: in right-to-left text the first item is on the right, and `reverse` packs the items to the left.
+- Group renders no built-in strings; translate the `aria-label`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name a group of icon-only buttons with `aria-label`, and each button too.
+- Keep the default 8px gap unless the Figma layout uses another step.
+- Group only items that belong together.
+
+</Do>
+<Dont>
+
+- Don't use `role="toolbar"` without arrow-key navigation.
+- Don't use `reverse` when the reading or focus order matters.
+- Don't use Group as a general layout container.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Button](?path=/docs/components-button--docs): icon buttons, the most common items.
+- [IconText](?path=/docs/components-icontext--docs): rows laid out by Group.
+- [ToggleGroup](?path=/docs/components-input-togglegroup--docs): a group with a selection.
+- [Separator](?path=/docs/components-separator--docs): a line between groups.
+
+## Props
+
+<Controls />

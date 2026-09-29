@@ -1,0 +1,155 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as PaginationStories from './Pagination.stories'
+
+<Meta of={PaginationStories} />
+
+<Title />
+
+<FigmaLinks label="Pagination on the Table page" page="25596:130955" pageLabel="Table page" />
+
+Pagination moves between the pages of a long list or table. It is a navigation landmark with a list of page links, previous / next links and ellipses. The items are the Figma Button Small "Outline" of the Table page's pagination: 24px high, radius 12, a 0.5px Black/10% stroke; the current page has a Black/4% fill.
+
+```tsx
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@holakirr/snow-ui'
+
+<Pagination>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious href="?page=1" disabled={page === 1} />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationLink href="?page=1" isActive={page === 1}>1</PaginationLink>
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationLink href="?page=2" isActive={page === 2}>2</PaginationLink>
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationNext href="?page=2" disabled={page === 2} />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>
+```
+
+<Primary />
+
+## When to use
+
+- A table or a list split into pages, where the user may jump to a given page.
+- Results whose page is part of the URL, so it can be shared and restored.
+
+## When not to use
+
+- Switching between views of the same content: [Tabs](?path=/docs/components-tabs--docs) or a [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+- A list that loads more items as the user asks: a [Button](?path=/docs/components-button--docs) ("Show more").
+- The path to the current page: [Breadcrumb](?path=/docs/components-breadcrumb--docs).
+
+## Anatomy
+
+1. **Landmark** (`Pagination`): a `<nav>`, centred in the full width.
+2. **List** (`PaginationContent`): a `<ul>`, items 8px apart.
+3. **Item** (`PaginationItem`): a `<li>` around each link or ellipsis.
+4. **Page link** (`PaginationLink`): an `<a>` with the page number. `isActive` marks the current page, `disabled` disables it, `size` sets its size.
+5. **Previous / next** (`PaginationPrevious`, `PaginationNext`): page links with an arrow and optional text. Without text they are square.
+6. **Ellipsis** (`PaginationEllipsis`): "…" for skipped pages, in `text-secondary`, with screen-reader text.
+
+## Sizes
+
+`sm` is the Figma size. `md` and `lg` are the library's own, for larger tables.
+
+<Canvas of={PaginationStories.Sizes} />
+
+| `size` | Height (min width) | Padding | Radius | Text | Arrow | Icon-only padding |
+| --- | --- | --- | --- | --- | --- | --- |
+| `sm` (default) | 24px | 12px | 12px | 12/16 | 16px | 4px |
+| `md` | 32px | 12px | 12px | 14/20 | 16px | 8px |
+| `lg` | 40px | 16px | 12px | 16/24 | 20px | 10px |
+
+Previous and next links with text have 8px of padding on the arrow's side. Set `size` on every link, the ellipsis included: there is no size on the list.
+
+<Canvas of={PaginationStories.WithLabels} />
+
+The Figma table footer stretches equal items across the table, the pages first and the arrows last:
+
+<Canvas of={PaginationStories.TableFooter} />
+
+## States
+
+- **Hover:** a Black/4% fill.
+- **Keyboard focus:** the `focus-ring` utility.
+- **Current page** (`isActive`): a Black/4% fill and `aria-current="page"`.
+- **Disabled** (`disabled`): Black/20% text, no pointer events, and no `href`, so it neither navigates nor takes focus. Use it for "previous" on the first page and "next" on the last.
+
+## Accessibility
+
+- `Pagination` is a `navigation` landmark named "Pagination" (`messages.pagination.label`). A page with several paginations needs a distinct `aria-label` on each.
+- Page links are `<a href>` links in the tab order; Enter follows them. The current page has `aria-current="page"`.
+- Previous and next are named by `aria-label`: "Go to previous page" and "Go to next page". The name replaces any visible text, so keep the text's words in it if you pass your own (a "Prev" label read as "Go to previous page" doesn't match what a speech-input user says).
+- A disabled link has no `href`, `role="link"` and `aria-disabled="true"`: it is announced as an unavailable link and skipped by Tab.
+- The ellipsis glyph is hidden from assistive technology; screen readers read "More pages" (`messages.pagination.more`) instead.
+- Arrows are decorative icons; the links' names carry the meaning.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| The ellipsis in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary` (5.74:1 light, 7.08:1 dark) | 1.4.3 |
+
+## Localization and RTL
+
+- Built-in strings come from `messages.pagination`: `label` (the landmark), `previous`, `next` and `more` (the ellipsis). `aria-label` on `Pagination`, `PaginationPrevious` and `PaginationNext`, and `label` on `PaginationEllipsis`, override them.
+- In right-to-left text the first page is on the right, the arrows point the other way (`rtl:-scale-x-100`) and the paddings next to the arrows swap sides.
+
+<Canvas of={PaginationStories.RTL} />
+
+## Composition (asChild)
+
+`PaginationLink`, `PaginationPrevious` and `PaginationNext` take `asChild` to render a router link instead of an `<a>`. The child gets the link's classes (its own win conflicts), `aria-current` and the arrow around its text. A disabled child gets `aria-disabled` and no pointer events, but keeps its own destination: don't give it one.
+
+```tsx
+<PaginationLink asChild isActive>
+  <RouterLink to="?page=2">2</RouterLink>
+</PaginationLink>
+```
+
+<Canvas of={PaginationStories.AsChild} />
+
+Pagination holds no state: pass `isActive` and `disabled` from your current page, and handle navigation with `href` (or `onClick`, which a disabled link drops).
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Put the page in the URL (`href="?page=2"`), so pages can be shared and restored.
+- Disable "previous" on the first page and "next" on the last.
+- Mark exactly one link `isActive`.
+- Give each pagination a distinct `aria-label` when a page has several.
+
+</Do>
+<Dont>
+
+- Don't show every page of a long list: keep the first, last and nearby pages and an ellipsis between them.
+- Don't mix sizes in one pagination.
+- Don't give a disabled `asChild` link a destination.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Table](?path=/docs/components-table--docs): the Figma page whose footer this pagination is.
+- [Breadcrumb](?path=/docs/components-breadcrumb--docs): the other navigation landmark of the dashboard.
+- [Button](?path=/docs/components-button--docs): the Figma Button Small "Outline" these items reuse.
+
+## Props
+
+<Controls />

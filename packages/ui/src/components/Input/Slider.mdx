@@ -1,0 +1,102 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SliderStories from './Slider.stories'
+
+<Meta of={SliderStories} />
+
+<Title />
+
+<FigmaLinks label="Slider2 component set" />
+
+Slider picks a number, or a range with two thumbs, by dragging along a track. It is the Radix Slider on the Figma "Slider2" track, with accessible names for every thumb.
+
+```tsx
+import { Slider } from '@holakirr/snow-ui'
+
+<Slider aria-label="Volume" value={volume} onValueChange={setVolume} max={100} step={1} />
+```
+
+<Primary />
+
+## When to use
+
+- A value where the position matters more than the exact number: volume, opacity, zoom.
+- A range between two limits: a price range, a time window (two thumbs).
+
+## When not to use
+
+- An exact number the user types: use an [Input](?path=/docs/components-input-input--docs) with `type="number"`.
+- One of a few named steps: [RadioGroup](?path=/docs/components-input-radiogroup--docs) or [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+- Showing progress, not setting it: [Strip](?path=/docs/components-strip--docs) with a `value`.
+
+## Anatomy
+
+1. **Root** (`className`): a `<div>`, full width. It has no role; `aria-label` and `aria-labelledby` are passed on to the thumbs.
+2. **Track**: 34px high, an 8px radius, Black/4%.
+3. **Range**: the filled part of the track, in `black` (up to the thumb, or between two thumbs).
+4. **Thumbs**: one per value, a 16px circle with a 1px Black/40% border, a `white` fill and the "Drop shadow 2" effect. Each thumb is a `role="slider"`.
+
+## Variants
+
+<Canvas of={SliderStories.WithTwoValues} />
+
+The number of values in `value` or `defaultValue` sets the number of thumbs: `[50]` is a single slider, `[25, 75]` a range. `minStepsBetweenThumbs` keeps the thumbs of a range apart.
+
+## States
+
+- **Hover:** a pointer cursor on the track and a grab cursor on the thumb (grabbing while you drag).
+- **Keyboard focus:** the `focus-ring` utility on the focused thumb (see Accessibility).
+- **Disabled** (`disabled`): the range turns Black/80%, the thumbs 40% opacity, and the cursor not-allowed. The thumbs leave the tab order.
+
+<Canvas of={SliderStories.Disabled} />
+
+## Accessibility
+
+- Each thumb is a `role="slider"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`, and is in the tab order.
+- **Arrow keys** change the value by `step`; **Shift** + an arrow and **Page Up** / **Page Down** by 10 steps; **Home** moves the first thumb to `min` and **End** the last one to `max`.
+- Name the slider with `aria-label` (or `aria-labelledby`): the thumbs get it, because the root has no role. The thumbs of a range get `messages.slider` names built from `aria-label`: "Price, minimum" and "Price, maximum" for two, "Price, 2 of 3" for three or more. `thumbLabels` names each thumb yourself. `aria-labelledby` wins over both, so every thumb of a range gets the same name: name a range with `aria-label` or `thumbLabels`.
+- Show the value next to the slider when the exact number matters.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+
+## Localization and RTL
+
+- Built-in strings: `messages.slider.minimum`, `maximum` and `thumb` name the thumbs of a range (see above). `thumbLabels` overrides them; see [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs).
+- Keyboard and pointer input follow the `dir` of `SnowUIProvider`: in right-to-left text the minimum is on the right and ArrowLeft increases the value.
+
+## Controlled and uncontrolled
+
+Values are arrays, one number per thumb. Pass `defaultValue` to leave them to the slider, or `value` with `onValueChange(values)` to control them. `onValueCommit(values)` fires once when a drag or a key press ends, e.g. to save the value. `min` (default 0), `max` (default 100) and `step` (default 1) set the scale; `name` submits the values with a `<form>`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name every slider with `aria-label`, `aria-labelledby` or `thumbLabels`.
+- Show the current value, and the unit, next to the slider.
+- Use `onValueCommit` for expensive work, and `onValueChange` for live feedback.
+
+</Do>
+<Dont>
+
+- Don't use a slider for a value the user needs to set exactly.
+- Don't put `aria-label` on a wrapper: pass it to Slider, which gives it to the thumbs.
+- Don't make the steps so small that the arrow keys barely move the thumb.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Strip](?path=/docs/components-strip--docs): a segmented progress bar or meter.
+- [Input](?path=/docs/components-input-input--docs): a number the user types.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the thumb messages and the direction.
+
+## Props
+
+<Controls />

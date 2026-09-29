@@ -11,6 +11,10 @@ const meta = {
   title: 'Components/IconBox',
   component: IconBox,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33138-1011',
+    },
     layout: 'centered',
     docs: {
       description: {

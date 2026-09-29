@@ -20,6 +20,10 @@ const meta = {
   title: 'Components/Dialog',
   component: Dialog,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=32546-96143',
+    },
     layout: 'centered',
     docs: {
       description: {

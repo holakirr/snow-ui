@@ -1,0 +1,100 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as InputSmallStories from './InputSmall.stories'
+
+<Meta of={InputSmallStories} />
+
+<Title />
+
+<FigmaLinks label="Search component set" page="27966:64489" />
+
+InputSmall is a compact, 28px single-line text field: the Figma "Search" field without its icons, in the same two types. It is a single native `<input>`, with no title, adornments or clear button.
+
+```tsx
+import { InputSmall } from '@holakirr/snow-ui'
+
+<InputSmall aria-label="Filter rows" placeholder="Filter" value={filter} onChange={(event) => setFilter(event.target.value)} />
+```
+
+<Primary />
+
+## When to use
+
+- A short value in a dense place: a toolbar, a table header, a popover.
+- A filter or rename field that should match the height of the 28px Search field next to it.
+
+## When not to use
+
+- A search field: [Search](?path=/docs/components-search--docs) adds the search icon, the shortcut hint and a clear button.
+- A form field with a title, icons or a larger hit area: [Input](?path=/docs/components-input-input--docs).
+- Several lines of text: [Textarea](?path=/docs/components-input-textarea--docs).
+
+## Anatomy
+
+1. **Input**: the native `<input>`, the only element. Every prop goes to it; `className` merges with its classes. It is 28px high (4 / 8px padding, 14/20 text), with a 16px radius, a Black/20% placeholder and a 10px background blur. It has the browser's default width; set one with `className`.
+
+## Variants
+
+<Canvas of={InputSmallStories.Outline} />
+
+| `variant` | Figma | Look | Use for |
+| --- | --- | --- | --- |
+| `gray` (default) | Gray | Black/4%; Black/10% on hover | most places |
+| `outline` | Outline | Surface/1 with a 0.5px Black/20% stroke; Black/40% on hover | gray or tinted surfaces, where a gray fill would disappear |
+
+## States
+
+- **Hover:** `gray` turns Black/10%, `outline` gets a Black/40% stroke.
+- **Focus:** the Figma "Focus" state on any focus, by mouse or keyboard: the 4px Focus ring, and a 0.5px Black/40% stroke (`gray` also turns Surface/1). Text fields don't get the `focus-ring` outline.
+- **Read-only** (`readOnly`): `gray` keeps its fill on hover; `outline` keeps its Black/20% stroke on hover and focus.
+- **Disabled** (`disabled`): Black/20% text and a not-allowed cursor; `gray` keeps its Black/4% fill, `outline` gets a Black/10% stroke.
+
+<Canvas of={InputSmallStories.WithValue} />
+
+<Canvas of={InputSmallStories.Disabled} />
+
+## Accessibility
+
+- It renders a native `<input>` with an explicit `role="textbox"`. Keyboard behaviour is the browser's.
+- It has no label of its own: pass `aria-label`, or render a [Label](?path=/docs/components-label--docs) with `htmlFor` and give the input the same `id`. A placeholder is not a label.
+- `disabled` removes the field from the tab order; a `readOnly` field stays focusable.
+
+No row of the package README's deviation table applies. Known gaps, kept from Figma for now: the Black/20% placeholder (1.6:1; it is never the field's only label) and the 0.5px Black/20% stroke of `outline`.
+
+## Localization and RTL
+
+- InputSmall renders no built-in strings: the placeholder and the label are yours to translate.
+- The text follows the direction of the page or of a `dir` attribute on the input.
+
+## Controlled and uncontrolled
+
+InputSmall is a native field: pass `value` with `onChange` to control it, or `defaultValue` to leave the value to the browser.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name the field with `aria-label` or a `Label`.
+- Set a width with `className` (`w-40`, `w-full`).
+- Use `outline` when the field sits on a gray surface.
+
+</Do>
+<Dont>
+
+- Don't build a search field from it: use Search.
+- Don't use the placeholder as the only label.
+- Don't use it for form fields that need a title or an error message: use Input in a Form.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Search](?path=/docs/components-search--docs): the same 28px field with the search icon, shortcut hint and clear button.
+- [Input](?path=/docs/components-input-input--docs): the 44px form field.
+- [Label](?path=/docs/components-label--docs): a visible label for the field.
+
+## Props
+
+<Controls />

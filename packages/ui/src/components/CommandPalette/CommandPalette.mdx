@@ -1,0 +1,160 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as CommandPaletteStories from './CommandPalette.stories'
+
+<Meta of={CommandPaletteStories} />
+
+<Title />
+
+<FigmaLinks label="SearchPopup component" page="27966:64489" pageLabel="Search page" />
+
+CommandPalette is a search dialog: the user types, the list of grouped results filters, and ↑ / ↓ and Enter pick one. Use it for site search, recent items and quick commands. It is the Figma "SearchPopup" of the dashboard header. It is built on Radix Dialog, with a search field that is a `combobox` controlling a `listbox`.
+
+```tsx
+import { CommandPalette, type CommandPaletteGroup } from '@holakirr/snow-ui'
+
+const groups: CommandPaletteGroup[] = [
+  {
+    id: 'pages',
+    heading: 'Recently visited',
+    items: [
+      { id: 'overview', label: 'Overview', icon: <SearchIcon size={16} /> },
+      { id: 'projects', label: 'Projects', keywords: ['work'] },
+    ],
+  },
+]
+
+<CommandPalette
+  groups={groups}
+  hotkey="mod+k"
+  trigger={<Button variant="gray" label="Search ⌘K" />}
+  onSelect={(item, event) => navigate(item.id, { newTab: event.metaKey || event.ctrlKey })}
+/>
+```
+
+<Primary />
+
+## When to use
+
+- Search across pages, records or people, with recent items when the field is empty.
+- Quick commands for keyboard users, behind a shortcut such as ⌘K or `/`.
+
+## When not to use
+
+- Filtering a list that is already on the page: a [Search](?path=/docs/components-search--docs) field next to it.
+- Picking a value for a form field: [Select](?path=/docs/components-input-select--docs).
+- A few actions behind a button: [DropdownMenu](?path=/docs/components-dropdownmenu--docs).
+- A form or a confirmation: [Dialog](?path=/docs/components-dialog--docs).
+
+## Anatomy
+
+1. **Trigger** (`trigger`, optional): an element that opens the palette, rendered with Radix `asChild`, e.g. a Button or a button styled as the Figma Search field.
+2. **Popup**: the dialog, in a portal, 15% of the viewport height from the top, centred; 480px wide at most and 16px from each side on narrow screens. `background-3` with the Glass 2 effect (20px background blur, 0 8 28 shadow), a 24px radius and 16px padding. There is no mask. `className` styles it.
+3. **Search field**: the `lg` [Search](?path=/docs/components-search--docs) field, 48px high, with no fill and a 0.5px `black-10` line under it. `placeholder` sets its placeholder; while `loading` it shows a spinner at the end.
+4. **Group heading** (`heading` of a group, optional): 14/20 `text-secondary`.
+5. **Item**: at least 36px high, 8px padding, a 12px radius, 14/20 text; an optional `icon` (a 16px icon or a 24px avatar) 8px before the label. Long labels are truncated.
+6. **Enter hint**: a ↩ in `text-secondary` at the end of the highlighted item.
+7. **List**: scrolls past 484px or 60% of the viewport height, whichever is smaller.
+8. **Empty message**: "No results" (`emptyMessage`) in 14/20 `text-secondary`, when nothing matches.
+
+Items are `{ id, label, icon?, keywords?, disabled?, onSelect? }`, in groups of `{ id, heading?, items }`. Ids must be unique within their group.
+
+## States
+
+- **Highlighted:** Black/4% fill and the Enter hint. The first result is highlighted when the palette opens and whenever the query changes; the pointer and ↑ / ↓ move the highlight.
+- **Disabled item** (`disabled`): 40% opacity and a not-allowed cursor; it is skipped by the arrow keys and can't be selected.
+- **Empty:** no item matches the query.
+- **Loading** (`loading`): a spinner in the field, the list marked busy and "Loading" announced, for results from a server.
+
+<Canvas of={CommandPaletteStories.Open} />
+
+<Canvas of={CommandPaletteStories.Empty} />
+
+<Canvas of={CommandPaletteStories.Loading} />
+
+Dark theme, open: [OpenDark story](?path=/story/components-commandpalette--open-dark).
+
+## Filtering and server results
+
+- **Default filter** (`defaultCommandPaletteFilter`): every word of the query must appear in the label or the `keywords`, in any order, case-insensitively. An empty query shows every item.
+- **Custom filter:** `filter={(item, query) => boolean}` gets the trimmed, non-empty query.
+- **Server results:** `filter={false}` shows `groups` as they are. Read the query with `onQueryChange` (or control it with `query`), fetch, and pass the results as `groups` with `loading` while waiting. The highlighted item survives new `groups` as long as its group and item ids stay.
+
+<Canvas of={CommandPaletteStories.AsyncResults} />
+
+## Opening and selecting
+
+- **Trigger:** `trigger` opens the palette on click.
+- **Hotkey:** `hotkey` toggles it from anywhere on the page: a key (`'/'`) or modifiers and a key joined with `+` (`'mod+k'`, where `mod` is ⌘ or Ctrl; also `ctrl`, `meta`, `alt`, `shift`). A hotkey without `mod`, `ctrl`, `meta` or `alt` is ignored while the user types in a field.
+- **Open state:** `open` / `defaultOpen` / `onOpenChange`. The query and the highlight reset every time it opens (to `defaultQuery`, or the controlled `query`).
+- **Selecting:** Enter or a click calls the item's `onSelect`, then the palette's `onSelect(item, event)`, and closes the palette (`closeOnSelect={false}` keeps it open). The event is the click or the Enter key press: check `event.metaKey` or `event.ctrlKey` to open the result in a new tab.
+
+<Canvas of={CommandPaletteStories.WithButtonTrigger} />
+
+## Portal and theme
+
+The popup renders in a portal at the end of `<body>`, so it takes the theme of `<html>`. Unlike the `*Content` components, CommandPalette doesn't pass other props to its popup, so `data-theme` can't scope it: set the theme on `<html>`.
+
+## Accessibility
+
+- The popup is a `role="dialog"`, named by a visually hidden title (`label`, "Search" by default).
+- The field is a `combobox` (`aria-expanded`, `aria-autocomplete="list"`) that controls a `listbox` named by `label`. Focus stays in the field; the highlighted `option` is `aria-selected` and the field's `aria-activedescendant`. Items are grouped in `group`s named by their heading.
+- Keyboard:
+
+| Key | Does |
+| --- | --- |
+| the `hotkey` | toggle the palette |
+| ↓ / ↑ | move the highlight to the next / previous enabled item, wrapping around |
+| Enter | select the highlighted item |
+| Escape | close the palette |
+| Tab | move between the field and its clear button, shown when the field has text (focus stays in the dialog) |
+
+- The palette is a modal Radix Dialog: opening moves focus to the search field, the rest of the page is hidden from assistive technology and ignores the pointer, and a click outside closes it. Closing returns focus to the trigger.
+- The empty message and the loading text are in a `status` live region, so screen readers announce them; `loading` also sets `aria-busy` on the list.
+- Built-in strings: `label` ("Search"), `placeholder` ("Search"), `emptyMessage` ("No results") and `loadingLabel` ("Loading").
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Group headings and the empty message in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+| The Enter hint in Black/20%: 1.6:1 | `text-secondary` | 1.4.3 |
+
+## Localization and RTL
+
+- `messages.commandPalette` holds the four strings: `label`, `placeholder`, `empty` and `loading`. The `label`, `placeholder`, `emptyMessage` and `loadingLabel` props override them.
+- The portalled popup takes `dir` from `SnowUIProvider`. Without a provider it has no `dir` and follows `<html dir>`.
+- The field's clear button is named by `messages.search.clear` ("Clear search"), from [Search](?path=/docs/components-search--docs).
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Group results under short headings: "Recent search", "Contacts".
+- Add `keywords` so items match the words users type, not only their labels.
+- Use `filter={false}` with `loading` for server results.
+- Use a modifier hotkey (`mod+k`) when `/` could clash with typing, and show it on the trigger.
+- Read `event.metaKey` / `event.ctrlKey` in `onSelect` to open results in a new tab.
+
+</Do>
+<Dont>
+
+- Don't reuse an item `id` within a group: it is the item's key and its option id.
+- Don't rely on the hotkey alone: give the palette a visible trigger too.
+- Don't expect `data-theme` on the palette to work: set the theme on `<html>`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Search](?path=/docs/components-search--docs): the Figma Search field; its styles make a matching trigger.
+- [Dialog](?path=/docs/components-dialog--docs): the same Radix primitive.
+- [DropdownMenu](?path=/docs/components-dropdownmenu--docs): a short list of actions behind a button.
+- [KBD](?path=/docs/components-text-kbd--docs): show the hotkey on the trigger.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the built-in strings.
+
+## Props
+
+<Controls />

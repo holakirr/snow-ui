@@ -1,0 +1,139 @@
+import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ContextMenuStories from './ContextMenu.stories'
+
+<Meta of={ContextMenuStories} />
+
+<Title />
+
+<FigmaLinks label="Popover component set" page="28002:96385" />
+
+ContextMenu opens a menu of actions for an area where the user right-clicks, or long-presses on a touch screen: a file, a row, a canvas. It opens at the pointer. The menu is the Figma "Popover" surface with the same items as [DropdownMenu](?path=/docs/components-dropdownmenu--docs). It is built on Radix Context Menu.
+
+```tsx
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuShortcut,
+  ContextMenuTrigger,
+} from '@holakirr/snow-ui'
+
+<ContextMenu>
+  <ContextMenuTrigger className="block rounded-16 border border-dashed p-6">
+    Right-click here
+  </ContextMenuTrigger>
+  <ContextMenuContent>
+    <ContextMenuItem onSelect={reload}>
+      Reload
+      <ContextMenuShortcut keys={['⌘', 'R']} />
+    </ContextMenuItem>
+    <ContextMenuItem onSelect={remove}>Delete</ContextMenuItem>
+  </ContextMenuContent>
+</ContextMenu>
+```
+
+<Primary />
+
+## When to use
+
+- Shortcuts to actions on an object the user points at: a file, a table row, a card.
+- Power-user actions that are also available somewhere else (a toolbar, a "more" menu).
+
+## When not to use
+
+- The only way to reach an action: right-click is hidden and the trigger isn't reachable with the keyboard. Use a [DropdownMenu](?path=/docs/components-dropdownmenu--docs) or a [Button](?path=/docs/components-button--docs), and add a context menu on top if you like.
+- Picking a value for a form field: [Select](?path=/docs/components-input-select--docs).
+- Content that isn't a list of actions: [Popover](?path=/docs/components-popover--docs).
+
+## Anatomy
+
+1. **Root** (`ContextMenu`): holds the open state. It renders nothing itself.
+2. **Trigger** (`ContextMenuTrigger`): a `<span>` around the area that opens the menu; style it (e.g. `block`) to size the area.
+3. **Content** (`ContextMenuContent`): the `role="menu"` panel, in a portal, at the pointer (Radix places it 2px to the right of the point, aligned to its top). At least 240px wide (`min-w-60`). The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2.
+4. **Item** (`ContextMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `inset` adds 32px of start padding.
+5. **Checkbox item** (`ContextMenuCheckboxItem`) and **radio item** (`ContextMenuRadioItem`, in a `ContextMenuRadioGroup`): a 16px check mark, or a 6px dot, in a 16px slot 8px from the start.
+6. **Label** (`ContextMenuLabel`, optional): a group title, 12/16 `text-secondary`, 28px high; takes `inset`.
+7. **Group** (`ContextMenuGroup`, optional): groups items (no spacing of its own).
+8. **Separator** (`ContextMenuSeparator`): a 0.5px `black-10` line, 4px from its neighbours.
+9. **Shortcut** (`ContextMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`.
+10. **Submenu** (`ContextMenuSub`): a `ContextMenuSubTrigger` (an item with an arrow at the end) and a `ContextMenuSubContent` on the same surface. `ContextMenuPortal` is exported to portal it.
+
+## States
+
+- **Highlighted** (hover or keyboard focus): Black/4% fill. A sub trigger keeps it while its submenu is open.
+- **Checked:** a check mark (`checked` on a checkbox item) or a dot (the radio group's `value`).
+- **Disabled** (`disabled` on an item): Black/20% text and a not-allowed cursor; the arrow keys and typeahead skip it.
+- **Disabled trigger** (`disabled` on `ContextMenuTrigger`): the area opens no menu, and the browser's own menu shows instead.
+- **Open and closed:** `open` / `onOpenChange` on `ContextMenu`. The trigger has `data-state="open"` while its menu is open.
+
+## Portal and theme
+
+`ContextMenuContent` renders in a portal at the end of `<body>`, outside your layout. So it takes the theme of `<html>`, not of a `data-theme` scope around the trigger. Set the theme on `<html>`, or give the menu its own scope: `<ContextMenuContent data-theme="dark">` (the prop is passed through).
+
+## Accessibility
+
+- The content is `role="menu"`; items are `menuitem`, `menuitemcheckbox` (with `aria-checked`) or `menuitemradio`, separators `separator`, groups `group`.
+- It opens on the `contextmenu` event (usually a right-click) and on a 700ms long press with a touch or a pen, at the pointer. The trigger has no role and adds no keyboard access (by default it is a `<span>`, which is not focusable), so keyboard and screen-reader users may never find the menu. Offer every action somewhere else too.
+- In the open menu the keyboard works as in DropdownMenu: ArrowDown / ArrowUp, Home / End and typeahead move; Enter or Space selects and closes; ArrowRight opens a submenu (ArrowLeft in right-to-left text) and ArrowLeft closes it; Escape closes the menu, submenus included. To keep the menu open after a selection, call `event.preventDefault()` in the item's `onSelect`.
+- The menu is modal by default (Radix `modal`): while it is open, focus stays in it, the rest of the page is hidden from assistive technology and ignores the pointer, and the page doesn't scroll. `modal={false}` turns this off.
+- There are no built-in strings. A `ContextMenuShortcut` is a `<kbd>` with `aria-keyshortcuts`; it only shows the shortcut.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Group labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+
+The Black/4% item highlight keeps the Figma value: the README lists it as a known gap.
+
+## Localization and RTL
+
+- The menu renders no text of its own: labels and shortcuts are yours to translate.
+- The content takes `dir` from `SnowUIProvider`; without a provider (or a Radix `DirectionProvider`) it is `ltr`, whatever `<html dir>` says.
+- In right-to-left text the check marks, `inset` padding and shortcuts swap sides, the submenu arrow points left, and ArrowLeft opens a submenu.
+
+## Composition (asChild)
+
+`ContextMenuTrigger` and the items take `asChild` (Radix). On the trigger it renders your element instead of the `<span>`, e.g. a card or a list row:
+
+```tsx
+<ContextMenu>
+  <ContextMenuTrigger asChild>
+    <div className="rounded-16 bg-surface-1 p-6">…</div>
+  </ContextMenuTrigger>
+  <ContextMenuContent>…</ContextMenuContent>
+</ContextMenu>
+```
+
+Checkbox items take `checked` / `onCheckedChange` and a radio group `value` / `onValueChange`. The root takes `open` / `onOpenChange` (there is no `defaultOpen`). The menu is placed at the point of the last right-click or long press, so `open` set before the user has opened it puts the menu at the top-left corner of the viewport (Radix warns in development).
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Put the same actions in a visible place too: a toolbar, buttons, or a DropdownMenu on a "more" button.
+- Keep the menu short, with the most used action first.
+- Give the trigger a clear area: size it with a class, or render your element with `asChild`.
+- Group items with `ContextMenuLabel` and separators.
+
+</Do>
+<Dont>
+
+- Don't make a context menu the only way to reach an action.
+- Don't put fields or long text in it: use a Popover.
+- Don't nest submenus more than one level deep.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [DropdownMenu](?path=/docs/components-dropdownmenu--docs): the same menu parts, opened from a button.
+- [Popover](?path=/docs/components-popover--docs): the Figma surface the menu uses.
+- [KBD](?path=/docs/components-text-kbd--docs): the shortcut hint.
+
+## Props
+
+<Controls />

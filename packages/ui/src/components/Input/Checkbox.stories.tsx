@@ -11,6 +11,10 @@ const meta: Meta<typeof Checkbox> = {
   // A checkbox without a visible label needs an accessible name.
   args: { 'aria-label': 'Accept the terms' },
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33400-60046',
+    },
     docs: {
       description: {
         component:

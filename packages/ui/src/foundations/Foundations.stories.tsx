@@ -11,6 +11,10 @@ import {
 const meta = {
   title: 'Foundations',
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=15098-130290',
+    },
     layout: 'fullscreen',
     // Reference pages, not components: no dashed component frame, no docs tab.
     storyWrapper: false,

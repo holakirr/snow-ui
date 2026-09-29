@@ -8,6 +8,12 @@ import { Tag, type TagState } from './Tag'
 const meta: Meta<typeof Tag> = {
   title: 'Components/Tag',
   component: Tag,
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33307-661',
+    },
+  },
   tags: ['autodocs'],
   args: { label: 'Tag' },
   argTypes: {

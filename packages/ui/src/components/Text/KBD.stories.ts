@@ -6,6 +6,10 @@ const meta = {
   title: 'Components/Text/KBD',
   component: KBD,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33257-43265',
+    },
     layout: 'centered',
   },
   tags: ['autodocs'],

@@ -1,0 +1,107 @@
+import { Canvas, Controls, Meta, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../.storybook/blocks'
+import * as IconsStories from './Icons.stories'
+
+<Meta of={IconsStories} />
+
+<Title />
+
+<FigmaLinks label="Icon page" />
+
+`@holakirr/snow-ui-icons` is the icon set of the SnowUI kit as React components: 49 icons on a 32×32 grid, most in several weights, tree-shakeable (one module per icon). The components of `@holakirr/snow-ui` use it, and it is published on its own.
+
+```tsx
+import { StarIcon } from '@holakirr/snow-ui-icons'
+
+<StarIcon size={16} weight="fill" />
+```
+
+<Canvas of={IconsStories.AllIcons} />
+
+## When to use
+
+- Next to a label (buttons, tabs, menu items, navigation) to help recognition.
+- Alone in a compact control (an icon-only button or toggle), with an accessible name on the control.
+- As a status or file-type marker (`StatusIcon`, `DocXIcon`, `XLSXIcon`…).
+
+## When not to use
+
+- As the only way to convey a meaning that has no text anywhere nearby: add a label or a tooltip.
+- To size an icon on a tile or with a badge: wrap it in [IconBox](?path=/docs/components-iconbox--docs), the Figma "Icon" component.
+- For avatars and pictures: use [Avatar](?path=/docs/components-avatar-avatar--docs).
+
+## Props
+
+Every icon takes the props of an `<svg>` plus:
+
+| Prop | Default | |
+| --- | --- | --- |
+| `size` | `24` | Width and height: a preset (`16`, `20`, `24`, `28`, `32`, `40`, `48`, `80`, also exported as `ICON_SIZES`), any number (px) or CSS length. |
+| `weight` | `"regular"` | `thin`, `light`, `regular`, `bold`, `fill` or `duotone` (`ICON_WEIGHTS`). Icons without the weight fall back to `regular`. |
+| `color` | `currentColor` | The fill (and the stroke of the stroke-drawn `LoadingAIcon`). |
+| `mirrored` | `false` | Flips the icon horizontally. |
+| `alt` | — | Accessible text: the icon becomes `role="img"` with a `<title>`. |
+
+<Controls of={IconsStories.AllIcons} />
+
+## Weights
+
+All six weights: `ArrowLineDownIcon`, `ArrowLineLeftIcon`, `ArrowLineRightIcon`, `ArrowLineUpIcon`, `ClipboardIcon`, `CopyIcon`, `DefaultIcon`, `FourLeafCloverIcon`, `XCircleIcon`. `regular` and `fill`: `DotIcon`, `RectangleIcon`, `StarIcon`. The others have `regular` only.
+
+<Canvas of={IconsStories.FourLeafCloverIconStory} />
+
+`DefaultIcon` is the kit's placeholder icon (a dashed square): use it in prototypes and examples where the real icon isn't chosen yet.
+
+## Sizes in components
+
+The Figma components set icon sizes; icons from this package always render their `width`, so pass the size:
+
+| Where | Size |
+| --- | --- |
+| `Button`, `Toggle`, segmented `Tabs` next to a label (`sm` / `md` / `lg`) | 12 / 16 / 20 |
+| Icon-only `Button` or `Toggle` (`sm` / `md` / `lg`) | 16 / 20 / 24 |
+| `IconText` (the Figma component) | 16, through `<IconBox size={16}>` |
+| `Input` adornments, menu items (`DropdownMenu`, `ContextMenu`, `Select`) | 16: they size an `<svg>` child to 16px |
+| `IconBox` | its `size` (the child is stretched to it) |
+
+## Accessibility
+
+- An icon without `alt`, `aria-label` or `aria-labelledby` is decorative: `aria-hidden="true"` and no role. That is right next to a text label.
+- With `alt`, the icon is `role="img"` with a `<title>`: use it when the icon carries meaning on its own. For an icon-only control, name the control (`aria-label` on the button) rather than the icon.
+- `color` defaults to `currentColor`, so icons follow the text colour and the theme. Check a non-text contrast of 3:1 when an icon is the only indicator of a state.
+
+## Localization and RTL
+
+Icons don't mirror on their own. For directional icons (arrows, "next", "back") in right-to-left text, add `className="rtl:-scale-x-100"`, or set `mirrored` from the direction (`useSnowUI().dir === 'rtl'` from `@holakirr/snow-ui`). The library's own directional icons already do.
+
+## Server rendering and custom icons
+
+- Icons are plain components with no hooks or effects, so they render in React Server Components.
+- `StatusIcon` (`status="progress" | "error" | "success"`) renders `LoadingAIcon`, or the Phosphor `Warning` / `CheckCircle` icons (bundled, fill weight) in the kit's yellow / green, which are meant for dark surfaces such as the toast. It always has an `alt` ("Icon for status …"). `Toaster` uses it.
+- To add your own icon with the same props, render `IconBase` with a `Map` of weights to SVG contents. The [package README](https://github.com/holakirr/snow-ui/tree/main/packages/icons#custom-icons) has the recipe.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Import icons by name (`import { StarIcon } …`) so bundlers ship only those.
+- Pass the Figma size of the place the icon goes (`size={16}` next to an `md` label).
+- Name icon-only controls with `aria-label`.
+- Mirror directional icons in right-to-left text.
+
+</Do>
+<Dont>
+
+- Don't pass the whole namespace object around (`import * as Icons` then `Icons[name]`): it defeats tree shaking.
+- Don't give decorative icons an `alt`: screen readers would read them twice next to their label.
+- Don't recolour icons with a fixed colour that ignores the theme; use a token (`className="text-secondary"`) or `currentColor`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [IconBox](?path=/docs/components-iconbox--docs): sizes an icon, puts it on a tile, adds a badge.
+- [IconText](?path=/docs/components-icontext--docs): an icon with text.
+- [Button](?path=/docs/components-button--docs): `startContent` / `endContent` take icons.

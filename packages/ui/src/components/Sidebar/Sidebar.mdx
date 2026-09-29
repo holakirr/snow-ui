@@ -1,0 +1,217 @@
+import { Canvas, Controls, Meta, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SidebarStories from './Sidebar.stories'
+
+<Meta of={SidebarStories} />
+
+<Title />
+
+<FigmaLinks label="Dashboard sidebar" />
+
+Sidebar is the app's side navigation: a column of grouped menu items that collapses off screen or to icons, and becomes a sheet on small screens. It is composed of parts inside a `SidebarProvider`, which holds the open state. The look is the Figma dashboard sidebar: 212px wide, no fill (it sits on the page background), a 0.5px Black/10% line on its inner edge, 14px section headings and 36px items with radius 12 and a Black/4% fill on hover and on the active item.
+
+```tsx
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@holakirr/snow-ui'
+
+<SidebarProvider>
+  <Sidebar collapsible="icon">
+    <SidebarContent>
+      <SidebarGroup>
+        <SidebarGroupLabel>Dashboards</SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive tooltip="Overview">
+                <a href="/overview" aria-current="page">
+                  <StarIcon />
+                  <span>Overview</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
+  </Sidebar>
+  <SidebarInset>
+    <SidebarTrigger />
+    {/* the page */}
+  </SidebarInset>
+</SidebarProvider>
+```
+
+The sidebar is fixed to the edge of the viewport, so the stories below with a collapsible sidebar render in their own frame. Press the trigger (or Ctrl+B / ⌘B inside the frame) to collapse it.
+
+<Canvas of={SidebarStories.Default} story={{ inline: false, height: '520px' }} />
+
+## When to use
+
+- The main navigation of an app or a dashboard, with more destinations than fit in a header.
+- Navigation grouped into sections, with nested pages.
+
+## When not to use
+
+- A panel of details or a form next to the page: [Sheet](?path=/docs/components-sheet--docs).
+- A few top-level sections: [Tabs](?path=/docs/components-tabs--docs) or links in a header.
+- A single list of items inside the page: [ListItem](?path=/docs/components-listitem--docs) or [IconText](?path=/docs/components-icontext--docs) (`interactive`).
+- The path to the current page: [Breadcrumb](?path=/docs/components-breadcrumb--docs).
+
+## Anatomy
+
+1. **Provider** (`SidebarProvider`): holds the state and renders a flex `<div>` at least the viewport's height. It sets `--sidebar-width` (212px) and `--sidebar-width-icon` (52px), which its `style` can override, and a `TooltipProvider` without delay. `useSidebar()` reads the state inside it.
+2. **Sidebar** (`Sidebar`): the panel. `side`, `variant` and `collapsible` set its place, look and collapsed form.
+3. **Header and footer** (`SidebarHeader`, `SidebarFooter`): columns at the top and bottom, padding 8 / 16px, 8px gap.
+4. **Content** (`SidebarContent`): the middle, which scrolls; groups are 8px apart.
+5. **Group** (`SidebarGroup`): a section, padding 8 / 16px, with:
+   - `SidebarGroupLabel`: the heading, 28px high, 12px side padding, radius 12, 14px Regular in `black-80`;
+   - `SidebarGroupAction` (optional): a 20px button at the heading's end;
+   - `SidebarGroupContent`: the section's menu, 14px text.
+6. **Menu** (`SidebarMenu`, a `<ul>` with 4px gaps, and `SidebarMenuItem`, an `<li>`), with:
+   - `SidebarMenuButton`: the Figma nav item ("Frame"), a `<button>` or, with `asChild`, your link. Padding 8px, radius 12, an 8px gap, 14px text and 20px icons. `isActive`, `variant`, `size` and `tooltip` (see below);
+   - `SidebarMenuAction` (optional): a 20px button at the item's end; `showOnHover` hides it on desktop until the item is hovered or focused;
+   - `SidebarMenuBadge` (optional): a 20px-high count at the item's end, 12px tabular figures;
+   - `SidebarMenuSkeleton`: a 36px loading row, with a 20px icon placeholder when `showIcon`.
+7. **Submenu** (`SidebarMenuSub`, `SidebarMenuSubItem`, `SidebarMenuSubButton`): a nested list with a 1px Black/10% line on its start side. Sub buttons are `<a>`s, 36px (`size="md"`, the default) or 28px (`sm`) high, with 16px icons and `isActive`.
+8. **Separator** (`SidebarSeparator`): a Separator with 16px side margins.
+9. **Input** (`SidebarInput`): an Input, 32px high and full width.
+10. **Trigger** (`SidebarTrigger`): a Button with the sidebar icon that opens and closes the sidebar.
+11. **Rail** (`SidebarRail`, optional): a 16px strip on the sidebar's inner edge that toggles it on click and shows a 2px Black/10% line on hover.
+12. **Inset** (`SidebarInset`): the `<main>` next to the sidebar, a sibling after `Sidebar`, with a `background-1` fill.
+
+## Variants
+
+| `variant` | Look | Use for |
+| --- | --- | --- |
+| `sidebar` (default) | the Figma dashboard sidebar: no fill, a 0.5px Black/10% line on the inner edge | the dashboard layout |
+| `floating` | 8px from the viewport's edges, a `background-1` panel with radius 16 and a 0.5px Black/10% stroke (the library's own) | a sidebar over a busy page |
+| `inset` | 8px from the edges, no line; the page (`SidebarInset`) becomes a `background-1` panel with radius 12 and 8px margins on a `background-2` fill (the library's own) | an app shell where the page is a card |
+
+The Figma dashboard sidebar (`Type=Complex`, `Fold=False`), with `collapsible="none"`:
+
+<Canvas of={SidebarStories.Dashboard} />
+
+<Canvas of={SidebarStories.Floating} story={{ inline: false, height: '480px' }} />
+
+<Canvas of={SidebarStories.Inset} story={{ inline: false, height: '480px' }} />
+
+### Collapsing
+
+| `collapsible` | Collapsed | Small screens |
+| --- | --- | --- |
+| `offcanvas` (default) | slides off the edge of the screen | a sheet |
+| `icon` | a 52px column of icons (68px for `floating` and `inset`): group labels, group and item actions, badges and submenus hide, menu buttons become 36px squares | a sheet |
+| `none` | never: a static 212px column | the same column (no sheet) |
+
+Below 768px wide (`useIsMobile`) the sidebar renders in a [Sheet](?path=/docs/components-sheet--docs) from its side: 288px wide, with a `background-1` fill and no close button. `SidebarTrigger` opens it.
+
+### Menu button
+
+| Prop | Values | Look |
+| --- | --- | --- |
+| `size` | `default` (36px, 14px text), `sm` (28px, 12px text), `lg` (48px, 14px text) | height and text |
+| `variant` | `default`, `outline` | `outline` adds a `background-1` fill and a 0.5px Black/10% stroke |
+| `isActive` | `boolean` | a Black/4% fill (`data-active`) |
+| `tooltip` | a string, or `TooltipContent` props | a tooltip with the label, shown only while the sidebar is collapsed on desktop |
+
+## States
+
+- **Expanded and collapsed:** the sidebar element has `data-state="expanded"` or `"collapsed"`, and `data-collapsible` set to the `collapsible` value while collapsed; style your own parts with `group-data-[collapsible=icon]:…`.
+- **Hover, pressed and active** (`isActive`): a Black/4% fill on menu and sub buttons.
+- **Keyboard focus:** the `focus-ring` utility on buttons, links, labels and actions.
+- **Disabled:** `disabled` or `aria-disabled` on a menu or sub button: 50% opacity and no pointer events.
+- **Loading:** `SidebarMenuSkeleton` rows in place of the menu items. The text placeholder gets a random width between 50% and 90%.
+
+## Accessibility
+
+- The desktop sidebar is a set of `<div>`s with no landmark: wrap its navigation in a `<nav>` with an `aria-label`. `SidebarInset` is a `<main>`.
+- Menus are `<ul>` lists. `SidebarMenuButton`, `SidebarGroupAction` and `SidebarMenuAction` render a `<button>` without a `type`, so inside a form pass `type="button"`. With `asChild` the child (a link) is the control.
+- `isActive` only sets `data-active` for the fill: put `aria-current="page"` on the current page's link yourself.
+- Every button and link is in the tab order; there are no arrow-key shortcuts between items. Ctrl+B or ⌘B toggles the sidebar from anywhere on the page: the provider listens on `window` and prevents the browser's default.
+- `SidebarTrigger` is named "Toggle Sidebar" (visually hidden text, `messages.sidebar.toggle`); `aria-label` replaces it. It doesn't set `aria-expanded`.
+- `SidebarRail` is for pointers only (`tabIndex={-1}`), named and titled "Toggle Sidebar"; the trigger is the keyboard path.
+- Collapsed to icons, the menu buttons keep their text in the DOM (clipped), so their names stay; `tooltip` shows the label on hover and keyboard focus.
+- On small screens the sheet is a modal Radix Dialog: focus moves into it and stays there, Escape or a click outside closes it, and its title "Sidebar" and description "Displays the mobile sidebar." are for screen readers only.
+- `showOnHover` actions become visible when their item has keyboard focus.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Section headings (`SidebarGroupLabel`) in Black/40%: 2.85:1 at 14px | `black-80` (12.6:1 light, 8.7:1 dark) | 1.4.3 |
+
+## Localization and RTL
+
+- Built-in strings come from `messages.sidebar`: `toggle` (`SidebarTrigger` and `SidebarRail`), `title` and `description` (the small-screen sheet). `aria-label` on `SidebarTrigger` overrides `toggle`.
+- `side="start"` (the default) and `"end"` follow the `dir` of `SnowUIProvider`: in right-to-left text a `start` sidebar is on the right. The rendered element gets the physical side as `data-side`; `left` and `right` stay physical.
+- In right-to-left text the edge line moves to the sidebar's left, the trigger icon is mirrored, actions and badges sit at the left end of items, the submenu line on the right, and tooltips open to the left.
+
+<Canvas of={SidebarStories.RTL} story={{ inline: false, height: '360px' }} />
+
+## Composition (asChild)
+
+`SidebarGroupLabel`, `SidebarGroupAction`, `SidebarMenuButton`, `SidebarMenuAction` and `SidebarMenuSubButton` take `asChild`: the only child (a router link, or another component's trigger) is rendered with the part's classes, the child's winning conflicts.
+
+```tsx
+<SidebarMenuButton asChild isActive={pathname === '/projects'}>
+  <RouterLink to="/projects" aria-current={pathname === '/projects' ? 'page' : undefined}>
+    <StarIcon />
+    <span>Projects</span>
+  </RouterLink>
+</SidebarMenuButton>
+
+{/* A menu button that opens a DropdownMenu. */}
+<DropdownMenuTrigger asChild>
+  <SidebarMenuButton>Username</SidebarMenuButton>
+</DropdownMenuTrigger>
+```
+
+`SidebarTrigger` and `SidebarRail` run your `onClick` first; `event.preventDefault()` in it skips the toggle.
+
+The desktop state is `open` (controlled) or `defaultOpen` (uncontrolled, `true` by default), with `onOpenChange(open)`, on `SidebarProvider`. Every change is saved in a `sidebar:state` cookie for 7 days, and the cookie wins over `defaultOpen` when the provider mounts in the browser. The small-screen sheet's state isn't a prop: use `useSidebar()`, which returns `state`, `open`, `setOpen`, `openMobile`, `setOpenMobile`, `isMobile` and `toggleSidebar` (and throws outside a `SidebarProvider`).
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Keep a visible `SidebarTrigger`: the rail is for pointers and the shortcut for keyboards.
+- Mark the current page with `isActive` and `aria-current="page"` on its link.
+- Give menu buttons a `tooltip` when the sidebar collapses to icons.
+- Wrap the navigation in a `<nav>` with an `aria-label`, and the page in `SidebarInset`.
+- Put the label of a menu button in a `<span>` last, so it truncates.
+
+</Do>
+<Dont>
+
+- Don't call `useSidebar` outside a `SidebarProvider`: it throws.
+- Don't render two providers on one page: each one toggles on Ctrl+B / ⌘B.
+- Don't put menu buttons inside a form without `type="button"`.
+- Don't hide the only way to a destination in a submenu or a `showOnHover` action: they disappear when the sidebar collapses to icons.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Sheet](?path=/docs/components-sheet--docs): the small-screen sidebar, and side panels of your own.
+- [Breadcrumb](?path=/docs/components-breadcrumb--docs): the header next to the sidebar in the dashboard layout.
+- [Tooltip](?path=/docs/components-tooltip--docs): the labels of a collapsed sidebar.
+- [DropdownMenu](?path=/docs/components-dropdownmenu--docs): account menus in the footer.
+- [Recipes/Dashboard](?path=/story/recipes-dashboard--default): the sidebar in the full SnowUI dashboard layout.
+
+## Props
+
+<Controls />

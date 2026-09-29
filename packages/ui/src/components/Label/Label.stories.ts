@@ -5,6 +5,10 @@ const meta = {
   title: 'Components/Label',
   component: Label,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=25559-12043',
+    },
     layout: 'centered',
   },
   tags: ['autodocs'],

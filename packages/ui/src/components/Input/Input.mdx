@@ -1,0 +1,131 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as InputStories from './Input.stories'
+
+<Meta of={InputStories} />
+
+<Title />
+
+<FigmaLinks page="25559:12043" />
+
+Input is a single-line text field. It is the Figma "Input": "1 row", or "2 row vertical" with a `title` above the value, with optional content before and after the value. `readOnly` gives the Figma "Static" state.
+
+```tsx
+import { Input } from '@holakirr/snow-ui'
+
+<Input title="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+```
+
+<Primary />
+
+## When to use
+
+- Short free text in a form: a name, an email, a URL.
+- A field with a visible title inside the field (`title`), as in the Figma forms.
+- A field with an icon, a button or a keyboard hint before or after the value.
+
+## When not to use
+
+- Several lines of text: use [Textarea](?path=/docs/components-input-textarea--docs).
+- Searching: [Search](?path=/docs/components-search--docs) adds the search icon, the shortcut hint and a clear button.
+- A compact 28px field in a toolbar: [InputSmall](?path=/docs/components-input-input-small--docs).
+- Picking from a fixed list: [Select](?path=/docs/components-input-select--docs).
+
+## Anatomy
+
+1. **Field** (`className`, `style`): the `<div data-slot="input">` that draws the fill, the stroke and the focus ring. Clicks on its padding or on the start and end content focus the input.
+2. **Start content** (`startContent`, optional): before the value (on the right in right-to-left text), in Black/40%. An `<svg>` passed directly is sized 16px.
+3. **Title** (`title`, optional): a 12/16 [Label](?path=/docs/components-label--docs) 8px above the value, linked to the input. An id is generated when you don't pass `id`.
+4. **Input** (`inputClassName`, `inputStyle`, and every other prop): the native `<input>`, 14/20 text with a Black/20% placeholder. `ref` points at it.
+5. **End content** (`endContent`, optional): after the value, e.g. an icon, a button or a [KBD](?path=/docs/components-text-kbd--docs).
+
+## Variants
+
+<Canvas of={InputStories.WithTitle} />
+
+| Props | Figma | Height | Use for |
+| --- | --- | --- | --- |
+| no `title` (default) | 1 row | 44px: 12px padding, 14/20 text | fields labelled outside the field, or by `aria-label` |
+| `title` | 2 row vertical | 68px: a 12/16 title 8px above the value | form fields with a built-in label |
+
+Both share the Figma field: 12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% inside stroke.
+
+## Content
+
+<Canvas of={InputStories.WithStartContent} />
+
+<Canvas of={InputStories.WithEndContent} />
+
+A button or a link in the start or end content keeps its own clicks; any other click there focuses the input.
+
+## States
+
+<Canvas of={InputStories.States} />
+
+- **Hover:** the stroke turns Black/40%.
+- **Focus:** the Figma "Focus" state while the input has focus, by mouse or keyboard: a Black/40% stroke and the 4px Focus ring. The caret and the stroke mark focus, so text fields don't get the `focus-ring` outline.
+- **Static** (`readOnly`): the stroke stays Black/20% on hover and focus; the 4px Focus ring still shows while the input has focus.
+- **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. The Figma set has no Disabled state, so this look is the library's own.
+
+<Canvas of={InputStories.Static} />
+
+<Canvas of={InputStories.Disabled} />
+
+## Accessibility
+
+- It renders a native `<input>` with an explicit `role="textbox"` inside a `<div>`. Keyboard behaviour is the browser's.
+- The accessible name comes from `title`, which renders a `<label for>`. Without a `title`, pass `aria-label`, or render your own [Label](?path=/docs/components-label--docs) with `htmlFor` and give the input the same `id`. A placeholder is not a label.
+- `title` is the visible label, not the native tooltip attribute: the prop replaces it.
+- Give a button in the start or end content its own accessible name. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
+- `disabled` removes the field from the tab order. A `readOnly` field stays focusable and its value can be selected and copied.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Title (`Label`) in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
+
+Known gaps, kept from Figma for now: the 0.5px Black/20% stroke (1.6:1) and the Black/20% placeholder (it is never the field's only label).
+
+## Localization and RTL
+
+- `startContent` and `endContent` follow the text direction: in right-to-left text the start content is on the right and the text starts on the right.
+- Input renders no built-in strings: the title, placeholder and adornments are yours to translate.
+
+<Canvas of={InputStories.RTL} />
+
+## Controlled and uncontrolled
+
+Input is a native field: pass `value` with `onChange` to control it, or `defaultValue` to leave the value to the browser. There is no `onValueChange`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Give every field a name: a `title`, an outside `Label`, or `aria-label`.
+- Put 16px icons in `startContent` and `endContent`.
+- Use `readOnly` for a value that can be copied but not changed.
+- Style the field with `className` and the `<input>` with `inputClassName`.
+
+</Do>
+<Dont>
+
+- Don't use the placeholder as the only label.
+- Don't pass `title` expecting a tooltip: it renders a visible label.
+- Don't put long text or several controls in the start or end content.
+- Don't use `disabled` for a value the user needs to read or copy: use `readOnly`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Textarea](?path=/docs/components-input-textarea--docs): the same field for several lines.
+- [InputSmall](?path=/docs/components-input-input-small--docs) and [Search](?path=/docs/components-search--docs): the 28px Figma "Search" field.
+- [Form](?path=/docs/components-form--docs): wires a field to its label, description and error message.
+- [Label](?path=/docs/components-label--docs): a label outside the field.
+
+## Props
+
+<Controls />

@@ -17,6 +17,10 @@ const meta: Meta<typeof Select> = {
   tags: ['autodocs', 'a11y'],
   argTypes: {},
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=25559-12043',
+    },
     docs: {
       description: {
         component:

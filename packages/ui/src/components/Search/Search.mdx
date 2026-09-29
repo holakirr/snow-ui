@@ -1,0 +1,127 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SearchStories from './Search.stories'
+
+<Meta of={SearchStories} />
+
+<Title />
+
+<FigmaLinks page="27966:64489" />
+
+Search is a search field: a search icon, the text, an optional keyboard shortcut hint and a clear button that appears while the field has a value. It is the Figma "Search" in its two types, `gray` and `outline`; `size="lg"` is the 48px field at the top of the Figma SearchPopup.
+
+```tsx
+import { Search } from '@holakirr/snow-ui'
+
+<Search aria-label="Search projects" shortcut={['/']} value={query} onValueChange={setQuery} />
+```
+
+<Primary />
+
+## When to use
+
+- Filtering or searching the content of a page, a list or a table.
+- A search field in a header or a sidebar, with a hint for the shortcut that focuses it.
+
+## When not to use
+
+- Search across the app with grouped results and keyboard navigation: use [CommandPalette](?path=/docs/components-commandpalette--docs), whose `hotkey` opens it.
+- A compact field that isn't a search: [InputSmall](?path=/docs/components-input-input-small--docs), the same field without icons.
+- A form field: [Input](?path=/docs/components-input-input--docs).
+
+## Anatomy
+
+1. **Field** (`className`): the `<div>` with the fill, the stroke and the focus ring (`data-variant`, `data-size`).
+2. **Search icon**: 16px (`sm`) or 24px (`lg`), Black/20%; Black/40% on hover and `primary` while the field has focus.
+3. **Input** (`inputClassName`, and every prop not listed here): an `<input type="search">`. `ref` points at it. The browser's own clear and decoration icons are hidden.
+4. **End content** (`endContent`, optional): extra content before the clear button, e.g. a spinner or a filter button.
+5. **Shortcut hint** (`shortcut`, optional): a [KBD](?path=/docs/components-text-kbd--docs) with the keys, shown while there is no clear button. It is only a hint: bind the shortcut in your app.
+6. **Clear button**: shown while the field has a value and is neither disabled nor read-only. An XCircle icon, 16px (`sm`) or 20px (`lg`).
+
+## Variants
+
+<Canvas of={SearchStories.AllVariants} />
+
+| `variant` | Figma | Look |
+| --- | --- | --- |
+| `gray` (default) | Gray | Black/4%; Black/10% on hover |
+| `outline` | Outline | Surface/1 with a 0.5px Black/20% stroke; Black/40% on hover |
+
+## Sizes
+
+<Canvas of={SearchStories.Large} />
+
+| `size` | Figma | Height | Padding | Text | Search icon | Clear icon |
+| --- | --- | --- | --- | --- | --- | --- |
+| `sm` (default) | Search | 28px | 4 / 8px | 14/20 | 16px | 16px |
+| `lg` | SearchPopup field | 48px | 0 / 8px | 18/28 | 24px | 20px |
+
+Both have a 16px radius, an 8px gap and a 10px background blur. Set the width with `className`.
+
+## States
+
+- **Hover:** the variant's hover fill or stroke; the search icon turns Black/40%.
+- **Focus:** while the input has focus, by mouse or keyboard, both types become Surface/1 with a 0.5px Black/40% stroke and the 4px Focus ring (the Figma "Focus"); the search icon turns `primary`. Text fields don't get the `focus-ring` outline.
+- **Typing:** a value replaces the shortcut hint with the clear button.
+- **Disabled** (`disabled`): the whole field at 40% opacity, with no pointer events and no clear button.
+- **Read-only** (`readOnly`): no clear button, and Escape doesn't clear.
+
+<Canvas of={SearchStories.Typing} />
+
+## Accessibility
+
+- The input is `type="search"`, so its role is `searchbox`. Give it a name with `aria-label` or a [Label](?path=/docs/components-label--docs) with `htmlFor` and the same `id`: the placeholder ("Search" by default) is not a label.
+- **Escape** clears the field while it has a value: it calls `onChange` and `onValueChange` with an empty value, then `onClear`, and keeps the focus. On an empty field Search doesn't handle Escape, so it reaches your other handlers. Call `event.preventDefault()` in your `onKeyDown` to keep the value.
+- The clear button is a `<button type="button">` after the input in the tab order, named by `clearLabel` ("Clear search" by default, also its `title`). After a click, the focus returns to the input.
+- The shortcut hint is `aria-hidden`. If the shortcut matters to keyboard users, describe it elsewhere, e.g. with `aria-keyshortcuts` on the input.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Shortcut hint in Black/20%: 1.6:1 | `text-secondary`, with no fill of its own (a second Black/4% layer on the hovered dark field took it under 4.5:1) | 1.4.3 |
+| Clear button at 40% opacity: 2.85:1 | 60% (5.74:1), 80% on hover and keyboard focus | 1.4.11 |
+
+Known gap, kept from Figma for now: the Black/20% placeholder (it is never the field's only label).
+
+## Localization and RTL
+
+- Built-in strings: `messages.search.placeholder` ("Search") and `messages.search.clear` ("Clear search"). The `placeholder` and `clearLabel` props override them; see [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs).
+- The field is a flex row, so in right-to-left text the search icon is on the right and the hint or clear button on the left.
+
+## Controlled and uncontrolled
+
+Pass `defaultValue` to leave the value to the field, or `value` with `onChange(event)` or `onValueChange(value)` to control it. Clearing (the button or Escape) sets the input's value the way the browser does, so `onChange` and `onValueChange` both fire with an empty value, controlled or not; `onClear` runs after them.
+
+<Canvas of={SearchStories.Controlled} />
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name the field with `aria-label` ("Search projects") or a visible label.
+- Bind the key of the `shortcut` hint in your app, e.g. through CommandPalette's `hotkey`.
+- Use `onValueChange` when you only need the text.
+- Use `endContent` for a spinner or a filter button next to the clear button.
+
+</Do>
+<Dont>
+
+- Don't rely on the placeholder as the name.
+- Don't add a second clear button: Search shows one while it has a value.
+- Don't show a `shortcut` hint for a key the app doesn't bind.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [CommandPalette](?path=/docs/components-commandpalette--docs): the Figma SearchPopup, a dialog with a search field and grouped results.
+- [InputSmall](?path=/docs/components-input-input-small--docs): the same 28px field without icons.
+- [KBD](?path=/docs/components-text-kbd--docs): the key hint.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the messages for the placeholder and the clear button.
+
+## Props
+
+<Controls />

@@ -1,0 +1,139 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as IconTextStories from './IconText.stories'
+
+<Meta of={IconTextStories} />
+
+<Title />
+
+<FigmaLinks page="25559:7437" />
+
+IconText puts an icon or avatar next to text, 8px apart: in a row, stacked (`vertical`) or with the text first (`flip`). It is the Figma "IconText". With `interactive` and `active` it is also the Figma "Frame", the same content in an 8px padded box with hover and selected fills; with `asChild` a link or a button is the row.
+
+```tsx
+import { IconBox, IconText } from '@holakirr/snow-ui'
+
+<IconText icon={<IconBox size={16}><StarIcon /></IconBox>}>Favourites</IconText>
+```
+
+<Primary />
+
+## When to use
+
+- A label with an icon or avatar: a user name, a menu entry, a caption under an icon.
+- A navigation item or a clickable row: `interactive` with a link or `<button>` child (`asChild`).
+- The current item of a list or a navigation: `active`.
+
+## When not to use
+
+- A row with a title and a description or timestamp: use [ListItem](?path=/docs/components-listitem--docs), which is built on IconText.
+- An action button with an icon: use [Button](?path=/docs/components-button--docs) with `startContent`.
+- Navigation in the app's sidebar: use the [Sidebar](?path=/docs/components-sidebar--docs) menu parts.
+- A link inside text: use [Link](?path=/docs/components-link--docs).
+
+## Anatomy
+
+1. **Container:** a `<div>` (or the `asChild` element), `inline-flex` with an 8px gap, a 12px radius and `text-black`.
+2. **Icon** (`icon`): any node. Size it with [IconBox](?path=/docs/components-iconbox--docs) (16px in the Figma component).
+3. **Text** (children): a string or a number is rendered as 14 Regular [Typography](?path=/docs/components-text-text--docs); other nodes are rendered as they are.
+
+## Variants
+
+<Canvas of={IconTextStories.AllVariants} />
+
+| Prop | Figma | Layout |
+| --- | --- | --- |
+| (none) | IconText | icon, then text, in a row, vertically centred |
+| `flip` | Flip | text, then icon |
+| `vertical` | Vertical | icon above the text, centred |
+| `vertical` + `flip` | Vertical + Flip | text above the icon |
+
+<Canvas of={IconTextStories.Vertical} />
+
+<Canvas of={IconTextStories.Flip} />
+
+<Canvas of={IconTextStories.VerticalFlip} />
+
+## States
+
+Figma draws these on "Frame". Frame has no padding of its own, but every instance in the kit uses 8px, so `interactive` and `active` add it.
+
+| Prop | Figma Frame | Look |
+| --- | --- | --- |
+| (none) | State=Static | no fill; no padding (add `p-2` for the Frame's 8px, as AllVariants does) |
+| `interactive` | State=Default | 8px padding; Black/4% fill on hover |
+| `active` | State=Hover | 8px padding; Black/4% fill kept on; `data-active="true"` |
+
+<Canvas of={IconTextStories.Interactive} />
+
+<Canvas of={IconTextStories.Active} />
+
+- **Hover:** with `interactive`, a Black/4% fill and a pointer cursor.
+- **Keyboard focus:** with `interactive`, the Figma "Focus" ring (4px, `ring-focus`) and no outline (see Accessibility).
+- **Active:** the Black/4% fill stays on. It is only visual: set `aria-current` yourself.
+
+The examples from the Figma IconText page: a user, a settings row with the text first, and a navigation with a current page:
+
+<Canvas of={IconTextStories.Examples} />
+
+## Accessibility
+
+- Without `asChild` IconText is a `<div>` with no role, and `interactive` only styles it: it isn't focusable and has no keyboard behaviour. For a row that does something, render a link or a `<button type="button">` with `asChild`; they bring the role, the tab stop and Enter (and Space for a button).
+- The accessible name of a link or button row is its text. An icon has no name of its own unless you give it one; icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
+- `active` sets `data-active`, not an ARIA state. Mark the current page with `aria-current="page"` on the link, as the Examples story does.
+- Keyboard focus on an `interactive` row shows only the Figma "Focus" ring, a 4px Black/4% ring (1.1:1), and removes the outline. IconText doesn't use the `focus-ring` utility that Button and the other controls use, so this indicator is faint.
+
+## Localization and RTL
+
+- The row follows the text direction: the first item (the icon, or the text with `flip`) is on the start side, the right in right-to-left text.
+- Mirror directional icons with `rtl:-scale-x-100`, as the chevron in the Examples story does (or the icon's `mirrored` prop).
+- The text is yours to translate; IconText renders no built-in strings.
+
+## Composition (asChild)
+
+`asChild` renders the only child instead of a `<div>`. The child gets the IconText classes (merged with its own, which win conflicts), props, ref and event handlers (the child's handler runs first), and the icon is rendered inside it, next to the child's own children (a string child becomes 14 Regular text).
+
+```tsx
+<IconText asChild interactive active icon={<IconBox size={20}><UserIcon /></IconBox>}>
+  <a href="/profile" aria-current="page">User Profile</a>
+</IconText>
+
+{/* A <button> child needs its own type="button". */}
+<IconText asChild interactive icon={<IconBox size={16}><GearIcon /></IconBox>}>
+  <button type="button" onClick={openSettings}>Settings</button>
+</IconText>
+```
+
+The `as` prop (`<IconText as="a" href="/">`) is deprecated: it logs a one-time development warning and will be removed in the next major version.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Size the icon with IconBox: 16px by default, 20px or 24px for larger rows.
+- Use `interactive` with a link or a button child (`asChild`).
+- Set `aria-current="page"` on the current navigation link along with `active`.
+- Mirror directional icons in right-to-left text.
+
+</Do>
+<Dont>
+
+- Don't use `interactive` on the plain `<div>`: it looks clickable but can't be reached with the keyboard.
+- Don't rely on `active` alone to tell assistive technology which item is current.
+- Don't put links or buttons inside an `interactive` link or button row.
+- Don't use the deprecated `as` in new code.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [IconBox](?path=/docs/components-iconbox--docs): sizes the icon.
+- [ListItem](?path=/docs/components-listitem--docs): an IconText with a title and a description.
+- [Group](?path=/docs/components-group--docs): lays out IconText rows 8px apart.
+- [Sidebar](?path=/docs/components-sidebar--docs): the app's navigation.
+
+## Props
+
+<Controls />

@@ -127,6 +127,23 @@ const mainExport = (item: Item, name?: string) =>
   (item.exports?.includes(item.title) ? item.title : item.exports?.[0]) ??
   item.title
 
+/** Every item `item` needs, recursively (not itself), in dependency order. */
+const itemClosure = (item: Item) => {
+  const seen = new Set<string>([item.name])
+  const order: Item[] = []
+  const visit = (current: Item) => {
+    for (const dep of current.registryDependencies ?? []) {
+      const next = items.get(dep)
+      if (!next || seen.has(dep)) continue
+      seen.add(dep)
+      visit(next)
+      order.push(next)
+    }
+  }
+  visit(item)
+  return order
+}
+
 const withRange = (name: string) =>
   ranges[name] ? `${name}@${ranges[name]}` : name
 
@@ -227,6 +244,14 @@ export const InstallTabs = ({ item: itemName, name }: InstallTabsProps) => {
     ? `@import "tailwindcss";\n@import "${uiPackage.name}/theme.css";\n@import "${chartsPackage.name}/styles.css";`
     : `@import "tailwindcss";\n@import "${uiPackage.name}/theme.css";\n@import "${uiPackage.name}/fonts.css";`
   const deps = item.registryDependencies ?? []
+  // By hand, the items it needs are copied too, recursively: their npm
+  // packages must be direct dependencies (pnpm doesn't hoist the others).
+  const allItems = itemClosure(item)
+  const npmPackages = [
+    ...new Set(
+      [item, ...allItems].flatMap((current) => current.dependencies ?? []),
+    ),
+  ].sort()
 
   const chooseManager = (next: Manager) => {
     setManager(next)
@@ -316,7 +341,7 @@ export const InstallTabs = ({ item: itemName, name }: InstallTabsProps) => {
         <p style={note}>1. Install the npm dependencies:</p>
         <Source
           language="bash"
-          code={`${pm.add} ${[uiPackage.name, ...(item.dependencies ?? [])].map(withRange).join(' ')}`}
+          code={`${pm.add} ${[uiPackage.name, ...npmPackages].map(withRange).join(' ')}`}
         />
         <p style={note}>
           2. Import the theme in your stylesheet (the package provides the
@@ -325,7 +350,8 @@ export const InstallTabs = ({ item: itemName, name }: InstallTabsProps) => {
         <Source language="css" code={theme} />
         {deps.length ? (
           <p style={note}>
-            3. Copy the items it uses, the same way: <ItemLinks names={deps} />.
+            3. Copy the items it uses, the same way (with the ones they use):{' '}
+            <ItemLinks names={allItems.map((i) => i.name)} />.
           </p>
         ) : null}
         <p style={note}>
@@ -339,8 +365,11 @@ export const InstallTabs = ({ item: itemName, name }: InstallTabsProps) => {
               <p style={mono}>
                 {file.target?.replace(/^@components\//, 'components/')}
               </p>
-              {file.content && !file.target?.endsWith('LICENSE') ? (
-                <Source language="tsx" code={file.content} />
+              {file.content ? (
+                <Source
+                  language={file.target?.endsWith('LICENSE') ? 'md' : 'tsx'}
+                  code={file.content}
+                />
               ) : null}
             </div>
           ))

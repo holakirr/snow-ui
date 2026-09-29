@@ -110,6 +110,8 @@ const Link: FC<LinkProps> = ({
     ? isValidElement<{ href?: string }>(children) && children.props.href
     : props.href
   const linkProps = {
+    // Marks the text link for tooling, e.g. Storybook's target-size check.
+    'data-slot': 'link',
     ...(href == null && { role: ROLES.link, tabIndex: 0 }),
     ...(isExternal && { target: '_blank', rel: 'noopener noreferrer' }),
     ...props,

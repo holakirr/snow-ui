@@ -71,11 +71,11 @@ const INTERACTIVE = [
 
 /** Exceptions for every story. */
 export const TARGET_SIZE_EXCEPTIONS: TargetSizeException[] = [
-  // `Link` renders `<a role="link">`: a text link, as tall as its line of
-  // text (16–20px). In a sentence the inline exception applies; on its own,
-  // the spacing exception (a 24px circle on it overlaps no other target).
+  // `Link` (`data-slot="link"`): a text link, as tall as its line of text
+  // (16–20px). In a sentence the inline exception applies; on its own, the
+  // spacing exception (a 24px circle on it overlaps no other target).
   {
-    selector: 'a[role="link"]',
+    selector: '[data-slot="link"]',
     reason: 'text link: the inline or the spacing exception',
   },
   // TEMPORARY: the Toast close button (16–20px) and the Sidebar group and

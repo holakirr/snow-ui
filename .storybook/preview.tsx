@@ -133,12 +133,15 @@ const preview: Preview = {
   // WCAG 2.5.8: after the `play` function, every interactive element of the
   // story needs a 24×24px hit area (see targetSize.ts). Only in the
   // Storybook tests (Vitest, from the CLI or the Storybook UI's test
-  // widget): not when a story is just shown (docs, the visual tests), and
-  // not in the unit tests' `composeStories`, whose jsdom has no layout.
-  afterEach: async ({ parameters, viewMode }) => {
+  // widget), in Chromium: not when a story is just shown (docs, the visual
+  // tests), not in the Firefox and WebKit runs (the `targetSize: 'off'`
+  // global of vitest.config.ts: rendering differs), and not in the unit
+  // tests' `composeStories`, whose jsdom has no layout.
+  afterEach: async ({ parameters, globals, viewMode }) => {
     if (
       viewMode !== 'story' ||
       import.meta.env.VITEST_STORYBOOK === undefined ||
+      globals.targetSize === 'off' ||
       !('checkVisibility' in HTMLElement.prototype)
     ) {
       return

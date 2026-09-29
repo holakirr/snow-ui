@@ -47,9 +47,13 @@ export const storybookProject = (
       initialGlobals: {
         // The theme toolbar global (see .storybook/withTheme.tsx).
         theme,
-        // axe is the Chromium projects' job (the gate); in the other
-        // browsers the stories and their play functions run without it.
-        ...(browser !== 'chromium' && { a11y: { manual: true } }),
+        // axe and the target-size check (.storybook/targetSize.ts) are the
+        // Chromium projects' job (the gate); in the other browsers the
+        // stories and their play functions run without them.
+        ...(browser !== 'chromium' && {
+          a11y: { manual: true },
+          targetSize: 'off',
+        }),
       },
       ...(name === 'storybook' && {
         storybookScript: 'bun run storybook --ci',
@@ -78,7 +82,7 @@ export default defineConfig({
       'packages/*/vitest.config.ts',
       storybookProject('storybook', 'light'),
       storybookProject('storybook-dark', 'dark'),
-      storybookProject('storybook-prefs', 'light', {
+      storybookProject('storybook-prefs', 'light', 'chromium', {
         contrast: 'more',
         reducedMotion: 'reduce',
       }),

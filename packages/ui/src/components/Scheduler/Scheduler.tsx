@@ -208,11 +208,15 @@ const Scheduler: FC<SchedulerProps> = ({
 
   // The grid's name: its week in the locale ("September 28 – October 4,
   // 2026"), so a screen reader says which week it is on entering.
+  // Plain spaces: ICU versions differ on the thin spaces around the dash
+  // (Node's and the browser's would give a hydration mismatch).
   const weekLabel = new Intl.DateTimeFormat(lang, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }).formatRange(week[0].date, week[6].date)
+  })
+    .formatRange(week[0].date, week[6].date)
+    .replace(/\s+/g, ' ')
 
   // The last focused item; the tab stop is there.
   const [focused, setFocused] = useState<Position | null>(null)

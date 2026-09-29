@@ -98,7 +98,9 @@ export const Default: Story = {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
-        }).formatRange(monday, addDays(monday, 6)),
+        })
+          .formatRange(monday, addDays(monday, 6))
+          .replace(/\s+/g, ' '),
       )
     })
 

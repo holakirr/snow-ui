@@ -453,7 +453,7 @@ describe('Scheduler', () => {
     it('is a grid named by its week in the locale', () => {
       renderScheduler()
       expect(screen.getByRole('grid')).toHaveAccessibleName(
-        /^September 28\s–\sOctober 4, 2026$/,
+        'September 28 – October 4, 2026',
       )
     })
 
@@ -468,7 +468,7 @@ describe('Scheduler', () => {
         </SnowUIProvider>,
       )
       expect(screen.getByRole('grid')).toHaveAccessibleName(
-        /^28 сентября\s–\s4 октября 2026/,
+        /^28 сентября – 4 октября 2026/,
       )
     })
 

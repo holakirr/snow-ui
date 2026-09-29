@@ -186,16 +186,31 @@ export const findSmallTargets = (
   const excepted = exceptions.map(({ selector }) => selector).join(', ')
   const view = document.defaultView ?? window
   const failures: string[] = []
+  const targets = [...root.querySelectorAll<HTMLElement>(INTERACTIVE)].filter(
+    (element) =>
+      !isDisabled(element) &&
+      !isHidden(element) &&
+      !isInlineInText(element) &&
+      !(excepted && element.matches(excepted)),
+  )
 
-  for (const element of root.querySelectorAll<HTMLElement>(INTERACTIVE)) {
-    if (
-      isDisabled(element) ||
-      isHidden(element) ||
-      isInlineInText(element) ||
-      (excepted && element.matches(excepted))
+  // Each target is scrolled into view to be hit-tested; put every scroll
+  // position back afterwards, so the check leaves the story as it was.
+  const scrolled = new Map<Element, [number, number]>()
+  for (const target of targets) {
+    for (
+      let parent = target.parentElement;
+      parent;
+      parent = parent.parentElement
     ) {
-      continue
+      if (!scrolled.has(parent)) {
+        scrolled.set(parent, [parent.scrollLeft, parent.scrollTop])
+      }
     }
+  }
+  const [pageX, pageY] = [view.scrollX, view.scrollY]
+
+  for (const element of targets) {
     element.scrollIntoView({ block: 'center', inline: 'center' })
     const { left, top, width, height } = element.getBoundingClientRect()
     const fits = ([cx, cy]: number[]) =>
@@ -220,5 +235,11 @@ export const findSmallTargets = (
     }
     if (!centres.some(fits)) failures.push(describe(element))
   }
+
+  for (const [element, [left, top]] of scrolled) {
+    element.scrollLeft = left
+    element.scrollTop = top
+  }
+  view.scrollTo(pageX, pageY)
   return failures
 }

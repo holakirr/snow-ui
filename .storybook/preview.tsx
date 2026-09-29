@@ -131,11 +131,16 @@ const preview: Preview = {
   ],
 
   // WCAG 2.5.8: after the `play` function, every interactive element of the
-  // story needs a 24×24px hit area (see targetSize.ts). It fails the
-  // Storybook tests; in the Storybook UI it only warns.
+  // story needs a 24×24px hit area (see targetSize.ts). Only in the
+  // Storybook tests (Vitest, from the CLI or the Storybook UI's test
+  // widget): not when a story is just shown (docs, the visual tests), and
+  // not in the unit tests' `composeStories`, whose jsdom has no layout.
   afterEach: async ({ parameters, viewMode }) => {
-    // Unit tests render stories in jsdom (`composeStories`): no layout there.
-    if (viewMode !== 'story' || !('checkVisibility' in HTMLElement.prototype)) {
+    if (
+      viewMode !== 'story' ||
+      import.meta.env.VITEST_STORYBOOK === undefined ||
+      !('checkVisibility' in HTMLElement.prototype)
+    ) {
       return
     }
     const { exceptions = [] } = (parameters.targetSize ??
@@ -145,9 +150,9 @@ const preview: Preview = {
       ...exceptions,
     ])
     if (!failures.length) return
-    const message = `WCAG 2.5.8: ${failures.length} target(s) smaller than 24×24px (add a hit area, or an exception with its reason in parameters.targetSize):\n${failures.join('\n')}`
-    if (import.meta.env.VITEST_STORYBOOK === undefined) console.warn(message)
-    else throw new Error(message)
+    throw new Error(
+      `WCAG 2.5.8: ${failures.length} target(s) smaller than 24×24px (add a hit area, or an exception with its reason in parameters.targetSize):\n${failures.join('\n')}`,
+    )
   },
 
   tags: ['autodocs'],

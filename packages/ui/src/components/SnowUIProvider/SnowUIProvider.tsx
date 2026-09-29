@@ -9,7 +9,6 @@ import {
   useMemo,
   useState,
 } from 'react'
-import type { StartOfWeek } from '../../types'
 import {
   defaultMessages,
   type Messages,
@@ -32,10 +31,11 @@ export type SnowUITheme = 'light' | 'dark'
 export type SnowUIContrast = 'standard' | 'more'
 
 /**
- * The first day of the week: 0 for Sunday … 6 for Saturday, or `'locale'`
- * for the locale's (`locale.options.weekStartsOn`).
+ * The first day of the week: 0 for Sunday … 6 for Saturday (as
+ * `StartOfWeek`), or `'locale'` for the locale's
+ * (`locale.options.weekStartsOn`).
  */
-export type WeekStart = StartOfWeek | 'locale'
+export type WeekStart = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 'locale'
 
 export type SnowUIProviderProps = {
   /**

@@ -1,6 +1,7 @@
 import { useDirection } from '@radix-ui/react-direction'
 import { act, render, screen, within } from '@testing-library/react'
 import { ru } from 'date-fns/locale'
+import { ru as dayPickerRu } from 'react-day-picker/locale'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { Badge } from '../Badge'
 import {
@@ -23,6 +24,7 @@ import {
   PaginationPrevious,
 } from '../Pagination'
 import { Popover, PopoverContent } from '../Popover'
+import { Scheduler } from '../Scheduler'
 import { Search } from '../Search'
 import { Sheet, SheetContent, SheetTitle } from '../Sheet'
 import {
@@ -39,7 +41,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../Tooltip'
-import { defaultMessages, type MessagesOverrides } from './messages'
+import {
+  defaultMessages,
+  type Messages,
+  type MessagesOverrides,
+  mergeMessages,
+  sameOverrides,
+} from './messages'
 import { SnowUIProvider, useMessages, useSnowUI } from './SnowUIProvider'
 
 const german: MessagesOverrides = {
@@ -535,5 +543,127 @@ describe('SnowUIProvider', () => {
     )
     // `start` in right-to-left text: the right edge, a left border.
     expect(screen.getByTestId('sidebar')).toHaveClass('border-l-[0.5px]')
+  })
+
+  it('keeps the base message for an override set to undefined', () => {
+    const merged = mergeMessages(defaultMessages, {
+      dialog: { close: undefined },
+      sheet: { close: 'Zu' },
+    })
+
+    expect(merged.dialog.close).toBe('Close')
+    expect(merged.sheet.close).toBe('Zu')
+    expect(mergeMessages(defaultMessages)).toBe(defaultMessages)
+  })
+
+  it('keeps the context value for an equal inline messages object', () => {
+    const remove = (label: string) => `x ${label}`
+    const seen: Messages[] = []
+    const Probe = () => {
+      seen.push(useMessages())
+      return null
+    }
+    const { rerender } = render(
+      <SnowUIProvider messages={{ tag: { remove }, dialog: { close: 'Zu' } }}>
+        <Probe />
+      </SnowUIProvider>,
+    )
+    rerender(
+      <SnowUIProvider messages={{ tag: { remove }, dialog: { close: 'Zu' } }}>
+        <Probe />
+      </SnowUIProvider>,
+    )
+    rerender(
+      <SnowUIProvider messages={{ tag: { remove }, dialog: { close: 'Auf' } }}>
+        <Probe />
+      </SnowUIProvider>,
+    )
+
+    expect(seen.at(1)).toBe(seen.at(0))
+    expect(seen.at(-1)).not.toBe(seen.at(0))
+    expect(seen.at(-1)?.dialog.close).toBe('Auf')
+    expect(sameOverrides({ tag: { remove } }, { tag: { remove } })).toBe(true)
+    expect(sameOverrides({ tag: { remove } }, { tag: {} })).toBe(false)
+    expect(sameOverrides({ tag: { remove } }, { dialog: {} })).toBe(false)
+    expect(sameOverrides({ tag: {} }, { tag: {}, dialog: {} })).toBe(false)
+    expect(sameOverrides(undefined, {})).toBe(false)
+  })
+
+  it('names the Calendar month buttons from the messages', () => {
+    const { rerender } = render(
+      <SnowUIProvider
+        locale={ru}
+        messages={{
+          calendar: { previousMonth: 'Назад', nextMonth: 'Вперёд' },
+        }}
+      >
+        <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
+      </SnowUIProvider>,
+    )
+    // A date-fns locale has no labels of its own: the messages name them.
+    expect(screen.getByRole('button', { name: 'Назад' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Вперёд' })).toBeInTheDocument()
+
+    // The English defaults give way to a react-day-picker locale's labels…
+    rerender(
+      <SnowUIProvider locale={dayPickerRu}>
+        <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
+      </SnowUIProvider>,
+    )
+    expect(
+      screen.getByRole('button', { name: 'Перейти к предыдущему месяцу' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('navigation', { name: 'Панель навигации' }),
+    ).toBeInTheDocument()
+
+    // …a translation wins over them, and the `labels` prop over both.
+    rerender(
+      <SnowUIProvider
+        locale={dayPickerRu}
+        messages={{ calendar: { previousMonth: 'Назад' } }}
+      >
+        <Calendar
+          mode="single"
+          defaultMonth={new Date(2025, 0, 1)}
+          labels={{ labelNext: () => 'Next!' }}
+        />
+      </SnowUIProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Назад' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Next!' })).toBeInTheDocument()
+
+    // Without a provider: the English defaults.
+    rerender(<Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />)
+    expect(
+      screen.getByRole('button', { name: 'Go to the previous month' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('navigation', { name: 'Month navigation' }),
+    ).toBeInTheDocument()
+  })
+
+  it('formats the Scheduler labels in the provider language', () => {
+    const scheduler = (
+      <Scheduler
+        currentDate={new Date(2025, 0, 8)}
+        onEventClick={() => {}}
+        onDateClick={() => {}}
+      />
+    )
+    const { rerender } = render(
+      <SnowUIProvider locale={ru}>{scheduler}</SnowUIProvider>,
+    )
+    const cellLabel = () =>
+      screen
+        .getAllByRole('button')
+        .map((button) => button.getAttribute('aria-label') ?? '')
+        .find((label) => label.includes('2025'))
+    // Russian: "06.01.2025, 9:00:00".
+    expect(cellLabel()).toMatch(/^\d{2}\.\d{2}\.2025/)
+
+    rerender(scheduler)
+    // en-US without a locale: the same text on the server and in the browser.
+    expect(cellLabel()).toMatch(/^1\/\d+\/2025/)
   })
 })

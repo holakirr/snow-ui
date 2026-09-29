@@ -27,6 +27,8 @@ export const ruMessages: Messages = {
   },
   calendar: {
     navigation: 'Навигация по месяцам',
+    previousMonth: 'Предыдущий месяц',
+    nextMonth: 'Следующий месяц',
     today: 'Сегодня',
     lastSelection: 'Последний выбор',
     previousYears: (count) => `Предыдущие ${count} ${years(count)}`,

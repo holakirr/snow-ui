@@ -75,9 +75,9 @@ const Scheduler: FC<SchedulerProps> = ({
     >
       <div className="col-span-1" />
       {weekDates.map((date, i) => (
-        <Fragment key={date.toLocaleDateString()}>
+        <Fragment key={date.toDateString()}>
           <div
-            key={date.toLocaleDateString()}
+            key={date.toDateString()}
             className="flex justify-center items-center"
           >
             <Typography
@@ -122,10 +122,10 @@ const Scheduler: FC<SchedulerProps> = ({
           {weekDates.map((date) => (
             // biome-ignore lint/a11y/useSemanticElements: the cell hosts nested interactive events, so it can't be a <button>
             <div
-              key={date.toLocaleDateString() + hour}
+              key={date.toDateString() + hour}
               role="button"
               tabIndex={0}
-              aria-label={getCellDate(date, hour).toLocaleString()}
+              aria-label={getCellDate(date, hour).toLocaleString(lang)}
               onClick={(e) => {
                 e.preventDefault()
                 onDateClick(getCellDate(date, hour))

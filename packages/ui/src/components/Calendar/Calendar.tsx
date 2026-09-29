@@ -27,7 +27,12 @@ import {
 } from 'react-day-picker'
 import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
-import { useMessages, useSnowUI } from '../SnowUIProvider'
+import {
+  defaultMessages,
+  type Messages,
+  useMessages,
+  useSnowUI,
+} from '../SnowUIProvider'
 
 export type CalendarProps = DayPickerProps & {
   /**
@@ -139,7 +144,6 @@ type CalendarContextValue = {
   todayLabel: string
   lastSelectionLabel: string
   header?: ReactNode
-  navLabel: string
   navClassName?: string
   buttonPreviousClassName?: string
   buttonNextClassName?: string
@@ -390,12 +394,12 @@ const CalendarMonthCaption: CustomComponents['MonthCaption'] = ({
   const {
     hideNavigation,
     numberOfMonths,
-    navLabel,
     navClassName,
     buttonPreviousClassName,
     buttonNextClassName,
   } = useCalendarContext()
   const { previous, next } = useCalendarNav()
+  const navLabel = useDayPicker().labels.labelNav()
   const showPrevious = !hideNavigation && displayIndex === 0
   const showNext = !hideNavigation && displayIndex === numberOfMonths - 1
   // One navigation landmark: the first caption's nav holds Previous (and Next
@@ -567,6 +571,36 @@ const CalendarRoot: CustomComponents['Root'] = ({
   )
 }
 
+type DayPickerLabels = NonNullable<DayPickerProps['labels']>
+
+/**
+ * The navigation labels from the messages, as react-day-picker `labels`: the
+ * landmark and the previous / next month buttons. A translated message wins
+ * over a react-day-picker locale's own label, the English default gives way
+ * to it, so a date-fns locale gets the messages and `react-day-picker/locale`
+ * keeps its translations. The `labels` prop wins over both.
+ */
+const messageLabels = (
+  messages: Messages['calendar'],
+  locale: DayPickerProps['locale'],
+): DayPickerLabels => {
+  const own: Partial<Record<keyof DayPickerLabels, unknown>> =
+    locale?.labels ?? {}
+  const english = defaultMessages.calendar
+  const labels: DayPickerLabels = {}
+
+  if (messages.navigation !== english.navigation || !own.labelNav) {
+    labels.labelNav = () => messages.navigation
+  }
+  if (messages.previousMonth !== english.previousMonth || !own.labelPrevious) {
+    labels.labelPrevious = () => messages.previousMonth
+  }
+  if (messages.nextMonth !== english.nextMonth || !own.labelNext) {
+    labels.labelNext = () => messages.nextMonth
+  }
+  return labels
+}
+
 /** Merges the user's `classNames` into the defaults slot by slot. */
 const mergeClassNames = (
   defaults: Partial<ClassNames>,
@@ -590,10 +624,11 @@ const mergeClassNames = (
  *
  * Localized by `SnowUIProvider`: its `locale` (a date-fns or
  * react-day-picker locale) names the months and weekdays and its `messages`
- * the toolbar ("Today", "Last selection", the "Month navigation" landmark of
- * the previous / next buttons); its `dir` flips the arrows and the arrow
- * keys. The `locale`, `dir`, `labels`, `todayLabel` and
- * `lastSelectionLabel` props win over the provider.
+ * the toolbar ("Today", "Last selection", the previous / next month buttons
+ * and their "Month navigation" landmark; the English defaults of the last
+ * three give way to a react-day-picker locale's own labels); its `dir` flips
+ * the arrows and the arrow keys. The `locale`, `dir`, `labels`,
+ * `todayLabel` and `lastSelectionLabel` props win over the provider.
  */
 function Calendar({
   className,
@@ -610,8 +645,9 @@ function Calendar({
   onLastSelectionClick,
   todayLabel,
   lastSelectionLabel,
-  locale,
+  locale: localeProp,
   dir,
+  labels,
   hideNavigation,
   classNames,
   components,
@@ -640,6 +676,7 @@ function Calendar({
   ...props
 }: CalendarProps) {
   const snowUI = useSnowUI()
+  const locale = localeProp ?? snowUI.locale
   const [navView, setNavView] = useState<NavView>('days')
   const [displayYears, setDisplayYears] = useState<DisplayYears>(() => {
     const currentYear = new Date().getFullYear()
@@ -681,8 +718,6 @@ function Calendar({
         lastSelectionLabel:
           lastSelectionLabel ?? snowUI.messages.calendar.lastSelection,
         header,
-        navLabel:
-          props.labels?.labelNav?.() ?? snowUI.messages.calendar.navigation,
         navClassName,
         buttonPreviousClassName,
         buttonNextClassName,
@@ -694,8 +729,12 @@ function Calendar({
         showOutsideDays={showOutsideDays ?? columnsDisplayed === 1}
         showWeekNumber={showWeekNumber}
         weekStartsOn={weekStartsOn}
-        locale={locale ?? snowUI.locale}
+        locale={locale}
         dir={dir ?? snowUI.dir}
+        labels={{
+          ...messageLabels(snowUI.messages.calendar, locale),
+          ...labels,
+        }}
         className={className}
         classNames={mergeClassNames(
           {

@@ -22,7 +22,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from './Pagination'
-import { SidebarMenuButton, SidebarProvider } from './Sidebar'
+import {
+  SidebarMenuButton,
+  SidebarProvider,
+  SidebarRail,
+  SidebarTrigger,
+} from './Sidebar'
 import { Tag } from './Tag'
 import { Typography } from './Text'
 
@@ -215,6 +220,54 @@ describe('asChild', () => {
   })
 })
 
+describe('event handlers', () => {
+  it('runs both asChild handlers, even when the child prevents the default', () => {
+    const onClick = vi.fn()
+    render(
+      <Button asChild label="Both" onClick={onClick}>
+        <button type="button" onClick={(event) => event.preventDefault()} />
+      </Button>,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Both' }))
+    expect(onClick).toHaveBeenCalledOnce()
+  })
+
+  it('skips the sidebar toggle when your handler prevents the default', () => {
+    const onOpenChange = vi.fn()
+    const { rerender } = render(
+      <SidebarProvider open onOpenChange={onOpenChange}>
+        <SidebarTrigger onClick={(event) => event.preventDefault()} />
+        <SidebarRail onClick={(event) => event.preventDefault()} />
+      </SidebarProvider>,
+    )
+    for (const button of screen.getAllByRole('button', {
+      name: 'Toggle Sidebar',
+      hidden: true,
+    })) {
+      fireEvent.click(button)
+    }
+    expect(onOpenChange).not.toHaveBeenCalled()
+
+    const onClick = vi.fn()
+    rerender(
+      <SidebarProvider open onOpenChange={onOpenChange}>
+        <SidebarTrigger onClick={onClick} />
+        <SidebarRail onClick={onClick} />
+      </SidebarProvider>,
+    )
+    for (const button of screen.getAllByRole('button', {
+      name: 'Toggle Sidebar',
+      hidden: true,
+    })) {
+      fireEvent.click(button)
+    }
+    expect(onClick).toHaveBeenCalledTimes(2)
+    expect(onOpenChange).toHaveBeenCalledTimes(2)
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+})
+
 describe('deprecations', () => {
   let warn: MockInstance<typeof console.warn>
 
@@ -303,6 +356,39 @@ describe('deprecations', () => {
     expect(messages.join('\n')).toMatch(/Tag: `leftContent`.*startContent/)
     expect(messages.join('\n')).toMatch(/Tag: `onClose`.*onRemove/)
     expect(messages.join('\n')).toMatch(/DialogHeader: `leftContent`/)
+  })
+
+  it('keeps the type of a deprecated `as` element', () => {
+    render(
+      <form>
+        <ListItem as="button" title="Submit" type="submit" />
+        <ListItem as="button" title="Plain" />
+        <ListItem as="a" title="Link" href="#x" />
+        <IconText as="button" type="submit">
+          Icon submit
+        </IconText>
+        <Button as="button" type="submit" label="Button submit" />
+      </form>,
+    )
+
+    expect(screen.getByRole('button', { name: 'Submit' })).toHaveAttribute(
+      'type',
+      'submit',
+    )
+    expect(screen.getByRole('button', { name: 'Plain' })).toHaveAttribute(
+      'type',
+      'button',
+    )
+    expect(screen.getByRole('link', { name: 'Link' })).not.toHaveAttribute(
+      'type',
+    )
+    expect(screen.getByRole('button', { name: 'Icon submit' })).toHaveAttribute(
+      'type',
+      'submit',
+    )
+    expect(
+      screen.getByRole('button', { name: 'Button submit' }),
+    ).toHaveAttribute('type', 'submit')
   })
 
   it('prefers the new props when both are passed', () => {

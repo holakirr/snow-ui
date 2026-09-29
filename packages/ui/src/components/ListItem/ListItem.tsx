@@ -33,9 +33,9 @@ export type ListItemProps<C extends ElementType = typeof defaultTag> = Omit<
  * Contacts: an icon or avatar (24px), a title and an optional description or
  * timestamp. It is an IconText, so `interactive`, `active`, `flip` and
  * `asChild` work the same way (`<ListItem asChild><li /></ListItem>` inside a
- * `<ul>`, or an `<a>` / `<button>` child for a clickable row). Children are
- * rendered after the text, e.g. a trailing badge or button; with `asChild`,
- * the child element's own children are.
+ * `<ul>`, or an `<a>` / `<button type="button">` child for a clickable
+ * row). Children are rendered after the text, e.g. a trailing badge or
+ * button; with `asChild`, the child element's own children are.
  */
 function ListItem<C extends ElementType = typeof defaultTag>({
   as,
@@ -68,10 +68,16 @@ function ListItem<C extends ElementType = typeof defaultTag>({
     </>
   )
   // The deprecated `as` is rendered as an `asChild` host, so IconText
-  // doesn't warn about it a second time.
+  // doesn't warn about it a second time. The host's props win over the
+  // slotted ones, so it gets only the `type` a `<button>` needs, and keeps
+  // the user's (`type="submit"`).
   const Host: ElementType | undefined = as
   const host = Host ? (
-    <Host type={Host === 'button' ? 'button' : undefined}>
+    <Host
+      {...(Host === 'button' && {
+        type: (props as { type?: string }).type ?? 'button',
+      })}
+    >
       {renderContent(children)}
     </Host>
   ) : (

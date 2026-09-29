@@ -287,13 +287,18 @@ export const RuLocale: Story = {
       canvas.getByRole('button', { name: 'Последний выбор' }),
     ).toBeInTheDocument()
     await expect(
-      canvas.getByRole('button', { name: /предыдущему месяцу/ }),
+      canvas.getByRole('button', { name: 'Предыдущий месяц' }),
     ).toBeInTheDocument()
   },
 }
 
-/** The `locale`, `todayLabel` (and `dir`) props win over the provider. */
+/**
+ * The `locale`, `todayLabel` (and `dir`) props win over the provider. With
+ * the English default messages, the previous / next buttons and their
+ * landmark take the react-day-picker locale's own labels.
+ */
 export const LocaleProp: Story = {
+  globals: { locale: 'en' },
   render: () => (
     <Calendar
       locale={ru}
@@ -307,6 +312,12 @@ export const LocaleProp: Story = {
     await expect(canvas.getByRole('grid')).toHaveAccessibleName(/январь 2025/i)
     await expect(
       canvas.getByRole('button', { name: 'Сегодня!' }),
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Перейти к предыдущему месяцу' }),
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('navigation', { name: 'Панель навигации' }),
     ).toBeInTheDocument()
   },
 }

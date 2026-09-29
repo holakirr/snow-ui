@@ -23,6 +23,7 @@ import {
 } from '../Pagination'
 import { Search } from '../Search'
 import { Tag } from '../Tag'
+import type { MessagesOverrides } from './messages'
 import { SnowUIProvider } from './SnowUIProvider'
 
 const meta: Meta<typeof SnowUIProvider> = {
@@ -34,7 +35,7 @@ const meta: Meta<typeof SnowUIProvider> = {
     docs: {
       description: {
         component:
-          'Localizes the components and sets their text direction: `messages` (the built-in strings, typed as `Messages`, English `defaultMessages` by default), `locale` (a date-fns / react-day-picker locale for dates) and `dir`. Storybook wraps every story in one, driven by the "Locale" and "Direction" toolbars. A component\'s own label props win over the provider.',
+          'Localizes the components and sets their text direction: `messages` (the built-in strings, typed as `Messages`, English `defaultMessages` by default), `locale` (a date-fns / react-day-picker locale for dates) and `dir`. Storybook wraps every story in one, driven by the "Locale" and "Direction" toolbars. A component\'s own label props win over the provider. It is a client component: in a React Server Components app (Next.js App Router), render it from a `\'use client\'` module that imports the locale and the messages (see the README).',
       },
     },
   },
@@ -138,6 +139,11 @@ export const Russian: Story = {
   },
 }
 
+/** Module scope, so the provider gets the same object on every render. */
+const deleteTagMessages: MessagesOverrides = {
+  tag: { remove: (label) => `Delete ${label}` },
+}
+
 /**
  * Providers nest and merge: the inner one changes one string and keeps the
  * rest. A component's own label prop (`removeLabel`) wins over both.
@@ -145,9 +151,7 @@ export const Russian: Story = {
 export const NestedOverrides: Story = {
   render: () => (
     <div className="flex flex-col items-start gap-4">
-      <SnowUIProvider
-        messages={{ tag: { remove: (label) => `Delete ${label}` } }}
-      >
+      <SnowUIProvider messages={deleteTagMessages}>
         <div className="flex gap-2" data-testid="nested">
           <Tag label="Design" onRemove={() => {}} />
           <Tag

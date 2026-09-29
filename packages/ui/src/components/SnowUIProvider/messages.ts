@@ -20,8 +20,16 @@ export type Messages = {
     more: string
   }
   calendar: {
-    /** The toolbar's previous / next navigation landmark. */
+    /**
+     * The toolbar's previous / next navigation landmark. Like
+     * `previousMonth` and `nextMonth`, the English default gives way to a
+     * react-day-picker locale's own label; a translation wins over it.
+     */
     navigation: string
+    /** The previous-month button. */
+    previousMonth: string
+    /** The next-month button. */
+    nextMonth: string
     /** The toolbar's "Today" action. */
     today: string
     /** The toolbar's "Last selection" action. */
@@ -111,6 +119,8 @@ export const defaultMessages: Messages = {
   },
   calendar: {
     navigation: 'Month navigation',
+    previousMonth: 'Go to the previous month',
+    nextMonth: 'Go to the next month',
     today: 'Today',
     lastSelection: 'Last selection',
     previousYears: (count) => `Go to the previous ${count} years`,
@@ -161,7 +171,11 @@ export const defaultMessages: Messages = {
   },
 }
 
-/** `overrides` over `base`, namespace by namespace. */
+/**
+ * `overrides` over `base`, namespace by namespace. A message set to
+ * `undefined` keeps the base one, so a partial translation built from
+ * optional fields can't blank a string.
+ */
 export const mergeMessages = (
   base: Messages,
   overrides?: MessagesOverrides,
@@ -170,7 +184,38 @@ export const mergeMessages = (
   return Object.fromEntries(
     (Object.keys(base) as (keyof Messages)[]).map((namespace) => [
       namespace,
-      { ...base[namespace], ...overrides[namespace] },
+      {
+        ...base[namespace],
+        ...Object.fromEntries(
+          Object.entries(overrides[namespace] ?? {}).filter(
+            ([, message]) => message !== undefined,
+          ),
+        ),
+      },
     ]),
   ) as Messages
+}
+
+/**
+ * Whether two `MessagesOverrides` have the same namespaces and the same
+ * messages (by identity). Lets the provider keep its context value when a
+ * parent re-renders with an equal inline `messages` object.
+ */
+export const sameOverrides = (
+  a: MessagesOverrides | undefined,
+  b: MessagesOverrides | undefined,
+): boolean => {
+  if (a === b) return true
+  if (!a || !b) return false
+  const namespaces = Object.keys(a) as (keyof Messages)[]
+  if (namespaces.length !== Object.keys(b).length) return false
+  return namespaces.every((namespace) => {
+    const left: Record<string, unknown> = a[namespace] ?? {}
+    const right: Record<string, unknown> = b[namespace] ?? {}
+    const keys = Object.keys(left)
+    return (
+      keys.length === Object.keys(right).length &&
+      keys.every((key) => left[key] === right[key])
+    )
+  })
 }

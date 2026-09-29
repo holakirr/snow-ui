@@ -308,9 +308,11 @@ const SidebarTrigger: FC<SidebarTriggerProps> = ({
     <Button
       data-sidebar="trigger"
       className={className}
+      // Radix convention: `event.preventDefault()` in your handler skips the
+      // toggle.
       onClick={(event) => {
         onClick?.(event)
-        toggleSidebar()
+        if (!event.defaultPrevented) toggleSidebar()
       }}
       startContent={<SidebarSimple className="rtl:-scale-x-100" />}
       {...props}
@@ -323,16 +325,25 @@ SidebarTrigger.displayName = 'SidebarTrigger'
 
 type SidebarRailProps = ComponentProps<'button'>
 
-const SidebarRail: FC<SidebarRailProps> = ({ className, ...props }) => {
+const SidebarRail: FC<SidebarRailProps> = ({
+  className,
+  onClick,
+  ...props
+}) => {
   const { toggleSidebar } = useSidebar()
   const messages = useMessages()
 
   return (
     <button
+      type="button"
       data-sidebar="rail"
       aria-label={messages.sidebar.toggle}
       tabIndex={-1}
-      onClick={toggleSidebar}
+      // Your `onClick` runs first; `event.preventDefault()` skips the toggle.
+      onClick={(event) => {
+        onClick?.(event)
+        if (!event.defaultPrevented) toggleSidebar()
+      }}
       title={messages.sidebar.toggle}
       className={twMerge(
         'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-black-10 group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',

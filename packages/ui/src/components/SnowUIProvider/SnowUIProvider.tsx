@@ -2,12 +2,19 @@
 
 import { DirectionProvider, useDirection } from '@radix-ui/react-direction'
 import type { Locale } from 'date-fns'
-import { createContext, type ReactNode, useContext, useMemo } from 'react'
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
 import {
   defaultMessages,
   type Messages,
   type MessagesOverrides,
   mergeMessages,
+  sameOverrides,
 } from './messages'
 
 /** The text direction: left-to-right or right-to-left. */
@@ -58,14 +65,27 @@ const SnowUIContext = createContext<SnowUIContextValue>({
  * left-to-right keyboard navigation. Providers nest: an inner one overrides
  * the outer one's messages, locale and direction for its subtree.
  *
+ * It is a client component, and date-fns locales and function messages
+ * can't be passed from a React Server Component: render it in a
+ * `'use client'` module that imports them (see the README).
+ *
+ * Define `messages` outside the component (or memoize it): an equal inline
+ * object is recognised, but inline function messages are new on every
+ * render and re-render every component that reads the messages.
+ *
  * @example
- * <html lang="ar" dir="rtl">
- *   <SnowUIProvider dir="rtl" locale={arSA} messages={arMessages}>
- *     <App />
+ * 'use client'
+ * import { ar } from 'react-day-picker/locale'
+ * import { arMessages } from './messages'
+ *
+ * export const Providers = ({ children }: { children: ReactNode }) => (
+ *   <SnowUIProvider dir="rtl" locale={ar} messages={arMessages}>
+ *     {children}
  *   </SnowUIProvider>
+ * )
  */
 export const SnowUIProvider = ({
-  messages,
+  messages: messagesProp,
   locale,
   dir,
   children,
@@ -73,6 +93,11 @@ export const SnowUIProvider = ({
   const parent = useContext(SnowUIContext)
   // Keeps an outer Radix `DirectionProvider` when no `dir` is set here.
   const radixDir = useDirection()
+
+  // An equal `messages` object (e.g. written inline) keeps the previous one,
+  // so the context value, and every consumer, stays the same.
+  const [messages, setMessages] = useState(messagesProp)
+  if (!sameOverrides(messages, messagesProp)) setMessages(messagesProp)
 
   const value = useMemo<SnowUIContextValue>(
     () => ({

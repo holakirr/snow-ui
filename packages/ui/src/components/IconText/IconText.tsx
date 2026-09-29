@@ -38,8 +38,9 @@ export type IconTextProps<C extends ElementType = typeof defaultTag> =
   PolymorphicProps<C> & {
     /**
      * Render the only child element instead of a `<div>`, e.g. a link or a
-     * `<button>` for an interactive row: the icon and the child's own
-     * children (the text) are rendered inside it.
+     * `<button type="button">` for an interactive row (give a button its
+     * `type`: the deprecated `as="button"` set it): the icon and the child's
+     * own children (the text) are rendered inside it.
      * @example <IconText asChild interactive icon={<HomeIcon />}><a href="/">Home</a></IconText>
      * @default false
      */

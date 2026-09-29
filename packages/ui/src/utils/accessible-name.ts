@@ -58,7 +58,9 @@ const componentName = (type: unknown): string => {
  * heroicons or MUI; `IconStar`). Any other element may render text, e.g.
  * `<FormattedMessage id="save" />` or `<Trans i18nKey="save" />`, so it
  * isn't taken for an icon (an icon library with other names isn't
- * recognised: no warning rather than a wrong one).
+ * recognised: no warning rather than a wrong one). The square icon-only
+ * layout of Toggle keeps the broader `isIconOnly` rule (any element without
+ * children), as in 5.0.0.
  */
 const isIconElement = (node: ReactNode): boolean => {
   if (!isValidElement(node)) return false

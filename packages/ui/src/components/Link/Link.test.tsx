@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import type { ComponentProps } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 import { Link } from './Link'
@@ -138,6 +139,27 @@ describe('Link', () => {
     })
 
     expect(onKeyDown).toHaveBeenCalledTimes(1)
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it("leaves Enter to a router link's own <a href>", () => {
+    const onClick = vi.fn()
+    // A router link renders the href from its own prop (`to`).
+    const RouterLink = ({
+      to,
+      ...props
+    }: { to: string } & ComponentProps<'a'>) => <a href={to} {...props} />
+    render(
+      <Link asChild onClick={onClick}>
+        <RouterLink to="/docs">Docs</RouterLink>
+      </Link>,
+    )
+
+    fireEvent.keyDown(screen.getByRole('link', { name: 'Docs' }), {
+      key: 'Enter',
+    })
+
+    // The browser clicks it on Enter; Link doesn't click it a second time.
     expect(onClick).not.toHaveBeenCalled()
   })
 

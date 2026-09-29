@@ -1,5 +1,4 @@
 import { Children, isValidElement, type ReactNode } from 'react'
-import { isIconOnly } from './children'
 import { isDevelopment } from './env'
 
 /** Props that name an element (or an icon: `alt`) without its content. */
@@ -31,10 +30,42 @@ const isNamedElement = (node: ReactNode): boolean =>
   node.props['aria-hidden'] !== 'true' &&
   hasNameProp(node.props)
 
-/** Whether `node` is an icon: an `<svg>`, or an element without children. */
-const isIconElement = (node: ReactNode): boolean =>
-  isValidElement<NameProps>(node) &&
-  (node.type === 'svg' || node.props.children == null)
+/** A component's name: its `displayName`, or that of what it wraps. */
+const componentName = (type: unknown): string => {
+  if (typeof type === 'function') {
+    const { displayName, name } = type as { displayName?: string; name: string }
+    return displayName ?? name
+  }
+  if (type && typeof type === 'object') {
+    // forwardRef ({ render }) and memo ({ type }) components.
+    const {
+      displayName,
+      render,
+      type: inner,
+    } = type as {
+      displayName?: string
+      render?: unknown
+      type?: unknown
+    }
+    return displayName ?? componentName(render ?? inner)
+  }
+  return ''
+}
+
+/**
+ * Whether `node` is certainly an icon: an `<svg>` or `<img>` element, or a
+ * component named like one (`StarIcon` from @holakirr/snow-ui-icons,
+ * heroicons or MUI; `IconStar`). Any other element may render text, e.g.
+ * `<FormattedMessage id="save" />` or `<Trans i18nKey="save" />`, so it
+ * isn't taken for an icon (an icon library with other names isn't
+ * recognised: no warning rather than a wrong one).
+ */
+const isIconElement = (node: ReactNode): boolean => {
+  if (!isValidElement(node)) return false
+  const { type } = node
+  if (typeof type === 'string') return type === 'svg' || type === 'img'
+  return /Icon$|^Icon[A-Z]/.test(componentName(type))
+}
 
 /**
  * Whether a control whose content is `children` (between `icons`, e.g. a
@@ -58,13 +89,14 @@ const isUnnamedIconOnly = (
   )
   // `children` next to icons may be screen-reader-only text: they count as a
   // name. Without icons, only a lone icon child is icon-only content.
+  const items = Children.toArray(content)
   const iconElements =
     adornments.length > 0
       ? content == null && adornments.every(isIconElement)
         ? adornments
         : []
-      : isIconOnly(content)
-        ? Children.toArray(content)
+      : items.length === 1 && isIconElement(items[0])
+        ? items
         : []
   return (
     iconElements.length > 0 &&

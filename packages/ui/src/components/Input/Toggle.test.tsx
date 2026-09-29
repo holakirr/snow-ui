@@ -201,6 +201,20 @@ describe('Toggle without an accessible name', () => {
     )
   })
 
+  it('takes a text component for text, not an icon', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const Trans = ({ i18nKey }: { i18nKey: string }) => <>{i18nKey}</>
+
+    render(
+      <Toggle>
+        <Trans i18nKey="Bold" />
+      </Toggle>,
+    )
+
+    expect(screen.getByRole('button', { name: 'Bold' })).toBeInTheDocument()
+    expect(warn).not.toHaveBeenCalled()
+  })
+
   it("doesn't take an aria-hidden icon's label as the toggle's name", () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 

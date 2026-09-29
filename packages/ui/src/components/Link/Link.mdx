@@ -85,7 +85,7 @@ The full table is in the package README.
 | External Link: — | `target="_blank"` and `rel="noopener noreferrer"` by default, and a visually hidden "(opens in a new tab)" (`externalLabel`) | 3.2.5 (advisory) |
 | The "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 
-A known gap: the arrow and the external icon keep the Figma 40% opacity at rest.
+A known gap with the default contrast: the arrow and the external icon keep the Figma 40% opacity at rest (2.85:1 on white). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) they are fully opaque.
 
 ## Localization and RTL
 

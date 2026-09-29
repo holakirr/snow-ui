@@ -44,6 +44,7 @@ With more contrast the components also:
 - give the gray `InputSmall` and `Search` fields a stroke: their Black/4% fill alone is 1.1:1;
 - use the per-mode `white` for the Switch thumb: black on the dark-mode indigo track (10.14:1), where Figma's white thumb is 2.06:1;
 - add a 2px `black-80` ring, the colour of `focus-ring`, to the highlighted menu item (DropdownMenu, ContextMenu, Select) and CommandPalette option, whose Black/4% highlight is 1.1:1.
+- show the Link arrow and external icon at full opacity instead of 40% (2.85:1).
 
 ## Measured contrast
 
@@ -84,7 +85,7 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 
 **Why these values.** The smallest alphas that pass on every surface are Black/44% (3.09:1) and White/46% (3.04:1) for boundaries, Black/56% (4.58:1) and White/74% (4.56:1) for placeholders. The tokens round up to Black/White 50% (3.79:1 and 3.3:1 at worst) and Black/60%, White/75% (5.25:1 and 4.63:1), for a margin and values a designer can name; Black/60% is also the light `text-secondary`, which the Select placeholder already uses. The hover and focus stroke has to stay stronger than the rest stroke, so it moves from Black/40% to the kit's next step, Black/80%. The invalid stroke uses `red-text`, the library's accessible red for error text, which already meets 4.5:1 as text. In dark mode Figma's white thumb keeps 3:1 on the off track only up to about White/45%, too close to the floor the other boundaries need, so the thumb flips to the per-mode `white` instead of holding the track to a narrow band.
 
-**Not changed.** Disabled controls are exempt (WCAG 1.4.11, 1.4.3). The Link arrow and external icon keep their 40% opacity in both modes (a known gap). The icons inside fields other than the Search icon and the Select chevron are decoration.
+**Not changed.** Disabled controls are exempt (WCAG 1.4.11, 1.4.3). The icons inside fields other than the Search icon and the Select chevron are decoration.
 
 **A demo fix.** The Search button of the CommandPalette and Dashboard stories set its shortcut hint in `text-secondary` on a KBD that kept its own Black/4% fill: in dark mode that was 4.37:1 on the gray field (3.9:1 hovered). The hint has no fill now, like `Search`'s own (5.51:1, 4.84:1 hovered).
 

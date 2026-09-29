@@ -83,7 +83,8 @@ const Link: FC<LinkProps> = ({
       {variant === 'arrow' && (
         <span
           aria-hidden
-          className="inline-block opacity-40 transition-opacity group-hover:opacity-100 rtl:-scale-x-100"
+          // Figma: 40% (2.85:1 on white); full opacity with more contrast.
+          className="inline-block opacity-40 transition-opacity group-hover:opacity-100 contrast-more:opacity-100 rtl:-scale-x-100"
         >
           ↗
         </span>
@@ -92,7 +93,7 @@ const Link: FC<LinkProps> = ({
         <>
           <ArrowSquareOut
             aria-hidden
-            className="size-3 shrink-0 opacity-40 transition-opacity group-hover:opacity-100 rtl:-scale-x-100"
+            className="size-3 shrink-0 opacity-40 transition-opacity group-hover:opacity-100 contrast-more:opacity-100 rtl:-scale-x-100"
           />
           {/* A separate space keeps the name "Text (opens…)"; flex drops it visually. */}{' '}
           <span className="sr-only">

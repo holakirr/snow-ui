@@ -239,7 +239,7 @@ export const ChartContainer = ({
     }
     return ['0123456789.,%', ...numbers, value, ...categories].join(' ')
   }, [data, categoryKey, categoryFormatter, valueFormatter, config, locale])
-  const fontsReady = useFontsReady(rootRef, fontSample)
+  const fonts = useFontsReady(rootRef, fontSample)
   const [sized, setSized] = useState(false)
   const onResize = useCallback((width: number, height: number) => {
     if (width > 0 && height > 0) setSized(true)
@@ -306,7 +306,7 @@ export const ChartContainer = ({
         // Set once the chart is drawn with its final font and size (or has
         // nothing to draw): screenshot tests wait for it.
         data-chart-ready={
-          loading || empty || (fontsReady && sized) ? '' : undefined
+          loading || empty || (fonts.settled && sized) ? '' : undefined
         }
         dir={explicitDir}
         data-dir={dir}
@@ -352,8 +352,10 @@ export const ChartContainer = ({
             <p className="snow-chart__state">{emptyMessage}</p>
           ) : (
             <>
-              {fontsReady && (
+              {fonts.ready && (
                 <ResponsiveContainer
+                  // A font for new text arrived after drawing: measure again.
+                  key={fonts.key}
                   width="100%"
                   height="100%"
                   onResize={onResize}

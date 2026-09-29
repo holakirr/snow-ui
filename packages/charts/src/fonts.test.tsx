@@ -17,7 +17,7 @@ const chart = (
 )
 
 /** A Font Loading API whose `load` resolves when the test says so. */
-const fakeFonts = () => {
+const fakeFonts = (covered: (text: string) => boolean = () => false) => {
   let resolve: () => void = () => {}
   const load = vi.fn(
     (_font: string, _text: string) =>
@@ -25,12 +25,26 @@ const fakeFonts = () => {
         resolve = () => done([])
       }),
   )
+  const check = vi.fn((_font: string, text: string) => covered(text))
   Object.defineProperty(document, 'fonts', {
     configurable: true,
-    value: { load, ready: Promise.resolve() },
+    value: { load, check, ready: Promise.resolve() },
   })
-  return { load, loaded: () => resolve() }
+  return { load, check, loaded: () => resolve() }
 }
+
+const chartWith = (category: string) => (
+  <ChartContainer
+    config={{ a: { label: 'A' } }}
+    title="Chart"
+    data={[{ x: category, a: 1 }]}
+    categoryKey="x"
+  >
+    <BarChart data={[{ x: category, a: 1 }]}>
+      <Bar dataKey="a" />
+    </BarChart>
+  </ChartContainer>
+)
 
 afterEach(() => {
   vi.useRealTimers()
@@ -78,6 +92,42 @@ describe('drawing once the font has loaded', () => {
         <BarChart data={[]} />
       </ChartContainer>,
     )
+    expect(screen.getByRole('figure')).toHaveAttribute('data-chart-ready')
+  })
+
+  it('loads the font for new text and measures the plot again', async () => {
+    const fonts = fakeFonts()
+    const { container, rerender } = render(chartWith('Jan'))
+    await act(async () => fonts.loaded())
+    const plot = container.querySelector('.recharts-wrapper')
+    expect(plot).not.toBeNull()
+
+    // New text the loaded faces don't cover (e.g. another script).
+    rerender(chartWith('Янв'))
+    expect(fonts.load).toHaveBeenCalledTimes(2)
+    expect(fonts.load.mock.calls[1]?.[1]).toContain('Янв')
+    // The plot stays drawn meanwhile, but the chart isn't final yet.
+    expect(container.querySelector('.recharts-wrapper')).not.toBeNull()
+    expect(screen.getByRole('figure')).not.toHaveAttribute('data-chart-ready')
+
+    await act(async () => fonts.loaded())
+    // Remounted, so Recharts measured the new labels with the loaded font.
+    const remeasured = container.querySelector('.recharts-wrapper')
+    expect(remeasured).not.toBeNull()
+    expect(remeasured).not.toBe(plot)
+    expect(screen.getByRole('figure')).toHaveAttribute('data-chart-ready')
+  })
+
+  it('keeps the plot when the loaded faces already cover new text', async () => {
+    const fonts = fakeFonts((text) => !text.includes('Янв'))
+    const { container, rerender } = render(chartWith('Jan'))
+    // First draw always waits for load (check isn't enough before drawing).
+    await act(async () => fonts.loaded())
+    const plot = container.querySelector('.recharts-wrapper')
+
+    rerender(chartWith('Feb'))
+    expect(fonts.load).toHaveBeenCalledTimes(1)
+    expect(container.querySelector('.recharts-wrapper')).toBe(plot)
     expect(screen.getByRole('figure')).toHaveAttribute('data-chart-ready')
   })
 })

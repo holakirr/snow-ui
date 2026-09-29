@@ -339,16 +339,14 @@ export const Stacked: Story = {
       'a fourth toast closes the oldest, fading in place',
       async () => {
         const oldest = toastOf('Report exported')
-        const top = oldest.getBoundingClientRect().top
         // Focus leaves the stack, which collapses again.
         await userEvent.click(show)
         await expect(oldest).toHaveAttribute('data-state', 'closed')
-        // It fades where it was, behind the others, instead of sliding down
-        // from the front position.
+        // It fades behind the others, instead of sliding down from the
+        // front position to below the stack.
+        await expect(oldest).toHaveAttribute('data-behind')
         await expect(getComputedStyle(oldest).animationName).toBe('animate-out')
-        await expect(oldest.getBoundingClientRect().top).toBeLessThanOrEqual(
-          top + 1,
-        )
+        await expect(oldest.style.getPropertyValue('--toast-y')).toBe('-16px')
         await waitFor(() =>
           expect(viewport()).not.toHaveAttribute('data-expanded'),
         )

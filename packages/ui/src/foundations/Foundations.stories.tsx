@@ -60,9 +60,11 @@ export const Motion: Story = {
     }
     const transform = 'transform, translate, scale, rotate'
 
-    for (const { utility, keyframes, reduced: to } of animations) {
+    // The Spinner and Progress tokens keep animating: those components
+    // replace their utilities with `motion-reduce:` (checked in their stories).
+    for (const { utility, keyframes, reduced: to, via } of animations) {
       await expect(sample(utility).animationName, utility).toBe(
-        reduced ? to : keyframes,
+        reduced && via === 'theme' ? to : keyframes,
       )
     }
     await expect(sample('skeleton').animationName).toBe(

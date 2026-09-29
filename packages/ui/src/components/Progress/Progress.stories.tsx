@@ -85,9 +85,13 @@ export const Indeterminate: Story = {
     await expect(bar).toHaveAttribute('data-state', 'indeterminate')
     await expect(bar).not.toHaveAttribute('aria-valuenow')
     await expect(bar).not.toHaveAttribute('aria-valuetext')
+    // With reduced motion (the `storybook-prefs` test run) it pulses.
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
     const fill = bar.firstElementChild as HTMLElement
     await expect(getComputedStyle(fill).animationName).toBe(
-      'progress-indeterminate',
+      reduced ? 'pulse' : 'progress-indeterminate',
     )
   },
 }

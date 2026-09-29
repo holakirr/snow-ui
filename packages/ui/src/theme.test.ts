@@ -478,7 +478,7 @@ describe('reduced motion (compiled index.css)', () => {
       [
         ...block
           .slice(0, block.indexOf('}'))
-          .matchAll(/^\s*(--animate-[\w-]+): ([\w-]+) /gm),
+          .matchAll(/^\s*(--animate-[\w-]+):\s+([\w-]+)\s/gm),
       ].map(([, name, keyframes]) => [name, keyframes]),
     )
     const reduced = rule(':root, :host', [
@@ -490,17 +490,24 @@ describe('reduced motion (compiled index.css)', () => {
     expect(animations.map(({ utility }) => `--${utility}`).sort()).toEqual(
       [...tokens.keys()].sort(),
     )
-    for (const { utility, keyframes, reduced: to } of animations) {
+    for (const { utility, keyframes, reduced: to, via } of animations) {
       const name = `--${utility}`
       expect(tokens.get(name), name).toBe(keyframes)
       // Fades stay; the rest fade (`var(--animate-in)`) or stop (`none`).
+      // The Spinner and Progress replace their utilities themselves.
       expect(reduced.get(name), name).toBe(
-        to === keyframes ? undefined : to === 'none' ? 'none' : `var(--${to})`,
+        via === 'component' || to === keyframes
+          ? undefined
+          : to === 'none'
+            ? 'none'
+            : `var(--${to})`,
       )
     }
     expect(reduced.size).toBe(
-      animations.filter(({ keyframes, reduced: to }) => to !== keyframes)
-        .length,
+      animations.filter(
+        ({ keyframes, reduced: to, via }) =>
+          via === 'theme' && to !== keyframes,
+      ).length,
     )
   })
 })

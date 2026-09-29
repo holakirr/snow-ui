@@ -587,12 +587,12 @@ export const MotionPage = () => (
         label="Animation tokens"
         head={[
           ['Utility', 'w-[30%]'],
-          ['Keyframes', 'w-[22%]'],
-          ['Reduced motion', 'w-[18%]'],
+          ['Keyframes', 'w-[20%]'],
+          ['Reduced motion', 'w-[20%]'],
           ['Used by', ''],
         ]}
       >
-        {animations.map(({ utility, keyframes, reduced, usedBy }) => (
+        {animations.map(({ utility, keyframes, reduced, via, usedBy }) => (
           <Row key={utility}>
             <Cell>
               <div className="flex items-center gap-3">
@@ -612,6 +612,11 @@ export const MotionPage = () => (
             </Cell>
             <Cell>
               <Code>{reduced}</Code>
+              {via === 'component' && (
+                <span className="block text-12 text-secondary">
+                  in the component
+                </span>
+              )}
             </Cell>
             <Cell className="text-black-80">{usedBy}</Cell>
           </Row>

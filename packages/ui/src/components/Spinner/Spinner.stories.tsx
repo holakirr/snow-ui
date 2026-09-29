@@ -39,14 +39,20 @@ export const Default: Story = {
     await expect(spinner).toHaveClass('size-5')
 
     // The ring turns and its arc grows and shrinks, in CSS (not SMIL), so
-    // `prefers-reduced-motion` can stop it.
+    // `prefers-reduced-motion` can stop it: then the ring stands still and
+    // the arc pulses (the `storybook-prefs` test run emulates it).
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
     const ring = spinner.querySelector('svg') as SVGSVGElement
     await expect(ring).toHaveAttribute('aria-hidden', 'true')
-    await expect(getComputedStyle(ring).animationName).toBe('spinner-turn')
+    await expect(getComputedStyle(ring).animationName).toBe(
+      reduced ? 'none' : 'spinner-turn',
+    )
     await expect(
       getComputedStyle(ring.querySelector('circle') as SVGCircleElement)
         .animationName,
-    ).toBe('spinner-arc')
+    ).toBe(reduced ? 'pulse' : 'spinner-arc')
   },
 }
 

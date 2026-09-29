@@ -394,8 +394,9 @@
    * changes stay visible and Radix still waits for the exit animation; the
    * Accordion opens and closes at once. The transitions of position, size or
    * scale that components set with utilities (the Button press, the Switch
-   * thumb, the Dialog zoom, the Accordion chevron, the Sidebar's collapse)
-   * and the Skeleton pulse use `motion-reduce:` utilities in the components.
+   * thumb, the Dialog zoom, the Accordion chevron, the Sidebar's collapse),
+   * the Skeleton pulse and the Spinner and Progress animations above use
+   * `motion-reduce:` utilities in the components.
    */
   @media (prefers-reduced-motion: reduce) {
     :root,

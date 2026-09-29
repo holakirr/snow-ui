@@ -1,0 +1,52 @@
+diff --git a/dist/chunks/typescript.mjs b/dist/chunks/typescript.mjs
+index c8d0c710c85a755d12bc9ee3d74efea4a17d2259..57aa7fab3139e2defd6e9b6f92c0468f051adc61 100644
+--- a/dist/chunks/typescript.mjs
++++ b/dist/chunks/typescript.mjs
+@@ -1,5 +1,6 @@
+ import { dirname } from 'node:path';
+-import ts from 'typescript';
++// snow-ui: TypeScript 7 has no JavaScript API; use TypeScript 6 (see CONTRIBUTING.md).
++import ts from '@typescript/typescript6';
+ 
+ function formatDiagnostic(diagnostic) {
+   if (typeof diagnostic.messageText === "string") {
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 321bc4825371c718922f94537988e57c8f484b57..0b7dd50bdd9cb071022481108bac3b89713d0de7 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -500,7 +500,7 @@ const resolveDocgenRootFiles = async (rootDir, includeArray, excludeArray, proje
+   ].sort();
+ };
+ const resolveTypescriptProject = async (config, rootDir) => {
+-  const { default: ts } = await import('typescript');
++  const { default: ts } = await import('@typescript/typescript6');
+   const includeArray = config.include ?? DEFAULT_INCLUDE;
+   const excludeArray = config.exclude ?? DEFAULT_EXCLUDE;
+   let referencedProjectMetadata = {
+@@ -561,7 +561,7 @@ const resolveTypescriptProject = async (config, rootDir) => {
+   };
+ };
+ const createProgram = async (project, oldProgram) => {
+-  const { default: ts } = await import('typescript');
++  const { default: ts } = await import('@typescript/typescript6');
+   const host = ts.createIncrementalCompilerHost(
+     project.compilerOptions,
+     ts.sys
+@@ -629,7 +629,7 @@ const closeProjectService = (projectService, projectName) => {
+   projectService.close?.();
+ };
+ const startWatch = async (project, onProgramCreatedOrUpdated) => {
+-  const { default: ts } = await import('typescript');
++  const { default: ts } = await import('@typescript/typescript6');
+   const reportWatchStatus = () => {
+   };
+   const startConfiguredWatch = (configuredProject) => {
+@@ -1246,7 +1246,7 @@ function reactDocgenTypescript(config = {}) {
+       return;
+     }
+     initializationPromise = (async () => {
+-      typescriptModule ??= (await import('typescript')).default;
++      typescriptModule ??= (await import('@typescript/typescript6')).default;
+       if (!project || !docGenParser) {
+         project = await resolveTypescriptProject(config, configRoot);
+         docGenParser = await getDocgen(config, project.compilerOptions);

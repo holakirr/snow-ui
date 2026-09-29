@@ -32,7 +32,11 @@
       "require": "./dist/react-hook-form.cjs"
     },
     "./package.json": "./package.json",
-    "./index.css": "./dist/index.css"
+    "./index.css": "./dist/index.css",
+    "./theme.css": "./dist/theme.css",
+    "./fonts.css": "./dist/fonts.css",
+    "./fonts-italic.css": "./dist/fonts-italic.css",
+    "./fonts/*": "./dist/fonts/*"
   },
   "repository": {
     "type": "git",
@@ -47,16 +51,18 @@
     "snow-ui",
     "snow"
   ],
-  "license": "MIT",
+  "license": "MIT AND OFL-1.1",
   "scripts": {
-    "build": "rm -rf dist && bun run build:css && tsdown",
-    "build:css": "tailwindcss -i ./src/index.css -o ./dist/index.css --minify",
+    "build": "rm -rf dist && bun run tokens && bun run build:css && tsdown",
+    "build:css": "tailwindcss -i ./src/index.css -o ./dist/index.css --minify && bun scripts/build-css.ts",
+    "tokens": "tz build && biome format --write src/styles/tokens.generated.css src/foundations/tokens.generated.ts src/utils/token-scales.generated.ts",
     "typecheck": "tsc -p . --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format .",
     "format:fix": "biome format --write .",
     "test": "vitest run",
+    "test:dist": "vitest run -c vitest.dist.config.ts",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
@@ -116,6 +122,8 @@
     "@storybook/react-vite": "^10.6.0",
     "@tailwindcss/cli": "^4.3.3",
     "@tanstack/react-table": "^9.2.4",
+    "@terrazzo/cli": "^2.7.1",
+    "@terrazzo/parser": "^2.7.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@types/bun": "^1.4.2",

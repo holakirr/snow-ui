@@ -1,6 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+/*
+ * Storybook uses the library like a project on Tailwind v4 does: Tailwind
+ * plus the theme (the package's `theme.css`), from source. The self-hosted
+ * Inter (`fonts.css`) is imported in preview.tsx, so its font URLs resolve.
+ */
 @import "tailwindcss";
-@import "../packages/ui/src/index.css";
+@import "../packages/ui/src/theme.css";
 
 /* Scan every package rendered in this Storybook for Tailwind classes. */
 @source "../packages/ui/src";
@@ -9,9 +13,7 @@
 .docs-story,
 .sb-show-main {
   background-color: var(--color-background-1);
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
+  font-family: var(--font-sans);
   font-weight: normal;
   font-style: normal;
-  font-variation-settings: "slnt" 0;
 }

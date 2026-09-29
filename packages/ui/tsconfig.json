@@ -9,6 +9,6 @@
       "@holakirr/snow-ui-icons": ["../icons/src/main.tsx"]
     }
   },
-  "include": ["src", "*.config.ts", "workspace-aliases.ts"],
+  "include": ["src", "scripts", "test", "*.config.ts", "workspace-aliases.ts"],
   "exclude": ["node_modules", "dist"]
 }

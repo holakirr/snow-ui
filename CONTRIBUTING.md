@@ -1,6 +1,6 @@
 # Contributing
 
-Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook` (or `bun run test:coverage`, which also checks coverage), `bun run build` and `bun run size`; if you changed how anything looks, also `bun run visual` (Docker).
+Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook` (or `bun run test:coverage`, which also checks coverage), `bun run build`, `bun run test:dist` and `bun run size`; if you changed how anything looks, also `bun run visual` (Docker).
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org) (`feat(ui): …`, `fix(icons): …`, `docs: …`).
 
@@ -56,7 +56,7 @@ bun run visual -g "Button"       # extra arguments go to `playwright test`
 VISUAL_SKIP_BUILD=1 bun run visual  # reuse the current storybook-static/
 ```
 
-Requirements: Docker (on Apple Silicon the amd64 image runs through Rosetta, a few minutes for the whole suite) and `bun install` done on the host (the container only uses the pure-JS `@playwright/test` from `node_modules`; Storybook is built on the host), plus network access for the Inter web font. Failures leave the actual/expected/diff images in `test-results/visual/` and an HTML report in `playwright-report/` (`bunx playwright show-report`).
+Requirements: Docker (on Apple Silicon the amd64 image runs through Rosetta, a few minutes for the whole suite) and `bun install` done on the host (the container only uses the pure-JS `@playwright/test` from `node_modules`; Storybook is built on the host). No network is needed: Storybook bundles the self-hosted Inter (`packages/ui/src/fonts.css`). Failures leave the actual/expected/diff images in `test-results/visual/` and an HTML report in `playwright-report/` (`bunx playwright show-report`).
 
 When a change is intended, run `bun run visual:update`, review the changed PNGs in the diff and commit them with the change. A story added without a baseline fails the comparison; opt a story or a whole component out with the `skip-visual` tag. `visual:update` only writes new and changed images: after removing or renaming stories, delete their PNGs (or empty the folder and regenerate everything).
 
@@ -69,6 +69,53 @@ In CI, the `visual` job runs the same image as a job container against the Story
 ### Package checks
 
 `bun run build` runs [publint](https://publint.dev) and [are-the-types-wrong](https://arethetypeswrong.github.io) on both packages after tsdown builds them (configured in `packages/*/tsdown.config.ts`), so broken `exports`, missing files or types that resolve differently in ESM and CommonJS fail the build.
+
+`bun run test:dist` (after `bun run build`) checks the published stylesheets of `@holakirr/snow-ui` (`packages/ui/test/dist.test.ts`): it compiles a Tailwind v4 project stylesheet that imports `@holakirr/snow-ui/theme.css` with `@source` on `dist` (`packages/ui/test/fixtures/app.css`, resolved through the package's `exports`) and fails if it misses any class the built components use; it also checks that every rule of `index.css` is in a cascade layer and that `fonts.css` points at existing files.
+
+### Generated token files
+
+`bun run tokens` regenerates the files built from the design tokens (see [Design tokens](#design-tokens)); `bun run build` runs it too. CI runs it first and fails when that changes anything, so commit the generated files with the token change.
+
+## Design tokens
+
+The design tokens live in `packages/ui/tokens/` as [W3C Design Tokens (DTCG 2025.10)](https://www.designtokens.org/) files, the single source of truth for everything the library derives from them:
+
+| File | Contents |
+| --- | --- |
+| `snow-ui.resolver.json` | The [resolver](https://www.designtokens.org/tr/2025.10/resolver/): the token files, and the `theme` modifier with the `light` and `dark` contexts |
+| `color.light.tokens.json` / `color.dark.tokens.json` | The Figma "Colors" collection in the SnowUI-Light / SnowUI-Dark mode, plus the library's additions (`primary-hover*`, `indigo-text`, `text-secondary`, `red-text`). Both files declare the same tokens |
+| `typography.tokens.json` | `font.sans` (with its `font-feature-settings`) and the Figma text styles, `text.<size>.regular` / `.semibold` |
+| `radius.tokens.json`, `effects.tokens.json` | Corner radius; shadows, the inner shadow, the focus ring colour and the background blurs |
+| `deprecated.tokens.json` | Old names: colour aliases (`$deprecated`) and the channels of the old token system |
+
+`bun run tokens` runs the [Terrazzo](https://terrazzo.app) CLI (`packages/ui/terrazzo.config.ts`): Terrazzo parses and validates the DTCG files, applies the resolver and resolves aliases, and the repository's plugin (`packages/ui/scripts/terrazzo-plugin-snow-ui.ts`) writes
+
+- `src/styles/tokens.generated.css`: the Tailwind v4 `@theme static` block (light values) and the theme scopes in `@layer base` (`:root, [data-theme="light"]`, `[data-theme="dark"]`, the `prefers-color-scheme: dark` block and the `[data-theme]` re-declarations). `theme.css` imports it;
+- `src/foundations/tokens.generated.ts`: the data of Storybook's Foundations pages;
+- `src/utils/token-scales.generated.ts`: the scales tailwind-merge needs.
+
+Don't edit these files: change the tokens and run `bun run tokens`. Terrazzo was picked over Style Dictionary because it is DTCG-first (strict validation, the 2025.10 resolver for modes, aliases, `$deprecated`); the output is a custom plugin because neither tool's stock CSS/Tailwind formats produce Tailwind `@theme` variables plus scoped `[data-theme]` blocks with the var()-based tokens re-declared per scope.
+
+Conventions the plugin relies on (it fails with a message when a token breaks them):
+
+- A token `<group>.<name>` becomes `--<group>-<name>`; the groups are Tailwind theme namespaces (`color`, `radius`, `shadow`, `inset-shadow`, `ring-color`, `blur`, `font`, `text`). A new group needs a line in the plugin.
+- Colours are sRGB objects (`{ "colorSpace": "srgb", "components": [0, 0, 0], "alpha": 0.8, "hex": "#000000" }`) and are written as `#rgb` / `rgb(r g b / a)`; dimensions are in px (`radius` and `text` become rem).
+- An alias that is the same in both modes (`{color.primary}`) is written as `var(--color-primary)`, so it follows the theme scopes; an alias that differs per mode (Figma's Primary: `{color.black}` / `{color.indigo}`) is written as each mode's colour.
+- `$extensions["com.holakirr.snow-ui"]`: `figma` (the Figma variable or style name, shown in the docs), `css` (a formula such as `color-mix(in srgb, {color.primary}, {color.white} 20%)`, whose `$value` in each mode must be its result) and `fontFeatureSettings`.
+
+To add a colour, add it to both `color.*.tokens.json` files (with the dark value, or the same one), run `bun run tokens`, and list it in a group in `src/foundations/tokens.ts` (`tokens.test.ts` fails otherwise); then `bg-<name>`, `text-<name>`… work. Add a changeset: new tokens are a minor change, renamed or removed ones a major.
+
+### Syncing from Figma
+
+The token names follow Tailwind (`color.black-80`), not Figma (`Black/80%`); each token records its Figma name in `$extensions`. To bring changes over from the [SnowUI Figma kit](https://www.figma.com/community/file/1301134685302006646):
+
+1. Export the variables as DTCG JSON, one file per mode. Figma's native variables export (announced at Schema 2025 and rolling out: right-click the "Colors" collection → Export) writes DTCG JSON; so do plugins such as [Design Tokens (W3C) Export](https://www.figma.com/community/plugin/1377982390646186215/design-tokens-w3c-export) or Tokens Studio (with the W3C DTCG token format), which also cover text and effect styles. `bunx tz import <figma file url>` (Terrazzo) writes a resolver with the tokens directly, but reading Variables through the Figma REST API requires an Enterprise plan (Styles work on every plan), as does any CI automation built on that API.
+2. Copy the changed values into the matching tokens here (by Figma name), keeping the token names, the library additions (no Figma name) and the deprecated aliases. The export's colour objects can be pasted as they are.
+3. Run `bun run tokens`, review the diff of `src/styles/tokens.generated.css` and the Foundations pages in Storybook, and run `bun run test` and `bun run visual`.
+
+### Fonts
+
+`@holakirr/snow-ui/fonts.css` self-hosts Inter from `packages/ui/src/fonts/`: subsets of the rsms Inter 4.1 variable fonts (the Google Fonts build lacks the `ss01` / `cv01` features), split by unicode-range, with the OFL license in `src/fonts/LICENSE.txt` (hence the package's `MIT AND OFL-1.1` license). Besides Google Fonts' script ranges there is `ui-symbols` (≈10 kB: the arrows and keyboard symbols components and shortcut hints render, such as Link's ↗ and CommandPalette's ↩) and `symbols` (≈150 kB: everything else), so a single arrow doesn't pull in the big file; when a component starts rendering a new symbol, add its code point to `UI_SYMBOLS`. The design only uses upright Regular and Semibold, so the italic faces are opt-in (`fonts-italic.css`). The base layer sets `font-optical-sizing: none`: the Figma kit uses the "Inter" family (text optical size) at every size, not "Inter Display". The files are committed; `packages/ui/scripts/subset-inter.py` (Python, fontTools) regenerates them and both stylesheets, as described at the top of the script. Size budgets cover the Latin (upright and italic), Latin Extended, `symbols` and `ui-symbols` files.
 
 ## Changesets
 

@@ -22,7 +22,9 @@ bun install            # install all workspaces
 bun run lint           # biome check (one shared biome.json)
 bun run typecheck      # tsc for every package
 bun run test           # vitest for every package
+bun run tokens         # regenerate the ui token files from packages/ui/tokens (DTCG)
 bun run build          # tsdown build of icons, then ui (+ publint and attw checks)
+bun run test:dist      # checks of the built ui stylesheets (needs `bun run build`)
 bun run storybook      # shared Storybook (ui + icons) on :53741
 bun run build:storybook # static Storybook in ./storybook-static
 bun run test:storybook # every story in headless Chromium, light and dark theme (+ play functions, axe)
@@ -42,7 +44,7 @@ Run a script in a single package with `bun run --filter <package-name> <script>`
 
 ### Library builds
 
-Both packages are built with [tsdown](https://tsdown.dev) (`packages/*/tsdown.config.ts`): ESM (`.js`) and CommonJS (`.cjs`) with matching `.d.ts` / `.d.cts`, one output file per source module (`unbundle`), so `'use client'` directives stay on their modules and single-icon imports stay small. tsdown writes the `exports` / `main` / `module` / `types` fields of each `package.json` and runs publint and are-the-types-wrong after every build. `@holakirr/snow-ui` additionally builds `dist/index.css` with the Tailwind CLI before tsdown runs.
+Both packages are built with [tsdown](https://tsdown.dev) (`packages/*/tsdown.config.ts`): ESM (`.js`) and CommonJS (`.cjs`) with matching `.d.ts` / `.d.cts`, one output file per source module (`unbundle`), so `'use client'` directives stay on their modules and single-icon imports stay small. tsdown writes the `exports` / `main` / `module` / `types` fields of each `package.json` and runs publint and are-the-types-wrong after every build. Before tsdown runs, `@holakirr/snow-ui` regenerates its token files (`bun run tokens`, see [Design tokens](CONTRIBUTING.md#design-tokens)) and builds its stylesheets: `dist/index.css` with the Tailwind CLI, then `dist/theme.css` (for projects on Tailwind v4, imports inlined), `dist/fonts.css`, `dist/fonts-italic.css` and `dist/fonts/` with `packages/ui/scripts/build-css.ts`.
 
 The handful of [Phosphor](https://phosphoricons.com) icons both packages use are inlined under `dist/vendor/` (see `tsdown.vendor.ts`) rather than depended on: `@phosphor-icons/react` ships its CommonJS build as `dist/index.cjs.js` inside a `"type": "module"` package, so Node can't `require()` it.
 
@@ -52,10 +54,12 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 
 | Gate | Local command | CI job | Fails the build when |
 | --- | --- | --- | --- |
+| Generated tokens | `bun run tokens` | `build` | the files generated from `packages/ui/tokens` differ from the committed ones |
 | Lint and format ([Biome](https://biomejs.dev)) | `bun run lint` | `build` | a lint rule or the formatter reports a problem |
 | Types | `bun run typecheck` | `build` | `tsc` reports an error in a package or the root tooling |
 | Unit tests (Vitest, jsdom) | `bun run test` | `build` (icons), `storybook-tests` (ui, with coverage) | a `*.test.ts(x)` test fails |
 | Package checks ([publint](https://publint.dev), [are-the-types-wrong](https://arethetypeswrong.github.io)) | `bun run build` | `build` | a package's `exports`/types would break for some consumers |
+| Built stylesheets | `bun run test:dist` | `build` | a Tailwind v4 project using `theme.css` doesn't get every component class, `index.css` has an unlayered rule, or `fonts.css` points at a missing file |
 | Storybook tests ([`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon)) | `bun run test:storybook` | `storybook-tests` | a story throws while rendering or its `play` function (interaction test) fails, in the light or the dark theme |
 | Accessibility ([axe](https://github.com/dequelabs/axe-core) via `@storybook/addon-a11y`) | `bun run test:storybook` / Storybook's a11y panel | `storybook-tests` | axe finds a violation in any story, in either theme, after its `play` function (`a11y.test: 'error'`) |
 | Coverage ([V8](https://vitest.dev/guide/coverage)) | `bun run test:coverage` | `storybook-tests` | coverage of `packages/ui/src` by the ui unit tests and the Storybook tests drops below the thresholds in `vitest.config.ts` |

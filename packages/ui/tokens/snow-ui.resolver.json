@@ -1,0 +1,35 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "SnowUI",
+  "version": "2025.10",
+  "description": "SnowUI design tokens (DTCG 2025.10). The single source of truth for src/styles/tokens.generated.css, src/foundations/tokens.generated.ts and src/utils/token-scales.generated.ts: edit these files, then run `bun run tokens`.",
+  "sets": {
+    "foundation": {
+      "description": "Mode-independent tokens: Figma text styles, corner radius and effect styles.",
+      "sources": [
+        { "$ref": "typography.tokens.json" },
+        { "$ref": "radius.tokens.json" },
+        { "$ref": "effects.tokens.json" }
+      ]
+    },
+    "deprecated": {
+      "description": "Old token names, kept as aliases until the next major.",
+      "sources": [{ "$ref": "deprecated.tokens.json" }]
+    }
+  },
+  "modifiers": {
+    "theme": {
+      "description": "The Figma \"Colors\" collection modes SnowUI-Light and SnowUI-Dark. In CSS: light on :root and [data-theme=\"light\"], dark on [data-theme=\"dark\"] and, without data-theme on <html>, with prefers-color-scheme: dark.",
+      "contexts": {
+        "light": [{ "$ref": "color.light.tokens.json" }],
+        "dark": [{ "$ref": "color.dark.tokens.json" }]
+      },
+      "default": "light"
+    }
+  },
+  "resolutionOrder": [
+    { "$ref": "#/sets/foundation" },
+    { "$ref": "#/modifiers/theme" },
+    { "$ref": "#/sets/deprecated" }
+  ]
+}

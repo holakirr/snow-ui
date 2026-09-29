@@ -41,6 +41,53 @@
     "limit": "16.5 kB"
   },
   {
+    "name": "@holakirr/snow-ui/theme.css (compiled by the consumer's Tailwind)",
+    "path": "packages/ui/dist/theme.css",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "limit": "8.5 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui/fonts.css",
+    "path": "packages/ui/dist/fonts.css",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "limit": "1.5 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui/fonts.css: Inter, Latin subset (woff2)",
+    "path": "packages/ui/dist/fonts/inter-latin-normal.woff2",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "brotli": false,
+    "limit": "115 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui/fonts.css: Inter, UI symbols subset: arrows, ⌘… (woff2)",
+    "path": "packages/ui/dist/fonts/inter-ui-symbols-normal.woff2",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "brotli": false,
+    "limit": "12 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui/fonts.css: Inter, Latin Extended subset (woff2)",
+    "path": "packages/ui/dist/fonts/inter-latin-ext-normal.woff2",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "brotli": false,
+    "limit": "155 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui/fonts.css: Inter, other symbols subset (woff2)",
+    "path": "packages/ui/dist/fonts/inter-symbols-normal.woff2",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "brotli": false,
+    "limit": "170 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui/fonts-italic.css: Inter Italic, Latin subset (woff2)",
+    "path": "packages/ui/dist/fonts/inter-latin-italic.woff2",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "brotli": false,
+    "limit": "127 kB"
+  },
+  {
     "name": "@holakirr/snow-ui-icons: full import (ESM)",
     "path": "packages/icons/dist/main.js",
     "import": "*",

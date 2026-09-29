@@ -23,6 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Python virtualenvs (packages/ui/scripts/subset-inter.py)
+.venv
+
 # Generated files
 playwright-report
 coverage

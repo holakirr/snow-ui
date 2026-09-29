@@ -2,6 +2,8 @@ import type { Preview } from '@storybook/react'
 import { StoryWrapper } from './StoryWrapper'
 import { withTheme } from './withTheme'
 
+// The self-hosted Inter (@holakirr/snow-ui/fonts.css): no web font requests.
+import '../packages/ui/src/fonts.css'
 import './index.css'
 
 const preview: Preview = {

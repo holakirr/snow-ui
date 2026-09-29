@@ -1,0 +1,178 @@
+{
+  "font": {
+    "$type": "fontFamily",
+    "sans": {
+      "$value": ["Inter", "sans-serif"],
+      "$description": "Inter with the \"ss01\" (open digits) and \"cv01\" (alternate one) features, as in the Figma kit. The Google Fonts build of Inter lacks them.",
+      "$extensions": {
+        "com.holakirr.snow-ui": {
+          "fontFeatureSettings": "\"ss01\" 1, \"cv01\" 1"
+        }
+      }
+    }
+  },
+  "text": {
+    "$type": "typography",
+    "$description": "Figma text styles, \"<size> Regular\" and \"<size> Semibold\". The two weights of a size share its font size and line height, which become `--text-<size>` and `--text-<size>--line-height` (in rem); the weight comes from `font-normal` / `font-semibold`.",
+    "12": {
+      "regular": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 12, "unit": "px" },
+          "fontWeight": 400,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 16, "unit": "px" }
+        }
+      },
+      "semibold": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 12, "unit": "px" },
+          "fontWeight": 600,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 16, "unit": "px" }
+        }
+      }
+    },
+    "14": {
+      "regular": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 14, "unit": "px" },
+          "fontWeight": 400,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 20, "unit": "px" }
+        }
+      },
+      "semibold": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 14, "unit": "px" },
+          "fontWeight": 600,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 20, "unit": "px" }
+        }
+      }
+    },
+    "16": {
+      "regular": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 16, "unit": "px" },
+          "fontWeight": 400,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 24, "unit": "px" }
+        }
+      },
+      "semibold": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 16, "unit": "px" },
+          "fontWeight": 600,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 24, "unit": "px" }
+        }
+      }
+    },
+    "18": {
+      "regular": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 18, "unit": "px" },
+          "fontWeight": 400,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 28, "unit": "px" }
+        }
+      },
+      "semibold": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 18, "unit": "px" },
+          "fontWeight": 600,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 28, "unit": "px" }
+        }
+      }
+    },
+    "24": {
+      "regular": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 24, "unit": "px" },
+          "fontWeight": 400,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 32, "unit": "px" }
+        }
+      },
+      "semibold": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 24, "unit": "px" },
+          "fontWeight": 600,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 32, "unit": "px" }
+        }
+      }
+    },
+    "32": {
+      "regular": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 32, "unit": "px" },
+          "fontWeight": 400,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 40, "unit": "px" }
+        }
+      },
+      "semibold": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 32, "unit": "px" },
+          "fontWeight": 600,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 40, "unit": "px" }
+        }
+      }
+    },
+    "48": {
+      "regular": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 48, "unit": "px" },
+          "fontWeight": 400,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 56, "unit": "px" }
+        }
+      },
+      "semibold": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 48, "unit": "px" },
+          "fontWeight": 600,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 56, "unit": "px" }
+        }
+      }
+    },
+    "64": {
+      "regular": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 64, "unit": "px" },
+          "fontWeight": 400,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 72, "unit": "px" }
+        }
+      },
+      "semibold": {
+        "$value": {
+          "fontFamily": "{font.sans}",
+          "fontSize": { "value": 64, "unit": "px" },
+          "fontWeight": 600,
+          "letterSpacing": { "value": 0, "unit": "px" },
+          "lineHeight": { "value": 72, "unit": "px" }
+        }
+      }
+    }
+  }
+}

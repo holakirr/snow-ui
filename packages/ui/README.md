@@ -317,7 +317,7 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Default Link hover | colour change only | colour change plus an underline | 1.4.1 |
 | External Link | — | `target="_blank"` and `rel="noopener noreferrer"` by default, and a visually hidden "(opens in a new tab)" (`externalLabel`) | 3.2.5 (advisory) |
 | Tag close button | a 12px icon | the same icon with a 24×24px hit area | 2.5.8 |
-| Icon-only tabs | — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
+| Icon-only tabs, buttons and toggles | — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
 | Dark Tooltip in dark mode | Black/80% flips to white/80% but the text stays `#FFF` | the text flips with it (black on white/80%) | 1.4.3 |
 
 The colour of those inactive items and Bare buttons is a custom property (`--segment-fg` for segmented items and `Toggle`, `--tab-fg` for Underline tabs, `--button-fg` for Bare buttons) that hover, focus and the selected state change. A `text-*` class passed as `className` sets the colour in every state; to change only the rest colour, set the property: `className="[--button-fg:var(--color-red-text)]"`. The state colours don't depend on `:enabled`, so a `TabsTrigger` or `Toggle` rendered as a link (`asChild`) gets them too.

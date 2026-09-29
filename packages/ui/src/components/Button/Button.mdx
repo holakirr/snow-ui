@@ -91,7 +91,7 @@ An icon in `startContent` with no `label` and no `endContent` makes a square ico
 ## Accessibility
 
 - It renders a native `<button type="button">`: it is in the tab order and Enter and Space activate it. Pass `type="submit"` to submit a form.
-- The accessible name is the label (plus any `children`). An icon-only button has no text, so give it an `aria-label` (the stories use `title`). Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
+- The accessible name is the label (plus any `children`). An icon-only button has no text, so give it an `aria-label` (the stories use `title`); without a name, it logs a development warning. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
 - `disabled` removes the button from the tab order; screen readers announce it as unavailable.
 
 Deviations from the Figma kit (the full table is in the package README):
@@ -101,6 +101,7 @@ Deviations from the Figma kit (the full table is in the package README):
 | No focus state on Button | `focus-ring`: the Figma "Focus" ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Filled label `#FFF` in both modes: 2.07:1 on the dark-mode indigo Primary | the per-mode `white` token: white on black (21:1), black on indigo (10.15:1) | 1.4.3 |
 | Bare at 40% layer opacity: 2.85:1 | `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus | 1.4.3, 1.4.11 |
+| Icon-only buttons: — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
 
 ## Localization and RTL
 

@@ -107,7 +107,7 @@ const form = useForm({ defaultValues: { username: '' } })
 - `aria-describedby` makes screen readers read the description, and the error while the field is invalid, after the name. It only lists the parts that are rendered (`FormItem` watches its children, so a description you show and hide, or your own part with the ids of `useFormField()`, counts too), and is left out when there are none.
 - `FormMessage` is an alert (`role="alert"`, WCAG technique ARIA19), so screen readers announce an error when it appears; pass `role="status"` for a polite announcement. Still move the focus to the first invalid field on submit (react-hook-form does; the story's interaction test checks it).
 - The Slider passes `aria-describedby` and `aria-invalid` on to its thumbs, and the RadioGroup keeps them on its `role="radiogroup"`.
-- The control must be one element that a `<label for>` can name: Input, Textarea, InputSmall, Search, a `SelectTrigger`, a Checkbox or a Switch. The RadioGroup and Slider roots are `<div>`s: name them with `aria-labelledby` and the id of a visible label instead.
+- The control must be one element that a `<label for>` can name: Input, Textarea, InputSmall, Search, a `SelectTrigger`, a Checkbox or a Switch. The RadioGroup root (a `<div>`) and the Slider root (a `<span>`) can't be: name them with `aria-labelledby` and the id of a visible label instead.
 
 ### Keyboard
 

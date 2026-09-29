@@ -175,10 +175,20 @@ Components that render a single element take `asChild` (Radix [`Slot`](https://w
 <BreadcrumbLink asChild>
   <RouterLink to="/">Home</RouterLink>
 </BreadcrumbLink>
+
+{/* A <button> child needs its own type="button" (the deprecated as="button" set it). */}
+<IconText asChild interactive icon={<GearIcon />}>
+  <button type="button" onClick={openSettings}>Settings</button>
+</IconText>
+
+<ListItem asChild interactive title="Drew Cano" description="Online">
+  <button type="button" onClick={openChat} />
+</ListItem>
 ```
 
 - **Where:** `Button`, `Typography`, `IconText`, `ListItem`, `Link`, `BreadcrumbLink`, `PaginationLink`, `PaginationPrevious`, `PaginationNext`, the `Sidebar*` parts that had it, and every Radix-based part (`DialogTrigger`, `DialogClose`, `TabsTrigger`, `DropdownMenuTrigger`, `TooltipTrigger`…).
-- **Props:** the component's props go on the child; for the same prop the child's wins (`href`, `type`…), except event handlers, which compose (the child's runs first, then the component's) and `style`, which merges.
+- **Props:** the component's props go on the child; for the same prop the child's wins (`href`, `type`…), except `style`, which merges, and event handlers, which compose.
+- **Event handlers:** with `asChild`, a handler on the child and one on the component both run, the child's first; the component's also runs when the child's calls `event.preventDefault()` (Radix `Slot` behaviour), because both are yours. Behaviour a component adds itself follows the Radix convention instead: it runs after your handler and is skipped when your handler calls `event.preventDefault()` — the Radix parts (a `DialogTrigger` doesn't open, a menu item doesn't close the menu), `SidebarTrigger` and `SidebarRail` (no toggle), `Search`'s Escape (no clear).
 - **Classes:** merged with the token-aware `twMerge`, the child's last: `<Button asChild><a className="px-8" /></Button>` replaces the button's `px-3` instead of fighting it in the stylesheet.
 - **Refs:** a `ref` on the component and a `ref` on the child both get the element.
 - **Content:** the component's own content goes inside the child, around the child's children: Button's `label`, `startContent` and `endContent`, IconText's icon, ListItem's title and description, Link's arrow and external text, the pagination arrows.
@@ -198,40 +208,84 @@ State follows the Radix naming everywhere: `value` / `defaultValue` / `onValueCh
 
 ## Localization
 
-Every string the components render on their own — accessible names, screen-reader text, placeholders, empty states — comes from a typed `Messages` object. `SnowUIProvider` sets it (English `defaultMessages` without one), along with the date-fns locale for dates:
+Every string the components render on their own — accessible names, screen-reader text, placeholders, empty states — comes from a typed `Messages` object. `SnowUIProvider` sets it (English `defaultMessages` without one), along with the date-fns locale for dates.
+
+`SnowUIProvider` is a client component, and a date-fns locale and function messages are functions, which a React Server Component can't pass to a client component (Next.js App Router: "Functions cannot be passed directly to Client Components"). Put the provider in a `'use client'` module that imports the locale and the messages itself, and render that from your root layout:
 
 ```tsx
-import { SnowUIProvider, type Messages } from '@holakirr/snow-ui'
+// app/providers.tsx
+'use client'
+
+import { type Messages, SnowUIProvider } from '@holakirr/snow-ui'
+import type { ReactNode } from 'react'
 import { ru } from 'react-day-picker/locale' // a date-fns locale plus day-picker labels
 
+// Module scope: the same object on every render (see below).
 const messages: Messages = {
   /* every namespace: badge, breadcrumb, calendar, commandPalette, dialog, link,
      pagination, search, sheet, sidebar, slider, tag, toast */
 }
 
-<SnowUIProvider messages={messages} locale={ru}>
-  <App />
-</SnowUIProvider>
+export const Providers = ({ children }: { children: ReactNode }) => (
+  <SnowUIProvider messages={messages} locale={ru}>
+    {children}
+  </SnowUIProvider>
+)
 ```
 
+```tsx
+// app/layout.tsx (a Server Component)
+import { Providers } from './providers'
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="ru">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  )
+}
+```
+
+For several languages, pass the language (a string) from the layout and pick the locale and messages inside `Providers`: `<Providers lang={lang}>` with `const { locale, messages } = translations[lang]`.
+
 - **Typed:** `Messages` is grouped by component (`messages.pagination.previous`, `messages.dialog.close`…). Strings with values are functions, so a translation can order and inflect them: `tag: { remove: (label) => \`Удалить тег ${label}\` }`, `calendar: { previousYears: (count) => … }`.
-- **Partial:** `messages` takes any subset (`MessagesOverrides`) and merges it over the defaults, namespace by namespace. Providers nest: an inner one overrides the outer one for its subtree.
+- **Partial:** `messages` takes any subset (`MessagesOverrides`) and merges it over the defaults, namespace by namespace; a message set to `undefined` keeps the default. Providers nest: an inner one overrides the outer one for its subtree.
+- **Stable:** define `messages` at module scope (or `useMemo` it). The provider recognises an equal inline object, but inline function messages are new functions on every render, which re-renders every component that reads the messages.
 - **Component props win:** `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` and `placeholder` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `label` (`BreadcrumbEllipsis`, `PaginationEllipsis`), `label` / `placeholder` / `emptyMessage` / `loadingLabel` (`CommandPalette`), `thumbLabels` (`Slider`), `todayLabel` / `lastSelectionLabel` / `labels` (`Calendar`) and `aria-label` (`Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger`, `Badge`) override the provider.
-- **Dates:** `locale` goes to `Calendar` (month and weekday names, day labels; its own `locale` prop wins) and to `Scheduler`'s day and time labels (`locale.code`). A react-day-picker locale (`react-day-picker/locale`) also translates the day picker's own labels ("Go to the next month"…).
+- **Dates:** `locale` goes to `Calendar` (month and weekday names, day labels; its own `locale` prop wins) and to `Scheduler`'s day, time and cell labels (`locale.code`; `en-US` without a locale, so the server and the browser render the same text). A react-day-picker locale (`react-day-picker/locale`) also translates the day picker's own labels (day buttons, dropdowns…).
+- **Calendar navigation:** `messages.calendar.previousMonth`, `nextMonth` and `navigation` name the previous / next month buttons and their landmark, so they translate with a plain date-fns locale too. Their English defaults give way to a react-day-picker locale's own labels; a translated message wins over them, and `Calendar`'s `labels` prop over both.
 - **Your components:** `useMessages()` returns the current messages, `useSnowUI()` the messages, `locale` and `dir`.
 
 The package ships English only: translations belong to the app. Storybook's "Locale" toolbar switches every story to an example Russian set (`.storybook/locales.ts`), a starting point for your own.
 
 ## RTL
 
-For right-to-left languages, set the direction on the document and on the provider:
+For right-to-left languages, set the direction on the document and on the provider, in the client `Providers` module from [Localization](#localization):
 
 ```tsx
-<html lang="ar" dir="rtl">
-  …
-  <SnowUIProvider dir="rtl" locale={arSA} messages={arMessages}>
-    <App />
+// app/providers.tsx
+'use client'
+
+import { SnowUIProvider } from '@holakirr/snow-ui'
+import type { ReactNode } from 'react'
+import { ar } from 'react-day-picker/locale'
+import { arMessages } from './messages'
+
+export const Providers = ({ children }: { children: ReactNode }) => (
+  <SnowUIProvider dir="rtl" locale={ar} messages={arMessages}>
+    {children}
   </SnowUIProvider>
+)
+```
+
+```tsx
+// app/layout.tsx (a Server Component): only strings cross into the client.
+<html lang="ar" dir="rtl">
+  <body>
+    <Providers>{children}</Providers>
+  </body>
 </html>
 ```
 

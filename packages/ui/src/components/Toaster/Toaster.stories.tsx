@@ -18,6 +18,10 @@ const meta: Meta<typeof Toaster> = {
   title: 'Components/Toaster',
   component: Toaster,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33296-44393',
+    },
     docs: {
       description: {
         component:

@@ -14,3 +14,11 @@
 /* Token sources and build scripts: not component markup. */
 @source not "../tokens";
 @source not "../scripts";
+
+/*
+ * Storybook usage pages and Figma Code Connect templates: they mention class
+ * names in prose and examples, which must not end up in the stylesheet.
+ */
+@source not "./**/*.mdx";
+@source not "./**/*.figma.ts";
+@source not "./code-connect";

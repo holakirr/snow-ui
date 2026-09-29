@@ -11,7 +11,7 @@ Monorepo for the React implementation of the [SnowUI design kit](https://snowui.
 
 `@holakirr/snow-ui` is the component library (React 19, Tailwind CSS v4, Radix UI). `@holakirr/snow-ui-icons` is the icon set it uses; it is also published on its own.
 
-Both packages are documented in one Storybook — [snow-ui.holakirr.com](https://snow-ui.holakirr.com) — with components under "Components" and icons under "Icons". Its config lives in the root `.storybook/`.
+Both packages are documented in one Storybook — [snow-ui.holakirr.com](https://snow-ui.holakirr.com) — with guides (Getting started, Theming, Localization and RTL) under "Guides", a usage page for every component under "Components" (when to use it, anatomy, variants, states, accessibility, a link to its Figma component) and icons under "Icons". Its config lives in the root `.storybook/`, the guides in `docs/`; see [Documentation](CONTRIBUTING.md#documentation).
 
 ## Development
 
@@ -31,6 +31,7 @@ bun run test:storybook # every story in headless Chromium, light and dark theme 
 bun run test:coverage  # ui unit tests + Storybook tests with V8 coverage and thresholds
 bun run size           # bundle-size budgets (needs `bun run build`)
 bun run visual         # visual regression tests in Docker (`visual:update` writes baselines)
+bun run code-connect   # check the Figma Code Connect templates offline (no token)
 ```
 
 Run a script in a single package with `bun run --filter <package-name> <script>`, e.g. `bun run --filter @holakirr/snow-ui-icons test`.
@@ -57,6 +58,7 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 | Generated tokens | `bun run tokens` | `build` | the files generated from `packages/ui/tokens` differ from the committed ones |
 | Lint and format ([Biome](https://biomejs.dev)) | `bun run lint` | `build` | a lint rule or the formatter reports a problem |
 | Types | `bun run typecheck` | `build` | `tsc` reports an error in a package or the root tooling |
+| Code Connect templates | `bun run code-connect` | `build` | a Figma Code Connect template (`*.figma.ts`) doesn't bundle; `typecheck` checks its prop mappings and the ui unit tests run it |
 | Unit tests (Vitest, jsdom) | `bun run test` | `build` (icons), `storybook-tests` (ui, with coverage) | a `*.test.ts(x)` test fails |
 | Package checks ([publint](https://publint.dev), [are-the-types-wrong](https://arethetypeswrong.github.io)) | `bun run build` | `build` | a package's `exports`/types would break for some consumers |
 | Built stylesheets | `bun run test:dist` | `build` | a Tailwind v4 project using `theme.css` doesn't get every component class, `index.css` has an unlayered rule, or `fonts.css` points at a missing file |

@@ -11,6 +11,10 @@ const meta: Meta<typeof Popover> = {
   argTypes: {},
   args: {},
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33534-70296',
+    },
     docs: {
       description: {
         component: 'Popover with page navigation, next and previous links.',

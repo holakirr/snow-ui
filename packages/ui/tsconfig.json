@@ -2,7 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "ES2022",
-    "types": ["node"],
+    // `figma`: the runtime module of the Code Connect templates
+    // (`*.figma.ts`), so they typecheck against the components' props.
+    "types": ["node", "@figma/code-connect/figma-types-no-require"],
     // Typecheck against the icons workspace source so a fresh clone doesn't
     // need `packages/icons/dist`. The emitting configs in src/ reset this.
     "paths": {

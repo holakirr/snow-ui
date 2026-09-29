@@ -1,0 +1,122 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as LinkStories from './Link.stories'
+
+<Meta of={LinkStories} />
+
+<Title />
+
+<FigmaLinks />
+
+Link takes the user to another page or place: in running text, in a list of links, or out of the app. It is the Figma "Link" set (Variant Default / Arrow / External × State Default / Hover). With `asChild` it styles a router link instead of an `<a>`.
+
+```tsx
+import { Link } from '@holakirr/snow-ui'
+
+<Link href="/pricing">See pricing</Link>
+<Link href="https://example.com" variant="external">Docs</Link>
+```
+
+<Primary />
+
+## When to use
+
+- A link inside a sentence (`default`).
+- A "see more" link that leads on to a section or page (`arrow`).
+- A link to another site, which opens in a new tab (`external`).
+
+## When not to use
+
+- An action that doesn't navigate (save, open a dialog): use [Button](?path=/docs/components-button--docs). For a link that should look like a button, use Button with `asChild`.
+- A navigation item with an icon, or a clickable row: [IconText](?path=/docs/components-icontext--docs) (`interactive`) or [ListItem](?path=/docs/components-listitem--docs), with `asChild`.
+- A trail of parent pages: [Breadcrumb](?path=/docs/components-breadcrumb--docs); page numbers: [Pagination](?path=/docs/components-pagination--docs).
+
+## Anatomy
+
+1. **Link**: the `<a>` (or the `asChild` element), 14/20 text.
+2. **Text** (`children`).
+3. **Arrow** (`arrow` only): a "↗" at 40% opacity, 2px after the text.
+4. **External icon and text** (`external` only): a 12px external-link icon at 40% opacity, 2px after the text, and a visually hidden "(opens in a new tab)".
+
+## Variants
+
+<Canvas of={LinkStories.AllVariants} />
+
+| `variant` | Figma | Look | Use for |
+| --- | --- | --- | --- |
+| `default` (default) | Default | `indigo-text`, inline so it wraps in prose; darker with an underline on hover | links in text |
+| `arrow` | Arrow | black text and a 40% "↗"; `indigo-text` and a full-opacity arrow on hover | "see more" links |
+| `external` | External | black text and a 40% external-link icon; `indigo-text` and a full-opacity icon on hover | links to other sites |
+
+`arrow` and `external` are `inline-flex`, so their text doesn't wrap around the icon. Keep them short, or out of running text.
+
+`className` merges over the variant's classes, e.g. a black, semibold, underlined link:
+
+<Canvas of={LinkStories.WithCustomClasses} />
+
+## States
+
+- **Hover:** `default` mixes 80% black into `indigo-text` (Figma's Black/80% overlay) and underlines the text (2px offset). `arrow` and `external` turn `indigo-text`, and their icon goes from 40% to full opacity.
+- **Keyboard focus:** the `focus-ring` utility, with a 4px radius (see Accessibility).
+- There is no visited, pressed or disabled style.
+
+## Accessibility
+
+- It renders an `<a>` with `role="link"` and `tabIndex={0}` set explicitly, so it is in the tab order even without an `href`. Enter follows a link only when it has an `href`: always pass one (with `asChild`, the router link renders it).
+- The accessible name is the text. The arrow and the external icon are `aria-hidden`; an `external` link's name ends with "(opens in a new tab)".
+- `external` sets `target="_blank"` and `rel="noopener noreferrer"`. Pass `target` or `rel` to override them.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Default Link in Secondary/Indigo `#ADADFB`: 2.07:1 on white | `indigo-text`: `#5B5BD6` in light mode (5.37:1), `#ADADFB` in dark mode (6.11:1) | 1.4.3 |
+| Default Link hover: colour change only | colour change plus an underline | 1.4.1 |
+| External Link: — | `target="_blank"` and `rel="noopener noreferrer"` by default, and a visually hidden "(opens in a new tab)" (`externalLabel`) | 3.2.5 (advisory) |
+| The "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+
+A known gap: the arrow and the external icon keep the Figma 40% opacity at rest.
+
+## Localization and RTL
+
+- An `external` link's hidden text is `messages.link.external`, "(opens in a new tab)" in English. `externalLabel` overrides the provider.
+- The arrow and the external icon are mirrored in right-to-left text (`rtl:-scale-x-100`), so they point to the end.
+
+## Composition (asChild)
+
+`asChild` renders the only child instead of an `<a>`, e.g. a router link. The child gets the link's classes (merged with its own, which win conflicts), props (`role`, `tabIndex`, and for `external` `target` and `rel`), ref and event handlers, and the arrow or the external icon and text are rendered inside it, after its own children.
+
+```tsx
+<Link asChild variant="arrow">
+  <RouterLink to="/docs">Docs</RouterLink>
+</Link>
+```
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Always pass an `href` (or a router link with `asChild`).
+- Write link text that makes sense out of context: "See pricing", not "Click here".
+- Use `external` for links that leave the app.
+
+</Do>
+<Dont>
+
+- Don't use a link for an action: use a [Button](?path=/docs/components-button--docs).
+- Don't put an `arrow` or `external` link mid-sentence where its text has to wrap.
+- Don't remove the underline on hover of a `default` link: it is what marks the hover without colour.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Button](?path=/docs/components-button--docs): actions, and links styled as buttons with `asChild`.
+- [Breadcrumb](?path=/docs/components-breadcrumb--docs) and [Pagination](?path=/docs/components-pagination--docs): navigation built from links.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the new-tab text.
+
+## Props
+
+<Controls />

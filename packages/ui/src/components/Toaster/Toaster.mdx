@@ -1,0 +1,165 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ToasterStories from './Toaster.stories'
+
+<Meta of={ToasterStories} />
+
+<Title />
+
+<FigmaLinks label="Toast component set" page="28002:97873" />
+
+A toast is a short message about something that just happened: "Saved", "Something went wrong". It shows at the bottom of the screen and closes itself after 3 seconds ("stay 3s" in the Figma guidance). It is the Figma "Toast" set: a dark glass pill with an optional success or error icon, in two sizes. Render `<Toaster />` once and call `toast()` from anywhere. It is built on Radix Toast.
+
+```tsx
+import { Toaster, toast } from '@holakirr/snow-ui'
+
+// Once, e.g. in the root layout.
+<Toaster />
+
+// Anywhere, e.g. after a save.
+toast({ status: 'success', title: 'Saved' })
+```
+
+<Primary />
+
+## When to use
+
+- Confirming an action the user just took: saved, copied, sent.
+- A short error that doesn't need an answer, with a way to retry elsewhere.
+- An undo for the action just taken (an `action`).
+
+## When not to use
+
+- Something the user must read or decide: a [Dialog](?path=/docs/components-dialog--docs).
+- An error about a form field: show it next to the field ([Form](?path=/docs/components-form--docs)).
+- Information that must stay on screen: put it in the page.
+- A hint about a control: [Tooltip](?path=/docs/components-tooltip--docs).
+
+## Anatomy
+
+1. **Toaster** (`Toaster`): renders the toasts from `toast()` inside a `ToastProvider` and a `ToastViewport`. Props: `duration` (3000ms by default) and `id`.
+2. **Viewport** (`ToastViewport`): a fixed list at the bottom centre of the screen, with 16px of padding; at most 448px wide from the `md` breakpoint.
+3. **Toast** (`Toast`): the pill: `static-black` at 80% under a `static-white` 10% overlay, a 20px background blur ("Background blur 40"), a 16px radius, `static-white` text.
+4. **Status icon** (optional, `status`): a success or error icon at the start, 16px (`sm`) or 20px (`lg`).
+5. **Title** (`ToastTitle`) and **description** (`ToastDescription`, optional): regular text; the description in `static-white` at 80%.
+6. **Action** (`action`, optional): an element after the text, e.g. an Undo button (`ToastAction`, a Filled button).
+7. **Close button** (`ToastClose`, when `closable`): a 16px close icon in `static-white` at 80%, white on hover.
+
+`toast()` takes the props of `Toast` plus `title`, `description`, `action`, `status`, `size`, `closable`, `duration` and `toasterId`. It returns `{ id, dismiss, update }`. `useToast()` returns the current `toasts`, `toast` and `dismiss(id?)`.
+
+## Variants
+
+The first story above is the Figma set, State × Big, rendered in place without a timer.
+
+| `status` | Icon | Use for |
+| --- | --- | --- |
+| none (default) | none | neutral messages |
+| `success` | the success status icon | a completed action |
+| `error` | the error status icon | a failed action |
+
+<Canvas of={ToasterStories.WithStatus} />
+
+The toast stays dark in both themes: the Figma component pins its colours to SnowUI-Light, so the library uses the static colours.
+
+## Sizes
+
+<Canvas of={ToasterStories.Large} />
+
+| `size` | Figma | Padding | Gap | Text | Status icon |
+| --- | --- | --- | --- | --- | --- |
+| `sm` (default) | small | 4 / 8px | 4px | 12/16 | 16px |
+| `lg` | Big | 8 / 12px | 8px | 14/20 | 20px |
+
+## Behaviour
+
+- **Duration:** a toast closes after the Toaster's `duration` (3000ms); a toast's own `duration` wins. `duration: Number.POSITIVE_INFINITY` keeps it until the user closes it.
+- **One at a time:** each Toaster shows one toast. A new `toast()` replaces the visible one.
+- **Pause:** hovering or focusing the toasts pauses their timers.
+- **Dismiss:** Escape or a swipe (to the right; to the left in right-to-left text) closes a toast; so do `dismiss()` and its close button. `update()` changes a toast in place.
+- **Several toasters:** every `<Toaster />` without an `id` shows the toasts that have no `toasterId`. Give a toaster an `id` and pass the same `toasterId` to `toast()` to run it separately; each keeps its own limit of one.
+
+## States
+
+- **Closable:** the Figma toast has no close button. Toasts with an `action` or an infinite `duration` get one by default; `closable` turns it on or off for any toast.
+
+<Canvas of={ToasterStories.Closable} />
+
+- **With an action:** an element after the text; the toast gets a close button. It still closes after its `duration` (hovering or focusing it pauses the timer), so give a toast with an important action a longer `duration`.
+
+<Canvas of={ToasterStories.WithAction} />
+
+## Accessibility
+
+- The viewport is a `region` landmark named "Notifications (F8)" (`messages.toast.region`, where `{hotkey}` becomes the shortcut). F8 moves focus to the viewport.
+- Each toast is announced in a live region when it appears, after "Notification" (`messages.toast.label`): assertively for the default `type="foreground"`, politely for `type="background"`.
+- A toast is focusable (in the viewport list), and Escape closes it.
+- The close button is named "Close" (`messages.toast.close`); `aria-label` on `ToastClose` overrides it. It has the `focus-ring`.
+- For an action, use `ToastAction` with `altText`: Radix requires it, and it tells screen-reader users how to do the action another way, since the toast may close before they reach it. `ToastAction` closes the toast when clicked.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| No close button: the toast closes itself | toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer | 2.2.1 |
+| "Focus" effect: 4px ring, black 4% (1.1:1) | the close button's `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px | 2.4.7, 1.4.11 |
+
+## Localization and RTL
+
+- Built-in strings: `messages.toast.close` ("Close", `aria-label` on `ToastClose`), `messages.toast.label` ("Notification", `label` on `ToastProvider`) and `messages.toast.region` (`Notifications ({hotkey})`, `label` on `ToastViewport`). `<Toaster />` renders them with the provider's messages.
+- The viewport takes `dir` from `SnowUIProvider`. In right-to-left text the status icon is on the right, the close button on the left, and toasts are swiped away to the left.
+
+<Canvas of={ToasterStories.RTL} />
+
+## Theme
+
+The viewport isn't portalled: toasts render inside `<Toaster />`, so they take the theme of wherever you place it. The toast itself uses static colours and looks the same in both themes; an action button follows the theme.
+
+## Composition
+
+`Toaster` covers most apps. To lay out toasts yourself, compose the parts, as the AllVariants story does:
+
+```tsx
+<ToastProvider duration={5000}>
+  <Toast size="lg" open={open} onOpenChange={setOpen}>
+    <ToastTitle size="lg">Deleted</ToastTitle>
+    <ToastAction altText="Restore it from the trash" onClick={undo}>
+      Undo
+    </ToastAction>
+    <ToastClose size="lg" />
+  </Toast>
+  <ToastViewport />
+</ToastProvider>
+```
+
+Pass the same `size` to `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction` and `ToastClose`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Render one `<Toaster />` near the root of the app.
+- Keep the title to a few words: "Saved", "Link copied".
+- Use `status` for success and error, so the icon carries the meaning with the text.
+- Give an action `ToastAction` with an `altText` that names another way to do it.
+
+</Do>
+<Dont>
+
+- Don't put information the user must act on only in a toast.
+- Don't show a toast for every small change; one message at a time is all the user sees.
+- Don't turn off the close button of a toast with an action or no timeout.
+- Don't render a `<Toaster />` in every page component: they all show the same toasts.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Dialog](?path=/docs/components-dialog--docs): a message that needs an answer.
+- [Button](?path=/docs/components-button--docs): the action.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the toast strings and sets the swipe direction.
+
+## Props
+
+<Controls />

@@ -10,6 +10,10 @@ const meta: Meta<typeof RadioGroup> = {
   tags: ['autodocs', 'a11y'],
   argTypes: {},
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33400-74134',
+    },
     docs: {
       description: {
         component: 'A group of radio buttons.',

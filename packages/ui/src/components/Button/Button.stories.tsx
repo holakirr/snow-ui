@@ -47,6 +47,10 @@ const meta = {
   title: 'Components/Button',
   component: Button,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33534-43615',
+    },
     layout: 'centered',
   },
   tags: ['autodocs'],

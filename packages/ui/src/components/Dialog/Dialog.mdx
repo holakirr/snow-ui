@@ -1,0 +1,184 @@
+import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as DialogStories from './Dialog.stories'
+
+<Meta of={DialogStories} />
+
+<Title />
+
+<FigmaLinks label="Dashboard “Add data” screen" />
+
+Dialog shows a task in a modal window over the page: a short form, a confirmation, a detail. The page behind it is blocked until the dialog closes. It is the Figma dashboard "Add data" screen: a gradient mask with a background blur, a title row with a close button, and a glass popup card under it. It is built on Radix Dialog.
+
+```tsx
+import {
+  Button,
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@holakirr/snow-ui'
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button variant="outline" label="Edit profile" />
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Edit profile</DialogTitle>
+    </DialogHeader>
+    <DialogBody>
+      <DialogDescription>Make changes to your profile.</DialogDescription>
+      {/* fields and actions */}
+    </DialogBody>
+  </DialogContent>
+</Dialog>
+```
+
+<Primary />
+
+## When to use
+
+- A short task the user finishes (or cancels) before going back to the page: "Add data", "Edit profile".
+- Confirming a destructive or irreversible action.
+- Content that needs the user's full attention and would not fit in the page flow.
+
+## When not to use
+
+- Content the user keeps open next to the page, or a panel from a screen edge: use [Sheet](?path=/docs/components-sheet--docs).
+- A few controls or details anchored to a button, without blocking the page: [Popover](?path=/docs/components-popover--docs).
+- A list of actions: [DropdownMenu](?path=/docs/components-dropdownmenu--docs).
+- Searching and jumping to a result: [CommandPalette](?path=/docs/components-commandpalette--docs).
+- A message that needs no answer: a toast ([Toaster](?path=/docs/components-toaster--docs)).
+
+## Anatomy
+
+1. **Root** (`Dialog`): holds the open state. It renders nothing itself.
+2. **Trigger** (`DialogTrigger`, optional): the element that opens the dialog, usually a Button (`asChild`).
+3. **Mask** (`DialogOverlay`, rendered by `DialogContent`): covers the page with the Figma "Mask", a gradient from #CBDDFF at 50% to #D7D0FF at 20%, and "Background blur 40" (20px).
+4. **Content** (`DialogContent`): the `role="dialog"` element, in a portal, centred in the viewport. It is 576px wide at most (`max-w-xl`) and 16px from each side on narrow screens. It has no fill: it stacks the title row and the popup 28px apart.
+5. **Title row** (`DialogHeader`): a 40px start slot (`startContent`, e.g. a 24px icon), the title, and a close button (a Gray `md` icon button with a 24px close icon, 40×40px). 8px padding on each side.
+6. **Title** (`DialogTitle`): 48/56 semibold, centred. It names the dialog.
+7. **Popup** (`DialogBody`): the card: `background-3` (Figma Background/3), a 32px radius, a 20px background blur and 32px padding (80px from the `md` breakpoint).
+8. **Description** (`DialogDescription`, optional): 14/20 `text-secondary`, centred. It describes the dialog.
+9. **Close** (`DialogClose`, optional): closes the dialog from your own button, e.g. Cancel.
+
+`DialogPortal` and `DialogOverlay` are exported for custom compositions; `DialogContent` already renders both.
+
+The "Add data" screen, open, with a start icon, four fields and Cancel / Save: [Add data story](?path=/story/components-dialog--add-data) ([dark](?path=/story/components-dialog--add-data-dark)).
+
+## Padding
+
+`DialogBody` pads with the `--dialog-padding` custom property: 32px, and 80px from the `md` breakpoint, as in Figma.
+
+- A padding class replaces it at every breakpoint: `<DialogBody className="p-4">`.
+- Setting the property keeps it responsive: `<DialogBody className="md:[--dialog-padding:--spacing(12)]">` pads 32px, then 48px from `md`.
+
+## States
+
+- **Open and closed:** `open` / `defaultOpen` / `onOpenChange` on `Dialog`. On open the content scales up from its centre and fades in. `data-state="open"` or `"closed"` is on the mask and the content for your own styles.
+- **Close button:** the Gray button states: Black/10% on hover, scaled to 95% when pressed, the `focus-ring` on keyboard focus.
+
+The dialog has no disabled or loading state of its own.
+
+## Portal and theme
+
+`DialogContent` renders its mask and content in a portal at the end of `<body>`, outside your layout. So it takes the theme of `<html>`, not of a `data-theme` scope around the dialog. Set the theme on `<html>` for the whole app, or give the dialog its own scope: `<DialogContent data-theme="dark">` (the prop is passed through). The mask keeps the same colours in both themes, as the Figma dark dashboards do.
+
+## Accessibility
+
+- `DialogContent` is a `role="dialog"` element. `DialogTitle` names it (`aria-labelledby`) and `DialogDescription` describes it (`aria-describedby`). Always render a `DialogTitle`.
+- The dialog is modal (Radix `modal`, on by default):
+  - Opening moves focus into the dialog, to its first focusable element (the close button of `DialogHeader`).
+  - Tab and Shift+Tab stay inside the dialog.
+  - The rest of the page is hidden from assistive technology (`aria-hidden`) and ignores the pointer; the mask locks the page scroll.
+- Escape, the close button, a `DialogClose` or a click on the mask outside the content closes it. Focus then returns to the trigger.
+- The close button's accessible name is "Close" (`messages.dialog.close`), as visually hidden text; `closeLabel` replaces it. It is the only built-in string.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: 4px ring, black 4% (1.1:1); no focus state on Button | the close button's `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Description in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+
+## Localization and RTL
+
+- `messages.dialog.close` ("Close") names the close button; `closeLabel` on `DialogHeader` overrides it.
+- The portalled content takes `dir` from `SnowUIProvider`, since it is outside your layout's `dir` scope. Without a provider it has no `dir` and follows `<html dir>`.
+- `startContent` is on the start side: on the right in right-to-left text, with the close button on the left. The deprecated `leftContent` is an alias of it.
+- Right-to-left, open: [RTL story](?path=/story/components-dialog--rtl).
+
+## Composition (asChild)
+
+`DialogTrigger` and `DialogClose` take `asChild` (Radix) to render your own button instead of theirs. With `asChild`, calling `event.preventDefault()` in the child's `onClick` stops the trigger from opening the dialog.
+
+Control the dialog with `open` and `onOpenChange`, e.g. to close it after a save:
+
+```tsx
+const [open, setOpen] = useState(false)
+
+<Dialog open={open} onOpenChange={setOpen}>
+  <DialogTrigger asChild>
+    <Button variant="filled" label="Add data" />
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader startContent={<AddIcon size={24} />}>
+      <DialogTitle>New</DialogTitle>
+    </DialogHeader>
+    <DialogBody className="flex flex-col gap-7">
+      {/* fields */}
+      <div className="flex gap-4">
+        <DialogClose asChild>
+          <Button variant="gray" size="lg" label="Cancel" className="flex-1" />
+        </DialogClose>
+        <Button
+          variant="filled"
+          size="lg"
+          label="Save"
+          className="flex-1"
+          onClick={() => save().then(() => setOpen(false))}
+        />
+      </div>
+    </DialogBody>
+  </DialogContent>
+</Dialog>
+```
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Always render a `DialogTitle`: it names the dialog for screen readers.
+- Keep a dialog to one task, with one Filled button for its main action.
+- Offer a way out next to the main action: a Cancel button in `DialogClose`.
+- Put the title in `DialogHeader` and the rest in `DialogBody`, as in the Figma screen.
+- Set `data-theme` on `DialogContent` when the dialog needs a theme other than the one on `<html>`.
+
+</Do>
+<Dont>
+
+- Don't open a dialog the user didn't ask for.
+- Don't use a dialog for content the user needs to compare with the page: use a Sheet.
+- Don't put the title inside `DialogBody`: the title row holds it with the close button.
+- Don't pass a padding class to `DialogBody` to change one breakpoint: set `--dialog-padding`.
+- Don't use the deprecated `leftContent` in new code: use `startContent`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Sheet](?path=/docs/components-sheet--docs): the same modal primitive, as a panel from a screen edge.
+- [Popover](?path=/docs/components-popover--docs): non-modal content anchored to a trigger.
+- [CommandPalette](?path=/docs/components-commandpalette--docs): a search dialog.
+- [Button](?path=/docs/components-button--docs): the trigger, the close button and the actions.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates the close button and sets the direction.
+
+## Props
+
+<Controls />

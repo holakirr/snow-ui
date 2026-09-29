@@ -11,6 +11,12 @@ import { Input } from './Input'
 const meta: Meta<typeof Input> = {
   title: 'Components/Input/Input',
   component: Input,
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33319-47513',
+    },
+  },
   tags: ['autodocs'],
   args: {
     disabled: false,

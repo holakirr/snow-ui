@@ -1,0 +1,157 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as TabsStories from './Tabs.stories'
+
+<Meta of={TabsStories} />
+
+<Title />
+
+<FigmaLinks page="28002:98904" />
+
+Tabs switch between panels of content, one shown at a time. They are built on the Radix Tabs primitive and styled as the Figma Tab set: `TabsList variant` picks Underline (`line`, the default), Pill, Icon-toggle or Solid, and `size` picks one of three sizes. The segmented variants share their items with [Toggle](?path=/docs/components-input-toggle--docs) and [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+
+```tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@holakirr/snow-ui'
+
+<Tabs defaultValue="account">
+  <TabsList>
+    <TabsTrigger value="account">Account</TabsTrigger>
+    <TabsTrigger value="password">Password</TabsTrigger>
+  </TabsList>
+  <TabsContent value="account">…</TabsContent>
+  <TabsContent value="password">…</TabsContent>
+</Tabs>
+```
+
+<Primary />
+
+## When to use
+
+- Related content split into sections at the same level, where the user needs one section at a time: settings pages, a card with several views.
+- The underline tabs for page sections; the segmented variants for compact switchers inside a card or a toolbar.
+
+## When not to use
+
+- A view or mode switcher without panels (a chart's day / week / month): [ToggleGroup](?path=/docs/components-input-togglegroup--docs). Every tab points at its panel, so a tab list without panels is invalid ARIA.
+- Site navigation: a [Sidebar](?path=/docs/components-sidebar--docs) or a [Breadcrumb](?path=/docs/components-breadcrumb--docs). (Tabs whose panels are routes can still render links, see Composition.)
+- Content the user compares or reads in sequence: show it on one page, or use an [Accordion](?path=/docs/components-accordion--docs).
+
+## Anatomy
+
+1. **Root** (`Tabs`): the Radix Tabs root. It holds the value and has no styles of its own.
+2. **List** (`TabsList`): the `tablist`. `variant` and `size` pass to its triggers. For `pill` and `icon-toggle` it is the Black/4% track.
+3. **Trigger** (`TabsTrigger`): a `tab` with a `value`. `icon` renders an icon before the label; an icon without children makes an icon-only tab. The `line` variant adds the 2px underline below the label.
+4. **Panel** (`TabsContent`): the `tabpanel` of the same `value`, 8px below the list, with a 4px radius for its focus ring.
+
+## Variants
+
+| `variant` | Figma | Look | Use for |
+| --- | --- | --- | --- |
+| `line` (default) | Underline | text tabs 16px apart; the active one `primary` with a 2px Primary line | page and card sections |
+| `pill` | Pill | Button items on a Black/4% track with a 10px background blur; the active item White/80% with the `shadow-2` shadow | compact switchers |
+| `icon-toggle` | Icon-toggle | the pill track; inactive items show only their icon, the active one its icon and label | switchers in a tight space (give every trigger an `icon`) |
+| `solid` | Solid | no track; the active item has a Black/4% fill | switchers on a busy surface |
+
+<Canvas of={TabsStories.Pill} />
+
+<Canvas of={TabsStories.IconToggle} />
+
+<Canvas of={TabsStories.Solid} />
+
+Icon-only tabs (an `icon` and an `aria-label`, no children) are square:
+
+<Canvas of={TabsStories.IconOnly} />
+
+## Sizes
+
+`TabsList size` sets the size of every trigger. The `line` tabs change their text style; the segmented items take the Figma Button sizes.
+
+| `size` | `line` text | `line` icon | Item min height | Item padding | Item radius | Item text | Icon-only padding / glyph | Track padding / radius |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `sm` | 12/16 | 12px | 24px | 4 / 12px | 12px | 12/16 | 4px / 16px | 2px / 16px |
+| `md` (default) | 14/20 | 16px | 36px | 8 / 16px | 16px | 14/20 | 8px / 20px | 4px / 20px |
+| `lg` | 16/24 | 20px | 48px | 12 / 20px | 20px | 16/24 | 12px / 24px | 4px / 24px |
+
+Segmented items are 2px (`sm`) or 4px apart. Inactive `icon-toggle` items are squares of the item's min height. Icons are sized unless they have a `size-*` class.
+
+The whole Figma set, every variant in every size:
+
+<Canvas of={TabsStories.Matrix} />
+
+## States
+
+- **Inactive:** `text-secondary` label and icon.
+- **Hover and keyboard focus:** the label turns black; keyboard focus adds the `focus-ring` utility.
+- **Active** (`data-state="active"`): `line` tabs get a `primary` label and the Primary underline; segmented items a black label and the variant's fill.
+- **Disabled:** `disabled` on a trigger gives it a Black/20% label and a not-allowed cursor (segmented items also a Black/4% tile). The keyboard skips it.
+
+The colour is a custom property (`--tab-fg` for `line`, `--segment-fg` for the segmented variants) that the states change. A `text-*` class sets the colour in every state; `[--tab-fg:…]` or `[--segment-fg:…]` changes only the rest colour.
+
+## Accessibility
+
+- Radix renders a `tablist` of `tab`s, each with `aria-selected` and `aria-controls` pointing at its `tabpanel`. Render a `TabsContent` for every trigger.
+- Tab moves into the list, onto the selected tab. The arrow keys move to the previous or next tab and select it (`activationMode="manual"` on `Tabs` makes them only move focus; Enter or Space then selects). They skip disabled tabs and wrap around; Home and End go to the first and last tab. Tab again moves to the panel, which is focusable.
+- An icon-only tab needs an `aria-label` or `aria-labelledby`; without one, `TabsTrigger` logs a development warning. In `icon-toggle`, the labels of inactive tabs are visually hidden, not removed, so every tab keeps its name.
+- Several tab lists on a page need distinct names: pass `aria-label` to `TabsList`.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: a 4px Black/4% ring (1.1:1); no focus state on Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Inactive tabs (every variant) at 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus (`primary` for the active Underline tab); disabled tabs keep Black/20% | 1.4.3, 1.4.11 |
+| Icon-only tabs: — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
+
+## Localization and RTL
+
+- Tabs render no built-in strings: the labels are yours.
+- The list follows the text direction: in right-to-left text the first tab is on the right. The arrow keys follow the `dir` of `SnowUIProvider`: ArrowLeft moves to the next tab.
+
+<Canvas of={TabsStories.RTL} />
+
+## Composition (asChild)
+
+`TabsTrigger asChild` makes the only child, e.g. a router link, the tab. The trigger's `icon`, label wrapper and underline are rendered inside it, around its content. The state colours don't depend on `:enabled`, so a link gets them in every state.
+
+```tsx
+<TabsList aria-label="Sections">
+  <TabsTrigger value="overview" asChild>
+    <RouterLink to="/overview">Overview</RouterLink>
+  </TabsTrigger>
+</TabsList>
+```
+
+<Canvas of={TabsStories.Links} />
+
+The selected tab is `value` (controlled) or `defaultValue` (uncontrolled), with `onValueChange(value)`, on `Tabs`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Render a panel for every tab.
+- Keep tab labels short, one or two words.
+- Give icon-only tabs an `aria-label`, and every `icon-toggle` trigger an `icon`.
+- Name each tab list when a page has several.
+
+</Do>
+<Dont>
+
+- Don't use tabs without panels to switch a view: use a ToggleGroup.
+- Don't use tabs for steps the user must complete in order.
+- Don't mix icon-only and labelled tabs in one list.
+- Don't put `text-*` on a trigger when you only want a different rest colour: set `[--tab-fg:…]` or `[--segment-fg:…]`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [ToggleGroup](?path=/docs/components-input-togglegroup--docs): the segmented control without panels.
+- [Toggle](?path=/docs/components-input-toggle--docs): the segmented item on its own.
+- [Accordion](?path=/docs/components-accordion--docs): sections that expand in place.
+
+## Props
+
+<Controls />

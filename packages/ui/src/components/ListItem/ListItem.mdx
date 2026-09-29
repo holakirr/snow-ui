@@ -1,0 +1,140 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ListItemStories from './ListItem.stories'
+
+<Meta of={ListItemStories} />
+
+<Title />
+
+<FigmaLinks note="The closest Figma pattern is a row of the dashboard's Notifications, Activities and Contacts lists (the right sidebar), drawn with IconText." />
+
+ListItem is a row of the dashboard lists: an icon or avatar, a title and an optional description or timestamp. It is an [IconText](?path=/docs/components-icontext--docs), so `interactive`, `active`, `flip` and `asChild` work the same way; with `asChild` it renders your `<li>`, link or button.
+
+```tsx
+import { IconBox, ListItem } from '@holakirr/snow-ui'
+
+<ul>
+  <ListItem asChild icon={<IconBox size={16} background><BugBeetleIcon /></IconBox>} title="You fixed a bug." description="Just now">
+    <li />
+  </ListItem>
+</ul>
+```
+
+<Primary />
+
+## When to use
+
+- Feeds and lists of people or events: notifications, activities, contacts.
+- A clickable row that opens a record or a chat: `interactive` with a link or a button child.
+
+## When not to use
+
+- An icon with a single line of text and no list: [IconText](?path=/docs/components-icontext--docs).
+- Data in columns that people compare or sort: [Table](?path=/docs/components-table--docs).
+- Commands in a menu: [DropdownMenu](?path=/docs/components-dropdownmenu--docs) or [CommandPalette](?path=/docs/components-commandpalette--docs).
+- Navigation in the app's sidebar: the [Sidebar](?path=/docs/components-sidebar--docs) menu parts.
+
+## Anatomy
+
+1. **Row:** the IconText container (a `<div>`, or the `asChild` element), full width with an 8px gap and a 12px radius. It aligns the icon with the top of the text when there is a description, and centres it otherwise.
+2. **Icon** (`icon`): 24px in the Figma lists, e.g. a 16px icon on an [IconBox](?path=/docs/components-iconbox--docs) tile, or a 24px avatar.
+3. **Title** (`title`, required): 14 Regular, `text-black`, one line, truncated with an ellipsis.
+4. **Description** (`description`, optional): 12 Regular, `text-secondary`, one line, truncated.
+5. **Trailing content** (children, optional): after the text, e.g. a badge or a button. With `asChild`, the child element's own children take this place.
+
+The text truncates to fit, so give the row a width (the stories use 248px, `w-62`) or a container that limits it.
+
+## Variants
+
+<Canvas of={ListItemStories.Default} />
+
+A title only:
+
+<Canvas of={ListItemStories.TitleOnly} />
+
+`flip` puts the text before the icon, as in IconText. `vertical` isn't available.
+
+## States
+
+The IconText states (Figma "Frame"):
+
+- **Hover** (`interactive`): `interactive` adds 8px padding; on hover the row gets a Black/4% fill.
+- **Keyboard focus** (`interactive`): the Figma "Focus" ring only (see Accessibility).
+- **Active** (`active`): the Black/4% fill stays on and `data-active="true"` is set. It is only visual.
+
+<Canvas of={ListItemStories.Interactive} />
+
+<Canvas of={ListItemStories.Active} />
+
+The Figma right-sidebar lists: Notifications (icon tiles), Activities (avatars with a timeline line) and Contacts (title only), each a `<ul>` of `<li>` rows in a labelled section:
+
+<Canvas of={ListItemStories.DashboardLists} />
+
+## Accessibility
+
+- Without `asChild` ListItem is a `<div>`. In a list, render `<li>` rows (`asChild`) inside a `<ul>` or `<ol>`, so screen readers announce the list and the number of items; give the list or its section a name.
+- For a row that does something, use a link or a `<button type="button">` as the child: it brings the role, the tab stop and Enter (and Space for a button). `interactive` alone only styles the row. The accessible name is the row's whole text: the title, the description, trailing content and an avatar's initials.
+- `active` isn't announced: set `aria-current` or another state on the element yourself.
+- Keyboard focus on an `interactive` row shows only the Figma "Focus" ring, a 4px Black/4% ring (1.1:1), and no outline: ListItem inherits IconText's focus style, not the `focus-ring` utility of the other controls.
+- Truncated text is cut only visually; screen readers read all of it. When the full text matters to sighted people too, show it elsewhere.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Descriptions in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`, at least 5.5:1 on the Black/4% hover), White/70% in dark mode (7.08:1 on #333) | 1.4.3 |
+
+## Localization and RTL
+
+- The row follows the text direction: the icon is on the start side (the right in right-to-left text) and the text is aligned to the start.
+- The title and description are yours to translate, dates included; ListItem renders no built-in strings.
+
+## Composition (asChild)
+
+`asChild` renders the only child instead of a `<div>`: an `<li>`, a link or a `<button type="button">`. The child gets the row's classes (merged with its own, which win conflicts), props, ref and event handlers (the child's handler runs first), and the icon, title and description are rendered inside it, before the child's own children.
+
+```tsx
+<ListItem asChild interactive title="Drew Cano" description="Online" icon={avatar}>
+  <button type="button" onClick={openChat} />
+</ListItem>
+
+<ListItem asChild interactive title="You fixed a bug." description="Just now" icon={tile}>
+  <a href="/notifications/42" />
+</ListItem>
+```
+
+For a clickable row inside a list, put the link or button inside the `<li>` instead of replacing it.
+
+The `as` prop (`<ListItem as="li">`) is deprecated: it logs a one-time development warning and will be removed in the next major version.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Render `<li>` rows inside a `<ul>` or `<ol>`.
+- Keep titles and descriptions short: each is one truncated line.
+- Use `interactive` on rows that are links or buttons.
+- Use a 24px icon or avatar, as the Figma lists do.
+
+</Do>
+<Dont>
+
+- Don't put a button inside a row that is itself a link or a button.
+- Don't rely on `active` alone to mark the current row.
+- Don't use ListItem for tabular data.
+- Don't use the deprecated `as` in new code.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [IconText](?path=/docs/components-icontext--docs): the component ListItem is built on.
+- [IconBox](?path=/docs/components-iconbox--docs): icon tiles and avatars at 24px.
+- [Avatar](?path=/docs/components-avatar-avatar--docs): the pictures and initials in Activities and Contacts.
+- [Badge](?path=/docs/components-badge--docs): trailing counts.
+
+## Props
+
+<Controls />

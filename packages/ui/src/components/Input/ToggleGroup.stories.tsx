@@ -19,6 +19,10 @@ const meta: Meta<typeof ToggleGroup> = {
   },
   argTypes: {},
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33534-46913',
+    },
     docs: {
       description: {
         component: 'ToggleGroup component',

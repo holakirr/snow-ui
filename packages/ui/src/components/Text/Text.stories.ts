@@ -6,6 +6,10 @@ const meta = {
   title: 'Components/Text/Text',
   component: Typography,
   parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=32814-289',
+    },
     layout: 'centered',
   },
   tags: ['autodocs'],

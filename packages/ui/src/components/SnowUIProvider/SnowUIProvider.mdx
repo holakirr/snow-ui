@@ -1,0 +1,165 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as SnowUIProviderStories from './SnowUIProvider.stories'
+
+<Meta of={SnowUIProviderStories} />
+
+<Title />
+
+<FigmaLinks note="Not visual: it sets the components' built-in strings, the date locale and the text direction." />
+
+SnowUIProvider localizes the components and sets their text direction. It takes `messages` (every string the components render on their own: accessible names, screen-reader text, placeholders, empty states), a date-fns `locale` for dates, and `dir`. It is optional: without it the components use the English `defaultMessages`, date-fns' `enUS` and left-to-right keyboard navigation. It renders no element of its own.
+
+The full walkthrough, with a Next.js App Router setup, several languages and right-to-left layouts, is in the [Localization and RTL guide](?path=/docs/guides-localization-and-rtl--docs).
+
+```tsx
+// app/providers.tsx
+'use client'
+
+import { type MessagesOverrides, SnowUIProvider } from '@holakirr/snow-ui'
+import type { ReactNode } from 'react'
+import { ru } from 'react-day-picker/locale'
+
+// Module scope: the same object on every render.
+const messages: MessagesOverrides = {
+  dialog: { close: 'Закрыть' },
+  tag: { remove: (label) => `Удалить тег ${label}` },
+}
+
+export const Providers = ({ children }: { children: ReactNode }) => (
+  <SnowUIProvider messages={messages} locale={ru}>
+    {children}
+  </SnowUIProvider>
+)
+```
+
+<Primary />
+
+## When to use
+
+- The app isn't in English: translate the built-in strings and the dates.
+- The app is in a right-to-left language: set `dir="rtl"` (and the same `dir` on `<html>`).
+- A part of the app needs other strings: nest a provider around it.
+
+## When not to use
+
+- Translating your own text: that is your i18n library's job. The provider only holds the library's strings.
+- One label on one component: pass the component's own prop (`closeLabel`, `aria-label`…), which wins over the provider.
+- Switching the theme: use `data-theme` (see the [Theming guide](?path=/docs/guides-theming--docs)).
+
+## What it sets
+
+| Prop | Type | Default | Sets |
+| --- | --- | --- | --- |
+| `messages` | `MessagesOverrides` | English `defaultMessages` | the built-in strings, merged over the defaults (and over an outer provider's) |
+| `locale` | a date-fns `Locale` | `enUS` | `Calendar` month and weekday names, week start and day labels; `Scheduler` headers and times |
+| `dir` | `'ltr'` or `'rtl'` | inherited, else `ltr` | keyboard direction, `start` / `end` sides and the `dir` of portalled content |
+| `children` | `ReactNode` | | the subtree it applies to |
+
+## Messages
+
+`Messages` is grouped by component. Strings with values are functions, so a translation can order and inflect them: `tag: { remove: (label) => … }`.
+
+| Namespace | Component | Messages |
+| --- | --- | --- |
+| `badge` | [Badge](?path=/docs/components-badge--docs) | `label` |
+| `breadcrumb` | [Breadcrumb](?path=/docs/components-breadcrumb--docs) | `label`, `more` |
+| `calendar` | [Calendar](?path=/docs/components-calendar--docs) | `navigation`, `previousMonth`, `nextMonth`, `today`, `lastSelection`, `previousYears(count)`, `nextYears(count)` |
+| `commandPalette` | [CommandPalette](?path=/docs/components-commandpalette--docs) | `label`, `placeholder`, `empty`, `loading` |
+| `dialog` | [Dialog](?path=/docs/components-dialog--docs) | `close` |
+| `link` | [Link](?path=/docs/components-link--docs) | `external` |
+| `pagination` | [Pagination](?path=/docs/components-pagination--docs) | `label`, `previous`, `next`, `more` |
+| `search` | [Search](?path=/docs/components-search--docs) | `placeholder`, `clear` |
+| `sheet` | [Sheet](?path=/docs/components-sheet--docs) | `close` |
+| `sidebar` | [Sidebar](?path=/docs/components-sidebar--docs) | `toggle`, `title`, `description` |
+| `slider` | [Slider](?path=/docs/components-input-slider--docs) | `minimum(label)`, `maximum(label)`, `thumb(label, position, count)` |
+| `tag` | [Tag](?path=/docs/components-tag--docs) | `remove(label)` |
+| `toast` | [Toaster](?path=/docs/components-toaster--docs) | `close`, `label`, `region` |
+
+- **Partial:** `messages` takes any subset (`MessagesOverrides`) and merges it over the defaults, namespace by namespace. A message set to `undefined` keeps the default.
+- **Nested:** an inner provider merges over the outer one for its subtree, and inherits its `locale` and `dir` unless it sets its own.
+- **Stable:** define `messages` at module scope (or `useMemo` it). An equal inline object keeps the provider's value, but inline function messages are new functions on every render and re-render every component that reads the messages.
+- **Component props win:** a component's own label props override the provider (the README's Localization section lists them).
+
+The Russian example set (`.storybook/locales.ts`) that the "Locale" toolbar applies:
+
+<Canvas of={SnowUIProviderStories.Russian} />
+
+A nested provider that changes one string; a `removeLabel` wins over both:
+
+<Canvas of={SnowUIProviderStories.NestedOverrides} />
+
+## Direction
+
+`dir` sets a Radix `DirectionProvider` for its subtree (without `dir`, an outer one is kept). Components follow it for:
+
+- keyboard navigation in `Tabs`, `Slider`, the menus, `RadioGroup`, `ToggleGroup` and `Accordion`, and the arrow keys of `Calendar`;
+- the `start` / `end` sides of `Sheet` and `Sidebar`;
+- the `dir` attribute of portalled content (dialogs, popovers, menus, tooltips), which is outside your layout's `dir` scope;
+- the swipe direction of toasts.
+
+The layout and the `rtl:` styles follow the DOM, not the provider: set the same `dir` on `<html>` (or on the element you scope it to).
+
+<Canvas of={SnowUIProviderStories.RightToLeft} />
+
+## Hooks
+
+- `useMessages()` returns the nearest provider's messages (`defaultMessages` without one). Use it to label your own components with the library's strings.
+- `useSnowUI()` returns `messages`, `locale` and `dir`. `locale` and `dir` are `undefined` unless a provider sets them.
+
+```tsx
+import { ArrowRightIcon } from '@holakirr/snow-ui-icons'
+import { useMessages, useSnowUI } from '@holakirr/snow-ui'
+
+const NextButton = ({ onClick }: { onClick: () => void }) => {
+  const { pagination } = useMessages()
+  const { dir } = useSnowUI()
+
+  return (
+    <button type="button" aria-label={pagination.next} onClick={onClick} className="focus-ring">
+      <ArrowRightIcon mirrored={dir === 'rtl'} />
+    </button>
+  )
+}
+```
+
+## Server components
+
+`SnowUIProvider` is a client component, and a date-fns locale and function messages are functions, which a React Server Component can't pass to a client component. Put the provider in a `'use client'` module that imports the locale and the messages itself, as above, and render that module from your root layout.
+
+## Accessibility
+
+- Most built-in strings are accessible names and screen-reader text: close buttons, the navigation landmarks, the remove button of a `Tag`, the "(opens in a new tab)" of external links. Translate every namespace your app uses; a missing message falls back to English.
+- `dir` makes arrow keys match the reading direction, which keyboard users expect in right-to-left languages.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Render one provider near the root, in a `'use client'` module.
+- Define `messages` at module scope, or memoize them.
+- Set the same `dir` on the provider and on `<html>`.
+- Pass a react-day-picker locale (`react-day-picker/locale`) to translate the day picker's own labels too.
+- Use `useMessages()` for your own components that need the same strings.
+
+</Do>
+<Dont>
+
+- Don't pass `messages` or `locale` from a Server Component to the provider.
+- Don't write function messages inline in JSX.
+- Don't expect `dir` on the provider to mirror the layout: set it on the DOM too.
+- Don't put your app's own strings in `Messages`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Localization and RTL guide](?path=/docs/guides-localization-and-rtl--docs): setup, several languages, right-to-left.
+- [Calendar](?path=/docs/components-calendar--docs) and [Scheduler](?path=/docs/components-scheduler--docs): use the `locale`.
+- [Dialog](?path=/docs/components-dialog--docs), [Popover](?path=/docs/components-popover--docs) and the other overlays: take `dir` from the provider.
+
+## Props
+
+<Controls />

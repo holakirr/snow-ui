@@ -1,0 +1,142 @@
+import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as PopoverStories from './Popover.stories'
+
+<Meta of={PopoverStories} />
+
+<Title />
+
+<FigmaLinks page="28002:96385" />
+
+Popover shows rich content in a floating panel next to its trigger: a few settings, a small form, details about an item. The page stays usable while it is open. It is the Figma "Popover": a glass surface with 12px padding and a 16px radius, the same surface as the DropdownMenu, ContextMenu and Select menus. It is built on Radix Popover.
+
+```tsx
+import { Button, Popover, PopoverContent, PopoverTrigger, Typography } from '@holakirr/snow-ui'
+
+<Popover>
+  <PopoverTrigger asChild>
+    <Button variant="outline" label="Display" />
+  </PopoverTrigger>
+  <PopoverContent aria-labelledby="display-title">
+    <Typography id="display-title" semibold>
+      Display
+    </Typography>
+    {/* controls */}
+  </PopoverContent>
+</Popover>
+```
+
+<Primary />
+
+## When to use
+
+- A few controls or a short form tied to one button: display options, a quick filter, a share link.
+- Details about an item that the user opens on purpose, and may interact with.
+
+## When not to use
+
+- A list of actions or options to pick from: [DropdownMenu](?path=/docs/components-dropdownmenu--docs) gives menu roles and arrow-key navigation.
+- A short text hint on hover or focus: [Tooltip](?path=/docs/components-tooltip--docs).
+- A task that must be finished or cancelled before going on: [Dialog](?path=/docs/components-dialog--docs); a long form: [Sheet](?path=/docs/components-sheet--docs).
+- Picking a value in a form field: [Select](?path=/docs/components-input-select--docs).
+
+## Anatomy
+
+1. **Root** (`Popover`): holds the open state. It renders nothing itself.
+2. **Trigger** (`PopoverTrigger`): the element that toggles the popover, usually a Button (`asChild`).
+3. **Anchor** (`PopoverAnchor`, optional): positions the content against another element than the trigger.
+4. **Content** (`PopoverContent`): the panel, in a portal. By default 240px wide (`w-60`), centred on the trigger (`align="center"`) and 4px from it (`sideOffset={4}`); `side`, `align` and `sideOffset` are Radix Popover props.
+
+## Surface
+
+The Figma "Popover" surface, shared with the menus of DropdownMenu, ContextMenu and Select:
+
+| Part | Library | Figma |
+| --- | --- | --- |
+| Padding | 12px (`p-3`) | 12 |
+| Radius | 16px (`rounded-16`) | 16 |
+| Fill | `background-3` | Background/3 |
+| Stroke | 1px `surface-1` | Surface/1, inside |
+| Effect | `shadow-glass-2` (0 8px 28px, black 10%) and a 20px background blur | Glass 2 |
+| Text | 14/20, `black` | |
+
+Set another width with `className`, e.g. `<PopoverContent className="w-80">`.
+
+Open, as in Figma: [Open story](?path=/story/components-popover--open).
+
+## States
+
+Open and closed only: `open` / `defaultOpen` / `onOpenChange` on `Popover`. The content has `data-state="open"` or `"closed"` and `data-side` (the side it opened on) for your own styles.
+
+## Portal and theme
+
+`PopoverContent` renders in a portal at the end of `<body>`, outside your layout. So it takes the theme of `<html>`, not of a `data-theme` scope around the trigger. Set the theme on `<html>`, or give the popover its own scope: `<PopoverContent data-theme="dark">` (the prop is passed through).
+
+## Accessibility
+
+- `PopoverContent` is a `role="dialog"` element with no name of its own: name it with `aria-labelledby` (pointing at its heading, as the Open story does) or `aria-label`.
+- The trigger gets `aria-haspopup="dialog"`, `aria-expanded` and, while open, `aria-controls`.
+- The popover is not modal (Radix `modal` is `false` by default):
+  - Opening moves focus into the content.
+  - Tab can leave it; focus or a click outside closes it.
+  - Escape closes it and returns focus to the trigger. After a click outside, focus stays where the user put it.
+- `modal` on `Popover` traps focus inside the content, hides the rest of the page from assistive technology and blocks pointer events and scrolling outside it.
+- There are no built-in strings.
+
+The package README's deviations from the Figma kit don't apply to the popover surface itself; the menus built on it have theirs (see [DropdownMenu](?path=/docs/components-dropdownmenu--docs)).
+
+## Localization and RTL
+
+- Popover renders no text of its own: everything in it is yours to translate.
+- The portalled content takes `dir` from `SnowUIProvider`, since it is outside your layout's `dir` scope. Without a provider it has no `dir` and follows `<html dir>`.
+
+## Composition (asChild)
+
+`PopoverTrigger` and `PopoverAnchor` take `asChild` (Radix) to render your own element. With `asChild`, calling `event.preventDefault()` in the child's `onClick` stops the trigger from toggling the popover.
+
+Control it with `open` and `onOpenChange`, e.g. to close it after applying a change:
+
+```tsx
+const [open, setOpen] = useState(false)
+
+<Popover open={open} onOpenChange={setOpen}>
+  <PopoverTrigger asChild>
+    <Button variant="outline" label="Filter" />
+  </PopoverTrigger>
+  <PopoverContent align="start" aria-label="Filter">
+    {/* fields */}
+    <Button variant="filled" label="Apply" onClick={() => { apply(); setOpen(false) }} />
+  </PopoverContent>
+</Popover>
+```
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name the content with `aria-labelledby` or `aria-label`.
+- Keep it small and about its trigger.
+- Use a Button (`asChild`) as the trigger, so it is focusable and announces the popup.
+- Set `data-theme` on `PopoverContent` when it needs a theme other than the one on `<html>`.
+
+</Do>
+<Dont>
+
+- Don't build a menu from a popover and buttons: use DropdownMenu.
+- Don't open a popover on hover: use a Tooltip for hints.
+- Don't put a long form or a blocking task in it: use a Sheet or a Dialog.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [DropdownMenu](?path=/docs/components-dropdownmenu--docs) and [ContextMenu](?path=/docs/components-contextmenu--docs): menus on the same surface.
+- [Select](?path=/docs/components-input-select--docs): its menu is the Figma Popover too.
+- [Tooltip](?path=/docs/components-tooltip--docs): a text hint on hover and focus.
+- [Dialog](?path=/docs/components-dialog--docs): modal content.
+
+## Props
+
+<Controls />

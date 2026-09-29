@@ -1,11 +1,21 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
 
+import { fileURLToPath } from 'node:url'
 import { configDefaults, defineConfig } from 'vitest/config'
 import { workspaceAliases } from './workspace-aliases.ts'
 
 export default defineConfig({
-  resolve: { alias: workspaceAliases },
+  resolve: {
+    alias: {
+      ...workspaceAliases,
+      // `figma`, the runtime module of the Code Connect templates, only
+      // exists inside Figma: the template tests mock it (vi.doMock).
+      figma: fileURLToPath(
+        new URL('./src/code-connect/figma-runtime.ts', import.meta.url),
+      ),
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

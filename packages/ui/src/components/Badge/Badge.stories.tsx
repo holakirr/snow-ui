@@ -6,6 +6,12 @@ import { Badge, BadgeComponent } from './Badge'
 const meta: Meta<typeof Badge> = {
   title: 'Components/Badge',
   component: Badge,
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=32792-840',
+    },
+  },
   tags: ['autodocs'],
   args: { children: <Button variant="filled">Badge</Button> },
 }

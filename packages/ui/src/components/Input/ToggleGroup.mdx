@@ -1,0 +1,131 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ToggleGroupStories from './ToggleGroup.stories'
+
+<Meta of={ToggleGroupStories} />
+
+<Title />
+
+<FigmaLinks label="Tab component set" page="28002:98904" />
+
+ToggleGroup is a set of toggles where one (`type="single"`) or any number (`type="multiple"`) can be on. It is the Figma Tab segmented control without panels, built on the Radix ToggleGroup primitive: `variant="pill"` puts the items on a blurred Black/4% track (Figma "Pill"); the other variants have no track (Figma "Solid"). The items are [Toggle](?path=/docs/components-input-toggle--docs)s and take the same variants and sizes.
+
+```tsx
+import { ToggleGroup, ToggleGroupItem } from '@holakirr/snow-ui'
+
+<ToggleGroup type="single" variant="pill" aria-label="Sort" value={sort} onValueChange={setSort}>
+  <ToggleGroupItem value="down" aria-label="Descending">
+    <ArrowsDownIcon />
+  </ToggleGroupItem>
+  <ToggleGroupItem value="up" aria-label="Ascending">
+    <ArrowsUpIcon />
+  </ToggleGroupItem>
+</ToggleGroup>
+```
+
+<Primary />
+
+## When to use
+
+- A segmented control that switches a view or a mode: day / week / month, list / grid.
+- A set of formatting or filter options, several on at a time (`type="multiple"`).
+
+## When not to use
+
+- Switching between panels of content on the page: [Tabs](?path=/docs/components-tabs--docs). A tab list needs its panels; a view switcher without panels is a ToggleGroup.
+- One option on or off: [Toggle](?path=/docs/components-input-toggle--docs).
+- Picking one value in a form, with a label per option: [RadioGroup](?path=/docs/components-input-radiogroup--docs); from a long list: [Select](?path=/docs/components-input-select--docs).
+
+## Anatomy
+
+1. **Group** (`ToggleGroup`): a `<div>`; `type` sets single or multiple selection. `variant`, `size` and `iconOnly` pass to every item. With `variant="pill"` it is the track.
+2. **Item** (`ToggleGroupItem`): a Toggle with a `value`. Its own `variant`, `size` and `iconOnly` win over the group's.
+
+## Variants
+
+| `variant` | Figma | Group | Item when on | Use for |
+| --- | --- | --- | --- | --- |
+| `borderless` (default) | Tab "Solid" | no track | Black/4% fill | toolbars, light segmented controls |
+| `outline` | none (the library's own, with Button Outline items) | no track; each item has a 0.5px Black/10% stroke | Black/4% fill | options that need a visible shape when off |
+| `pill` | Tab "Pill" | a Black/4% track with a 10px background blur | White/80% fill and the `shadow-2` shadow | view switchers |
+
+<Canvas of={ToggleGroupStories.Pill} />
+
+<Canvas of={ToggleGroupStories.Solid} />
+
+## Sizes
+
+The items take the Figma Button sizes of [Toggle](?path=/docs/components-input-toggle--docs) (24, 36 and 48px; `md` by default). The group sets the gap and, for `pill`, the track:
+
+| `size` | Gap | `pill` track padding | `pill` track radius |
+| --- | --- | --- | --- |
+| `sm` | 2px | 2px | 16px |
+| `md` (default) | 4px | 4px | 20px |
+| `lg` | 4px | 4px | 24px |
+
+Every variant and size, with the middle item on:
+
+<Canvas of={ToggleGroupStories.Matrix} />
+
+## States
+
+- **Off:** `text-secondary` label and icon; black on hover and keyboard focus, which adds the `focus-ring` utility.
+- **On** (`data-state="on"`): a black label and the variant's "on" fill.
+- **Disabled:** `disabled` on the group disables every item; `disabled` on an item disables that one. Disabled items have Black/20% content on a Black/4% tile.
+
+<Canvas of={ToggleGroupStories.Disabled} />
+
+## Accessibility
+
+- `type="single"` renders a `radiogroup` of `radio` items (`aria-checked`); `type="multiple"` renders a `toolbar` of toggle buttons (`aria-pressed`).
+- The group is one tab stop, on an item that is on (or the first item). The arrow keys move focus between the items and wrap around; Home and End go to the first and last. Space and Enter turn the focused item on or off: the arrow keys don't select.
+- Name the group with `aria-label` or `aria-labelledby`, and every icon-only item with `aria-label`.
+- A single group lets the user turn the last item off (`onValueChange('')`). To keep one item on, control `value` and ignore the empty value.
+
+<Canvas of={ToggleGroupStories.Single} />
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: a 4px Black/4% ring (1.1:1); no focus state on Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Off items at 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus; disabled items keep Black/20% | 1.4.3, 1.4.11 |
+
+## Localization and RTL
+
+- ToggleGroup renders no built-in strings: the group and item labels are yours.
+- The items follow the text direction, and the arrow keys follow the `dir` of `SnowUIProvider`: in right-to-left text ArrowLeft moves to the next item.
+
+## Composition (asChild)
+
+`ToggleGroupItem` takes Radix `asChild`, as [Toggle](?path=/docs/components-input-toggle--docs) does. The value is `value` (controlled) or `defaultValue` (uncontrolled), with `onValueChange`: a string for `type="single"`, an array of strings for `type="multiple"`.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Name the group (`aria-label`) and every icon-only item.
+- Use `type="single"` for a view or mode switcher, `type="multiple"` for independent options.
+- Keep the items few and short, and of one kind: all icons, or all labels.
+- Set `variant` and `size` on the group, not on each item.
+
+</Do>
+<Dont>
+
+- Don't use a ToggleGroup to show and hide panels: use Tabs.
+- Don't mix `pill` items with other variants in one group.
+- Don't rely on the arrow keys to select an item: they only move focus.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Toggle](?path=/docs/components-input-toggle--docs): a single on/off button, the item of this group.
+- [Tabs](?path=/docs/components-tabs--docs): the same Figma segmented control, with panels.
+- [RadioGroup](?path=/docs/components-input-radiogroup--docs): one choice in a form.
+
+## Props
+
+<Controls />

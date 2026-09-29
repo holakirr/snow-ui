@@ -1,0 +1,122 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as CardStories from './Card.stories'
+
+<Meta of={CardStories} />
+
+<Title />
+
+<FigmaLinks page="25596:130954" />
+
+Card is a surface that groups related content. `variant="default"` is the Figma "Card" component (Count × State: Static, Default, Hover, Selected); `variant="block"` is the dashboard block that holds a chart, a table or stat tiles. Card sets the surface only: lay out its content with your own classes.
+
+```tsx
+import { Card } from '@holakirr/snow-ui'
+
+<Card variant="block" className="flex flex-col gap-4">
+  <Typography semibold>Traffic by Website</Typography>
+  …
+</Card>
+```
+
+<Primary />
+
+## When to use
+
+- A small item among others, such as a plan or an option (`default`).
+- A section of a dashboard: a chart, a table, a list, a stat tile (`block`).
+- A choice shown as cards, with `interactive` and `selected` (see Accessibility for the keyboard part).
+
+## When not to use
+
+- A modal surface: use [Dialog](?path=/docs/components-dialog--docs) or [Sheet](?path=/docs/components-sheet--docs); a floating one: [Popover](?path=/docs/components-popover--docs).
+- A row in a list: use [ListItem](?path=/docs/components-listitem--docs).
+- Show-and-hide sections: use [Accordion](?path=/docs/components-accordion--docs).
+- Plain spacing between blocks of a page: a layout `<div>` is enough.
+
+## Anatomy
+
+1. **Surface**: a `<div>` with the variant's fill, radius and padding, and `text-black`.
+2. **Stroke** (`interactive` on hover, `bordered`, `selected`): an inset ring, so it doesn't change the card's size (Figma draws strokes inside the frame).
+3. **Content** (`children`): anything. Card adds no layout, so set `flex flex-col gap-…` or a grid on it.
+
+## Variants
+
+<Canvas of={CardStories.Count} />
+
+| `variant` | Figma | Radius | Padding | Fill | Use for |
+| --- | --- | --- | --- | --- | --- |
+| `default` (default) | Card | 16px | 12 / 16px | Surface/1 | small items, options |
+| `block` | dashboard Block | 20px | 24px | Background/2 | dashboard sections |
+
+The Count story shows the Figma "Count" (1 to 4 text rows): the card's height follows its content.
+
+<Canvas of={CardStories.Block} />
+
+Dashboard stat tiles are blocks with a `color-1` or `color-2` fill and `text-static-black`:
+
+<Canvas of={CardStories.StatTiles} />
+
+<Canvas of={CardStories.LoginForm} />
+
+## States
+
+| Prop | Figma state | Look |
+| --- | --- | --- |
+| none | Static | no stroke, no hover |
+| `interactive` | Default, Hover | a pointer cursor; on hover a 0.5px Black/40% stroke; the `focus-ring` on keyboard focus |
+| `bordered` | Hover, kept | the 0.5px Black/40% stroke at all times |
+| `selected` | Selected | a 1px Primary stroke, also on hover, and `data-state="selected"` |
+
+<Canvas of={CardStories.States} />
+
+The radio-like marker in the Hover and Selected cards is part of the stories, not of Card.
+
+## Accessibility
+
+- Card is a `<div>` with no role and isn't focusable: `interactive` and `selected` change only the look.
+- For a clickable card, put a real control inside (a [Link](?path=/docs/components-link--docs) or a [Button](?path=/docs/components-button--docs) on the title), or give the card a role, `tabIndex={0}` and keyboard handlers. The `focus-ring` shows only on a focusable card.
+- `selected` isn't announced. Pair it with state a screen reader gets: `aria-checked`, `aria-selected` or `aria-pressed`, whichever fits the role.
+- The Selectable story makes the cards radios: `role="radio"` and `aria-checked` in a `role="radiogroup"`, each with `tabIndex={0}`, selected with a click, Space or Enter. A complete radio group also has a single tab stop and moves with the arrow keys, which the story leaves out; for a plain choice of options prefer [RadioGroup](?path=/docs/components-input-radiogroup--docs).
+
+<Canvas of={CardStories.Selectable} />
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| The "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring` on an `interactive` card: the ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+
+## Localization and RTL
+
+Card renders no built-in strings, and its padding is the same on both sides, so it needs nothing for right-to-left text. Lay out the content with logical classes (`ps-`, `pe-`, `start-`, `end-`).
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Use `block` for dashboard sections and `default` for small items.
+- Make a clickable card keyboard-reachable, or put the link or button inside it.
+- Pair `selected` with an ARIA state.
+- Set the content's layout (`flex flex-col gap-…`) on the card or inside it.
+
+</Do>
+<Dont>
+
+- Don't set `interactive` on a card nobody can click: the hover stroke promises an action.
+- Don't nest cards of the same variant.
+- Don't use `bordered` to show selection: use `selected`.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Table](?path=/docs/components-table--docs): the "Table B" story sits in a block.
+- [RadioGroup](?path=/docs/components-input-radiogroup--docs): a choice of options with the full keyboard pattern.
+- [Accordion](?path=/docs/components-accordion--docs): sections that open and close.
+
+## Props
+
+<Controls />

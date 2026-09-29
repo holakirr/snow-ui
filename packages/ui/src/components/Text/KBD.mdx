@@ -1,0 +1,93 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as KBDStories from './KBD.stories'
+
+<Meta of={KBDStories} />
+
+<Title />
+
+<FigmaLinks />
+
+KBD shows a keyboard shortcut: the keys joined into one `<kbd>` element, e.g. "⌘+K". It is the Figma "Kbd" (Variant Solid / Border): 16px high, at least 28px wide, 12/16 text. It only displays the shortcut; handling the keys is up to you.
+
+```tsx
+import { KBD } from '@holakirr/snow-ui'
+
+<KBD keys={['⌘', 'K']} />
+```
+
+<Primary />
+
+## When to use
+
+- Next to a command that has a shortcut: a menu item, a button's hint, a help list.
+- In text that tells people which keys to press.
+
+## When not to use
+
+- A shortcut in a menu item: use `DropdownMenuShortcut` or `ContextMenuShortcut` ([DropdownMenu](?path=/docs/components-dropdownmenu--docs), [ContextMenu](?path=/docs/components-contextmenu--docs)), which are KBD pushed to the end of the row.
+- The shortcut hint of a search field: [Search](?path=/docs/components-search--docs) takes `shortcut={['/']}` and renders it.
+- A count or a status: [Badge](?path=/docs/components-badge--docs) or [Tag](?path=/docs/components-tag--docs).
+
+## Anatomy
+
+1. **Key cap:** the `<kbd>`, rendered through [Typography](?path=/docs/components-text-text--docs) (`size` 12 by default), with 4px side padding and a 6px radius. `variant` sets its fill.
+2. **Shortcut text:** `keys` joined with `separator` (`+` by default). All the keys share one key cap.
+
+## Variants
+
+| `variant` | Figma | Look |
+| --- | --- | --- |
+| `solid` (default) | Solid | Black/4% fill |
+| `border` | Border | no fill; a 0.5px Black/10% inner stroke |
+
+<Canvas of={KBDStories.Default} />
+
+<Canvas of={KBDStories.Border} />
+
+A single key:
+
+<Canvas of={KBDStories.SingleKey} />
+
+`separator` changes the text between the keys: `separator=" "` renders "Ctrl C", `separator=""` renders "⌘K". The text is `text-black` (12/16); the key cap is 16px high, so keep `size` at 12.
+
+## Accessibility
+
+- It renders a `<kbd>` element, the HTML element for keyboard input. Screen readers read its text, so write the keys as people see them on their keyboard.
+- The `<kbd>` also gets `aria-keyshortcuts` with the same text. That attribute describes a shortcut of the element it is on; to announce the shortcut of the control it triggers, set `aria-keyshortcuts` on that control, with the key names ARIA uses (`Meta+K`, `Control+C`).
+- KBD doesn't listen for the keys: register the shortcut yourself.
+- A shortcut that is only a visual hint, repeated elsewhere, can be hidden with `aria-hidden` (Search does this for its hint).
+
+## Localization and RTL
+
+- The `<kbd>` has `dir="ltr"`: shortcuts read left to right, also in right-to-left text.
+- Key names are yours to translate ("Ctrl" / "Strg"), and to adapt per platform (⌘ on macOS, Ctrl elsewhere). KBD renders no built-in strings.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Show the keys of the person's platform: ⌘ on macOS, Ctrl elsewhere.
+- Set `aria-keyshortcuts` on the control the shortcut triggers.
+- Keep the default 12px size: the key cap is 16px high.
+
+</Do>
+<Dont>
+
+- Don't rely on KBD to make a shortcut work: register the keys yourself.
+- Don't render one KBD per key: pass them all in `keys`, so they share one key cap.
+- Don't show a shortcut that isn't bound.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Typography](?path=/docs/components-text-text--docs): the text styles KBD is built on.
+- [DropdownMenu](?path=/docs/components-dropdownmenu--docs) and [ContextMenu](?path=/docs/components-contextmenu--docs): their `*Shortcut` parts are KBDs.
+- [Search](?path=/docs/components-search--docs): a field with a shortcut hint.
+
+## Props
+
+<Controls />

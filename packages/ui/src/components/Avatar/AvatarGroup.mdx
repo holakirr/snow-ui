@@ -1,0 +1,94 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as AvatarGroupStories from './AvatarGroup.stories'
+
+<Meta of={AvatarGroupStories} />
+
+<Title />
+
+<FigmaLinks note="A library extension: it overlaps the Figma Image avatars and adds a count of the rest." />
+
+AvatarGroup shows several people in a compact row: overlapping [Avatars](?path=/docs/components-avatar-avatar--docs), the first `items` of them, then a "+N" avatar for the rest.
+
+```tsx
+import { Avatar, AvatarFallback, AvatarGroup, AvatarImage } from '@holakirr/snow-ui'
+
+<AvatarGroup items={3}>
+  {members.map((member) => (
+    <Avatar key={member.id} size="sm">
+      <AvatarImage src={member.photoUrl} alt={member.name} />
+      <AvatarFallback>{member.initials}</AvatarFallback>
+    </Avatar>
+  ))}
+</AvatarGroup>
+```
+
+<Primary />
+
+## When to use
+
+- The people on a task, a project or a document, where the faces matter more than the names (e.g. an "Assigned to" column).
+
+## When not to use
+
+- One person: use [Avatar](?path=/docs/components-avatar-avatar--docs).
+- A list where each person needs a name or an action: use [ListItem](?path=/docs/components-listitem--docs) rows.
+
+## Anatomy
+
+1. **Row**: a flex `<div>`; each avatar overlaps the one before it by 8px.
+2. **Avatar wrappers**: a round `<span>` around each avatar, with a 2px `white` border (the per-mode token, so it separates the avatars in both modes). A hovered avatar comes to the front.
+3. **Avatars** (`children`): the first `items` (default 3) of them.
+4. **Overflow avatar**: when there are more children than `items`, an `Avatar` with an `AvatarFallback` of "+N", N being the number not shown. It takes the `size` of the first child (`lg` when the first child has none).
+
+## Sizes
+
+The group has no size of its own: set `size` on the avatars, all the same.
+
+<Canvas of={AvatarGroupStories.WithSmallAvatars} />
+
+<Canvas of={AvatarGroupStories.WithMediumAvatars} />
+
+## States
+
+- **Overflow:** with more children than `items`, the rest collapse into the "+N" avatar.
+- **Hover:** the hovered avatar moves above its neighbours and brightens to 105%.
+
+<Canvas of={AvatarGroupStories.WithMoreItems} />
+
+## Accessibility
+
+- The row is a `<div>` and the wrappers are `<span>`s, with no roles: screen readers read each avatar in turn (the image `alt` or the fallback initials), then "+N".
+- "+N" alone doesn't say what it counts. Name the group, e.g. `role="group"` with `aria-label="Assigned to 5 people"`, or put the full list of names in visually hidden text and hide the row with `aria-hidden`.
+- The avatars aren't interactive. To show who is hidden behind "+N", add a control next to the group (a [Button](?path=/docs/components-button--docs) that opens a [Popover](?path=/docs/components-popover--docs) with the list).
+
+No row of the README's table of deviations from the Figma kit applies to AvatarGroup.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Give every avatar the same `size`, and a unique `key`.
+- Keep `items` small (2 to 5), so the row stays short.
+- Tell screen reader users who, or how many, the group stands for.
+
+</Do>
+<Dont>
+
+- Don't mix avatar sizes in one group: the overflow avatar takes the first one's size.
+- Don't rely on "+N" alone to say how many people there are.
+- Don't pass `className` to lay out the group: it replaces the row's flex and overlap classes instead of adding to them.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Avatar](?path=/docs/components-avatar-avatar--docs): the avatars in the group.
+- [Table](?path=/docs/components-table--docs): the "Table B" story shows groups in an "Assigned to" column.
+- [ListItem](?path=/docs/components-listitem--docs): people with names and details.
+
+## Props
+
+<Controls />

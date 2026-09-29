@@ -1,0 +1,141 @@
+import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as TextStories from './Text.stories'
+
+<Meta of={TextStories} />
+
+<Title />
+
+<FigmaLinks page="25559:7066" />
+
+`Typography` sets text in one of the Figma text styles: a font size with its line height, a regular or semibold weight, and an alignment. It is the Figma "Text" component, which defaults to "14 Regular". It renders a `<span>`; with `asChild` it styles your own heading, paragraph or label instead.
+
+```tsx
+import { Typography } from '@holakirr/snow-ui'
+
+<Typography size={14}>Last updated 2 hours ago</Typography>
+
+<Typography asChild size={24} semibold>
+  <h1>Settings</h1>
+</Typography>
+```
+
+<Primary />
+
+## When to use
+
+- Any text that should follow the kit's type scale: body text, captions, titles.
+- Headings, paragraphs and other semantic text elements, styled through `asChild`.
+- Text inside your own components, so the sizes stay in step with the library's.
+
+## When not to use
+
+- A link: use [Link](?path=/docs/components-link--docs).
+- The name of a form field: use [Label](?path=/docs/components-label--docs), which ties the text to its control.
+- A keyboard shortcut: use [KBD](?path=/docs/components-text-kbd--docs).
+- An icon next to text: use [IconText](?path=/docs/components-icontext--docs), which renders a string child as 14 Regular text for you.
+- A status or a short label on a chip: [Tag](?path=/docs/components-tag--docs) or [Badge](?path=/docs/components-badge--docs).
+
+## Anatomy
+
+Typography is a single element: the `<span>`, or the `asChild` child. Its classes set:
+
+1. **Family and weight:** `font-sans`, regular by default; `semibold` sets weight 600.
+2. **Size** (`size`): the font size and line height of a Figma text style.
+3. **Alignment** (`align`): `start` by default.
+4. **Emphasis** (optional): `italic`, `underline`.
+
+It sets no colour: the text inherits it. Use `text-black` for primary text and `text-secondary` for secondary text.
+
+The font is Inter, with the `ss01` and `cv01` features and the text optical size at every size, as in the Figma kit. It is opt-in: import `@holakirr/snow-ui/fonts.css` or load Inter with those features yourself.
+
+## Sizes
+
+| `size` | Font size | Line height |
+| --- | --- | --- |
+| `12` | 12px | 16px |
+| `14` (default) | 14px | 20px |
+| `16` | 16px | 24px |
+| `18` | 18px | 28px |
+| `24` | 24px | 32px |
+| `32` | 32px | 40px |
+| `48` | 48px | 56px |
+| `64` | 64px | 72px |
+
+The sizes are the `text-12` … `text-64` tokens of the theme.
+
+## Alignment
+
+| `align` | Class | In right-to-left text |
+| --- | --- | --- |
+| `start` (default) | `text-start` | right |
+| `end` | `text-end` | left |
+| `center` | `text-center` | centre |
+| `left` | `text-left` | left (doesn't follow the direction) |
+| `right` | `text-right` | right (doesn't follow the direction) |
+
+Prefer `start` and `end`: they follow the text direction.
+
+## Accessibility
+
+- Without `asChild` it renders a `<span>`, which has no role. A large `size` doesn't make a heading: render the heading element with `asChild` (`<h1>` … `<h6>`), and choose its level by the page structure, its size by the design.
+- The accessible text is the content; Typography adds no attributes.
+- Pick a colour token that passes contrast. Figma draws secondary text in Black/40%; use `text-secondary`.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Secondary text in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333) | 1.4.3 |
+
+## Localization and RTL
+
+- `align="start"` (the default) and `align="end"` follow the text direction; `left` and `right` don't.
+- The text is yours to translate; Typography renders no built-in strings.
+
+## Composition (asChild)
+
+`asChild` renders the only child instead of a `<span>`. The child gets the text classes (merged with its own, which win conflicts), the props and the ref, and keeps its own children.
+
+```tsx
+<Typography asChild size={32} semibold>
+  <h2>Revenue</h2>
+</Typography>
+
+<Typography asChild size={12} className="text-secondary">
+  <p>Updated every hour.</p>
+</Typography>
+```
+
+The `as` prop (`<Typography as="h1">`) is deprecated: it logs a one-time development warning and will be removed in the next major version.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Use `asChild` with a heading element for titles.
+- Keep to the Figma sizes (`size`) instead of arbitrary `text-[…]` values.
+- Use `text-secondary` for secondary text.
+- Use `align="start"` / `"end"` so the text follows the direction.
+
+</Do>
+<Dont>
+
+- Don't use a large `size` on a `<span>` in place of a heading.
+- Don't use Black/40% (`text-black-40`) for text: it fails contrast.
+- Don't use the deprecated `as` in new code.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [KBD](?path=/docs/components-text-kbd--docs): a keyboard shortcut, built on Typography.
+- [IconText](?path=/docs/components-icontext--docs): an icon with text.
+- [Link](?path=/docs/components-link--docs): links in and around text.
+- [Theming](?path=/docs/guides-theming--docs): the colour tokens for text.
+
+## Props
+
+<Controls />

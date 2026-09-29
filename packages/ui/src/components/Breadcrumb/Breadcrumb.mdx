@@ -1,0 +1,147 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as BreadcrumbStories from './Breadcrumb.stories'
+
+<Meta of={BreadcrumbStories} />
+
+<Title />
+
+<FigmaLinks label="Dashboard breadcrumb" />
+
+Breadcrumb shows where the current page sits in the hierarchy, with links to its parents. It is the breadcrumb of the Figma dashboard header ("Dashboards / Default"): 12px items with the Button Small "Borderless" padding, `text-secondary` parents, a black current page and Black/10% "/" separators, 4px apart.
+
+```tsx
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@holakirr/snow-ui'
+
+<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/dashboards">Dashboards</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Default</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+```
+
+<Primary />
+
+## When to use
+
+- Pages nested two or more levels deep, where the user may go up to a parent.
+- The page header of a dashboard, above or next to the page title.
+
+## When not to use
+
+- A flat site or a single level: the page title is enough.
+- Moving between the pages of a list: [Pagination](?path=/docs/components-pagination--docs).
+- The main navigation of an app: [Sidebar](?path=/docs/components-sidebar--docs).
+- Steps of a process: the breadcrumb shows a place in a hierarchy, not progress.
+
+## Anatomy
+
+1. **Landmark** (`Breadcrumb`): a `<nav>` named "Breadcrumb".
+2. **List** (`BreadcrumbList`): an `<ol>`, items 4px apart, 12px text.
+3. **Item** (`BreadcrumbItem`): an `<li>` in `text-secondary`; the last item is black.
+4. **Link** (`BreadcrumbLink`): an `<a>` styled as a Button Small "Borderless": padding 4 / 12px, radius 12, a Black/4% fill on hover. It takes the item's colour. `asChild` renders a router link; `disabled` disables it.
+5. **Current page** (`BreadcrumbPage`): the last item's text, black, with the link padding.
+6. **Separator** (`BreadcrumbSeparator`): an `<li>` hidden from assistive technology with "/" in Black/10% at 14px. Pass an icon as `children` for another separator; it is 14px.
+7. **Ellipsis** (`BreadcrumbEllipsis`, optional): "..." in place of collapsed items, with screen-reader text.
+
+## Variants
+
+The Figma dashboard header, a parent link and the current page:
+
+<Canvas of={BreadcrumbStories.Dashboard} />
+
+A chevron icon as the separator:
+
+<Canvas of={BreadcrumbStories.WithCustomSeparator} />
+
+Collapsed middle items:
+
+<Canvas of={BreadcrumbStories.WithEllipsis} />
+
+## States
+
+- **Hover:** a link gets a Black/4% fill.
+- **Pressed:** the link scales to 95%, as a Button does.
+- **Keyboard focus:** the `focus-ring` utility.
+- **Current page:** `BreadcrumbPage`, black text that isn't a link; or a `BreadcrumbLink` with `aria-current="page"`, as in the first example.
+- **Disabled** (`disabled` on `BreadcrumbLink`): Black/10% text, no pointer events and out of the tab order.
+
+<Canvas of={BreadcrumbStories.WithDisabledLink} />
+
+## Accessibility
+
+- `Breadcrumb` is a `navigation` landmark named "Breadcrumb" (`messages.breadcrumb.label`); pass `aria-label` to change it.
+- The trail is an ordered list. Separators are `aria-hidden` with `role="presentation"`, so they are neither read nor counted as items.
+- Links are `<a href>` in the tab order. `BreadcrumbPage` is a `<span>` with `role="link"`, `aria-disabled="true"` and `aria-current="page"`: announced as an unavailable link that is the current page, and not focusable. A current page rendered as `BreadcrumbLink` needs `aria-current="page"` from you.
+- `BreadcrumbEllipsis` shows "..." to sighted users (hidden from assistive technology) and reads "More pages" (`messages.breadcrumb.more`).
+- A disabled link has `aria-disabled` and `tabIndex={-1}`; it keeps its `href`.
+
+Deviations from the Figma kit (the full table is in the package README):
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Parents in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary` (5.74:1 light, 7.08:1 dark) | 1.4.3 |
+
+## Localization and RTL
+
+- Built-in strings come from `messages.breadcrumb`: `label` (the landmark) and `more` (the ellipsis). `aria-label` on `Breadcrumb` and `label` on `BreadcrumbEllipsis` override them.
+- In right-to-left text the trail starts on the right and an icon separator (a chevron) points left (`rtl:-scale-x-100`). The "/" separator doesn't change.
+
+<Canvas of={BreadcrumbStories.RTL} />
+
+## Composition (asChild)
+
+`BreadcrumbLink asChild` renders the only child, e.g. a router link, with the link styles; the child's classes win conflicts. `href` is ignored with `asChild`: give the destination to the child.
+
+```tsx
+<BreadcrumbLink asChild>
+  <RouterLink to="/">Home</RouterLink>
+</BreadcrumbLink>
+```
+
+<Canvas of={BreadcrumbStories.AsChild} />
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- End the trail with the current page, as `BreadcrumbPage`.
+- Put a `BreadcrumbSeparator` between items, outside them.
+- Use the page titles the user sees as the link labels.
+- Collapse the middle of a long trail with `BreadcrumbEllipsis`, keeping the first and last items.
+
+</Do>
+<Dont>
+
+- Don't put links or other controls inside `BreadcrumbPage`.
+- Don't put a separator after the last item.
+- Don't use a breadcrumb as the only navigation.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Sidebar](?path=/docs/components-sidebar--docs): the main navigation of the dashboard layout.
+- [Link](?path=/docs/components-link--docs): links in text.
+- [Pagination](?path=/docs/components-pagination--docs): the other navigation landmark.
+- [Button](?path=/docs/components-button--docs): the Figma Button Small "Borderless" the links reuse.
+
+## Props
+
+<Controls />

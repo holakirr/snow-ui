@@ -664,7 +664,7 @@ describe('Combobox in a form', () => {
     expect(new FormData(form).get('fruit')).toBe('banana')
   })
 
-  it('goes back to its initial value when the form resets', () => {
+  it('goes back to its initial value when the form resets', async () => {
     const { container } = render(
       <form>
         <Combobox
@@ -681,13 +681,51 @@ describe('Combobox in a form', () => {
     fireEvent.change(field(), { target: { value: 'gr' } })
     expect(new FormData(form).get('fruit')).toBe('banana')
 
-    act(() => form.reset())
+    await act(async () => form.reset())
     expect(new FormData(form).get('fruit')).toBe('apple')
     expect(field()).toHaveValue('Apple')
     expect(field()).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('asks a controlled parent for its initial value on reset', () => {
+  it('keeps its value when the reset is cancelled', async () => {
+    const { container } = render(
+      <form onReset={(event) => event.preventDefault()}>
+        <Combobox
+          aria-label="Fruit"
+          options={fruits}
+          name="fruit"
+          defaultValue="apple"
+        />
+      </form>,
+    )
+    const form = formOf(container)
+    fireEvent.change(field(), { target: { value: 'ban' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+
+    await act(async () => form.reset())
+    expect(new FormData(form).get('fruit')).toBe('banana')
+    expect(field()).toHaveValue('Banana')
+  })
+
+  it('keeps a custom validity message the app set', () => {
+    render(
+      <Combobox aria-label="Fruit" options={fruits} required name="fruit" />,
+    )
+    const input = field() as HTMLInputElement
+    // Typed text that picks nothing: the field's own message.
+    fireEvent.change(input, { target: { value: 'zzz' } })
+    expect(input.validationMessage).toBe('Select an item in the list.')
+
+    // The app's message (a server error) replaces it, and stays when the
+    // field's own reason goes away: an option is picked.
+    act(() => input.setCustomValidity('Server says no'))
+    fireEvent.change(input, { target: { value: 'ban' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(input).toHaveValue('Banana')
+    expect(input.validationMessage).toBe('Server says no')
+  })
+
+  it('asks a controlled parent for its initial value on reset', async () => {
     const onValueChange = vi.fn()
     const { container } = render(
       <form>
@@ -699,7 +737,7 @@ describe('Combobox in a form', () => {
         />
       </form>,
     )
-    act(() => formOf(container).reset())
+    await act(async () => formOf(container).reset())
     expect(onValueChange).not.toHaveBeenCalled()
 
     const { container: other } = render(
@@ -719,7 +757,7 @@ describe('Combobox in a form', () => {
       key: 'Enter',
     })
     expect(onValueChange).toHaveBeenLastCalledWith('grapes')
-    act(() => formOf(other).reset())
+    await act(async () => formOf(other).reset())
     // Still `value="apple"`: nothing to report.
     expect(onValueChange).toHaveBeenCalledTimes(1)
   })
@@ -745,7 +783,7 @@ describe('Combobox in a form', () => {
     await waitFor(() => expect(field()).toHaveValue(''))
   })
 
-  it('submits and resets with a form outside it (form="id")', () => {
+  it('submits and resets with a form outside it (form="id")', async () => {
     render(
       <>
         <form id="filters" data-testid="form" />
@@ -764,7 +802,7 @@ describe('Combobox in a form', () => {
     fireEvent.change(field(), { target: { value: 'gr' } })
     fireEvent.keyDown(field(), { key: 'Enter' })
     expect(new FormData(form).get('fruit')).toBe('grapes')
-    act(() => form.reset())
+    await act(async () => form.reset())
     expect(new FormData(form).get('fruit')).toBe('apple')
   })
 

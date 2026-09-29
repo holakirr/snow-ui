@@ -100,7 +100,7 @@ Bind `value` and `onValueChange` (a `DateRange`, or `null`); pass `field.ref`, `
 | --- | --- |
 | Submits | `name=yyyy-MM-dd/yyyy-MM-dd`, an ISO 8601 interval (e.g. `2025-01-13/2025-01-16`), or `name=` (empty) with no range or a range without an end |
 | `required` | the form doesn't submit until both ends are set |
-| `form="id"`, reset, `disabled` | as in [DatePicker](?path=/docs/components-datepicker--docs#native-forms): a form reset brings back the range the field had on mount |
+| `form="id"`, reset, `disabled` | as in [DatePicker](?path=/docs/components-datepicker--docs#native-forms): a form reset drops a half-picked range and brings back the range the field had on mount (a controlled field gets `onValueChange` with it) |
 
 A controlled `value` without an end (`{ from }`) shows as "Jan 20, 2025 – …" (`messages.datePicker.range(start, '…')`) and isn't submitted. An `Invalid Date` start counts as no range.
 

@@ -241,6 +241,7 @@ export const DatePickerField = ({
     name,
     form,
     onKeyDown,
+    onInvalid,
     ref,
     'aria-invalid': ariaInvalid,
     ...triggerProps
@@ -366,6 +367,7 @@ export const DatePickerField = ({
               form={form}
               disabled={disabled}
               focusTarget={triggerRef}
+              onInvalid={onInvalid}
             />
           )}
         </div>

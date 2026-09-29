@@ -12,4 +12,4 @@ New **`DatePicker`**: a form field for a date that opens the `Calendar` in a pop
 
 The deprecated `DatePickerType` and `RangePickerType` types are unrelated to it and unchanged.
 
-**Forms:** `name` submits `yyyy-MM-dd` (empty with no date) with a hidden input that follows `form="id"`; `required` blocks native submission while there is no date; a form reset brings back the initial date. An `Invalid Date` value counts as no date; picking the same day again calls nothing; disabling the field closes the calendar with `onOpenChange(false)`; a month with no day to pick focuses the month navigation.
+**Forms:** `name` submits `yyyy-MM-dd` (empty with no date) with a hidden input that follows `form="id"`; `required` blocks native submission while there is no date; a form reset brings back the initial date (a controlled field gets `onValueChange` with it; a reset cancelled in `onReset` changes nothing); `onInvalid` gets the `invalid` event of a `required` field. An `Invalid Date` value counts as no date; picking the same day again calls nothing; disabling the field closes the calendar with `onOpenChange(false)`; a month with no day to pick focuses the month navigation.

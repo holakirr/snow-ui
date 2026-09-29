@@ -9,7 +9,6 @@ import {
   DatePickerField,
   type DatePickerSharedProps,
   disabledMatchers,
-  sameDate,
   useOpenState,
   validDate,
 } from './field'
@@ -30,7 +29,7 @@ export type DateRangePickerProps = DatePickerSharedProps & {
    * Called with the picked range once both ends are picked (`from` and `to`
    * are set; the same day twice is a one-day range), and with `null` when
    * the field is cleared. Picking the range the field already has calls
-   * nothing.
+   * nothing. A form reset calls it with the range the field had on mount.
    */
   onValueChange?: (value: DateRange | null) => void
   /**
@@ -51,10 +50,13 @@ export type DateRangePickerProps = DatePickerSharedProps & {
 const ordered = (a: Date, b: Date): { from: Date; to: Date } =>
   a <= b ? { from: a, to: b } : { from: b, to: a }
 
-/** Whether two ranges (or `null`s) have the same ends. */
+/** Whether two days (or two missing ones) are the same, whatever the time. */
+const sameDay = (a: Date | undefined, b: Date | undefined) =>
+  a && b ? isSameDay(a, b) : a === b
+
+/** Whether two ranges (or `null`s) have their ends on the same days. */
 const sameRange = (a: DateRange | null, b: DateRange | null) =>
-  sameDate(a?.from ?? null, b?.from ?? null) &&
-  sameDate(a?.to ?? null, b?.to ?? null)
+  sameDay(a?.from, b?.from) && sameDay(a?.to, b?.to)
 
 /**
  * DateRangePicker is a field that opens a `Calendar` to pick a range of
@@ -162,6 +164,10 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
       // An ISO 8601 interval, "2025-01-20/2025-01-27"; nothing without an end.
       formValue={from && to ? `${iso(from)}/${iso(to)}` : ''}
       onFormReset={() => {
+        // A half-picked range goes too, also while a controlled `open`
+        // keeps the calendar open.
+        setStart(undefined)
+        setHovered(undefined)
         if (!sameRange(initialValue.current, value)) {
           setValue(initialValue.current)
         }

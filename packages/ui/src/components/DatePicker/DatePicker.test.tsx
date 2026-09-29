@@ -390,7 +390,7 @@ describe('DatePicker in a form', () => {
     expect(new FormData(formOf(container)).get('due')).toBe('')
   })
 
-  it('goes back to its initial date when the form resets', () => {
+  it('goes back to its initial date when the form resets', async () => {
     const onOpenChange = vi.fn()
     const { container } = render(
       <form>
@@ -406,12 +406,12 @@ describe('DatePicker in a form', () => {
     fireEvent.keyDown(field(), { key: 'Backspace' })
     expect(new FormData(form).get('due')).toBe('')
 
-    act(() => form.reset())
+    await act(async () => form.reset())
     expect(new FormData(form).get('due')).toBe('2025-01-20')
     expect(field()).toHaveTextContent('Jan 20, 2025')
   })
 
-  it('submits and resets with a form outside it (form="id")', () => {
+  it('submits and resets with a form outside it (form="id")', async () => {
     render(
       <>
         <form id="task" data-testid="form" />
@@ -426,17 +426,19 @@ describe('DatePicker in a form', () => {
     const form = screen.getByTestId('form') as HTMLFormElement
     expect(new FormData(form).get('due')).toBe('2025-01-20')
     fireEvent.keyDown(field(), { key: 'Delete' })
-    act(() => form.reset())
+    await act(async () => form.reset())
     expect(new FormData(form).get('due')).toBe('2025-01-20')
   })
 
   it('blocks the form while required and empty; focus goes to the field', () => {
+    const onInvalid = vi.fn()
     const { container } = render(
       <form>
         <DatePicker
           aria-label="Due"
           name="due"
           required
+          onInvalid={onInvalid}
           calendarProps={{ defaultMonth: new Date(2025, 0, 1) }}
         />
       </form>,
@@ -444,6 +446,8 @@ describe('DatePicker in a form', () => {
     const form = formOf(container)
     expect(field()).toHaveAttribute('aria-required', 'true')
     expect(form.checkValidity()).toBe(false)
+    // The `invalid` event fires on the stand-in and reaches `onInvalid`.
+    expect(onInvalid).toHaveBeenCalledTimes(1)
 
     // The browser focuses the invalid stand-in; the focus moves on.
     const proxy = container.querySelector(

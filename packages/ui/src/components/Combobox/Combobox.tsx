@@ -6,11 +6,11 @@ import {
   type ComponentProps,
   type FC,
   type KeyboardEvent,
-  useEffect,
   useRef,
   useState,
 } from 'react'
-import { useFormReset } from '../../utils/form-field'
+import { useCustomValidity, useFormReset } from '../../utils/form-field'
+import { isComposingKey } from '../../utils/keyboard'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
 import {
@@ -23,7 +23,6 @@ import {
   comboboxInputClasses,
   comboboxInvalidClasses,
   comboboxStaticClasses,
-  isComposingKey,
   useCombobox,
   useListLabel,
 } from './listbox'
@@ -179,12 +178,12 @@ const Combobox: FC<ComboboxProps> = ({
   // `required` is on the input, so an empty field doesn't submit. Typed text
   // that picked nothing doesn't count as a value either.
   const inputText = query ?? selectedLabel
-  const requiredMessage = messages.combobox.required
-  useEffect(() => {
-    inputRef.current?.setCustomValidity(
-      required && value === null && inputText !== '' ? requiredMessage : '',
-    )
-  }, [inputRef, required, value, inputText, requiredMessage])
+  useCustomValidity(
+    inputRef,
+    required && value === null && inputText !== ''
+      ? messages.combobox.required
+      : '',
+  )
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(event)

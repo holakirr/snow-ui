@@ -6,11 +6,11 @@ import {
   type ComponentProps,
   type FC,
   type KeyboardEvent,
-  useEffect,
   useRef,
   useState,
 } from 'react'
-import { useFormReset } from '../../utils/form-field'
+import { useCustomValidity, useFormReset } from '../../utils/form-field'
+import { isComposingKey } from '../../utils/keyboard'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
 import { Tag } from '../Tag'
@@ -24,7 +24,6 @@ import {
   comboboxInputClasses,
   comboboxInvalidClasses,
   comboboxStaticClasses,
-  isComposingKey,
   useCombobox,
   useListLabel,
 } from './listbox'
@@ -195,11 +194,10 @@ const MultiSelect: FC<MultiSelectProps> = ({
   // The typed text isn't the value, so `required` can't go on the input:
   // with no tag picked the input is invalid (the form doesn't submit), and
   // `aria-required` tells assistive technology.
-  const requiredMessage = messages.combobox.requiredMultiple
-  const missing = required && values.length === 0
-  useEffect(() => {
-    inputRef.current?.setCustomValidity(missing ? requiredMessage : '')
-  }, [inputRef, missing, requiredMessage])
+  useCustomValidity(
+    inputRef,
+    required && values.length === 0 ? messages.combobox.requiredMultiple : '',
+  )
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(event)

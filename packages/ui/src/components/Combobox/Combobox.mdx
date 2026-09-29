@@ -174,6 +174,8 @@ Without a form library, give the Combobox a `name` and it takes part in the `<fo
 | Reset | `form.reset()`, a reset button and React 19's reset after a `<form action>` bring back the value the field had on mount (a controlled field gets `onValueChange` with it) |
 | `disabled` | nothing is submitted |
 
+A controlled field that resets calls `onValueChange` with its value on mount, as `Select` does, so after a React 19 `<form action>` the state you pass goes back to it. To keep the submitted value, cancel the reset: `<form onReset={(event) => event.preventDefault()}>` (a cancelled reset changes nothing).
+
 ## Controlled and uncontrolled
 
 Pass `defaultValue` to leave the value to the combobox, or `value` with `onValueChange(value)` to control it. Values are strings; `null` is no value (`onValueChange(null)` when the field is cleared). The list works the same way: `defaultOpen`, or `open` with `onOpenChange`.

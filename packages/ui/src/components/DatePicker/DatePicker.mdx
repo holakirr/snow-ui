@@ -143,8 +143,10 @@ Bind `value` and `onValueChange` (a `Date`, or `null` once cleared). With react-
 | Submits | `name=yyyy-MM-dd` (e.g. `2025-01-20`, whatever the `dateFormat` and the locale), or `name=` (empty) with no date, from a hidden input |
 | `required` | the form doesn't submit while there is no date: an invisible required stand-in shows the browser's message, and the focus goes to the field; assistive technology hears `aria-required` |
 | `form="id"` | associates the field and its hidden input with a form elsewhere in the page |
-| Reset | a form reset (`form.reset()`, a reset button, React 19's reset after a `<form action>`) closes the calendar and brings back the date the field had on mount |
+| Reset | a form reset (`form.reset()`, a reset button, React 19's reset after a `<form action>`) closes the calendar and brings back the date the field had on mount (a controlled field gets `onValueChange` with it) |
 | `disabled` | nothing is submitted; disabling an open calendar closes it with `onOpenChange(false)` |
+
+A controlled field that resets calls `onValueChange` with its value on mount, as `Select` does, so after a React 19 `<form action>` the state you pass goes back to it. To keep the submitted value, cancel the reset: `<form onReset={(event) => event.preventDefault()}>` (a cancelled reset changes nothing).
 
 An `Invalid Date` value (say `new Date('')` from a bad string) counts as no date.
 

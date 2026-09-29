@@ -270,7 +270,7 @@ describe('MultiSelect in a form', () => {
   const formOf = (container: HTMLElement) =>
     container.querySelector('form') as HTMLFormElement
 
-  it('goes back to its initial values when the form resets', () => {
+  it('goes back to its initial values when the form resets', async () => {
     const { container } = render(
       <form>
         <MultiSelect
@@ -287,14 +287,48 @@ describe('MultiSelect in a form', () => {
     fireEvent.keyDown(field(), { key: 'Enter' })
     expect(new FormData(form).getAll('skills')).toEqual(['figma'])
 
-    act(() => form.reset())
+    await act(async () => form.reset())
     expect(new FormData(form).getAll('skills')).toEqual(['react'])
     expect(field()).toHaveValue('')
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
     expect(screen.getByRole('status')).toHaveTextContent('')
   })
 
-  it('submits and resets with a form outside it (form="id")', () => {
+  it('keeps its tags when the reset is cancelled', async () => {
+    const { container } = render(
+      <form onReset={(event) => event.preventDefault()}>
+        <MultiSelect
+          aria-label="Skills"
+          options={skills}
+          name="skills"
+          defaultValue={['react']}
+        />
+      </form>,
+    )
+    const form = formOf(container)
+    fireEvent.click(screen.getByRole('button', { name: 'Remove tag React' }))
+
+    await act(async () => form.reset())
+    expect(new FormData(form).getAll('skills')).toEqual([])
+  })
+
+  it('keeps a custom validity message the app set', () => {
+    renderMultiSelect({ required: true })
+    const input = field() as HTMLInputElement
+    expect(input.validationMessage).toBe(
+      'Select at least one item in the list.',
+    )
+
+    act(() => input.setCustomValidity('Server says no'))
+    fireEvent.change(input, { target: { value: 'fig' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(
+      screen.getByRole('button', { name: 'Remove tag Figma' }),
+    ).toBeInTheDocument()
+    expect(input.validationMessage).toBe('Server says no')
+  })
+
+  it('submits and resets with a form outside it (form="id")', async () => {
     render(
       <>
         <form id="profile" data-testid="form" />
@@ -311,7 +345,7 @@ describe('MultiSelect in a form', () => {
     expect(new FormData(form).getAll('skills')).toEqual(['react', 'figma'])
     fireEvent.keyDown(field(), { key: 'Backspace' })
     expect(new FormData(form).getAll('skills')).toEqual(['react'])
-    act(() => form.reset())
+    await act(async () => form.reset())
     expect(new FormData(form).getAll('skills')).toEqual(['react', 'figma'])
   })
 

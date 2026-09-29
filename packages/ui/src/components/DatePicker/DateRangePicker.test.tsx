@@ -359,7 +359,44 @@ describe('DateRangePicker edge cases', () => {
     expect(field()).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('goes back to its initial range when the form resets', () => {
+  it('compares days, not times, before calling onValueChange', () => {
+    const onValueChange = vi.fn()
+    renderPicker({
+      value: {
+        from: new Date(2025, 0, 13, 15, 30),
+        to: new Date(2025, 0, 16, 11),
+      },
+      onValueChange,
+    })
+    fireEvent.click(field())
+    fireEvent.click(day(/January 13th, 2025/))
+    fireEvent.click(day(/January 16th, 2025/))
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
+  it('drops a half-picked range when the form resets', async () => {
+    const onValueChange = vi.fn()
+    const { container } = render(
+      <form>
+        <DateRangePicker
+          aria-label="Stay"
+          open
+          onOpenChange={() => {}}
+          defaultValue={january(1, 2)}
+          onValueChange={onValueChange}
+        />
+      </form>,
+    )
+    fireEvent.click(day(/January 10th, 2025/))
+    await act(async () => formOf(container).reset())
+    // Jan 20 starts a new range: the start picked before the reset is gone.
+    fireEvent.click(day(/January 20th, 2025/))
+    expect(onValueChange).not.toHaveBeenCalled()
+    fireEvent.click(day(/January 22nd, 2025/))
+    expect(onValueChange.mock.calls).toEqual([[january(20, 22)]])
+  })
+
+  it('goes back to its initial range when the form resets', async () => {
     const { container } = render(
       <form>
         <DateRangePicker
@@ -372,7 +409,7 @@ describe('DateRangePicker edge cases', () => {
     const form = formOf(container)
     fireEvent.keyDown(field(), { key: 'Delete' })
     expect(new FormData(form).get('stay')).toBe('')
-    act(() => form.reset())
+    await act(async () => form.reset())
     expect(new FormData(form).get('stay')).toBe('2025-01-13/2025-01-16')
   })
 

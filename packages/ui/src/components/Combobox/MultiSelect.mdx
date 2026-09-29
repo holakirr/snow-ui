@@ -115,8 +115,10 @@ Bind `value` (an array of strings) and `onValueChange`; pass `field.ref`, `field
 | `required` | the form doesn't submit while no tag is picked: the browser shows "Select at least one item in the list." (`messages.combobox.requiredMultiple`); assistive technology hears `aria-required` |
 | Enter | toggles the highlighted option while the list is open, and never submits the form then |
 | `form="id"` | associates the field and its hidden inputs with a form elsewhere in the page |
-| Reset | a form reset brings back the values the field had on mount |
+| Reset | a form reset (`form.reset()`, a reset button, React 19's reset after a `<form action>`) brings back the values the field had on mount (a controlled field gets `onValueChange` with them) |
 | `disabled` | nothing is submitted |
+
+A controlled field that resets calls `onValueChange` with its value on mount, as `Select` does, so after a React 19 `<form action>` the state you pass goes back to it. To keep the submitted value, cancel the reset: `<form onReset={(event) => event.preventDefault()}>` (a cancelled reset changes nothing).
 
 ## Controlled and uncontrolled
 

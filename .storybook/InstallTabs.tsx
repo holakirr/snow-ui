@@ -1,8 +1,9 @@
-import { Source } from '@storybook/addon-docs/blocks'
 import {
   type CSSProperties,
   type KeyboardEvent,
+  lazy,
   type ReactNode,
+  Suspense,
   useEffect,
   useId,
   useRef,
@@ -20,6 +21,30 @@ import uiPackage from '../packages/ui/package.json'
  * needs no import. Inline styles, like the other blocks: the docs page is
  * outside the library's theme.
  */
+
+/*
+ * Storybook's Source block (highlighting, copy button), loaded when a tab
+ * renders: @storybook/addon-docs/blocks touches `document` when it is
+ * imported, and preview.tsx (which registers this block) is also imported
+ * on the server by the SSR test (ssr/stories.ts).
+ */
+const LazySource = lazy(() =>
+  import('@storybook/addon-docs/blocks').then(({ Source }) => ({
+    default: Source,
+  })),
+)
+
+const Source = ({ code, language }: { code: string; language: string }) => (
+  <Suspense
+    fallback={
+      <pre style={{ margin: '16px 0', padding: 16, overflowX: 'auto' }}>
+        <code>{code}</code>
+      </pre>
+    }
+  >
+    <LazySource code={code} language={language as 'tsx'} />
+  </Suspense>
+)
 
 interface Item {
   name: string

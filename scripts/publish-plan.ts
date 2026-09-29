@@ -41,39 +41,111 @@ export const classifyPackage = (
 export const isDryRun = (value: string | undefined): boolean =>
   value === '1' || value?.toLowerCase() === 'true'
 
-/** `publish-plan.json` as `changeset pack` writes it (the parts we check). */
-export interface PackedPlan {
-  version: number
-  plan: {
-    kind: string
-    name: string
-    version: string
-    tarball?: { path: string; integrity: string }
-  }[][]
+/** A release of a publish plan (`changeset pack` / `changeset publish-plan`). */
+export interface PlanEntry {
+  kind: string
+  name: string
+  version: string
+  access?: string
+  tag?: string
+  tarball?: { path: string; integrity: string }
 }
 
+/** `publish-plan.json`, as `changeset pack` and `changeset publish-plan` write it. */
+export interface PackedPlan {
+  version: number
+  plan: PlanEntry[][]
+}
+
+/** A packed tarball: its bytes and its own package.json (name, version). */
+export interface PackedTarball {
+  bytes: Uint8Array
+  manifest?: { name?: unknown; version?: unknown }
+}
+
+const TARBALL_PATH = /^packages\/[^/\\]+\.tgz$/
+
+/** The parts of a release that decide what is published where. */
+const releaseKey = ({ kind, name, version, access, tag }: PlanEntry) => ({
+  kind,
+  name,
+  version,
+  access,
+  tag,
+})
+
+const describePlan = (plan: PackedPlan) =>
+  JSON.stringify(plan.plan.map((chunk) => chunk.map(releaseKey)))
+
 /**
- * What is wrong with the tarballs of a packed plan before they are
- * published: a missing tarball, or one whose sha256 differs from the
- * integrity `changeset pack` recorded (`sha256-<base64>`). `read` returns a
- * tarball's bytes (by its path in the plan), or undefined when it is missing.
+ * What is wrong with a packed plan (and its tarballs) that the publish job is
+ * about to publish. The pack job runs the build toolchain, so everything it
+ * hands over is checked against what the publish job computes itself from
+ * the commit and npm:
+ *
+ * - the releases (kind, name, version, access, dist-tag) must be exactly the
+ *   plan `changeset publish-plan` computes in the publish job (`expected`);
+ * - only `publish` releases, of public workspace packages, at their version
+ *   at this commit (`workspace`: name → version);
+ * - each tarball under `packages/` of the pack directory, with the sha256
+ *   the plan records (`sha256-<base64>`) and its own package.json naming
+ *   the same package and version (npm publishes what the tarball says).
+ *
+ * `tarball` reads a tarball by its path in the plan (undefined: missing).
  */
-export const tarballProblems = (
-  { version, plan }: PackedPlan,
-  read: (path: string) => Uint8Array | undefined,
+export const packedPlanProblems = (
+  packed: PackedPlan,
+  expected: PackedPlan,
+  workspace: ReadonlyMap<string, string>,
+  tarball: (path: string) => PackedTarball | undefined,
 ): string[] => {
-  if (version !== 1) return [`Unknown publish plan version ${version}`]
-  return plan.flat().flatMap((release) => {
-    if (release.kind !== 'publish') return []
+  if (packed.version !== 1)
+    return [`Unknown publish plan version ${packed.version}`]
+  const problems: string[] = []
+  if (describePlan(packed) !== describePlan(expected)) {
+    problems.push(
+      `The packed plan ${describePlan(packed)} is not the plan of this commit ${describePlan(expected)}`,
+    )
+  }
+  for (const release of packed.plan.flat()) {
     const id = `${release.name}@${release.version}`
-    if (!release.tarball) return [`${id} has no tarball in the plan`]
-    const bytes = read(release.tarball.path)
-    if (!bytes) return [`${id}: ${release.tarball.path} is missing`]
-    const integrity = `sha256-${createHash('sha256').update(bytes).digest('base64')}`
-    return integrity === release.tarball.integrity
-      ? []
-      : [
-          `${id}: ${release.tarball.path} is ${integrity}, the pack job recorded ${release.tarball.integrity}`,
-        ]
-  })
+    if (release.kind !== 'publish') {
+      problems.push(
+        `${id}: a "${release.kind}" release; only "publish" is expected`,
+      )
+      continue
+    }
+    if (workspace.get(release.name) !== release.version) {
+      problems.push(
+        `${id} is not a public workspace package at its version in this commit`,
+      )
+    }
+    if (!release.tarball) {
+      problems.push(`${id} has no tarball in the plan`)
+      continue
+    }
+    const { path, integrity } = release.tarball
+    if (!TARBALL_PATH.test(path)) {
+      problems.push(`${id}: ${path} is not a tarball under packages/`)
+      continue
+    }
+    const packedTarball = tarball(path)
+    if (!packedTarball) {
+      problems.push(`${id}: ${path} is missing`)
+      continue
+    }
+    const actual = `sha256-${createHash('sha256').update(packedTarball.bytes).digest('base64')}`
+    if (actual !== integrity) {
+      problems.push(
+        `${id}: ${path} is ${actual}, the pack job recorded ${integrity}`,
+      )
+    }
+    const { name, version } = packedTarball.manifest ?? {}
+    if (name !== release.name || version !== release.version) {
+      problems.push(
+        `${id}: ${path} contains ${String(name)}@${String(version)}`,
+      )
+    }
+  }
+  return problems
 }

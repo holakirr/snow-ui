@@ -10,9 +10,8 @@
  *   then publish the tarballs (npm OIDC, tags and GitHub releases);
  * - `none`: only empty changesets, which the action ignores.
  *
- *   bun scripts/release-mode.ts   # prints the mode, and `mode=<mode>` to $GITHUB_OUTPUT
+ *   bun scripts/release-mode.ts   # prints the mode
  */
-import { appendFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { readPreState } from '@changesets/pre'
 import readChangesets from '@changesets/read'
@@ -24,6 +23,3 @@ const mode: ReleaseMode = releaseMode(
   (await readPreState(root))?.mode,
 )
 console.log(mode)
-if (process.env.GITHUB_OUTPUT) {
-  appendFileSync(process.env.GITHUB_OUTPUT, `mode=${mode}\n`)
-}

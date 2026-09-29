@@ -102,7 +102,7 @@ container=
 waiting=
 until mkdir "$lock" 2>/dev/null; do
   owner=$(cat "$lock/pid" 2>/dev/null || true)
-  if [[ -n "$owner" ]] && ! kill -0 "$owner" 2>/dev/null; then
+  if [[ -n "$owner" ]] && ! ps -p "$owner" >/dev/null 2>&1; then
     rm -rf "$lock"
     continue
   fi
@@ -127,10 +127,11 @@ trap 'exit 143' TERM
 # Containers left over from a killed run (its CLI died, the container kept
 # going) are stopped. Each container carries the pid of the script that
 # started it: only those whose script is gone are stopped, never the one of a
-# live run (of another user, or one that didn't see this lock).
+# live run (of another user, or one that didn't see this lock). `ps -p`, not
+# `kill -0`, which fails for another user's live process.
 while read -r id owner; do
   [[ -n "$id" ]] || continue
-  if [[ -n "$owner" ]] && kill -0 "$owner" 2>/dev/null; then
+  if [[ -n "$owner" ]] && ps -p "$owner" >/dev/null 2>&1; then
     continue
   fi
   echo "Stopping visual test container ${id}, left over from a killed run (pid ${owner:-?})..."

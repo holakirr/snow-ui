@@ -4,7 +4,7 @@ import {
   classifyPackage,
   isDryRun,
   type PackedPlan,
-  tarballProblems,
+  packedPlanProblems,
 } from './publish-plan'
 
 const E404 = `npm error code E404
@@ -81,53 +81,122 @@ describe('isDryRun', () => {
   })
 })
 
-describe('tarballProblems', () => {
-  const tarball = new TextEncoder().encode('package contents')
-  const integrity = `sha256-${createHash('sha256').update(tarball).digest('base64')}`
-  const packed = (): PackedPlan => ({
+describe('packedPlanProblems', () => {
+  const bytes = new TextEncoder().encode('package contents')
+  const integrity = `sha256-${createHash('sha256').update(bytes).digest('base64')}`
+  const icons = {
+    kind: 'publish',
+    name: '@holakirr/snow-ui-icons',
+    version: '2.2.1',
+    access: 'public',
+    tag: 'latest',
+  }
+  const packed = (
+    release: Record<string, unknown> = {},
+    path = 'packages/icons.tgz',
+  ): PackedPlan => ({
     version: 1,
-    plan: [
-      [
-        {
-          kind: 'publish',
-          name: '@holakirr/snow-ui-icons',
-          version: '2.2.1',
-          tarball: { path: 'packages/icons.tgz', integrity },
-        },
-      ],
-      [{ kind: 'tag-only', name: 'private-thing', version: '1.0.0' }],
-    ],
+    plan: [[{ ...icons, ...release, tarball: { path, integrity } }]],
   })
-  const reader = (files: Record<string, Uint8Array>) => (path: string) =>
-    files[path]
+  const expected: PackedPlan = { version: 1, plan: [[icons]] }
+  const workspace = new Map([
+    ['@holakirr/snow-ui', '5.1.0'],
+    ['@holakirr/snow-ui-icons', '2.2.1'],
+  ])
+  const tarballs =
+    (manifest: object = { name: icons.name, version: icons.version }) =>
+    (path: string) =>
+      path === 'packages/icons.tgz' ? { bytes, manifest } : undefined
 
-  it('accepts tarballs that match the recorded integrity', () => {
+  it('accepts the plan of this commit with matching tarballs', () => {
     expect(
-      tarballProblems(packed(), reader({ 'packages/icons.tgz': tarball })),
+      packedPlanProblems(packed(), expected, workspace, tarballs()),
     ).toEqual([])
   })
 
-  it('rejects a changed tarball', () => {
-    expect(
-      tarballProblems(
-        packed(),
-        reader({
-          'packages/icons.tgz': new TextEncoder().encode('something else'),
-        }),
+  it('rejects releases the publish job did not plan (another version or tag)', () => {
+    const problems = packedPlanProblems(
+      packed({ version: '9.9.9' }),
+      expected,
+      workspace,
+      tarballs({ name: icons.name, version: '9.9.9' }),
+    )
+    expect(problems).toContainEqual(
+      expect.stringMatching(
+        /^The packed plan .* is not the plan of this commit/,
       ),
+    )
+    expect(problems).toContainEqual(
+      '@holakirr/snow-ui-icons@9.9.9 is not a public workspace package at its version in this commit',
+    )
+    expect(
+      packedPlanProblems(
+        packed({ tag: 'next' }),
+        expected,
+        workspace,
+        tarballs(),
+      ),
+    ).toEqual([
+      expect.stringMatching(
+        /^The packed plan .* is not the plan of this commit/,
+      ),
+    ])
+  })
+
+  it('rejects tag-only releases and tarballs outside packages/', () => {
+    expect(
+      packedPlanProblems(
+        packed({ kind: 'tag-only' }),
+        { version: 1, plan: [[{ ...icons, kind: 'tag-only' }]] },
+        workspace,
+        tarballs(),
+      ),
+    ).toEqual([
+      '@holakirr/snow-ui-icons@2.2.1: a "tag-only" release; only "publish" is expected',
+    ])
+    expect(
+      packedPlanProblems(
+        packed({}, '../elsewhere.tgz'),
+        expected,
+        workspace,
+        tarballs(),
+      ),
+    ).toEqual([
+      '@holakirr/snow-ui-icons@2.2.1: ../elsewhere.tgz is not a tarball under packages/',
+    ])
+  })
+
+  it('rejects a changed, missing or mislabelled tarball', () => {
+    expect(
+      packedPlanProblems(packed(), expected, workspace, () => ({
+        bytes: new TextEncoder().encode('something else'),
+        manifest: { name: icons.name, version: icons.version },
+      })),
     ).toEqual([
       expect.stringMatching(
         /^@holakirr\/snow-ui-icons@2\.2\.1: packages\/icons\.tgz is sha256-.*, the pack job recorded sha256-/,
       ),
     ])
-  })
-
-  it('rejects a missing tarball and an unknown plan version', () => {
-    expect(tarballProblems(packed(), reader({}))).toEqual([
-      '@holakirr/snow-ui-icons@2.2.1: packages/icons.tgz is missing',
+    expect(
+      packedPlanProblems(packed(), expected, workspace, () => undefined),
+    ).toEqual(['@holakirr/snow-ui-icons@2.2.1: packages/icons.tgz is missing'])
+    expect(
+      packedPlanProblems(
+        packed(),
+        expected,
+        workspace,
+        tarballs({ name: '@holakirr/snow-ui', version: '9.9.9' }),
+      ),
+    ).toEqual([
+      '@holakirr/snow-ui-icons@2.2.1: packages/icons.tgz contains @holakirr/snow-ui@9.9.9',
     ])
-    expect(tarballProblems({ version: 2, plan: [] }, reader({}))).toEqual([
-      'Unknown publish plan version 2',
-    ])
+    expect(
+      packedPlanProblems(
+        { version: 2, plan: [] },
+        expected,
+        workspace,
+        tarballs(),
+      ),
+    ).toEqual(['Unknown publish plan version 2'])
   })
 })

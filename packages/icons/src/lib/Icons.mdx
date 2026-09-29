@@ -1,5 +1,6 @@
-import { Canvas, Controls, Meta, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Controls, Meta, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../.storybook/blocks'
+import { IconBase } from './IconBase'
 import * as IconsStories from './Icons.stories'
 
 <Meta of={IconsStories} />
@@ -32,7 +33,7 @@ import { StarIcon } from '@holakirr/snow-ui-icons'
 
 ## Props
 
-Every icon takes the props of an `<svg>` plus:
+Every icon takes the attributes of the `<svg>` it renders plus:
 
 | Prop | Default | |
 | --- | --- | --- |
@@ -42,7 +43,15 @@ Every icon takes the props of an `<svg>` plus:
 | `mirrored` | `false` | Flips the icon horizontally. |
 | `alt` | — | Accessible text: the icon becomes `role="img"` with a `<title>`. |
 
+Try them on every icon:
+
 <Controls of={IconsStories.AllIcons} />
+
+### IconBase
+
+Every icon renders `IconBase` with its drawings; render it yourself for a custom icon with the same props (see [Server rendering and custom icons](#server-rendering-and-custom-icons)). Its `weights` is a `Map` of each weight to the SVG content; the icons pass it for you.
+
+<ArgTypes of={IconBase} />
 
 ## Weights
 

@@ -56,6 +56,34 @@
     "limit": "10.2 kB"
   },
   {
+    "name": "@holakirr/snow-ui: { Combobox }",
+    "path": "packages/ui/dist/index.js",
+    "import": "{ Combobox }",
+    "ignore": ["react", "react-dom", "react-hook-form"],
+    "limit": "41 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui: { MultiSelect }",
+    "path": "packages/ui/dist/index.js",
+    "import": "{ MultiSelect }",
+    "ignore": ["react", "react-dom", "react-hook-form"],
+    "limit": "43.5 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui: { DatePicker }",
+    "path": "packages/ui/dist/index.js",
+    "import": "{ DatePicker }",
+    "ignore": ["react", "react-dom", "react-hook-form"],
+    "limit": "65 kB"
+  },
+  {
+    "name": "@holakirr/snow-ui: { DateRangePicker }",
+    "path": "packages/ui/dist/index.js",
+    "import": "{ DateRangePicker }",
+    "ignore": ["react", "react-dom", "react-hook-form"],
+    "limit": "65 kB"
+  },
+  {
     "name": "@holakirr/snow-ui/react-hook-form: full import (ESM)",
     "path": "packages/ui/dist/react-hook-form.js",
     "import": "*",

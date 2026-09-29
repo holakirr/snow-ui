@@ -68,34 +68,43 @@ type Size = { width: number; height: number }
 /**
  * Reports the size of a toast while it has its own size (the front toast,
  * or any toast of an expanded stack): collapsed behind the front one, it
- * takes the front one's size.
+ * takes the front one's size. Reports `null` once Radix has removed it (after
+ * its exit animation).
  */
 const useToastSize = (
   id: string,
   measure: boolean,
-  onSize: (id: string, size: Size) => void,
+  onSize: (id: string, size: Size | null) => void,
 ) => {
-  const ref = useRef<HTMLLIElement>(null)
+  const nodeRef = useRef<HTMLLIElement | null>(null)
+  const observerRef = useRef<ResizeObserver | undefined>(undefined)
   const measureRef = useRef(measure)
   measureRef.current = measure
 
-  useLayoutEffect(() => {
-    const node = ref.current
-    if (!node) return
-    const report = () => {
-      if (!measureRef.current) return
-      onSize(id, { width: node.offsetWidth, height: node.offsetHeight })
-    }
-    report()
-    if (typeof ResizeObserver === 'undefined') return
-    const observer = new ResizeObserver(report)
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [id, onSize])
+  const ref = useCallback(
+    (node: HTMLLIElement | null) => {
+      observerRef.current?.disconnect()
+      observerRef.current = undefined
+      nodeRef.current = node
+      if (!node) {
+        onSize(id, null)
+        return
+      }
+      const report = () => {
+        if (!measureRef.current) return
+        onSize(id, { width: node.offsetWidth, height: node.offsetHeight })
+      }
+      report()
+      if (typeof ResizeObserver === 'undefined') return
+      observerRef.current = new ResizeObserver(report)
+      observerRef.current.observe(node)
+    },
+    [id, onSize],
+  )
 
   // Measures again when the toast gets its own size back.
   useLayoutEffect(() => {
-    const node = ref.current
+    const node = nodeRef.current
     if (measure && node) {
       onSize(id, { width: node.offsetWidth, height: node.offsetHeight })
     }
@@ -149,7 +158,7 @@ type StackedToastProps = {
     zIndex: number
   }
   front?: Size
-  onSize: (id: string, size: Size) => void
+  onSize: (id: string, size: Size | null) => void
 }
 
 const StackedToast = ({
@@ -189,9 +198,10 @@ const StackedToast = ({
       data-front={layout.index === 0 || undefined}
       data-collapsed={layout.collapsed || undefined}
       className={[
-        // Stacked at the bottom centre: `mx-auto` with `w-fit` centres it
-        // without a transform, which the swipe gesture uses.
-        'pointer-events-auto absolute inset-x-0 bottom-4 mx-auto max-w-[calc(100vw-4rem)] origin-bottom [transform:translateY(var(--toast-y))_scale(var(--toast-scale))] md:max-w-[26rem]',
+        // Stacked at the bottom centre of the viewport, which is sized to
+        // the stack: `mx-auto` centres it without a transform (the swipe
+        // gesture uses one), `w-max` keeps its width its own.
+        'absolute inset-x-0 bottom-4 mx-auto w-max max-w-[calc(100vw-4rem)] origin-bottom [transform:translateY(var(--toast-y))_scale(var(--toast-scale))] md:max-w-[26rem]',
         // Behind the front toast: its size, content hidden.
         '[&>*]:transition-opacity [&[data-collapsed]>*]:opacity-0',
         // Closed while a newer toast is in front of it: fades out in place.
@@ -289,12 +299,18 @@ export function Toaster({
     }
   }, [])
 
-  const onSize = useCallback((id: string, size: Size) => {
-    setSizes((sizes) =>
-      sizes[id]?.width === size.width && sizes[id]?.height === size.height
+  const onSize = useCallback((id: string, size: Size | null) => {
+    setSizes((sizes) => {
+      if (!size) {
+        if (!(id in sizes)) return sizes
+        const { [id]: _removed, ...rest } = sizes
+        return rest
+      }
+      return sizes[id]?.width === size.width &&
+        sizes[id]?.height === size.height
         ? sizes
-        : { ...sizes, [id]: size },
-    )
+        : { ...sizes, [id]: size }
+    })
   }, [])
 
   // Newest first, like the store.
@@ -308,22 +324,15 @@ export function Toaster({
     if (openCount === 0) setHovered(false)
   }, [openCount])
 
-  // Forgets the sizes of removed toasts.
-  useEffect(() => {
-    setSizes((sizes) => {
-      const ids = Object.keys(sizes)
-      const kept = ids.filter((id) => own.some((toast) => toast.id === id))
-      return kept.length === ids.length
-        ? sizes
-        : Object.fromEntries(kept.map((id) => [id, sizes[id]]))
-    })
-  })
-
   const frontId = own.find((toast) => toast.open !== false)?.id
   const front = frontId ? sizes[frontId] : undefined
 
   let index = 0
   let offset = 0
+  // The size of the stack as drawn: the viewport wraps it, so its focus
+  // outline (F8) and its hover area match the toasts.
+  let stackWidth = 0
+  let stackHeight = 0
   const items = own.map((toast, position) => {
     const isOpen = toast.open !== false
     // A closed toast keeps the place behind the open toasts newer than it.
@@ -335,9 +344,15 @@ export function Toaster({
       behind: index > 0,
       zIndex: own.length - position,
     }
+    const size = sizes[toast.id]
+    if (size) {
+      const drawn = layout.collapsed && front ? front : size
+      stackWidth = Math.max(stackWidth, drawn.width)
+      stackHeight = Math.max(stackHeight, drawn.height - layout.y)
+    }
     if (isOpen) {
       index += 1
-      offset += (sizes[toast.id]?.height ?? 0) + STACK_GAP
+      offset += (size?.height ?? 0) + STACK_GAP
     }
     return (
       <StackedToast
@@ -357,9 +372,16 @@ export function Toaster({
       <ToastViewport
         ref={viewportRef}
         data-expanded={expanded || undefined}
-        // The toasts are placed in it absolutely: a full-width strip at the
-        // bottom that lets clicks through between them.
-        className="inset-x-0 w-full max-w-none translate-x-0 pointer-events-none md:max-w-none"
+        // The toasts are placed in it absolutely, so it takes the stack's
+        // size (plus its padding) from their measured sizes.
+        style={
+          stackWidth > 0
+            ? {
+                width: `calc(${stackWidth}px + 2rem)`,
+                height: `calc(${stackHeight}px + 2rem)`,
+              }
+            : undefined
+        }
       />
     </ToastProvider>
   )

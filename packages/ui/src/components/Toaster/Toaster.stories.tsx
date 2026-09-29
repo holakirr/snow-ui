@@ -298,6 +298,12 @@ export const Stacked: Story = {
       await expect(toastOf('Sync failed')).toHaveAttribute('data-front')
       await expect(toastOf('Invite sent')).toHaveAttribute('data-collapsed')
       await expect(toastOf('Report exported')).toHaveAttribute('data-collapsed')
+      // The viewport wraps the stack (its focus outline and hover area).
+      const box = (viewport() as HTMLElement).getBoundingClientRect()
+      const front = toastOf('Sync failed').getBoundingClientRect()
+      await expect(box.left).toBeLessThanOrEqual(front.left)
+      await expect(box.right).toBeGreaterThanOrEqual(front.right)
+      await expect(box.width).toBeLessThanOrEqual(front.width + 33)
     })
 
     await step('hovering spreads the stack into a list', async () => {

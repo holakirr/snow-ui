@@ -1,6 +1,6 @@
 'use client'
 
-import type { ComponentProps, FC } from 'react'
+import type { ComponentProps, FC, MouseEvent } from 'react'
 import { ROLES } from '../../constants'
 import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
@@ -66,10 +66,21 @@ export type BreadcrumbLinkProps = ComponentProps<'a'> & {
 }
 
 /**
+ * Blocks a click (a pointer or Enter on the focused link) before the link's
+ * own handlers run: a router link's `onClick` sees `defaultPrevented` too
+ * late in the bubble phase, so the event stops in the capture phase.
+ */
+const preventActivation = (event: MouseEvent) => {
+  event.preventDefault()
+  event.stopPropagation()
+}
+
+/**
  * A link to an ancestor page. `disabled` renders it without its `href`: a
  * `<span role="link" aria-disabled="true">` that isn't in the tab order (like
  * `BreadcrumbPage`). With `asChild`, the child keeps its own `href`: it gets
- * `aria-disabled` and `tabIndex={-1}` and can't be clicked.
+ * `aria-disabled` and `tabIndex={-1}`, and clicks (and Enter, which clicks a
+ * link) don't reach it.
  */
 const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
   className,
@@ -77,12 +88,14 @@ const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
   asChild = false,
   href,
   children,
+  onClickCapture,
   ...props
 }) => (
   <Button<'a'>
     asChild
     aria-disabled={disabled || undefined}
     tabIndex={disabled && asChild ? -1 : undefined}
+    onClickCapture={disabled && asChild ? preventActivation : onClickCapture}
     // Figma: a Button Small "Borderless" (padding 4/12, radius 12).
     className={twMerge(
       'rounded-12 px-3 py-1 text-12 text-inherit transition-colors hover:bg-black-4',

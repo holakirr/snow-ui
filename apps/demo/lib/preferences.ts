@@ -42,7 +42,10 @@ export const isTheme = (value: unknown): value is Theme =>
  * Runs in `<head>` before the body is parsed: pins `data-theme` on `<html>`
  * when the user picked light or dark. Without it (system) the SnowUI tokens
  * follow `prefers-color-scheme`.
+ *
+ * A literal, with no interpolation: nothing but this source ends up in the
+ * inline script (CodeQL flags interpolated values). The key must match
+ * `THEME_STORAGE_KEY`.
  */
-export const themeScript = `(function(){try{var t=localStorage.getItem(${JSON.stringify(
-  THEME_STORAGE_KEY,
-)});if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()`
+export const themeScript =
+  '(function(){try{var t=localStorage.getItem("snow-demo-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()'

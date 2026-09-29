@@ -69,6 +69,11 @@ export const ruMessages: Messages = {
     empty: 'Ничего не найдено',
     loading: 'Загрузка',
   },
+  datePicker: {
+    placeholder: 'Выберите дату',
+    dialog: 'Выбор даты',
+    clear: 'Очистить дату',
+  },
   dialog: {
     close: 'Закрыть',
   },

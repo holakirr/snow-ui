@@ -9,10 +9,10 @@
  * wins over the provider.
  *
  * The namespaces added in 5.1 (`alert`, `alertDialog`, `avatarGroup`,
- * `charts`, `combobox`, `progress`, `spinner`) are optional, so a
- * translation typed as `Messages` before they existed still compiles; the
- * English defaults fill them in, and `useMessages()` always returns every
- * namespace (`Required<Messages>`). They become required in 6.0.
+ * `charts`, `combobox`, `datePicker`, `progress`, `spinner`) are optional,
+ * so a translation typed as `Messages` before they existed still compiles;
+ * the English defaults fill them in, and `useMessages()` always returns
+ * every namespace (`Required<Messages>`). They become required in 6.0.
  */
 export type Messages = {
   alert?: {
@@ -112,6 +112,15 @@ export type Messages = {
     empty: string
     /** Announced while `loading`. */
     loading: string
+  }
+  /** `DatePicker` and `DateRangePicker` (5.1 and later). */
+  datePicker?: {
+    /** The field's text while no date is picked (`DatePicker`). */
+    placeholder: string
+    /** The popover with the calendar (`DatePicker`). */
+    dialog: string
+    /** The clear button. */
+    clear: string
   }
   dialog: {
     /** The close button of `DialogHeader`. */
@@ -239,6 +248,11 @@ export const defaultMessages: Required<Messages> = {
     placeholder: 'Search',
     empty: 'No results',
     loading: 'Loading',
+  },
+  datePicker: {
+    placeholder: 'Pick a date',
+    dialog: 'Choose a date',
+    clear: 'Clear date',
   },
   dialog: {
     close: 'Close',

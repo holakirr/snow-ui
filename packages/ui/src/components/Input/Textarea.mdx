@@ -48,11 +48,20 @@ There is no `title` prop: label it with a [Label](?path=/docs/components-label--
 
 ## Accessibility
 
-- It renders a native `<textarea>`: Enter adds a line and Tab moves focus on, as in the browser.
+- It renders a native `<textarea>`.
 - Give it an accessible name: a `Label` with `htmlFor` and the same `id`, a `FormLabel` inside a [Form](?path=/docs/components-form--docs) item, or `aria-label` (as the stories do). A placeholder is not a label.
 - `disabled` removes the field from the tab order; a `readOnly` field stays focusable and its text can be selected and copied.
 
 No row of the package README's deviation table applies. Known gaps, kept from Figma for now: the 0.5px Black/20% stroke (1.6:1) and the Black/20% placeholder (it is never the field's only label).
+
+### Keyboard
+
+Keyboard behaviour is the browser's:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the textarea, and on to the next control: it doesn't type a tab character |
+| Enter | add a line; it doesn't submit the form |
 
 ## Localization and RTL
 
@@ -89,5 +98,7 @@ Textarea is a native field: pass `value` with `onChange` to control it, or `defa
 - [Label](?path=/docs/components-label--docs): the visible label.
 
 ## Props
+
+Textarea takes `className` (merged with its classes) and the attributes of the native `<textarea>` it renders, `ref` included.
 
 <Controls />

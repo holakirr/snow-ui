@@ -31,7 +31,7 @@ import { Slider } from '@holakirr/snow-ui'
 
 ## Anatomy
 
-1. **Root** (`className`): a `<div>`, full width. It has no role; `aria-label` and `aria-labelledby` are passed on to the thumbs.
+1. **Root** (`className`): a `<span>`, full width. It has no role; `aria-label` and `aria-labelledby` are passed on to the thumbs.
 2. **Track**: 34px high, an 8px radius, Black/4%.
 3. **Range**: the filled part of the track, in `black` (up to the thumb, or between two thumbs).
 4. **Thumbs**: one per value, a 16px circle with a 1px Black/40% border, a `white` fill and the "Drop shadow 2" effect. Each thumb is a `role="slider"`.
@@ -56,10 +56,23 @@ The number of values in `value` or `defaultValue` sets the number of thumbs: `[5
 ## Accessibility
 
 - Each thumb is a `role="slider"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`, and is in the tab order.
-- **Arrow keys** change the value by `step`; **Shift** + an arrow and **Page Up** / **Page Down** by 10 steps; **Home** moves the first thumb to `min` and **End** the last one to `max`.
 - Name the slider with `aria-label` (or `aria-labelledby`): the thumbs get it, because the root has no role. The thumbs of a range get `messages.slider` names built from `aria-label`: "Price, minimum" and "Price, maximum" for two, "Price, 2 of 3" for three or more. `thumbLabels` names each thumb yourself. `aria-labelledby` wins over both, so every thumb of a range gets the same name: name a range with `aria-label` or `thumbLabels`.
 - `aria-describedby` and `aria-invalid` go to the thumbs too, so a `FormControl` around the slider describes each thumb and marks it invalid.
 - Show the value next to the slider when the exact number matters.
+
+### Keyboard
+
+Each thumb is a tab stop. The value snaps to `step` and stays between `min` and `max`:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the next thumb |
+| ArrowRight / ArrowLeft | increase / decrease the focused thumb's value by `step`; in right-to-left text or with `inverted` (not both), ArrowLeft increases it |
+| ArrowUp / ArrowDown | increase / decrease the value by `step` |
+| PageUp / PageDown | increase / decrease the value by 10 steps |
+| Shift + an arrow key | change the value by 10 steps |
+| Home | move the first thumb to `min` |
+| End | move the last thumb to `max` |
 
 ### Deviations from the Figma kit
 
@@ -104,5 +117,7 @@ Values are arrays, one number per thumb. Pass `defaultValue` to leave them to th
 - [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the thumb messages and the direction.
 
 ## Props
+
+Slider is the [Radix Slider](https://www.radix-ui.com/primitives/docs/components/slider#api-reference) root with the Figma track and thumbs. It takes the Radix props below, `thumbLabels`, `className` (merged with the root's classes) and the attributes of the root `<span>`, except `aria-label` and `aria-labelledby`, which go to the thumbs. The Radix defaults: `min` 0, `max` 100, `step` 1, `minStepsBetweenThumbs` 0, `orientation` `horizontal`. The styles are for the horizontal Figma track only: `orientation="vertical"` isn't styled.
 
 <Controls />

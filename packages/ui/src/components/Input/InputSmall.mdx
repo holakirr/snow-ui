@@ -58,11 +58,20 @@ import { InputSmall } from '@holakirr/snow-ui'
 
 ## Accessibility
 
-- It renders a native `<input>`, with the role of its `type` (a textbox, `spinbutton` for `number`, `searchbox` for `search`). Keyboard behaviour is the browser's.
+- It renders a native `<input>`, with the role of its `type` (a textbox, `spinbutton` for `number`, `searchbox` for `search`).
 - It has no label of its own: pass `aria-label`, or render a [Label](?path=/docs/components-label--docs) with `htmlFor` and give the input the same `id`. A placeholder is not a label.
 - `disabled` removes the field from the tab order; a `readOnly` field stays focusable.
 
 No row of the package README's deviation table applies. Known gaps, kept from Figma for now: the Black/20% placeholder (1.6:1; it is never the field's only label) and the 0.5px Black/20% stroke of `outline`.
+
+### Keyboard
+
+Keyboard behaviour is the browser's:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the input |
+| Enter | submit the form the input is in, when the form has a submit button or this is its only text field (the browser's implicit submission) |
 
 ## Localization and RTL
 
@@ -99,5 +108,7 @@ InputSmall is a native field: pass `value` with `onChange` to control it, or `de
 - [Label](?path=/docs/components-label--docs): a visible label for the field.
 
 ## Props
+
+InputSmall takes `variant`, `className` (merged with its classes) and the attributes of the native `<input>` it renders, `ref` included.
 
 <Controls />

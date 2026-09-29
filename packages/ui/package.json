@@ -1,7 +1,7 @@
 {
   "name": "@holakirr/snow-ui",
   "private": false,
-  "version": "4.0.0",
+  "version": "5.0.0",
   "type": "module",
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.cts",
@@ -85,7 +85,7 @@
     }
   },
   "dependencies": {
-    "@holakirr/snow-ui-icons": "^2.1.1",
+    "@holakirr/snow-ui-icons": "^2.2.0",
     "@radix-ui/react-accordion": "^1.2.20",
     "@radix-ui/react-avatar": "^1.2.6",
     "@radix-ui/react-checkbox": "^1.3.11",

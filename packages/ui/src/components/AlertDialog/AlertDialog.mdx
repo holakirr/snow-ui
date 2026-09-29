@@ -1,0 +1,175 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as AlertDialogStories from './AlertDialog.stories'
+
+<Meta of={AlertDialogStories} />
+
+<Title />
+
+<FigmaLinks note="A library extension built from the Dialog (the dashboard “Add data” screen): its mask, motion and popup." />
+
+AlertDialog interrupts the user with a question they must answer before going on: confirming a destructive action, leaving with unsaved changes. Unlike [Dialog](?path=/docs/components-dialog--docs) it can't be dismissed by clicking outside, it has no close button, and it opens with the focus on the safe choice. It reuses the Dialog's mask, motion and glass popup, and is built on Radix AlertDialog.
+
+```tsx
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  Button,
+} from '@holakirr/snow-ui'
+
+<AlertDialog>
+  <AlertDialogTrigger asChild>
+    <Button variant="outline" label="Delete project" />
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Delete this project?</AlertDialogTitle>
+      <AlertDialogDescription>This can't be undone.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel />
+      <AlertDialogAction variant="destructive" onClick={deleteProject}>
+        Delete
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+<Primary />
+
+## When to use
+
+- Confirming an action that deletes something or can't be undone: "Delete this project?"
+- A decision the task can't go on without: "Discard unsaved changes?"
+
+## When not to use
+
+- A form or any task with more than a yes or no: [Dialog](?path=/docs/components-dialog--docs).
+- Information that needs no answer: an [Alert](?path=/docs/components-alert--docs) in the page or a toast ([Toaster](?path=/docs/components-toaster--docs)).
+- Confirming every routine action: prefer undo (a toast with an action) for actions that can be reversed.
+
+## Anatomy
+
+1. **Root** (`AlertDialog`): holds the open state. It renders nothing itself.
+2. **Trigger** (`AlertDialogTrigger`, optional): the element that opens it, usually a Button (`asChild`).
+3. **Mask** (`AlertDialogOverlay`, rendered by `AlertDialogContent`): the Dialog's mask, the Figma gradient from #CBDDFF at 50% to #D7D0FF at 20% with "Background blur 40".
+4. **Content** (`AlertDialogContent`): the `role="alertdialog"` card, in a portal, centred: the Dialog's popup (`background-3`, radius 32, a 20px background blur), 448px wide at most (`max-w-md`) and 16px from each side on narrow screens, with 32px padding. The text and the actions are 28px apart.
+5. **Header** (`AlertDialogHeader`): the title and the description, 8px apart, centred.
+6. **Title** (`AlertDialogTitle`): 24/32 Semibold. It names the dialog.
+7. **Description** (`AlertDialogDescription`): 14/20 `text-secondary`. It describes the dialog.
+8. **Footer** (`AlertDialogFooter`): the buttons, 16px apart, at equal widths.
+9. **Cancel** (`AlertDialogCancel`): a Gray `lg` Button that closes the dialog; "Cancel" without children.
+10. **Action** (`AlertDialogAction`): a Filled `lg` Button that closes the dialog; run the action in its `onClick`.
+
+The buttons are those of the Dialog's "Add data" screen (Gray and Filled, `lg`, side by side). `AlertDialogPortal` and `AlertDialogOverlay` are exported for custom compositions; `AlertDialogContent` renders both.
+
+<Canvas of={AlertDialogStories.Open} />
+
+## Variants
+
+`AlertDialogAction` takes the Button variants (Filled by default) and `destructive`: a red Filled button for actions that delete something or can't be undone. It is the library's `red-text` colour (#D42020, #FF8080 in dark mode) with the per-mode `white` label: 5.21:1 in light mode and 8.65:1 in dark mode. On hover it mixes in 15% of `black` (white in dark mode), which keeps the label contrast up (6.75:1 and 9.85:1). Figma's Secondary/Red under a white label would be 3.36:1. `AlertDialogCancel` takes the Button variants too (Gray by default); both take `size` (`lg` by default).
+
+<Canvas of={AlertDialogStories.Destructive} />
+
+When the two buttons don't fit side by side at 160px each (a phone, or long labels), they stack at full width, the action on top:
+
+<Canvas of={AlertDialogStories.Narrow} />
+
+## States
+
+- **Open and closed:** `open` / `defaultOpen` / `onOpenChange` on `AlertDialog`. It opens and closes with the Dialog's motion: the card scales up from its centre and fades in. `data-state="open"` or `"closed"` is on the mask and the content.
+- **Buttons:** the Button states (hover fill, 95% scale when pressed, the `focus-ring`).
+
+## Accessibility
+
+- `AlertDialogContent` is a `role="alertdialog"` element. `AlertDialogTitle` names it and `AlertDialogDescription` describes it: render both (Radix warns in development without them). Screen readers read the description when it opens.
+- It is modal:
+  - Opening moves the focus to `AlertDialogCancel`, the choice that changes nothing.
+  - Tab and Shift+Tab stay inside the dialog.
+  - The rest of the page is hidden from assistive technology and ignores the pointer; the page doesn't scroll.
+- Escape and `AlertDialogCancel` close it without the action; `AlertDialogAction` closes it after its `onClick`. A click on the mask does nothing and keeps the focus in the dialog. The focus then returns to the trigger.
+- Label the action with what it does ("Delete", not "OK"), so the buttons make sense without the description.
+
+<Canvas of={AlertDialogStories.Default} />
+
+Deviations from the Figma kit (the full table is in the package README): the buttons' `focus-ring`, the destructive action's colours (above) and the Dialog's `text-secondary` description (5.74:1 on `background-1`).
+
+## Portal and theme
+
+`AlertDialogContent` renders its mask and card in a portal at the end of `<body>`, so it takes the theme of `<html>`. Pass `data-theme` to `AlertDialogContent` to give it its own. The mask keeps the same colours in both themes, as the Dialog's does.
+
+## Localization and RTL
+
+- `messages.alertDialog.cancel` ("Cancel") is the label of an `AlertDialogCancel` without children or `label`. Everything else is your text.
+- The portalled content takes `dir` from `SnowUIProvider`. In right-to-left text Cancel is on the right and the action on the left.
+- Right-to-left, open: [RTL story](?path=/story/components-alertdialog--rtl).
+
+## Composition (asChild)
+
+`AlertDialogTrigger` takes `asChild` (Radix) to render your own button. `AlertDialogAction` and `AlertDialogCancel` are Buttons: they take the Button props (`label`, `startContent`, `asChild`…).
+
+To wait for the action before closing (a request that can fail), control the dialog and keep it open in the action's `onClick`:
+
+```tsx
+const [open, setOpen] = useState(false)
+
+<AlertDialog open={open} onOpenChange={setOpen}>
+  <AlertDialogTrigger asChild>
+    <Button variant="outline" label="Delete project" />
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    {/* header */}
+    <AlertDialogFooter>
+      <AlertDialogCancel />
+      <AlertDialogAction
+        variant="destructive"
+        onClick={(event) => {
+          event.preventDefault() // stay open
+          deleteProject().then(() => setOpen(false))
+        }}
+      >
+        Delete
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Ask a question in the title and say what will happen in the description.
+- Name the action after what it does: "Delete", "Discard changes".
+- Use `destructive` for actions that delete or can't be undone.
+- Keep it to two buttons: Cancel and the action.
+
+</Do>
+<Dont>
+
+- Don't use an alert dialog for information or a form: use an Alert or a Dialog.
+- Don't move the default focus to the destructive action.
+- Don't ask for confirmation of actions that can be undone.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Dialog](?path=/docs/components-dialog--docs): the same mask, motion and popup, for tasks and forms.
+- [Alert](?path=/docs/components-alert--docs): a message in the page that needs no answer.
+- [Button](?path=/docs/components-button--docs): the trigger and the actions.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): translates "Cancel" and sets the direction.
+
+## Props
+
+<Controls />

@@ -25,6 +25,9 @@ export const ruMessages: Messages = {
     warning: 'Предупреждение',
     error: 'Ошибка',
   },
+  alertDialog: {
+    cancel: 'Отмена',
+  },
   avatarGroup: {
     more: (count) => `Ещё ${count}`,
   },

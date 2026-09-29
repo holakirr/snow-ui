@@ -26,6 +26,10 @@ export type Messages = {
     /** Screen-reader text before the content of an `error` alert. */
     error: string
   }
+  alertDialog: {
+    /** The label of an `AlertDialogCancel` without children. */
+    cancel: string
+  }
   avatarGroup?: {
     /** Screen-reader text of the "+N" avatar: the avatars not shown. */
     more: (count: number) => string
@@ -174,6 +178,9 @@ export const defaultMessages: Required<Messages> = {
     success: 'Success',
     warning: 'Warning',
     error: 'Error',
+  },
+  alertDialog: {
+    cancel: 'Cancel',
   },
   avatarGroup: {
     more: (count) => `${count} more`,

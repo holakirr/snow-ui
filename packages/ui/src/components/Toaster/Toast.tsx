@@ -35,9 +35,10 @@ ToastProvider.displayName = 'ToastProvider'
  * The toast region. Its `label` defaults to `messages.toast.region`
  * ("Notifications ({hotkey})").
  */
-const ToastViewport: FC<
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
-> = ({ className, ...props }) => {
+const ToastViewport: FC<ComponentProps<typeof ToastPrimitives.Viewport>> = ({
+  className,
+  ...props
+}) => {
   const messages = useMessages()
   const { dir } = useSnowUI()
 
@@ -84,12 +85,17 @@ const toastVariants = cva(
 type ToastProps = ComponentProps<typeof ToastPrimitives.Root> &
   VariantProps<typeof toastVariants> & {
     size?: SimpleSize
+    /**
+     * The toast's status, set as `data-status` for styling. `Toaster` draws
+     * its icon; with `Toast` itself, put a `StatusIcon` in it.
+     */
     status?: StatusNotify
   }
 
-const Toast: FC<ToastProps> = ({ className, size, ...props }) => (
+const Toast: FC<ToastProps> = ({ className, size, status, ...props }) => (
   <ToastPrimitives.Root
     className={twMerge(toastVariants({ size }), className)}
+    data-status={status}
     {...props}
   />
 )
@@ -109,12 +115,14 @@ const ToastAction: FC<ToastActionProps> = ({ className, size, ...props }) => (
 ToastAction.displayName = ToastPrimitives.Action.displayName
 
 const toastCloseStyles = cva(
-  'shrink-0 rounded-8 text-static-white/80 transition-colors hover:text-static-white focus-ring',
+  // The hit area is 24px (WCAG 2.5.8), drawn by `::after` around the 16px
+  // (small) or 20px (large) button.
+  "relative shrink-0 rounded-8 text-static-white/80 transition-colors after:absolute after:content-[''] hover:text-static-white focus-ring",
   {
     variants: {
       size: {
-        lg: 'p-0.5',
-        sm: 'p-0',
+        lg: 'p-0.5 after:-inset-0.5',
+        sm: 'p-0 after:-inset-1',
       },
     },
     defaultVariants: {

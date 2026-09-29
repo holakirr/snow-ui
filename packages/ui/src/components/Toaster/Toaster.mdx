@@ -37,15 +37,15 @@ toast({ status: 'success', title: 'Saved' })
 
 ## Anatomy
 
-1. **Toaster** (`Toaster`): renders the toasts from `toast()` inside a `ToastProvider` and a `ToastViewport`. Props: `duration` (3000ms by default, for toasts without an `action`) and `id`.
+1. **Toaster** (`Toaster`): renders the toasts from `toast()` inside a `ToastProvider` and a `ToastViewport`. Props: `duration` (3000ms by default, for toasts without an `action`), `limit` (1 by default: how many toasts show at once), `expand` and `id`.
 2. **Viewport** (`ToastViewport`): a fixed list at the bottom centre of the screen, with 16px of padding; at most 448px wide from the `md` breakpoint.
 3. **Toast** (`Toast`): the pill: `static-black` at 80% under a `static-white` 10% overlay, a 20px background blur ("Background blur 40"), a 16px radius, `static-white` text.
-4. **Status icon** (optional, `status`): a success or error icon at the start, 16px (`sm`) or 20px (`lg`).
+4. **Status icon** (optional, `status`): a success or error icon at the start, 16px (`sm`) or 20px (`lg`). The toast gets the status as `data-status`.
 5. **Title** (`ToastTitle`) and **description** (`ToastDescription`, optional): regular text; the description in `static-white` at 80%.
 6. **Action** (`action`, optional): an element after the text, e.g. an Undo button (`ToastAction`, a Filled button).
-7. **Close button** (`ToastClose`, when `closable`): a 16px close icon in `static-white` at 80%, white on hover.
+7. **Close button** (`ToastClose`, when `closable`): a 16px close icon in `static-white` at 80%, white on hover, with a 24px hit area.
 
-`toast()` takes the props of `Toast` plus `title`, `description`, `action`, `status`, `size`, `closable`, `duration` and `toasterId`. It returns `{ id, dismiss, update }`. `useToast()` returns the current `toasts`, `toast` and `dismiss(id?)`.
+`toast()` takes the props of `Toast` plus `title`, `description`, `action`, `status`, `size`, `closable`, `duration` and `toasterId`. It returns `{ id, dismiss, update }`. `useToast()` returns the current `toasts` (newest first; a closed one stays a few seconds with `open: false` while it animates out), `toast` and `dismiss(id?)`. The `reducer` export is deprecated and will be removed in 6.0: it is no longer what the store runs.
 
 ## Variants
 
@@ -73,10 +73,14 @@ The toast stays dark in both themes: the Figma component pins its colours to Sno
 ## Behaviour
 
 - **Duration:** a toast closes after the Toaster's `duration` (3000ms); a `duration` passed to `toast()` wins. A toast with an `action` defaults to `Number.POSITIVE_INFINITY` instead of the Toaster's `duration`: it stays until the user closes it, unless you give it its own `duration`. `duration: Number.POSITIVE_INFINITY` keeps any toast until the user closes it.
-- **One at a time:** each Toaster shows one toast. A new `toast()` replaces the visible one.
+- **How many:** a Toaster shows up to `limit` toasts at once (1 by default: a new `toast()` replaces the visible one). Over the limit, the oldest toast closes.
+- **Stacking:** with a `limit` above 1 the toasts stack, as in Sonner: the newest in front, each older one 8px higher and 5% smaller behind it, with its content hidden. Hovering the stack or moving focus into it (F8) spreads it into a list, 8px apart, newest at the bottom; it collapses again once the pointer and focus have left. `expand` keeps it spread. The front toast keeps the Figma look; the stack is the library's own.
+
+<Canvas of={ToasterStories.Stacked} />
+
 - **Pause:** hovering or focusing the toasts pauses their timers.
 - **Dismiss:** Escape or a swipe (to the right; to the left in right-to-left text) closes a toast; so do `dismiss()` and its close button. `update()` changes a toast in place.
-- **Several toasters:** every `<Toaster />` without an `id` shows the toasts that have no `toasterId`. Give a toaster an `id` and pass the same `toasterId` to `toast()` to run it separately; each keeps its own limit of one.
+- **Several toasters:** every `<Toaster />` without an `id` shows the toasts that have no `toasterId`. Give a toaster an `id` and pass the same `toasterId` to `toast()` to run it separately; each keeps its own `limit`.
 
 ## States
 
@@ -92,8 +96,8 @@ The toast stays dark in both themes: the Figma component pins its colours to Sno
 
 - The viewport is a `region` landmark named "Notifications (F8)" (`messages.toast.region`, where `{hotkey}` becomes the shortcut). F8 moves focus to the viewport.
 - Each toast is announced in a live region when it appears, after "Notification" (`messages.toast.label`): assertively for the default `type="foreground"`, politely for `type="background"`.
-- A toast is focusable (in the viewport list), and Escape closes it.
-- The close button is named "Close" (`messages.toast.close`); `aria-label` on `ToastClose` overrides it. It has the `focus-ring`.
+- A toast is focusable (in the viewport list), and Escape closes it. Focus in a stack spreads it, so the toasts behind the front one are visible while you move through them.
+- The close button is named "Close" (`messages.toast.close`); `aria-label` on `ToastClose` overrides it. It has the `focus-ring` and a 24px hit area (WCAG 2.5.8) around its 16px (`sm`) or 20px (`lg`) box.
 - For an action, use `ToastAction` with `altText`: Radix requires it, and it tells screen-reader users how to do the action another way, since they hear the toast without moving to it (and a toast with its own `duration` may close before they reach it). `ToastAction` closes the toast when clicked.
 
 Deviations from the Figma kit (the full table is in the package README):
@@ -147,7 +151,7 @@ Pass the same `size` to `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction`
 <Dont>
 
 - Don't put information the user must act on only in a toast.
-- Don't show a toast for every small change; one message at a time is all the user sees.
+- Don't show a toast for every small change: by default one message at a time is all the user sees, and a stack only shows the newest in full.
 - Don't turn off the close button of a toast with an action or no timeout.
 - Don't render a `<Toaster />` in every page component: they all show the same toasts.
 

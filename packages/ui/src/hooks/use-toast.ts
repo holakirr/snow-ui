@@ -2,176 +2,55 @@
 
 // Inspired by react-hot-toast library
 import { useEffect, useState } from 'react'
+import { warnDeprecated } from '../utils/deprecation'
+import {
+  ACTION_TYPES,
+  type Action,
+  dispatch,
+  genId,
+  getState,
+  listeners,
+  reduce,
+  type State,
+  type ToasterToast,
+} from './toast-store'
 
-import type {
-  ToastActionElement,
-  ToastProps,
-} from '../components/Toaster/Toast'
-
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 3000
-
-type ToasterToast = ToastProps & {
-  id: string
-  title?: React.ReactNode
-  description?: React.ReactNode
-  action?: ToastActionElement
-  /**
-   * Time in milliseconds before the toast closes (`Number.POSITIVE_INFINITY`
-   * keeps it until it is dismissed). Defaults to the `<Toaster>`'s
-   * `duration` (3000), or to `Number.POSITIVE_INFINITY` for a toast with an
-   * `action`, so the action doesn't vanish before the user reaches it.
-   */
-  duration?: number
-  /**
-   * Shows a close button. The Figma toast has none: it closes itself, on
-   * swipe or with Escape. Defaults to `true` for toasts with an `action` or
-   * an infinite `duration`, `false` otherwise.
-   */
-  closable?: boolean
-  /**
-   * The `<Toaster id>` that shows this toast. Toasts without one go to the
-   * `<Toaster>` without an `id`. Each toaster keeps its own limit of one
-   * visible toast.
-   */
-  toasterId?: string
-}
-
-const ACTION_TYPES = {
-  ADD_TOAST: 'ADD_TOAST',
-  UPDATE_TOAST: 'UPDATE_TOAST',
-  DISMISS_TOAST: 'DISMISS_TOAST',
-  REMOVE_TOAST: 'REMOVE_TOAST',
-} as const
-
-let count = 0
-
-function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER
-  return count.toString()
-}
-
-type ActionType = typeof ACTION_TYPES
-
-type Action =
-  | {
-      type: ActionType['ADD_TOAST']
-      toast: ToasterToast
-    }
-  | {
-      type: ActionType['UPDATE_TOAST']
-      toast: Partial<ToasterToast>
-    }
-  | {
-      type: ActionType['DISMISS_TOAST']
-      toastId?: ToasterToast['id']
-    }
-  | {
-      type: ActionType['REMOVE_TOAST']
-      toastId?: ToasterToast['id']
-    }
-
-interface State {
-  toasts: ToasterToast[]
-}
-
-const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
-
-const addToRemoveQueue = (toastId: string) => {
-  if (toastTimeouts.has(toastId)) {
-    return
-  }
-
-  const timeout = setTimeout(() => {
-    toastTimeouts.delete(toastId)
-    dispatch({
-      type: ACTION_TYPES.REMOVE_TOAST,
-      toastId: toastId,
-    })
-  }, TOAST_REMOVE_DELAY)
-
-  toastTimeouts.set(toastId, timeout)
-}
-
+/**
+ * The store's reducer.
+ *
+ * @deprecated Internal, and no longer the reducer of the toast store: it
+ * will not be exported in 6.0. Show toasts with `toast()`, read them with
+ * `useToast()` and set how many a toaster shows with `<Toaster limit>`. It
+ * keeps its 5.0 behaviour: `ADD_TOAST` keeps only the newest toast of each
+ * toaster.
+ */
 export const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case ACTION_TYPES.ADD_TOAST: {
-      // The limit applies per toaster, so toasters don't evict each other.
-      const sameToaster = state.toasts.filter(
-        (t) => t.toasterId === action.toast.toasterId,
-      )
-      const otherToasters = state.toasts.filter(
-        (t) => t.toasterId !== action.toast.toasterId,
-      )
-      return {
-        ...state,
-        toasts: [
-          ...[action.toast, ...sameToaster].slice(0, TOAST_LIMIT),
-          ...otherToasters,
-        ],
-      }
-    }
+  warnDeprecated(
+    'toast:reducer',
+    'The `reducer` export of the toast store is deprecated and will be removed in the next major version. Use `toast()`, `useToast()` and `<Toaster limit>` instead.',
+  )
+  if (action.type !== ACTION_TYPES.ADD_TOAST) return reduce(state, action)
 
-    case ACTION_TYPES.UPDATE_TOAST:
-      return {
-        ...state,
-        toasts: state.toasts.map((t) =>
-          t.id === action.toast.id ? { ...t, ...action.toast } : t,
-        ),
-      }
-
-    case ACTION_TYPES.DISMISS_TOAST: {
-      const { toastId } = action
-
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
-      if (toastId) {
-        addToRemoveQueue(toastId)
-      } else {
-        for (const toast of state.toasts) {
-          addToRemoveQueue(toast.id)
-        }
-      }
-
-      return {
-        ...state,
-        toasts: state.toasts.map((t) =>
-          t.id === toastId || toastId === undefined
-            ? {
-                ...t,
-                open: false,
-              }
-            : t,
-        ),
-      }
-    }
-    case ACTION_TYPES.REMOVE_TOAST:
-      if (action.toastId === undefined) {
-        return {
-          ...state,
-          toasts: [],
-        }
-      }
-      return {
-        ...state,
-        toasts: state.toasts.filter((t) => t.id !== action.toastId),
-      }
-  }
-}
-
-const listeners: Array<(state: State) => void> = []
-
-let memoryState: State = { toasts: [] }
-
-function dispatch(action: Action) {
-  memoryState = reducer(memoryState, action)
-  for (const listener of listeners) {
-    listener(memoryState)
+  // The limit applies per toaster, so toasters don't evict each other.
+  const sameToaster = state.toasts.filter(
+    (t) => t.toasterId === action.toast.toasterId,
+  )
+  const otherToasters = state.toasts.filter(
+    (t) => t.toasterId !== action.toast.toasterId,
+  )
+  return {
+    ...state,
+    toasts: [...[action.toast, ...sameToaster].slice(0, 1), ...otherToasters],
   }
 }
 
 type Toast = Omit<ToasterToast, 'id'>
 
+/**
+ * Shows a toast in the `<Toaster>` with its `toasterId` (the one without an
+ * `id` by default). Returns its `id` and functions to `update` and
+ * `dismiss` it. Over the toaster's `limit`, the oldest toast closes.
+ */
 function toast({ ...props }: Toast) {
   const id = genId()
 
@@ -202,11 +81,18 @@ function toast({ ...props }: Toast) {
   }
 }
 
+/**
+ * The toasts of every toaster, newest first (closed ones stay for a few
+ * seconds, with `open: false`, while they animate out), with `toast()` and
+ * `dismiss(id?)` (every toast without an id).
+ */
 function useToast() {
-  const [state, setState] = useState<State>(memoryState)
+  const [state, setState] = useState<State>(getState)
 
   useEffect(() => {
     listeners.push(setState)
+    // A toast shown between the first render and this effect.
+    setState(getState())
     return () => {
       const index = listeners.indexOf(setState)
       if (index > -1) {

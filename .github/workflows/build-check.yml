@@ -112,6 +112,7 @@ jobs:
       - name: Check the built stylesheets
         run: bun run test:dist
 
+      # Storybook, the @snow-ui registry (storybook-static/r) and llms.txt.
       - name: Build Storybook
         run: bun run build:storybook
 
@@ -501,6 +502,86 @@ jobs:
             apps/demo/playwright-report
             apps/demo/test-results
           retention-days: 7
+
+  # The @snow-ui shadcn registry (packages/registry), generated from
+  # packages/ui/src: the committed manifest must match the sources, the
+  # generator's and the registry's unit tests pass (shadcn's zod schemas,
+  # every relative import resolvable within an item and the items it depends
+  # on, npm dependencies with ranges, licence headers that survive the CLI,
+  # an install block on every usage page), and the pinned shadcn CLI
+  # validates and builds it. The deployed copy is built by `build:storybook`.
+  registry:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check the registry manifest
+        run: |
+          bun run registry
+          if ! git diff --exit-code packages/registry/manifest.json; then
+            echo "::error title=Stale registry manifest::packages/registry/manifest.json is out of date. Run \`bun run registry\` and commit the result."
+            exit 1
+          fi
+
+      - name: Unit tests (registry)
+        run: bun run --filter @holakirr/snow-ui-registry test
+
+      # Stages the files, runs `shadcn registry validate` and `shadcn build`.
+      - name: Validate and build the registry (shadcn CLI)
+        run: bun packages/registry/src/cli.ts build --out registry-dist/r --llms registry-dist/llms.txt
+
+  # Installs every registry item with the pinned shadcn CLI, from a local
+  # copy of the registry, into fresh apps (create-next-app with RSC; Vite
+  # with a strict tsconfig and `rsc: false`; an existing shadcn/ui project),
+  # which must typecheck and build (Next.js prerenders a page that renders
+  # components and imports every item). The packages come from the `build`
+  # job as tarballs, so unreleased versions are tested.
+  registry-smoke:
+    needs: build
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [next, vite, next-shadcn]
+
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Download package builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+          path: packages
+
+      - name: Smoke test (${{ matrix.app }})
+        run: bun packages/registry/smoke/smoke.ts --app ${{ matrix.app }} --work "$RUNNER_TEMP/registry-smoke"
 
   # Warns (never fails the PR) when packages changed without a changeset.
   # Docs/CI-only PRs don't need one; `bun changeset --empty` silences it.

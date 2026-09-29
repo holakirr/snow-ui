@@ -12,6 +12,8 @@ Monorepo for the React implementation of the [SnowUI design kit](https://snowui.
 | [`@holakirr/snow-ui-icons`](packages/icons) | `packages/icons` | [![npm](https://img.shields.io/npm/v/@holakirr/snow-ui-icons)](https://www.npmjs.com/package/@holakirr/snow-ui-icons) |
 | [`@holakirr/snow-ui-charts`](packages/charts) | `packages/charts` | [![npm](https://img.shields.io/npm/v/@holakirr/snow-ui-charts)](https://www.npmjs.com/package/@holakirr/snow-ui-charts) |
 
+`packages/registry` (private) generates the [`@snow-ui` shadcn registry](https://snow-ui.holakirr.com/?path=/docs/guides-registry--docs) from the ui package's sources: the same components as copy-paste source for the shadcn CLI, served at `https://snow-ui.holakirr.com/r/`.
+
 `@holakirr/snow-ui` is the component library (React 19, Tailwind CSS v4, Radix UI). `@holakirr/snow-ui-icons` is the icon set it uses; it is also published on its own. `@holakirr/snow-ui-charts` is an optional companion: line, area, bar, donut and sparkline charts in the SnowUI design, built on [Recharts](https://recharts.github.io) 3 and the ui package's tokens (a peer dependency).
 
 All packages are documented in one Storybook — [snow-ui.holakirr.com](https://snow-ui.holakirr.com) — with guides (Getting started, Theming, Localization and RTL) under "Guides", a usage page for every component under "Components" (when to use it, anatomy, variants, states, accessibility, a link to its Figma component), the charts under "Charts" and icons under "Icons". Its config lives in the root `.storybook/`, the guides in `docs/`; see [Documentation](CONTRIBUTING.md#documentation).
@@ -41,7 +43,8 @@ bun run build          # tsdown build of icons, then ui, then charts (+ publint 
 bun run build:all      # the packages, then the demo app (apps/demo)
 bun run test:dist      # checks of the built ui stylesheets and charts package (needs `bun run build`)
 bun run storybook      # shared Storybook (ui + icons + charts) on :53741
-bun run build:storybook # static Storybook in ./storybook-static
+bun run build:storybook # static Storybook in ./storybook-static, with the registry (/r) and llms.txt
+bun run registry       # regenerate packages/registry/manifest.json (the shadcn registry's items)
 bun run test:storybook # every story in headless Chromium, light and dark theme (+ play functions, axe)
 bun run test:storybook:browsers # every story in headless Firefox and WebKit (+ play functions)
 bun run test:ssr       # every ui story rendered on the server (Node) and hydrated in Chromium
@@ -92,6 +95,8 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 | Visual regression (Playwright, in Docker) | `bun run visual` | `visual` | a story's screenshot (light or dark theme) differs from its baseline in `visual/__screenshots__` (update them with `bun run visual:update`) |
 | Bundle size ([size-limit](https://github.com/ai/size-limit)) | `bun run size` | `size` | an entry point grows past its budget in `.size-limit.json` |
 | Demo app | `bun run build:all && bun run test:demo` | `demo` | the demo's types or Next.js build fail against the built packages, or its Playwright smoke tests fail: a page logs a console error or has an axe violation, a toggle, the command palette or a form breaks, or a route's First Load JS exceeds its budget |
+| Registry | `bun run registry`, `bun run test`, `bun run registry:build` | `registry` | `packages/registry/manifest.json` is out of date, an item breaks an invariant (an import that doesn't resolve within the item and its dependencies, an undeclared npm package, a lost licence header, a usage page without install tabs), or the shadcn CLI rejects the registry |
+| Registry smoke test | `bun packages/registry/smoke/smoke.ts` (after `bun run build`) | `registry-smoke` | installing every item with the shadcn CLI into a fresh Next.js app, a Vite app or an existing shadcn/ui project fails, or the app doesn't typecheck or build |
 | Changesets | `bun changeset status` | `changeset` | never: warns when a package changed without a changeset |
 
 ## Releasing

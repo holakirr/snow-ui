@@ -14,9 +14,11 @@ import type {
  * - `css`: a Tailwind v4 stylesheet. Every token as a theme variable in
  *   `@theme static` (light values), and the theme scopes in `@layer base`:
  *   the tokens that differ between the `theme` modifier's contexts on
- *   `:root, [data-theme="light"]`, `[data-theme="dark"]` and, for the OS
- *   preference, `:root:not([data-theme="light"])`; plus `[data-theme]`, which
- *   re-declares the tokens whose value refers to a switching token.
+ *   `:root, [data-theme="light"], .light`, `[data-theme="dark"], .dark` and,
+ *   for the OS preference when <html> sets no mode, `:root:not([data-theme],
+ *   .light, .dark)`; plus `[data-theme], .light, .dark`, which re-declares
+ *   the tokens whose value refers to a switching token. The `light` / `dark`
+ *   classes are the ones next-themes and shadcn/ui set.
  * - `ts`: the token data behind Storybook's Foundations pages.
  * - `scales`: the token scales tailwind-merge needs (`src/utils/tw-merge.ts`).
  *
@@ -666,6 +668,12 @@ function declaration(name: string, value: string, indent: string) {
   ].join('\n')
 }
 
+/** Selectors of the light and the dark scopes. */
+const LIGHT_SCOPES = ['[data-theme="light"]', '.light']
+const DARK_SCOPES = ['[data-theme="dark"]', '.dark']
+/** Every element that sets a mode (the OS preference applies to none). */
+const SCOPES = ['[data-theme]', '.light', '.dark']
+
 function renderCss({ sections }: Model) {
   const all = sections.flatMap((section) => section.variables)
   const theme = sections
@@ -723,20 +731,23 @@ function renderCss({ sections }: Model) {
     '',
     '@layer base {',
     comment(
-      'Theme scopes. `data-theme="dark"` on any element switches the tokens of its subtree to the dark mode and `data-theme="light"` switches them back (a light panel in a dark page); with no data-theme on <html>, the page follows the OS preference. The tokens are inherited CSS variables, so an element gets the values of its nearest data-theme ancestor, at any depth. `color-scheme` follows, for native controls, scrollbars and system colours. Only the tokens that differ between the modes are listed; the light values repeat `@theme static` so that a light scope can override a dark parent.',
+      'Theme scopes. `data-theme="dark"` (or the `dark` class, as set by next-themes and shadcn/ui) on any element switches the tokens of its subtree to the dark mode and `data-theme="light"` (or the `light` class) switches them back (a light panel in a dark page); with no mode set on <html>, the page follows the OS preference. The tokens are inherited CSS variables, so an element gets the values of its nearest scope ancestor, at any depth. `color-scheme` follows, for native controls, scrollbars and system colours. Only the tokens that differ between the modes are listed; the light values repeat `@theme static` so that a light scope can override a dark parent.',
       '  ',
     ),
-    scope(':root,\n  [data-theme="light"]', 'light', '  '),
+    scope(`:root,\n  ${LIGHT_SCOPES.join(',\n  ')}`, 'light', '  '),
     '',
     comment(
       'Dark mode. The same values as the OS-preference block below.',
       '  ',
     ),
-    scope('[data-theme="dark"]', 'dark', '  '),
+    scope(DARK_SCOPES.join(',\n  '), 'dark', '  '),
     '',
-    comment('No data-theme on <html>: dark when the OS prefers dark.', '  '),
+    comment(
+      'No mode on <html> (no data-theme, no light / dark class): dark when the OS prefers dark.',
+      '  ',
+    ),
     '  @media (prefers-color-scheme: dark) {',
-    scope(':root:not([data-theme="light"])', 'dark', '    '),
+    scope(`:root:not(${SCOPES.join(', ')})`, 'dark', '    '),
     '  }',
     ...(rederived.length
       ? [
@@ -745,7 +756,7 @@ function renderCss({ sections }: Model) {
             'A variable defined with var() is computed on the element that declares it and inherited as a value, so the `@theme static` values built on switching tokens would keep the values of <html>. Each scope re-declares them.',
             '  ',
           ),
-          '  [data-theme] {',
+          `  ${SCOPES.join(',\n  ')} {`,
           ...declarations(rederived, 'light', '    ', 'none'),
           '  }',
         ]

@@ -9,25 +9,32 @@ import { Typography } from '../Text'
 
 const defaultTag = 'div'
 
-const iconTextStyles = cva('inline-flex gap-2 rounded-12 text-black', {
-  variants: {
-    vertical: {
-      true: 'flex-col items-center text-center',
-      false: 'flex-row items-center',
+// `focus-ring` (the keyboard focus indicator of every control) only shows on
+// :focus-visible, so it covers any focusable row — an `asChild` link or
+// button, interactive or not — and leaves a static `<div>` alone. Its
+// outline sits outside the row, so the hover and active fills don't hide it.
+const iconTextStyles = cva(
+  'inline-flex gap-2 rounded-12 text-black focus-ring',
+  {
+    variants: {
+      vertical: {
+        true: 'flex-col items-center text-center',
+        false: 'flex-row items-center',
+      },
+      // Figma "Frame": the IconText with hover / selected states. Frame itself
+      // has no padding, but every instance in the kit uses 8, so it is built in.
+      interactive: {
+        true: 'p-2 cursor-pointer transition-colors hover:bg-black-4',
+      },
+      active: {
+        true: 'p-2 bg-black-4',
+      },
     },
-    // Figma "Frame": the IconText with hover / selected states. Frame itself
-    // has no padding, but every instance in the kit uses 8, so it is built in.
-    interactive: {
-      true: 'p-2 cursor-pointer transition-colors hover:bg-black-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus',
-    },
-    active: {
-      true: 'p-2 bg-black-4',
+    defaultVariants: {
+      vertical: false,
     },
   },
-  defaultVariants: {
-    vertical: false,
-  },
-})
+)
 
 /**
  * Props for the IconText component.

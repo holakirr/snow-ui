@@ -36,7 +36,7 @@ describe('ListItem', () => {
 
     const link = screen.getByRole('link', { name: /You fixed a bug/ })
     expect(link).toHaveAttribute('href', '#notification')
-    expect(link).toHaveClass('p-2', 'hover:bg-black-4')
+    expect(link).toHaveClass('p-2', 'hover:bg-black-4', 'focus-ring')
   })
 
   it('builds the dashboard lists as labelled lists of items', async () => {

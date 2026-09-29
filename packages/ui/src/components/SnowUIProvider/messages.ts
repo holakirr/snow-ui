@@ -117,10 +117,16 @@ export type Messages = {
   datePicker?: {
     /** The field's text while no date is picked (`DatePicker`). */
     placeholder: string
+    /** The field's text while no range is picked (`DateRangePicker`). */
+    rangePlaceholder: string
     /** The popover with the calendar (`DatePicker`). */
     dialog: string
+    /** The popover with the calendar (`DateRangePicker`). */
+    rangeDialog: string
     /** The clear button. */
     clear: string
+    /** A picked range, from its two formatted dates (`DateRangePicker`). */
+    range: (start: string, end: string) => string
   }
   dialog: {
     /** The close button of `DialogHeader`. */
@@ -251,8 +257,11 @@ export const defaultMessages: Required<Messages> = {
   },
   datePicker: {
     placeholder: 'Pick a date',
+    rangePlaceholder: 'Pick a date range',
     dialog: 'Choose a date',
+    rangeDialog: 'Choose a date range',
     clear: 'Clear date',
+    range: (start, end) => `${start} – ${end}`,
   },
   dialog: {
     close: 'Close',

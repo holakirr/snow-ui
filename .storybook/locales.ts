@@ -71,8 +71,11 @@ export const ruMessages: Messages = {
   },
   datePicker: {
     placeholder: 'Выберите дату',
+    rangePlaceholder: 'Выберите период',
     dialog: 'Выбор даты',
+    rangeDialog: 'Выбор периода',
     clear: 'Очистить дату',
+    range: (start, end) => `${start} – ${end}`,
   },
   dialog: {
     close: 'Закрыть',

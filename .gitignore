@@ -30,6 +30,8 @@ dist-ssr
 playwright-report
 coverage
 test-results
+# Vitest browser-mode failure screenshots; the SSR test's server HTML (.tmp)
+.vitest
 .tmp
 storybook-static
 *storybook.log

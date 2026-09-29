@@ -19,6 +19,10 @@
  *
  *   bun scripts/publish.ts            # what `bun run release` runs
  *   RELEASE_DRY_RUN=1 bun scripts/publish.ts   # only report what it would do
+ *
+ * Arguments are passed on to `changeset publish`: the canary job of
+ * release.yml runs `bun scripts/publish.ts --tag canary --no-git-tag` after
+ * `changeset version --snapshot canary`.
  */
 import { spawnSync } from 'node:child_process'
 import {
@@ -37,6 +41,9 @@ interface WorkspacePackage {
 }
 
 const root = join(import.meta.dirname, '..')
+
+/** Extra `changeset publish` options, e.g. `--tag canary --no-git-tag`. */
+const publishArgs = process.argv.slice(2)
 
 const packages: WorkspacePackage[] = readdirSync(join(root, 'packages'))
   .map((dir) => join(root, 'packages', dir, 'package.json'))
@@ -91,7 +98,7 @@ for (const pkg of unpublished) {
 
 if (isDryRun(process.env.RELEASE_DRY_RUN)) {
   console.log(
-    `Would publish with changeset publish, skipping: ${
+    `Would publish with changeset publish ${publishArgs.join(' ')}, skipping: ${
       unpublished.map((pkg) => pkg.name).join(', ') || 'none'
     }`,
   )
@@ -108,7 +115,7 @@ try {
     )
   }
   // Inherits stdout: changesets/action reads the "New tag:" lines from it.
-  const result = spawnSync('changeset', ['publish'], {
+  const result = spawnSync('changeset', ['publish', ...publishArgs], {
     cwd: root,
     stdio: 'inherit',
   })

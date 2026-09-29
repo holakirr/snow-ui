@@ -1,0 +1,74 @@
+name: Accessibility issue
+description: Something that is hard or impossible to use with a keyboard, a screen reader, zoom, high contrast or other assistive technology.
+labels: ["bug", "accessibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Accessibility problems are bugs, and SnowUI treats WCAG 2.2 AA as the bar (deviations from the Figma kit are listed in the [ui README](https://github.com/holakirr/snow-ui/blob/main/packages/ui/README.md#accessibility-deviations-from-the-figma-kit)). Thanks for taking the time to report one.
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      placeholder: "Select, Dialog, Calendar…"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: "@holakirr/snow-ui 5.0.0"
+    validations:
+      required: true
+  - type: checkboxes
+    id: assistive-technology
+    attributes:
+      label: How you use it
+      options:
+        - label: Keyboard only
+        - label: VoiceOver (macOS)
+        - label: VoiceOver (iOS)
+        - label: NVDA
+        - label: JAWS
+        - label: TalkBack
+        - label: Narrator
+        - label: Voice control (Voice Control, Dragon…)
+        - label: Zoom or screen magnifier
+        - label: High contrast or forced colours
+        - label: Reduced motion
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: "Firefox 140 on Windows 11 with NVDA 2026.1"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happens
+      description: What you tried to do, what you expected (announcements, focus, keys), and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Where to see it
+      description: A link to the Storybook story (snow-ui.holakirr.com) that shows it, or the smallest code that does.
+    validations:
+      required: true
+  - type: input
+    id: wcag
+    attributes:
+      label: WCAG success criterion (if you know it)
+      placeholder: "2.1.1 Keyboard, 4.1.2 Name, Role, Value…"
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - "Blocks a task: I can't complete it"
+        - "There is a workaround"
+        - "Annoying, but doesn't block anything"
+    validations:
+      required: true

@@ -35,13 +35,9 @@ export const disabledInputClasses =
 export const focusInputClasses =
   'focus:inset-ring-control-border-strong focus:ring-4 focus:ring-focus'
 
-/**
- * Figma "Static" (read-only): the stroke doesn't react to hover or focus. An
- * invalid read-only field keeps its red stroke (these selectors would
- * outweigh `aria-invalid:`).
- */
+/** Figma "Static" (read-only): the stroke doesn't react to hover or focus. */
 export const staticInputClasses =
-  'read-only:not-aria-invalid:hover:inset-ring-control-border read-only:not-aria-invalid:focus:inset-ring-control-border'
+  'read-only:hover:inset-ring-control-border read-only:focus:inset-ring-control-border'
 
 /**
  * Invalid, while the field has `aria-invalid="true"` (`FormControl` sets it):
@@ -49,11 +45,14 @@ export const staticInputClasses =
  * on white), `red-text` with more contrast. The design has no error state;
  * the error text is the `FormMessage`.
  *
+ * The read-only states repeat it, because the Static ones (`read-only:hover:`)
+ * would outweigh `aria-invalid:`.
+ *
  * Shared by the fields, not exported from the package: for a field of your
  * own, use these utilities directly.
  */
 export const invalidInputClasses =
-  'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid'
+  'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid aria-invalid:read-only:hover:inset-ring-control-border-invalid aria-invalid:read-only:focus:inset-ring-control-border-invalid'
 
 // The field shell: the same look, driven by the inner <input>. Focus is the
 // Figma "Focus" state: Black/40% stroke + the 4px Focus ring, while the

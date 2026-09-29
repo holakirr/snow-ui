@@ -6,3 +6,7 @@ next-env.d.ts
 # Playwright
 test-results
 playwright-report
+
+# Written by `next dev` when it detects an AI coding agent
+AGENTS.md
+CLAUDE.md

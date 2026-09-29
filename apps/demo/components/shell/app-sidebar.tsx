@@ -123,7 +123,9 @@ export const AppSidebar = ({ dict }: { dict: Dictionary }) => (
     <SidebarFooter className="items-center">
       <IconText
         icon={
-          <IconBox size={20} aria-hidden>
+          // SnowUIIcon draws fixed black and white (not currentColor):
+          // inverted, it stays visible on the dark theme.
+          <IconBox size={20} aria-hidden className="dark:invert">
             <SnowUIIcon />
           </IconBox>
         }

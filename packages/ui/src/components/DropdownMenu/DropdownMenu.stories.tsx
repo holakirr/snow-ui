@@ -45,7 +45,8 @@ export const Default: Story = {
       trigger.focus()
       await userEvent.keyboard('{Enter}')
       const menu = await page.findByRole('menu')
-      await expect(menu).toBeVisible()
+      // It fades in (only fades, with reduced motion): wait for it.
+      await waitFor(() => expect(menu).toBeVisible())
       await waitFor(() =>
         expect(page.getByRole('menuitem', { name: /^Profile/ })).toHaveFocus(),
       )

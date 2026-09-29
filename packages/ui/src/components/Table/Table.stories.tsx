@@ -145,8 +145,9 @@ const features = tableFeatures({
 })
 
 const checkboxClassName =
-  // The Figma table checkbox is 16px (the Checkbox component is 28px).
-  'size-4 rounded-4 inset-ring-[1.5px] translate-y-0'
+  // The Figma table checkbox is 16px (the Checkbox component is 28px), with
+  // a 24px pointer target (`hit-area`, WCAG 2.5.8).
+  'relative size-4 rounded-4 inset-ring-[1.5px] translate-y-0 hit-area'
 
 const columns: ColumnDef<typeof features, Order>[] = [
   {

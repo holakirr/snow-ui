@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { createRef } from 'react'
+import { type ComponentProps, createRef } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 import {
@@ -85,6 +85,57 @@ describe('Pagination', () => {
     expect(previous).not.toHaveFocus()
     fireEvent.click(previous)
     expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it('blocks a disabled asChild link, a router link included', () => {
+    const navigate = vi.fn()
+    const onPageChange = vi.fn()
+    // A router link: navigates in its own onClick, unless it was prevented
+    // before (it can't see a preventDefault that comes later).
+    const RouterLink = ({
+      to,
+      ...props
+    }: { to: string } & ComponentProps<'a'>) => (
+      <a
+        href={to}
+        {...props}
+        onClick={(event) => {
+          props.onClick?.(event)
+          if (event.defaultPrevented) return
+          event.preventDefault()
+          navigate(to)
+        }}
+      />
+    )
+    render(
+      <Pagination onPageChange={onPageChange}>
+        <PaginationNext asChild disabled page={3}>
+          <RouterLink to="?page=3">Next</RouterLink>
+        </PaginationNext>
+      </Pagination>,
+    )
+    const next = screen.getByRole('link', { name: 'Go to next page' })
+
+    expect(next).toHaveAttribute('aria-disabled', 'true')
+    expect(next).toHaveAttribute('tabindex', '-1')
+    // A click (or Enter, which clicks a link) stops before the router.
+    fireEvent.click(next)
+    expect(navigate).not.toHaveBeenCalled()
+    expect(onPageChange).not.toHaveBeenCalled()
+  })
+
+  it('keeps a disabled link focusable in client-side paging', () => {
+    render(
+      <Pagination onPageChange={() => {}}>
+        <PaginationNext href="?page=3" page={3} disabled />
+      </Pagination>,
+    )
+    const next = screen.getByRole('link', { name: 'Go to next page' })
+
+    expect(next).not.toHaveAttribute('href')
+    expect(next).toHaveAttribute('tabindex', '0')
+    next.focus()
+    expect(next).toHaveFocus()
   })
 
   it('keeps href and onClick on enabled links', () => {
@@ -208,7 +259,7 @@ describe('Pagination', () => {
     })
 
     it('hands the ref and onClick the button of a client-side item', () => {
-      const ref = createRef<HTMLAnchorElement | HTMLButtonElement>()
+      const ref = createRef<HTMLButtonElement>()
       const targets: EventTarget[] = []
       const onClick = vi.fn((event: { currentTarget: EventTarget }) => {
         targets.push(event.currentTarget)

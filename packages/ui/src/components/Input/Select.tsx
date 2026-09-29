@@ -16,6 +16,7 @@ import {
   popoverSeparatorClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
+import { useSnowUI } from '../SnowUIProvider'
 import { invalidInputClasses } from './Input'
 
 const Select = SelectPrimitive.Root
@@ -104,36 +105,43 @@ const SelectContent: FC<SelectContentProps> = ({
   children,
   position = 'popper',
   ...props
-}) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      className={twMerge(
-        'relative z-50 max-h-96 min-w-[8rem] touch-manipulation overflow-hidden sm:touch-auto',
-        popoverSurfaceClasses,
-        // The padding is on the viewport, so the list scrolls inside it.
-        'p-0',
-        popoverAnimationClasses,
-        position === 'popper' &&
-          'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
-        className,
-      )}
-      position={position}
-      {...props}
-    >
-      <SelectScrollUpButton />
-      <SelectPrimitive.Viewport
+}) => {
+  const { theme } = useSnowUI()
+
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        // The portal is outside your `data-theme` scope: a `ThemeScope`'s
+        // theme follows it.
+        data-theme={theme}
         className={twMerge(
-          'p-3',
+          'relative z-50 max-h-96 min-w-[8rem] touch-manipulation overflow-hidden sm:touch-auto',
+          popoverSurfaceClasses,
+          // The padding is on the viewport, so the list scrolls inside it.
+          'p-0',
+          popoverAnimationClasses,
           position === 'popper' &&
-            'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]',
+            'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+          className,
         )}
+        position={position}
+        {...props}
       >
-        {children}
-      </SelectPrimitive.Viewport>
-      <SelectScrollDownButton />
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-)
+        <SelectScrollUpButton />
+        <SelectPrimitive.Viewport
+          className={twMerge(
+            'p-3',
+            position === 'popper' &&
+              'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]',
+          )}
+        >
+          {children}
+        </SelectPrimitive.Viewport>
+        <SelectScrollDownButton />
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  )
+}
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
 type SelectLabelProps = ComponentProps<typeof SelectPrimitive.Label>

@@ -11,6 +11,7 @@ import {
   popoverSeparatorClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
+import { useSnowUI } from '../SnowUIProvider'
 import { KBD, type KBDProps } from '../Text'
 
 const ContextMenu = CtxMenuPrimitive.Root
@@ -60,27 +61,42 @@ type ContextMenuSubContentProps = ComponentProps<
 const ContextMenuSubContent: FC<ContextMenuSubContentProps> = ({
   className,
   ...props
-}) => (
-  <CtxMenuPrimitive.SubContent
-    className={twMerge(contentClasses, className)}
-    {...props}
-  />
-)
+}) => {
+  const { theme } = useSnowUI()
+
+  return (
+    <CtxMenuPrimitive.SubContent
+      // For a submenu you put in a `ContextMenuPortal`.
+      data-theme={theme}
+      className={twMerge(contentClasses, className)}
+      {...props}
+    />
+  )
+}
 ContextMenuSubContent.displayName = CtxMenuPrimitive.SubContent.displayName
 
 type ContextMenuContentProps = ComponentProps<typeof CtxMenuPrimitive.Content>
 
+/**
+ * The menu, in a portal. It takes the `theme` of a `SnowUIProvider` or
+ * `ThemeScope` (the portal is outside your layout's `data-theme` scope).
+ */
 const ContextMenuContent: FC<ContextMenuContentProps> = ({
   className,
   ...props
-}) => (
-  <CtxMenuPrimitive.Portal>
-    <CtxMenuPrimitive.Content
-      className={twMerge(contentClasses, className)}
-      {...props}
-    />
-  </CtxMenuPrimitive.Portal>
-)
+}) => {
+  const { theme } = useSnowUI()
+
+  return (
+    <CtxMenuPrimitive.Portal>
+      <CtxMenuPrimitive.Content
+        data-theme={theme}
+        className={twMerge(contentClasses, className)}
+        {...props}
+      />
+    </CtxMenuPrimitive.Portal>
+  )
+}
 ContextMenuContent.displayName = CtxMenuPrimitive.Content.displayName
 
 const itemClasses = popoverItemClasses

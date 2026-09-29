@@ -9,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '../Breadcrumb'
+import { Button } from '../Button'
 import { Calendar } from '../Calendar'
 import { Slider } from '../Input'
 import { Link } from '../Link'
@@ -21,10 +22,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../Pagination'
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover'
 import { Search } from '../Search'
 import { Tag } from '../Tag'
+import { Typography } from '../Text'
 import type { MessagesOverrides } from './messages'
 import { SnowUIProvider } from './SnowUIProvider'
+import { ThemeScope } from './ThemeScope'
 
 const meta: Meta<typeof SnowUIProvider> = {
   title: 'Components/SnowUIProvider',
@@ -194,5 +198,50 @@ export const RightToLeft: Story = {
       next.getBoundingClientRect().left,
     )
     await expect(document.documentElement).toHaveAttribute('dir', 'rtl')
+  },
+}
+
+/**
+ * `ThemeScope` themes a subtree and the overlays opened from it: the
+ * popover renders at the end of `<body>`, outside the dark card, and is
+ * dark too. A plain `data-theme` attribute on the card would leave it light.
+ */
+export const ScopedTheme: Story = {
+  globals: { theme: 'light' },
+  render: () => (
+    <ThemeScope
+      theme="dark"
+      className="flex w-80 flex-col items-start gap-3 rounded-16 bg-background-1 p-6 text-black"
+    >
+      <Typography size={14} semibold>
+        Dark scope
+      </Typography>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline">Open popover</Button>
+        </PopoverTrigger>
+        <PopoverContent side="bottom" align="start" aria-label="Preview">
+          <Typography size={14}>Rendered in the scope's theme</Typography>
+        </PopoverContent>
+      </Popover>
+    </ThemeScope>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const body = within(canvasElement.ownerDocument.body)
+    const scope = canvas
+      .getByText('Dark scope')
+      .closest('[data-theme]') as HTMLElement
+    await userEvent.click(canvas.getByRole('button', { name: 'Open popover' }))
+    const popover = await body.findByRole('dialog', { name: 'Preview' })
+
+    // Outside the scope in the DOM, but in its theme: the dark tokens.
+    await expect(scope).not.toContainElement(popover)
+    await expect(popover).toHaveAttribute('data-theme', 'dark')
+    await expect(getComputedStyle(popover).color).toBe(
+      getComputedStyle(scope).color,
+    )
+    await expect(getComputedStyle(popover).color).not.toBe(
+      getComputedStyle(canvasElement).color,
+    )
   },
 }

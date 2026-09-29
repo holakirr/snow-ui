@@ -41,21 +41,23 @@ const DialogOverlay: FC<ComponentProps<typeof DialogPrimitive.Overlay>> = ({
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 /**
- * The dialog, in a portal. It takes the `dir` of a `SnowUIProvider` (the
- * portal is outside your layout's `dir` scope).
+ * The dialog, in a portal. It takes the `dir` and the `theme` of a
+ * `SnowUIProvider` or `ThemeScope` (the portal is outside your layout's
+ * `dir` and `data-theme` scopes).
  */
 const DialogContent: FC<ComponentProps<typeof DialogPrimitive.Content>> = ({
   className,
   children,
   ...props
 }) => {
-  const { dir } = useSnowUI()
+  const { dir, theme } = useSnowUI()
 
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         dir={dir}
+        data-theme={theme}
         className={twMerge(
           // Figma "Add data": 576px wide, the title row and the popup 28px apart.
           'fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 duration-200 gap-7',

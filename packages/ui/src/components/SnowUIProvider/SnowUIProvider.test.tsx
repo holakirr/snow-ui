@@ -548,8 +548,11 @@ describe('SnowUIProvider', () => {
   it('accepts a full translation without the namespaces added in 5.1', () => {
     // A `Messages` object written for 5.0 still type-checks: the new
     // namespaces are optional and the defaults fill them in.
-    const { avatarGroup: _avatarGroup, charts: _charts, ...v50 } =
-      defaultMessages
+    const {
+      avatarGroup: _avatarGroup,
+      charts: _charts,
+      ...v50
+    } = defaultMessages
     const translation: Messages = { ...v50, dialog: { close: 'Schließen' } }
     let seen: Required<Messages> | undefined
     const Probe = () => {

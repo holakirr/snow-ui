@@ -13,6 +13,7 @@ import {
   popoverSeparatorClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
+import { useSnowUI } from '../SnowUIProvider'
 import { KBD, type KBDProps } from '../Text'
 
 const dropdownMenuContentStyles = twMerge(
@@ -73,12 +74,18 @@ type DropdownMenuSubContentProps = ComponentProps<
 const DropdownMenuSubContent: FC<DropdownMenuSubContentProps> = ({
   className,
   ...props
-}) => (
-  <DropdownMenuPrimitive.SubContent
-    className={twMerge(dropdownMenuContentStyles, className)}
-    {...props}
-  />
-)
+}) => {
+  const { theme } = useSnowUI()
+
+  return (
+    <DropdownMenuPrimitive.SubContent
+      // For a submenu you put in a `DropdownMenuPortal`.
+      data-theme={theme}
+      className={twMerge(dropdownMenuContentStyles, className)}
+      {...props}
+    />
+  )
+}
 DropdownMenuSubContent.displayName =
   DropdownMenuPrimitive.SubContent.displayName
 
@@ -86,19 +93,28 @@ type DropdownMenuContentProps = ComponentProps<
   typeof DropdownMenuPrimitive.Content
 >
 
+/**
+ * The menu, in a portal. It takes the `theme` of a `SnowUIProvider` or
+ * `ThemeScope` (the portal is outside your layout's `data-theme` scope).
+ */
 const DropdownMenuContent: FC<DropdownMenuContentProps> = ({
   className,
   sideOffset = 4,
   ...props
-}) => (
-  <DropdownMenuPrimitive.Portal>
-    <DropdownMenuPrimitive.Content
-      sideOffset={sideOffset}
-      className={twMerge(dropdownMenuContentStyles, className)}
-      {...props}
-    />
-  </DropdownMenuPrimitive.Portal>
-)
+}) => {
+  const { theme } = useSnowUI()
+
+  return (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.Content
+        data-theme={theme}
+        sideOffset={sideOffset}
+        className={twMerge(dropdownMenuContentStyles, className)}
+        {...props}
+      />
+    </DropdownMenuPrimitive.Portal>
+  )
+}
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
 
 type DropdownMenuItemProps = ComponentProps<

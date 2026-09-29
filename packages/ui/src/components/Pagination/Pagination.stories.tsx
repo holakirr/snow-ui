@@ -161,7 +161,9 @@ export const Sizes: Story = {
 
 /**
  * The Figma table footer: equal-width items stretched across the table, the
- * pages first and the previous / next buttons last.
+ * pages first and the previous / next buttons last. The links keep their
+ * URLs (a new tab, no JavaScript) and `onPageChange` handles plain clicks
+ * in the page.
  */
 export const TableFooter: Story = {
   render: () => {
@@ -169,45 +171,114 @@ export const TableFooter: Story = {
     const pages = [1, 2, 3, 4, 5]
 
     return (
-      <Pagination className="w-[892px]">
+      <Pagination className="w-[892px]" onPageChange={setPage}>
         <PaginationContent className="w-full [&>li]:flex-1 [&>li>a]:w-full">
           {pages.map((p) => (
             <PaginationItem key={p}>
-              <PaginationLink
-                href={`#${p}`}
-                isActive={p === page}
-                onClick={(event) => {
-                  event.preventDefault()
-                  setPage(p)
-                }}
-              >
+              <PaginationLink href={`#${p}`} page={p} isActive={p === page}>
                 {p}
               </PaginationLink>
             </PaginationItem>
           ))}
           <PaginationItem>
             <PaginationPrevious
-              href="#prev"
+              href={`#${page - 1}`}
+              page={page - 1}
               disabled={page === 1}
-              onClick={(event) => {
-                event.preventDefault()
-                setPage((p) => Math.max(1, p - 1))
-              }}
             />
           </PaginationItem>
           <PaginationItem>
             <PaginationNext
-              href="#next"
+              href={`#${page + 1}`}
+              page={page + 1}
               disabled={page === pages.length}
-              onClick={(event) => {
-                event.preventDefault()
-                setPage((p) => Math.min(pages.length, p + 1))
-              }}
             />
           </PaginationItem>
         </PaginationContent>
       </Pagination>
     )
+  },
+}
+
+const ClientSideExample = () => {
+  const [page, setPage] = useState(1)
+  const count = 5
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <Typography size={14} role="status">
+        Page {page} of {count}
+      </Typography>
+      <Pagination aria-label="Results pages" onPageChange={setPage}>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious page={page - 1} disabled={page === 1} />
+          </PaginationItem>
+          {Array.from({ length: count }, (_, index) => index + 1).map((p) => (
+            <PaginationItem key={p}>
+              <PaginationLink page={p} isActive={p === page}>
+                {p}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext page={page + 1} disabled={page === count} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    </div>
+  )
+}
+
+/**
+ * Client-side paging (state, not URLs): `onPageChange` on `Pagination` and a
+ * `page` on each item without `href`. The items are buttons, the current one
+ * `aria-current="page"`, and previous / next are natively disabled at the
+ * ends.
+ */
+export const ClientSide: Story = {
+  render: () => <ClientSideExample />,
+  play: async ({ canvas, userEvent, step }) => {
+    const status = canvas.getByRole('status')
+    const previous = canvas.getByRole('button', { name: 'Go to previous page' })
+    const next = canvas.getByRole('button', { name: 'Go to next page' })
+
+    await step('the first page is current; previous is disabled', async () => {
+      await expect(canvas.queryByRole('link')).not.toBeInTheDocument()
+      await expect(canvas.getByRole('button', { name: '1' })).toHaveAttribute(
+        'aria-current',
+        'page',
+      )
+      await expect(previous).toBeDisabled()
+    })
+
+    await step('a page button changes the page', async () => {
+      await userEvent.click(canvas.getByRole('button', { name: '3' }))
+      await expect(status).toHaveTextContent('Page 3 of 5')
+      await expect(canvas.getByRole('button', { name: '3' })).toHaveAttribute(
+        'aria-current',
+        'page',
+      )
+      await expect(previous).toBeEnabled()
+    })
+
+    await step(
+      'next works from the keyboard, up to the last page',
+      async () => {
+        next.focus()
+        await userEvent.keyboard('{Enter}')
+        await userEvent.keyboard('{Enter}')
+        await expect(status).toHaveTextContent('Page 5 of 5')
+        await expect(next).toBeDisabled()
+      },
+    )
+
+    await step('back to the first page', async () => {
+      await userEvent.click(canvas.getByRole('button', { name: '1' }))
+      await expect(status).toHaveTextContent('Page 1 of 5')
+      // No focus ring in the screenshot.
+      ;(document.activeElement as HTMLElement | null)?.blur()
+    })
   },
 }
 

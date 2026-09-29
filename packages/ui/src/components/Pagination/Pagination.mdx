@@ -44,6 +44,7 @@ import {
 
 - A table or a list split into pages, where the user may jump to a given page.
 - Results whose page is part of the URL, so it can be shared and restored.
+- Pages kept in the client's state (a table filtered in the browser): `onPageChange` (see [Client-side paging](#client-side-paging)).
 
 ## When not to use
 
@@ -53,10 +54,10 @@ import {
 
 ## Anatomy
 
-1. **Landmark** (`Pagination`): a `<nav>`, centred in the full width.
+1. **Landmark** (`Pagination`): a `<nav>`, centred in the full width. `onPageChange(page)` turns on client-side paging.
 2. **List** (`PaginationContent`): a `<ul>`, items 8px apart.
 3. **Item** (`PaginationItem`): a `<li>` around each link or ellipsis.
-4. **Page link** (`PaginationLink`): an `<a>` with the page number. `isActive` marks the current page, `disabled` disables it, `size` sets its size.
+4. **Page link** (`PaginationLink`): an `<a>` with the page number, or a `<button>` when it has a `page` and no `href`. `isActive` marks the current page, `disabled` disables it, `size` sets its size, `page` is the page it goes to.
 5. **Previous / next** (`PaginationPrevious`, `PaginationNext`): page links with an arrow and optional text. Without text they are square.
 6. **Ellipsis** (`PaginationEllipsis`): "…" for skipped pages, in `text-secondary`, with screen-reader text.
 
@@ -80,17 +81,45 @@ The Figma table footer stretches equal items across the table, the pages first a
 
 <Canvas of={PaginationStories.TableFooter} />
 
+## Client-side paging
+
+When the page lives in state rather than in the URL, give `Pagination` an `onPageChange` and each item the `page` it goes to. Items without `href` render as `<button type="button">`s; no `preventDefault()` needed.
+
+```tsx
+const [page, setPage] = useState(1)
+
+<Pagination onPageChange={setPage}>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious page={page - 1} disabled={page === 1} />
+    </PaginationItem>
+    {[1, 2, 3].map((p) => (
+      <PaginationItem key={p}>
+        <PaginationLink page={p} isActive={p === page}>{p}</PaginationLink>
+      </PaginationItem>
+    ))}
+    <PaginationItem>
+      <PaginationNext page={page + 1} disabled={page === 3} />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>
+```
+
+<Canvas of={PaginationStories.ClientSide} />
+
+Keep an `href` next to the `page` when the page also has a URL (the table footer above): the items stay links, so they open in a new tab and work without JavaScript, and a plain click calls `onPageChange` instead of navigating. A click with ⌘, Ctrl, Shift or Alt, or with the middle button, navigates as usual, and an `onClick` that calls `event.preventDefault()` skips `onPageChange`.
+
 ## States
 
 - **Hover:** a Black/4% fill.
 - **Keyboard focus:** the `focus-ring` utility.
 - **Current page** (`isActive`): a Black/4% fill and `aria-current="page"`.
-- **Disabled** (`disabled`): Black/20% text, no pointer events, and no `href`, so it neither navigates nor takes focus. Use it for "previous" on the first page and "next" on the last.
+- **Disabled** (`disabled`): Black/20% text, no pointer events, and no `href` (a button is `disabled`), so it neither navigates nor takes focus. Use it for "previous" on the first page and "next" on the last.
 
 ## Accessibility
 
 - `Pagination` is a `navigation` landmark named "Pagination" (`messages.pagination.label`). A page with several paginations needs a distinct `aria-label` on each.
-- Page links are `<a href>` links in the tab order; Enter follows them. The current page has `aria-current="page"`.
+- Page links are `<a href>` links in the tab order; Enter follows them. In client-side paging, items without `href` are buttons (Enter or Space). The current page has `aria-current="page"`. Announce the new page yourself if the content that changes is far from the pagination (the ClientSide story uses a `status`).
 - Previous and next are named by `aria-label`: "Go to previous page" and "Go to next page". The name replaces any visible text, so keep the text's words in it if you pass your own (a "Prev" label read as "Go to previous page" doesn't match what a speech-input user says).
 - A disabled link has no `href`, `role="link"` and `aria-disabled="true"`: it is announced as an unavailable link and skipped by Tab.
 - The ellipsis glyph is hidden from assistive technology; screen readers read "More pages" (`messages.pagination.more`) instead.
@@ -122,7 +151,7 @@ Deviations from the Figma kit (the full table is in the package README):
 
 <Canvas of={PaginationStories.AsChild} />
 
-Pagination holds no state: pass `isActive` and `disabled` from your current page, and handle navigation with `href` (or `onClick`, which a disabled link drops).
+Pagination holds no state: pass `isActive` and `disabled` from your current page, and handle navigation with `href`, `onPageChange` and `page` (client-side paging), or `onClick` (which a disabled link drops).
 
 ## Do and don't
 

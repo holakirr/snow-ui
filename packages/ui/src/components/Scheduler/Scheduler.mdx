@@ -41,13 +41,13 @@ const events: CalendarEvent[] = [
 
 ## Anatomy
 
-1. **Grid**: a `<div>` CSS grid with a 59px hour column and seven 100px day columns, 16px apart, and 48px rows. Other `div` props, `className` and `style` go to it.
-2. **Day labels**: the header row, the short weekday and the day number in 12px `text-secondary`, with radius 4 and padding 2 / 4px. Today's label has a Secondary/Indigo fill with static black text.
+1. **Grid**: a `<div>` CSS grid with a 59px hour column and seven 100px day columns, 16px apart, and 48px rows. Each row is a subgrid of these columns. Other `div` props, `className` and `style` go to it.
+2. **Day labels**: the header row, the short weekday and the day number in 12px `text-secondary`, with radius 4 and padding 2 / 4px. Today's label has a Secondary/Indigo fill with static black text, and is semibold.
 3. **Day separators**: Black/4% vertical lines between the days.
 4. **Hour labels**: 12px `text-secondary` hours in the locale's clock ("9 AM" in `en-US`). The rows run from 7 to 20 (8 pm) and grow to fit the events of the shown week (events of other weeks don't change them). An event that ends on the hour doesn't add that hour's row, and the rows make room for an event's minimum 48px block. The labels don't depend on today's date, so a daylight saving change doesn't repeat or skip one.
-5. **Hour cells**: one per day and hour, each a `<button>` that fills the cell. A click calls `onDateClick` with the start of that hour.
+5. **Hour cells**: one per day and hour, each with a `<button>` that fills the cell. A click calls `onDateClick` with the start of that hour.
 6. **Events** (`events`): Color 2 blocks with radius 4 and 4px padding: the title (truncated) and the start and end times in 12px static black, the times at 60%. An event sits in the cell of its start hour, moved down by its minutes, and is as tall as the hours it covers on the clock (48px per hour, at least 48px), so a daylight saving change doesn't shrink or stretch it. An event that runs past midnight is cut at the end of its day and continues from midnight on the next day, and an event that started in the previous week shows its part in this one; one that ends exactly at midnight stays on its own day. A click calls `onEventClick` and opens a [DropdownMenu](?path=/docs/components-dropdownmenu--docs) with `dropdownContentRenderer(event)`, or the title without one.
-7. **Current time**: a Primary [Tag](?path=/docs/components-tag--docs) with the time and a Primary line across the grid, when the shown week contains today and the current time is within the grid's hours.
+7. **Current time**: a Primary [Tag](?path=/docs/components-tag--docs) with the time and a Primary line across the grid, when the shown week contains today and the current time is within the grid's hours. Clicks go through it to the hour cells.
 
 ## Variants
 
@@ -63,8 +63,8 @@ An event is a `CalendarEvent`. Scheduler reads `id`, `title`, `date` (the start)
 
 ## States
 
-- **Today:** the day label on Secondary/Indigo.
-- **Keyboard focus:** the `focus-ring` utility on hour cells and events.
+- **Today:** the day label on Secondary/Indigo, semibold.
+- **Keyboard focus:** the `focus-ring` utility on hour cells and events. A focused hour cell is drawn above the events, so they don't hide its ring.
 - **Empty:** without events the grid still shows the hours from 7 to 20.
 - **Now:** the current-time tag and line, placed by the hour and minute at render, only in the week that contains today.
 
@@ -72,10 +72,26 @@ Cells and events have no hover style.
 
 ## Accessibility
 
-- Every hour cell has a `<button type="button">` that fills it, named by the date and time of the start of its hour in the locale (`toLocaleString`); a click calls `onDateClick`. The default grid has 98 cells (7 days × 14 hours), so a keyboard user tabs through all of them to pass it.
-- Every event is a `div` with `role="button"` in the tab order, next to its cell's button (after it in the tab order); its name is its text (the title and times). An event that runs past midnight is a button on each day. A click calls `onEventClick` and opens its menu (a [DropdownMenu](?path=/docs/components-dropdownmenu--docs)).
+- The grid is a `grid` named by its week in the locale ("September 28 – October 4, 2026" in `en-US`); an `aria-label` or `aria-labelledby` of yours replaces the name. Its rows are `row`s: the day labels are `columnheader`s (after an empty corner `gridcell`), the hour labels `rowheader`s, and each hour of each day is a `gridcell`.
+- Today's column header has `aria-current="date"`, and the hour cell of the current hour `aria-current="time"`. The current-time tag and line are hidden from assistive technology (`aria-hidden`).
+- Every hour cell has a `<button type="button">` that fills it, named by the date and time of the start of its hour in the locale (`toLocaleString`). A click, Enter or Space calls `onDateClick`.
+- Every event is a `div` with `role="button"` in the cell of its start hour, next to the cell's button; its name is its text (the title and times). An event that runs past midnight is a button on each day. A click, Enter or Space calls `onEventClick` and opens its menu (a [DropdownMenu](?path=/docs/components-dropdownmenu--docs): in the menu the arrow keys move, and Escape closes it and returns focus to the event).
 - The events are siblings of the cell buttons, not inside them, so no control is nested in another (a control inside a button isn't exposed to assistive technologies).
-- The grid has no table or grid semantics: the day and hour labels are plain text, and the cells' names carry the date and time.
+- The grid is one tab stop (a roving `tabIndex` shared by the hour cells and the events). Keyboard, from the stories' interaction tests:
+
+| Key | Does |
+| --- | --- |
+| Tab, Shift+Tab | move into the grid, on the last focused hour cell or event (the first time: today's current hour, or the first or last row when the time is outside the grid's hours, or the first cell in a week without today); the next Tab leaves the grid |
+| ArrowRight / ArrowLeft | the same hour of the next / previous day (mirrored in right-to-left text) |
+| ArrowDown / ArrowUp | the next / previous item down the day: each hour's cell, then the events that start in that hour |
+| Home / End | the first / last day of the row |
+| Ctrl+Home / Ctrl+End (⌘ on macOS) | the first / last hour cell of the grid |
+| PageDown / PageUp | 6 hours later / earlier in the same day, stopping at the last / first row |
+| Enter, Space | on an hour cell: call `onDateClick`; on an event: call `onEventClick` and open its menu |
+| Escape | in an event's menu: close it and return focus to the event |
+
+- The keys don't wrap at the edges of the grid (and don't scroll the page there). Alt and Shift combinations, and Ctrl / ⌘ with the arrows and the page keys, are left to the browser and assistive technology. ArrowDown on an event moves down the day instead of opening its menu.
+- Moving the focus scrolls the item into view. When the focused event disappears (deleted, or moved to another hour), its hour cell takes its place.
 
 ### Keyboard
 
@@ -97,13 +113,14 @@ The full table is in the package README.
 | "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Day and hour labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary` (5.74:1 light, 7.08:1 dark) | 1.4.3 |
 | Today's day label: white on Secondary/Indigo, 2.06:1 | static black on Secondary/Indigo | 1.4.3 |
+| Today's day label is told by its fill colour only | also semibold, not by colour alone (and `aria-current="date"`) | 1.4.1 |
 | Event times at 40% on Color 2 | 60% static black on Color 2 (5.5:1) | 1.4.3 |
 
 ## Localization and RTL
 
-- Scheduler uses no `Messages` keys. The day labels, hour labels and cell names use the language of `SnowUIProvider`'s `locale` (`locale.code`), and `en-US` without one, so the server and the browser render the same text.
+- Scheduler uses no `Messages` keys. The grid's name, the day labels, hour labels and cell names use the language of `SnowUIProvider`'s `locale` (`locale.code`), and `en-US` without one, so the server and the browser render the same text.
 - Event times (`09:30`) and the current time (`9:30`) use a 24-hour clock in every locale; the hour labels follow the locale's clock.
-- In right-to-left text the grid runs from the right: the hour column is on the right, and the day separators are placed from the end edge so they stay between the days.
+- In right-to-left text the grid runs from the right: the hour column is on the right, and the day separators are placed from the end edge so they stay between the days. ArrowLeft moves to the next day and ArrowRight to the previous one; Home and End still go to the first and last day of the week. The direction is the `dir` prop's, else `SnowUIProvider`'s.
 
 ## Controlled props
 

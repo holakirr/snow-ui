@@ -36,7 +36,9 @@ const searchStyles = cva(
           'bg-surface-1 inset-ring-[0.5px] inset-ring-black-20 hover:inset-ring-black-40',
       },
       size: {
-        sm: 'h-7 rounded-16 px-2 py-1 text-14',
+        // The input is the field's full height (`h-full`), not 20px inside
+        // 4px paddings, so the whole 28px is its target (WCAG 2.5.8).
+        sm: 'h-7 rounded-16 px-2 text-14',
         // The 48px field at the top of the Figma SearchPopup.
         lg: 'h-12 rounded-16 px-2 text-18',
       },
@@ -218,8 +220,9 @@ const Search: FC<SearchProps> = ({
           aria-label={clearName}
           title={clearName}
           onClick={clear}
-          // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon (WCAG 1.4.11).
-          className="flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
+          // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon
+          // (WCAG 1.4.11). A 16px icon: `hit-area` makes it 24px (2.5.8).
+          className="relative flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hit-area hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
         >
           <XCircleIcon weight="fill" size={clearIconSizes[size]} />
         </button>

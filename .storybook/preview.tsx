@@ -1,6 +1,11 @@
 import type { Preview } from '@storybook/react'
 import { InstallTabs } from './InstallTabs'
 import { StoryWrapper } from './StoryWrapper'
+import {
+  findSmallTargets,
+  TARGET_SIZE_EXCEPTIONS,
+  type TargetSizeParameters,
+} from './targetSize'
 import { withLocale } from './withLocale'
 import { withTheme } from './withTheme'
 
@@ -106,6 +111,23 @@ const preview: Preview = {
     withLocale,
     withTheme,
   ],
+
+  // WCAG 2.5.8: after the `play` function, every interactive element of the
+  // story needs a 24×24px hit area (see targetSize.ts). It fails the
+  // Storybook tests; in the Storybook UI it only warns.
+  afterEach: async ({ parameters, viewMode }) => {
+    if (viewMode !== 'story') return
+    const { exceptions = [] } = (parameters.targetSize ??
+      {}) as TargetSizeParameters
+    const failures = findSmallTargets(document.body, [
+      ...TARGET_SIZE_EXCEPTIONS,
+      ...exceptions,
+    ])
+    if (!failures.length) return
+    const message = `WCAG 2.5.8: ${failures.length} target(s) smaller than 24×24px (add a hit area, or an exception with its reason in parameters.targetSize):\n${failures.join('\n')}`
+    if (import.meta.env.VITEST_STORYBOOK === undefined) console.warn(message)
+    else throw new Error(message)
+  },
 
   tags: ['autodocs'],
 }

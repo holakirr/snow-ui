@@ -9,12 +9,13 @@ type SwitchProps = ComponentProps<typeof SwitchPrimitives.Root>
 /**
  * Figma "Switch": a 28×16 pill track with the Figma inner shadow — Black/20%
  * off (40% on hover), Primary on (under White/40% on hover) — and a 12px
- * white thumb with "Drop shadow 2", inset 2px, that travels 12px.
+ * white thumb with "Drop shadow 2", inset 2px, that travels 12px. `hit-area`
+ * makes the pointer target 28×24 (WCAG 2.5.8).
  */
 const Switch: FC<SwitchProps> = ({ className, ...props }) => (
   <SwitchPrimitives.Root
     className={twMerge(
-      'peer group inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-80 p-0.5 inset-shadow-inner transition-colors',
+      'peer group relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-80 p-0.5 inset-shadow-inner transition-colors hit-area',
       'data-[state=unchecked]:bg-black-20 data-[state=checked]:bg-primary',
       'enabled:hover:data-[state=unchecked]:bg-black-40 enabled:hover:data-[state=checked]:bg-primary-hover-strong',
       // Invalid (`aria-invalid`, no Figma state): a 1px Secondary/Red stroke.

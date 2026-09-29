@@ -124,6 +124,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from '@holakirr/s
 - **Spacing:** the Figma spacing and size values are multiples of 4px, so Tailwind's spacing utilities (`p-1` = 4px, `gap-3` = 12px, `size-10` = 40px) cover them.
 - **Cursors:** a base rule gives buttons and ARIA controls (`option`, `menuitem`, `tab`, `radio`, `checkbox`, `switch`, `label[for]`…) the pointer cursor, which Tailwind v4's preflight no longer sets, and disabled elements (`:disabled`, `aria-disabled="true"`, `data-disabled`) the not-allowed cursor. `cursor-*` utilities override it.
 - **Focus:** the `focus-ring` utility is the keyboard focus indicator of every component: on `:focus-visible` it draws the Figma "Focus" ring (`ring-4 ring-focus`) plus a 2px `black-80` outline offset by 2px. Use it on your own focusable elements: `<button className="focus-ring">`.
+- **Target size:** the `hit-area` utility gives a small control an invisible pointer hit area of at least 24×24px (WCAG 2.5.8), centred on it; the element needs `relative`. Bare `Button`s, `Switch`, the `Slider` thumb, sortable `Table` headers, line tabs and the `Search` clear button use it.
 - **Motion:** with the OS setting `prefers-reduced-motion: reduce`, the overlays fade instead of sliding or zooming, the Accordion opens at once, and the Skeleton pulse, the Button press, the Switch thumb, the Dialog zoom and the Accordion chevron stop moving (WCAG 2.3.3). Storybook's Foundations › Motion page lists the animation tokens.
 - **Effects:** `shadow-1`, `shadow-2`, `shadow-glow`, `shadow-glass-1`, `shadow-glass-2`, `inset-shadow-inner`, the Figma focus ring `ring-4 ring-focus` (or `shadow-focus`), the background blurs `backdrop-blur-bg-40` (20px) and `backdrop-blur-bg-100` (50px), and `glass` / `glass-1` / `glass-2`, which approximate Figma's Glass effects with a fill, a background blur and a shadow.
 
@@ -329,6 +330,7 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Default Link hover | colour change only | colour change plus an underline | 1.4.1 |
 | External Link | — | `target="_blank"` and `rel="noopener noreferrer"` by default, and a visually hidden "(opens in a new tab)" (`externalLabel`) | 3.2.5 (advisory) |
 | Tag close button | a 12px icon | the same icon with a 24×24px hit area | 2.5.8 |
+| Switch (28×16px), bare Buttons, the Slider thumb (16px), sortable Table headers (16px high), small line tabs (22px), the Search clear button (16px) | their Figma size | the same look with an invisible hit area of at least 24×24px (`hit-area`) | 2.5.8 |
 | Icon-only tabs, buttons and toggles | — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
 | Invalid form fields | no error state | while a field has `aria-invalid` (`FormControl` sets it): a 1px Secondary/Red (`red`) stroke on Input, InputSmall, Textarea, Search, the Select trigger and Switch, a red ring on Checkbox and Radio, a red track stroke and thumb borders on Slider (3.36:1 on white, 3.76:1 on #333); the error text is `FormMessage` | 1.4.1, 1.4.11 |
 | Dark Tooltip in dark mode | Black/80% flips to white/80% but the text stays `#FFF` | the text flips with it (black on white/80%) | 1.4.3 |
@@ -358,7 +360,7 @@ Components are documented in Storybook with examples and props documentation. Vi
 
 ## Testing
 
-- Storybook stories are tests too: every story is rendered in Chromium in both themes and once more with the OS asking for more contrast and reduced motion, checked with axe, and many have `play` interaction tests (keyboard, focus, selection)
+- Storybook stories are tests too: every story is rendered in Chromium in both themes and once more with the OS asking for more contrast and reduced motion, checked with axe and for 24×24px target sizes, and many have `play` interaction tests (keyboard, focus, selection)
 - Unit tests are written using Vitest and React Testing Library
 - Visual regression tests screenshot every story in both themes with Playwright, in Docker, and compare the shots with the committed Linux baselines (`bun run visual` / `bun run visual:update` from the repository root; see CONTRIBUTING.md)
 - Unit tests cover most components (see the `*.test.tsx` files next to them), the toast store, the date utils and the design tokens; more are welcome

@@ -91,7 +91,8 @@ TabsList.displayName = TabsPrimitive.List.displayName
 const lineTriggerVariants = cva(
   [
     'group inline-flex flex-col items-center justify-center gap-1 whitespace-nowrap transition-all',
-    'cursor-pointer rounded-4 focus-ring',
+    // The small tabs are 22px high: `hit-area` makes them 24 (WCAG 2.5.8).
+    'relative cursor-pointer rounded-4 focus-ring hit-area',
     'text-(--tab-fg) [--tab-fg:var(--color-text-secondary)]',
     'hover:[--tab-fg:var(--color-black)] focus-visible:[--tab-fg:var(--color-black)] data-[state=active]:[--tab-fg:var(--color-primary)]',
     'disabled:cursor-not-allowed disabled:text-black-20 [&_svg]:shrink-0',

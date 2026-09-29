@@ -132,7 +132,8 @@ const TableHead: FC<TableHeadProps> = ({
           type="button"
           onClick={onSort}
           className={twMerge(
-            '-mx-1 inline-flex items-center gap-1 rounded-8 px-1 transition-colors hover:text-black focus-ring',
+            // 16px high in a 40px header cell: `hit-area` (24px, WCAG 2.5.8).
+            'relative -mx-1 inline-flex items-center gap-1 rounded-8 px-1 transition-colors hover:text-black focus-ring hit-area',
             sortDirection && 'text-black',
           )}
         >

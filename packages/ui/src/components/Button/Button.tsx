@@ -127,7 +127,9 @@ const buttonVariants = cva(
     compoundVariants: [
       {
         variant: 'bare',
-        className: 'min-h-0 min-w-0 rounded-none p-0',
+        // No box, so the element can be smaller than 24px: `hit-area` gives
+        // it an invisible 24×24px hit area (WCAG 2.5.8).
+        className: 'relative min-h-0 min-w-0 rounded-none p-0 hit-area',
       },
     ],
     defaultVariants: {

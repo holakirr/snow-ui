@@ -358,7 +358,7 @@ Text fields (`Input`, `InputSmall`, `Textarea`, `Search`) keep the Figma "Focus"
 Data, overlay and navigation components:
 
 - **Calendar:** today's date is static black on Secondary/Indigo (10.15:1). Figma uses white, which is 2.07:1 (1.4.3). Outside days (the previous and next month's dates in the grid) are real, selectable dates, not decoration, so they get the full 4.5:1: `text-secondary` instead of Black/40%.
-- **Scheduler:** today's day label is static black on Secondary/Indigo (was white, 2.06:1); event times are 60% static black on Color 2 (5.5:1) instead of 40% (1.4.3).
+- **Scheduler:** today's day label is static black on Secondary/Indigo (was white, 2.06:1) and semibold, with `aria-current="date"`, so today isn't told by colour alone (1.4.1); event times are 60% static black on Color 2 (5.5:1) instead of 40% (1.4.3). The week is a WAI-ARIA grid with one tab stop and arrow keys (see its page).
 - **Sidebar:** group labels (`SidebarGroupLabel`) are `black-80` (12.6:1 light, 8.7:1 dark). Figma's Black/40% is 2.85:1 at 14px (1.4.3).
 - **Alert** (a library extension): the text is black and `text-secondary` on every status tint (at least 5.2:1). The status icons mix the Secondary colours with 40% of `black` (white in dark mode): at least 3.6:1 on the light tints and 5:1 on the dark ones, where Secondary/Green, Yellow and Blue alone are 1.5–2:1 on white (1.4.11). The status is also read out as text, not only shown by colour and icon (1.4.1).
 - **AlertDialog** (a library extension): the destructive action is `red-text` (#D42020, #FF8080 in dark mode) with the per-mode `white` label, 5.21:1 and 8.65:1; Secondary/Red under a white label would be 3.36:1 (1.4.3).

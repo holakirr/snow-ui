@@ -38,7 +38,7 @@ const [date, setDate] = useState<Date | undefined>()
 1. **Surface** (the `Root` slot): the glass container, radius 16. `className` goes here.
 2. **Header** (`header`, optional): your content above the toolbar, e.g. a date field. Padding 16px, a 0.5px Black/10% line below.
 3. **Toolbar** (the month caption, 28px high, 12px text), one per month:
-   - the actions (`showTodayButton`, `lastSelection`, first month only): 20px-high Black/4% chips, radius 8, 4px side padding;
+   - the actions (`showTodayButton`, `lastSelection`, first month only): 20px-high Black/4% chips, radius 8, 4px side padding, with a 24px pointer target (`hit-area`, WCAG 2.5.8);
    - the previous and next buttons: Button Small "Borderless" icon buttons with 16px arrows, in a `nav` landmark;
    - the caption label: the month name. With `showYearSwitcher` (the default) it is a button that opens the year view; `captionLayout="dropdown"` (react-day-picker) shows month and year dropdowns instead.
 4. **Weekdays**: a 38px row of 12px weekday names in `text-secondary`.

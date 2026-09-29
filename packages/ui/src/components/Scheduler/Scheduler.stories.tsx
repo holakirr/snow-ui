@@ -58,6 +58,16 @@ const settle = (canvasElement: HTMLElement) => {
   document.defaultView?.scrollTo(0, 0)
 }
 
+// WCAG 2.5.8 exception for the Storybook target-size check
+// (.storybook/targetSize.ts) in the stories with overlapping events.
+const eventExceptions = [
+  {
+    selector: 'button[data-scheduler-item="slot"]',
+    reason:
+      'An event covers part or all of the slots of its hours by design (Figma), leaving less than 24px of some: the part under an event is no pointer target for the slot, and the grid keys reach every slot.',
+  },
+]
+
 const meta: Meta<typeof Scheduler> = {
   title: 'Components/Scheduler',
   component: Scheduler,
@@ -131,6 +141,7 @@ export const Default: Story = {
 }
 
 export const WithEvents: Story = {
+  parameters: { targetSize: { exceptions: eventExceptions } },
   play: async ({ args, canvas, canvasElement, userEvent, step }) => {
     const page = within(canvasElement.ownerDocument.body)
     const slot = (day: number, hour: number) =>
@@ -228,6 +239,7 @@ export const WithEvents: Story = {
 }
 
 export const MultipleEventsPerHour: Story = {
+  parameters: { targetSize: { exceptions: eventExceptions } },
   args: {
     currentDate: new Date(),
     events: [

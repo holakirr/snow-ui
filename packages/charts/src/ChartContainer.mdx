@@ -77,8 +77,8 @@ A `ChartConfig` maps each data key to a `label`, a `color` and optionally an `ic
 
 ## States
 
-- **Loading** (`loading`): bar placeholders, `aria-busy="true"` and the `loadingLabel` ("Loading chart") in the live region. The placeholders pulse unless the user prefers reduced motion.
-- **Empty** (`empty`): the `emptyMessage` ("No data") instead of the chart; the ready-made charts set it when `data` is empty.
+- **Loading** (`loading`): bar placeholders, `aria-busy="true"` and the `loadingLabel` (`messages.charts.loading`, "Loading chart") in the live region. The placeholders pulse unless the user prefers reduced motion.
+- **Empty** (`empty`): the `emptyMessage` (`messages.charts.empty`, "No data") instead of the chart; the ready-made charts set it when `data` is empty.
 
 <Canvas of={ChartContainerStories.Loading} />
 
@@ -103,7 +103,7 @@ Recharts measures text when it first draws (the value axis fits its widest label
 ## Localization and RTL
 
 - **Numbers** follow the `locale` prop, else the language of the nearest `SnowUIProvider` (its date-fns locale's `code`), else `en-US` (so the server and the browser render the same text). `valueFormatter` formats the tooltip, the legend values and the table; `categoryFormatter` the categories (by default their text; dates in the locale's medium date style, in UTC, so the server and the browser agree); the ready-made charts take `xTickFormatter` and `yTickFormatter` for the axes (compact numbers by default: `10K`).
-- **Strings**: `emptyMessage`, `loadingLabel`, `keyboardHint` and `navigationLabel` are props; translate them with your messages.
+- **Strings** come from `messages.charts` of `SnowUIProvider` (`@holakirr/snow-ui` 5.1 and later; English before): `empty`, `loading`, `keyboardHint`, `navigation` (the focusable plot's name), `value` and `point` (the table headers of `DonutChart` and `Sparkline`). The props `emptyMessage`, `loadingLabel`, `keyboardHint`, `navigationLabel`, `valueLabel` and `categoryLabel` win over them. The line, area and bar charts take `navigationLabel` too.
 - **Direction** follows the `dir` prop, else the `SnowUIProvider`'s, else the computed direction of the chart's element (`<html dir="rtl">`). Right-to-left cartesian charts mirror: the category axis runs from right to left (`reversed`), the value axis moves to the right, the tooltip opens to the left, ← moves forward. The figure gets the `dir` you pass (or the provider's), so its HTML parts (legend, tooltip, table) follow it even inside a left-to-right page; the SVG keeps left-to-right text layout.
 
 <Canvas of={ChartContainerStories.Formatters} />

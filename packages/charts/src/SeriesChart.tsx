@@ -320,6 +320,7 @@ export const SeriesChart = <TDatum extends object>({
   emptyMessage,
   loadingLabel,
   keyboardHint,
+  navigationLabel,
   table,
   categoryLabel,
   valueFormatter,
@@ -352,6 +353,7 @@ export const SeriesChart = <TDatum extends object>({
       emptyMessage={emptyMessage}
       loadingLabel={loadingLabel}
       keyboardHint={keyboardHint}
+      navigationLabel={navigationLabel}
       data={data}
       categoryKey={xKey}
       categoryLabel={categoryLabel}

@@ -25,6 +25,7 @@ import {
   formatNumber,
   toNumber,
 } from './format'
+import { useChartMessages } from './messages'
 
 export interface SparklineProps
   extends Omit<
@@ -57,9 +58,9 @@ export interface SparklineProps
   width?: number | string
   /** The values as a visually hidden table, like the other charts. @default true */
   table?: boolean
-  /** Header of the table's first column. @default 'Point' */
+  /** Header of the table's first column. @default messages.charts.point: 'Point' */
   categoryLabel?: ReactNode
-  /** Header of the table's value column. @default 'Value' */
+  /** Header of the table's value column. @default messages.charts.value: 'Value' */
   valueLabel?: string
   /** Formats the values in the table. Defaults to the locale's number format. */
   valueFormatter?: ChartValueFormatter
@@ -179,8 +180,8 @@ export const Sparkline = ({
   height = 32,
   width = '100%',
   table = true,
-  categoryLabel = 'Point',
-  valueLabel = 'Value',
+  categoryLabel: categoryLabelProp,
+  valueLabel: valueLabelProp,
   valueFormatter,
   locale: localeProp,
   dir: dirProp,
@@ -198,6 +199,9 @@ export const Sparkline = ({
   const rootRef = useRef<HTMLElement | null>(null)
   const dir = useChartDirection(rootRef, dirProp)
   const locale = useChartLocale(localeProp)
+  const messages = useChartMessages()
+  const categoryLabel = categoryLabelProp ?? messages.point
+  const valueLabel = valueLabelProp ?? messages.value
 
   const values = useMemo(
     () =>

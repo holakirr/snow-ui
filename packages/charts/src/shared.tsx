@@ -16,6 +16,7 @@ export type ChartFrameProps = Pick<
   | 'emptyMessage'
   | 'loadingLabel'
   | 'keyboardHint'
+  | 'navigationLabel'
   | 'table'
   | 'categoryLabel'
   | 'valueFormatter'

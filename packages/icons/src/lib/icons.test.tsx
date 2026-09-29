@@ -91,6 +91,36 @@ describe('icons', () => {
     }
   })
 
+  it('draws SnowUIIcon in its colour, with the snowflake cut out', () => {
+    const { container } = render(
+      <>
+        <lib.SnowUIIcon color="red" />
+        <lib.SnowUIIcon />
+      </>,
+    )
+    const [red, current] = container.querySelectorAll('svg')
+
+    expect(red).toHaveAttribute('fill', 'red')
+    expect(current).toHaveAttribute('fill', 'currentColor')
+    for (const svg of [red, current]) {
+      // No hard-coded black: the bars inherit the icon's fill; the only
+      // white shapes are the translucent highlights and the mask.
+      expect(svg.querySelector('[fill="black"]:not(mask *)')).toBeNull()
+      const mask = svg.querySelector('mask')
+      const masked = svg.querySelector('g[mask]')
+      expect(masked?.getAttribute('mask')).toBe(`url(#${mask?.id})`)
+      expect(masked?.querySelectorAll('path:not([fill])')).toHaveLength(4)
+      for (const highlight of masked?.querySelectorAll('[fill="white"]') ??
+        []) {
+        expect(highlight).toHaveAttribute('fill-opacity')
+      }
+    }
+    // Every icon has its own mask.
+    expect(red.querySelector('mask')?.id).not.toBe(
+      current.querySelector('mask')?.id,
+    )
+  })
+
   it('falls back to the regular weight when a weight is missing', () => {
     const { AddIcon } = lib
     const regular = getSvg(render(<AddIcon />).container).innerHTML

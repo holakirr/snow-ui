@@ -51,7 +51,7 @@ const App = () => {
 
 Icon components accept all props that you can pass to a normal SVG element, including inline style objects, onClick handlers, and more. The main way of styling them will usually be with the following props:
 
-- color?: string – Icon color (applied as `fill`; the stroke-drawn `LoadingAIcon` also uses it for `stroke`). Can be any CSS color string, including hex, rgb, rgba, hsl, hsla, named colors, or the special currentColor variable. Defaults to `currentColor`.
+- color?: string – Icon color (applied as `fill`; the stroke-drawn `LoadingAIcon` also uses it for `stroke`). Can be any CSS color string, including hex, rgb, rgba, hsl, hsla, named colors, or the special currentColor variable. Defaults to `currentColor`. The multicolour file icons (`DocXIcon`, `NotepadIcon`…) keep their own colours; `SnowUIIcon` (the logo) draws its bars in `color`, with the snowflake cut out, so it shows the background behind it.
 - size?: `IconSize` | number | string – Icon height & width, default `24`. Presets (`16 | 20 | 24 | 28 | 32 | 40 | 48 | 80`, also exported as `ICON_SIZES`) are suggested by autocomplete, but any number (px) or CSS length string (`"2rem"`, `"100%"`, ...) is accepted.
 - weight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone" – Icon weight/style (see `ICON_WEIGHTS`). Can also be used, for example, to "toggle" an icon's state: a rating component could use `StarIcon` with weight="regular" to denote an empty star, and weight="fill" to denote a filled star. Not every icon defines every weight — see [Supported weights](#supported-weights).
 - mirrored?: boolean – Flip the icon horizontally. Can be useful in RTL languages where normal icon orientation is not appropriate.

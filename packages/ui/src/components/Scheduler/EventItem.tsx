@@ -13,19 +13,25 @@ import { DEFAULT_LANG, formatTime, HOUR_HEIGHT } from './constants'
 
 export type EventItemProps = ComponentProps<'div'> & {
   event: CalendarEvent
+  /**
+   * Where the block starts and ends on its day, in clock hours since
+   * midnight (9.5 is 9:30; see `getDaySegments`). It is placed in the cell
+   * of the start hour.
+   */
+  start: number
+  end: number
   onEventClick: (event: CalendarEvent) => void
 }
 
 export const EventItem: FC<EventItemProps> = ({
   event,
+  start,
+  end,
   onEventClick,
   className,
 }) => {
   const { endsAt, date, title, dropdownContentRenderer } = event
   const lang = useSnowUI().locale?.code ?? DEFAULT_LANG
-
-  const duration = endsAt.getTime() - date.getTime()
-  const durationInHours = duration / 1000 / 60 / 60
 
   return (
     <DropdownMenu>
@@ -49,8 +55,8 @@ export const EventItem: FC<EventItemProps> = ({
             }
           }}
           style={{
-            height: `${durationInHours * HOUR_HEIGHT}px`,
-            top: `${(date.getMinutes() / 60) * 100}%`,
+            height: `${(end - start) * HOUR_HEIGHT}px`,
+            top: `${(start - Math.floor(start)) * 100}%`,
             minHeight: `${HOUR_HEIGHT}px`,
           }}
         >

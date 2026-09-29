@@ -6,7 +6,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 The SnowUI Figma kit draws the boundaries of form controls — the rings of unchecked Checkbox and Radio, the 0.5px strokes of text fields and the Select trigger, the Switch's off track — and the native placeholders in Black/20%: 1.6:1 on white. WCAG 2.2 AA asks for 3:1 for the visual information that identifies a control and its state (1.4.11) and 4.5:1 for text (1.4.3).
 
-The library keeps the Figma look by default and meets AA with **more contrast**. The owner chose this over changing the default: the default stays true to the kit, and people who need more contrast get it from their OS setting or from the app. The default's deviations are listed as known gaps in the package README.
+The library keeps the Figma look by default and meets AA with **more contrast**. The same goes for the red stroke of invalid fields, a library addition in Secondary/Red: 3.36:1 on white, but under 3:1 on the gray fields. The owner chose this over changing the default: the default stays true to the kit, and people who need more contrast get it from their OS setting or from the app. The default's deviations are listed as known gaps in the package README.
 
 ## Turning it on
 
@@ -29,13 +29,14 @@ In this Storybook, the "Contrast" toolbar follows the OS or pins either level on
 
 ## What changes
 
-Three colour tokens, library additions to the kit, carry the difference:
+Four colour tokens, library additions to the kit, carry the difference:
 
 | Token | Standard (Figma) | More contrast | Used by |
 | --- | --- | --- | --- |
 | `control-border` | Black/20% | Black/50%; White/50% in dark mode | Unchecked Checkbox and Radio rings, text field and Select strokes, the Switch's off track |
 | `control-border-strong` | Black/40% | Black/80%; White/80% in dark mode | Their hover and focus states, the Slider thumb border, the Select chevron, the hovered Search icon |
 | `placeholder` | Black/20% | Black/60%; White/75% in dark mode | Placeholders of `Input`, `InputSmall`, `Textarea` and `Search`, the Search icon |
+| `control-border-invalid` | Secondary/Red | `red-text` (#D42020; #FF8080 in dark mode) | The stroke of an invalid control (`aria-invalid`): text fields, the Select trigger, Checkbox and Radio rings, Switch, Slider |
 
 With more contrast the components also:
 
@@ -68,6 +69,12 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 | Switch thumb vs the on track | dark | 2.06 | 10.14 |
 | Slider thumb border vs the track | light | 2.48–2.6 | 10.99–11.56 |
 | Slider thumb border vs the track | dark | 1.36–1.6 | 4.87–5.74 |
+| Invalid stroke vs the surface | light | 3.19–3.36 | 4.95–5.21 |
+| Invalid stroke vs the surface | dark | 3.14–3.75 | 4.35–5.2 |
+| Invalid stroke vs the field fill | light | 3.32–3.36 | 5.16–5.21 |
+| Invalid stroke vs the field fill | dark | 2.78–3.32 | 3.86–4.6 |
+| Invalid stroke on the gray field | light | 2.92–3.07 | 4.53–4.77 |
+| Invalid stroke on the gray field | dark | 2.32–2.74 | 3.22–3.8 |
 | Placeholder on the field fill | light | 1.6 | 5.72–5.74 |
 | Placeholder on the field fill | dark | 1.76–1.84 | 6.13–7.1 |
 | Placeholder on the gray field | light | 1.59 | 5.5–5.59 |
@@ -75,7 +82,7 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 | Placeholder on the hovered gray field | light | 1.58 | 5.25–5.34 |
 | Placeholder on the hovered gray field | dark | 1.61–1.68 | 4.63–5.28 |
 
-**Why these values.** The smallest alphas that pass on every surface are Black/44% (3.09:1) and White/46% (3.04:1) for boundaries, Black/56% (4.58:1) and White/74% (4.56:1) for placeholders. The tokens round up to Black/White 50% (3.79:1 and 3.3:1 at worst) and Black/60%, White/75% (5.25:1 and 4.63:1), for a margin and values a designer can name; Black/60% is also the light `text-secondary`, which the Select placeholder already uses. The hover and focus stroke has to stay stronger than the rest stroke, so it moves from Black/40% to the kit's next step, Black/80%. In dark mode Figma's white thumb keeps 3:1 on the off track only up to about White/45%, too close to the floor the other boundaries need, so the thumb flips to the per-mode `white` instead of holding the track to a narrow band.
+**Why these values.** The smallest alphas that pass on every surface are Black/44% (3.09:1) and White/46% (3.04:1) for boundaries, Black/56% (4.58:1) and White/74% (4.56:1) for placeholders. The tokens round up to Black/White 50% (3.79:1 and 3.3:1 at worst) and Black/60%, White/75% (5.25:1 and 4.63:1), for a margin and values a designer can name; Black/60% is also the light `text-secondary`, which the Select placeholder already uses. The hover and focus stroke has to stay stronger than the rest stroke, so it moves from Black/40% to the kit's next step, Black/80%. The invalid stroke uses `red-text`, the library's accessible red for error text, which already meets 4.5:1 as text. In dark mode Figma's white thumb keeps 3:1 on the off track only up to about White/45%, too close to the floor the other boundaries need, so the thumb flips to the per-mode `white` instead of holding the track to a narrow band.
 
 **Not changed.** Disabled controls are exempt (WCAG 1.4.11, 1.4.3). The Link arrow and external icon keep their 40% opacity in both modes (a known gap). The icons inside fields other than the Search icon and the Select chevron are decoration.
 
@@ -83,7 +90,7 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 
 ## How it is built
 
-The values live in the DTCG tokens (`packages/ui/tokens`), the single source of truth. The resolver has a `contrast` modifier next to `theme`: its default context, "standard", is `color.contrast-standard.tokens.json`, which aliases the three tokens to the Figma palette (the same aliases in both themes); the "more" context adds nothing, so the values in `color.light.tokens.json` and `color.dark.tokens.json` apply. Every combination of theme and contrast resolves correctly in any DTCG tool.
+The values live in the DTCG tokens (`packages/ui/tokens`), the single source of truth. The resolver has a `contrast` modifier next to `theme`: its default context, "standard", is `color.contrast-standard.tokens.json`, which aliases the four tokens to the Figma palette (the same aliases in both themes); the "more" context adds nothing, so the values in `color.light.tokens.json` and `color.dark.tokens.json` apply. Every combination of theme and contrast resolves correctly in any DTCG tool.
 
 `bun run tokens` turns this into CSS scopes (`src/styles/tokens.generated.css`). The theme scopes declare each theme's "more" values (`--color-control-border--more`); a switch, `--contrast-more`, is a space inside a "more" scope and `initial` (invalid) elsewhere; and every scope element (`:root`, `[data-theme]`, `[data-contrast]`) re-declares `--color-control-border: var(--color-control-border--more-on, var(--color-black-20))`, where `--color-control-border--more-on: var(--contrast-more) var(--color-control-border--more)` is only valid when the switch is on. So the value follows the nearest theme and the nearest contrast scope independently, at any depth.
 

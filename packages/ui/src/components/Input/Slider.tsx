@@ -65,7 +65,7 @@ const Slider: FC<SliderProps> = ({
     >
       {/* Invalid (no Figma state): a 1px Secondary/Red stroke around it (an
           inner one would be under the range). */}
-      <SliderPrimitive.Track className="relative h-[34px] w-full grow cursor-pointer overflow-hidden rounded-8 bg-black-4 group-data-invalid/slider:ring group-data-invalid/slider:ring-red data-[disabled]:cursor-not-allowed">
+      <SliderPrimitive.Track className="relative h-[34px] w-full grow cursor-pointer overflow-hidden rounded-8 bg-black-4 group-data-invalid/slider:ring group-data-invalid/slider:ring-control-border-invalid data-[disabled]:cursor-not-allowed">
         <SliderPrimitive.Range className="absolute h-full bg-black data-[disabled]:bg-black-80" />
       </SliderPrimitive.Track>
       {thumbs.map((_, index) => (
@@ -82,7 +82,7 @@ const Slider: FC<SliderProps> = ({
           // A 16px thumb with a 24px hit area (`hit-area`, WCAG 2.5.8). The
           // Black/40% border is `control-border-strong` (Black/80% with more
           // contrast).
-          className="relative block size-4 cursor-grab rounded-full border border-control-border-strong bg-white shadow-2 transition-colors focus-ring hit-area active:cursor-grabbing aria-invalid:border-red data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40"
+          className="relative block size-4 cursor-grab rounded-full border border-control-border-strong bg-white shadow-2 transition-colors focus-ring hit-area active:cursor-grabbing aria-invalid:border-control-border-invalid data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40"
         />
       ))}
     </SliderPrimitive.Root>

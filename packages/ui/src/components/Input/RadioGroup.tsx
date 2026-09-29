@@ -29,7 +29,7 @@ const RadioGroupItem: FC<RadioGroupItemProps> = ({ className, ...props }) => (
       'enabled:hover:bg-black/8 enabled:hover:inset-ring-control-border-strong',
       // Invalid (an `aria-invalid` group, no Figma state): Secondary/Red
       // rings, hovered or not.
-      'group-aria-invalid/radio-group:inset-ring-red enabled:hover:group-aria-invalid/radio-group:inset-ring-red',
+      'group-aria-invalid/radio-group:inset-ring-control-border-invalid enabled:hover:group-aria-invalid/radio-group:inset-ring-control-border-invalid',
       'focus-ring',
       // Disabled (no Figma state): a Black/4% circle with a Black/10% ring
       // and a Black/20% dot. Visible in both modes.

@@ -1,6 +1,7 @@
 /**
  * The colour pairs of the form controls whose contrast depends on the
- * contrast tokens (`control-border`, `control-border-strong`, `placeholder`),
+ * contrast tokens (`control-border`, `control-border-strong`, `placeholder`,
+ * `control-border-invalid`),
  * computed from the generated tokens for both themes and both contrast levels.
  * `foundations/contrast.test.ts` asserts them. Not part of the package.
  */
@@ -101,6 +102,24 @@ export const contrastPairs: ContrastPair[] = [
     control: 'Slider thumb border vs the track',
     kind: 'nonText',
     foreground: () => ['white', 'control-border-strong'],
+    background: () => ['black-4'],
+  },
+  {
+    control: 'Invalid stroke vs the surface',
+    kind: 'nonText',
+    foreground: () => ['surface-1', 'control-border-invalid'],
+    background: () => [],
+  },
+  {
+    control: 'Invalid stroke vs the field fill',
+    kind: 'nonText',
+    foreground: () => ['surface-1', 'control-border-invalid'],
+    background: () => ['surface-1'],
+  },
+  {
+    control: 'Invalid stroke on the gray field (InputSmall, Search)',
+    kind: 'nonText',
+    foreground: () => ['black-4', 'control-border-invalid'],
     background: () => ['black-4'],
   },
   {

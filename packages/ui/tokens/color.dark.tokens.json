@@ -405,6 +405,10 @@
         "hex": "#ffffff"
       },
       "$description": "Accessibility addition (not in the Figma kit): the placeholder text of the native text fields (Input, InputSmall, Textarea, Search) and the Search icon. Contrast \"standard\" (the default): the Figma White/20% (1.84:1 on #333). Contrast \"more\": White/75%, at least 4.63:1 on every field fill (WCAG 1.4.3)."
+    },
+    "control-border-invalid": {
+      "$value": "{color.red-text}",
+      "$description": "Accessibility addition (not in the Figma kit, which has no error state): the stroke of an invalid form control (`aria-invalid`: text fields, the Select trigger, Checkbox and Radio rings, Switch, Slider). Contrast \"standard\" (the default): Secondary/Red (3.76:1 on #333, but 2.32:1 on a gray field in a popover). Contrast \"more\": red-text, at least 3.22:1 on every surface and field fill (WCAG 1.4.11)."
     }
   }
 }

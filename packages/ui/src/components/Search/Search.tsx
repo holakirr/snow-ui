@@ -29,7 +29,7 @@ export type SearchSize = 'sm' | 'lg'
 // the `control-border*` tokens; with more contrast the stroke is 1px and the
 // gray field gets one too (its fill alone is 1.1:1, WCAG 1.4.11).
 const searchStyles = cva(
-  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-control-border-strong focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red has-disabled:pointer-events-none has-disabled:opacity-40 contrast-more:inset-ring-1 contrast-more:focus-within:inset-ring-1',
+  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-control-border-strong focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-disabled:pointer-events-none has-disabled:opacity-40 contrast-more:inset-ring-1 contrast-more:focus-within:inset-ring-1',
   {
     variants: {
       variant: {

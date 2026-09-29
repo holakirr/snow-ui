@@ -86,8 +86,13 @@ export const colorGroups: ColorGroup[] = [
   ),
   group(
     'Form controls',
-    'Library additions for the boundaries and placeholders of form controls. With the default contrast they are the Figma colours (Black/20%, Black/40%), under WCAG AA; with more contrast (the OS setting prefers-contrast: more, or data-contrast="more" on any element) they meet it: 3:1 for boundaries, 4.5:1 for placeholder text. See Guides › Contrast.',
-    ['control-border', 'control-border-strong', 'placeholder'],
+    'Library additions for the boundaries, placeholders and invalid strokes of form controls. With the default contrast they are the Figma colours (Black/20%, Black/40%, Secondary/Red), under WCAG AA in places; with more contrast (the OS setting prefers-contrast: more, or data-contrast="more" on any element) they meet it: 3:1 for boundaries, 4.5:1 for placeholder text. See Guides › Contrast.',
+    [
+      'control-border',
+      'control-border-strong',
+      'placeholder',
+      'control-border-invalid',
+    ],
   ),
 ]
 

@@ -18,6 +18,12 @@
       "$extensions": {
         "com.holakirr.snow-ui": { "figma": "Black/20%" }
       }
+    },
+    "control-border-invalid": {
+      "$value": "{color.red}",
+      "$extensions": {
+        "com.holakirr.snow-ui": { "figma": "Secondary/Red" }
+      }
     }
   }
 }

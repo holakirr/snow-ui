@@ -42,7 +42,7 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
       'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0',
       // Invalid: the red Input stroke, also while the list is open.
       invalidInputClasses,
-      'aria-invalid:data-[state=open]:inset-ring-red',
+      'aria-invalid:data-[state=open]:inset-ring-control-border-invalid',
       className,
     )}
     {...props}

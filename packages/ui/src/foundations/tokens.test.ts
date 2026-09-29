@@ -170,6 +170,7 @@ describe('generated tokens (tokens.generated.css ↔ tokens.generated.ts)', () =
       'control-border',
       'control-border-strong',
       'placeholder',
+      'control-border-invalid',
     ])
     // A "more" value that differs per theme is a variable of the theme
     // scopes; one alias for both themes (Black/80%) is written in place.

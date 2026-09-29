@@ -27,7 +27,7 @@ describe('InputSmall', () => {
 
       expect(screen.getByRole('textbox')).toHaveClass(
         'aria-invalid:inset-ring',
-        'aria-invalid:inset-ring-red',
+        'aria-invalid:inset-ring-control-border-invalid',
       )
     },
   )

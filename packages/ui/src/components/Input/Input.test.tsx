@@ -225,7 +225,7 @@ describe('Input', () => {
     expect(screen.getByRole('textbox')).toBeInvalid()
     expect(field).toHaveClass(
       'has-aria-invalid:inset-ring',
-      'has-aria-invalid:inset-ring-red',
+      'has-aria-invalid:inset-ring-control-border-invalid',
     )
   })
 })

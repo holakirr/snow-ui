@@ -24,7 +24,7 @@ const Switch: FC<SwitchProps> = ({ className, ...props }) => (
       'data-[state=unchecked]:bg-control-border data-[state=checked]:bg-primary',
       'enabled:hover:data-[state=unchecked]:bg-control-border-strong enabled:hover:data-[state=checked]:bg-primary-hover-strong',
       // Invalid (`aria-invalid`, no Figma state): a 1px Secondary/Red stroke.
-      'aria-invalid:inset-ring aria-invalid:inset-ring-red',
+      'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid',
       'focus-ring',
       // Disabled (no Figma state): a Black/10% track (Black/20% when on) with
       // the white thumb, so it stays visible in both modes.

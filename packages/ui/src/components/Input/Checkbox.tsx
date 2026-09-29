@@ -27,7 +27,7 @@ const Checkbox: FC<CheckboxProps> = ({ className, ...props }) => (
       'data-[state=indeterminate]:bg-primary data-[state=indeterminate]:inset-ring-0 data-[state=indeterminate]:inset-shadow-inner data-[state=indeterminate]:enabled:hover:bg-primary-hover-strong',
       // Invalid (`aria-invalid`, no Figma state): a Secondary/Red ring on the
       // unchecked box, hovered or not.
-      'aria-invalid:inset-ring-red enabled:hover:aria-invalid:inset-ring-red',
+      'aria-invalid:inset-ring-control-border-invalid enabled:hover:aria-invalid:inset-ring-control-border-invalid',
       'focus-ring',
       // Disabled (no Figma state): a Black/4% box with a Black/10% ring; when
       // checked, a Black/10% fill with a Black/40% mark. Visible in both modes.

@@ -371,6 +371,22 @@ export const colorTokens: ColorToken[] = [
     },
     note: 'Accessibility addition (not in the Figma kit): the placeholder text of the native text fields (Input, InputSmall, Textarea, Search) and the Search icon. Contrast "standard" (the default): the Figma Black/20% (1.6:1). Contrast "more": Black/60%, at least 5.25:1 on every field fill (WCAG 1.4.3).',
   },
+  {
+    name: 'control-border-invalid',
+    figma: 'Secondary/Red',
+    light: 'var(--color-red)',
+    dark: 'var(--color-red)',
+    swatch: 'bg-control-border-invalid',
+    resolved: {
+      light: '#ff4747',
+      dark: '#ff4747',
+    },
+    contrastMore: {
+      light: '#d42020',
+      dark: '#ff8080',
+    },
+    note: 'Accessibility addition (not in the Figma kit, which has no error state): the stroke of an invalid form control (`aria-invalid`: text fields, the Select trigger, Checkbox and Radio rings, Switch, Slider). Contrast "standard" (the default): Secondary/Red (3.36:1 on white, but 2.92:1 on a gray field on background-2). Contrast "more": red-text, at least 4.53:1 on every surface and field fill (WCAG 1.4.11).',
+  },
 ]
 
 /** Old colour names, kept as aliases until the next major. */

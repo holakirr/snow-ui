@@ -41,11 +41,12 @@ export const staticInputClasses =
 
 /**
  * Invalid, while the field has `aria-invalid="true"` (`FormControl` sets it):
- * a 1px Secondary/Red stroke (3.36:1 on white) in every state. The design
- * has no error state; the error text is the `FormMessage`.
+ * a 1px `control-border-invalid` stroke in every state: Secondary/Red (3.36:1
+ * on white), `red-text` with more contrast. The design has no error state;
+ * the error text is the `FormMessage`.
  */
 export const invalidInputClasses =
-  'aria-invalid:inset-ring aria-invalid:inset-ring-red'
+  'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid'
 
 // The field shell: the same look, driven by the inner <input>. Focus is the
 // Figma "Focus" state: Black/40% stroke + the 4px Focus ring, while the
@@ -58,7 +59,7 @@ const fieldStaticClasses =
 
 // Invalid: the `invalidInputClasses` stroke, while the <input> is invalid.
 const fieldInvalidClasses =
-  'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red'
+  'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid'
 
 const fieldDisabledClasses =
   'cursor-not-allowed bg-black-4 text-black-20 inset-ring-0 hover:inset-ring-0'

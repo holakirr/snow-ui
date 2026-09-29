@@ -23,12 +23,15 @@ import { SnowUIProvider } from '../SnowUIProvider'
 import { HOUR_HEIGHT, PAGE_HOURS } from './constants'
 import { Scheduler, type SchedulerProps } from './Scheduler'
 
+// The tests use the Figma kit's Monday-first week unless they test the
+// week start itself (the default follows the locale).
 const renderScheduler = (props: Partial<SchedulerProps> = {}) => {
   const onDateClick = vi.fn()
   const onEventClick = vi.fn()
   const scheduler = (next: Partial<SchedulerProps>) => (
     <Scheduler
       currentDate={new Date(2026, 8, 29, 10, 37, 12, 345)}
+      startOfWeek={1}
       onDateClick={onDateClick}
       onEventClick={onEventClick}
       {...next}
@@ -128,6 +131,48 @@ describe('Scheduler', () => {
       renderScheduler({ currentDate: new Date(2026, 8, 27, 12) })
       expect(getDays()[0]).toBe('9/21/2026')
       expect(getDays()[6]).toBe('9/27/2026')
+    })
+
+    it("starts the week on the locale's first day: Sunday in en-US", () => {
+      // Tuesday, September 29: the en-US week runs from Sunday the 27th.
+      render(
+        <Scheduler
+          currentDate={new Date(2026, 8, 29, 12)}
+          onDateClick={() => {}}
+          onEventClick={() => {}}
+        />,
+      )
+      expect(getDays()[0]).toBe('9/27/2026')
+      expect(getDays()[6]).toBe('10/3/2026')
+    })
+
+    it("starts the week on the provider locale's first day: Monday in ru", () => {
+      render(
+        <SnowUIProvider locale={ru}>
+          <Scheduler
+            currentDate={new Date(2026, 8, 29, 12)}
+            onDateClick={() => {}}
+            onEventClick={() => {}}
+          />
+        </SnowUIProvider>,
+      )
+      // The labels are in the ru format too.
+      expect(getDays()[0]).toBe('28.09.2026')
+      expect(getDays()[6]).toBe('04.10.2026')
+    })
+
+    it('lets startOfWeek win over the locale', () => {
+      render(
+        <SnowUIProvider locale={ru}>
+          <Scheduler
+            currentDate={new Date(2026, 8, 29, 12)}
+            startOfWeek={0}
+            onDateClick={() => {}}
+            onEventClick={() => {}}
+          />
+        </SnowUIProvider>,
+      )
+      expect(getDays()[0]).toBe('27.09.2026')
     })
 
     it('shows the week that contains currentDate for any startOfWeek', () => {
@@ -793,6 +838,7 @@ describe('Scheduler', () => {
     describe('right-to-left', () => {
       const scheduler = (props: Partial<SchedulerProps> = {}) => (
         <Scheduler
+          startOfWeek={1}
           currentDate={TODAY}
           onDateClick={() => {}}
           onEventClick={() => {}}

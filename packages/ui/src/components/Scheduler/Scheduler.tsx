@@ -45,9 +45,11 @@ type SchedulerProps = ComponentProps<'div'> & {
    */
   events?: CalendarEvent[]
   /**
-   * The first day of the week: 0 for Sunday … 6 for Saturday. Like
-   * `Calendar`'s `weekStartsOn`, it doesn't follow the locale.
-   * @default 1
+   * The first day of the week: 0 for Sunday … 6 for Saturday. Without it,
+   * the `SnowUIProvider` locale's (`locale.options.weekStartsOn`): Sunday
+   * with the default English, Monday with `ru`. The Figma kit starts on
+   * Monday: pass `1` for that whatever the locale.
+   * @default the locale's first day of the week (Sunday without a locale)
    */
   startOfWeek?: StartOfWeek
   /** Called with the event when an event is clicked. */
@@ -166,7 +168,7 @@ const getTarget = (
 const Scheduler: FC<SchedulerProps> = ({
   currentDate,
   events = [],
-  startOfWeek = 1,
+  startOfWeek,
   onEventClick,
   onDateClick,
   dir,
@@ -177,14 +179,18 @@ const Scheduler: FC<SchedulerProps> = ({
   onKeyDownCapture,
   ...props
 }) => {
-  // Day and hour labels in the `SnowUIProvider` locale (en-US without one).
-  const lang = useSnowUI().locale?.code ?? DEFAULT_LANG
+  // Day and hour labels in the `SnowUIProvider` locale (en-US without one),
+  // and its first day of the week unless `startOfWeek` is set (Sunday for
+  // en-US), like Calendar.
+  const { locale } = useSnowUI()
+  const lang = locale?.code ?? DEFAULT_LANG
+  const weekStart = startOfWeek ?? locale?.options?.weekStartsOn ?? 0
   // The `dir` prop, else the provider's: the arrow keys follow the reading
   // direction.
   const rtl =
     useDirection(dir === 'rtl' || dir === 'ltr' ? dir : undefined) === 'rtl'
   // The days at midnight, and the parts of the events on each of them.
-  const week = getWeekDates(currentDate, startOfWeek).map((date) => ({
+  const week = getWeekDates(currentDate, weekStart).map((date) => ({
     date,
     segments: getDaySegments(events, date),
   }))

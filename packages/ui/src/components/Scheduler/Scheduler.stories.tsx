@@ -17,7 +17,8 @@ import { Scheduler } from './Scheduler'
 
 /**
  * A time in the current week (`day` 0 is its Monday), so the events are in
- * the week the stories show (`currentDate: new Date()`).
+ * the week the stories with events show: they start on Monday like the
+ * Figma kit (`startOfWeek: 1`), with `currentDate: new Date()`.
  */
 const thisWeek = (day: number, hours: number, minutes = 0) =>
   setMinutes(
@@ -83,14 +84,30 @@ const meta: Meta<typeof Scheduler> = {
 export default meta
 type Story = StoryObj<typeof Scheduler>
 
+/**
+ * Without `startOfWeek` the week starts on the locale's first day: Sunday in
+ * the stories' default English (Monday with the Russian toolbar locale).
+ */
 export const Default: Story = {
   args: {
     events: [],
   },
   play: async ({ canvas, canvasElement, userEvent, step }) => {
     const now = new Date()
-    const monday = startOfWeek(now, { weekStartsOn: 1 })
+    const sunday = startOfWeek(now, { weekStartsOn: 0 })
     const grid = canvas.getByRole('grid')
+
+    await step(
+      "the week starts on the locale's first day: Sunday",
+      async () => {
+        await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
+          sunday.toLocaleDateString('en-US', {
+            weekday: 'short',
+            day: 'numeric',
+          }),
+        )
+      },
+    )
 
     await step('the grid is named by its week', async () => {
       await expect(grid).toHaveAccessibleName(
@@ -99,7 +116,7 @@ export const Default: Story = {
           month: 'long',
           day: 'numeric',
         })
-          .formatRange(monday, addDays(monday, 6))
+          .formatRange(sunday, addDays(sunday, 6))
           .replace(/\s+/g, ' '),
       )
     })
@@ -143,6 +160,7 @@ export const Default: Story = {
 }
 
 export const WithEvents: Story = {
+  args: { startOfWeek: 1 },
   parameters: { targetSize: { exceptions: eventExceptions } },
   play: async ({ args, canvas, canvasElement, userEvent, step }) => {
     const page = within(canvasElement.ownerDocument.body)
@@ -243,6 +261,7 @@ export const WithEvents: Story = {
 export const MultipleEventsPerHour: Story = {
   parameters: { targetSize: { exceptions: eventExceptions } },
   args: {
+    startOfWeek: 1,
     currentDate: new Date(),
     events: [
       ...sampleEvents,
@@ -327,9 +346,31 @@ export const MultipleEventsPerHour: Story = {
   },
 }
 
+/** `startOfWeek` wins over the locale: Sunday first, in Russian. */
 export const WithWeekStartsFromSunday: Story = {
   args: {
     events: [],
     startOfWeek: 0,
+  },
+  globals: { locale: 'ru' },
+  play: async ({ canvas }) => {
+    const sunday = startOfWeek(new Date(), { weekStartsOn: 0 })
+    await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
+      sunday.toLocaleDateString('ru', { weekday: 'short', day: 'numeric' }),
+    )
+  },
+}
+
+/** The Russian locale's week starts on Monday. */
+export const RussianWeek: Story = {
+  args: {
+    events: [],
+  },
+  globals: { locale: 'ru' },
+  play: async ({ canvas }) => {
+    const monday = startOfWeek(new Date(), { weekStartsOn: 1 })
+    await expect(canvas.getAllByRole('columnheader')[0]).toHaveTextContent(
+      monday.toLocaleDateString('ru', { weekday: 'short', day: 'numeric' }),
+    )
   },
 }

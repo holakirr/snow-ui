@@ -14,6 +14,14 @@
 #                             relative to the repository root
 #   VISUAL_DOCKER_PLATFORM    image platform (default linux/amd64, what CI runs;
 #                             Apple Silicon runs it through Rosetta/QEMU)
+#   VISUAL_DOCKER_CPUS        CPUs the container may use (default: half the
+#                             host's, at most 6); Playwright gets as many workers
+#                             unless you pass --workers yourself
+#   VISUAL_DOCKER_MEMORY      the container's memory limit (default 4g)
+#
+# One run at a time per machine: a second run (another terminal, another
+# worktree, an agent) waits for the first. Containers of runs that were killed
+# before they could clean up are stopped when the next run starts.
 #
 # Only the pure-JS @playwright/test package from the host's node_modules is
 # used in the container (browsers ship with the image); Storybook is built on
@@ -63,17 +71,75 @@ if [[ -z "${VISUAL_SKIP_BUILD:-}" ]]; then
   bun run build:storybook
 fi
 
+host_cpus=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
+default_cpus=$((host_cpus / 2))
+((default_cpus > 6)) && default_cpus=6
+((default_cpus < 1)) && default_cpus=1
+cpus="${VISUAL_DOCKER_CPUS:-$default_cpus}"
+memory="${VISUAL_DOCKER_MEMORY:-4g}"
+
 args=(test -c visual/playwright.config.ts)
 if [[ "$mode" == update ]]; then
   args+=(--update-snapshots=changed)
 fi
+# Inside the container Node sees every CPU of the Docker VM, so Playwright's
+# default (half of them) would oversubscribe the --cpus quota.
+if [[ " $* " != *" --workers"* && " $* " != *" -j"* ]]; then
+  args+=("--workers=${cpus%.*}")
+fi
 args+=("$@")
 
-echo "Running visual tests in ${image} (${platform})"
+# One visual run per machine. The lock is a directory holding the owner's pid;
+# a lock whose owner is gone is taken over.
+label=org.snow-ui.visual
+lock="${TMPDIR:-/tmp}/snow-ui-visual.lock"
+container=
+waiting=
+until mkdir "$lock" 2>/dev/null; do
+  owner=$(cat "$lock/pid" 2>/dev/null || true)
+  if [[ -n "$owner" ]] && ! kill -0 "$owner" 2>/dev/null; then
+    rm -rf "$lock"
+    continue
+  fi
+  if [[ -z "$waiting" ]]; then
+    echo "Another visual run is in progress (pid ${owner:-?}); waiting for it to finish..."
+    waiting=1
+  fi
+  sleep 5
+done
+echo $$ >"$lock/pid"
+
+cleanup() {
+  if [[ -n "$container" ]]; then
+    docker stop --time 5 "$container" >/dev/null 2>&1 || true
+  fi
+  rm -rf "$lock"
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+# Holding the lock, any container still labelled as a visual run is left over
+# from a run that was killed (its CLI died, the container kept going).
+stale=$(docker ps -q --filter "label=$label")
+if [[ -n "$stale" ]]; then
+  echo "Stopping visual test containers left over from a killed run..."
+  # shellcheck disable=SC2086
+  docker stop --time 5 $stale >/dev/null
+fi
+
+container="snow-ui-visual-$$"
+echo "Running visual tests in ${image} (${platform}, ${cpus} CPUs, ${memory})"
 # --init/--ipc=host: recommended for Chromium in Docker. The host user's
 # uid/gid keep written files (snapshots, reports) owned by you on Linux hosts.
-exec docker run --rm --init --ipc=host \
+# Started in the background and awaited, so a TERM/INT to this script runs the
+# cleanup (stopping the container) right away instead of after the run.
+docker run --rm --init --ipc=host \
+  --name "$container" \
+  --label "$label" \
   --platform "$platform" \
+  --cpus "$cpus" \
+  --memory "$memory" \
   --user "$(id -u):$(id -g)" \
   -e HOME=/tmp \
   -e CI \
@@ -81,4 +147,5 @@ exec docker run --rm --init --ipc=host \
   -v "$PWD":/work \
   -w /work \
   "$image" \
-  node node_modules/@playwright/test/cli.js "${args[@]}"
+  node node_modules/@playwright/test/cli.js "${args[@]}" &
+wait $!

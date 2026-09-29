@@ -675,7 +675,7 @@
         "components/Scheduler/Scheduler.tsx",
         "components/Scheduler/constants.ts"
       ],
-      "dependencies": ["date-fns"],
+      "dependencies": ["@radix-ui/react-direction", "date-fns"],
       "registryDependencies": [
         "dropdown-menu",
         "separator",

@@ -459,6 +459,8 @@
    */
   :root,
   [data-theme],
+  .light,
+  .dark,
   [data-contrast] {
     --color-control-border--more-on: var(--contrast-more)
       var(--color-control-border--more);

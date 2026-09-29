@@ -145,5 +145,27 @@ export const Contrast: Story = {
         )
       }
     }
+
+    // The `light` / `dark` classes (next-themes, shadcn/ui) are theme scopes
+    // too, and combine with the contrast scopes the same way.
+    const inScope = (
+      selector: string,
+      className: 'light' | 'dark',
+      level: Level,
+    ) => {
+      const scope = canvasElement.ownerDocument.createElement('div')
+      scope.className = className
+      canvasElement.querySelector(selector)?.appendChild(scope)
+      const color = colorOf('text-control-border', scope)
+      scope.remove()
+      return same(color, tokenColor('control-border', className, level))
+    }
+    await inScope('[data-contrast="more"]', 'dark', 'more')
+    await inScope(
+      '[data-contrast="more"] [data-contrast-sample="dark"]',
+      'light',
+      'more',
+    )
+    await inScope('[data-contrast="standard"]', 'dark', 'standard')
   },
 }

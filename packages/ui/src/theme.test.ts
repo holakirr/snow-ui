@@ -93,7 +93,7 @@ const parse = (css: string) => {
 const DARK_QUERY = '@media (prefers-color-scheme: dark)'
 const MOTION_QUERY = '@media (prefers-reduced-motion: reduce)'
 const CONTRAST_QUERY = '@media (prefers-contrast: more)'
-const CONTRAST_SCOPES = ':root, [data-theme], [data-contrast]'
+const CONTRAST_SCOPES = ':root, [data-theme], .light, .dark, [data-contrast]'
 
 let rules: Rule[]
 let css: string
@@ -396,11 +396,44 @@ describe('contrast scopes (compiled index.css)', () => {
     },
   )
 
+  it('re-declares them on every element that sets a theme or a contrast', () => {
+    // A theme scope (data-theme or the light / dark classes) inside a
+    // contrast scope, or the other way round, recomputes the contrast
+    // tokens with its own theme's values: every theme scope is listed.
+    const themeScopes = new Set(
+      rules
+        .filter(
+          (r) =>
+            r.context.join(' ') === '@layer base' &&
+            r.declarations.get('color-scheme'),
+        )
+        .flatMap((r) => r.selector.split(', ')),
+    )
+    expect([...themeScopes].sort()).toEqual([
+      '.dark',
+      '.light',
+      ':root',
+      '[data-theme="dark"]',
+      '[data-theme="light"]',
+    ])
+    const selectors = CONTRAST_SCOPES.split(', ')
+    for (const scope of [
+      '.light',
+      '.dark',
+      '[data-theme]',
+      '[data-contrast]',
+    ]) {
+      expect(selectors).toContain(scope)
+    }
+  })
+
   it('comes after the theme scopes, so their values are its input', () => {
     const base = rules.filter((r) => r.context[0] === '@layer base')
     expect(
       base.indexOf(rule(CONTRAST_SCOPES, ['@layer base'])),
-    ).toBeGreaterThan(base.indexOf(rule('[data-theme]', ['@layer base'])))
+    ).toBeGreaterThan(
+      base.indexOf(rule('[data-theme], .light, .dark', ['@layer base'])),
+    )
   })
 
   describe('contrast-more: variant', () => {

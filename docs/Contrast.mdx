@@ -13,7 +13,7 @@ The library keeps the Figma look by default and meets AA with **more contrast**.
 - **The OS preference** `prefers-contrast: more` (macOS and iOS "Increase contrast", and similar OS or browser settings), unless `<html data-contrast="standard">`.
 - **`data-contrast="more"`** on any element, for an app's own setting. `data-contrast="standard"` switches a subtree back to the Figma look.
 
-Like `data-theme`, it works at any depth, and contrast and theme scopes combine: a dark panel in a high-contrast page gets the dark high-contrast values, whichever element carries which attribute.
+Like `data-theme`, it works at any depth, and contrast and theme scopes (`data-theme` or the `light` / `dark` classes) combine: a dark panel in a high-contrast page gets the dark high-contrast values, whichever element carries which attribute or class.
 
 ```tsx
 <html data-contrast="more">
@@ -93,7 +93,7 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 
 The values live in the DTCG tokens (`packages/ui/tokens`), the single source of truth. The resolver has a `contrast` modifier next to `theme`: its default context, "standard", is `color.contrast-standard.tokens.json`, which aliases the four tokens to the Figma palette (the same aliases in both themes); the "more" context adds nothing, so the values in `color.light.tokens.json` and `color.dark.tokens.json` apply. Every combination of theme and contrast resolves correctly in any DTCG tool.
 
-`bun run tokens` turns this into CSS scopes (`src/styles/tokens.generated.css`). The theme scopes declare each theme's "more" values (`--color-control-border--more`); a switch, `--contrast-more`, is a space inside a "more" scope and `initial` (invalid) elsewhere; and every scope element (`:root`, `[data-theme]`, `[data-contrast]`) re-declares `--color-control-border: var(--color-control-border--more-on, var(--color-black-20))`, where `--color-control-border--more-on: var(--contrast-more) var(--color-control-border--more)` is only valid when the switch is on. So the value follows the nearest theme and the nearest contrast scope independently, at any depth.
+`bun run tokens` turns this into CSS scopes (`src/styles/tokens.generated.css`). The theme scopes declare each theme's "more" values (`--color-control-border--more`); a switch, `--contrast-more`, is a space inside a "more" scope and `initial` (invalid) elsewhere; and every scope element (`:root`, `[data-theme]`, `.light`, `.dark`, `[data-contrast]`) re-declares `--color-control-border: var(--color-control-border--more-on, var(--color-black-20))`, where `--color-control-border--more-on: var(--contrast-more) var(--color-control-border--more)` is only valid when the switch is on. So the value follows the nearest theme and the nearest contrast scope independently, at any depth.
 
 For your own controls, use the tokens for boundaries and placeholders, and the `contrast-more:` variant for other changes: `theme.css` redefines it to follow the same scopes as the tokens (Tailwind's reads only the OS preference; like `dark:`, it sees one level of nesting): `className="inset-ring-[0.5px] contrast-more:inset-ring-1"`.
 

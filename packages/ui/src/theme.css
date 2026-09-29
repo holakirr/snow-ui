@@ -73,6 +73,9 @@
   --animate-slide-out-to-bottom: slide-out-to-bottom 0.3s ease-out;
   --animate-zoom-in-95: zoom-in-95 0.3s ease-out;
   --animate-zoom-out-95: zoom-out-95 0.3s ease-out;
+  /* Spinner and ProgressCircle: the "Loading A" icon's motion, in CSS. */
+  --animate-spinner-turn: spinner-turn 2s linear infinite;
+  --animate-spinner-arc: spinner-arc 1.5s ease-in-out infinite;
 }
 
 /*
@@ -278,6 +281,32 @@
     }
     to {
       transform: scale(0.95);
+    }
+  }
+  /*
+   * The ring of @holakirr/snow-ui-icons' LoadingAIcon (r 9.5 in a 24 box,
+   * about 60 around): it turns once every 2s while its arc grows to 42 and
+   * its tail catches up again every 1.5s. The icon animates with SMIL, which
+   * CSS can't stop; these keyframes can be turned off for reduced motion.
+   */
+  @keyframes spinner-turn {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes spinner-arc {
+    0% {
+      stroke-dasharray: 0 150;
+      stroke-dashoffset: 0;
+    }
+    47.5% {
+      stroke-dasharray: 42 150;
+      stroke-dashoffset: -16;
+    }
+    95%,
+    100% {
+      stroke-dasharray: 42 150;
+      stroke-dashoffset: -59;
     }
   }
 }

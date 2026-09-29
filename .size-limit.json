@@ -28,6 +28,13 @@
     "limit": "25 kB"
   },
   {
+    "name": "@holakirr/snow-ui: { Spinner }",
+    "path": "packages/ui/dist/index.js",
+    "import": "{ Spinner }",
+    "ignore": ["react", "react-dom", "react-hook-form"],
+    "limit": "10.2 kB"
+  },
+  {
     "name": "@holakirr/snow-ui/react-hook-form: full import (ESM)",
     "path": "packages/ui/dist/react-hook-form.js",
     "import": "*",

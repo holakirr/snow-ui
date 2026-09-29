@@ -80,6 +80,9 @@ export const ruMessages: Messages = {
     maximum: (label) => `${label}, максимум`,
     thumb: (label, position, count) => `${label}, ${position} из ${count}`,
   },
+  spinner: {
+    label: 'Загрузка',
+  },
   tag: {
     remove: (label) => `Удалить тег ${label}`,
   },

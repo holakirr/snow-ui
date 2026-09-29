@@ -122,6 +122,10 @@ export type Messages = {
     /** A thumb of a slider with three or more thumbs (`position` from 1). */
     thumb: (label: string, position: number, count: number) => string
   }
+  spinner: {
+    /** The screen-reader text of a `Spinner`. */
+    label: string
+  }
   tag: {
     /** The remove button of a `Tag`. */
     remove: (label: string) => string
@@ -205,6 +209,9 @@ export const defaultMessages: Required<Messages> = {
     minimum: (label) => `${label}, minimum`,
     maximum: (label) => `${label}, maximum`,
     thumb: (label, position, count) => `${label}, ${position} of ${count}`,
+  },
+  spinner: {
+    label: 'Loading',
   },
   tag: {
     remove: (label) => `Remove tag ${label}`,

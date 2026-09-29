@@ -553,6 +553,8 @@ describe('SnowUIProvider', () => {
       alertDialog: _alertDialog,
       avatarGroup: _avatarGroup,
       charts: _charts,
+      combobox: _combobox,
+      datePicker: _datePicker,
       progress: _progress,
       spinner: _spinner,
       ...v50
@@ -574,6 +576,8 @@ describe('SnowUIProvider', () => {
     expect(seen?.alertDialog.cancel).toBe('Cancel')
     expect(seen?.avatarGroup.more(2)).toBe('2 more')
     expect(seen?.charts.navigation).toBe('Data points')
+    expect(seen?.combobox.empty).toBe('No results')
+    expect(seen?.datePicker.placeholder).toBe('Pick a date')
     expect(seen?.progress.value(1, 4)).toBe('25%')
     expect(seen?.spinner.label).toBe('Loading')
   })

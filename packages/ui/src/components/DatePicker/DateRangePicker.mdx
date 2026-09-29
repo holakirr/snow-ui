@@ -1,0 +1,130 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as DateRangePickerStories from './DateRangePicker.stories'
+
+<Meta of={DateRangePickerStories} />
+
+<Title />
+
+<FigmaLinks label="DatePicker component set" page="29706:37201" note="The field is the Figma Input; the calendar is the Figma DatePicker in range mode." />
+<InstallTabs item="date-range-picker" />
+
+DateRangePicker is a form field for a range of dates: it shows the picked range and opens a [Calendar](?path=/docs/components-calendar--docs) in range mode to pick another. The first pick is the start, the second the end, and the calendar closes. Everything else — the field, the popover, the limits, the keyboard, localization and forms — works as in [DatePicker](?path=/docs/components-datepicker--docs).
+
+```tsx
+import { type DateRange, DateRangePicker, Label } from '@holakirr/snow-ui'
+
+const [stay, setStay] = useState<DateRange | null>(null)
+
+<Label htmlFor="stay">Stay</Label>
+<DateRangePicker id="stay" value={stay} onValueChange={setStay} numberOfMonths={2} />
+```
+
+<Primary />
+
+## When to use
+
+- A period in a form: a stay, a sprint, a report's dates.
+
+## When not to use
+
+- One date: [DatePicker](?path=/docs/components-datepicker--docs).
+- A few preset periods ("Last 7 days", "This month"): a [Select](?path=/docs/components-input-select--docs) or a [ToggleGroup](?path=/docs/components-input-togglegroup--docs), with a DateRangePicker for "Custom" if needed.
+
+## Anatomy
+
+As in [DatePicker](?path=/docs/components-datepicker--docs#anatomy). The field shows "Jan 13, 2025 – Jan 16, 2025" (`messages.datePicker.range(start, end)` with the dates in the `dateFormat`), or the placeholder "Pick a date range". `numberOfMonths` shows several months side by side (one by default, so the popover fits a phone).
+
+## Picking a range
+
+- Every time the calendar opens, a new range starts: the first click (or Enter) picks the start, the second the end, and the calendar closes. If the end comes before the start, the two are swapped. The same day twice is a one-day range.
+- While the end is being picked, the range follows the pointer.
+- Closing the calendar after the first pick (Escape, a click outside) keeps the range the field had.
+- `onValueChange` is called once, with the complete range `{ from, to }`, or with `null` when the field is cleared.
+
+<Canvas of={DateRangePickerStories.Open} />
+
+<Canvas of={DateRangePickerStories.TwoMonths} />
+
+Dark theme, open: [OpenDark story](?path=/story/components-daterangepicker--open-dark).
+
+## States
+
+As in [DatePicker](?path=/docs/components-datepicker--docs#states). In the calendar, the range is one Primary band with rounded ends (see [Calendar](?path=/docs/components-calendar--docs#states)); a one-day range keeps all its rounded corners.
+
+<Canvas of={DateRangePickerStories.States} />
+
+<Canvas of={DateRangePickerStories.MinMaxAndDisabledDates} />
+
+## Accessibility
+
+- As in [DatePicker](?path=/docs/components-datepicker--docs#accessibility): a `<button role="combobox">` that opens a modal `dialog`, here named "Choose a date range", with focus on the range's start (or today).
+- The calendar is a `grid` with `aria-multiselectable`; the days of the range are `aria-selected`.
+- `name` adds a hidden input with the range as an ISO 8601 interval: `2025-01-13/2025-01-16`.
+
+### Keyboard
+
+As in [DatePicker](?path=/docs/components-datepicker--docs#keyboard), except that Enter picks a start, then an end (the Default story's test and the unit tests):
+
+| Key | Action |
+| --- | --- |
+| Enter, Space, ArrowDown | on the field: open the calendar, with focus on the range's start (or today) |
+| Backspace, Delete | on the field: clear the range (`clearable`) |
+| Arrow keys, Page Up / Page Down, Home / End | in the calendar: move between days, weeks and months |
+| Enter, Space | in the calendar: pick the start, then the end; the second pick closes the calendar and focus returns to the field |
+| Escape | close the calendar; after only a start, the field keeps its previous range |
+
+### Deviations from the Figma kit
+
+As in [DatePicker](?path=/docs/components-datepicker--docs#deviations-from-the-figma-kit).
+
+## Localization and RTL
+
+- As in DatePicker: `SnowUIProvider`'s `locale` formats the dates and localizes the calendar, `dateFormat` sets the format, the week starts on the locale's first day unless you pass `weekStartsOn`.
+- `messages.datePicker` holds `rangePlaceholder` ("Pick a date range"), `rangeDialog` ("Choose a date range"), `range(start, end)` ("start – end") and `clear` ("Clear date").
+- In right-to-left text the range reads from the right.
+
+<Canvas of={DateRangePickerStories.RTL} />
+
+## Forms
+
+Bind `value` and `onValueChange` (a `DateRange`, or `null`); pass `field.ref`, `field.onBlur`, `field.name` and `field.disabled` as they are. With zod: `z.object({ from: z.date(), to: z.date() }, { error: 'Pick your dates.' })`.
+
+<Canvas of={DateRangePickerStories.InForm} />
+
+## Controlled and uncontrolled
+
+Pass `defaultValue` to leave the range to the picker, or `value` with `onValueChange(range)` to control it; `null` is no range. `DateRange` is react-day-picker's `{ from, to? }`, re-exported. The popover: `defaultOpen`, or `open` with `onOpenChange`.
+
+## Composition
+
+As in DatePicker: no `asChild`; `className` and `style` go to the field, the button props to the trigger, `contentClassName` to the popover, `calendarProps` to the Calendar.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Show two months (`numberOfMonths={2}`) where there is room, so ranges across months are easy to pick.
+- Set `minDate` and `maxDate` when only some dates make sense.
+
+</Do>
+<Dont>
+
+- Don't use two DatePickers for a start and an end date: a range picker shows the range and keeps the ends in order.
+- Don't pass `mode`, `selected` or `onSelect` in `calendarProps`: the picker owns the selection.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [DatePicker](?path=/docs/components-datepicker--docs): one date, and the full field reference.
+- [Calendar](?path=/docs/components-calendar--docs): the calendar in the popover.
+- [Form](?path=/docs/components-form--docs): label, description and error message.
+
+## Props
+
+As in [DatePicker](?path=/docs/components-datepicker--docs#props): everything not listed goes to the trigger, `className` and `style` to the field, `contentClassName` to the popover, `calendarProps` to the Calendar.
+
+<Controls />

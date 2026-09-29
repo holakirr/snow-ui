@@ -1,0 +1,203 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ComboboxStories from './Combobox.stories'
+
+<Meta of={ComboboxStories} />
+
+<Title />
+
+<FigmaLinks label="Input/Form page" note="The kit has no combobox: the field is the Figma Input, the list the Figma Popover (as in Select)." />
+<InstallTabs item="combobox" />
+
+Combobox is a text field with a list of options that filters as the user types: pick one value out of many by typing a few letters. It follows the WAI-ARIA [combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) with a listbox popup and list autocomplete: focus stays in the field, and the highlighted option is the field's `aria-activedescendant`. The field is the Figma Input, the list the Select menu on the Figma Popover surface. For several values, use [MultiSelect](?path=/docs/components-multiselect--docs).
+
+```tsx
+import { Combobox, Label, type ComboboxOption } from '@holakirr/snow-ui'
+
+const fruits: ComboboxOption[] = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana', keywords: ['yellow'] },
+  { value: 'durian', label: 'Durian', disabled: true },
+]
+
+<Label htmlFor="fruit">Fruit</Label>
+<Combobox id="fruit" options={fruits} value={fruit} onValueChange={setFruit} placeholder="Pick a fruit" />
+```
+
+<Primary />
+
+## When to use
+
+- One value out of a list too long to scan: countries, time zones, people, tags.
+- Results from a server, filtered as the user types.
+- A list the user may add to (`creatable`).
+
+## When not to use
+
+- A short list (up to about 15 options) without typing: [Select](?path=/docs/components-input-select--docs).
+- Two to five options that should stay visible: [RadioGroup](?path=/docs/components-input-radiogroup--docs).
+- Several values: [MultiSelect](?path=/docs/components-multiselect--docs).
+- Searching the whole app or running commands: [CommandPalette](?path=/docs/components-commandpalette--docs).
+- Free text with suggestions the value doesn't have to match: an [Input](?path=/docs/components-input-input--docs).
+
+## Anatomy
+
+1. **Field**: the Figma Input field (12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% inside stroke, 14/20 text), full width. `className` and `style` style it.
+2. **Start content** (`startContent`, optional): a 16px icon before the text, in Black/40%.
+3. **Input**: an `<input role="combobox">` with the selected option's label, or the text being typed. `placeholder`, `id`, `aria-*`, `onBlur`, `ref` and other input props go to it; `inputClassName` styles it.
+4. **Spinner** (while `loading`): the 16px LoadingA icon.
+5. **Clear button** (`clearable`, on by default, while there is a value): the Search clear button, a 16px filled XCircle at 60% opacity.
+6. **Chevron**: the 16px ArrowLineUpDown icon of the Select trigger.
+7. **List**: portalled below the field, as wide as the field, on the Popover surface (Background/3, a 1px Surface/1 stroke, a 16px radius, the "Glass 2" blur and shadow) with 12px padding. It scrolls past 352px or the room below the field. `contentClassName` styles it.
+8. **Group title** (a group's `label`): 12/16 `text-secondary`.
+9. **Option**: 36px high (8px padding, 14/20 text), a 12px radius and a Black/4% highlight, an optional 16px `icon`; the selected option has a 16px check at the end. Long labels are truncated.
+10. **Create option** (`creatable`): an Add icon and 'Create "…"' at the end of the list.
+11. **Empty and loading message**: "No results" or "Loading" in 14/20 `text-secondary`.
+
+Options are `{ value, label, icon?, keywords?, disabled? }`; pass them flat, in groups `{ label, options }`, or both (in display order). Values must be unique across the list.
+
+## States
+
+- **Hover:** the stroke turns Black/40%.
+- **Focus** (the input is focused) and **open:** a Black/40% stroke and the 4px Focus ring, the Figma "Focus" of the Input.
+- **Highlighted option:** Black/4%; the pointer and ↑ / ↓ move the highlight. While filtering, the first match is highlighted, so Enter picks it; when the list opens, the selected option is.
+- **Static** (`readOnly`): the Figma "Static" Input; the list doesn't open and the value can't be cleared.
+- **Invalid** (`aria-invalid`, set by `FormControl` when the field has an error): a Red stroke.
+- **Disabled** (`disabled`): a Black/4% field with no stroke, Black/20% text and icons, and a not-allowed cursor.
+- **Disabled option** (`disabled`): Black/20% text; it can't be highlighted or picked.
+- **Empty:** no option matches the query.
+- **Loading** (`loading`): the spinner, the list marked busy, "Loading" when there are no options yet.
+
+<Canvas of={ComboboxStories.Open} />
+
+<Canvas of={ComboboxStories.GroupedOpen} />
+
+<Canvas of={ComboboxStories.States} />
+
+<Canvas of={ComboboxStories.Empty} />
+
+<Canvas of={ComboboxStories.Loading} />
+
+Dark theme, open: [OpenDark story](?path=/story/components-combobox--open-dark).
+
+## Filtering, server results and new options
+
+- **Default filter** (`defaultComboboxFilter`): every word of the query must appear in the label or the `keywords`, case-insensitively, as in CommandPalette. Options show until the user types: opening the list on a selected value shows every option.
+- **Custom filter:** `filter={(option, query) => boolean}` gets the trimmed, non-empty query.
+- **Server results:** `filter={false}` shows `options` as they are. `onQueryChange(query)` reports the text to search for (and `''` when it resets); fetch, and pass the results as `options` with `loading` while waiting. The selected option's label stays in the field even when the results no longer have it.
+- **New options** (`creatable`): while the query matches no label exactly, the list ends with 'Create "query"'. Picking it calls `onCreate(query)` with the trimmed query, which becomes the value: add `{ value: query, label: query }` to `options`.
+
+<Canvas of={ComboboxStories.AsyncResults} />
+
+<Canvas of={ComboboxStories.Creatable} />
+
+## Accessibility
+
+- The field is an `<input role="combobox">` with `aria-autocomplete="list"`, `aria-expanded` and, while open, `aria-controls` pointing at the `listbox`. Options are `option`s, in `group`s named by their title; the selected one is `aria-selected`, a disabled one `aria-disabled`.
+- **Focus never leaves the field.** The highlighted option is the field's `aria-activedescendant`, so screen readers read it as the highlight moves.
+- A click on the field opens or closes the list; a click on an option picks it.
+- Emptying the text and leaving the field clears the value (with `clearable`, the default).
+- Name the field with a [Label](?path=/docs/components-label--docs) (or `FormLabel`) linked to its `id`, or `aria-label`. The list takes the same name.
+- The empty and loading messages are also in a visually hidden `status` region, so screen readers announce them.
+- `name` adds a hidden input with the value (not the label) for native form submission.
+
+### Keyboard
+
+Focus stays in the field; the highlight is its `aria-activedescendant` (the Default story's test and the unit tests):
+
+| Key | Action |
+| --- | --- |
+| typing | open the list, filter it and highlight the first match |
+| ArrowDown | open the list on the selected option (or the first); with the list open, move the highlight down, wrapping around |
+| ArrowUp | open the list on the selected option (or the last); with the list open, move the highlight up, wrapping around |
+| Alt + ArrowDown | open the list without moving the highlight |
+| Alt + ArrowUp | close the list |
+| Enter | pick the highlighted option and close the list; with the list closed, submit the form |
+| Escape | close the list; with the list closed, clear the field (`clearable`) |
+| Tab | move on: the list closes and the text goes back to the selected label (or clears the value if you emptied it) |
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Group titles and the empty message in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
+| The clear icon at 40% opacity (2.85:1) | 60% (the 3:1 of a control's icon) | 1.4.11 |
+
+Known gaps with the default contrast, which keeps the Figma values, as in [Input](?path=/docs/components-input-input--docs#accessibility) and [Select](?path=/docs/components-input-select--docs#accessibility): the 0.5px Black/20% stroke (1.6:1), the Black/20% placeholder and the Black/4% highlight of the options (1.1:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border`, the placeholder the `placeholder` token (AA), the invalid stroke `control-border-invalid`, the chevron `control-border-strong`, and the highlighted option gets a 2px `black-80` ring. The clear button is a 16px icon with a 24×24px hit area (2.5.8).
+
+## Localization and RTL
+
+- `messages.combobox` holds the built-in strings: `empty` ("No results"), `loading` ("Loading"), `clear` ("Clear") and `create(query)` ('Create "query"'). The `emptyMessage`, `loadingLabel`, `clearLabel` and `createLabel` props override them.
+- The icons, the clear button and the check marks are at the end: on the left in right-to-left text. The list is portalled outside your `dir` scope, so it takes the direction from `SnowUIProvider`.
+
+<Canvas of={ComboboxStories.RTL} />
+
+## Theming
+
+The list renders in a portal at the end of `<body>`, outside your layout. It takes the theme of the nearest `ThemeScope` or `SnowUIProvider` `theme` (see [Theming](?path=/docs/guides-theming--docs)), else the theme of `<html>`.
+
+## Forms
+
+Bind the value with `value` and `onValueChange`, not `onChange`: `onChange` would be the text being typed. With react-hook-form, pass `field.ref` to `ref` (it reaches the `<input>`, so the form focuses the field on an error) and `field.onBlur`, `field.name` and `field.disabled` as they are. `FormControl` gives the input its `id`, `aria-invalid` and `aria-describedby`.
+
+```tsx
+<FormField
+  control={form.control}
+  name="fruit"
+  render={({ field: { value, onChange, ...field } }) => (
+    <FormItem>
+      <FormLabel>Fruit</FormLabel>
+      <FormControl>
+        <Combobox options={fruits} value={value} onValueChange={onChange} {...field} />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+<Canvas of={ComboboxStories.InForm} />
+
+## Controlled and uncontrolled
+
+Pass `defaultValue` to leave the value to the combobox, or `value` with `onValueChange(value)` to control it. Values are strings; `null` is no value (`onValueChange(null)` when the field is cleared). The list works the same way: `defaultOpen`, or `open` with `onOpenChange`.
+
+## Composition
+
+Combobox has no `asChild`: it renders a field with an input, buttons and a portalled list. `className` and `style` go to the field, `inputClassName` and the input props to the `<input>`, `contentClassName` to the list.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Label the field; say what to type in the placeholder: "Search time zones".
+- Add `keywords` so options match the words users type, not only their labels.
+- Use `filter={false}`, `onQueryChange` and `loading` for server results, and debounce the requests.
+- Keep option values unique and stable.
+
+</Do>
+<Dont>
+
+- Don't bind `onChange` to the form value: use `onValueChange`.
+- Don't use Combobox for a handful of options: use Select or RadioGroup.
+- Don't put interactive content in an option's label or icon.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [MultiSelect](?path=/docs/components-multiselect--docs): the same field for several values.
+- [Select](?path=/docs/components-input-select--docs): a short list without typing.
+- [CommandPalette](?path=/docs/components-commandpalette--docs): the same list model (and default filter) in a search dialog.
+- [Input](?path=/docs/components-input-input--docs) and [Popover](?path=/docs/components-popover--docs): the field and the surface it is made of.
+- [Form](?path=/docs/components-form--docs): label, description and error message.
+
+## Props
+
+Everything not listed goes to the `<input role="combobox">` (`id`, `aria-*`, `placeholder`, `required`, `onBlur`, `ref`…); `className` and `style` go to the field. `options` takes `ComboboxOption`s (`{ value, label, icon?, keywords?, disabled? }`) and `ComboboxOptionGroup`s (`{ label, options }`).
+
+<Controls />

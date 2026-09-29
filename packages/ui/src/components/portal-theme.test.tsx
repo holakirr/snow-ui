@@ -1,6 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeAll, describe, expect, it } from 'vitest'
 
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+} from './AlertDialog'
 import { CommandPalette } from './CommandPalette'
 import {
   ContextMenu,
@@ -53,7 +58,7 @@ const portalled = (text: string, selector = '[data-theme]') => {
 }
 
 describe('portalled content in a ThemeScope', () => {
-  it('takes the scope theme: dialog, sheet, popover, tooltip, command palette', () => {
+  it('takes the scope theme: dialog, alert dialog, sheet, popover, tooltip, command palette', () => {
     render(
       <ThemeScope theme="dark" data-testid="scope">
         <Dialog open>
@@ -61,6 +66,11 @@ describe('portalled content in a ThemeScope', () => {
             <DialogTitle>Dialog</DialogTitle>
           </DialogContent>
         </Dialog>
+        <AlertDialog open>
+          <AlertDialogContent aria-describedby={undefined}>
+            <AlertDialogTitle>Alert dialog</AlertDialogTitle>
+          </AlertDialogContent>
+        </AlertDialog>
         <Sheet open>
           <SheetContent aria-describedby={undefined}>
             <SheetTitle>Sheet</SheetTitle>
@@ -81,7 +91,7 @@ describe('portalled content in a ThemeScope', () => {
     const scope = screen.getByTestId('scope')
 
     expect(scope).toHaveAttribute('data-theme', 'dark')
-    for (const text of ['Dialog', 'Sheet', 'Popover', 'Tip']) {
+    for (const text of ['Dialog', 'Alert dialog', 'Sheet', 'Popover', 'Tip']) {
       const content = portalled(text)
       // Rendered in <body>, outside the scope…
       expect(scope).not.toContainElement(content as HTMLElement)

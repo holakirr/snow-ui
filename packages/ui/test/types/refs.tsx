@@ -29,6 +29,20 @@ type RefTargets = {
   AccordionContent: HTMLDivElement
   AccordionItem: HTMLDivElement
   AccordionTrigger: HTMLButtonElement
+  Alert: HTMLDivElement
+  AlertDescription: HTMLDivElement
+  AlertDialog: null
+  AlertDialogAction: HTMLButtonElement
+  AlertDialogCancel: HTMLButtonElement
+  AlertDialogContent: HTMLDivElement
+  AlertDialogDescription: HTMLParagraphElement
+  AlertDialogFooter: HTMLDivElement
+  AlertDialogHeader: HTMLDivElement
+  AlertDialogOverlay: HTMLDivElement
+  AlertDialogPortal: null
+  AlertDialogTitle: HTMLHeadingElement
+  AlertDialogTrigger: HTMLButtonElement
+  AlertTitle: HTMLDivElement
   Avatar: HTMLSpanElement
   AvatarFallback: HTMLSpanElement
   AvatarGroup: HTMLDivElement
@@ -118,6 +132,8 @@ type RefTargets = {
   PopoverAnchor: HTMLDivElement
   PopoverContent: HTMLDivElement
   PopoverTrigger: HTMLButtonElement
+  Progress: HTMLDivElement
+  ProgressCircle: HTMLDivElement
   RadioGroup: HTMLDivElement
   RadioGroupItem: HTMLButtonElement
   Scheduler: HTMLDivElement
@@ -169,6 +185,7 @@ type RefTargets = {
   Skeleton: HTMLDivElement
   Slider: HTMLSpanElement
   SnowUIProvider: null
+  Spinner: HTMLSpanElement
   Strip: HTMLDivElement
   Switch: HTMLButtonElement
   Table: HTMLTableElement

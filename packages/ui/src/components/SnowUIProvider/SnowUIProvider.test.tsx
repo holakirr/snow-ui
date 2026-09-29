@@ -549,8 +549,12 @@ describe('SnowUIProvider', () => {
     // A `Messages` object written for 5.0 still type-checks: the new
     // namespaces are optional and the defaults fill them in.
     const {
+      alert: _alert,
+      alertDialog: _alertDialog,
       avatarGroup: _avatarGroup,
       charts: _charts,
+      progress: _progress,
+      spinner: _spinner,
       ...v50
     } = defaultMessages
     const translation: Messages = { ...v50, dialog: { close: 'Schließen' } }
@@ -566,8 +570,12 @@ describe('SnowUIProvider', () => {
     )
 
     expect(seen?.dialog.close).toBe('Schließen')
+    expect(seen?.alert.dismiss).toBe('Dismiss')
+    expect(seen?.alertDialog.cancel).toBe('Cancel')
     expect(seen?.avatarGroup.more(2)).toBe('2 more')
     expect(seen?.charts.navigation).toBe('Data points')
+    expect(seen?.progress.value(1, 4)).toBe('25%')
+    expect(seen?.spinner.label).toBe('Loading')
   })
 
   it('keeps the base message for an override set to undefined', () => {

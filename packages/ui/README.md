@@ -147,14 +147,15 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 - A scope sets the tokens and `color-scheme`, not a background or text colour: give it `bg-background-1 text-black` (or your own) to paint it.
 - Without a mode on `<html>`, the page follows the OS preference; `<html data-theme="light">` or `"dark"` (or `class="light"` / `"dark"`, e.g. from next-themes with `attribute="class"`) pins it. Scopes inside work either way.
 - `dark:` utilities follow the same scopes, with one limit: a dark scope inside a light scope inside a dark scope gets the dark tokens but not `dark:` utilities. Prefer the tokens, which switch at any depth.
-- Overlays are portalled: the content of `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope. A plain `data-theme` attribute leaves it in the theme of `<html>`; a `ThemeScope` (`<ThemeScope theme="dark">`, or `asChild` on your element) scopes the tokens and passes the theme to the overlays opened inside it, as their `data-theme`. `SnowUIProvider`'s `theme` does the same without an element, and a `data-theme` on a `*Content` component wins. Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
+- Overlays are portalled: the content of `Dialog`, `AlertDialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope. A plain `data-theme` attribute leaves it in the theme of `<html>`; a `ThemeScope` (`<ThemeScope theme="dark">`, or `asChild` on your element) scopes the tokens and passes the theme to the overlays opened inside it, as their `data-theme`. `SnowUIProvider`'s `theme` does the same without an element, and a `data-theme` on a `*Content` component wins. Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
 
 ## Components
 
 - **Base:** `Typography`, `KBD`, `IconBox`, `IconText`, `Group`, `Strip`, `Separator`, `Badge`, `Tag`, `Link`, `Avatar`, `AvatarGroup`, `Skeleton`.
 - **Controls:** `Button`, `Input`, `InputSmall`, `Search`, `Textarea`, `Checkbox`, `RadioGroup`, `Switch`, `Toggle`, `ToggleGroup`, `Select`, `Slider`, `Label`, `Form*`.
-- **Overlays:** `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Toaster`, `CommandPalette`.
+- **Overlays:** `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Toaster`, `CommandPalette`, `AlertDialog`.
 - **Data and navigation:** `Card`, `Table`, `Tabs`, `Accordion`, `Breadcrumb`, `Pagination`, `Sidebar`, `ListItem`, `Calendar`, `Scheduler`.
+- **Feedback:** `Alert`, `Progress`, `ProgressCircle`, `Spinner`.
 
 The components that map to the SnowUI Figma base components:
 
@@ -195,17 +196,17 @@ Components that render a single element take `asChild` (Radix [`Slot`](https://w
 </ListItem>
 ```
 
-- **Where:** `Button`, `Typography`, `IconText`, `ListItem`, `Link`, `BreadcrumbLink`, `PaginationLink`, `PaginationPrevious`, `PaginationNext`, the `Sidebar*` parts that had it, and every Radix-based part (`DialogTrigger`, `DialogClose`, `TabsTrigger`, `DropdownMenuTrigger`, `TooltipTrigger`…).
+- **Where:** `Button`, `Typography`, `IconText`, `ListItem`, `Link`, `BreadcrumbLink`, `PaginationLink`, `PaginationPrevious`, `PaginationNext`, the `Sidebar*` parts that had it, `Alert`, `AlertTitle`, `AlertDescription`, `AlertDialogAction` and `AlertDialogCancel` (Buttons), and every Radix-based part (`DialogTrigger`, `DialogClose`, `AlertDialogTrigger`, `TabsTrigger`, `DropdownMenuTrigger`, `TooltipTrigger`…).
 - **Props:** the component's props go on the child; for the same prop the child's wins (`href`, `type`…), except `style`, which merges, and event handlers, which compose.
 - **Event handlers:** with `asChild`, a handler on the child and one on the component both run, the child's first; the component's also runs when the child's calls `event.preventDefault()` (Radix `Slot` behaviour), because both are yours. Behaviour a component adds itself follows the Radix convention instead: it runs after your handler and is skipped when your handler calls `event.preventDefault()` — the Radix parts (a `DialogTrigger` doesn't open, a menu item doesn't close the menu), `SidebarTrigger` and `SidebarRail` (no toggle), `Search`'s Escape (no clear).
 - **Classes:** merged with the token-aware `twMerge`, the child's last: `<Button asChild><a className="px-8" /></Button>` replaces the button's `px-3` instead of fighting it in the stylesheet.
 - **Refs:** a `ref` on the component and a `ref` on the child both get the element.
-- **Content:** the component's own content goes inside the child, around the child's children: Button's `label`, `startContent` and `endContent`, IconText's icon, ListItem's title and description, Link's arrow and external text, the pagination arrows.
+- **Content:** the component's own content goes inside the child, around the child's children: Button's `label`, `startContent` and `endContent`, IconText's icon, ListItem's title and description, Link's arrow and external text, the pagination arrows, Alert's icon, actions and dismiss button.
 - **Deprecated `as`:** `Button`, `Typography`, `IconText` and `ListItem` still accept `as` (`<Button as="a" href="/">`), with a one-time development warning. It will be removed in the next major version; migrate to `asChild` and move element-specific props (`href`, `type`) to the child: `<Button asChild><a href="/">…</a></Button>`.
 
 ### Controlled and uncontrolled props
 
-State follows the Radix naming everywhere: `value` / `defaultValue` / `onValueChange` (`Tabs`, `Accordion`, `Select`, `RadioGroup`, `ToggleGroup`, `Slider`), `open` / `defaultOpen` / `onOpenChange` (`Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, `SidebarProvider`), `checked` / `defaultChecked` / `onCheckedChange` (`Checkbox`, `Switch`, menu checkbox items) and `pressed` / `defaultPressed` / `onPressedChange` (`Toggle`). Aligned in this release, with the old names kept as deprecated aliases (one development warning each, removal in the next major):
+State follows the Radix naming everywhere: `value` / `defaultValue` / `onValueChange` (`Tabs`, `Accordion`, `Select`, `RadioGroup`, `ToggleGroup`, `Slider`), `open` / `defaultOpen` / `onOpenChange` (`Dialog`, `AlertDialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, `SidebarProvider`), `checked` / `defaultChecked` / `onCheckedChange` (`Checkbox`, `Switch`, menu checkbox items) and `pressed` / `defaultPressed` / `onPressedChange` (`Toggle`). Aligned in this release, with the old names kept as deprecated aliases (one development warning each, removal in the next major):
 
 | Component | Deprecated | Use |
 | --- | --- | --- |
@@ -231,9 +232,9 @@ import { ru } from 'react-day-picker/locale' // a date-fns locale plus day-picke
 
 // Module scope: the same object on every render (see below).
 const messages: Messages = {
-  /* every namespace: avatarGroup, badge, breadcrumb, calendar, charts,
-     commandPalette, dialog, link, pagination, search, sheet, sidebar,
-     slider, tag, toast */
+  /* every namespace: alert, alertDialog, avatarGroup, badge, breadcrumb,
+     calendar, charts, commandPalette, dialog, link, pagination, progress,
+     search, sheet, sidebar, slider, spinner, tag, toast */
 }
 
 export const Providers = ({ children }: { children: ReactNode }) => (
@@ -263,7 +264,7 @@ For several languages, pass the language (a string) from the layout and pick the
 - **Typed:** `Messages` is grouped by component (`messages.pagination.previous`, `messages.dialog.close`…). Strings with values are functions, so a translation can order and inflect them: `tag: { remove: (label) => \`Удалить тег ${label}\` }`, `calendar: { previousYears: (count) => … }`.
 - **Partial:** `messages` takes any subset (`MessagesOverrides`) and merges it over the defaults, namespace by namespace; a message set to `undefined` keeps the default. Providers nest: an inner one overrides the outer one for its subtree.
 - **Stable:** define `messages` at module scope (or `useMemo` it). The provider recognises an equal inline object, but inline function messages are new functions on every render, which re-renders every component that reads the messages.
-- **Component props win:** `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` and `placeholder` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `label` (`BreadcrumbEllipsis`, `PaginationEllipsis`), `label` / `placeholder` / `emptyMessage` / `loadingLabel` (`CommandPalette`), `thumbLabels` (`Slider`), `todayLabel` / `lastSelectionLabel` / `labels` (`Calendar`) and `aria-label` (`Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger`, `Badge`) override the provider.
+- **Component props win:** `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` and `placeholder` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `label` (`BreadcrumbEllipsis`, `PaginationEllipsis`), `label` / `placeholder` / `emptyMessage` / `loadingLabel` (`CommandPalette`), `thumbLabels` (`Slider`), `todayLabel` / `lastSelectionLabel` / `labels` (`Calendar`), `statusLabel` / `dismissLabel` (`Alert`), the children or `label` of `AlertDialogCancel`, `getValueLabel` (`Progress`, `ProgressCircle`), `label` (`Spinner`) and `aria-label` (`Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger`, `Badge`, `Progress`, `ProgressCircle`) override the provider.
 - **Dates:** `locale` goes to `Calendar` (month and weekday names, day labels; its own `locale` prop wins) and to `Scheduler`'s day, time and cell labels (`locale.code`; `en-US` without a locale, so the server and the browser render the same text). A react-day-picker locale (`react-day-picker/locale`) also translates the day picker's own labels (day buttons, dropdowns…).
 - **Calendar navigation:** `messages.calendar.previousMonth`, `nextMonth` and `navigation` name the previous / next month buttons and their landmark, so they translate with a plain date-fns locale too. Their English defaults give way to a react-day-picker locale's own labels; a translated message wins over them, and `Calendar`'s `labels` prop over both.
 - **Your components:** `useMessages()` returns the current messages, `useSnowUI()` the messages, `locale` and `dir`.
@@ -302,10 +303,10 @@ export const Providers = ({ children }: { children: ReactNode }) => (
 - **Layout** follows the DOM `dir`: the components use logical utilities (`ps-` / `pe-`, `ms-` / `me-`, `start-` / `end-`, `text-start`, `rounded-s-` / `rounded-e-`, `border-s` / `border-e`), so paddings, icons, check marks, badges, the remove button of a `Tag` and the rounded ends of a `Calendar` range swap sides. `dir` on any element scopes it to a subtree, like `data-theme`.
 - **Directional icons** point the other way: pagination and calendar arrows, the `Accordion`, menu and submenu arrows, the `Link` arrow and external icon, `SidebarTrigger` and icon separators of `BreadcrumbSeparator` get `rtl:-scale-x-100` (for your own icons: the same class, or the icons' `mirrored` prop). `Switch` moves its thumb the other way.
 - **Keyboard** follows the provider's `dir` (wrapped Radix `DirectionProvider`): in `Tabs`, `RadioGroup`, `ToggleGroup`, `Slider` and horizontal `Accordion` ArrowLeft moves forward, menus open submenus to the left with ArrowLeft, and `Calendar` passes `dir` to react-day-picker's arrow keys.
-- **Portals** (`Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, the toast viewport) render outside your `dir` scope, so they take `dir` from the provider.
+- **Portals** (`Dialog`, `AlertDialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select`, `CommandPalette`, the toast viewport) render outside your `dir` scope, so they take `dir` from the provider.
 - **Sides:** `Sheet` and `Sidebar` take `side="start"` / `"end"` (defaults: `Sheet` `end`, `Sidebar` `start`), resolved with the provider's `dir`; `left` / `right` stay physical. `Tag`'s `arrow-start` / `arrow-end` shapes flip, `arrow-left` / `arrow-right` don't. `Typography`'s `align` takes `start` (the default) and `end`. In right-to-left text toasts are swiped away to the left.
 
-Storybook's "Direction" toolbar renders any story right-to-left; the `RTL` stories of Button, Input, Tabs, Breadcrumb, Pagination, Sidebar, Dialog, DropdownMenu, Calendar, Tag and Toaster pin it and check the layout and keyboard in their interaction tests.
+Storybook's "Direction" toolbar renders any story right-to-left; the `RTL` stories of Button, Input, Tabs, Breadcrumb, Pagination, Sidebar, Dialog, AlertDialog, Alert, Progress, DropdownMenu, Calendar, Tag and Toaster pin it and check the layout and keyboard in their interaction tests.
 
 ## Accessibility deviations from the Figma kit
 
@@ -340,6 +341,8 @@ Data, overlay and navigation components:
 - **Calendar:** today's date is static black on Secondary/Indigo (10.15:1). Figma uses white, which is 2.07:1 (1.4.3). Outside days (the previous and next month's dates in the grid) are real, selectable dates, not decoration, so they get the full 4.5:1: `text-secondary` instead of Black/40%.
 - **Scheduler:** today's day label is static black on Secondary/Indigo (was white, 2.06:1); event times are 60% static black on Color 2 (5.5:1) instead of 40% (1.4.3).
 - **Sidebar:** group labels (`SidebarGroupLabel`) are `black-80` (12.6:1 light, 8.7:1 dark). Figma's Black/40% is 2.85:1 at 14px (1.4.3).
+- **Alert** (a library extension): the text is black and `text-secondary` on every status tint (at least 5.2:1). The status icons mix the Secondary colours with 40% of `black` (white in dark mode): at least 3.6:1 on the light tints and 5:1 on the dark ones, where Secondary/Green, Yellow and Blue alone are 1.5–2:1 on white (1.4.11). The status is also read out as text, not only shown by colour and icon (1.4.1).
+- **AlertDialog** (a library extension): the destructive action is `red-text` (#D42020, #FF8080 in dark mode) with the per-mode `white` label, 5.21:1 and 8.65:1; Secondary/Red under a white label would be 3.36:1 (1.4.3).
 - **Toast:** a toast with an `action` stays until it is dismissed (its `duration` defaults to `Number.POSITIVE_INFINITY`, not the Toaster's 3 seconds, unless you set one), so the action doesn't vanish on a timer (2.2.1). Toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer. The Figma toast has no close button.
 
 Known gaps (Figma values kept for now): the Black/20% rings of unchecked Checkbox and Radio and the 0.5px Black/20% Input stroke (1.6:1), the Switch's white thumb on the dark-mode indigo track (2.07:1), the Black/20% placeholders of the native text fields (`Input`, `InputSmall`, `Textarea`, `Search`: axe doesn't check `::placeholder`, and they are never the field's only label), the 40% Link arrow and external icon, and the Black/4% highlight of menu items.

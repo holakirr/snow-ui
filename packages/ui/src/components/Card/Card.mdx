@@ -77,9 +77,18 @@ The radio-like marker in the Hover and Selected cards is part of the stories, no
 - Card is a `<div>` with no role and isn't focusable: `interactive` and `selected` change only the look.
 - For a clickable card, put a real control inside (a [Link](?path=/docs/components-link--docs) or a [Button](?path=/docs/components-button--docs) on the title), or give the card a role, `tabIndex={0}` and keyboard handlers. The `focus-ring` shows only on a focusable card.
 - `selected` isn't announced. Pair it with state a screen reader gets: `aria-checked`, `aria-selected` or `aria-pressed`, whichever fits the role.
-- The Selectable story makes the cards radios: `role="radio"` and `aria-checked` in a `role="radiogroup"`, each with `tabIndex={0}`, selected with a click, Space or Enter. A complete radio group also has a single tab stop and moves with the arrow keys, which the story leaves out; for a plain choice of options prefer [RadioGroup](?path=/docs/components-input-radiogroup--docs).
+- The Selectable story makes the cards radios: `role="radio"` and `aria-checked` in a `role="radiogroup"`, each with `tabIndex={0}` and a key handler. A complete radio group also has a single tab stop and moves with the arrow keys, which the story leaves out; for a plain choice of options prefer [RadioGroup](?path=/docs/components-input-radiogroup--docs).
 
 <Canvas of={CardStories.Selectable} />
+
+### Keyboard
+
+Card has no key handling of its own:
+
+| Key | Action |
+| --- | --- |
+| Tab | move to the controls inside the card; the card itself is a tab stop only with your `tabIndex={0}` |
+| Enter, Space | nothing on the card itself; a card with a role needs your `onKeyDown` (the Selectable story selects the card on both) |
 
 ### Deviations from the Figma kit
 
@@ -120,5 +129,7 @@ Card renders no built-in strings, and its padding is the same on both sides, so 
 - [Accordion](?path=/docs/components-accordion--docs): sections that open and close.
 
 ## Props
+
+`className` merges with the card's classes; the other attributes (`role`, `tabIndex`, `onClick`, `aria-*`…) go to the `<div>`.
 
 <Controls />

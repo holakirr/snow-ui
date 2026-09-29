@@ -62,3 +62,21 @@ export const RingArc: FC<{ className?: string }> = ({ className }) => (
     )}
   />
 )
+
+/**
+ * The turning ring alone, hidden from assistive technology: the loading
+ * indicator of a control that announces its busy state otherwise
+ * (`aria-busy`, a live region), such as CommandPalette's input. `Spinner` is
+ * the announced one. It stops turning for reduced motion, like Spinner (an
+ * SVG `<animate>`, as in LoadingAIcon, doesn't).
+ */
+export const LoadingRing: FC<{ className?: string }> = ({ className }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden
+    className={twMerge(ringTurnClasses, className)}
+  >
+    <RingArc />
+  </svg>
+)

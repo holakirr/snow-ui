@@ -3,12 +3,7 @@
 import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
-import {
-  RingArc,
-  type RingSize,
-  ringSizeClasses,
-  ringTurnClasses,
-} from './ring'
+import { LoadingRing, type RingSize, ringSizeClasses } from './ring'
 
 /** Diameter of the Spinner in px: the kit's icon sizes. */
 export type SpinnerSize = RingSize
@@ -54,14 +49,7 @@ const Spinner: FC<SpinnerProps> = ({
       )}
       {...props}
     >
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden
-        className={twMerge('size-full', ringTurnClasses)}
-      >
-        <RingArc />
-      </svg>
+      <LoadingRing className="size-full" />
       <span className="sr-only">{label ?? messages.spinner.label}</span>
     </span>
   )

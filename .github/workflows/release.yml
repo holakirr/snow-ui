@@ -1,7 +1,9 @@
 # Versions and publishes the workspace packages with Changesets, only from
 # commits that passed Build Check (build-check.yml: build, lint, types, unit
 # and Storybook tests with axe, Firefox and WebKit, SSR and hydration,
-# visual regression, size budgets, the built packages).
+# visual regression, size budgets, the built packages, the demo app). The
+# gate below requires the whole Build Check run to have succeeded, so a job
+# added to it later is covered without changing this file.
 #
 #   1. A push to main (or next, the pre-release branch) runs Build Check.
 #   2. When that run succeeds, the `trigger` job below (workflow_run)

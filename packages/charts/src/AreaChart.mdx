@@ -1,0 +1,55 @@
+import { ArgTypes, Canvas, Meta, Title } from '@storybook/addon-docs/blocks'
+import { FigmaLinks } from '../../../.storybook/blocks'
+import * as AreaChartStories from './AreaChart.stories'
+
+<Meta of={AreaChartStories} />
+
+<Title />
+
+<FigmaLinks page="25596:130956" pageLabel="Chart page" label="Line and area graphic" />
+
+An area chart is a line chart whose series are filled down to the baseline with a gradient of their colour, from 10% under the line to transparent: the Figma "Total Users" block. It takes the same props as [LineChart](?path=/docs/charts-linechart--docs); `stacked` stacks the areas.
+
+```tsx
+import { AreaChart } from '@holakirr/snow-ui-charts'
+
+<AreaChart
+  title="Total users"
+  data={data}
+  xKey="month"
+  config={{
+    thisYear: { label: 'This year', color: 'primary' },
+    lastYear: { label: 'Last year', color: 'cyan', dashed: true, opacity: 0 },
+  }}
+  grid={false}
+  fade
+/>
+```
+
+<Canvas of={AreaChartStories.TotalUsers} />
+
+## When to use
+
+- A trend whose volume matters (users, revenue), or a total and its parts over time (`stacked`).
+- The Figma "Total Users" look: the current series filled, the comparison a dashed line (`opacity: 0`).
+
+## When not to use
+
+- Several overlapping series that aren't stacked: the fills hide each other; use a [LineChart](?path=/docs/charts-linechart--docs).
+- Parts of one whole at a single moment: [DonutChart](?path=/docs/charts-donutchart--docs).
+
+## Fill
+
+Each series' config `opacity` sets the top of its gradient (default `0.1`, as in Figma, where Primary goes from 10% to transparent). `0` draws the series as a line only; stacked areas read better with a stronger fill (`0.3`).
+
+<Canvas of={AreaChartStories.Stacked} />
+
+## Accessibility, localization and RTL
+
+As for every chart: a named figure with a visually hidden data table, ← / → between points with announcements, numbers in the provider's locale and mirrored axes in right-to-left text. See [ChartContainer](?path=/docs/charts-chartcontainer--docs#accessibility).
+
+## Props
+
+Besides the props below, every ready-made chart takes the frame props of [ChartContainer](?path=/docs/charts-chartcontainer--docs): `title`, `description`, `aria-label`, `aria-labelledby`, `aria-describedby`, `height`, `loading`, `emptyMessage`, `loadingLabel`, `keyboardHint`, `table`, `categoryLabel`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`, `legendPosition`, `className`, `style`, `id` and `ref`.
+
+<ArgTypes of={AreaChartStories} />

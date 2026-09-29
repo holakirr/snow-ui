@@ -1,0 +1,40 @@
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { FigmaLinks } from '../../../.storybook/blocks'
+import * as SparklineStories from './Sparkline.stories'
+
+<Meta of={SparklineStories} />
+
+<Title />
+
+<FigmaLinks
+  page="25596:130956"
+  pageLabel="Chart page"
+  label="Chart kit"
+  note="The kit has no sparkline; it uses the chart line style."
+/>
+
+A sparkline is a tiny line chart without axes, gridlines or tooltip: the trend next to a number, in a KPI card.
+
+```tsx
+import { Sparkline } from '@holakirr/snow-ui-charts'
+
+<Sparkline title="Views, last 7 days" data={[12, 18, 15, 22, 30, 26, 34]} color="indigo" area />
+```
+
+<Primary />
+
+<Canvas of={SparklineStories.KpiCards} />
+
+## Props at a glance
+
+- `data`: numbers, oldest first, or rows with a `dataKey` field.
+- `color`: a SnowUI token or any CSS colour (default `primary`); `area` adds a gradient fill (20% to transparent); `dashed`, `strokeWidth` (1.5), `curve` (`smooth` or `linear`).
+- `height` (32) and `width` (`100%`, it follows resizes).
+
+## Accessibility
+
+A sparkline is an image (`role="img"`) named by `title` (or `aria-label` / `aria-labelledby`); the graphic inside is hidden. It has no data table and no keyboard navigation: it illustrates a number that should be text next to it ("7,265, +11.01%"). Without a name a development warning is logged.
+
+## Props
+
+<ArgTypes of={SparklineStories} />

@@ -2,10 +2,7 @@
 
 import { SeriesChart, type SeriesChartProps } from './SeriesChart'
 
-export type LineChartProps<TDatum extends object> = Omit<
-  SeriesChartProps<TDatum>,
-  'stacked'
->
+export type LineChartProps<TDatum extends object> = SeriesChartProps<TDatum>
 
 /**
  * A line chart of one or more series over categories (months, days…): the

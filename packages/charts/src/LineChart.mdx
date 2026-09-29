@@ -1,0 +1,111 @@
+import { ArgTypes, Canvas, Meta, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../.storybook/blocks'
+import * as LineChartStories from './LineChart.stories'
+
+<Meta of={LineChartStories} />
+
+<Title />
+
+<FigmaLinks page="25596:130956" pageLabel="Chart page" label="Line graphic" />
+
+A line chart shows how one or more series change over ordered categories (days, months). It is the SnowUI dashboards' "Revenue" block: 1px smooth lines, the comparison period dashed, 12px axis labels, and a tooltip on hover and keyboard focus.
+
+```tsx
+import { LineChart } from '@holakirr/snow-ui-charts'
+
+<LineChart
+  title="Revenue"
+  data={data} // [{ month: 'Jan', current: 8000, previous: 6000 }, …]
+  xKey="month"
+  config={{
+    current: { label: 'Current week', color: 'primary' },
+    previous: { label: 'Previous week', color: 'cyan', dashed: true },
+  }}
+/>
+```
+
+<Canvas of={LineChartStories.Revenue} />
+
+## When to use
+
+- Trends over time or another ordered axis, for one to about eight series.
+- Comparing a period with the previous one (a `dashed` series), or actuals with a forecast (`projectionFrom`).
+
+## When not to use
+
+- Parts of a whole: [DonutChart](?path=/docs/charts-donutchart--docs).
+- Amounts per unordered category: [BarChart](?path=/docs/charts-barchart--docs).
+- Volume under the line matters (totals, stacked shares): [AreaChart](?path=/docs/charts-areachart--docs).
+- A trend next to a KPI number, without axes: [Sparkline](?path=/docs/charts-sparkline--docs).
+
+## Anatomy
+
+1. **Legend** (with two series or more; `legend` forces it on or off): each series' dot and label. A dashed series has a hollow dot.
+2. **Value axis**: compact numbers (`0`, `10K`, `20K`, `30K`), 4 ticks in steps of 1, 2 or 5 × 10ⁿ (`tickCount`, `domain`, `yTickFormatter`).
+3. **Gridlines and baseline** (`grid`): 0.5px Black/4% lines and a 0.5px Black/20% baseline. The Figma dashboards hide them (`grid={false}`).
+4. **Lines**: 1px (`strokeWidth`), monotone curves (`curve`: `smooth`, `linear`, `step`); `dots` marks every point.
+5. **Category axis**: the `xKey` values (`xTickFormatter`); labels that would overlap are skipped.
+6. **Tooltip**: on hover and keyboard focus, with a Black/20% cursor line and a 12px dot on each line.
+
+## Variants
+
+**Dashed series and projections.** `dashed: true` in a series' config dashes it (`2 4`, round caps). `projectionFrom="Apr"` draws every other series solid up to April and dashed after it; April's value appears once in the tooltip.
+
+<Canvas of={LineChartStories.Projection} />
+
+**Fade.** `fade` makes each line fade in from 40% opacity at its start to 100% at its end, like the Figma lines (it follows the direction in right-to-left charts).
+
+**Many series** take the palette in order; `tooltip="light"` uses the glass tooltip.
+
+<Canvas of={LineChartStories.ManySeries} />
+
+## States
+
+<Canvas of={LineChartStories.Loading} />
+
+<Canvas of={LineChartStories.Empty} />
+
+## Accessibility
+
+- The chart is a named figure with a visually hidden table of every value (see [ChartContainer](?path=/docs/charts-chartcontainer--docs#accessibility)). Name it with `title` or `aria-labelledby` (the card heading), and summarise it in `description`.
+- Tab focuses the chart and shows the first point; ← / → move between points and the values are announced.
+- Tell series apart by more than colour: labels in the legend, `dashed` for the comparison series.
+
+<Canvas of={LineChartStories.KeyboardNavigation} />
+
+## Localization and RTL
+
+Numbers follow the `SnowUIProvider` locale (or `locale`); the axes mirror in right-to-left text, and ← moves forward in time.
+
+<Canvas of={LineChartStories.Locale} />
+
+<Canvas of={LineChartStories.RTL} />
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Keep the current period Primary and the comparison Cyan and dashed, as in Figma.
+- Keep series under about eight; split or filter beyond that.
+- Start the value axis at 0 unless the change is the point (`domain`).
+
+</Do>
+<Dont>
+
+- Don't connect unordered categories with a line: use bars.
+- Don't rely on `fade` for meaning: it only softens the start of the line.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [AreaChart](?path=/docs/charts-areachart--docs), [BarChart](?path=/docs/charts-barchart--docs), [Sparkline](?path=/docs/charts-sparkline--docs)
+- [ChartContainer](?path=/docs/charts-chartcontainer--docs): config, colours, tooltip, accessibility.
+
+## Props
+
+Besides the props below, every ready-made chart takes the frame props of [ChartContainer](?path=/docs/charts-chartcontainer--docs): `title`, `description`, `aria-label`, `aria-labelledby`, `aria-describedby`, `height`, `loading`, `emptyMessage`, `loadingLabel`, `keyboardHint`, `table`, `categoryLabel`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`, `legendPosition`, `className`, `style`, `id` and `ref`.
+
+<ArgTypes of={LineChartStories} />

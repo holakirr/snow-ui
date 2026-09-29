@@ -12,6 +12,8 @@ The [Build Check](.github/workflows/build-check.yml) workflow runs every gate be
 
 `bun run test` runs each package's Vitest suite (jsdom, Testing Library): `*.test.ts(x)` files next to the code under test, configured in `packages/*/vitest.config.ts`. `bun run --filter @holakirr/snow-ui test:watch` / `test:coverage` are the watch and coverage variants.
 
+The charts' tests (`packages/charts`) render Recharts in jsdom, which has no layout: `src/test/setup.ts` stubs `ResizeObserver` and `getBoundingClientRect` (a 600×240 container, about 7px per character for tick labels) and reports `prefers-reduced-motion: reduce`, so Recharts draws the final state without animating. Tooltips on hover and keyboard focus are tested in the stories' `play` functions (real layout, in Chromium).
+
 ### Storybook tests and accessibility
 
 `bun run test:storybook` turns every story into a test with [`@storybook/addon-vitest`](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon): each story is rendered in headless Chromium (Vitest browser mode with the Playwright provider, at Storybook's 1200×900 default viewport) and fails if it throws or its `play` function fails. Every story runs twice: in the light theme (the `storybook` project of the root `vitest.config.ts`) and in the dark theme (`storybook-dark`, the theme global set to `dark`; stories that pin a theme with `globals: { theme: … }` keep it). The first run needs the browser: `bunx playwright install chromium`. You can also run the tests from Storybook's sidebar (the testing widget at the bottom) while `bun run storybook` is running.
@@ -43,7 +45,7 @@ The [Build Check](.github/workflows/build-check.yml) workflow runs every gate be
 
 ### Coverage
 
-`bun run test:coverage` runs the ui unit tests and both Storybook projects with [V8 coverage](https://vitest.dev/guide/coverage) and merges them into one report of `packages/ui/src` (stories, tests, the Foundations pages and the recipes are excluded) in `coverage/` (`coverage/index.html`). It fails when statements, branches, functions or lines drop below the thresholds in the root `vitest.config.ts`, which sit about 2 points under the measured coverage. CI runs it in the `storybook-tests` job, writes the totals to the job summary and uploads the report. When your PR raises coverage, raise the thresholds with it; don't lower them to make a PR pass: add tests (a unit test, or a `play` function) instead.
+`bun run test:coverage` runs the ui and charts unit tests and both Storybook projects with [V8 coverage](https://vitest.dev/guide/coverage) and merges them into one report of `packages/ui/src` and `packages/charts/src` (stories, tests, the Foundations pages and the recipes are excluded) in `coverage/` (`coverage/index.html`). It fails when statements, branches, functions or lines drop below the thresholds in the root `vitest.config.ts`, which sit about 2 points under the measured coverage. CI runs it in the `storybook-tests` job, writes the totals to the job summary and uploads the report. When your PR raises coverage, raise the thresholds with it; don't lower them to make a PR pass: add tests (a unit test, or a `play` function) instead.
 
 ### Visual regression tests
 
@@ -68,13 +70,13 @@ Requirements: Docker (on Apple Silicon the amd64 image runs through Rosetta, a f
 
 ### Bundle size
 
-`bun run size` checks the budgets in `.size-limit.json` with [size-limit](https://github.com/ai/size-limit) (esbuild preset: minified and brotli-compressed, React and other peer dependencies excluded) against the built packages, so run `bun run build` first. It covers the full `@holakirr/snow-ui` import, single-component imports (tree-shaking), the `react-hook-form` entry, `dist/index.css`, and a full and a single-icon import of `@holakirr/snow-ui-icons`. When a change legitimately needs more, raise the limit in the same PR and say why in its description; keep limits about 10% above the measured size so regressions stay visible.
+`bun run size` checks the budgets in `.size-limit.json` with [size-limit](https://github.com/ai/size-limit) (esbuild preset: minified and brotli-compressed, React and other peer dependencies excluded) against the built packages, so run `bun run build` first. It covers the full `@holakirr/snow-ui` import, single-component imports (tree-shaking), the `react-hook-form` entry, `dist/index.css`, a full and a single-icon import of `@holakirr/snow-ui-icons`, and a full import, `{ BarChart }`, `{ Sparkline }` and `styles.css` of `@holakirr/snow-ui-charts` (Recharts, a dependency, included; `@holakirr/snow-ui`, a peer, excluded). When a change legitimately needs more, raise the limit in the same PR and say why in its description; keep limits about 10% above the measured size so regressions stay visible.
 
 ### Package checks
 
-`bun run build` runs [publint](https://publint.dev) and [are-the-types-wrong](https://arethetypeswrong.github.io) on both packages after tsdown builds them (configured in `packages/*/tsdown.config.ts`), so broken `exports`, missing files or types that resolve differently in ESM and CommonJS fail the build.
+`bun run build` runs [publint](https://publint.dev) and [are-the-types-wrong](https://arethetypeswrong.github.io) on every package after tsdown builds them (configured in `packages/*/tsdown.config.ts`), so broken `exports`, missing files or types that resolve differently in ESM and CommonJS fail the build.
 
-`bun run test:dist` (after `bun run build`) checks the published stylesheets of `@holakirr/snow-ui` (`packages/ui/test/dist.test.ts`): it compiles a Tailwind v4 project stylesheet that imports `@holakirr/snow-ui/theme.css` with `@source` on `dist` (`packages/ui/test/fixtures/app.css`, resolved through the package's `exports`) and fails if it misses any class the built components use; it also checks that every rule of `index.css` is in a cascade layer and that `fonts.css` points at existing files.
+`bun run test:dist` (after `bun run build`) checks the published stylesheets of `@holakirr/snow-ui` (`packages/ui/test/dist.test.ts`): it compiles a Tailwind v4 project stylesheet that imports `@holakirr/snow-ui/theme.css` with `@source` on `dist` (`packages/ui/test/fixtures/app.css`, resolved through the package's `exports`) and fails if it misses any class the built components use; it also checks that every rule of `index.css` is in a cascade layer and that `fonts.css` points at existing files. `packages/charts/test/dist.test.ts` checks the charts package: its exports resolve and load with `require()` and `import()`, every module that renders starts with `'use client'`, no stories or fixtures are shipped, and `styles.css` is one `components` layer that only reads tokens `@holakirr/snow-ui/index.css` defines.
 
 ### Code Connect templates
 
@@ -163,9 +165,19 @@ bunx figma connect unpublish           # removes the published mappings
 
 In CI, store the token as a secret and run `figma connect publish --exit-on-unreadable-files` on pushes to `main`.
 
+## Charts
+
+`packages/charts` (`@holakirr/snow-ui-charts`) wraps [Recharts](https://recharts.github.io) 3 (a dependency) in the SnowUI design. Its stories live next to the components (`packages/charts/src/*.stories.tsx`, "Charts/…" in Storybook) with a usage page each (`*.mdx`), like the ui components.
+
+- **Styles** are plain CSS in `src/styles.css` (copied to `dist/styles.css` by the build), not Tailwind classes: the package can't count on the consumer's Tailwind scanning it, and `@holakirr/snow-ui/index.css` only has the classes the ui components use. Every rule is in `@layer components` and reads ui tokens only (`test:dist` checks both); Storybook imports it from `.storybook/index.css`. Stories may use Tailwind classes (Storybook scans `packages/charts/src`).
+- **Colours** come from the `ChartConfig` as `--chart-<key>` custom properties; use `seriesColor(key)` for Recharts fills and strokes, never hex values, so dark mode and scoped themes work.
+- **`@holakirr/snow-ui` is a peer dependency** (`^5.0.0`) for its tokens and `useSnowUI()`. Changesets is set to update a peer range only when a release leaves it (`onlyUpdatePeerDependentsWhenOutOfRange`); when ui gets a new major, add a changeset for the charts that widens or moves the range (a major for the charts if it drops the old ui major).
+- **Accessibility**: every chart is a named `<figure>` with a visually hidden data table, keyboard navigation and a live region (see the ChartContainer page); new charts must keep all four, and their stories need `play` tests for hover and keyboard.
+- **Figma**: the SnowUI kit's Chart page (`25596:130956`) is a drawing kit of fixed bar counts, gridlines and labels, not data-driven components, so the charts have no Code Connect templates; the stories link their Figma nodes in `parameters.design`.
+
 ## Changesets
 
-Releases are driven by [Changesets](https://github.com/changesets/changesets). If your PR changes what users of `@holakirr/snow-ui` or `@holakirr/snow-ui-icons` get from npm — code, styles, types, dependencies or the build output — add a changeset:
+Releases are driven by [Changesets](https://github.com/changesets/changesets). If your PR changes what users of `@holakirr/snow-ui`, `@holakirr/snow-ui-icons` or `@holakirr/snow-ui-charts` get from npm — code, styles, types, dependencies or the build output — add a changeset:
 
 ```bash
 bun changeset
@@ -182,3 +194,32 @@ PRs that don't touch a published package (docs, Storybook stories, CI, tests) do
 ## Releases
 
 Maintainers don't bump versions or write changelogs by hand. After a PR with changesets is merged into `main`, a bot opens (or updates) the **"chore(release): version packages"** PR with the version bumps and changelog entries. Merging it publishes the packages to npm, tags them and creates GitHub releases. See [Releasing](README.md#releasing) for details.
+
+### Publishing a new package
+
+CI publishes with npm Trusted Publishing, and npm only lets you add a Trusted Publisher to a package that already exists. So the **first** version of a new package (now: `@holakirr/snow-ui-charts` 0.1.0) is published by the owner, by hand; `scripts/publish.ts` skips packages that aren't on npm yet (with a warning in the release job's summary), so the automated release doesn't fail meanwhile and the other packages publish as usual.
+
+1. Merge the version PR ("chore(release): version packages") that bumps the new package (here to 0.1.0). The release job runs, publishes the other packages and warns "First publish of @holakirr/snow-ui-charts".
+2. On an up-to-date `main`, with npm logged in as the owner of the `@holakirr` scope (`npm whoami`; 2FA as usual):
+
+   ```bash
+   git switch main && git pull
+   bun install --frozen-lockfile
+   bun run build          # builds icons, ui and the charts (publint + attw)
+   bun run test:dist
+   cd packages/charts
+   npm publish --dry-run --access public --provenance=false   # check the file list
+   npm publish --access public --provenance=false
+   ```
+
+   `--provenance=false` is needed because `publishConfig.provenance` is on and provenance can only be generated in CI; this one version has none.
+3. Tag it as CI would, and create its GitHub release with the `0.1.0` entry of `packages/charts/CHANGELOG.md` as the notes (in the web UI, or `gh release create @holakirr/snow-ui-charts@0.1.0 --title @holakirr/snow-ui-charts@0.1.0 --notes "…"`):
+
+   ```bash
+   git tag @holakirr/snow-ui-charts@0.1.0
+   git push origin @holakirr/snow-ui-charts@0.1.0
+   ```
+
+4. On npmjs.com → the package → Settings → Trusted Publisher: GitHub Actions, repository `holakirr/snow-ui`, workflow `release.yml` (and the publishing-access settings you use for the other packages).
+
+From the next version on, the release workflow publishes it with provenance like the others. If the owner merges the version PR and forgets step 2, nothing breaks: every release run skips the package and warns again.

@@ -1,0 +1,71 @@
+import { ArgTypes, Canvas, Meta, Title } from '@storybook/addon-docs/blocks'
+import { FigmaLinks } from '../../../.storybook/blocks'
+import * as DonutChartStories from './DonutChart.stories'
+
+<Meta of={DonutChartStories} />
+
+<Title />
+
+<FigmaLinks page="25596:130956" pageLabel="Chart page" label="DonutChart" />
+
+A donut chart shows the shares of a whole: the Figma "Traffic by Location" block, a 120px ring 30px thick, with rounded slices separated by small gaps, starting at 12 o'clock and going clockwise, and a legend of the categories and their percentages beside it.
+
+```tsx
+import { DonutChart } from '@holakirr/snow-ui-charts'
+
+<DonutChart
+  title="Traffic by location"
+  data={[
+    { country: 'United States', visits: 52.1 },
+    { country: 'Canada', visits: 22.8 },
+    { country: 'Mexico', visits: 13.9 },
+    { country: 'Other', visits: 11.2 },
+  ]}
+  nameKey="country"
+  valueKey="visits"
+  config={{
+    'United States': { color: 'primary' },
+    Canada: { color: 'blue' },
+    Mexico: { color: 'green' },
+    Other: { color: 'cyan' },
+  }}
+/>
+```
+
+<Canvas of={DonutChartStories.TrafficByLocation} />
+
+## When to use
+
+- Two to about six parts of one whole, where the share matters more than the exact value.
+
+## When not to use
+
+- Comparing amounts that aren't parts of a whole, or many categories: [BarChart](?path=/docs/charts-barchart--docs).
+- Change over time: [LineChart](?path=/docs/charts-linechart--docs).
+
+## Anatomy
+
+1. **Ring**: `size` (120) and `thickness` (30), slices with `cornerRadius` 4 and `padAngle` 3°.
+2. **Centre** (optional): `centerLabel` (12px, secondary) and `centerValue` (24px Semibold), like the Figma "Percentage 58%".
+3. **Legend**: a column of the categories with their share (`legend="percent"`, default), their value (`"value"`), no value (`"none"`), or none (`false`); beside the ring (`legendPosition="end"`) or below it (`"bottom"`).
+4. **Tooltip**: the category and its value on hover.
+
+<Canvas of={DonutChartStories.CenterLabel} />
+
+## Accessibility
+
+- The legend shows every category and its share as text, and the visually hidden table every value (`categoryLabel`, `valueLabel` name its columns), so the ring itself is hidden from assistive technology and isn't a tab stop: there is nothing on it a keyboard user would miss.
+- Name the chart (`title` or `aria-labelledby`); the centre text is read as part of it.
+- The legend dots take the slice colours. Figma draws them black, which ties no label to its slice; the library colours them (WCAG 1.4.1: the labels and values carry the meaning, the colour only links them).
+
+## Localization and RTL
+
+Percentages and values follow the provider's locale. In right-to-left text the legend moves to the other side and mirrors; the ring keeps going clockwise.
+
+<Canvas of={DonutChartStories.RTL} />
+
+## Props
+
+Besides the props below, every ready-made chart takes the frame props of [ChartContainer](?path=/docs/charts-chartcontainer--docs): `title`, `description`, `aria-label`, `aria-labelledby`, `aria-describedby`, `loading`, `emptyMessage`, `loadingLabel`, `table`, `categoryLabel`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`, `legendPosition`, `className`, `style`, `id` and `ref`.
+
+<ArgTypes of={DonutChartStories} />

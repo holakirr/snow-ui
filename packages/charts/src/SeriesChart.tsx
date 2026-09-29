@@ -53,7 +53,7 @@ export interface SeriesChartProps<TDatum extends object>
    * like the Figma "Total Users" and "Revenue" lines. @default false
    */
   fade?: boolean
-  /** Area charts: stacks the series. @default false */
+  /** Stacks the series (each line or area on top of the previous ones). @default false */
   stacked?: boolean
 }
 

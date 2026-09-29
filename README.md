@@ -14,17 +14,29 @@ Monorepo for the React implementation of the [SnowUI design kit](https://snowui.
 
 All packages are documented in one Storybook — [snow-ui.holakirr.com](https://snow-ui.holakirr.com) — with guides (Getting started, Theming, Localization and RTL) under "Guides", a usage page for every component under "Components" (when to use it, anatomy, variants, states, accessibility, a link to its Figma component), the charts under "Charts" and icons under "Icons". Its config lives in the root `.storybook/`, the guides in `docs/`; see [Documentation](CONTRIBUTING.md#documentation).
 
+## Demo
+
+[demo.snow-ui.holakirr.com](https://demo.snow-ui.holakirr.com) — the SnowUI kit's dashboard, sign-in and settings pages built with the three packages in a Next.js (App Router) app, [`apps/demo`](apps/demo): light / dark / system theme, English / Russian, left-to-right / right-to-left, Server Components by default. It consumes the packages like an installed dependency (their built `dist`, the `theme.css` + `@source` Tailwind v4 setup), so it doubles as an integration test of the published entry points. Private, not published; see its [README](apps/demo/README.md).
+
+```bash
+bun run build          # the packages first: the demo imports their dist
+bun run demo           # next dev on http://localhost:3000
+bun run build:demo     # production build
+bun run test:demo      # Playwright smoke tests against `next start`
+```
+
 ## Development
 
-Requirements: [Bun](https://bun.sh) 1.3.11 (see `packageManager`). The repo uses Bun workspaces with a single `bun.lock` at the root.
+Requirements: [Bun](https://bun.sh) 1.3.11 (see `packageManager`). The repo uses Bun workspaces (`packages/*` and `apps/*`) with a single `bun.lock` at the root.
 
 ```bash
 bun install            # install all workspaces
 bun run lint           # biome check (one shared biome.json)
-bun run typecheck      # tsc for every package
+bun run typecheck      # tsc for every package (the demo: `bun run typecheck:demo`, after `bun run build`)
 bun run test           # vitest for every package and the release scripts
 bun run tokens         # regenerate the ui token files from packages/ui/tokens (DTCG)
 bun run build          # tsdown build of icons, then ui, then charts (+ publint and attw checks)
+bun run build:all      # the packages, then the demo app (apps/demo)
 bun run test:dist      # checks of the built ui stylesheets and charts package (needs `bun run build`)
 bun run storybook      # shared Storybook (ui + icons + charts) on :53741
 bun run build:storybook # static Storybook in ./storybook-static
@@ -72,6 +84,7 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 | Coverage ([V8](https://vitest.dev/guide/coverage)) | `bun run test:coverage` | `storybook-tests` | coverage of `packages/ui/src` and `packages/charts/src` by the unit tests and the Storybook tests drops below the thresholds in `vitest.config.ts` |
 | Visual regression (Playwright, in Docker) | `bun run visual` | `visual` | a story's screenshot (light or dark theme) differs from its baseline in `visual/__screenshots__` (update them with `bun run visual:update`) |
 | Bundle size ([size-limit](https://github.com/ai/size-limit)) | `bun run size` | `size` | an entry point grows past its budget in `.size-limit.json` |
+| Demo app | `bun run build:all && bun run test:demo` | `demo` | the demo's types or Next.js build fail against the built packages, or its Playwright smoke tests fail: a page logs a console error or has an axe violation, a toggle, the command palette or a form breaks, or a route's First Load JS exceeds its budget |
 | Changesets | `bun changeset status` | `changeset` | never: warns when a package changed without a changeset |
 
 ## Releasing

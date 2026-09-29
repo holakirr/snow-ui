@@ -1,0 +1,28 @@
+/*
+ * A Tailwind CSS v4 app stylesheet, as the SnowUI README describes for
+ * projects on Tailwind: Tailwind, then the SnowUI theme (tokens, scoped
+ * themes, the dark variant, base rules), then the charts' stylesheet (it
+ * reads the tokens).
+ */
+@import "tailwindcss";
+@import "@holakirr/snow-ui/theme.css";
+@import "@holakirr/snow-ui-charts/styles.css";
+
+/*
+ * Let Tailwind generate the classes the components use. `@source` takes a
+ * path relative to this file: Bun hoists the workspace packages into the
+ * repository's node_modules (an app with its own install would use
+ * "../node_modules/@holakirr/snow-ui/dist").
+ */
+@source "../../../node_modules/@holakirr/snow-ui/dist";
+
+@layer base {
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-background-1 text-black antialiased;
+  }
+}

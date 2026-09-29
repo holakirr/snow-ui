@@ -37,7 +37,10 @@
       "!**/playwright-report",
       "!**/test-results",
       "!**/*.d.ts.map",
-      "!**/.claude"
+      "!**/.claude",
+      "!**/.next",
+      "!**/next-env.d.ts",
+      "!**/.tmp"
     ]
   },
   "javascript": {

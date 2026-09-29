@@ -1,6 +1,6 @@
 # Contributing
 
-Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook` (or `bun run test:coverage`, which also checks coverage), `bun run build`, `bun run test:dist`, `bun run size` and, if you touched a Code Connect template, `bun run code-connect`; if you changed how anything looks, also `bun run visual` (Docker).
+Setup, scripts and the monorepo layout are described in the [README](README.md#development). Before opening a PR, run `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:storybook` (or `bun run test:coverage`, which also checks coverage), `bun run build`, `bun run test:dist`, `bun run size` and, if you touched a Code Connect template, `bun run code-connect`; if you changed how anything looks, also `bun run visual` (Docker). The demo app (`apps/demo`, see its [README](apps/demo/README.md)) consumes the built packages: after `bun run build`, `bun run typecheck:demo`, `bun run build:demo` and `bun run test:demo` check that a Next.js app still builds and works with your change.
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org) (`feat(ui): …`, `fix(icons): …`, `docs: …`).
 

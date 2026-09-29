@@ -199,12 +199,13 @@ const Button = <C extends ElementType = typeof defaultTag>({
   const buttonSize = size ?? SIZES.sm
   // `children` may be screen-reader-only text, so they don't count here.
   const isIconOnly = !!start && !end && !label
-  if (!label && !end) {
+  // An icon at either end (or both) without a label or a name.
+  if (!label) {
     warnIfUnnamedIconOnly(
       'Button',
       'button',
       { ...props, children },
-      { asChild, icon: start },
+      { asChild, icons: [start, end] },
     )
   }
 

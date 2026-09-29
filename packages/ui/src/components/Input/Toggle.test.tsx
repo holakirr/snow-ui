@@ -201,6 +201,18 @@ describe('Toggle without an accessible name', () => {
     )
   })
 
+  it("doesn't take an aria-hidden icon's label as the toggle's name", () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(
+      <Toggle>
+        <svg aria-hidden="true" aria-label="Star" />
+      </Toggle>,
+    )
+
+    expect(warn).toHaveBeenCalledTimes(1)
+  })
+
   it('warns about an unnamed icon-only group item, not a named one', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 

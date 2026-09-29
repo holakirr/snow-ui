@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SIZES } from '../../constants'
+import { photos } from '../../test/photos'
 import { Avatar, AvatarFallback, AvatarImage } from './Avatar'
 
 const meta: Meta<typeof Avatar> = {
@@ -24,10 +25,7 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <AvatarImage
-          src="https://avatars.githubusercontent.com/u/19807798?v=4"
-          alt="holakirr"
-        />
+        <AvatarImage src={photos[0]} alt="holakirr" />
         <AvatarFallback>HK</AvatarFallback>
       </>
     ),
@@ -38,24 +36,15 @@ export const Sizes: Story = {
   render: () => (
     <div className="flex items-center space-x-4">
       <Avatar size="sm">
-        <AvatarImage
-          src="https://avatars.githubusercontent.com/u/19807798?v=4"
-          alt="holakirr"
-        />
+        <AvatarImage src={photos[0]} alt="holakirr" />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>
       <Avatar size="md">
-        <AvatarImage
-          src="https://avatars.githubusercontent.com/u/19807798?v=4"
-          alt="holakirr"
-        />
+        <AvatarImage src={photos[0]} alt="holakirr" />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>
       <Avatar size="lg">
-        <AvatarImage
-          src="https://avatars.githubusercontent.com/u/19807798?v=4"
-          alt="holakirr"
-        />
+        <AvatarImage src={photos[0]} alt="holakirr" />
         <AvatarFallback>HK</AvatarFallback>
       </Avatar>
     </div>

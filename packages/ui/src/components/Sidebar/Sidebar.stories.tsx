@@ -14,6 +14,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { expect, waitFor } from 'storybook/test'
 
+import { photos } from '../../test/photos'
 import { Avatar, AvatarFallback, AvatarImage } from '../Avatar'
 import {
   DropdownMenu,
@@ -115,7 +116,7 @@ const Header = () => (
         <SidebarMenuButton>
           <picture>
             <Avatar size="sm" className="group-data-[collapsible=icon]:size-4">
-              <AvatarImage src="https://github.com/shadcn.png" alt="" />
+              <AvatarImage src={photos[3]} alt="" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </picture>

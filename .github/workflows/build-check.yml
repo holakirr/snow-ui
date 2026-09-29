@@ -114,7 +114,8 @@ jobs:
         run: bun run build
 
       # The published packages: ui's theme.css compiled by a Tailwind v4
-      # project (with `@source` on dist) must generate every component class;
+      # project (with or without its own `@source` on dist) must generate
+      # every component class, theme-core.css only the project's own;
       # index.css layering, fonts.css files, package exports; the charts'
       # exports, 'use client' modules and styles.css (layer, ui tokens).
       - name: Check the built stylesheets

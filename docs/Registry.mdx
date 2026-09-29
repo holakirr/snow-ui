@@ -75,6 +75,8 @@ Items keep the package's source layout under your `components` alias: `@snow-ui/
 
 ## Updating
 
+Projects initialized before `theme-core.css` existed import `@holakirr/snow-ui/theme.css`: replace it with `@holakirr/snow-ui/theme-core.css` (once `@holakirr/snow-ui` is updated to the release that has it), so Tailwind stops generating the classes of the npm components.
+
 The shadcn CLI keeps no lockfile of what it installed. To update an item, compare it with the registry and merge the changes you want:
 
 ```bash

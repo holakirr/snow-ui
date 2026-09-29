@@ -19,6 +19,10 @@
  *   @snow-ui registry, every item and the SnowUI theme: nothing of shadcn's
  *   may change.
  *
+ * In the Next.js and Vite apps, the CSS of one copied Button is measured
+ * with the base item's theme-core.css and with theme.css (which adds the
+ * classes of every npm component); theme-core.css must at least halve it.
+ *
  * The workspace packages are installed from tarballs of the local build
  * (item dependencies and package overrides), so unreleased versions work.
  * With `--published` they come from npm, at the ranges the registry
@@ -42,6 +46,7 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { createServer, type Server } from 'node:http'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, extname, join, relative, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
@@ -456,6 +461,15 @@ async function measureTheme(ctx: Context, app: string, stylesheet: string) {
     'theme-core.css': source,
     'theme.css': source.replace('/theme-core.css"', '/theme.css"'),
   }
+  // The repository's Tailwind CLI (packages/ui's devDependency).
+  const cli = join(
+    dirname(
+      createRequire(join(repoRoot, 'packages/ui/package.json')).resolve(
+        '@tailwindcss/cli/package.json',
+      ),
+    ),
+    'dist/index.mjs',
+  )
   const sizes: Record<string, { raw: number; gzip: number }> = {}
   for (const [name, css] of Object.entries(variants)) {
     const input = join(app, `measure-${name}`)
@@ -464,12 +478,15 @@ async function measureTheme(ctx: Context, app: string, stylesheet: string) {
       input,
       css.replaceAll('@import "./', `@import "./${dirname(stylesheet)}/`),
     )
-    await run(
-      join(repoRoot, 'node_modules/.bin/tailwindcss'),
-      ['-i', input, '-o', output, '--minify'],
-      { cwd: app, env: ctx.env, quiet: true },
-    )
-    rmSync(input)
+    try {
+      await run('node', [cli, '-i', input, '-o', output, '--minify'], {
+        cwd: app,
+        env: ctx.env,
+        quiet: true,
+      })
+    } finally {
+      rmSync(input, { force: true })
+    }
     const built = readFileSync(output)
     sizes[name] = { raw: built.length, gzip: gzipSync(built).length }
   }

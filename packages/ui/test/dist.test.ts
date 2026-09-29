@@ -4,6 +4,7 @@ import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { beforeAll, describe, expect, it } from 'vitest'
+import { THEME_CORE_NOTE, THEME_SOURCE } from '../scripts/build-css'
 
 // Checks the published stylesheets in dist/ (run `bun run build` first; CI
 // runs this after the build with `bun run test:dist`).
@@ -205,13 +206,15 @@ describe('theme.css', () => {
 })
 
 describe('theme-core.css (the theme without the components)', () => {
-  /** A theme stylesheet without its banner and the package's `@source`. */
+  /** A theme stylesheet without its banner, `@source` or note. */
   const body = (file: string) =>
     read(file)
       .replace(/^\/\*![^\n]*\n/, '')
-      .replace(/^\/\* The components' classes[^\n]*\n@source "[^"]+";\n\n/m, '')
+      .replace(`${THEME_SOURCE}\n`, '')
+      .replace(`${THEME_CORE_NOTE}\n`, '')
 
   it('is theme.css without its @source', () => {
+    expect(read('theme.css')).toContain(THEME_SOURCE)
     expect(read('theme-core.css')).not.toMatch(/^@source /m)
     expect(body('theme-core.css')).toBe(body('theme.css'))
   })

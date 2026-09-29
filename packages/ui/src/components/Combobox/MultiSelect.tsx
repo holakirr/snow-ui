@@ -6,9 +6,11 @@ import {
   type ComponentProps,
   type FC,
   type KeyboardEvent,
+  useEffect,
   useRef,
   useState,
 } from 'react'
+import { useFormReset } from '../../utils/form-field'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
 import { Tag } from '../Tag'
@@ -22,6 +24,7 @@ import {
   comboboxInputClasses,
   comboboxInvalidClasses,
   comboboxStaticClasses,
+  isComposingKey,
   useCombobox,
   useListLabel,
 } from './listbox'
@@ -79,6 +82,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
   readOnly = false,
   required,
   name,
+  form,
   placeholder,
   onKeyDown,
   onBlur,
@@ -103,6 +107,8 @@ const MultiSelect: FC<MultiSelectProps> = ({
     if (!isControlled) setInnerValue(next)
     onValueChange?.(next)
   }
+  // What a form reset goes back to: the values on mount.
+  const initialValues = useRef(values)
 
   const state = useCombobox({
     options,
@@ -110,7 +116,13 @@ const MultiSelect: FC<MultiSelectProps> = ({
     onQueryChange,
     open,
     defaultOpen,
-    onOpenChange,
+    // A removal is announced once: opening or closing the list (or typing,
+    // below) drops it, so it doesn't come back after "Loading" or "No
+    // results" leave the status region.
+    onOpenChange: (next) => {
+      setAnnouncement('')
+      onOpenChange?.(next)
+    },
     creatable,
     disabled,
     readOnly,
@@ -163,9 +175,35 @@ const MultiSelect: FC<MultiSelectProps> = ({
     inputRef.current?.focus()
   }
 
+  // A form reset brings back the initial values, as for a native `<select>`.
+  useFormReset(
+    inputRef,
+    () => {
+      state.reset()
+      setAnnouncement('')
+      const initial = initialValues.current
+      if (
+        initial.length !== values.length ||
+        initial.some((item, index) => item !== values[index])
+      ) {
+        setValues(initial)
+      }
+    },
+    form,
+  )
+
+  // The typed text isn't the value, so `required` can't go on the input:
+  // with no tag picked the input is invalid (the form doesn't submit), and
+  // `aria-required` tells assistive technology.
+  const requiredMessage = messages.combobox.requiredMultiple
+  const missing = required && values.length === 0
+  useEffect(() => {
+    inputRef.current?.setCustomValidity(missing ? requiredMessage : '')
+  }, [inputRef, missing, requiredMessage])
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(event)
-    if (event.defaultPrevented || event.nativeEvent.isComposing) return
+    if (event.defaultPrevented || isComposingKey(event)) return
     if (!canEdit) return
     if (state.handleListKeys(event)) return
     // Backspace in the empty field removes the last tag.
@@ -245,7 +283,8 @@ const MultiSelect: FC<MultiSelectProps> = ({
                   .join(' ') || undefined
               }
               aria-invalid={ariaInvalid}
-              // Not `required`: the text stays empty while tags are picked.
+              // Not `required`: the text stays empty while tags are picked
+              // (the custom validity above blocks the form instead).
               aria-required={required || undefined}
               aria-expanded={isOpen}
               aria-controls={isOpen ? listId : undefined}
@@ -256,7 +295,11 @@ const MultiSelect: FC<MultiSelectProps> = ({
               spellCheck={false}
               value={query ?? ''}
               placeholder={values.length > 0 ? undefined : placeholder}
-              onChange={state.handleInputChange}
+              onChange={(event) => {
+                setAnnouncement('')
+                state.handleInputChange(event)
+              }}
+              form={form}
               onKeyDown={handleKeyDown}
               onBlur={(event) => {
                 onBlur?.(event)
@@ -294,6 +337,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
                 name={name}
                 value={item}
                 disabled={disabled}
+                form={form}
               />
             ))}
         </div>

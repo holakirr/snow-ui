@@ -11,3 +11,5 @@ New **`DatePicker`**: a form field for a date that opens the `Calendar` in a pop
 - Right-to-left aware, with its strings in the new `messages.datePicker` namespace (`placeholder`, `dialog`, `clear`), optional in the `Messages` type like `messages.combobox`, so a full translation typed as `Messages` for 5.0 keeps compiling.
 
 The deprecated `DatePickerType` and `RangePickerType` types are unrelated to it and unchanged.
+
+**Forms:** `name` submits `yyyy-MM-dd` (empty with no date) with a hidden input that follows `form="id"`; `required` blocks native submission while there is no date; a form reset brings back the initial date. An `Invalid Date` value counts as no date; picking the same day again calls nothing; disabling the field closes the calendar with `onOpenChange(false)`; a month with no day to pick focuses the month navigation.

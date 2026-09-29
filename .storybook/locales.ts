@@ -62,6 +62,8 @@ export const ruMessages: Messages = {
     create: (query) => `Создать «${query}»`,
     selected: (labels) => `Выбрано: ${labels.join(', ')}`,
     removed: (label) => `Удалено: ${label}`,
+    required: 'Выберите элемент из списка.',
+    requiredMultiple: 'Выберите хотя бы один элемент из списка.',
   },
   commandPalette: {
     label: 'Поиск',

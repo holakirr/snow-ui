@@ -1,14 +1,16 @@
 'use client'
 
-import { format } from 'date-fns'
-import { type FC, useState } from 'react'
+import { format, isSameDay } from 'date-fns'
+import { type FC, useRef, useState } from 'react'
 import { Calendar } from '../Calendar'
 import { useSnowUI } from '../SnowUIProvider'
 import {
   DatePickerField,
   type DatePickerSharedProps,
   disabledMatchers,
+  sameDate,
   useOpenState,
+  validDate,
 } from './field'
 
 /**
@@ -60,7 +62,10 @@ const DatePicker: FC<DatePickerProps> = ({
   const locale = localeProp ?? providerLocale
   const isControlled = valueProp !== undefined
   const [innerValue, setInnerValue] = useState(defaultValue)
-  const value = isControlled ? valueProp : innerValue
+  // An Invalid Date counts as no date.
+  const value = validDate(isControlled ? valueProp : innerValue)
+  // What a form reset goes back to: the value on mount.
+  const initialValue = useRef(value)
   const [open, setOpen] = useOpenState(
     openProp,
     defaultOpen,
@@ -90,18 +95,13 @@ const DatePicker: FC<DatePickerProps> = ({
       className={className}
       style={style}
       contentClassName={contentClassName}
-      hiddenInputs={
-        name !== undefined && (
-          // Disabled with the field, so a form doesn't submit it.
-          <input
-            type="hidden"
-            name={name}
-            value={value ? format(value, 'yyyy-MM-dd') : ''}
-            disabled={disabled}
-          />
-        )
-      }
-      triggerProps={{ ...triggerProps, disabled }}
+      formValue={value ? format(value, 'yyyy-MM-dd') : ''}
+      onFormReset={() => {
+        if (!sameDate(initialValue.current, value)) {
+          setValue(initialValue.current)
+        }
+      }}
+      triggerProps={{ ...triggerProps, name, disabled }}
     >
       <Calendar
         defaultMonth={value ?? undefined}
@@ -113,9 +113,9 @@ const DatePicker: FC<DatePickerProps> = ({
         mode="single"
         selected={value ?? undefined}
         // The clicked day, also when it is the picked one (react-day-picker
-        // would unselect it).
+        // would unselect it); picking the same day again changes nothing.
         onSelect={(_, day) => {
-          setValue(day)
+          if (!value || !isSameDay(day, value)) setValue(day)
           setOpen(false)
         }}
         disabled={disabledMatchers(minDate, maxDate, disabledDates)}

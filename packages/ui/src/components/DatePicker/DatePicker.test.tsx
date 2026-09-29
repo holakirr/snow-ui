@@ -85,14 +85,15 @@ describe('DatePicker', () => {
     await waitFor(() => expect(field()).toHaveFocus())
   })
 
-  it('keeps the date when its day is clicked again', () => {
+  it('keeps the date when its day is clicked again, without onValueChange', () => {
     const onValueChange = vi.fn()
     renderDatePicker({ defaultValue: new Date(2025, 0, 20), onValueChange })
 
     fireEvent.click(field())
     fireEvent.click(day(/January 20th, 2025/))
-    expect(onValueChange).toHaveBeenCalledWith(new Date(2025, 0, 20))
+    expect(onValueChange).not.toHaveBeenCalled()
     expect(field()).toHaveTextContent('Jan 20, 2025')
+    expect(field()).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('opens with ↓ and clears with Backspace or Delete', () => {
@@ -359,5 +360,114 @@ describe('DatePicker', () => {
     await waitFor(() =>
       expect(screen.getByRole('combobox', { name: 'Due date' })).toHaveFocus(),
     )
+  })
+})
+
+describe('DatePicker in a form', () => {
+  const formOf = (container: HTMLElement) =>
+    container.querySelector('form') as HTMLFormElement
+
+  it('treats an Invalid Date as no date instead of crashing', () => {
+    const { container } = render(
+      <form>
+        <DatePicker aria-label="Due" name="due" value={new Date('')} />
+      </form>,
+    )
+    expect(field()).toHaveTextContent('Pick a date')
+    expect(new FormData(formOf(container)).get('due')).toBe('')
+  })
+
+  it('goes back to its initial date when the form resets', () => {
+    const onOpenChange = vi.fn()
+    const { container } = render(
+      <form>
+        <DatePicker
+          aria-label="Due"
+          name="due"
+          defaultValue={new Date(2025, 0, 20)}
+          onOpenChange={onOpenChange}
+        />
+      </form>,
+    )
+    const form = formOf(container)
+    fireEvent.keyDown(field(), { key: 'Backspace' })
+    expect(new FormData(form).get('due')).toBe('')
+
+    act(() => form.reset())
+    expect(new FormData(form).get('due')).toBe('2025-01-20')
+    expect(field()).toHaveTextContent('Jan 20, 2025')
+  })
+
+  it('submits and resets with a form outside it (form="id")', () => {
+    render(
+      <>
+        <form id="task" data-testid="form" />
+        <DatePicker
+          aria-label="Due"
+          name="due"
+          form="task"
+          defaultValue={new Date(2025, 0, 20)}
+        />
+      </>,
+    )
+    const form = screen.getByTestId('form') as HTMLFormElement
+    expect(new FormData(form).get('due')).toBe('2025-01-20')
+    fireEvent.keyDown(field(), { key: 'Delete' })
+    act(() => form.reset())
+    expect(new FormData(form).get('due')).toBe('2025-01-20')
+  })
+
+  it('blocks the form while required and empty; focus goes to the field', () => {
+    const { container } = render(
+      <form>
+        <DatePicker
+          aria-label="Due"
+          name="due"
+          required
+          calendarProps={{ defaultMonth: new Date(2025, 0, 1) }}
+        />
+      </form>,
+    )
+    const form = formOf(container)
+    expect(field()).toHaveAttribute('aria-required', 'true')
+    expect(form.checkValidity()).toBe(false)
+
+    // The browser focuses the invalid stand-in; the focus moves on.
+    const proxy = container.querySelector(
+      '[data-slot="required-proxy"]',
+    ) as HTMLInputElement
+    expect(proxy).toHaveAttribute('aria-hidden', 'true')
+    act(() => proxy.focus())
+    expect(field()).toHaveFocus()
+
+    fireEvent.click(field())
+    fireEvent.click(day(/January 9th, 2025/))
+    expect(form.checkValidity()).toBe(true)
+  })
+
+  it('focuses the month navigation when no day can be picked', async () => {
+    renderDatePicker({
+      defaultValue: new Date(2025, 0, 20),
+      disabledDates: { from: new Date(2025, 0, 1), to: new Date(2025, 0, 31) },
+    })
+    fireEvent.click(field())
+    const dialog = screen.getByRole('dialog')
+    await waitFor(() =>
+      expect(dialog).toContainElement(document.activeElement as HTMLElement),
+    )
+  })
+
+  it('tells the parent it closed when it is disabled while open', () => {
+    const onOpenChange = vi.fn()
+    const { rerender } = render(
+      <DatePicker aria-label="Due" onOpenChange={onOpenChange} />,
+    )
+    fireEvent.click(field())
+    expect(onOpenChange).toHaveBeenLastCalledWith(true)
+    rerender(
+      <DatePicker aria-label="Due" onOpenChange={onOpenChange} disabled />,
+    )
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 })

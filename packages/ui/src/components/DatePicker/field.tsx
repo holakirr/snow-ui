@@ -4,16 +4,18 @@ import { XCircleIcon } from '@holakirr/snow-ui-icons'
 import { CalendarBlank } from '@phosphor-icons/react/dist/csr/CalendarBlank'
 import { useComposedRefs } from '@radix-ui/react-compose-refs'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
-import type { Locale } from 'date-fns'
+import { isValid, type Locale } from 'date-fns'
 import {
   type ComponentProps,
   type CSSProperties,
   type KeyboardEvent,
   type ReactNode,
+  useEffect,
   useRef,
   useState,
 } from 'react'
 import type { Matcher } from 'react-day-picker'
+import { RequiredProxy, useFormReset } from '../../utils/form-field'
 import { twMerge } from '../../utils/tw-merge'
 import type { CalendarProps } from '../Calendar'
 import { popoverAnimationClasses } from '../Popover/surface'
@@ -38,7 +40,10 @@ export type DatePickerSharedProps = Omit<
   ComponentProps<'button'>,
   'value' | 'defaultValue' | 'onChange' | 'children' | 'type'
 > & {
-  /** Marks the field required for assistive technology (`aria-required`). */
+  /**
+   * The form doesn't submit while the field has no value (native constraint
+   * validation), and assistive technology hears `aria-required`.
+   */
   required?: boolean
 
   /** Controlled open state of the calendar. */
@@ -116,17 +121,36 @@ export const useOpenState = (
   disabled: boolean,
 ) => {
   const [innerOpen, setInnerOpen] = useState(defaultOpen)
-  // Disabling closes an uncontrolled calendar for good (it doesn't reopen
-  // when the field is enabled again).
-  if (disabled && innerOpen) setInnerOpen(false)
   const open = (openProp ?? innerOpen) && !disabled
   const setOpen = (next: boolean) => {
     if (next === open || (next && disabled)) return
     if (openProp === undefined) setInnerOpen(next)
     onOpenChange?.(next)
   }
+  // Disabling the field closes the calendar: the parent hears
+  // `onOpenChange(false)`, and an uncontrolled calendar stays closed when
+  // the field is enabled again.
+  const wasDisabled = useRef(disabled)
+  useEffect(() => {
+    const becameDisabled = disabled && !wasDisabled.current
+    wasDisabled.current = disabled
+    if (!disabled) return
+    if (innerOpen) setInnerOpen(false)
+    if (becameDisabled && (openProp ?? innerOpen)) onOpenChange?.(false)
+  })
   return [open, setOpen] as const
 }
+
+/**
+ * A date, or `null` for none: an `Invalid Date` (e.g. `new Date('')` from a
+ * bad string) counts as no date instead of crashing the formatting.
+ */
+export const validDate = (date: Date | null | undefined): Date | null =>
+  date instanceof Date && isValid(date) ? date : null
+
+/** Whether two dates (or `null`s) are the same instant. */
+export const sameDate = (a: Date | null, b: Date | null) =>
+  a?.getTime() === b?.getTime()
 
 /** `minDate`, `maxDate` and `disabledDates` as react-day-picker matchers. */
 export const disabledMatchers = (
@@ -177,8 +201,13 @@ type DatePickerFieldProps = {
   className?: string
   style?: CSSProperties
   contentClassName?: string
-  /** Hidden inputs for native form submission. */
-  hiddenInputs?: ReactNode
+  /**
+   * What the form submits under `name` (`''` for no value): a hidden input,
+   * and with `required` an invalid proxy while it is empty.
+   */
+  formValue: string
+  /** Called on a reset of the field's form: back to the initial value. */
+  onFormReset: () => void
   /** The calendar. */
   children: ReactNode
   triggerProps: TriggerProps
@@ -203,11 +232,14 @@ export const DatePickerField = ({
   className,
   style,
   contentClassName,
-  hiddenInputs,
+  formValue,
+  onFormReset,
   children,
   triggerProps: {
     disabled,
     required,
+    name,
+    form,
     onKeyDown,
     ref,
     'aria-invalid': ariaInvalid,
@@ -218,6 +250,17 @@ export const DatePickerField = ({
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const setTriggerRef = useComposedRefs(triggerRef, ref)
   const contentRef = useRef<HTMLDivElement | null>(null)
+
+  // A form reset (`form.reset()`, a reset button, React 19's form actions)
+  // closes the calendar and brings back the initial value.
+  useFormReset(
+    triggerRef,
+    () => {
+      setOpen(false)
+      onFormReset()
+    },
+    form,
+  )
 
   const clear = () => {
     onClear()
@@ -275,6 +318,7 @@ export const DatePickerField = ({
               aria-invalid={ariaInvalid}
               aria-required={required || undefined}
               disabled={disabled}
+              form={form}
               data-slot="date-picker-trigger"
               data-placeholder={hasValue ? undefined : ''}
               onKeyDown={handleKeyDown}
@@ -292,9 +336,10 @@ export const DatePickerField = ({
               aria-label={clearLabel}
               title={clearLabel}
               onClick={clear}
-              // As in `Search`: 60% opacity meets the 3:1 of a control's
-              // icon, and `hit-area` makes the 16px icon a 24px target.
-              className="absolute end-10 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hit-area hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
+              // 60% opacity meets the 3:1 of a control's icon, `hit-area`
+              // makes the 16px icon a 24px target, and keyboard focus gets
+              // the `focus-ring` outline at full opacity.
+              className="absolute end-10 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-black opacity-60 transition-opacity hit-area hover:opacity-80 focus-ring focus-visible:opacity-100"
             >
               <XCircleIcon weight="fill" size={16} />
             </button>
@@ -304,7 +349,25 @@ export const DatePickerField = ({
             size={16}
             className="pointer-events-none absolute end-4 top-1/2 shrink-0 -translate-y-1/2 text-control-border-strong group-data-disabled/date-picker:text-black-20"
           />
-          {hiddenInputs}
+          {name !== undefined && (
+            // Disabled with the field, so a form doesn't submit it.
+            <input
+              type="hidden"
+              name={name}
+              value={formValue}
+              disabled={disabled}
+              form={form}
+            />
+          )}
+          {/* A button can't be `required`: an invalid stand-in blocks the form. */}
+          {required && (
+            <RequiredProxy
+              value={formValue}
+              form={form}
+              disabled={disabled}
+              focusTarget={triggerRef}
+            />
+          )}
         </div>
       </PopoverPrimitive.Anchor>
       <PopoverPrimitive.Portal>
@@ -321,11 +384,19 @@ export const DatePickerField = ({
           aria-label={dialogLabel}
           // Focus goes to the selected day (or today, or the first day of the
           // month): react-day-picker's roving tab stop, not the first button.
+          // A month with no day to pick has none: then the first button (the
+          // month navigation), else the popover itself.
           onOpenAutoFocus={(event) => {
             event.preventDefault()
-            contentRef.current
-              ?.querySelector<HTMLElement>('[role="grid"] button[tabindex="0"]')
-              ?.focus()
+            const content = contentRef.current
+            if (!content) return
+            const target =
+              content.querySelector<HTMLElement>(
+                '[role="grid"] button[tabindex="0"]',
+              ) ??
+              content.querySelector<HTMLElement>('button:not(:disabled)') ??
+              content
+            target.focus()
           }}
           className={twMerge(
             'z-50 outline-none',

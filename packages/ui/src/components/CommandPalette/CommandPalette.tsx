@@ -314,7 +314,9 @@ const CommandPaletteList: FC<ListProps> = ({
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.nativeEvent.isComposing) return
+    // An IME composition's keys: \`isComposing\`, or WebKit's keyCode 229 on
+    // the Enter that commits it (it arrives with \`isComposing\` false).
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault()

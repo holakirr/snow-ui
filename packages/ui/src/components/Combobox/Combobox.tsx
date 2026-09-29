@@ -6,9 +6,11 @@ import {
   type ComponentProps,
   type FC,
   type KeyboardEvent,
+  useEffect,
   useRef,
   useState,
 } from 'react'
+import { useFormReset } from '../../utils/form-field'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
 import {
@@ -21,6 +23,7 @@ import {
   comboboxInputClasses,
   comboboxInvalidClasses,
   comboboxStaticClasses,
+  isComposingKey,
   useCombobox,
   useListLabel,
 } from './listbox'
@@ -80,7 +83,9 @@ const Combobox: FC<ComboboxProps> = ({
   contentClassName,
   disabled = false,
   readOnly = false,
+  required,
   name,
+  form,
   onKeyDown,
   onBlur,
   ref,
@@ -102,6 +107,8 @@ const Combobox: FC<ComboboxProps> = ({
     if (!isControlled) setInnerValue(next)
     onValueChange?.(next)
   }
+  // What a form reset goes back to: the value on mount.
+  const initialValue = useRef(value)
 
   const state = useCombobox({
     options,
@@ -158,9 +165,30 @@ const Combobox: FC<ComboboxProps> = ({
     inputRef.current?.focus()
   }
 
+  // A form reset (`form.reset()`, a reset button, React 19's form actions)
+  // brings back the initial value, as it does for a native `<select>`.
+  useFormReset(
+    inputRef,
+    () => {
+      state.reset()
+      setValue(initialValue.current)
+    },
+    form,
+  )
+
+  // `required` is on the input, so an empty field doesn't submit. Typed text
+  // that picked nothing doesn't count as a value either.
+  const inputText = query ?? selectedLabel
+  const requiredMessage = messages.combobox.required
+  useEffect(() => {
+    inputRef.current?.setCustomValidity(
+      required && value === null && inputText !== '' ? requiredMessage : '',
+    )
+  }, [inputRef, required, value, inputText, requiredMessage])
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(event)
-    if (event.defaultPrevented || event.nativeEvent.isComposing) return
+    if (event.defaultPrevented || isComposingKey(event)) return
     if (disabled || readOnly) return
     if (state.handleListKeys(event)) return
     // WAI-ARIA: Escape on a closed list clears the field.
@@ -217,7 +245,9 @@ const Combobox: FC<ComboboxProps> = ({
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
-            value={query ?? selectedLabel}
+            value={inputText}
+            required={required}
+            form={form}
             onChange={state.handleInputChange}
             onKeyDown={handleKeyDown}
             onBlur={(event) => {
@@ -249,6 +279,7 @@ const Combobox: FC<ComboboxProps> = ({
               name={name}
               value={value ?? ''}
               disabled={disabled}
+              form={form}
             />
           )}
         </div>

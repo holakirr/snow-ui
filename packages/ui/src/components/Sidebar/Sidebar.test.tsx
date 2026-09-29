@@ -282,6 +282,8 @@ describe('Sidebar', () => {
     expect(trigger).toHaveAttribute('aria-controls', 'main-nav')
     expect(document.getElementById('main-nav')).toBe(panel().lastElementChild)
 
+    // A sidebar that never collapses keeps the id, but the trigger doesn't
+    // control it.
     rerender(
       <SidebarProvider>
         <Sidebar id="main-nav" collapsible="none" />
@@ -289,21 +291,23 @@ describe('Sidebar', () => {
       </SidebarProvider>,
     )
     expect(document.getElementById('main-nav')).not.toBeNull()
-    expect(trigger).toHaveAttribute('aria-controls', 'main-nav')
+    expect(trigger).not.toHaveAttribute('aria-controls')
   })
 
   it('gives each sidebar of a provider its own id, and the trigger both', () => {
     render(
       <SidebarProvider>
         <Sidebar side="left" data-testid="left" />
-        <Sidebar side="right" collapsible="none" data-testid="right" />
+        <Sidebar side="right" collapsible="icon" data-testid="right" />
+        <Sidebar collapsible="none" data-testid="static" />
         <SidebarTrigger />
       </SidebarProvider>,
     )
     const left = screen.getByTestId('left').id
     const right = screen.getByTestId('right').id
+    const fixed = screen.getByTestId('static').id
 
-    expect(left).not.toBe(right)
+    expect(new Set([left, right, fixed]).size).toBe(3)
     expect(
       screen.getByRole('button', { name: 'Toggle Sidebar' }),
     ).toHaveAttribute('aria-controls', `${left} ${right}`)

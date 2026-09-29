@@ -270,11 +270,15 @@ const Sidebar: FC<SidebarProps> = ({
 }) => {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
   // Its own id (yours, or a generated one): each sidebar of a provider has
-  // one, and the trigger's `aria-controls` lists them.
+  // one, and the trigger's `aria-controls` lists those it opens and closes
+  // (not a `collapsible="none"` one).
   const generatedId = useId()
   const sidebarId = idProp ?? generatedId
   const { register } = useContext(SidebarIdsContext)
-  useLayoutEffect(() => register(sidebarId), [register, sidebarId])
+  useLayoutEffect(
+    () => (collapsible === 'none' ? undefined : register(sidebarId)),
+    [register, sidebarId, collapsible],
+  )
   const messages = useMessages()
   const side = resolveSide(sideProp, useDirection())
 

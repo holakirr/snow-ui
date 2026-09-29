@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "holakirr/snow-ui" }],
+  "changelog": ["./changelog.mjs", { "repo": "holakirr/snow-ui" }],
   "commit": false,
   "fixed": [],
   "linked": [],
@@ -10,5 +10,9 @@
   "ignore": [],
   "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
     "onlyUpdatePeerDependentsWhenOutOfRange": true
+  },
+  "snapshot": {
+    "useCalculatedVersion": false,
+    "prereleaseTemplate": "{tag}-{commit-short}"
   }
 }

@@ -1,0 +1,16 @@
+# Issues are for bugs, accessibility problems and concrete feature requests
+# (the forms in this folder); questions and open ideas go to Discussions.
+blank_issues_enabled: false
+contact_links:
+  - name: Question or help
+    url: https://github.com/holakirr/snow-ui/discussions/categories/q-a
+    about: How do I…, why does…, which component should I use? Ask in Discussions → Q&A.
+  - name: Idea
+    url: https://github.com/holakirr/snow-ui/discussions/categories/ideas
+    about: An idea that isn't a concrete feature request yet. Discuss it in Discussions → Ideas.
+  - name: Security vulnerability
+    url: https://github.com/holakirr/snow-ui/security/advisories/new
+    about: Report it privately, never in a public issue (see SECURITY.md).
+  - name: Documentation
+    url: https://snow-ui.holakirr.com
+    about: Guides and a usage page for every component, with live examples.

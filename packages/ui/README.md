@@ -50,7 +50,7 @@ import '@holakirr/snow-ui/index.css'
 
 **Cascade layers.** Both stylesheets keep every rule in Tailwind's cascade layers (`theme`, `base`, `components`, `utilities`; react-day-picker's stylesheet is in `components`), so your own unlayered CSS overrides them whatever the load order or specificity, and your utilities override the base and component rules.
 
-**Fonts (optional).** The design uses Inter with the `ss01` / `cv01` OpenType features, which the Google Fonts build of Inter doesn't include. `fonts.css` self-hosts [Inter](https://rsms.me/inter/) 4.1 (the rsms build, SIL Open Font License): variable weight 100–900, `font-display: swap`, split by `unicode-range` so browsers only download the scripts a page uses (about 105 kB for Latin, plus 10 kB when a page shows arrows or keyboard symbols such as the external-link ↗):
+**Fonts (optional).** The design uses Inter with the `ss01` / `cv01` OpenType features, which the Google Fonts build of Inter doesn't include. `fonts.css` self-hosts [Inter](https://rsms.me/inter/) 4.1 (the rsms build, SIL Open Font License): variable weight 100–900 with the optical size pinned at 14 (the text optical size the design uses at every size), `font-display: swap`, split by `unicode-range` so browsers only download the scripts a page uses (about 69 kB for Latin, plus 8 kB when a page shows arrows or keyboard symbols such as the external-link ↗):
 
 ```tsx
 import '@holakirr/snow-ui/fonts.css'
@@ -58,7 +58,17 @@ import '@holakirr/snow-ui/fonts.css'
 import '@holakirr/snow-ui/fonts-italic.css'
 ```
 
-Import it from JavaScript or through a bundler (Vite, webpack, Next.js), which resolve its relative `url()`s to the font files. Don't `@import` it into a stylesheet built by the Tailwind CLI: the CLI inlines it and keeps the `url("./fonts/…")` as they are, so they point next to your output file and 404. The font files are in `@holakirr/snow-ui/fonts/*` (e.g. for a preload: `import latin from '@holakirr/snow-ui/fonts/inter-latin-normal.woff2?url'` in Vite). To load Inter yourself, use a build with those features; the stylesheets only set `font-family: Inter, sans-serif`, the `font-feature-settings` and `font-optical-sizing: none` (see [Design tokens](#design-tokens)).
+Import it from JavaScript or through a bundler (Vite, webpack, Next.js), which resolve its relative `url()`s to the font files. Don't `@import` it into a stylesheet built by the Tailwind CLI: the CLI inlines it and keeps the `url("./fonts/…")` as they are, so they point next to your output file and 404. The font files are in `@holakirr/snow-ui/fonts/*`. To load Inter yourself, use a build with those features; the stylesheets only set `font-family: Inter, sans-serif`, the `font-feature-settings` and `font-optical-sizing: none` (see [Design tokens](#design-tokens)).
+
+**Preloading the font.** Almost every page needs the Latin file for its first paint, and the browser only discovers it once the CSS has loaded and a text node uses it. Preload it so the text doesn't render in the fallback font and then swap:
+
+```html
+<link rel="preload" href="/assets/inter-latin-normal-[hash].woff2" as="font" type="font/woff2" crossorigin />
+```
+
+- The `href` must be the URL your bundler emits for `@holakirr/snow-ui/fonts/inter-latin-normal.woff2`, so that the preload and the `@font-face` rule share one request. In Vite: `import interLatin from '@holakirr/snow-ui/fonts/inter-latin-normal.woff2?url'`. In React 19 you can then call `preload(interLatin, { as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' })` from `react-dom` during render; React adds the `<link>` to the document head, also when rendering on the server.
+- Keep `crossorigin`, even on the same origin: fonts are always fetched in CORS mode, and a preload without it is not reused (the font downloads twice).
+- Preload only the Latin file (`inter-latin-normal.woff2`). The other subsets, the symbols and the italic faces load when a page shows those characters.
 
 ### Basic example
 

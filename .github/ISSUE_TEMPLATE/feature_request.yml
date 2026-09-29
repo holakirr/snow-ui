@@ -1,0 +1,44 @@
+name: Feature request
+description: A new component, prop, token or option, or a change to an existing one.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check the [Roadmap](https://github.com/holakirr/snow-ui/blob/main/ROADMAP.md) first: it may already be planned. Open ideas that aren't concrete yet fit better in [Discussions → Ideas](https://github.com/holakirr/snow-ui/discussions/categories/ideas).
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - "@holakirr/snow-ui"
+        - "@holakirr/snow-ui-icons"
+        - "@holakirr/snow-ui-charts"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you are trying to build, and why the library doesn't let you today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: The API you have in mind (props, a usage example), and how it looks. Link the component in the SnowUI Figma kit if it has one.
+      render: tsx
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Workarounds you use today, and how other libraries (Radix, shadcn/ui, React Aria…) solve it.
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contributing
+      options:
+        - label: I'd like to open a pull request for this (see CONTRIBUTING.md).

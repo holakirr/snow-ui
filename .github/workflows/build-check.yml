@@ -2,14 +2,23 @@ name: Build Check
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, next]
   push:
-    branches: [main]
+    branches: [main, next]
+  # The release workflow dispatches Build Check on the version PR's branch
+  # (changeset-release/main): the PR is opened with GITHUB_TOKEN, so it
+  # triggers no pull_request run, and a dispatched run reports its checks on
+  # the PR's head commit, where the ruleset's required checks look for them.
+  # Also runnable by hand on any branch (Actions → Build Check → Run workflow),
+  # e.g. before publishing a canary from it.
+  workflow_dispatch:
 
-# A new push to a PR supersedes the running checks; main always runs to the end.
+# A new push to a PR (or a new dispatch on a branch) supersedes the running
+# checks; pushes to main and next always run to the end, because the release
+# workflow publishes only commits whose Build Check passed.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'push' }}
 
 permissions:
   contents: read
@@ -19,8 +28,9 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      # The `visual` job runs in the Playwright image of this version.
-      playwright-version: ${{ steps.playwright.outputs.version }}
+      # The `visual` job runs in this image: visual/Dockerfile's, pinned by
+      # digest, checked below against the installed @playwright/test.
+      playwright-image: ${{ steps.playwright.outputs.image }}
 
     steps:
       - name: Checkout code
@@ -36,9 +46,23 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Get Playwright version
+      # The visual tests run in the Playwright image that visual/Dockerfile
+      # pins by digest (locally through visual/docker.sh, and in the `visual`
+      # job). It must be the image of the installed @playwright/test, whose
+      # browser the baselines were taken with.
+      - name: Get Playwright image
         id: playwright
-        run: echo "version=$(jq -r .version node_modules/@playwright/test/package.json)" >> "$GITHUB_OUTPUT"
+        run: |
+          version=$(jq -r .version node_modules/@playwright/test/package.json)
+          image=$(sed -n 's/^FROM //p' visual/Dockerfile)
+          case "$image" in
+            "mcr.microsoft.com/playwright:v${version}-noble@sha256:"*) ;;
+            *)
+              echo "::error file=visual/Dockerfile,title=Playwright image mismatch::visual/Dockerfile pins '${image}', but @playwright/test is ${version}. Pin mcr.microsoft.com/playwright:v${version}-noble by digest there and regenerate the baselines (CONTRIBUTING.md, Visual regression tests)."
+              exit 1
+              ;;
+          esac
+          echo "image=$image" >> "$GITHUB_OUTPUT"
 
       # The DTCG tokens in packages/ui/tokens are the source of truth: the
       # committed files generated from them (CSS, Foundations data,
@@ -220,16 +244,113 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  # Every story in headless Firefox and WebKit (Safari's engine), in the light
+  # theme: render errors and failing play functions (keyboard, focus,
+  # pointer) fail the job (vitest.browsers.config.ts; a failing story is
+  # retried once). axe, the dark theme and coverage run in Chromium, in the
+  # `storybook-tests` job. One job per browser, in parallel with the others;
+  # each caches its browser like `storybook-tests` caches Chromium.
+  storybook-browsers:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+
+    env:
+      STORYBOOK_DISABLE_TELEMETRY: 1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Get Playwright version
+        id: playwright
+        run: echo "version=$(jq -r .version node_modules/playwright/package.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browser
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-${{ matrix.browser }}
+
+      - name: Install Playwright ${{ matrix.browser }}
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps ${{ matrix.browser }}
+
+      - name: Storybook tests (${{ matrix.browser }})
+        run: bunx vitest run -c vitest.browsers.config.ts --project storybook-${{ matrix.browser }}
+
+  # Every ui story rendered on the server (react-dom/server in Node, no DOM),
+  # then hydrated on that HTML in headless Chromium (`bun run test:ssr`,
+  # ssr/): a story fails when it throws on the server, or when React reports
+  # a hydration mismatch or logs an error while hydrating.
+  ssr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Get Playwright version
+        id: playwright
+        run: echo "version=$(jq -r .version node_modules/playwright/package.json)" >> "$GITHUB_OUTPUT"
+
+      # The same key as the storybook-tests job: one cached Chromium.
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      - name: Server rendering and hydration of every ui story
+        run: bun run test:ssr
+
   # Screenshot comparison of every story (light + dark) against the committed
   # Linux baselines in visual/__screenshots__, in the same Playwright image
-  # `bun run visual` uses locally (visual/docker.sh): the one of the installed
-  # @playwright/test version. Any difference fails the job; the diffs are
+  # `bun run visual` uses locally (visual/docker.sh): the one visual/Dockerfile
+  # pins by digest, of the installed @playwright/test version. Any difference fails the job; the diffs are
   # uploaded as the `visual-diffs` artifact.
   visual:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v${{ needs.build.outputs.playwright-version }}-noble
+      image: ${{ needs.build.outputs.playwright-image }}
       options: --ipc=host
 
     steps:

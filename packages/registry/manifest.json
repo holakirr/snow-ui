@@ -955,6 +955,7 @@
       "exports": ["SnowUIProvider", "useMessages", "useSnowUI"],
       "types": [
         "SnowUIContextValue",
+        "SnowUIContrast",
         "SnowUIProviderProps",
         "SnowUITheme",
         "TextDirection"
@@ -1167,6 +1168,7 @@
         "genId",
         "getState",
         "listeners",
+        "normalizeToastLimit",
         "reduce",
         "registerToasterLimit"
       ],

@@ -9,9 +9,12 @@ import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
 import { useMessages, useSnowUI } from '../SnowUIProvider'
 import { Typography } from '../Text'
-
-const animationClasses =
-  'data-[state=open]:scale-100 starting:data-[state=open]:scale-0 data-[state=closed]:scale-0 starting:data-[state=closed]:scale-100 data-[state=closed]:opacity-0 starting:data-[state=closed]:opacity-100 data-[state=open]:opacity-100 starting:data-[state=open]:opacity-0'
+import {
+  dialogMotionClasses,
+  dialogOverlayClasses,
+  dialogPopupClasses,
+  dialogPositionClasses,
+} from './styles'
 
 const Dialog = DialogPrimitive.Root
 
@@ -26,14 +29,7 @@ const DialogOverlay: FC<ComponentProps<typeof DialogPrimitive.Overlay>> = ({
   ...props
 }) => (
   <DialogPrimitive.Overlay
-    className={twMerge(
-      // Figma "Mask": a linear gradient (#CBDDFF 50% → #D7D0FF 20%) and
-      // "Background blur 40". The Figma dark dashboards use the same raw
-      // colours ("Add data", SnowUI-Dark), so the mask doesn't flip.
-      'fixed inset-0 z-50 bg-linear-to-t from-[#cbddff]/50 to-[#d7d0ff]/20 data-[state=open]:backdrop-blur-bg-40 starting:data-[state=open]:backdrop-blur-none data-[state=closed]:backdrop-blur-none starting:data-[state=closed]:backdrop-blur-bg-40',
-      animationClasses,
-      className,
-    )}
+    className={twMerge(dialogOverlayClasses, dialogMotionClasses, className)}
     {...props}
   />
 )
@@ -59,9 +55,10 @@ const DialogContent: FC<ComponentProps<typeof DialogPrimitive.Content>> = ({
         dir={dir}
         data-theme={theme}
         className={twMerge(
+          dialogPositionClasses,
           // Figma "Add data": 576px wide, the title row and the popup 28px apart.
-          'fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 duration-200 gap-7',
-          animationClasses,
+          'grid max-w-xl gap-7',
+          dialogMotionClasses,
           className,
         )}
         {...props}
@@ -135,12 +132,13 @@ DialogHeader.displayName = 'DialogHeader'
  */
 const DialogBody: FC<ComponentProps<'div'>> = ({ className, ...props }) => (
   <div
-    // Figma "Popup": Background/3 with "Background blur 40", radius 32 and
-    // padding 80 (32 below the md breakpoint). The padding reads the
-    // --dialog-padding variable, so a padding class replaces it at every
-    // breakpoint, and setting the variable changes it responsively.
+    // Figma "Popup", with padding 80 (32 below the md breakpoint). The
+    // padding reads the --dialog-padding variable, so a padding class
+    // replaces it at every breakpoint, and setting the variable changes it
+    // responsively.
     className={twMerge(
-      'rounded-32 bg-background-3 p-(--dialog-padding) backdrop-blur-bg-40 [--dialog-padding:--spacing(8)] md:[--dialog-padding:--spacing(20)]',
+      dialogPopupClasses,
+      'p-(--dialog-padding) [--dialog-padding:--spacing(8)] md:[--dialog-padding:--spacing(20)]',
       className,
     )}
     {...props}

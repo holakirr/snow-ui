@@ -8,12 +8,29 @@
  * component's own label prop (`closeLabel`, `clearLabel`, `aria-label`…)
  * wins over the provider.
  *
- * The namespaces added in 5.1 (`avatarGroup`, `charts`) are optional, so a
- * translation typed as `Messages` before they existed still compiles; the
- * English defaults fill them in, and `useMessages()` always returns every
- * namespace (`Required<Messages>`). They become required in 6.0.
+ * The namespaces added in 5.1 (`alert`, `alertDialog`, `avatarGroup`,
+ * `charts`, `progress`, `spinner`) are optional, so a translation typed as
+ * `Messages` before they existed still compiles; the English defaults fill
+ * them in, and `useMessages()` always returns every namespace
+ * (`Required<Messages>`). They become required in 6.0.
  */
 export type Messages = {
+  alert?: {
+    /** The dismiss button of an `Alert` with `onDismiss`. */
+    dismiss: string
+    /** Screen-reader text before the content of an `info` alert. */
+    info: string
+    /** Screen-reader text before the content of a `success` alert. */
+    success: string
+    /** Screen-reader text before the content of a `warning` alert. */
+    warning: string
+    /** Screen-reader text before the content of an `error` alert. */
+    error: string
+  }
+  alertDialog?: {
+    /** The label of an `AlertDialogCancel` without children. */
+    cancel: string
+  }
   avatarGroup?: {
     /** Screen-reader text of the "+N" avatar: the avatars not shown. */
     more: (count: number) => string
@@ -97,6 +114,15 @@ export type Messages = {
     /** Screen-reader text of `PaginationEllipsis`. */
     more: string
   }
+  progress?: {
+    /**
+     * Accessible name of a `Progress` or `ProgressCircle` without an
+     * `aria-label` or `aria-labelledby`.
+     */
+    label: string
+    /** The value read out (`aria-valuetext`) of a determinate progress bar. */
+    value: (value: number, max: number) => string
+  }
   search: {
     placeholder: string
     /** The clear button. */
@@ -122,6 +148,10 @@ export type Messages = {
     /** A thumb of a slider with three or more thumbs (`position` from 1). */
     thumb: (label: string, position: number, count: number) => string
   }
+  spinner?: {
+    /** The screen-reader text of a `Spinner`. */
+    label: string
+  }
   tag: {
     /** The remove button of a `Tag`. */
     remove: (label: string) => string
@@ -143,6 +173,16 @@ export type MessagesOverrides = {
 
 /** The English messages, used where no `SnowUIProvider` sets others. */
 export const defaultMessages: Required<Messages> = {
+  alert: {
+    dismiss: 'Dismiss',
+    info: 'Information',
+    success: 'Success',
+    warning: 'Warning',
+    error: 'Error',
+  },
+  alertDialog: {
+    cancel: 'Cancel',
+  },
   avatarGroup: {
     more: (count) => `${count} more`,
   },
@@ -189,6 +229,10 @@ export const defaultMessages: Required<Messages> = {
     next: 'Go to next page',
     more: 'More pages',
   },
+  progress: {
+    label: 'Progress',
+    value: (value, max) => `${Math.round((value / max) * 100)}%`,
+  },
   search: {
     placeholder: 'Search',
     clear: 'Clear search',
@@ -205,6 +249,9 @@ export const defaultMessages: Required<Messages> = {
     minimum: (label) => `${label}, minimum`,
     maximum: (label) => `${label}, maximum`,
     thumb: (label, position, count) => `${label}, ${position} of ${count}`,
+  },
+  spinner: {
+    label: 'Loading',
   },
   tag: {
     remove: (label) => `Remove tag ${label}`,

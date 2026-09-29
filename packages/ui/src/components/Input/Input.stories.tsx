@@ -5,6 +5,7 @@ import {
 } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
+import { hasInsetRing } from '../../test/colors'
 import { KBD } from '../Text'
 import { Input } from './Input'
 
@@ -150,4 +151,29 @@ export const States: Story = {
       <Input title="Disabled" defaultValue="Text" disabled />
     </div>
   ),
+}
+
+/**
+ * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
+ * error (no Figma state). A 1px Secondary/Red stroke, also on hover and focus. Pair it with the error text: see Form.
+ */
+export const Invalid: Story = {
+  args: {
+    title: 'Email',
+    defaultValue: 'name@',
+    'aria-invalid': true,
+  },
+  play: async ({ canvas, userEvent, step }) => {
+    const input = canvas.getByLabelText('Email')
+    const field = input.closest('[data-slot="input"]') as HTMLElement
+
+    await expect(input).toBeInvalid()
+    await expect(await hasInsetRing(field, 'text-red', '1px')).toBe(true)
+
+    await step('the stroke stays red on focus', async () => {
+      await userEvent.click(input)
+      await expect(await hasInsetRing(field, 'text-red', '1px')).toBe(true)
+      await userEvent.tab()
+    })
+  },
 }

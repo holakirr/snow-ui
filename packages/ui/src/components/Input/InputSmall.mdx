@@ -48,10 +48,13 @@ import { InputSmall } from '@holakirr/snow-ui'
 - **Focus:** the Figma "Focus" state on any focus, by mouse or keyboard: the 4px Focus ring, and a 0.5px Black/40% stroke (`gray` also turns Surface/1). Text fields don't get the `focus-ring` outline.
 - **Read-only** (`readOnly`): `gray` keeps its fill on hover; `outline` keeps its Black/20% stroke on hover and focus.
 - **Disabled** (`disabled`): Black/20% text and a not-allowed cursor; `gray` keeps its Black/4% fill, `outline` gets a Black/10% stroke.
+- **Invalid** (`aria-invalid`): a 1px Secondary/Red stroke on both variants, also on hover and focus (no Figma state).
 
 <Canvas of={InputSmallStories.WithValue} />
 
 <Canvas of={InputSmallStories.Disabled} />
+
+<Canvas of={InputSmallStories.Invalid} />
 
 ## Accessibility
 

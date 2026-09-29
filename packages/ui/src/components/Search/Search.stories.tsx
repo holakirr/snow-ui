@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
+import { expect } from 'storybook/test'
+import { hasInsetRing } from '../../test/colors'
 import { Typography } from '../Text'
 import { Search } from './Search'
 
@@ -117,4 +119,28 @@ export const AllVariants: Story = {
 export const AllVariantsDark: Story = {
   render: () => <Variants />,
   globals: { theme: 'dark' },
+}
+
+/**
+ * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
+ * error (no Figma state). A 1px Secondary/Red stroke on both types. Pair it with the error text: see Form.
+ */
+export const Invalid: Story = {
+  args: {
+    defaultValue: 'a',
+    'aria-invalid': true,
+  },
+  render: (args) => (
+    <div className="flex gap-4">
+      <Search {...args} />
+      <Search {...args} variant="outline" />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    for (const input of canvas.getAllByRole('searchbox', { name: 'Search' })) {
+      await expect(input).toBeInvalid()
+      const field = input.parentElement as HTMLElement
+      await expect(await hasInsetRing(field, 'text-red', '1px')).toBe(true)
+    }
+  },
 }

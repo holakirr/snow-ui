@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
+import { hasInsetRing } from '../../test/colors'
 
 import {
   Select,
@@ -230,4 +231,28 @@ export const Open: Story = {
       </Select>
     </div>
   ),
+}
+
+/**
+ * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
+ * error (no Figma state). The trigger gets the red Input stroke, also while the list is open. Pair it with the error text: see Form.
+ */
+export const Invalid: Story = {
+  render: () => (
+    <Select>
+      <SelectTrigger className="w-[200px]" aria-label="Fruit" aria-invalid>
+        <SelectValue placeholder="Select a fruit" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="apple">Apple</SelectItem>
+        <SelectItem value="banana">Banana</SelectItem>
+      </SelectContent>
+    </Select>
+  ),
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole('combobox', { name: 'Fruit' })
+
+    await expect(trigger).toBeInvalid()
+    await expect(await hasInsetRing(trigger, 'text-red', '1px')).toBe(true)
+  },
 }

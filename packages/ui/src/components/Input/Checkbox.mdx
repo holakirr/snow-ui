@@ -49,10 +49,13 @@ import { Checkbox, Label } from '@holakirr/snow-ui'
 
 - **Keyboard focus:** the `focus-ring` utility (see Accessibility).
 - **Disabled** (`disabled`): a Black/4% box with a Black/10% ring; checked or indeterminate, a Black/10% fill with a Black/40% mark. The Figma set has no Disabled state, so this look is the library's own, visible in both modes.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): the unchecked box gets a Secondary/Red ring, also on hover (no Figma state). A checked box keeps its look.
 
 <Canvas of={CheckboxStories.Indeterminate} />
 
 <Canvas of={CheckboxStories.Disabled} />
+
+<Canvas of={CheckboxStories.Invalid} />
 
 ## Accessibility
 

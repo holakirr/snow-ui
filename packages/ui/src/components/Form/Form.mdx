@@ -56,8 +56,10 @@ The same parts without a form library: the submit handler validates the value an
 
 ## States
 
-- **Valid:** `aria-invalid="false"`; `aria-describedby` points at the description.
-- **Invalid** (a truthy `error`, or `invalid`): the `FormLabel` turns `red-text`, `FormMessage` shows the error, the control gets `aria-invalid="true"` and the message's id is added to its `aria-describedby`. `invalid` alone marks the field invalid without a message.
+- **Valid:** `aria-invalid="false"`; `aria-describedby` points at the description, or is left out when there is none.
+- **Invalid** (a truthy `error`, or `invalid`): the `FormLabel` turns `red-text`, `FormMessage` shows the error, the control gets `aria-invalid="true"` and the message's id is added to its `aria-describedby`. `invalid` alone marks the field invalid without a message. Every field shows it with a red stroke or ring (see each field's Invalid state):
+
+<Canvas of={FormStories.InvalidFields} />
 
 ## react-hook-form
 
@@ -111,6 +113,7 @@ Deviations from the Figma kit (the full table is in the package README):
 | --- | --- | --- |
 | Label and description in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
 | Error text (`FormMessage`, an invalid `FormLabel`) in Secondary/Red `#FF4747`: 3.36:1 on white, 3.76:1 on #333 | `red-text`: `#D42020` in light mode, `#FF8080` in dark mode (5.21:1 on `background-1` in both) | 1.4.3 |
+| Invalid fields: no error state | a Secondary/Red stroke or ring on the control while it has `aria-invalid` (3.36:1 on white), next to the error text | 1.4.1, 1.4.11 |
 
 ## Localization and RTL
 

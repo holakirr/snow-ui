@@ -23,9 +23,11 @@ export type SearchSize = 'sm' | 'lg'
 // Figma "Search" (set 33509:43630): 28px high, padding 4/8, gap 8, radius 16,
 // background blur 20 (= 10px in CSS). Gray: Black/4% → Black/10% on hover;
 // Outline: Surface/1 with a 0.5px Black/20% stroke → Black/40% on hover. On
-// focus both become Surface/1 + 0.5px Black/40% + the Focus ring.
+// focus both become Surface/1 + 0.5px Black/40% + the Focus ring. Invalid
+// (the <input> has `aria-invalid="true"`; no Figma state): a 1px
+// Secondary/Red stroke in every state, like Input.
 const searchStyles = cva(
-  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-black-40 focus-within:ring-4 focus-within:ring-focus has-disabled:pointer-events-none has-disabled:opacity-40',
+  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-black-40 focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red has-disabled:pointer-events-none has-disabled:opacity-40',
   {
     variants: {
       variant: {

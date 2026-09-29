@@ -43,10 +43,13 @@ import { Label, Switch } from '@holakirr/snow-ui'
 - **On:** a Primary track; on hover Primary under White/40%.
 - **Keyboard focus:** the `focus-ring` utility (see Accessibility).
 - **Disabled** (`disabled`): a Black/10% track (Black/20% when on), no inner shadow, the white thumb. The Figma component has no Disabled state, so this look is the library's own, visible in both modes.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): a 1px Secondary/Red stroke inside the track, on or off (no Figma state).
 
 <Canvas of={SwitchStories.DisabledOff} />
 
 <Canvas of={SwitchStories.Disabled} />
+
+<Canvas of={SwitchStories.Invalid} />
 
 ## Accessibility
 

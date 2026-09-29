@@ -3,6 +3,7 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
+import { invalidInputClasses } from './Input'
 
 /**
  * The Figma "Search" field without its icons: 28px high, 4/8 padding, a 16px
@@ -17,6 +18,7 @@ const inputVariants = cva(
     'rounded-16 px-2 py-1 text-14 text-black backdrop-blur-[10px] transition-all placeholder:text-black-20',
     'focus:ring-4 focus:ring-focus',
     'disabled:cursor-not-allowed disabled:text-black-20',
+    invalidInputClasses,
   ],
   {
     variants: {

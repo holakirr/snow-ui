@@ -66,10 +66,13 @@ A button or a link in the start or end content keeps its own clicks; any other c
 - **Focus:** the Figma "Focus" state while the input has focus, by mouse or keyboard: a Black/40% stroke and the 4px Focus ring. The caret and the stroke mark focus, so text fields don't get the `focus-ring` outline.
 - **Static** (`readOnly`): the stroke stays Black/20% on hover and focus; the 4px Focus ring still shows while the input has focus.
 - **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. The Figma set has no Disabled state, so this look is the library's own.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets while the field has an error): a 1px Secondary/Red stroke, also on hover and focus. The Figma set has no error state, so this look is the library's own; the error text is the `FormMessage`.
 
 <Canvas of={InputStories.Static} />
 
 <Canvas of={InputStories.Disabled} />
+
+<Canvas of={InputStories.Invalid} />
 
 ## Accessibility
 

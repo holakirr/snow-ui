@@ -216,4 +216,16 @@ describe('Input', () => {
     // A password field has no role.
     expect(screen.getByLabelText('Password')).not.toHaveAttribute('role')
   })
+
+  it('shows the red stroke while the input is invalid', () => {
+    render(<Input aria-label="Email" aria-invalid />)
+
+    const field = screen.getByRole('textbox').closest('[data-slot="input"]')
+
+    expect(screen.getByRole('textbox')).toBeInvalid()
+    expect(field).toHaveClass(
+      'has-aria-invalid:inset-ring',
+      'has-aria-invalid:inset-ring-red',
+    )
+  })
 })

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useId } from 'react'
 import { expect } from 'storybook/test'
+import { hasInsetRing } from '../../test/colors'
 import { Label } from '../Label'
 import { Checkbox } from './Checkbox'
 
@@ -89,5 +90,27 @@ export const States: Story = {
         </div>
       </div>
     )
+  },
+}
+
+/**
+ * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
+ * error (no Figma state). The unchecked box gets a Secondary/Red ring, also on hover. Pair it with the error text: see Form.
+ */
+export const Invalid: Story = {
+  args: {
+    'aria-invalid': true,
+  },
+  play: async ({ canvas, userEvent, step }) => {
+    const checkbox = canvas.getByRole('checkbox')
+
+    await expect(checkbox).toBeInvalid()
+    await expect(await hasInsetRing(checkbox, 'text-red', '2px')).toBe(true)
+
+    await step('the ring stays red on hover', async () => {
+      await userEvent.hover(checkbox)
+      await expect(await hasInsetRing(checkbox, 'text-red', '2px')).toBe(true)
+      await userEvent.unhover(checkbox)
+    })
   },
 }

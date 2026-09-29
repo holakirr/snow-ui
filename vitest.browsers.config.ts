@@ -19,18 +19,28 @@ import { storybookProject } from './vitest.config'
 // Firefox and WebKit are slower than Chromium on the 4-core runners, and the
 // charts' play functions wait for their font with a fixed timeout. A story
 // that only passes on the retry is reported as flaky in the log.
+//
+// WebKit runs at most two story files at a time: every file is an iframe in
+// the one WebKit page, whose memory grows with each file, and with more files
+// in parallel the page ran out of memory near the end of a full run (run
+// 36617263390, "The webkit page crashed"). The CI job also splits WebKit in
+// two shards, each in a fresh browser, and retries a shard whose page
+// crashed; a retry doesn't help a crashed page, which fails the whole run.
 const crossBrowser = (
   project: TestProjectInlineConfiguration,
+  options: { maxWorkers?: number } = {},
 ): TestProjectInlineConfiguration => ({
   ...project,
-  test: { ...project.test, retry: process.env.CI ? 1 : 0 },
+  test: { ...project.test, ...options, retry: process.env.CI ? 1 : 0 },
 })
 
 export default defineConfig({
   test: {
     projects: [
       crossBrowser(storybookProject('storybook-firefox', 'light', 'firefox')),
-      crossBrowser(storybookProject('storybook-webkit', 'light', 'webkit')),
+      crossBrowser(storybookProject('storybook-webkit', 'light', 'webkit'), {
+        maxWorkers: 2,
+      }),
     ],
   },
 })

@@ -1,7 +1,7 @@
 import { AddIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
-
+import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
 import { Input } from '../Input'
 import { Typography } from '../Text'
@@ -203,11 +203,11 @@ export const RTL: Story = {
 
     const close = within(dialog).getByRole('button', { name: 'Close' })
     const title = within(dialog).getByText('جديد')
-    // After the open animation (it scales the dialog up from its centre).
-    await waitFor(() =>
-      expect(close.getBoundingClientRect().right).toBeLessThan(
-        title.getBoundingClientRect().left,
-      ),
+    // The final layout, not a frame of the open transition (it scales the
+    // dialog up from its centre).
+    await settleLayout(dialog)
+    await expect(close.getBoundingClientRect().right).toBeLessThan(
+      title.getBoundingClientRect().left,
     )
   },
 }

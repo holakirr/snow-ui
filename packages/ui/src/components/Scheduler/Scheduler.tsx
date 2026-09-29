@@ -1,9 +1,12 @@
 'use client'
 
+import { isSameDay, setHours } from 'date-fns'
 import { type ComponentProps, type FC, Fragment } from 'react'
 import { TEXT_SIZES } from '../../constants'
 import type { CalendarEvent, StartOfWeek } from '../../types'
 import {
+  getClockHours,
+  getDaySegments,
   getEarliestScheduleHour,
   getLatestScheduleHour,
   getScheduleHours,
@@ -14,29 +17,31 @@ import { Separator } from '../Separator'
 import { useSnowUI } from '../SnowUIProvider'
 import { Tag } from '../Tag'
 import { Typography } from '../Text'
-import { DEFAULT_LANG, formatTime, HOUR_HEIGHT } from './constants'
+import { DEFAULT_LANG, formatHour, formatTime, HOUR_HEIGHT } from './constants'
 import { EventItem } from './EventItem'
 
-/**
- * Props для компонента Scheduler
- */
 type SchedulerProps = ComponentProps<'div'> & {
-  /** Текущая дата */
+  /** A day of the week to show: the grid shows the week that contains it. */
   currentDate: Date
-  /** Массив событий календаря */
+  /**
+   * The events. An event is shown in the cell of the hour it starts in, as
+   * tall as it lasts on the clock; one that runs past midnight continues on
+   * the next day.
+   */
   events?: CalendarEvent[]
-  /** Начало недели (0-6, где 0 - воскресенье) */
+  /**
+   * The first day of the week: 0 for Sunday … 6 for Saturday. Like
+   * `Calendar`'s `weekStartsOn`, it doesn't follow the locale.
+   * @default 1
+   */
   startOfWeek?: StartOfWeek
-  /** Обработчик клика по событию */
+  /** Called with the event when an event is clicked. */
   onEventClick: (event: CalendarEvent) => void
-  /** Обработчик клика по дате */
+  /**
+   * Called when an hour cell is clicked, with the start of that hour: the
+   * cell's day at `hh:00:00.000`.
+   */
   onDateClick: (date: Date) => void
-}
-
-const getCellDate = (date: Date, hour: number): Date => {
-  const cellDate = new Date(date)
-  cellDate.setHours(hour)
-  return cellDate
 }
 
 const Scheduler: FC<SchedulerProps> = ({
@@ -51,15 +56,24 @@ const Scheduler: FC<SchedulerProps> = ({
 }) => {
   // Day and hour labels in the `SnowUIProvider` locale (en-US without one).
   const lang = useSnowUI().locale?.code ?? DEFAULT_LANG
-  const weekDates = getWeekDates(currentDate, startOfWeek)
-
-  const earliestHour = getEarliestScheduleHour(events)
-  const earliestTime = new Date(new Date().setHours(earliestHour, 0, 0, 0))
-  const latestHour = getLatestScheduleHour(events)
-  // The grid includes the whole latest hour, so it ends at latestHour + 1
-  const latestTime = new Date(new Date().setHours(latestHour + 1, 0, 0, 0))
-  const now = new Date()
+  // The days at midnight, and the parts of the events on each of them.
+  const week = getWeekDates(currentDate, startOfWeek).map((date) => ({
+    date,
+    segments: getDaySegments(events, date),
+  }))
+  // The grid fits the events of this week only.
+  const segments = week.flatMap((day) => day.segments)
+  const earliestHour = getEarliestScheduleHour(segments)
+  const latestHour = getLatestScheduleHour(segments)
   const hours = getScheduleHours(earliestHour, latestHour)
+
+  const now = new Date()
+  const nowHours = getClockHours(now)
+  // The grid includes the whole latest hour, so it ends at latestHour + 1.
+  const showNow =
+    week.some(({ date }) => isSameDay(date, now)) &&
+    nowHours >= earliestHour &&
+    nowHours < latestHour + 1
 
   return (
     <div
@@ -74,21 +88,14 @@ const Scheduler: FC<SchedulerProps> = ({
       {...props}
     >
       <div className="col-span-1" />
-      {weekDates.map((date, i) => (
+      {week.map(({ date }, i) => (
         <Fragment key={date.toDateString()}>
-          <div
-            key={date.toDateString()}
-            className="flex justify-center items-center"
-          >
+          <div className="flex justify-center items-center">
             <Typography
               size={TEXT_SIZES[12]}
               className={twMerge(
                 'text-secondary px-1 py-0.5 rounded-4',
-                date.getDate() === now.getDate() &&
-                  date.getMonth() === now.getMonth() &&
-                  date.getFullYear() === now.getFullYear()
-                  ? 'bg-indigo text-static-black'
-                  : '',
+                isSameDay(date, now) && 'bg-indigo text-static-black',
               )}
             >
               {date.toLocaleDateString(lang, {
@@ -115,62 +122,45 @@ const Scheduler: FC<SchedulerProps> = ({
       {hours.map((hour) => (
         <Fragment key={hour}>
           <Typography size={TEXT_SIZES[12]} className="text-secondary">
-            {new Date(new Date().setHours(hour)).toLocaleTimeString(lang, {
-              hour: 'numeric',
-            })}
+            {formatHour(hour, lang)}
           </Typography>
-          {weekDates.map((date) => (
-            // biome-ignore lint/a11y/useSemanticElements: the cell hosts nested interactive events, so it can't be a <button>
-            <div
-              key={date.toDateString() + hour}
-              role="button"
-              tabIndex={0}
-              aria-label={getCellDate(date, hour).toLocaleString(lang)}
-              onClick={(e) => {
-                e.preventDefault()
-                onDateClick(getCellDate(date, hour))
-              }}
-              onKeyDown={(e) => {
-                if (e.target !== e.currentTarget) return
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  onDateClick(getCellDate(date, hour))
-                }
-              }}
-              className="relative focus-ring"
-            >
-              {events
-                ?.filter((event) => {
-                  const eventDate = new Date(event.date)
-                  return (
-                    eventDate.getDate() === date.getDate() &&
-                    eventDate.getMonth() === date.getMonth() &&
-                    eventDate.getFullYear() === date.getFullYear() &&
-                    eventDate.getHours() === hour
-                  )
-                })
-                .map((event) => (
-                  <EventItem
-                    key={event.id}
-                    className="bg-color-2 text-static-black p-1 text-14 rounded-4"
-                    onEventClick={onEventClick}
-                    event={event}
-                  />
-                ))}
-            </div>
-          ))}
+          {week.map(({ date, segments: daySegments }) => {
+            // The start of the hour on the clock of that day.
+            const cellDate = setHours(date, hour)
+            return (
+              <div key={date.toDateString() + hour} className="relative">
+                {/* The cell's button fills it, and the events are its
+                    siblings: a button can't contain other controls. */}
+                <button
+                  type="button"
+                  aria-label={cellDate.toLocaleString(lang)}
+                  onClick={() => onDateClick(cellDate)}
+                  className="absolute inset-0 focus-ring"
+                />
+                {daySegments
+                  .filter(({ start }) => Math.floor(start) === hour)
+                  .map(({ event, start, end }) => (
+                    <EventItem
+                      key={event.id}
+                      className="bg-color-2 text-static-black p-1 text-14 rounded-4"
+                      onEventClick={onEventClick}
+                      event={event}
+                      start={start}
+                      end={end}
+                    />
+                  ))}
+              </div>
+            )
+          })}
         </Fragment>
       ))}
 
       {/* Current time indicator */}
-      {now < latestTime && now > earliestTime && (
+      {showNow && (
         <div
           className="absolute start-0 w-full px-4 flex justify-center items-center z-10"
           style={{
-            top: `${
-              (1 + (now.getHours() - earliestHour) + now.getMinutes() / 60) *
-              HOUR_HEIGHT
-            }px`,
+            top: `${(1 + (nowHours - earliestHour)) * HOUR_HEIGHT}px`,
           }}
         >
           <Tag

@@ -8,7 +8,7 @@ import * as ToasterStories from './Toaster.stories'
 
 <FigmaLinks label="Toast component set" page="28002:97873" />
 
-A toast is a short message about something that just happened: "Saved", "Something went wrong". It shows at the bottom of the screen and closes itself after 3 seconds ("stay 3s" in the Figma guidance). It is the Figma "Toast" set: a dark glass pill with an optional success or error icon, in two sizes. Render `<Toaster />` once and call `toast()` from anywhere. It is built on Radix Toast.
+A toast is a short message about something that just happened: "Saved", "Something went wrong". It shows at the bottom of the screen and closes itself after 3 seconds ("stay 3s" in the Figma guidance), unless it has an action. It is the Figma "Toast" set: a dark glass pill with an optional success or error icon, in two sizes. Render `<Toaster />` once and call `toast()` from anywhere. It is built on Radix Toast.
 
 ```tsx
 import { Toaster, toast } from '@holakirr/snow-ui'
@@ -37,7 +37,7 @@ toast({ status: 'success', title: 'Saved' })
 
 ## Anatomy
 
-1. **Toaster** (`Toaster`): renders the toasts from `toast()` inside a `ToastProvider` and a `ToastViewport`. Props: `duration` (3000ms by default) and `id`.
+1. **Toaster** (`Toaster`): renders the toasts from `toast()` inside a `ToastProvider` and a `ToastViewport`. Props: `duration` (3000ms by default, for toasts without an `action`) and `id`.
 2. **Viewport** (`ToastViewport`): a fixed list at the bottom centre of the screen, with 16px of padding; at most 448px wide from the `md` breakpoint.
 3. **Toast** (`Toast`): the pill: `static-black` at 80% under a `static-white` 10% overlay, a 20px background blur ("Background blur 40"), a 16px radius, `static-white` text.
 4. **Status icon** (optional, `status`): a success or error icon at the start, 16px (`sm`) or 20px (`lg`).
@@ -72,7 +72,7 @@ The toast stays dark in both themes: the Figma component pins its colours to Sno
 
 ## Behaviour
 
-- **Duration:** a toast closes after the Toaster's `duration` (3000ms); a toast's own `duration` wins. `duration: Number.POSITIVE_INFINITY` keeps it until the user closes it.
+- **Duration:** a toast closes after the Toaster's `duration` (3000ms); a `duration` passed to `toast()` wins. A toast with an `action` defaults to `Number.POSITIVE_INFINITY` instead of the Toaster's `duration`: it stays until the user closes it, unless you give it its own `duration`. `duration: Number.POSITIVE_INFINITY` keeps any toast until the user closes it.
 - **One at a time:** each Toaster shows one toast. A new `toast()` replaces the visible one.
 - **Pause:** hovering or focusing the toasts pauses their timers.
 - **Dismiss:** Escape or a swipe (to the right; to the left in right-to-left text) closes a toast; so do `dismiss()` and its close button. `update()` changes a toast in place.
@@ -84,7 +84,7 @@ The toast stays dark in both themes: the Figma component pins its colours to Sno
 
 <Canvas of={ToasterStories.Closable} />
 
-- **With an action:** an element after the text; the toast gets a close button. It still closes after its `duration` (hovering or focusing it pauses the timer), so give a toast with an important action a longer `duration`.
+- **With an action:** an element after the text. The toast stays until it is dismissed (its `duration` defaults to `Number.POSITIVE_INFINITY`, and the Toaster's `duration` doesn't apply) and gets a close button by default, so the user has as long as they need to reach the action (WCAG 2.2.1). A `duration` passed to `toast()` closes it on a timer again (hovering or focusing it pauses the timer).
 
 <Canvas of={ToasterStories.WithAction} />
 
@@ -94,13 +94,13 @@ The toast stays dark in both themes: the Figma component pins its colours to Sno
 - Each toast is announced in a live region when it appears, after "Notification" (`messages.toast.label`): assertively for the default `type="foreground"`, politely for `type="background"`.
 - A toast is focusable (in the viewport list), and Escape closes it.
 - The close button is named "Close" (`messages.toast.close`); `aria-label` on `ToastClose` overrides it. It has the `focus-ring`.
-- For an action, use `ToastAction` with `altText`: Radix requires it, and it tells screen-reader users how to do the action another way, since the toast may close before they reach it. `ToastAction` closes the toast when clicked.
+- For an action, use `ToastAction` with `altText`: Radix requires it, and it tells screen-reader users how to do the action another way, since they hear the toast without moving to it (and a toast with its own `duration` may close before they reach it). `ToastAction` closes the toast when clicked.
 
 Deviations from the Figma kit (the full table is in the package README):
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
-| No close button: the toast closes itself | toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer | 2.2.1 |
+| No close button: the toast closes itself after 3s | a toast with an `action` stays until it is dismissed (`duration` defaults to `Number.POSITIVE_INFINITY`); toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer | 2.2.1 |
 | "Focus" effect: 4px ring, black 4% (1.1:1) | the close button's `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px | 2.4.7, 1.4.11 |
 
 ## Localization and RTL
@@ -120,7 +120,7 @@ The viewport isn't portalled: toasts render inside `<Toaster />`, so they take t
 
 ```tsx
 <ToastProvider duration={5000}>
-  <Toast size="lg" open={open} onOpenChange={setOpen}>
+  <Toast size="lg" duration={Number.POSITIVE_INFINITY} open={open} onOpenChange={setOpen}>
     <ToastTitle size="lg">Deleted</ToastTitle>
     <ToastAction altText="Restore it from the trash" onClick={undo}>
       Undo
@@ -131,7 +131,7 @@ The viewport isn't portalled: toasts render inside `<Toaster />`, so they take t
 </ToastProvider>
 ```
 
-Pass the same `size` to `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction` and `ToastClose`.
+Pass the same `size` to `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction` and `ToastClose`. The `Toaster` defaults don't apply to composed toasts: give a toast with an action `duration={Number.POSITIVE_INFINITY}` and a `ToastClose` yourself, as above.
 
 ## Do and don't
 

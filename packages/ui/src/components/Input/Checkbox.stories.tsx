@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useId } from 'react'
 import { expect } from 'storybook/test'
 import { Label } from '../Label'
 import { Checkbox } from './Checkbox'
@@ -61,28 +62,32 @@ export const Disabled: Story = {
 
 /** The Figma Checkbox set: False, True and Multiple (hover for the hover state). */
 export const States: Story = {
-  render: () => (
-    <div className="flex items-center gap-6">
-      {(
-        [
-          ['unchecked', false],
-          ['checked', true],
-          ['indeterminate', 'indeterminate'],
-        ] as const
-      ).map(([name, checked]) => (
-        <div key={name} className="flex items-center gap-2">
-          <Checkbox id={`checkbox-${name}`} defaultChecked={checked} />
-          <Label htmlFor={`checkbox-${name}`}>{name}</Label>
+  // `useId` keeps the ids unique if the story is on a page more than once.
+  render: function Render() {
+    const id = useId()
+    return (
+      <div className="flex items-center gap-6">
+        {(
+          [
+            ['unchecked', false],
+            ['checked', true],
+            ['indeterminate', 'indeterminate'],
+          ] as const
+        ).map(([name, checked]) => (
+          <div key={name} className="flex items-center gap-2">
+            <Checkbox id={`${id}-${name}`} defaultChecked={checked} />
+            <Label htmlFor={`${id}-${name}`}>{name}</Label>
+          </div>
+        ))}
+        <div className="flex items-center gap-2">
+          <Checkbox id={`${id}-disabled`} disabled />
+          <Label htmlFor={`${id}-disabled`}>disabled</Label>
         </div>
-      ))}
-      <div className="flex items-center gap-2">
-        <Checkbox id="checkbox-disabled" disabled />
-        <Label htmlFor="checkbox-disabled">disabled</Label>
+        <div className="flex items-center gap-2">
+          <Checkbox id={`${id}-disabled-checked`} disabled defaultChecked />
+          <Label htmlFor={`${id}-disabled-checked`}>disabled checked</Label>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <Checkbox id="checkbox-disabled-checked" disabled defaultChecked />
-        <Label htmlFor="checkbox-disabled-checked">disabled checked</Label>
-      </div>
-    </div>
-  ),
+    )
+  },
 }

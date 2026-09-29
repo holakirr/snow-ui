@@ -69,7 +69,7 @@ Icons fall back to `regular` when the requested weight is not defined, so any we
 
 ### StatusIcon
 
-`<StatusIcon status="progress" | "error" | "success" />` renders `LoadingAIcon`, or the `Warning` / `Check` icons from [Phosphor](https://phosphoricons.com). Those two Phosphor icons are bundled into this package (under `dist/vendor`), so you don't need to install `@phosphor-icons/react`, and nothing else from Phosphor is shipped.
+`<StatusIcon status="progress" | "error" | "success" />` renders `LoadingAIcon`, or the filled `Warning` / `CheckCircle` icons from [Phosphor](https://phosphoricons.com), the icons of the SnowUI Figma Toast. Those two Phosphor icons are bundled into this package (under `dist/vendor`), so you don't need to install `@phosphor-icons/react`, and nothing else from Phosphor is shipped. `error` is Secondary/Yellow and `success` Secondary/Green (`var(--color-yellow, #fc0)` / `var(--color-green, #71dd8c)`: the `@holakirr/snow-ui` tokens, with the Figma values as fallbacks); a `color` prop wins. The colours are meant for dark surfaces like the toast and don't reach 3:1 on white.
 
 ### Composability
 

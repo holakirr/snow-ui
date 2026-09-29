@@ -16,9 +16,24 @@ import {
 const TOAST_DURATION = 3000
 
 /**
+ * How long a toast stays: its own `duration`, else until it is dismissed if
+ * it has an action (WCAG 2.2.1: the user gets as long as they need to reach
+ * it), else the Toaster's `duration`.
+ */
+const getDuration = ({
+  duration,
+  action,
+  toasterDuration,
+}: {
+  duration?: number
+  action?: unknown
+  toasterDuration: number
+}) => duration ?? (action ? Number.POSITIVE_INFINITY : toasterDuration)
+
+/**
  * The Figma toast has no close button: it closes itself. A toast that
- * doesn't (no timeout) or that has an action gets one by default, so it can
- * be dismissed with a pointer and the action isn't lost when time runs out.
+ * doesn't (no timeout, the default with an action) gets one by default, so
+ * it can be dismissed with a pointer.
  */
 const isClosable = ({
   closable,
@@ -39,7 +54,8 @@ export type ToasterProps = {
   id?: string
   /**
    * Time in milliseconds before each toast closes. A toast's own `duration`
-   * wins.
+   * wins, and a toast with an `action` stays until it is dismissed unless it
+   * sets its own `duration`.
    * @default 3000
    */
   duration?: number
@@ -47,12 +63,12 @@ export type ToasterProps = {
 
 export function Toaster({
   id: toasterId,
-  duration = TOAST_DURATION,
+  duration: toasterDuration = TOAST_DURATION,
 }: ToasterProps = {}) {
   const { toasts } = useToast()
 
   return (
-    <ToastProvider duration={duration}>
+    <ToastProvider duration={toasterDuration}>
       {toasts
         .filter((toast) => toast.toasterId === toasterId)
         .map(
@@ -65,30 +81,38 @@ export function Toaster({
             status,
             size,
             closable,
+            duration: toastDuration,
             ...props
-          }) => (
-            <Toast key={id} size={size} {...props}>
-              {status && (
-                <StatusIcon
-                  size={size === 'lg' ? 20 : 16}
-                  status={status}
-                  className="shrink-0"
-                />
-              )}
-              <div className="grid">
-                {title && <ToastTitle size={size}>{title}</ToastTitle>}
-                {description && (
-                  <ToastDescription size={size}>{description}</ToastDescription>
+          }) => {
+            const duration = getDuration({
+              duration: toastDuration,
+              action,
+              toasterDuration,
+            })
+            return (
+              <Toast key={id} size={size} duration={duration} {...props}>
+                {status && (
+                  <StatusIcon
+                    size={size === 'lg' ? 20 : 16}
+                    status={status}
+                    className="shrink-0"
+                  />
                 )}
-              </div>
-              {action}
-              {isClosable({
-                closable,
-                action,
-                duration: props.duration ?? duration,
-              }) && <ToastClose size={size} />}
-            </Toast>
-          ),
+                <div className="grid">
+                  {title && <ToastTitle size={size}>{title}</ToastTitle>}
+                  {description && (
+                    <ToastDescription size={size}>
+                      {description}
+                    </ToastDescription>
+                  )}
+                </div>
+                {action}
+                {isClosable({ closable, action, duration }) && (
+                  <ToastClose size={size} />
+                )}
+              </Toast>
+            )
+          },
         )}
       <ToastViewport />
     </ToastProvider>

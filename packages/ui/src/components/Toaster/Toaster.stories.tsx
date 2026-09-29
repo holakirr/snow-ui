@@ -164,6 +164,10 @@ const ToastWithActionExample = () => (
   </>
 )
 
+/**
+ * A toast with an `action` stays until it is dismissed, with the close
+ * button it gets by default, unless you give it a `duration`.
+ */
 export const WithAction: Story = {
   render: () => <ToastWithActionExample />,
 }

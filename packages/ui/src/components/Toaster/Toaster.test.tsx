@@ -1,7 +1,14 @@
-import { act, render, screen, within } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  within,
+} from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { toast } from '../../hooks'
+import { toast, useToast } from '../../hooks'
 import { Toaster } from './Toaster'
 
 const getToast = (title: string) => {
@@ -10,13 +17,20 @@ const getToast = (title: string) => {
   return node
 }
 
+const undo = <button type="button">Undo</button>
+
 describe('Toaster', () => {
   beforeEach(() => {
     vi.useFakeTimers()
   })
 
   afterEach(() => {
-    // Close and remove every toast so the shared toast store starts empty.
+    // Close and remove every toast, including those without a timeout, so
+    // the shared toast store starts empty.
+    const { result } = renderHook(() => useToast())
+    act(() => {
+      result.current.dismiss()
+    })
     act(() => {
       vi.runAllTimers()
     })
@@ -96,6 +110,59 @@ describe('Toaster', () => {
       vi.advanceTimersByTime(4000)
     })
     expect(screen.queryByText('Slow')).not.toBeInTheDocument()
+  })
+
+  it('keeps a toast with an action until it is dismissed (WCAG 2.2.1)', () => {
+    render(<Toaster />)
+    act(() => {
+      toast({ title: 'Deleted', action: undo })
+    })
+
+    act(() => {
+      vi.advanceTimersByTime(60_000)
+    })
+    expect(getToast('Deleted')).toHaveAttribute('data-state', 'open')
+
+    fireEvent.click(
+      within(getToast('Deleted')).getByRole('button', { name: 'Close' }),
+    )
+    act(() => {
+      vi.runAllTimers()
+    })
+    expect(screen.queryByText('Deleted')).not.toBeInTheDocument()
+  })
+
+  it("doesn't apply the Toaster's duration to toasts with an action", () => {
+    render(<Toaster duration={1000} />)
+    act(() => {
+      toast({ title: 'Archived', action: undo })
+    })
+
+    act(() => {
+      vi.advanceTimersByTime(5000)
+    })
+    expect(getToast('Archived')).toHaveAttribute('data-state', 'open')
+  })
+
+  it('lets a toast with an action set its own duration', () => {
+    render(<Toaster />)
+    act(() => {
+      toast({ title: 'Moved', action: undo, duration: 8000 })
+    })
+
+    act(() => {
+      vi.advanceTimersByTime(7900)
+    })
+    expect(getToast('Moved')).toHaveAttribute('data-state', 'open')
+    // It still gets the close button.
+    expect(
+      within(getToast('Moved')).getByRole('button', { name: 'Close' }),
+    ).toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(200)
+    })
+    expect(screen.queryByText('Moved')).not.toBeInTheDocument()
   })
 
   it('adds a close button to toasts with an action or no timeout', () => {

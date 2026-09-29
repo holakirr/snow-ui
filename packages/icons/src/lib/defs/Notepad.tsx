@@ -1,12 +1,21 @@
+import { useId } from 'react'
 import type { CustomIconWeights } from '../types'
 
-export const NotepadWeights: CustomIconWeights = /* @__PURE__ */ new Map([
-  [
-    'regular',
-    <g key="NotepadRegular" stroke="none">
+/**
+ * The regular weight fills its shapes with gradients, which are referenced by
+ * id. The ids come from `useId`, so every NotepadIcon on a page has its own
+ * gradients: with fixed ids the icons shared the first one's, and lost them
+ * when that icon was hidden (`display: none`) or removed.
+ */
+const NotepadRegular = () => {
+  // Only letters, digits, `_` and `-`, whatever the React version's format.
+  const id = `notepad${useId().replace(/[^\w-]/g, '_')}`
+
+  return (
+    <g stroke="none">
       <path
         d="M6 5C6 3.89543 6.89543 3 8 3H20L26 9V27C26 28.1046 25.1046 29 24 29H8C6.89543 29 6 28.1046 6 27V5Z"
-        fill="url(#paint0_linear_52206_162198)"
+        fill={`url(#${id}-paint0)`}
       />
       <path d="M26 9L20 3V7C20 8.10457 20.8954 9 22 9H26Z" fill="#DCCFE8" />
       <path
@@ -17,11 +26,11 @@ export const NotepadWeights: CustomIconWeights = /* @__PURE__ */ new Map([
       />
       <path
         d="M24.8493 12.7071C25.2398 12.3166 25.873 12.3166 26.2635 12.7071L29.0919 15.5355C29.4825 15.9261 29.4825 16.5592 29.0919 16.9497L16.364 29.6777L12.1214 25.435L24.8493 12.7071Z"
-        fill="url(#paint1_linear_52206_162198)"
+        fill={`url(#${id}-paint1)`}
       />
       <path
         d="M12.1213 29.6777V25.4351L16.364 29.6777H12.1213Z"
-        fill="url(#paint2_linear_52206_162198)"
+        fill={`url(#${id}-paint2)`}
       />
       <path
         d="M12.1213 29.6776V28.2634L13.5356 29.6776H12.1213Z"
@@ -33,11 +42,11 @@ export const NotepadWeights: CustomIconWeights = /* @__PURE__ */ new Map([
         width="6"
         height="3"
         transform="rotate(45 23.4351 14.1213)"
-        fill="url(#paint3_linear_52206_162198)"
+        fill={`url(#${id}-paint3)`}
       />
       <defs>
         <linearGradient
-          id="paint0_linear_52206_162198"
+          id={`${id}-paint0`}
           x1="16"
           y1="3"
           x2="16"
@@ -48,7 +57,7 @@ export const NotepadWeights: CustomIconWeights = /* @__PURE__ */ new Map([
           <stop offset="1" stopColor="#E8DEF2" />
         </linearGradient>
         <linearGradient
-          id="paint1_linear_52206_162198"
+          id={`${id}-paint1`}
           x1="27.6777"
           y1="14.1213"
           x2="14.2427"
@@ -59,7 +68,7 @@ export const NotepadWeights: CustomIconWeights = /* @__PURE__ */ new Map([
           <stop offset="1" stopColor="#FF8749" />
         </linearGradient>
         <linearGradient
-          id="paint2_linear_52206_162198"
+          id={`${id}-paint2`}
           x1="14.2427"
           y1="27.5564"
           x2="12.1213"
@@ -70,7 +79,7 @@ export const NotepadWeights: CustomIconWeights = /* @__PURE__ */ new Map([
           <stop offset="1" stopColor="#DE8893" />
         </linearGradient>
         <linearGradient
-          id="paint3_linear_52206_162198"
+          id={`${id}-paint3`}
           x1="23.7487"
           y1="15.0503"
           x2="30.8198"
@@ -82,6 +91,10 @@ export const NotepadWeights: CustomIconWeights = /* @__PURE__ */ new Map([
           <stop offset="1" stopColor="#EADEFC" />
         </linearGradient>
       </defs>
-    </g>,
-  ],
+    </g>
+  )
+}
+
+export const NotepadWeights: CustomIconWeights = /* @__PURE__ */ new Map([
+  ['regular', <NotepadRegular key="NotepadRegular" />],
 ])

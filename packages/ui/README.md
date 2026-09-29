@@ -329,7 +329,7 @@ Data, overlay and navigation components:
 - **Calendar:** today's date is static black on Secondary/Indigo (10.15:1). Figma uses white, which is 2.07:1 (1.4.3). Outside days (the previous and next month's dates in the grid) are real, selectable dates, not decoration, so they get the full 4.5:1: `text-secondary` instead of Black/40%.
 - **Scheduler:** today's day label is static black on Secondary/Indigo (was white, 2.06:1); event times are 60% static black on Color 2 (5.5:1) instead of 40% (1.4.3).
 - **Sidebar:** group labels (`SidebarGroupLabel`) are `black-80` (12.6:1 light, 8.7:1 dark). Figma's Black/40% is 2.85:1 at 14px (1.4.3).
-- **Toast:** toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer and an action doesn't vanish on a timer (2.2.1). The Figma toast has no close button.
+- **Toast:** a toast with an `action` stays until it is dismissed (its `duration` defaults to `Number.POSITIVE_INFINITY`, not the Toaster's 3 seconds, unless you set one), so the action doesn't vanish on a timer (2.2.1). Toasts with an `action` or an infinite `duration` get a close button by default (`closable`), so they can be dismissed with a pointer. The Figma toast has no close button.
 
 Known gaps (Figma values kept for now): the Black/20% rings of unchecked Checkbox and Radio and the 0.5px Black/20% Input stroke (1.6:1), the Switch's white thumb on the dark-mode indigo track (2.07:1), the Black/20% placeholders of the native text fields (`Input`, `InputSmall`, `Textarea`, `Search`: axe doesn't check `::placeholder`, and they are never the field's only label), the 40% Link arrow and external icon, and the Black/4% highlight of menu items.
 

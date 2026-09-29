@@ -37,6 +37,10 @@ const getSvg = (container: HTMLElement) => {
   return svg
 }
 
+/** The markup of an icon without its generated ids, which differ per render. */
+const getShape = (container: HTMLElement) =>
+  getSvg(container).innerHTML.replace(/(id="|url\(#)[^")]+/g, '$1')
+
 describe('icons', () => {
   it('exports all 49 icons', () => {
     expect(icons).toHaveLength(49)
@@ -56,16 +60,36 @@ describe('icons', () => {
   it.each(weightCases)(
     '%s falls back to regular for weights it does not define',
     (_name, Icon, weights) => {
-      const regular = getSvg(render(<Icon />).container).innerHTML
+      const regular = getShape(render(<Icon />).container)
       for (const weight of Object.values(lib.ICON_WEIGHTS)) {
-        const html = getSvg(
-          render(<Icon weight={weight} />).container,
-        ).innerHTML
+        const html = getShape(render(<Icon weight={weight} />).container)
         if (weights.has(weight)) expect(html.length).toBeGreaterThan(0)
         else expect(html).toBe(regular)
       }
     },
   )
+
+  it('gives every icon on the page its own gradient ids', () => {
+    const { container } = render(
+      <>
+        <lib.NotepadIcon />
+        <lib.NotepadIcon size={48} />
+      </>,
+    )
+
+    const ids = Array.from(container.querySelectorAll('[id]'), (el) => el.id)
+    expect(ids).toHaveLength(8)
+    expect(new Set(ids).size).toBe(ids.length)
+    // Each fill points at a gradient of its own icon.
+    for (const svg of container.querySelectorAll('svg')) {
+      for (const shape of svg.querySelectorAll('[fill^="url(#"]')) {
+        const id = shape.getAttribute('fill')?.slice(5, -1) ?? ''
+        expect(svg.querySelector(`[id="${id}"]`)?.tagName).toBe(
+          'linearGradient',
+        )
+      }
+    }
+  })
 
   it('falls back to the regular weight when a weight is missing', () => {
     const { AddIcon } = lib

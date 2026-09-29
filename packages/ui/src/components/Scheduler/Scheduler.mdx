@@ -43,35 +43,37 @@ const events: CalendarEvent[] = [
 1. **Grid**: a `<div>` CSS grid with a 59px hour column and seven 100px day columns, 16px apart, and 48px rows. Other `div` props, `className` and `style` go to it.
 2. **Day labels**: the header row, the short weekday and the day number in 12px `text-secondary`, with radius 4 and padding 2 / 4px. Today's label has a Secondary/Indigo fill with static black text.
 3. **Day separators**: Black/4% vertical lines between the days.
-4. **Hour labels**: 12px `text-secondary` hours in the locale's clock ("9 AM" in `en-US`). The rows run from 7 to 20 (8 pm) and grow to fit the events' start and end hours.
-5. **Hour cells**: one per day and hour. A click calls `onDateClick`.
-6. **Events** (`events`): Color 2 blocks with radius 4 and 4px padding: the title (truncated) and the start and end times in 12px static black, the times at 60%. An event sits in the cell of its start hour, moved down by its minutes, and is as tall as its duration (48px per hour, at least 48px). A click calls `onEventClick` and opens a [DropdownMenu](?path=/docs/components-dropdownmenu--docs) with `dropdownContentRenderer(event)`, or the title without one.
-7. **Current time**: a Primary [Tag](?path=/docs/components-tag--docs) with the time and a Primary line across the grid, while the current time is within the grid's hours.
+4. **Hour labels**: 12px `text-secondary` hours in the locale's clock ("9 AM" in `en-US`). The rows run from 7 to 20 (8 pm) and grow to fit the events of the shown week (events of other weeks don't change them). An event that ends on the hour doesn't add that hour's row, and the rows make room for an event's minimum 48px block. The labels don't depend on today's date, so a daylight saving change doesn't repeat or skip one.
+5. **Hour cells**: one per day and hour, each a `<button>` that fills the cell. A click calls `onDateClick` with the start of that hour.
+6. **Events** (`events`): Color 2 blocks with radius 4 and 4px padding: the title (truncated) and the start and end times in 12px static black, the times at 60%. An event sits in the cell of its start hour, moved down by its minutes, and is as tall as the hours it covers on the clock (48px per hour, at least 48px), so a daylight saving change doesn't shrink or stretch it. An event that runs past midnight is cut at the end of its day and continues from midnight on the next day, and an event that started in the previous week shows its part in this one; one that ends exactly at midnight stays on its own day. A click calls `onEventClick` and opens a [DropdownMenu](?path=/docs/components-dropdownmenu--docs) with `dropdownContentRenderer(event)`, or the title without one.
+7. **Current time**: a Primary [Tag](?path=/docs/components-tag--docs) with the time and a Primary line across the grid, when the shown week contains today and the current time is within the grid's hours.
 
 ## Variants
 
-`startOfWeek` sets the first day of the week, from `0` (Sunday) to `6`; the default is `1` (Monday).
+`startOfWeek` sets the first day of the week, from `0` (Sunday) to `6`; the default is `1` (Monday). Like Calendar's `weekStartsOn`, it doesn't follow the `SnowUIProvider` locale. The grid always shows the week that contains `currentDate`, even when `currentDate` comes before `startOfWeek` in its week (a Sunday, when weeks start on Monday).
 
 <Canvas of={SchedulerStories.WithWeekStartsFromSunday} />
 
 ### Events
 
-An event is a `CalendarEvent`. Scheduler reads `id`, `title`, `date` (the start), `endsAt` and the optional `dropdownContentRenderer(event)`, which returns the content of the event's menu (details, "Edit" and "Share" actions…). The type's other fields (`description`, `participants`, `location`, `url`…) are for your own renderers. Events that start in the same hour of the same day overlap: each one is as wide as the cell.
+An event is a `CalendarEvent`. Scheduler reads `id`, `title`, `date` (the start), `endsAt` and the optional `dropdownContentRenderer(event)`, which returns the content of the event's menu (details, "Edit" and "Share" actions…). The type's other fields (`description`, `participants`, `location`, `url`…) are for your own renderers. Events that start in the same hour of the same day overlap: each one is as wide as the cell. An event whose `endsAt` is before its `date` is shown with no duration (the minimum 48px block).
+
+<Canvas of={SchedulerStories.WithEvents} />
 
 ## States
 
 - **Today:** the day label on Secondary/Indigo.
 - **Keyboard focus:** the `focus-ring` utility on hour cells and events.
 - **Empty:** without events the grid still shows the hours from 7 to 20.
-- **Now:** the current-time tag and line, placed by the hour and minute at render.
+- **Now:** the current-time tag and line, placed by the hour and minute at render, only in the week that contains today.
 
 Cells and events have no hover style.
 
 ## Accessibility
 
-- Every hour cell is a `div` with `role="button"` in the tab order, named by its date and time in the locale (`toLocaleString`). Enter or Space calls `onDateClick`. The default grid has 98 cells (7 days × 14 hours), so a keyboard user tabs through all of them to pass it.
-- Every event is a `div` with `role="button"` in the tab order, inside its cell; its name is its text (the title and times). A click, Enter or Space calls `onEventClick` and opens its menu; in the menu the arrow keys move and Escape closes it and returns focus.
-- The events are buttons inside the cell buttons: nested interactive controls, which some assistive technologies don't expose.
+- Every hour cell has a `<button type="button">` that fills it, named by the date and time of the start of its hour in the locale (`toLocaleString`). A click, Enter or Space calls `onDateClick`. The default grid has 98 cells (7 days × 14 hours), so a keyboard user tabs through all of them to pass it.
+- Every event is a `div` with `role="button"` in the tab order, next to its cell's button (after it in the tab order); its name is its text (the title and times). An event that runs past midnight is a button on each day. A click, Enter or Space calls `onEventClick` and opens its menu; in the menu the arrow keys move and Escape closes it and returns focus.
+- The events are siblings of the cell buttons, not inside them, so no control is nested in another (a control inside a button isn't exposed to assistive technologies).
 - The grid has no table or grid semantics: the day and hour labels are plain text, and the cells' names carry the date and time.
 
 Deviations from the Figma kit (the full table is in the package README):
@@ -91,7 +93,7 @@ Deviations from the Figma kit (the full table is in the package README):
 
 ## Controlled props
 
-`currentDate` is controlled only: the grid shows the week that contains it, starting on `startOfWeek`. Scheduler has no navigation of its own, so move `currentDate` by seven days from your own previous / next buttons. `onDateClick` and `onEventClick` are required. `onDateClick` gets the cell's day with its hour set; the minutes and seconds come from `currentDate`. (A `defaultDate` and optional handlers need a breaking change, planned for the next major version.)
+`currentDate` is controlled only: the grid shows the week that contains it, starting on `startOfWeek`. Scheduler has no navigation of its own, so move `currentDate` by seven days from your own previous / next buttons. `onDateClick` and `onEventClick` are required. `onDateClick` gets the start of the clicked hour: the cell's day at `hh:00:00.000`, whatever the time of `currentDate`. (A `defaultDate` and optional handlers need a breaking change, planned for the next major version.)
 
 ## Do and don't
 
@@ -99,7 +101,7 @@ Deviations from the Figma kit (the full table is in the package README):
 <Do>
 
 - Keep `currentDate` in state and change it by a week from your own buttons.
-- Give each event an `endsAt` after its `date`: the block's height is the duration.
+- Give each event an `endsAt` after its `date`: the block's height is the duration on the clock.
 - Use `dropdownContentRenderer` for an event's details and actions.
 - Set a `SnowUIProvider` locale so the labels match the page's language.
 

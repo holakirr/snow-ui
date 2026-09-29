@@ -29,8 +29,9 @@ export type SnowUIProviderProps = {
   messages?: MessagesOverrides
   /**
    * The date-fns locale (or a react-day-picker locale, which adds its own
-   * labels) for dates: `Calendar` month and weekday names, week start and
-   * day labels, `Scheduler` headers and times.
+   * labels) for dates: `Calendar` month and weekday names and day labels,
+   * `Scheduler` headers and times. Not the first day of the week: both
+   * start on Monday unless you set their `weekStartsOn` / `startOfWeek`.
    * @default enUS (date-fns)
    */
   locale?: Locale

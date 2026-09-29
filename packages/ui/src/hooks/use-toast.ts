@@ -17,6 +17,13 @@ type ToasterToast = ToastProps & {
   description?: React.ReactNode
   action?: ToastActionElement
   /**
+   * Time in milliseconds before the toast closes (`Number.POSITIVE_INFINITY`
+   * keeps it until it is dismissed). Defaults to the `<Toaster>`'s
+   * `duration` (3000), or to `Number.POSITIVE_INFINITY` for a toast with an
+   * `action`, so the action doesn't vanish before the user reaches it.
+   */
+  duration?: number
+  /**
    * Shows a close button. The Figma toast has none: it closes itself, on
    * swipe or with Escape. Defaults to `true` for toasts with an `action` or
    * an infinite `duration`, `false` otherwise.

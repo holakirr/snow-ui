@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { addDays, setHours, setMinutes, startOfWeek } from 'date-fns'
 
 import type { CalendarEvent } from '../../types'
 import { Button } from '../Button'
@@ -7,24 +8,34 @@ import { Sheet, SheetContent, SheetTrigger } from '../Sheet'
 import { Typography } from '../Text'
 import { Scheduler } from './Scheduler'
 
+/**
+ * A time in the current week (`day` 0 is its Monday), so the events are in
+ * the week the stories show (`currentDate: new Date()`).
+ */
+const thisWeek = (day: number, hours: number, minutes = 0) =>
+  setMinutes(
+    setHours(addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), day), hours),
+    minutes,
+  )
+
 const sampleEvents: CalendarEvent[] = [
   {
     id: '0',
     title: 'Standup Very Long Title',
-    date: new Date(2025, 0, 26, 9, 30), // Jan 23, 2025, 9:00
-    endsAt: new Date(2025, 0, 23, 10, 30), // Jan 23, 2025, 9:30
+    date: thisWeek(6, 9, 30), // Sunday, 9:30
+    endsAt: thisWeek(6, 10, 30), // Sunday, 10:30
   },
   {
     id: '1',
     title: 'Team Meeting',
-    date: new Date(2025, 0, 24, 10), // Jan 24, 2025, 10:00
-    endsAt: new Date(2025, 0, 24, 11, 30), // Jan 24, 2025, 11:00
+    date: thisWeek(4, 10), // Friday, 10:00
+    endsAt: thisWeek(4, 11, 30), // Friday, 11:30
   },
   {
     id: '2',
     title: 'Lunch Break',
-    date: new Date(2025, 0, 23, 12), // Jan 23, 2025, 12:00
-    endsAt: new Date(2025, 0, 23, 13, 30), // Jan 23, 2025, 13:00
+    date: thisWeek(3, 12), // Thursday, 12:00
+    endsAt: thisWeek(3, 13, 30), // Thursday, 13:30
   },
 ]
 
@@ -64,8 +75,8 @@ export const MultipleEventsPerHour: Story = {
       {
         id: '3',
         title: 'Quick Sync',
-        date: new Date(2025, 0, 24, 10, 0),
-        endsAt: new Date(2025, 0, 24, 10, 50),
+        date: thisWeek(4, 10), // Friday, 10:00
+        endsAt: thisWeek(4, 10, 50), // Friday, 10:50
         dropdownContentRenderer: ({ title, date, id, endsAt }) => (
           <div className="flex flex-col items-start gap-2">
             <div className="flex flex-col">

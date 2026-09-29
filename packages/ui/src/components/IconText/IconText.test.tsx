@@ -45,6 +45,10 @@ describe('IconText', () => {
     expect(button).toHaveAttribute('type', 'button')
     expect(button).toHaveClass('p-2', 'hover:bg-black-4')
     expect(button).not.toHaveAttribute('data-active')
+    // The keyboard focus indicator of the other controls, not the faint
+    // Figma ring without an outline.
+    expect(button).toHaveClass('focus-ring')
+    expect(button.className).not.toMatch(/focus-visible:(outline-none|ring)/)
   })
 
   it('keeps the fill when active', async () => {
@@ -52,7 +56,16 @@ describe('IconText', () => {
 
     const button = screen.getByRole('button', { name: 'Text' })
     expect(button).toHaveAttribute('data-active', 'true')
-    expect(button).toHaveClass('bg-black-4')
+    expect(button).toHaveClass('bg-black-4', 'focus-ring')
+  })
+
+  it('shows the focus-ring on links and buttons that are not interactive', () => {
+    render(
+      <IconText asChild icon={icon}>
+        <a href="#home">Home</a>
+      </IconText>,
+    )
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveClass('focus-ring')
   })
 
   it('renders links with aria-current', async () => {

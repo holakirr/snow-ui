@@ -123,7 +123,7 @@ The invalid state is `aria-invalid="true"` on the control, and the fields style 
 
 - **In a form:** `FormItem` takes `error` (a message; truthy marks the field invalid) or `invalid`. `FormControl` then sets `aria-invalid` and an `aria-describedby` with the rendered description and message on the control, `FormLabel` turns `red-text`, and `FormMessage` shows the error as an alert (`role="alert"`).
 - **Outside a form:** set `aria-invalid` on the control yourself.
-- **Your own fields:** `invalidInputClasses` is the text fields' invalid stroke, to use on an element of your own.
+- **Your own fields:** `aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid` gives an element of your own the text fields' invalid stroke; the `control-border-invalid` token follows the contrast level.
 
 ## Styling hooks: `data-*` attributes
 

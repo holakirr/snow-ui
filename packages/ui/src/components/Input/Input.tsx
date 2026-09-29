@@ -48,6 +48,9 @@ export const staticInputClasses =
  * a 1px `control-border-invalid` stroke in every state: Secondary/Red (3.36:1
  * on white), `red-text` with more contrast. The design has no error state;
  * the error text is the `FormMessage`.
+ *
+ * Shared by the fields, not exported from the package: for a field of your
+ * own, use these utilities directly.
  */
 export const invalidInputClasses =
   'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid'

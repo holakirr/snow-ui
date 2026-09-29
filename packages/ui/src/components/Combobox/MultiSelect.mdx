@@ -1,0 +1,135 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as MultiSelectStories from './MultiSelect.stories'
+
+<Meta of={MultiSelectStories} />
+
+<Title />
+
+<FigmaLinks label="Input/Form page" note="The kit has no multi-select: the field is the Figma Input with Tags, the list the Figma Popover (as in Select)." />
+
+MultiSelect picks several values from a list that filters as the user types. The picked options show as removable [Tags](?path=/docs/components-tag--docs) in the field. It is a [Combobox](?path=/docs/components-combobox--docs) with a multi-selectable listbox: the same field, list, options, filtering, server results and keyboard, except that picking toggles an option and the list stays open.
+
+```tsx
+import { Label, MultiSelect, type ComboboxOption } from '@holakirr/snow-ui'
+
+const skills: ComboboxOption[] = [
+  { value: 'react', label: 'React' },
+  { value: 'typescript', label: 'TypeScript', keywords: ['ts'] },
+]
+
+<Label htmlFor="skills">Skills</Label>
+<MultiSelect id="skills" options={skills} value={picked} onValueChange={setPicked} placeholder="Add skills" />
+```
+
+<Primary />
+
+## When to use
+
+- Several values out of a long list: skills, labels, recipients, countries.
+- Tags the user may add to (`creatable`).
+
+## When not to use
+
+- One value: [Combobox](?path=/docs/components-combobox--docs) or [Select](?path=/docs/components-input-select--docs).
+- A few options that should stay visible: a group of [Checkboxes](?path=/docs/components-input-checkbox--docs) or a multiple [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+
+## Anatomy
+
+1. **Field**: the Figma Input field, at least 44px high; it grows as the tags wrap onto more lines (4px apart). `className` and `style` style it.
+2. **Tags**: one static [Tag](?path=/docs/components-tag--docs) per picked option, in the order they were picked, each with a remove button.
+3. **Input**: an `<input role="combobox">` after the tags, at least 64px wide, with the text being typed. The `placeholder` shows while nothing is picked.
+4. **Spinner**, **clear button** and **chevron**: as in Combobox. The clear button removes every tag.
+5. **List**: as in Combobox; every picked option has a check at the end.
+
+## States
+
+As in [Combobox](?path=/docs/components-combobox--docs#states): hover, focus and open, highlighted, static (`readOnly`: the tags have no remove buttons), invalid, disabled, empty and loading.
+
+<Canvas of={MultiSelectStories.Open} />
+
+<Canvas of={MultiSelectStories.ManyValues} />
+
+<Canvas of={MultiSelectStories.States} />
+
+Dark theme, open: [OpenDark story](?path=/story/components-multiselect--open-dark).
+
+## Picking and removing
+
+- Enter or a click toggles the highlighted option: it adds it, or removes it when it is picked. The list stays open and the query clears, so the user can go on typing.
+- **Backspace** in the empty field removes the last tag.
+- Each tag's remove button removes it and puts the focus back in the field.
+- `creatable` adds 'Create "query"' as in Combobox; `onCreate(query)` is called and the query becomes a value.
+
+<Canvas of={MultiSelectStories.Creatable} />
+
+## Accessibility
+
+- The field is an `<input role="combobox">`; the list is a `listbox` with `aria-multiselectable="true"`, and each option is `aria-selected` `true` or `false`. Focus stays in the field; the highlighted option is its `aria-activedescendant`.
+- The picked options describe the field ("Selected: React, TypeScript", through `aria-describedby`, next to `FormControl`'s description), so screen readers read them when the field gets focus.
+- Removing a tag is announced ("React removed") in a visually hidden `status` region, like the empty and loading messages.
+- Each tag's remove button is a tab stop named "Remove tag React" (`messages.tag.remove`).
+- **Keyboard:** as in [Combobox](?path=/docs/components-combobox--docs#accessibility), with these differences:
+
+| Key | Does |
+| --- | --- |
+| Enter | adds or removes the highlighted option; the list stays open |
+| Backspace | in the empty field: removes the last tag |
+| Escape | closes the list (it doesn't clear the tags) |
+
+- `required` sets `aria-required` on the input, not the native `required` (the text stays empty while tags are picked).
+- `name` adds one hidden input per value for native form submission.
+
+## Localization and RTL
+
+- `messages.combobox` holds the strings: `empty`, `loading`, `clear` and `create(query)` as in Combobox, plus `selected(labels)` ("Selected: …") and `removed(label)` ("… removed"). The tags' remove buttons use `messages.tag.remove(label)`.
+- In right-to-left text the tags flow from the right, and the icons and check marks are on the left.
+
+<Canvas of={MultiSelectStories.RTL} />
+
+## Theming
+
+As in Combobox: the list renders in a portal at the end of `<body>` and takes the theme of `<html>`.
+
+## Forms
+
+Bind `value` (an array of strings) and `onValueChange`; pass `field.ref`, `field.onBlur`, `field.name` and `field.disabled` as they are. With a schema, require a count: `z.array(z.string()).min(1)`.
+
+<Canvas of={MultiSelectStories.InForm} />
+
+## Controlled and uncontrolled
+
+Pass `defaultValue` (an array) to leave the values to the field, or `value` with `onValueChange(values)` to control them. The list: `defaultOpen`, or `open` with `onOpenChange`.
+
+## Composition
+
+MultiSelect has no `asChild`: `className` and `style` go to the field, `inputClassName` and the input props to the `<input>`, `contentClassName` to the list.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Label the field and say what to add in the placeholder: "Add skills".
+- Keep option labels short: they become tags.
+- Validate the number of values with the form, and say it in the description.
+
+</Do>
+<Dont>
+
+- Don't use it for one value.
+- Don't expect Escape to clear the tags: it closes the list.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Combobox](?path=/docs/components-combobox--docs): one value, and the full keyboard and filtering reference.
+- [Tag](?path=/docs/components-tag--docs): the picked options.
+- [Checkbox](?path=/docs/components-input-checkbox--docs): a few options, all visible.
+- [Form](?path=/docs/components-form--docs): label, description and error message.
+
+## Props
+
+<Controls />

@@ -55,6 +55,14 @@ export const ruMessages: Messages = {
     value: 'Значение',
     point: 'Точка',
   },
+  combobox: {
+    empty: 'Ничего не найдено',
+    loading: 'Загрузка',
+    clear: 'Очистить',
+    create: (query) => `Создать «${query}»`,
+    selected: (labels) => `Выбрано: ${labels.join(', ')}`,
+    removed: (label) => `Удалено: ${label}`,
+  },
   commandPalette: {
     label: 'Поиск',
     placeholder: 'Поиск',

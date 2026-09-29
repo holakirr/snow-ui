@@ -9,10 +9,10 @@
  * wins over the provider.
  *
  * The namespaces added in 5.1 (`alert`, `alertDialog`, `avatarGroup`,
- * `charts`, `progress`, `spinner`) are optional, so a translation typed as
- * `Messages` before they existed still compiles; the English defaults fill
- * them in, and `useMessages()` always returns every namespace
- * (`Required<Messages>`). They become required in 6.0.
+ * `charts`, `combobox`, `progress`, `spinner`) are optional, so a
+ * translation typed as `Messages` before they existed still compiles; the
+ * English defaults fill them in, and `useMessages()` always returns every
+ * namespace (`Required<Messages>`). They become required in 6.0.
  */
 export type Messages = {
   alert?: {
@@ -88,6 +88,21 @@ export type Messages = {
     value: string
     /** Header of the first column of `Sparkline`'s data table (`categoryLabel`). */
     point: string
+  }
+  /** `Combobox` and `MultiSelect` (5.1 and later). */
+  combobox?: {
+    /** Shown and announced when no option matches. */
+    empty: string
+    /** Shown and announced while `loading`. */
+    loading: string
+    /** The clear button. */
+    clear: string
+    /** The option that creates one from the query (`creatable`). */
+    create: (query: string) => string
+    /** `MultiSelect`: describes the field with the labels of the picked options. */
+    selected: (labels: string[]) => string
+    /** `MultiSelect`: announced when a tag is removed. */
+    removed: (label: string) => string
   }
   commandPalette: {
     /** Accessible name of the dialog, the search field and the list. */
@@ -210,6 +225,14 @@ export const defaultMessages: Required<Messages> = {
     navigation: 'Data points',
     value: 'Value',
     point: 'Point',
+  },
+  combobox: {
+    empty: 'No results',
+    loading: 'Loading',
+    clear: 'Clear',
+    create: (query) => `Create "${query}"`,
+    selected: (labels) => `Selected: ${labels.join(', ')}`,
+    removed: (label) => `${label} removed`,
   },
   commandPalette: {
     label: 'Search',

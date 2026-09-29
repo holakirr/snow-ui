@@ -8,7 +8,7 @@ import {
   weekly,
   weeklyConfig,
 } from './test/fixtures'
-import { chartSurface, visibleTooltip } from './test/play'
+import { chartSurface, endInteraction, visibleTooltip } from './test/play'
 
 const meta: Meta<typeof AreaChart> = {
   title: 'Charts/AreaChart',
@@ -62,6 +62,9 @@ export const TotalUsers: Story = {
     // Two areas: the second has no fill (opacity 0).
     const stops = canvasElement.querySelectorAll('linearGradient stop')
     expect(stops.length).toBeGreaterThan(0)
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 

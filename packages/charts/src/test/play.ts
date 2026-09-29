@@ -1,5 +1,8 @@
 import { expect, waitFor, within } from 'storybook/test'
 
+/** Charts draw once their font has loaded (see fonts.ts): give them time. */
+export const DRAWN = { timeout: 5000 }
+
 /** The chart's focusable surface (Recharts' accessibility layer). */
 export const chartSurface = async (canvasElement: HTMLElement) => {
   const surface = await waitFor(() => {
@@ -8,7 +11,7 @@ export const chartSurface = async (canvasElement: HTMLElement) => {
     )
     expect(element).not.toBeNull()
     return element as SVGSVGElement
-  })
+  }, DRAWN)
   return surface
 }
 
@@ -24,7 +27,7 @@ export const visibleTooltip = (canvasElement: HTMLElement) =>
       (_, element) => element?.getAttribute('data-slot') === 'chart-tooltip',
     )
     return tooltip
-  })
+  }, DRAWN)
 
 /**
  * Moves the pointer over an element of the chart (a bar, a point): Recharts
@@ -63,4 +66,21 @@ export const leaveChart = (canvasElement: HTMLElement) => {
       relatedTarget: canvasElement.ownerDocument.body,
     }),
   )
+}
+
+/**
+ * Ends a story's interaction: blurs the chart and moves the pointer out, and
+ * waits until every tooltip is hidden.
+ */
+export const endInteraction = async (canvasElement: HTMLElement) => {
+  const active = canvasElement.ownerDocument.activeElement
+  if (active && canvasElement.contains(active)) (active as HTMLElement).blur()
+  leaveChart(canvasElement)
+  await waitFor(() => {
+    for (const wrapper of canvasElement.querySelectorAll<HTMLElement>(
+      '.recharts-tooltip-wrapper',
+    )) {
+      expect(getComputedStyle(wrapper).visibility).toBe('hidden')
+    }
+  }, DRAWN)
 }

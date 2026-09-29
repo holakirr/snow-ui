@@ -3,7 +3,12 @@ import { expect, waitFor, within } from 'storybook/test'
 import { DonutChart } from './DonutChart'
 import { DashboardCard } from './test/DashboardCard'
 import { trafficByLocation, trafficByLocationConfig } from './test/fixtures'
-import { hoverChartAt, leaveChart, visibleTooltip } from './test/play'
+import {
+  DRAWN,
+  endInteraction,
+  hoverChartAt,
+  visibleTooltip,
+} from './test/play'
 
 const meta: Meta<typeof DonutChart> = {
   title: 'Charts/DonutChart',
@@ -51,7 +56,11 @@ export const TrafficByLocation: Story = {
     expect(items[0]).toHaveTextContent('United States52.1%')
     // The ring is hidden from assistive technology and not a tab stop; the
     // legend and the table carry the values.
-    const svg = canvasElement.querySelector('svg.recharts-surface')
+    const svg = await waitFor(() => {
+      const found = canvasElement.querySelector('svg.recharts-surface')
+      expect(found).not.toBeNull()
+      return found
+    }, DRAWN)
     expect(svg).toHaveAttribute('aria-hidden', 'true')
     expect(svg).not.toHaveAttribute('tabindex')
     const table = within(
@@ -65,11 +74,13 @@ export const TrafficByLocation: Story = {
       const found = canvasElement.querySelectorAll('.recharts-pie-sector path')
       expect(found).toHaveLength(4)
       return found
-    })
+    }, DRAWN)
     hoverChartAt(canvasElement, sectors[1] as Element)
     const tooltip = await visibleTooltip(canvasElement)
     await waitFor(() => expect(tooltip).toHaveTextContent('Canada22.8'))
-    leaveChart(canvasElement)
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 

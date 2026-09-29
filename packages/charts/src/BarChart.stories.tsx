@@ -10,8 +10,9 @@ import {
 } from './test/fixtures'
 import {
   chartSurface,
+  DRAWN,
+  endInteraction,
   hoverChartAt,
-  leaveChart,
   visibleTooltip,
 } from './test/play'
 
@@ -71,7 +72,7 @@ export const TrafficByDevice: Story = {
       )
       expect(found).toHaveLength(6)
       return found
-    })
+    }, DRAWN)
     // Each bar has its device's colour.
     expect(bars[0]).toHaveAttribute('fill', 'var(--chart-Linux)')
     expect(bars[3]).toHaveAttribute('fill', 'var(--chart-Windows)')
@@ -84,7 +85,9 @@ export const TrafficByDevice: Story = {
     expect(swatch.style.getPropertyValue('--snow-chart-swatch')).toBe(
       'var(--chart-Windows)',
     )
-    leaveChart(canvasElement)
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 
@@ -126,6 +129,9 @@ export const ProjectionsVsActuals: Story = {
     await waitFor(() => expect(tooltip).toHaveTextContent('Feb'))
     expect(tooltip).toHaveTextContent('Actual22,500')
     expect(tooltip).toHaveTextContent('Rest of projection3,750')
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 
@@ -161,14 +167,16 @@ export const Grouped: Story = {
       )
       expect(found).toHaveLength(12)
       return found
-    })
+    }, DRAWN)
     hoverChartAt(canvasElement, bars[1] as Element)
     const tooltip = await visibleTooltip(canvasElement)
     expect(tooltip).toHaveAttribute('data-variant', 'light')
     await waitFor(() => expect(tooltip).toHaveTextContent('Feb'))
     expect(tooltip).toHaveTextContent('Desktop30,500')
     expect(tooltip).toHaveTextContent('Mobile20,000')
-    leaveChart(canvasElement)
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 
@@ -208,7 +216,7 @@ export const HorizontalRTL: Story = {
       )
       expect(found).toHaveLength(6)
       return found
-    })
+    }, DRAWN)
     const plot = (
       canvasElement.querySelector('[data-slot="chart-plot"]') as Element
     ).getBoundingClientRect()
@@ -233,7 +241,7 @@ export const RTL: Story = {
       ]
       expect(found).toHaveLength(6)
       return found
-    })
+    }, DRAWN)
     const left = (text: string) =>
       (
         labels.find((label) => label.textContent === text) as Element

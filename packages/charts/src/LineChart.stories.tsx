@@ -10,7 +10,13 @@ import {
   weekly,
   weeklyConfig,
 } from './test/fixtures'
-import { chartSurface, hoverChartAt, visibleTooltip } from './test/play'
+import {
+  chartSurface,
+  DRAWN,
+  endInteraction,
+  hoverChartAt,
+  visibleTooltip,
+} from './test/play'
 
 const usd = (value: number) =>
   new Intl.NumberFormat('en-US', {
@@ -97,6 +103,9 @@ export const KeyboardNavigation: Story = {
         'Feb: Current week $16,000, Previous week $11,000',
       ),
     )
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 
@@ -110,11 +119,14 @@ export const Hover: Story = {
       )
       expect(found.length).toBeGreaterThan(3)
       return found
-    })
+    }, DRAWN)
     hoverChartAt(canvasElement, ticks[3] as Element)
     const tooltip = await visibleTooltip(canvasElement)
     await waitFor(() => expect(tooltip).toHaveTextContent('Apr'))
     expect(tooltip).toHaveTextContent('$21,000')
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 
@@ -153,6 +165,9 @@ export const Projection: Story = {
     await waitFor(() => expect(tooltip).toHaveTextContent('Apr'))
     expect(within(tooltip).getAllByRole('listitem')).toHaveLength(2)
     expect(tooltip).toHaveTextContent('$21,000')
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 
@@ -193,7 +208,7 @@ export const RTL: Story = {
       ]
       expect(found.length).toBe(6)
       return found
-    })
+    }, DRAWN)
     const x = (label: Element) => label.getBoundingClientRect().left
     // January is on the right, June on the left.
     expect(
@@ -218,6 +233,9 @@ export const RTL: Story = {
     await userEvent.keyboard('{ArrowLeft}')
     const tooltip = await visibleTooltip(canvasElement)
     await waitFor(() => expect(tooltip).toHaveTextContent('Feb'))
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 
@@ -298,7 +316,7 @@ export const Locale: Story = {
       ].map((text) => text.textContent)
       expect(found.length).toBeGreaterThan(2)
       return found
-    })
+    }, DRAWN)
     expect(yTicks.some((tick) => /тыс/.test(tick ?? ''))).toBe(true)
   },
 }

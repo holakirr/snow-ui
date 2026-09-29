@@ -16,7 +16,12 @@ import {
   YAxis,
 } from './recharts'
 import { DashboardCard } from './test/DashboardCard'
-import { chartSurface, visibleTooltip } from './test/play'
+import {
+  chartSurface,
+  DRAWN,
+  endInteraction,
+  visibleTooltip,
+} from './test/play'
 
 const meta: Meta<typeof ChartContainer> = {
   title: 'Charts/ChartContainer',
@@ -142,6 +147,9 @@ export const Composable: Story = {
     expect(
       within(table).getByRole('columnheader', { name: 'Month' }),
     ).toBeInTheDocument()
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 
@@ -149,6 +157,78 @@ export const ComposableDark: Story = {
   ...Composable,
   globals: { theme: 'dark' },
   play: undefined,
+}
+
+/**
+ * The two tooltip variants, open without interaction (Recharts'
+ * `defaultIndex`): `dark`, the Figma chart tooltip, and `light`, the popover
+ * glass.
+ */
+export const Tooltips: Story = {
+  render: () => (
+    <div className="flex gap-6">
+      {(['dark', 'light'] as const).map((variant, index) => (
+        <DashboardCard
+          key={variant}
+          title={`Visitors (${variant})`}
+          width={360}
+        >
+          {(titleId) => (
+            <ChartContainer
+              config={config}
+              aria-labelledby={titleId}
+              data={data}
+              categoryKey="month"
+              height={200}
+            >
+              <BarChart
+                data={data}
+                margin={{ top: 8, right: 0, bottom: 0, left: 0 }}
+              >
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={tick}
+                  tickMargin={12}
+                />
+                <Bar
+                  dataKey="desktop"
+                  fill={seriesColor('desktop')}
+                  radius={8}
+                  maxBarSize={20}
+                />
+                <Bar
+                  dataKey="mobile"
+                  fill={seriesColor('mobile')}
+                  radius={8}
+                  maxBarSize={20}
+                />
+                <ChartTooltip
+                  defaultIndex={index + 1}
+                  content={<ChartTooltipContent variant={variant} />}
+                  cursor={{ fill: 'var(--color-black-4)', stroke: 'none' }}
+                />
+              </BarChart>
+            </ChartContainer>
+          )}
+        </DashboardCard>
+      ))}
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const tooltips = await waitFor(() => {
+      const found = canvasElement.querySelectorAll(
+        '[data-slot="chart-tooltip"]',
+      )
+      expect(found).toHaveLength(2)
+      return found
+    }, DRAWN)
+    expect(tooltips[0]).toHaveAttribute('data-variant', 'dark')
+    expect(tooltips[0]).toHaveTextContent('FebDesktop30,500Mobile20,000')
+    expect(tooltips[1]).toHaveAttribute('data-variant', 'light')
+    expect(tooltips[1]).toHaveTextContent('MarDesktop23,700Mobile12,000')
+  },
 }
 
 /** Recharts' own legend (`<ChartLegend content={<ChartLegendContent />} />`), inside the plot area. */
@@ -199,7 +279,7 @@ export const RechartsLegend: Story = {
       const found = canvasElement.querySelector('[data-slot="chart-legend"]')
       expect(found).not.toBeNull()
       return found as HTMLElement
-    })
+    }, DRAWN)
     expect(
       within(legend)
         .getAllByRole('listitem')
@@ -266,6 +346,9 @@ export const Formatters: Story = {
     await userEvent.keyboard('{ArrowRight}')
     const tooltip = await visibleTooltip(canvasElement)
     await waitFor(() => expect(tooltip).toHaveTextContent(/30\.500,00\s€/))
+    // End without focus or hover: the screenshot of the story must
+    // not depend on when the interaction state is torn down.
+    await endInteraction(canvasElement)
   },
 }
 

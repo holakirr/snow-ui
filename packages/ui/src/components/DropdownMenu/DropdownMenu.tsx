@@ -56,11 +56,11 @@ const DropdownMenuSubTrigger: FC<DropdownMenuSubTriggerProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.SubTrigger
-    className={twMerge(popoverItemClasses, inset && 'pl-8', className)}
+    className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
     {...props}
   >
     {children}
-    <ArrowLineRightIcon className="ml-auto" />
+    <ArrowLineRightIcon className="ms-auto rtl:-scale-x-100" />
   </DropdownMenuPrimitive.SubTrigger>
 )
 DropdownMenuSubTrigger.displayName =
@@ -113,7 +113,7 @@ const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.Item
-    className={twMerge(popoverItemClasses, inset && 'pl-8', className)}
+    className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
     {...props}
   />
 )
@@ -130,11 +130,11 @@ const DropdownMenuCheckboxItem: FC<DropdownMenuCheckboxItemProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.CheckboxItem
-    className={twMerge(popoverItemClasses, 'pl-8', className)}
+    className={twMerge(popoverItemClasses, 'ps-8', className)}
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex size-4 items-center justify-center">
+    <span className="absolute start-2 flex size-4 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
         <Check size={16} />
       </DropdownMenuPrimitive.ItemIndicator>
@@ -155,10 +155,10 @@ const DropdownMenuRadioItem: FC<DropdownMenuRadioItemProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.RadioItem
-    className={twMerge(popoverItemClasses, 'pl-8', className)}
+    className={twMerge(popoverItemClasses, 'ps-8', className)}
     {...props}
   >
-    <span className="absolute left-2 flex size-4 items-center justify-center">
+    <span className="absolute start-2 flex size-4 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
         <DotIcon size={16} className="fill-current" weight="fill" />
       </DropdownMenuPrimitive.ItemIndicator>
@@ -180,7 +180,7 @@ const DropdownMenuLabel: FC<DropdownMenuLabelProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.Label
-    className={twMerge(popoverLabelClasses, inset && 'pl-8', className)}
+    className={twMerge(popoverLabelClasses, inset && 'ps-8', className)}
     {...props}
   />
 )
@@ -208,7 +208,7 @@ const DropdownMenuShortcut: FC<DropdownMenuShortcutProps> = ({
   ...props
 }) => (
   <KBD
-    className={twMerge('ml-auto', className)}
+    className={twMerge('ms-auto', className)}
     size={TEXT_SIZES[12]}
     {...props}
   />

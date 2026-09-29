@@ -1,19 +1,38 @@
-import { ArrowLineLeftIcon, ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
-import { cva } from 'class-variance-authority'
-import type { ComponentProps, FC } from 'react'
-import type { Size } from '../../types'
-import { twMerge } from '../../utils/tw-merge'
+'use client'
 
+import { ArrowLineLeftIcon, ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
+import { Slot } from '@radix-ui/react-slot'
+import { cva } from 'class-variance-authority'
+import {
+  type ComponentProps,
+  type FC,
+  isValidElement,
+  type ReactNode,
+} from 'react'
+import type { Size } from '../../types'
+import { slotted, withSlotContent } from '../../utils/slot'
+import { twMerge } from '../../utils/tw-merge'
+import { useMessages } from '../SnowUIProvider'
+
+/**
+ * The pagination navigation landmark, named by `aria-label` (default:
+ * `messages.pagination.label`, "Pagination").
+ */
 const Pagination: FC<ComponentProps<'nav'>> = ({
   className,
+  'aria-label': ariaLabel,
   ...props
-}: ComponentProps<'nav'>) => (
-  <nav
-    aria-label="pagination"
-    className={twMerge('mx-auto flex w-full justify-center', className)}
-    {...props}
-  />
-)
+}: ComponentProps<'nav'>) => {
+  const messages = useMessages()
+
+  return (
+    <nav
+      aria-label={ariaLabel ?? messages.pagination.label}
+      className={twMerge('mx-auto flex w-full justify-center', className)}
+      {...props}
+    />
+  )
+}
 Pagination.displayName = 'Pagination'
 
 const PaginationContent: FC<ComponentProps<'ul'>> = ({
@@ -69,6 +88,14 @@ type PaginationLinkProps = {
   size?: Size
   /** Disables the link (`aria-disabled`), e.g. "previous" on the first page. */
   disabled?: boolean
+  /**
+   * Render the only child element (a router link) instead of an `<a>`. A
+   * disabled one gets `aria-disabled` and no pointer events; give it no
+   * destination yourself.
+   * @example <PaginationLink asChild isActive><RouterLink to="?page=2">2</RouterLink></PaginationLink>
+   * @default false
+   */
+  asChild?: boolean
 } & ComponentProps<'a'>
 
 const PaginationLink: FC<PaginationLinkProps> = ({
@@ -76,23 +103,40 @@ const PaginationLink: FC<PaginationLinkProps> = ({
   isActive,
   size = 'sm',
   disabled,
+  asChild = false,
   href,
   onClick,
+  children,
   ...props
-}) => (
+}) => {
+  const classes = twMerge(paginationLinkVariants({ size, isActive }), className)
   // A disabled link has no `href` (so it can't navigate or take focus) and
   // keeps `role="link"` with `aria-disabled`.
-  <a
-    href={disabled ? undefined : href}
-    onClick={disabled ? undefined : onClick}
-    role={disabled ? 'link' : undefined}
-    aria-current={isActive ? 'page' : undefined}
-    aria-disabled={disabled || undefined}
-    data-active={isActive || undefined}
-    className={twMerge(paginationLinkVariants({ size, isActive }), className)}
-    {...props}
-  />
-)
+  const linkProps = {
+    href: disabled ? undefined : href,
+    onClick: disabled ? undefined : onClick,
+    role: disabled ? 'link' : undefined,
+    'aria-current': isActive ? ('page' as const) : undefined,
+    'aria-disabled': disabled || undefined,
+    'data-active': isActive || undefined,
+    ...props,
+  }
+
+  if (asChild) {
+    const slot = slotted(children, classes)
+    return (
+      <Slot {...linkProps} className={slot.className}>
+        {slot.child}
+      </Slot>
+    )
+  }
+
+  return (
+    <a {...linkProps} className={classes}>
+      {children}
+    </a>
+  )
+}
 PaginationLink.displayName = 'PaginationLink'
 
 const PAGINATION_ICON_SIZES = {
@@ -108,44 +152,100 @@ const ICON_ONLY_PADDINGS = {
   lg: 'px-2.5',
 }
 
-const PaginationPrevious: FC<ComponentProps<typeof PaginationLink>> = ({
+/** The visible text of a previous / next link (inside the child with `asChild`). */
+const linkText = (asChild: boolean | undefined, children: ReactNode) =>
+  asChild && isValidElement<{ children?: ReactNode }>(children)
+    ? children.props.children
+    : children
+
+/**
+ * The link to the previous page: an arrow (pointing to the start side, so
+ * right in right-to-left text) and optional text, named by `aria-label`
+ * (default: `messages.pagination.previous`, "Go to previous page").
+ */
+const PaginationPrevious: FC<PaginationLinkProps> = ({
   className,
   size = 'sm',
+  asChild,
+  'aria-label': ariaLabel,
   children,
   ...props
-}) => (
-  <PaginationLink
-    aria-label="Go to previous page"
-    size={size}
-    className={twMerge(children ? 'pl-2' : ICON_ONLY_PADDINGS[size], className)}
-    {...props}
-  >
-    <ArrowLineLeftIcon size={PAGINATION_ICON_SIZES[size]} />
-    {children && <span>{children}</span>}
-  </PaginationLink>
-)
+}) => {
+  const messages = useMessages()
+  const hasText = !!linkText(asChild, children)
+
+  return (
+    <PaginationLink
+      aria-label={ariaLabel ?? messages.pagination.previous}
+      size={size}
+      asChild={asChild}
+      className={twMerge(
+        hasText ? 'ps-2' : ICON_ONLY_PADDINGS[size],
+        className,
+      )}
+      {...props}
+    >
+      {withSlotContent(asChild, children, (text) => (
+        <>
+          <ArrowLineLeftIcon
+            size={PAGINATION_ICON_SIZES[size]}
+            className="rtl:-scale-x-100"
+          />
+          {text && <span>{text}</span>}
+        </>
+      ))}
+    </PaginationLink>
+  )
+}
 PaginationPrevious.displayName = 'PaginationPrevious'
 
-const PaginationNext: FC<ComponentProps<typeof PaginationLink>> = ({
+/**
+ * The link to the next page, named by `aria-label` (default:
+ * `messages.pagination.next`, "Go to next page").
+ */
+const PaginationNext: FC<PaginationLinkProps> = ({
   className,
   size = 'sm',
+  asChild,
+  'aria-label': ariaLabel,
   children,
   ...props
-}) => (
-  <PaginationLink
-    aria-label="Go to next page"
-    size={size}
-    className={twMerge(children ? 'pr-2' : ICON_ONLY_PADDINGS[size], className)}
-    {...props}
-  >
-    {children && <span>{children}</span>}
-    <ArrowLineRightIcon size={PAGINATION_ICON_SIZES[size]} />
-  </PaginationLink>
-)
+}) => {
+  const messages = useMessages()
+  const hasText = !!linkText(asChild, children)
+
+  return (
+    <PaginationLink
+      aria-label={ariaLabel ?? messages.pagination.next}
+      size={size}
+      asChild={asChild}
+      className={twMerge(
+        hasText ? 'pe-2' : ICON_ONLY_PADDINGS[size],
+        className,
+      )}
+      {...props}
+    >
+      {withSlotContent(asChild, children, (text) => (
+        <>
+          {text && <span>{text}</span>}
+          <ArrowLineRightIcon
+            size={PAGINATION_ICON_SIZES[size]}
+            className="rtl:-scale-x-100"
+          />
+        </>
+      ))}
+    </PaginationLink>
+  )
+}
 PaginationNext.displayName = 'PaginationNext'
 
 type PaginationEllipsisProps = {
   size?: Size
+  /**
+   * Screen-reader text for the skipped pages.
+   * @default messages.pagination.more: "More pages"
+   */
+  label?: string
 } & Omit<ComponentProps<'span'>, 'size'>
 
 const ELLIPSIS_SIZES = {
@@ -157,8 +257,11 @@ const ELLIPSIS_SIZES = {
 const PaginationEllipsis = ({
   className,
   size = 'sm',
+  label,
   ...props
 }: PaginationEllipsisProps) => {
+  const messages = useMessages()
+
   return (
     <span
       className={twMerge(
@@ -169,7 +272,7 @@ const PaginationEllipsis = ({
       {...props}
     >
       <span aria-hidden>…</span>
-      <span className="sr-only">More pages</span>
+      <span className="sr-only">{label ?? messages.pagination.more}</span>
     </span>
   )
 }

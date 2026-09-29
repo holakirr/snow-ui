@@ -130,16 +130,22 @@ FormControl.displayName = 'FormControl'
 
 type FormDescriptionProps = HTMLAttributes<HTMLParagraphElement>
 
-const FormDescription: FC<FormDescriptionProps> = ({ className, ...props }) => {
+const FormDescription: FC<FormDescriptionProps> = ({
+  className,
+  children,
+  ...props
+}) => {
   const { formDescriptionId } = useFormField()
 
   return (
     <Typography
-      as="p"
-      id={formDescriptionId}
+      asChild
       className={twMerge('text-12 text-secondary', className)}
-      {...props}
-    />
+    >
+      <p id={formDescriptionId} {...props}>
+        {children}
+      </p>
+    </Typography>
   )
 }
 
@@ -160,13 +166,10 @@ const FormMessage: FC<FormMessageProps> = ({
   }
 
   return (
-    <Typography
-      as="p"
-      id={formMessageId}
-      className={twMerge('text-12 text-red-text', className)}
-      {...props}
-    >
-      {body}
+    <Typography asChild className={twMerge('text-12 text-red-text', className)}>
+      <p id={formMessageId} {...props}>
+        {body}
+      </p>
     </Typography>
   )
 }

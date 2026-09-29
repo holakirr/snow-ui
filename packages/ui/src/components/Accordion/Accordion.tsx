@@ -34,17 +34,15 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
     <AccordionPrimitive.Trigger
       className={twMerge(
         // Like the Figma Sidebar collapsible item: radius 12, Black/4% on hover.
-        'flex w-full rounded-12 px-4 py-2 items-center justify-between transition-all hover:bg-black-4 focus-visible:bg-black-4 focus-ring [&[data-state=open]>svg]:rotate-90 gap-2',
+        'flex w-full rounded-12 px-4 py-2 items-center justify-between transition-all hover:bg-black-4 focus-visible:bg-black-4 focus-ring [&[data-state=open]>svg]:rotate-90 rtl:[&[data-state=open]>svg]:-rotate-90 gap-2',
         className,
       )}
       tabIndex={0}
       {...props}
     >
-      <Typography as="span" size={16}>
-        {children}
-      </Typography>
+      <Typography size={16}>{children}</Typography>
 
-      <ArrowLineRightIcon className="shrink-0 transition-transform" />
+      <ArrowLineRightIcon className="shrink-0 transition-transform rtl:-scale-x-100" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 )

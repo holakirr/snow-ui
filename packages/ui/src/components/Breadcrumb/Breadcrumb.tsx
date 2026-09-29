@@ -1,14 +1,31 @@
+'use client'
+
 import type { ComponentProps, FC } from 'react'
 import { ROLES } from '../../constants'
 import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
+import { useMessages } from '../SnowUIProvider'
 import { Typography } from '../Text'
 
 export type BreadcrumbProps = ComponentProps<'nav'>
 
-const Breadcrumb: FC<BreadcrumbProps> = ({ ...props }) => (
-  <nav aria-label="Breadcrumb" role={ROLES.navigation} {...props} />
-)
+/**
+ * The breadcrumb navigation landmark, named by `aria-label` (default:
+ * `messages.breadcrumb.label`, "Breadcrumb").
+ */
+const Breadcrumb: FC<BreadcrumbProps> = ({
+  'aria-label': ariaLabel,
+  ...props
+}) => {
+  const messages = useMessages()
+  return (
+    <nav
+      aria-label={ariaLabel ?? messages.breadcrumb.label}
+      role={ROLES.navigation}
+      {...props}
+    />
+  )
+}
 Breadcrumb.displayName = 'Breadcrumb'
 
 export type BreadcrumbListProps = ComponentProps<'ol'>
@@ -40,15 +57,24 @@ BreadcrumbItem.displayName = 'BreadcrumbItem'
 
 export type BreadcrumbLinkProps = ComponentProps<'a'> & {
   disabled?: boolean
+  /**
+   * Render the only child element (a router link) instead of an `<a>`.
+   * @example <BreadcrumbLink asChild><RouterLink to="/">Home</RouterLink></BreadcrumbLink>
+   * @default false
+   */
+  asChild?: boolean
 }
 
 const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
   className,
   disabled,
+  asChild = false,
+  href,
+  children,
   ...props
 }) => (
-  <Button
-    as="a"
+  <Button<'a'>
+    asChild
     aria-disabled={disabled}
     tabIndex={disabled ? -1 : 0}
     // Figma: a Button Small "Borderless" (padding 4/12, radius 12).
@@ -58,7 +84,9 @@ const BreadcrumbLink: FC<BreadcrumbLinkProps> = ({
       className,
     )}
     {...props}
-  />
+  >
+    {asChild ? children : <a href={href}>{children}</a>}
+  </Button>
 )
 BreadcrumbLink.displayName = 'BreadcrumbLink'
 
@@ -88,7 +116,9 @@ const BreadcrumbSeparator: FC<BreadcrumbSeparatorProps> = ({
     role="presentation"
     aria-hidden="true"
     className={twMerge(
-      'text-14 text-black-10 [&>svg]:h-3.5 [&>svg]:w-3.5',
+      // An icon separator (a chevron) points the other way in right-to-left
+      // text.
+      'text-14 text-black-10 [&>svg]:h-3.5 [&>svg]:w-3.5 rtl:[&>svg]:-scale-x-100',
       className,
     )}
     {...props}
@@ -98,23 +128,34 @@ const BreadcrumbSeparator: FC<BreadcrumbSeparatorProps> = ({
 )
 BreadcrumbSeparator.displayName = 'BreadcrumbSeparator'
 
-export type BreadcrumbEllipsisProps = ComponentProps<'span'>
+export type BreadcrumbEllipsisProps = ComponentProps<'span'> & {
+  /**
+   * Screen-reader text for the collapsed items.
+   * @default messages.breadcrumb.more: "More pages"
+   */
+  label?: string
+}
 
+/**
+ * Stands for collapsed items: "…" on screen, `label` for screen readers.
+ */
 const BreadcrumbEllipsis: FC<BreadcrumbEllipsisProps> = ({
   className,
+  label,
   ...props
-}) => (
-  <span
-    role="presentation"
-    aria-hidden="true"
-    className={twMerge('flex items-center justify-center', className)}
-    {...props}
-  >
-    <Typography>...</Typography>
+}) => {
+  const messages = useMessages()
 
-    <span className="sr-only">Additional navigation elements</span>
-  </span>
-)
+  return (
+    <span
+      className={twMerge('flex items-center justify-center', className)}
+      {...props}
+    >
+      <Typography aria-hidden>...</Typography>
+      <span className="sr-only">{label ?? messages.breadcrumb.more}</span>
+    </span>
+  )
+}
 BreadcrumbEllipsis.displayName = 'BreadcrumbEllipsis'
 
 export {

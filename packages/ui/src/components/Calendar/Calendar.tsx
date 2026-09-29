@@ -27,6 +27,7 @@ import {
 } from 'react-day-picker'
 import { twMerge } from '../../utils/tw-merge'
 import { Button } from '../Button'
+import { useMessages, useSnowUI } from '../SnowUIProvider'
 
 export type CalendarProps = DayPickerProps & {
   /**
@@ -77,9 +78,9 @@ export type CalendarProps = DayPickerProps & {
   lastSelection?: Date
   /** Called by the "Last selection" action with `lastSelection`. */
   onLastSelectionClick?: (date: Date) => void
-  /** @default 'Today' */
+  /** @default messages.calendar.today: "Today" */
   todayLabel?: string
-  /** @default 'Last selection' */
+  /** @default messages.calendar.lastSelection: "Last selection" */
   lastSelectionLabel?: string
 
   monthsClassName?: string
@@ -191,7 +192,17 @@ const CHEVRONS = {
 const CalendarChevron = ({ orientation = 'left', className }: ChevronProps) => {
   const Icon = CHEVRONS[orientation]
   return (
-    <Icon size={16} aria-hidden className={twMerge('shrink-0', className)} />
+    <Icon
+      size={16}
+      aria-hidden
+      className={twMerge(
+        'shrink-0',
+        // Left / right mean previous / next: mirrored in right-to-left text.
+        (orientation === 'left' || orientation === 'right') &&
+          'rtl:-scale-x-100',
+        className,
+      )}
+    />
   )
 }
 
@@ -217,6 +228,7 @@ const useCalendarNav = () => {
     onNextClick,
   } = useCalendarContext()
   const { nextMonth, previousMonth, goToMonth, labels } = useDayPicker()
+  const messages = useMessages()
 
   const yearsCount = displayYears.to - displayYears.from + 1
 
@@ -297,7 +309,7 @@ const useCalendarNav = () => {
       disabled: isPreviousDisabled,
       label:
         navView === 'years'
-          ? `Go to the previous ${yearsCount} years`
+          ? messages.calendar.previousYears(yearsCount)
           : labels.labelPrevious(previousMonth),
       onClick: handlePreviousClick,
     },
@@ -305,7 +317,7 @@ const useCalendarNav = () => {
       disabled: isNextDisabled,
       label:
         navView === 'years'
-          ? `Go to the next ${yearsCount} years`
+          ? messages.calendar.nextYears(yearsCount)
           : labels.labelNext(nextMonth),
       onClick: handleNextClick,
     },
@@ -395,9 +407,10 @@ const CalendarMonthCaption: CustomComponents['MonthCaption'] = ({
       {displayIndex === 0 && <CalendarActions />}
       <Group
         aria-label={showPrevious ? navLabel : undefined}
-        className={twMerge('ml-auto flex items-center gap-2', navClassName)}
+        className={twMerge('ms-auto flex items-center gap-2', navClassName)}
       >
-        {/* Figma: Button Small "Borderless" icon buttons. */}
+        {/* Figma: Button Small "Borderless" icon buttons. The arrows point to
+            the start / end side, so they flip in right-to-left text. */}
         {showPrevious && (
           <Button
             variant="borderless"
@@ -406,7 +419,9 @@ const CalendarMonthCaption: CustomComponents['MonthCaption'] = ({
             disabled={previous.disabled}
             aria-label={previous.label}
             onClick={previous.onClick}
-            leftContent={<ArrowLineLeftIcon size={16} />}
+            startContent={
+              <ArrowLineLeftIcon size={16} className="rtl:-scale-x-100" />
+            }
           />
         )}
         {children}
@@ -418,7 +433,9 @@ const CalendarMonthCaption: CustomComponents['MonthCaption'] = ({
             disabled={next.disabled}
             aria-label={next.label}
             onClick={next.onClick}
-            leftContent={<ArrowLineRightIcon size={16} />}
+            startContent={
+              <ArrowLineRightIcon size={16} className="rtl:-scale-x-100" />
+            }
           />
         )}
       </Group>
@@ -571,8 +588,12 @@ const mergeClassNames = (
  * Secondary/Indigo and days outside the month are `text-secondary` (Figma:
  * Black/40%, 2.85:1).
  *
- * The previous / next buttons sit in one navigation landmark labelled
- * "Month navigation"; translate it with `labels={{ labelNav: () => '…' }}`.
+ * Localized by `SnowUIProvider`: its `locale` (a date-fns or
+ * react-day-picker locale) names the months and weekdays and its `messages`
+ * the toolbar ("Today", "Last selection", the "Month navigation" landmark of
+ * the previous / next buttons); its `dir` flips the arrows and the arrow
+ * keys. The `locale`, `dir`, `labels`, `todayLabel` and
+ * `lastSelectionLabel` props win over the provider.
  */
 function Calendar({
   className,
@@ -587,8 +608,10 @@ function Calendar({
   onTodayClick,
   lastSelection,
   onLastSelectionClick,
-  todayLabel = 'Today',
-  lastSelectionLabel = 'Last selection',
+  todayLabel,
+  lastSelectionLabel,
+  locale,
+  dir,
   hideNavigation,
   classNames,
   components,
@@ -616,6 +639,7 @@ function Calendar({
   hiddenClassName,
   ...props
 }: CalendarProps) {
+  const snowUI = useSnowUI()
   const [navView, setNavView] = useState<NavView>('days')
   const [displayYears, setDisplayYears] = useState<DisplayYears>(() => {
     const currentYear = new Date().getFullYear()
@@ -653,10 +677,12 @@ function Calendar({
         onTodayClick,
         lastSelection,
         onLastSelectionClick,
-        todayLabel,
-        lastSelectionLabel,
+        todayLabel: todayLabel ?? snowUI.messages.calendar.today,
+        lastSelectionLabel:
+          lastSelectionLabel ?? snowUI.messages.calendar.lastSelection,
         header,
-        navLabel: props.labels?.labelNav?.() ?? 'Month navigation',
+        navLabel:
+          props.labels?.labelNav?.() ?? snowUI.messages.calendar.navigation,
         navClassName,
         buttonPreviousClassName,
         buttonNextClassName,
@@ -668,6 +694,8 @@ function Calendar({
         showOutsideDays={showOutsideDays ?? columnsDisplayed === 1}
         showWeekNumber={showWeekNumber}
         weekStartsOn={weekStartsOn}
+        locale={locale ?? snowUI.locale}
+        dir={dir ?? snowUI.dir}
         className={className}
         classNames={mergeClassNames(
           {
@@ -717,7 +745,7 @@ function Calendar({
             selected: twMerge(selectedButton, selectedClassName),
             range_start: twMerge(
               selectedButton,
-              'day-range-start [&>button]:rounded-r-none',
+              'day-range-start [&>button]:rounded-e-none',
               rangeStartClassName,
             ),
             range_middle: twMerge(
@@ -727,7 +755,7 @@ function Calendar({
             ),
             range_end: twMerge(
               selectedButton,
-              'day-range-end [&>button]:rounded-l-none',
+              'day-range-end [&>button]:rounded-s-none',
               rangeEndClassName,
             ),
             // Figma "Today": Secondary/Indigo, unless selected. The text is

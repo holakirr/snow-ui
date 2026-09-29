@@ -4,6 +4,7 @@ import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
+import { useSnowUI } from '../SnowUIProvider'
 
 const TooltipProvider = TooltipPrimitive.Provider
 
@@ -38,21 +39,30 @@ const tooltipVariants = cva(
 type TooltipContentProps = TooltipPrimitive.TooltipContentProps &
   VariantProps<typeof tooltipVariants>
 
+/**
+ * The tooltip, in a portal. It takes the `dir` of a `SnowUIProvider` (the
+ * portal is outside your layout's `dir` scope).
+ */
 const TooltipContent: FC<TooltipContentProps> = ({
   className,
   sideOffset = 4,
   variant,
   ...props
-}) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Content
-      sideOffset={sideOffset}
-      data-variant={variant ?? 'dark'}
-      className={twMerge(tooltipVariants({ variant }), className)}
-      {...props}
-    />
-  </TooltipPrimitive.Portal>
-)
+}) => {
+  const { dir } = useSnowUI()
+
+  return (
+    <TooltipPrimitive.Portal>
+      <TooltipPrimitive.Content
+        dir={dir}
+        sideOffset={sideOffset}
+        data-variant={variant ?? 'dark'}
+        className={twMerge(tooltipVariants({ variant }), className)}
+        {...props}
+      />
+    </TooltipPrimitive.Portal>
+  )
+}
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
 type TooltipShortcutProps = ComponentProps<'span'>

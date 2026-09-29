@@ -1,5 +1,6 @@
+import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
-import type { ElementType, JSX } from 'react'
+import type { ElementType, JSX, ReactNode, Ref } from 'react'
 import { SIZES, TEXT_SIZES } from '../../constants'
 import type {
   ButtonVariant,
@@ -7,6 +8,8 @@ import type {
   Size,
   TextSize,
 } from '../../types'
+import { warnAsDeprecated, warnDeprecated } from '../../utils/deprecation'
+import { slotted } from '../../utils/slot'
 import { twMerge } from '../../utils/tw-merge'
 import { Typography } from '../Text'
 
@@ -19,7 +22,20 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
   PolymorphicProps<C> &
     VariantProps<typeof buttonVariants> & {
       /**
-       * The element type for the Text component.
+       * Render the only child element instead of a `<button>`, e.g. a router
+       * link: it gets the button's classes (merged with its own, which win
+       * conflicts), props, ref and event handlers, and the `label`,
+       * `startContent` and `endContent` are rendered inside it, around its
+       * own children.
+       * @example <Button asChild label="Home"><a href="/" /></Button>
+       * @default false
+       */
+      asChild?: boolean
+
+      /**
+       * The element to render instead of a `<button>`.
+       * @deprecated Use `asChild`: `<Button asChild><a href="/">…</a></Button>`.
+       * `as` will be removed in the next major version.
        */
       as?: C
 
@@ -29,12 +45,26 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
       label?: string
 
       /**
-       * The icon component to be displayed on the left side of the button.
+       * Content before the label (on the left in left-to-right text, on the
+       * right in right-to-left text), e.g. an icon. An icon without a
+       * `label` or `endContent` makes a square icon-only button.
+       */
+      startContent?: ReactNode
+
+      /**
+       * Content after the label (on the right in left-to-right text).
+       */
+      endContent?: ReactNode
+
+      /**
+       * @deprecated Use `startContent`, which follows the text direction.
+       * `leftContent` will be removed in the next major version.
        */
       leftContent?: JSX.Element
 
       /**
-       * The icon component to be displayed on the right side of the button.
+       * @deprecated Use `endContent`, which follows the text direction.
+       * `rightContent` will be removed in the next major version.
        */
       rightContent?: JSX.Element
 
@@ -52,6 +82,9 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
        * @default "borderless"
        */
       variant?: ButtonVariant
+
+      /** The rendered element: the `<button>`, or the child with `asChild`. */
+      ref?: Ref<HTMLElement>
     }
 
 /**
@@ -131,12 +164,16 @@ const iconButtonClasses: { [K in Size]: string } = {
 }
 
 /**
- * Button component displays a button element.
+ * Button component displays a button element. With `asChild` it styles its
+ * child element instead, e.g. a link or a router link.
  */
 const Button = <C extends ElementType = typeof defaultTag>({
   as,
+  asChild = false,
   className,
   label,
+  startContent,
+  endContent,
   leftContent,
   rightContent,
   size,
@@ -145,26 +182,34 @@ const Button = <C extends ElementType = typeof defaultTag>({
   children,
   ...props
 }: ButtonProps<C>): JSX.Element => {
+  if (as !== undefined) {
+    warnAsDeprecated('Button', '<Button asChild><a href="/">…</a></Button>')
+  }
+  if (leftContent !== undefined || rightContent !== undefined) {
+    warnDeprecated(
+      'Button:leftContent',
+      'Button: `leftContent` and `rightContent` are deprecated and will be removed in the next major version. Use `startContent` and `endContent`, which follow the text direction.',
+    )
+  }
+
+  const start = startContent ?? leftContent
+  const end = endContent ?? rightContent
   const Component = as ?? defaultTag
-  const isNativeButton = Component === defaultTag
   const buttonSize = size ?? SIZES.sm
   // `children` may be screen-reader-only text, so they don't count here.
-  const isIconOnly = !!leftContent && !rightContent && !label
+  const isIconOnly = !!start && !end && !label
 
-  return (
-    <Component
-      type={isNativeButton ? 'button' : undefined}
-      aria-label={label && children == null ? label : undefined}
-      className={twMerge(
-        buttonVariants({ variant, size }),
-        isIconOnly
-          ? [iconButtonClasses[buttonSize], variant === 'bare' && 'p-0']
-          : buttonIconSizes[buttonSize],
-        className,
-      )}
-      {...props}
-    >
-      {leftContent}
+  const classes = twMerge(
+    buttonVariants({ variant, size }),
+    isIconOnly
+      ? [iconButtonClasses[buttonSize], variant === 'bare' && 'p-0']
+      : buttonIconSizes[buttonSize],
+    className,
+  )
+
+  const renderContent = (content: ReactNode) => (
+    <>
+      {start}
       {label && (
         <Typography
           className="text-center text-inherit group-hover:px-1 group-disabled:px-0"
@@ -173,8 +218,28 @@ const Button = <C extends ElementType = typeof defaultTag>({
           {label}
         </Typography>
       )}
-      {children}
-      {rightContent}
+      {content}
+      {end}
+    </>
+  )
+
+  if (asChild) {
+    const slot = slotted(children, classes, renderContent)
+    return (
+      <Slot {...props} className={slot.className}>
+        {slot.child}
+      </Slot>
+    )
+  }
+
+  return (
+    <Component
+      type={Component === defaultTag ? 'button' : undefined}
+      aria-label={label && children == null ? label : undefined}
+      className={classes}
+      {...props}
+    >
+      {renderContent(children)}
     </Component>
   )
 }

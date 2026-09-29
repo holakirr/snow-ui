@@ -1,8 +1,13 @@
+'use client'
+
 import { ArrowSquareOut } from '@phosphor-icons/react/dist/csr/ArrowSquareOut'
+import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
-import type { ComponentProps, FC } from 'react'
+import type { ComponentProps, FC, ReactNode } from 'react'
 import { ROLES } from '../../constants'
+import { slotted } from '../../utils/slot'
 import { twMerge } from '../../utils/tw-merge'
+import { useMessages } from '../SnowUIProvider'
 
 /**
  * Figma "Link" (Variant Default / Arrow / External × State Default / Hover):
@@ -36,38 +41,44 @@ type LinkProps = ComponentProps<'a'> &
   VariantProps<typeof linkVariants> & {
     /**
      * Screen-reader text appended to `external` links.
-     * @default "(opens in a new tab)"
+     * @default messages.link.external: "(opens in a new tab)"
      */
     externalLabel?: string
+
+    /**
+     * Render the only child element (a router link) with the link styles
+     * and the arrow or external icon, instead of an `<a>`.
+     * @example <Link asChild variant="arrow"><RouterLink to="/docs">Docs</RouterLink></Link>
+     * @default false
+     */
+    asChild?: boolean
   }
 
 /**
  * Link component displays a text link. `external` links open in a new tab
  * (`target="_blank"`, `rel="noopener noreferrer"`, both overridable) and tell
- * screen readers so.
+ * screen readers so. The arrow and the external icon point the other way in
+ * right-to-left text.
  */
 const Link: FC<LinkProps> = ({
   className,
   variant,
-  externalLabel = '(opens in a new tab)',
+  externalLabel,
+  asChild = false,
   children,
   ...props
 }) => {
+  const messages = useMessages()
   const isExternal = variant === 'external'
+  const classes = twMerge(linkVariants({ variant }), className)
 
-  return (
-    <a
-      className={twMerge(linkVariants({ variant }), className)}
-      role={ROLES.link}
-      tabIndex={0}
-      {...(isExternal && { target: '_blank', rel: 'noopener noreferrer' })}
-      {...props}
-    >
-      {children}
+  const renderContent = (content: ReactNode) => (
+    <>
+      {content}
       {variant === 'arrow' && (
         <span
           aria-hidden
-          className="opacity-40 transition-opacity group-hover:opacity-100"
+          className="inline-block opacity-40 transition-opacity group-hover:opacity-100 rtl:-scale-x-100"
         >
           ↗
         </span>
@@ -76,12 +87,36 @@ const Link: FC<LinkProps> = ({
         <>
           <ArrowSquareOut
             aria-hidden
-            className="size-3 shrink-0 opacity-40 transition-opacity group-hover:opacity-100"
+            className="size-3 shrink-0 opacity-40 transition-opacity group-hover:opacity-100 rtl:-scale-x-100"
           />
           {/* A separate space keeps the name "Text (opens…)"; flex drops it visually. */}{' '}
-          <span className="sr-only">{externalLabel}</span>
+          <span className="sr-only">
+            {externalLabel ?? messages.link.external}
+          </span>
         </>
       )}
+    </>
+  )
+
+  const linkProps = {
+    role: ROLES.link,
+    tabIndex: 0,
+    ...(isExternal && { target: '_blank', rel: 'noopener noreferrer' }),
+    ...props,
+  }
+
+  if (asChild) {
+    const slot = slotted(children, classes, renderContent)
+    return (
+      <Slot {...linkProps} className={slot.className}>
+        {slot.child}
+      </Slot>
+    )
+  }
+
+  return (
+    <a className={classes} {...linkProps}>
+      {renderContent(children)}
     </a>
   )
 }

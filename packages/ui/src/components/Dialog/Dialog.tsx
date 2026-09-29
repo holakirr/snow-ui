@@ -2,10 +2,18 @@
 
 import { CloseIcon } from '@holakirr/snow-ui-icons'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import type { ComponentProps, ComponentPropsWithoutRef, FC, JSX } from 'react'
+import type {
+  ComponentProps,
+  ComponentPropsWithoutRef,
+  FC,
+  JSX,
+  ReactNode,
+} from 'react'
+import { warnDeprecated } from '../../utils/deprecation'
 import { twMerge } from '../../utils/tw-merge'
 
 import { Button } from '../Button'
+import { useMessages, useSnowUI } from '../SnowUIProvider'
 import { Typography } from '../Text'
 
 const animationClasses =
@@ -37,50 +45,87 @@ const DialogOverlay: FC<
 
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
+/**
+ * The dialog, in a portal. It takes the `dir` of a `SnowUIProvider` (the
+ * portal is outside your layout's `dir` scope).
+ */
 const DialogContent: FC<
   ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
-> = ({ className, children, ...props }) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      className={twMerge(
-        // Figma "Add data": 576px wide, the title row and the popup 28px apart.
-        'fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 duration-200 gap-7',
-        animationClasses,
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </DialogPrimitive.Content>
-  </DialogPortal>
-)
+> = ({ className, children, ...props }) => {
+  const { dir } = useSnowUI()
+
+  return (
+    <DialogPortal>
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        dir={dir}
+        className={twMerge(
+          // Figma "Add data": 576px wide, the title row and the popup 28px apart.
+          'fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 duration-200 gap-7',
+          animationClasses,
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  )
+}
 
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 type DialogHeaderProps = ComponentProps<'div'> & {
+  /**
+   * Content before the title (on the left in left-to-right text), in a 40px
+   * slot that balances the close button.
+   */
+  startContent?: ReactNode
+  /**
+   * @deprecated Use `startContent`, which follows the text direction.
+   * `leftContent` will be removed in the next major version.
+   */
   leftContent?: JSX.Element
+  /**
+   * Accessible name of the close button.
+   * @default messages.dialog.close: "Close"
+   */
+  closeLabel?: string
 }
 
 const DialogHeader: FC<DialogHeaderProps> = ({
   className,
+  startContent,
   leftContent,
+  closeLabel,
   children,
   ...props
-}) => (
-  <div
-    className={twMerge('flex justify-between items-center px-2', className)}
-    {...props}
-  >
-    <div className="w-10">{leftContent}</div>
-    {children}
-    <DialogPrimitive.Close asChild>
-      <Button variant="gray" size="md" leftContent={<CloseIcon size={24} />}>
-        <Typography className="sr-only">Close</Typography>
-      </Button>
-    </DialogPrimitive.Close>
-  </div>
-)
+}) => {
+  const messages = useMessages()
+  if (leftContent !== undefined) {
+    warnDeprecated(
+      'DialogHeader:leftContent',
+      'DialogHeader: `leftContent` is deprecated and will be removed in the next major version. Use `startContent`, which follows the text direction.',
+    )
+  }
+
+  return (
+    <div
+      className={twMerge('flex justify-between items-center px-2', className)}
+      {...props}
+    >
+      <div className="w-10">{startContent ?? leftContent}</div>
+      {children}
+      <DialogPrimitive.Close asChild>
+        <Button variant="gray" size="md" startContent={<CloseIcon size={24} />}>
+          <Typography className="sr-only">
+            {closeLabel ?? messages.dialog.close}
+          </Typography>
+        </Button>
+      </DialogPrimitive.Close>
+    </div>
+  )
+}
 
 DialogHeader.displayName = 'DialogHeader'
 

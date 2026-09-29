@@ -17,6 +17,7 @@ import {
 } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import { Search } from '../Search'
+import { useSnowUI } from '../SnowUIProvider'
 import { Typography } from '../Text'
 
 /**
@@ -130,21 +131,27 @@ export type CommandPaletteProps = {
 
   /**
    * Accessible name of the dialog and the list.
-   * @default 'Search'
+   * @default messages.commandPalette.label: "Search"
    */
   label?: string
 
-  /** @default 'Search' */
+  /** @default messages.commandPalette.placeholder: "Search" */
   placeholder?: string
 
   /**
    * Shown when nothing matches.
-   * @default 'No results'
+   * @default messages.commandPalette.empty: "No results"
    */
   emptyMessage?: ReactNode
 
   /** Shows a spinner in the search field and marks the list busy. */
   loading?: boolean
+
+  /**
+   * Announced while `loading`.
+   * @default messages.commandPalette.loading: "Loading"
+   */
+  loadingLabel?: string
 
   /**
    * Close the palette after an item is selected.
@@ -194,7 +201,12 @@ const matchesHotkey = (
 type ListProps = Required<
   Pick<
     CommandPaletteProps,
-    'groups' | 'label' | 'placeholder' | 'closeOnSelect'
+    | 'groups'
+    | 'label'
+    | 'placeholder'
+    | 'closeOnSelect'
+    | 'emptyMessage'
+    | 'loadingLabel'
   >
 > &
   Pick<
@@ -204,7 +216,6 @@ type ListProps = Required<
     | 'defaultQuery'
     | 'onQueryChange'
     | 'filter'
-    | 'emptyMessage'
     | 'loading'
   > & {
     close: () => void
@@ -224,8 +235,9 @@ const CommandPaletteList: FC<ListProps> = ({
   defaultQuery = '',
   onQueryChange,
   filter = defaultCommandPaletteFilter,
-  emptyMessage = 'No results',
+  emptyMessage,
   loading = false,
+  loadingLabel,
   close,
 }) => {
   const baseId = useId()
@@ -376,13 +388,13 @@ const CommandPaletteList: FC<ListProps> = ({
             >
               {group.heading && (
                 <Typography
-                  as="div"
-                  id={headingId}
-                  role="presentation"
+                  asChild
                   size={14}
                   className="px-2 py-1 text-secondary"
                 >
-                  {group.heading}
+                  <div id={headingId} role="presentation">
+                    {group.heading}
+                  </div>
                 </Typography>
               )}
               {group.items.map(({ item, key }) => {
@@ -432,14 +444,14 @@ const CommandPaletteList: FC<ListProps> = ({
       <div role="status" aria-live="polite" className="empty:hidden">
         {isEmpty && (
           <Typography
-            as="p"
+            asChild
             size={14}
             className="px-2 pt-4 pb-2 text-secondary"
           >
-            {emptyMessage}
+            <p>{emptyMessage}</p>
           </Typography>
         )}
-        {loading && <span className="sr-only">Loading</span>}
+        {loading && <span className="sr-only">{loadingLabel}</span>}
       </div>
     </>
   )
@@ -463,13 +475,16 @@ const CommandPalette: FC<CommandPaletteProps> = ({
   defaultQuery,
   onQueryChange,
   filter,
-  label = 'Search',
-  placeholder = 'Search',
+  label: labelProp,
+  placeholder,
   emptyMessage,
   loading,
+  loadingLabel,
   closeOnSelect = true,
   className,
 }) => {
+  const { messages, dir } = useSnowUI()
+  const label = labelProp ?? messages.commandPalette.label
   const [innerOpen, setInnerOpen] = useState(defaultOpen)
   const open = openProp ?? innerOpen
   const openRef = useRef(open)
@@ -510,6 +525,7 @@ const CommandPalette: FC<CommandPaletteProps> = ({
       )}
       <DialogPrimitive.Portal>
         <DialogPrimitive.Content
+          dir={dir}
           aria-describedby={undefined}
           className={twMerge(
             // Figma SearchPopup: 480 wide, padding 16, radius 24, Background/3
@@ -524,15 +540,16 @@ const CommandPalette: FC<CommandPaletteProps> = ({
           <CommandPaletteList
             groups={groups}
             label={label}
-            placeholder={placeholder}
+            placeholder={placeholder ?? messages.commandPalette.placeholder}
             closeOnSelect={closeOnSelect}
             onSelect={onSelect}
             query={query}
             defaultQuery={defaultQuery}
             onQueryChange={onQueryChange}
             filter={filter}
-            emptyMessage={emptyMessage}
+            emptyMessage={emptyMessage ?? messages.commandPalette.empty}
             loading={loading}
+            loadingLabel={loadingLabel ?? messages.commandPalette.loading}
             close={close}
           />
         </DialogPrimitive.Content>

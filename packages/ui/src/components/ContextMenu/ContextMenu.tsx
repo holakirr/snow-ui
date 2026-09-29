@@ -37,11 +37,11 @@ const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.SubTrigger
-    className={twMerge(popoverItemClasses, inset && 'pl-8', className)}
+    className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
     {...props}
   >
     {children}
-    <ArrowRightIcon className="ml-auto" />
+    <ArrowRightIcon className="ms-auto rtl:-scale-x-100" />
   </CtxMenuPrimitive.SubTrigger>
 )
 ContextMenuSubTrigger.displayName = CtxMenuPrimitive.SubTrigger.displayName
@@ -92,7 +92,7 @@ const ContextMenuItem: FC<ContextMenuItemProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.Item
-    className={twMerge(itemClasses, inset && 'pl-8', className)}
+    className={twMerge(itemClasses, inset && 'ps-8', className)}
     {...props}
   />
 )
@@ -108,11 +108,11 @@ const ContextMenuCheckboxItem: FC<ContextMenuCheckboxItemProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.CheckboxItem
-    className={twMerge(itemClasses, 'pl-8', className)}
+    className={twMerge(itemClasses, 'ps-8', className)}
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex size-4 items-center justify-center">
+    <span className="absolute start-2 flex size-4 items-center justify-center">
       <CtxMenuPrimitive.ItemIndicator>
         <Check />
       </CtxMenuPrimitive.ItemIndicator>
@@ -130,10 +130,10 @@ const ContextMenuRadioItem: FC<ContextMenuRadioItemProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.RadioItem
-    className={twMerge(itemClasses, 'pl-8', className)}
+    className={twMerge(itemClasses, 'ps-8', className)}
     {...props}
   >
-    <span className="absolute left-2 flex size-4 items-center justify-center">
+    <span className="absolute start-2 flex size-4 items-center justify-center">
       <CtxMenuPrimitive.ItemIndicator>
         <span className="block size-1.5 rounded-full bg-current" />
       </CtxMenuPrimitive.ItemIndicator>
@@ -153,7 +153,7 @@ const ContextMenuLabel: FC<ContextMenuLabelProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.Label
-    className={twMerge(popoverLabelClasses, inset && 'pl-8', className)}
+    className={twMerge(popoverLabelClasses, inset && 'ps-8', className)}
     {...props}
   />
 )
@@ -177,7 +177,7 @@ type ContextMenuShortcutProps = KBDProps
 const ContextMenuShortcut: FC<ContextMenuShortcutProps> = ({
   className,
   ...props
-}) => <KBD className={twMerge('ml-auto', className)} {...props} />
+}) => <KBD className={twMerge('ms-auto', className)} {...props} />
 ContextMenuShortcut.displayName = 'ContextMenuShortcut'
 
 export {

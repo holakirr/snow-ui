@@ -68,8 +68,8 @@ const TableRow: FC<TableRowProps> = ({ className, ...props }) => (
   <tr
     className={twMerge(
       '[&>td]:transition-colors',
-      'hover:[&>td]:bg-black-4 hover:[&>td:first-child]:rounded-l-12 hover:[&>td:last-child]:rounded-r-12',
-      'data-[state=selected]:[&>td]:bg-black-4 data-[state=selected]:[&>td:first-child]:rounded-l-12 data-[state=selected]:[&>td:last-child]:rounded-r-12',
+      'hover:[&>td]:bg-black-4 hover:[&>td:first-child]:rounded-s-12 hover:[&>td:last-child]:rounded-e-12',
+      'data-[state=selected]:[&>td]:bg-black-4 data-[state=selected]:[&>td:first-child]:rounded-s-12 data-[state=selected]:[&>td:last-child]:rounded-e-12',
       className,
     )}
     {...props}
@@ -122,7 +122,7 @@ const TableHead: FC<TableHeadProps> = ({
     <th
       aria-sort={sortable ? ARIA_SORT[sort] : undefined}
       className={twMerge(
-        'h-10 px-3 py-2 text-left align-middle font-normal text-secondary border-b border-black-20',
+        'h-10 px-3 py-2 text-start align-middle font-normal text-secondary border-b border-black-20',
         className,
       )}
       {...props}
@@ -153,7 +153,7 @@ const TableCell: FC<TableCellProps> = ({ className, ...props }) => (
   <td
     role={ROLES.cell}
     className={twMerge(
-      'h-10 px-3 py-2 align-middle font-normal text-black border-b border-black-4 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+      'h-10 px-3 py-2 align-middle font-normal text-black border-b border-black-4 [&:has([role=checkbox])]:pe-0 [&>[role=checkbox]]:translate-y-[2px]',
       className,
     )}
     {...props}

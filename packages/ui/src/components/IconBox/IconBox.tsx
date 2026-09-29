@@ -32,61 +32,62 @@ type SizeSpec = {
 // Figma "Icon" (set 33138:1011). With Background the box is
 // 12→20, 16→24, 20→28, 24→32, 28→36, 32→40 (padding 4), 40→56, 48→64
 // (padding 8) and 80→104 (padding 12). The Badge (a 16/20/24 Dot) sits on the
-// top-right corner; its offset depends on the size and the background.
+// top end corner (top right; top left in right-to-left text); its offset
+// depends on the size and the background.
 const sizeSpecs: { [K in IconBoxSize]: SizeSpec } = {
   12: {
     icon: 'size-3',
     background: 'p-1 rounded-8',
     badge: 'size-4',
-    badgeOffset: ['-top-2 -right-2', '-top-1 -right-1'],
+    badgeOffset: ['-top-2 -end-2', '-top-1 -end-1'],
   },
   16: {
     icon: 'size-4',
     background: 'p-1 rounded-8',
     badge: 'size-4',
-    badgeOffset: ['-top-2 -right-2', '-top-1 -right-1'],
+    badgeOffset: ['-top-2 -end-2', '-top-1 -end-1'],
   },
   20: {
     icon: 'size-5',
     background: 'p-1 rounded-8',
     badge: 'size-4',
-    badgeOffset: ['top-[-7px] right-[-7px]', 'top-[-3px] right-[-3px]'],
+    badgeOffset: ['top-[-7px] end-[-7px]', 'top-[-3px] end-[-3px]'],
   },
   24: {
     icon: 'size-6',
     background: 'p-1 rounded-12',
     badge: 'size-4',
-    badgeOffset: ['top-[-6px] right-[-6px]', 'top-[-2px] right-[-2px]'],
+    badgeOffset: ['top-[-6px] end-[-6px]', 'top-[-2px] end-[-2px]'],
   },
   28: {
     icon: 'size-7',
     background: 'p-1 rounded-12',
     badge: 'size-4',
-    badgeOffset: ['top-[-5px] right-[-5px]', 'top-[-1px] right-[-1px]'],
+    badgeOffset: ['top-[-5px] end-[-5px]', 'top-[-1px] end-[-1px]'],
   },
   32: {
     icon: 'size-8',
     background: 'p-1 rounded-12',
     badge: 'size-4',
-    badgeOffset: ['-top-1 -right-1', 'top-0 right-0'],
+    badgeOffset: ['-top-1 -end-1', 'top-0 end-0'],
   },
   40: {
     icon: 'size-10',
     background: 'p-2 rounded-16',
     badge: 'size-4',
-    badgeOffset: ['top-[-3px] right-[-3px]', 'top-[5px] right-[5px]'],
+    badgeOffset: ['top-[-3px] end-[-3px]', 'top-[5px] end-[5px]'],
   },
   48: {
     icon: 'size-12',
     background: 'p-2 rounded-20',
     badge: 'size-5',
-    badgeOffset: ['top-[-2px] right-[-2px]', 'top-[6px] right-[6px]'],
+    badgeOffset: ['top-[-2px] end-[-2px]', 'top-[6px] end-[6px]'],
   },
   80: {
     icon: 'size-20',
     background: 'p-3 rounded-28',
     badge: 'size-6',
-    badgeOffset: ['top-[2px] right-[2px]', 'top-[14px] right-[14px]'],
+    badgeOffset: ['top-[2px] end-[2px]', 'top-[14px] end-[14px]'],
   },
 }
 
@@ -109,8 +110,9 @@ export type IconBoxProps = ComponentProps<'span'> & {
   background?: boolean
 
   /**
-   * Show a badge on the top-right corner: `true` renders the Figma dot, any
-   * other node (e.g. a `<Badge>` with a count) is centred on the same spot.
+   * Show a badge on the top end corner (top right; top left in right-to-left
+   * text): `true` renders the Figma dot, any other node (e.g. a `<Badge>`
+   * with a count) is centred on the same spot.
    */
   badge?: boolean | ReactNode
 

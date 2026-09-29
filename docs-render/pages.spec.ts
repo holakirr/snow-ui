@@ -200,12 +200,18 @@ function collectErrors() {
       errors,
     }
   }
+  const page = describe(window)
+  // An inline story that throws shows the error in place of the story.
+  for (const block of document.querySelectorAll('[data-story-block] > pre')) {
+    const id = block.parentElement?.id.replace(/^story--|--primary$/g, '')
+    const message = block.textContent?.split(/\s+at\s/)[0]
+    page.errors.push(`inline story ${id} shows an error: ${message}`)
+  }
   const stories = Array.from(document.querySelectorAll('iframe'), (iframe) => {
     if (!iframe.contentWindow) throw new Error(`${iframe.id} is detached`)
     return describe(iframe.contentWindow)
   })
   const inStories = new Set(stories.flatMap((story) => story.errors))
-  const page = describe(window)
   page.errors = page.errors.filter((error) => !inStories.has(error))
   return [page, ...stories].flatMap(({ where, errors }) =>
     errors.map((error) => `${where}: ${error}`),

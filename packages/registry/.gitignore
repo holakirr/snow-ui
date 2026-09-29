@@ -1,0 +1,2 @@
+# Staged sources and registry.json of `bun run registry:build`.
+.build/

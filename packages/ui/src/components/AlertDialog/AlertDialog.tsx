@@ -1,7 +1,7 @@
 'use client'
 
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
-import type { ComponentProps, ComponentPropsWithoutRef, FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import type { ButtonVariant } from '../../types'
 import { twMerge } from '../../utils/tw-merge'
 import { Button, type ButtonProps } from '../Button'
@@ -25,7 +25,7 @@ const AlertDialogPortal = AlertDialogPrimitive.Portal
  * either.
  */
 const AlertDialogOverlay: FC<
-  ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Overlay>
+  ComponentProps<typeof AlertDialogPrimitive.Overlay>
 > = ({ className, onMouseDown, ...props }) => (
   <AlertDialogPrimitive.Overlay
     className={twMerge(dialogOverlayClasses, dialogMotionClasses, className)}
@@ -46,7 +46,7 @@ AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName
  * Opening focuses `AlertDialogCancel`; a click on the mask doesn't close it.
  */
 const AlertDialogContent: FC<
-  ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content>
+  ComponentProps<typeof AlertDialogPrimitive.Content>
 > = ({ className, ...props }) => {
   const { dir } = useSnowUI()
 

@@ -1,7 +1,7 @@
 'use client'
 
 import * as ProgressPrimitive from '@radix-ui/react-progress'
-import type { ComponentPropsWithoutRef, FC } from 'react'
+import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
 import {
@@ -21,7 +21,7 @@ export type ProgressCircleSize = RingSize
  * Props for the ProgressCircle component.
  */
 export type ProgressCircleProps = Omit<
-  ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>,
+  ComponentProps<typeof ProgressPrimitive.Root>,
   'value' | 'max' | 'getValueLabel' | 'children'
 > &
   ProgressValueProps & {

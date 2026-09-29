@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 
 import { Link } from './Link'
 
@@ -106,5 +106,80 @@ describe('Link', () => {
       'tabindex',
       '0',
     )
+  })
+
+  it('activates a link without an href with Enter, not Space', () => {
+    const onClick = vi.fn()
+    render(<Link onClick={onClick}>Open</Link>)
+    const link = screen.getByRole('link', { name: 'Open' })
+
+    fireEvent.keyDown(link, { key: ' ' })
+    expect(onClick).not.toHaveBeenCalled()
+
+    fireEvent.keyDown(link, { key: 'Enter' })
+    expect(onClick).toHaveBeenCalledTimes(1)
+
+    // A held key clicks once.
+    fireEvent.keyDown(link, { key: 'Enter', repeat: true })
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps its own onKeyDown, which can prevent the activation', () => {
+    const onClick = vi.fn()
+    const onKeyDown = vi.fn((event) => event.preventDefault())
+    render(
+      <Link onClick={onClick} onKeyDown={onKeyDown}>
+        Open
+      </Link>,
+    )
+
+    fireEvent.keyDown(screen.getByRole('link', { name: 'Open' }), {
+      key: 'Enter',
+    })
+
+    expect(onKeyDown).toHaveBeenCalledTimes(1)
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it('leaves Enter to elements that activate themselves', () => {
+    const onClick = vi.fn()
+    render(
+      <>
+        <Link href="/docs" onClick={onClick}>
+          Docs
+        </Link>
+        <Link asChild>
+          <button type="button" onClick={onClick}>
+            Menu
+          </button>
+        </Link>
+      </>,
+    )
+
+    // The browser clicks these on Enter itself; a second click would run
+    // onClick twice.
+    fireEvent.keyDown(screen.getByRole('link', { name: 'Docs' }), {
+      key: 'Enter',
+    })
+    fireEvent.keyDown(screen.getByRole('link', { name: 'Menu' }), {
+      key: 'Enter',
+    })
+
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it('activates an asChild element without an href with Enter', () => {
+    const onClick = vi.fn()
+    render(
+      <Link asChild onClick={onClick}>
+        <span>Home</span>
+      </Link>,
+    )
+
+    fireEvent.keyDown(screen.getByRole('link', { name: 'Home' }), {
+      key: 'Enter',
+    })
+
+    expect(onClick).toHaveBeenCalledTimes(1)
   })
 })

@@ -7,6 +7,7 @@ import {
   type ComponentProps,
   type FC,
   isValidElement,
+  type KeyboardEvent,
   type ReactNode,
 } from 'react'
 import { ROLES } from '../../constants'
@@ -59,6 +60,30 @@ type LinkProps = ComponentProps<'a'> &
     asChild?: boolean
   }
 
+/** Elements whose Enter already activates them (a router's <a href>…). */
+const activatesItself =
+  'a[href], area[href], button, input, select, textarea, summary'
+
+/**
+ * Enter clicks a link that has no `href` (the WAI-ARIA link pattern), so its
+ * `onClick` runs from the keyboard too. Space doesn't, as for a link; a
+ * held key clicks once.
+ */
+const activateOnEnter = (event: KeyboardEvent<HTMLElement>) => {
+  const link = event.currentTarget
+  if (
+    event.defaultPrevented ||
+    event.key !== 'Enter' ||
+    event.repeat ||
+    event.target !== link ||
+    link.matches(activatesItself)
+  ) {
+    return
+  }
+  event.preventDefault()
+  link.click()
+}
+
 /**
  * Link component displays a text link. `external` links open in a new tab
  * (`target="_blank"`, `rel="noopener noreferrer"`, both overridable) and tell
@@ -105,16 +130,26 @@ const Link: FC<LinkProps> = ({
   )
 
   // An <a href> is a focusable link already. Without an `href` (on the
-  // link, or on the `asChild` element) `role` and `tabIndex` keep it one.
+  // link, or on the `asChild` element) `role` and `tabIndex` keep it one,
+  // and Enter activates it like a link (it has no activation of its own).
   const href = asChild
-    ? isValidElement<{ href?: string }>(children) && children.props.href
+    ? isValidElement<{ href?: string }>(children)
+      ? children.props.href
+      : undefined
     : props.href
+  const { onKeyDown } = props
   const linkProps = {
     // Marks the text link for tooling, e.g. Storybook's target-size check.
     'data-slot': 'link',
     ...(href == null && { role: ROLES.link, tabIndex: 0 }),
     ...(isExternal && { target: '_blank', rel: 'noopener noreferrer' }),
     ...props,
+    ...(href == null && {
+      onKeyDown: (event: KeyboardEvent<HTMLAnchorElement>) => {
+        onKeyDown?.(event)
+        activateOnEnter(event)
+      },
+    }),
   }
 
   if (asChild) {

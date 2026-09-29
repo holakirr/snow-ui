@@ -74,9 +74,19 @@ Both have a 16px radius, an 8px gap and a 10px background blur. Set the width wi
 ## Accessibility
 
 - The input is `type="search"`, so its role is `searchbox`. Give it a name with `aria-label` or a [Label](?path=/docs/components-label--docs) with `htmlFor` and the same `id`: the placeholder ("Search" by default) is not a label.
-- **Escape** clears the field while it has a value: it calls `onChange` and `onValueChange` with an empty value, then `onClear`, and keeps the focus. On an empty field Search doesn't handle Escape, so it reaches your other handlers. Call `event.preventDefault()` in your `onKeyDown` to keep the value.
-- The clear button is a `<button type="button">` after the input in the tab order, named by `clearLabel` ("Clear search" by default, also its `title`). After a click, the focus returns to the input.
+- The clear button is a `<button type="button">` named by `clearLabel` ("Clear search" by default, also its `title`). After a click, the focus returns to the input.
 - The shortcut hint is `aria-hidden`. If the shortcut matters to keyboard users, describe it elsewhere, e.g. with `aria-keyshortcuts` on the input.
+
+### Keyboard
+
+The `shortcut` keys are only a hint: Search doesn't bind them.
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the input, then to the controls in `endContent` and to the clear button (shown while the field has a value) |
+| Escape | clear the field while it has a value: `onChange` and `onValueChange` get an empty value, then `onClear` runs, and the focus stays. Call `event.preventDefault()` in your `onKeyDown` to keep the value. On an empty field Search leaves Escape to your handlers |
+| Enter, Space | on the clear button: clear the field; the focus returns to the input |
+| Enter | in the input: submit the form it is in, when the form has a submit button or this is its only text field (the browser's implicit submission) |
 
 ### Deviations from the Figma kit
 
@@ -128,5 +138,7 @@ Pass `defaultValue` to leave the value to the field, or `value` with `onChange(e
 - [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the messages for the placeholder and the clear button.
 
 ## Props
+
+Search takes the props below and the attributes of the `<input type="search">` it renders, which gets every other prop (`value`, `defaultValue`, `onChange`, `placeholder`, `disabled`, `readOnly`, `ref`). `className` styles the field `<div>` and `inputClassName` the input. `searchStyles({ variant, size })` returns the field's classes.
 
 <Controls />

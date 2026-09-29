@@ -1,5 +1,7 @@
-import { Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { FormField } from '../../react-hook-form'
+import { Form, FormControl, FormDescription, FormItem, FormLabel, FormMessage } from './Form'
 import * as FormStories from './Form.stories'
 
 <Meta of={FormStories} />
@@ -107,6 +109,16 @@ const form = useForm({ defaultValues: { username: '' } })
 - The Slider passes `aria-describedby` and `aria-invalid` on to its thumbs, and the RadioGroup keeps them on its `role="radiogroup"`.
 - The control must be one element that a `<label for>` can name: Input, Textarea, InputSmall, Search, a `SelectTrigger`, a Checkbox or a Switch. The RadioGroup and Slider roots are `<div>`s: name them with `aria-labelledby` and the id of a visible label instead.
 
+### Keyboard
+
+The parts add no key handling: these keys are the browser's, and each control has its own (see its page).
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift + Tab | move to the next / previous control in DOM order; labels, descriptions and messages aren't tab stops |
+| Enter | in a text field: submit the form, when it has a submit button or a single text field (the browser's implicit submission); on the submit button: submit the form. If the submit fails validation, the react-hook-form adapter moves the focus to the first invalid field (react-hook-form's `shouldFocusError`, on by default); the plain parts don't move it |
+| Space | on the submit button: submit the form, as Enter does |
+
 ### Deviations from the Figma kit
 
 The full table is in the package README.
@@ -157,13 +169,58 @@ The full table is in the package README.
 
 ## Props
 
-The stories render a whole form, so there are no controls here. The parts' own props:
+Each part takes the props below, `className` (merged with the part's classes) and the attributes of the element it renders. The stories render a whole form, so the tables have no controls.
 
-| Part | Props |
-| --- | --- |
-| `FormItem` | `error` (a message; truthy marks the field invalid), `invalid` (wins over `error`), `name`, and `<div>` attributes |
-| `FormFieldState` | `value`: `{ name, error, invalid }`, the same fields as `FormItem` |
-| `FormLabel` | the props of [Label](?path=/docs/components-label--docs); `htmlFor` is set for you |
-| `FormControl` | one child; props are merged into it |
-| `FormDescription`, `FormMessage` | `<p>` attributes and children |
-| `FormField` (adapter) | the props of react-hook-form's `Controller`: `control`, `name`, `rules`, `render`, `defaultValue`… |
+### Form
+
+A plain `<form>`: every prop goes to it (`onSubmit`, `action`, `noValidate`…).
+
+<ArgTypes of={Form} />
+
+### FormItem
+
+A `<div>` that stacks the field's parts 8px apart and holds its state: `error` (a message; a truthy value marks the field invalid), `invalid` (wins over `error`) and `name`. These props win over a `FormFieldState` around the item.
+
+<ArgTypes of={FormItem} />
+
+### FormFieldState
+
+A React context provider, with no props table: `value={{ name, error, invalid }}` gives the `FormItem`s inside it the field's state, the same fields as `FormItem`'s props. Adapters use it; the react-hook-form `FormField` wraps its `render` output in one.
+
+### FormLabel
+
+A [Label](?path=/docs/components-label--docs) whose `htmlFor` points at the control, `red-text` while the field is invalid. It takes Label's props.
+
+<ArgTypes of={FormLabel} />
+
+### FormControl
+
+A Radix Slot around exactly one control: it renders the child with the item's `id`, `aria-invalid` and `aria-describedby`, and merges its own props into it.
+
+<ArgTypes of={FormControl} />
+
+### FormDescription
+
+A 12/16 `<p>` in `text-secondary`, linked to the control by `aria-describedby`.
+
+<ArgTypes of={FormDescription} />
+
+### FormMessage
+
+A 12/16 `<p>` in `red-text`, linked to the control while the field is invalid. It shows `error`, or its children; it renders nothing when both are empty.
+
+<ArgTypes of={FormMessage} />
+
+### Form (react-hook-form)
+
+The adapter's `Form` is react-hook-form's `FormProvider`, with no props table: spread `useForm()` into it (`<Form {...form}>`) and render your own `<form>` inside.
+
+### FormField
+
+The adapter's field: react-hook-form's [`Controller`](https://react-hook-form.com/docs/usecontroller/controller), wrapped in a `FormFieldState` that passes the field's `name`, error message and `invalid` to the `FormItem` that `render` returns.
+
+<ArgTypes of={FormField} />
+
+### Re-exported parts
+
+`@holakirr/snow-ui/react-hook-form` also exports `FormItem`, `FormLabel`, `FormControl`, `FormDescription`, `FormMessage` and `useFormField`: the parts above, unchanged, so one import serves the whole form.

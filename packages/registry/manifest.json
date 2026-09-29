@@ -296,7 +296,7 @@
       "type": "registry:ui",
       "title": "Form",
       "files": ["components/Form/Form.tsx", "components/Form/index.ts"],
-      "dependencies": ["@radix-ui/react-slot"],
+      "dependencies": ["@radix-ui/react-compose-refs", "@radix-ui/react-slot"],
       "registryDependencies": ["label", "snow-core", "text"],
       "import": "components/Form",
       "exports": [
@@ -310,6 +310,7 @@
         "useFormField"
       ],
       "types": [
+        "FormControlProps",
         "FormDescriptionProps",
         "FormFieldStateValue",
         "FormItemProps",
@@ -385,6 +386,7 @@
         "basicInputClasses",
         "disabledInputClasses",
         "focusInputClasses",
+        "invalidInputClasses",
         "staticInputClasses"
       ],
       "types": ["InputProps"],
@@ -396,7 +398,7 @@
       "title": "InputSmall",
       "files": ["components/Input/InputSmall.tsx"],
       "dependencies": ["class-variance-authority"],
-      "registryDependencies": ["snow-core"],
+      "registryDependencies": ["input", "snow-core"],
       "import": "components/Input/InputSmall",
       "exports": ["InputSmall"],
       "types": ["InputSmallProps"],
@@ -424,7 +426,7 @@
         "@phosphor-icons/react",
         "@radix-ui/react-select"
       ],
-      "registryDependencies": ["popover", "snow-core"],
+      "registryDependencies": ["input", "popover", "snow-core"],
       "import": "components/Input/Select",
       "exports": [
         "Select",
@@ -470,6 +472,7 @@
       "registryDependencies": ["snow-core"],
       "import": "components/Input/Switch",
       "exports": ["Switch"],
+      "types": ["SwitchProps"],
       "docs": "components-input-switch"
     },
     {
@@ -1018,7 +1021,12 @@
         "FormMessage",
         "useFormField"
       ],
-      "types": ["FormDescriptionProps", "FormItemProps", "FormMessageProps"]
+      "types": [
+        "FormControlProps",
+        "FormDescriptionProps",
+        "FormItemProps",
+        "FormMessageProps"
+      ]
     },
     {
       "name": "snow-date",
@@ -1063,6 +1071,7 @@
         "constants/statuses.ts",
         "constants/variants.ts",
         "types/index.ts",
+        "utils/accessible-name.ts",
         "utils/children.ts",
         "utils/deprecation.ts",
         "utils/direction.ts",

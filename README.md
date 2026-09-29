@@ -117,7 +117,7 @@ Publishing uses [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishe
 | Browsers | Chrome and Edge 111+, Safari 16.4+ (macOS, iOS), Firefox 128+: the baseline of Tailwind CSS v4, which the styles need | Chromium (every story, both themes, axe, screenshots); Firefox and WebKit (every story, play functions) |
 | Tailwind CSS | v4 (`theme.css`), or none (the precompiled `index.css`) | both |
 | Server rendering | React 19 SSR and hydration (Next.js App Router, React Router…) | every ui story, rendered in Node.js and hydrated in Chromium |
-| Node.js | 20.19+, 22 and 24 (Active and Maintenance LTS) | 24 |
+| Node.js | 20.19+, 22 and 24 (Active and Maintenance LTS) | the GitHub runner's default Node.js (tests), 24 (release builds); no version matrix yet |
 
 **Contrast.** The default theme reproduces the SnowUI Figma kit. Where the kit's colours fall short of WCAG AA contrast, the high-contrast mode meets it: it follows the user's `prefers-contrast: more` setting, or turn it on for a page or a scope with `data-contrast="more"`.
 

@@ -64,7 +64,7 @@ Only the latest minor of the current major is fixed: a fix for 5.2 ships as 5.2.
 | **Browsers** | The baseline of Tailwind CSS v4, which the styles need (`@layer`, `color-mix()`, `@property`): Chrome and Edge 111+, Safari 16.4+ (macOS and iOS), Firefox 128+. | Chromium (every story in both themes, axe, visual regression), Firefox and WebKit (every story, play functions) |
 | **Tailwind CSS** | v4 for `theme.css`, or no Tailwind at all with the precompiled `index.css`. | Both, in `test:dist` |
 | **Server rendering** | React 19 server rendering and hydration (Next.js App Router, React Router, any `react-dom/server` setup). | Every ui story rendered in Node.js and hydrated in Chromium (`test:ssr`) |
-| **Node.js** (server rendering, builds, tests) | The Node.js versions in Active or Maintenance LTS: today 20.19+, 22 and 24. The packages' `engines` field still says `>=18`; 6.0 raises it to `>=20.19`. | Node.js 24 |
+| **Node.js** (server rendering, builds, tests) | The Node.js versions in Active or Maintenance LTS: today 20.19+, 22 and 24. The packages' `engines` field still says `>=18`; 6.0 raises it to `>=20.19`. | The GitHub runner's default Node.js for the tests and 24 for the release builds; there is no matrix of Node.js versions yet. |
 
 Supporting a new version of React, Node.js or a browser is a minor release. Dropping one is a major release, except for a Node.js version that has reached its end of life upstream, which may be dropped in a minor release.
 

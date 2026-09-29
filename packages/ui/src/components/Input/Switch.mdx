@@ -53,10 +53,17 @@ import { Label, Switch } from '@holakirr/snow-ui'
 
 ## Accessibility
 
-- It renders a `<button type="button" role="switch">` with `aria-checked`. It is in the tab order, and **Space** and **Enter** toggle it.
+- It renders a `<button type="button" role="switch">` with `aria-checked`. It is in the tab order.
 - Give it a name: a `Label` with `htmlFor` and the same `id`, or `aria-label` (as the stories do). Name the setting, not the state: "Airplane mode", not "Turn on airplane mode".
 - Inside a `<form>`, a hidden native checkbox carries `name` and `value` (default `on`), so the form submits it.
 - `disabled` removes it from the tab order.
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the switch |
+| Space, Enter | toggle it (the native `<button>` turns both into a click) |
 
 ### Deviations from the Figma kit
 
@@ -103,5 +110,7 @@ Pass `defaultChecked` to leave the state to the switch, or `checked` with `onChe
 - [Label](?path=/docs/components-label--docs): the visible label.
 
 ## Props
+
+Switch is the [Radix Switch](https://www.radix-ui.com/primitives/docs/components/switch#api-reference) root with the Figma styles. It takes the Radix props below, `className` (merged with its classes) and the attributes of the `<button>` it renders; `name`, `value`, `form` and `disabled` also go to the hidden native checkbox.
 
 <Controls />

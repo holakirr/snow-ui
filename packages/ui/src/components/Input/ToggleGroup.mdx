@@ -1,5 +1,6 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { ToggleGroupItem } from './ToggleGroup'
 import * as ToggleGroupStories from './ToggleGroup.stories'
 
 <Meta of={ToggleGroupStories} />
@@ -78,9 +79,19 @@ Every variant and size, with the middle item on:
 ## Accessibility
 
 - `type="single"` renders a `radiogroup` of `radio` items (`aria-checked`); `type="multiple"` renders a `toolbar` of toggle buttons (`aria-pressed`).
-- The group is one tab stop, on an item that is on (or the first item). The arrow keys move focus between the items and wrap around; Home and End go to the first and last. Space and Enter turn the focused item on or off: the arrow keys don't select.
 - Name the group with `aria-label` or `aria-labelledby`, and every icon-only item with `aria-label` (an unnamed one logs a development warning).
 - A single group lets the user turn the last item off (`onValueChange('')`). To keep one item on, control `value` and ignore the empty value.
+
+### Keyboard
+
+The group is one tab stop (roving focus); with `rovingFocus={false}` every item is a tab stop and the arrow keys do nothing:
+
+| Key | Action |
+| --- | --- |
+| Tab | move into the group, onto an item that is on (otherwise the item focused last, or the first); press again to leave it |
+| ArrowRight / ArrowLeft | move focus to the next / previous item, skipping disabled ones; focus wraps around (`loop`, on by default). ArrowDown / ArrowUp do the same unless `orientation` is set, which keeps only its pair of arrows. In right-to-left text ArrowLeft moves to the next item |
+| Home / End | move focus to the first / last item (PageUp / PageDown too) |
+| Space, Enter | turn the focused item on or off (in a single group, an item turned on replaces the one that was on); the arrow keys don't select |
 
 <Canvas of={ToggleGroupStories.Single} />
 
@@ -130,4 +141,16 @@ The full table is in the package README.
 
 ## Props
 
+The parts are the [Radix ToggleGroup](https://www.radix-ui.com/primitives/docs/components/toggle-group#api-reference) parts with the Figma styles: they take the Radix props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### ToggleGroup
+
+The group, a `<div>` (a `radiogroup` or a `toolbar`): `type` (required) picks single or multiple selection, held in `value` with `onValueChange` (controlled) or `defaultValue` (uncontrolled). `variant`, `size` and `iconOnly` pass to every item. `rovingFocus` and `loop` are on by default.
+
 <Controls />
+
+### ToggleGroupItem
+
+An item, a toggle `<button>` (a `radio` in a single group); `value` names it in the group's value. Its own `variant`, `size` and `iconOnly` win over the group's.
+
+<ArgTypes of={ToggleGroupItem} />

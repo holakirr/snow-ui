@@ -60,10 +60,18 @@ import { Checkbox, Label } from '@holakirr/snow-ui'
 ## Accessibility
 
 - It renders a `<button type="button" role="checkbox">` with `aria-checked` (`"mixed"` when indeterminate). It is in the tab order.
-- **Space** toggles it; **Enter** doesn't, as WAI-ARIA recommends for checkboxes. Clicking or pressing Space on an indeterminate checkbox checks it; after that it toggles between unchecked and checked.
+- Clicking an indeterminate checkbox checks it; after that it toggles between unchecked and checked.
 - Give it a name: a `Label` with `htmlFor` and the same `id`, or `aria-label` when there is no visible label.
 - Inside a `<form>`, a hidden native checkbox carries `name` and `value` (default `on`), so the form submits it.
 - `disabled` removes it from the tab order.
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the checkbox |
+| Space | toggle it; an indeterminate checkbox becomes checked |
+| Enter | does nothing: Radix prevents it, as WAI-ARIA recommends for checkboxes |
 
 ### Deviations from the Figma kit
 
@@ -111,5 +119,7 @@ Pass `defaultChecked` to leave the state to the checkbox, or `checked` with `onC
 - [Label](?path=/docs/components-label--docs) and [Form](?path=/docs/components-form--docs): the label, description and error message.
 
 ## Props
+
+Checkbox is the [Radix Checkbox](https://www.radix-ui.com/primitives/docs/components/checkbox#api-reference) root with the Figma styles. It takes the Radix props below, `className` (merged with its classes) and the attributes of the `<button>` it renders; `name`, `value`, `form` and `disabled` also go to the hidden native checkbox.
 
 <Controls />

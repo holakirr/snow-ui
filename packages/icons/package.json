@@ -1,7 +1,7 @@
 {
   "name": "@holakirr/snow-ui-icons",
   "private": false,
-  "version": "2.1.1",
+  "version": "2.2.0",
   "main": "./dist/main.cjs",
   "module": "./dist/main.js",
   "types": "./dist/main.d.cts",

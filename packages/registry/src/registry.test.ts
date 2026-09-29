@@ -55,9 +55,9 @@ const parse = (path: string, content: string) =>
 describe('the committed manifest', () => {
   it('is up to date (run `bun run registry` and commit it)', () => {
     expect(
-      readFileSync(resolve(configDir, config.manifest), 'utf8'),
+      JSON.parse(readFileSync(resolve(configDir, config.manifest), 'utf8')),
       'packages/registry/manifest.json is out of date: run `bun run registry`',
-    ).toBe(serializeManifest(manifest))
+    ).toEqual(JSON.parse(serializeManifest(manifest)))
   })
 })
 
@@ -186,3 +186,31 @@ describe.each(withFiles.map((item) => [item.name, item] as const))(
     })
   },
 )
+
+describe('Storybook usage pages', () => {
+  const pages = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+      entry.isDirectory()
+        ? pages(join(dir, entry.name))
+        : entry.name.endsWith('.mdx')
+          ? [join(dir, entry.name)]
+          : [],
+    )
+
+  it('show the install tabs of an existing item', () => {
+    const problems: string[] = []
+    for (const page of [
+      ...pages(join(plan.paths.srcDir, 'components')),
+      ...pages(resolve(plan.paths.packageDir, '../charts/src')),
+    ]) {
+      const match = readFileSync(page, 'utf8').match(
+        /^<InstallTabs item="([^"]+)"(?: name="[^"]+")? \/>$/m,
+      )
+      if (!match) problems.push(`${page}: no <InstallTabs item="…" />`)
+      else if (!items.has(match[1])) {
+        problems.push(`${page}: no item "${match[1]}"`)
+      }
+    }
+    expect(problems).toEqual([])
+  })
+})

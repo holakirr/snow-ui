@@ -7,6 +7,7 @@ import * as SnowUIProviderStories from './SnowUIProvider.stories'
 <Title />
 
 <FigmaLinks note="Not visual: it sets the components' built-in strings, the date locale and the text direction." />
+<InstallTabs item="snow-ui-provider" />
 
 SnowUIProvider localizes the components and sets their text direction. It takes `messages` (every string the components render on their own: accessible names, screen-reader text, placeholders, empty states), a date-fns `locale` for dates, and `dir`. It is optional: without it the components use the English `defaultMessages`, date-fns' `enUS` and left-to-right keyboard navigation. It renders no element of its own.
 

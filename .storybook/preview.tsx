@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react'
+import { InstallTabs } from './InstallTabs'
 import { StoryWrapper } from './StoryWrapper'
 import { withLocale } from './withLocale'
 import { withTheme } from './withTheme'
@@ -62,11 +63,13 @@ const preview: Preview = {
       },
     },
     layout: 'centered',
+    // Blocks that every MDX page can use without importing them.
+    docs: { components: { InstallTabs } },
     options: {
       storySort: {
         order: [
           'Guides',
-          ['Getting started', 'Theming', 'Localization and RTL'],
+          ['Getting started', 'Registry', 'Theming', 'Localization and RTL'],
           'Foundations',
           'Components',
           'Charts',

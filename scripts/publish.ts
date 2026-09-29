@@ -1,7 +1,9 @@
 /**
- * The publish step of `bun run release` (run by .github/workflows/release.yml
- * after the build): `changeset publish`, except for packages that are not on
- * npm yet.
+ * `changeset publish` or `changeset pack`, except for packages that are not
+ * on npm yet. The release workflow (.github/workflows/release.yml) packs in
+ * a job without write access (`pack`, after the build) and publishes the
+ * tarballs in another (`publish --from-pack-dir`), after checking them
+ * against the integrity the pack job recorded.
  *
  * Why: CI publishes with npm Trusted Publishing (OIDC, no token), and a
  * package's Trusted Publisher can only be configured on npmjs.com once the
@@ -17,11 +19,13 @@
  * `<name>@<version>` git tag; a 404 for a released package, or any other
  * npm error, fails the run before anything is published (publish-plan.ts).
  *
- *   bun scripts/publish.ts            # what `bun run release` runs
+ *   bun scripts/publish.ts [options]         # changeset publish (`bun run release`)
+ *   bun scripts/publish.ts pack --out-dir packs       # changeset pack
+ *   bun scripts/publish.ts --from-pack-dir packs      # publish those tarballs
  *   RELEASE_DRY_RUN=1 bun scripts/publish.ts   # only report what it would do
  *
- * Arguments are passed on to `changeset publish`: the canary job of
- * release.yml runs `bun scripts/publish.ts --tag canary --no-git-tag` after
+ * Other arguments are passed on to changesets: the canary job of release.yml
+ * runs `bun scripts/publish.ts --tag canary --no-git-tag` after
  * `changeset version --snapshot canary`.
  */
 import { spawnSync } from 'node:child_process'
@@ -31,8 +35,13 @@ import {
   readFileSync,
   writeFileSync,
 } from 'node:fs'
-import { join } from 'node:path'
-import { classifyPackage, isDryRun } from './publish-plan'
+import { join, resolve } from 'node:path'
+import {
+  classifyPackage,
+  isDryRun,
+  type PackedPlan,
+  tarballProblems,
+} from './publish-plan'
 
 interface WorkspacePackage {
   name: string
@@ -42,8 +51,17 @@ interface WorkspacePackage {
 
 const root = join(import.meta.dirname, '..')
 
-/** Extra `changeset publish` options, e.g. `--tag canary --no-git-tag`. */
-const publishArgs = process.argv.slice(2)
+/**
+ * The changesets command and its options: `pack …`, or `publish` with
+ * options such as `--tag canary --no-git-tag` or `--from-pack-dir <dir>`.
+ */
+const [command, ...commandArgs] =
+  process.argv[2] === 'pack'
+    ? process.argv.slice(2)
+    : ['publish', ...process.argv.slice(2)]
+
+/** Run by path: `bun <file>` (unlike `bun run`) doesn't put it on the PATH. */
+const changeset = join(root, 'node_modules/.bin/changeset')
 
 const packages: WorkspacePackage[] = readdirSync(join(root, 'packages'))
   .map((dir) => join(root, 'packages', dir, 'package.json'))
@@ -96,9 +114,30 @@ for (const pkg of unpublished) {
   }
 }
 
+// Publishing packed tarballs: only those whose contents are still what the
+// pack job recorded (sha256 of each tarball, in publish-plan.json).
+const packDirIndex = commandArgs.indexOf('--from-pack-dir')
+if (command === 'publish' && packDirIndex !== -1) {
+  const packDir = resolve(root, commandArgs[packDirIndex + 1] ?? '')
+  const plan = JSON.parse(
+    readFileSync(join(packDir, 'publish-plan.json'), 'utf8'),
+  ) as PackedPlan
+  const problems = tarballProblems(plan, (path) => {
+    try {
+      return readFileSync(join(packDir, path))
+    } catch {
+      return undefined
+    }
+  })
+  if (problems.length > 0) {
+    console.error(`Not publishing:\n${problems.join('\n')}`)
+    process.exit(1)
+  }
+}
+
 if (isDryRun(process.env.RELEASE_DRY_RUN)) {
   console.log(
-    `Would publish with changeset publish ${publishArgs.join(' ')}, skipping: ${
+    `Would run changeset ${[command, ...commandArgs].join(' ')}, skipping: ${
       unpublished.map((pkg) => pkg.name).join(', ') || 'none'
     }`,
   )
@@ -114,16 +153,17 @@ try {
       `${JSON.stringify({ ...json, private: true }, null, 2)}\n`,
     )
   }
-  // Inherits stdout: changesets/action reads the "New tag:" lines from it.
-  const result = spawnSync('changeset', ['publish', ...publishArgs], {
+  // Inherits stdio and the environment: changesets/action reads what was
+  // published from the file CHANGESETS_OUTPUT names.
+  const result = spawnSync(changeset, [command, ...commandArgs], {
     cwd: root,
     stdio: 'inherit',
   })
   if (result.error) {
-    console.error(`Could not run changeset publish: ${result.error.message}`)
+    console.error(`Could not run changeset ${command}: ${result.error.message}`)
   } else if (result.status !== 0) {
     console.error(
-      `changeset publish exited with ${result.status ?? result.signal}`,
+      `changeset ${command} exited with ${result.status ?? result.signal}`,
     )
   }
   status = result.status ?? 1

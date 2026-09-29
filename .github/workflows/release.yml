@@ -67,9 +67,11 @@ on:
         description: >-
           release: version PR or publish (main and next only). canary:
           0.0.0-canary-<sha> snapshots of the pending changesets under the
-          `canary` dist-tag (any branch).
+          `canary` dist-tag (any branch). sbom: attach the SBOMs to the
+          GitHub releases of the versions at this ref (a release tag or the
+          release branch).
         type: choice
-        options: [release, canary]
+        options: [release, canary, sbom]
         default: release
 
 # One run at a time per branch (a workflow_run run's github.ref is the
@@ -93,6 +95,7 @@ jobs:
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       actions: write # dispatch this workflow
       contents: read # read the branch's head
@@ -117,8 +120,9 @@ jobs:
   # Check is still running, nothing happens: for main and next, its success
   # dispatches the release again.
   gate:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.mode != 'sbom'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       actions: read # list the Build Check runs
     outputs:
@@ -149,7 +153,13 @@ jobs:
             exit 1
           fi
 
-  release:
+  # Which half of a release this commit needs, decided as changesets/action
+  # decides it (scripts/release-mode.ts): `version` (changesets pending),
+  # `publish` (none) or `none` (only empty changesets). The halves run in
+  # separate jobs with separate permissions. A version PR is only ever built
+  # from the branch's head: re-running an old release run would otherwise
+  # force-push the version branch back to an old base.
+  plan:
     needs: gate
     # workflow_dispatch can target any branch; only ever version/publish from
     # main and next.
@@ -157,11 +167,54 @@ jobs:
       needs.gate.outputs.passed == 'true' && inputs.mode == 'release' &&
       (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/next')
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
-      contents: write # version commit/branch, tags, GitHub releases (+ SBOMs)
+      contents: read # the changesets, the branch's head
+    outputs:
+      mode: ${{ steps.mode.outputs.mode }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      # Only @changesets/read and @changesets/pre run here: no install scripts.
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Decide the release mode
+        id: mode
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mode=$(bun scripts/release-mode.ts)
+          head=$(gh api "repos/$GITHUB_REPOSITORY/branches/$GITHUB_REF_NAME" --jq .commit.sha)
+          if [ "$mode" = version ] && [ "$head" != "$GITHUB_SHA" ]; then
+            echo "::notice title=No version PR::$GITHUB_SHA is no longer the head of $GITHUB_REF_NAME ($head): the version PR is only built from the head, by that commit's release run."
+            mode=none
+          fi
+          echo "Release mode for $GITHUB_SHA: $mode"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+
+  # Changesets pending: open or update the "chore(release): version
+  # packages" PR (`bun run version-packages`: versions, CHANGELOG.md,
+  # bun.lock), then run Build Check on its branch: a PR opened with
+  # GITHUB_TOKEN triggers no workflows, and the ruleset requires Build
+  # Check's jobs on the PR's head commit. No npm access in this job.
+  version:
+    needs: plan
+    if: needs.plan.outputs.mode == 'version'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # the version branch
       pull-requests: write # open/update the version PR
       actions: write # dispatch Build Check on the version PR's branch
-      id-token: write # npm Trusted Publishing + provenance
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -178,17 +231,21 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
-          registry-url: https://registry.npmjs.org/
 
+      # `changeset version` and `bun install --lockfile-only` need no install
+      # scripts, which would run with this job's write token.
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install --frozen-lockfile --ignore-scripts
 
-      - name: Create version PR or publish to npm
+      # publish-script only shapes the PR's text ("merging publishes"): the
+      # plan job found changesets, so the action takes the version path. Were
+      # it to publish here, it would fail: no packs, no npm OIDC token.
+      - name: Create or update the version PR
         id: changesets
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           version-script: bun run version-packages
-          publish-script: bun run release
+          publish-script: bun scripts/publish.ts --from-pack-dir packs
           commit-message: "chore(release): version packages"
           pr-title: "chore(release): version packages"
 
@@ -196,7 +253,7 @@ jobs:
       # (changeset-release/<branch>), whose jobs report on the PR's head
       # commit. Superseded runs are cancelled (build-check.yml concurrency).
       - name: Run Build Check on the version PR
-        if: steps.changesets.outputs.published != 'true' && steps.changesets.outputs.pr-number != ''
+        if: steps.changesets.outputs.pr-number != ''
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: changeset-release/${{ github.ref_name }}
@@ -205,21 +262,283 @@ jobs:
           gh workflow run build-check.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
           echo "Dispatched Build Check on $BRANCH (PR #$PR)." >> "$GITHUB_STEP_SUMMARY"
 
-      # A CycloneDX SBOM of each published package: its production
-      # dependencies at the versions installed from bun.lock. Attached to the
-      # package's GitHub release (tag `<name>@<version>`) and kept as an
-      # artifact.
-      - name: Generate SBOMs
-        id: sbom
-        if: steps.changesets.outputs.published == 'true'
+  # Nothing pending: build the packages and pack the ones npm doesn't have
+  # yet, in a job that can't write to the repository or publish to npm, so
+  # the build toolchain (tsdown, Tailwind, Terrazzo…) never runs next to a
+  # write token or the npm OIDC token. `changeset pack` records each
+  # tarball's sha256 in packs/publish-plan.json.
+  pack:
+    needs: plan
+    if: needs.plan.outputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # scripts/publish.ts reads the release tags
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build packages
+        run: bun run build
+
+      # Packages that aren't on npm yet are left out (scripts/publish.ts).
+      - name: Pack the unpublished versions
+        run: bun scripts/publish.ts pack --out-dir packs
+
+      - name: Upload the packs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packs
+          path: packs
+          if-no-files-found: error
+          retention-days: 7
+
+  # Publishes the packed tarballs (after checking them against the recorded
+  # sha256) with npm Trusted Publishing and provenance, then pushes the
+  # `<name>@<version>` tags and creates a GitHub release per package. Only
+  # changesets, npm and scripts/publish.ts run here: no build, no install
+  # scripts.
+  publish:
+    needs: [plan, pack]
+    if: needs.plan.outputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # tags, GitHub releases
+      id-token: write # npm Trusted Publishing + provenance
+    outputs:
+      published: ${{ steps.changesets.outputs.published }}
+      published-packages: ${{ steps.changesets.outputs.published-packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # scripts/publish.ts reads the release tags
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Download the packs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: packs
+          path: packs
+
+      - name: Publish to npm
+        id: changesets
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          publish-script: bun scripts/publish.ts --from-pack-dir packs
+
+  # Before the release branch moves (and with it the site, see `promote`):
+  # the registry of this commit, installed with the pinned shadcn CLI into
+  # fresh apps against the versions now on npm, not local tarballs: the
+  # items' npm ranges must resolve and the published theme must style them.
+  verify:
+    needs: publish
+    if: needs.publish.outputs.published == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [next, vite, next-shadcn]
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # npm's CDN takes a moment to serve a new version everywhere.
+      - name: Wait for the published versions on npm
         env:
-          PUBLISHED: ${{ steps.changesets.outputs.published-packages }}
+          PUBLISHED: ${{ needs.publish.outputs.published-packages }}
         run: |
-          mapfile -t names < <(jq -r '.[].name' <<< "$PUBLISHED")
+          for spec in $(jq -r '.[] | "\(.name)@\(.version)"' <<< "$PUBLISHED"); do
+            for _ in $(seq 1 30); do
+              if [ "$(npm view "$spec" version 2>/dev/null)" != "" ]; then
+                echo "$spec is on npm"
+                continue 2
+              fi
+              sleep 10
+            done
+            echo "::error title=Not on npm::$spec isn't served by npm after 5 minutes."
+            exit 1
+          done
+
+      - name: Registry against npm (${{ matrix.app }})
+        run: bun packages/registry/smoke/smoke.ts --published --app ${{ matrix.app }} --work "$RUNNER_TEMP/registry-smoke"
+
+  # snow-ui.holakirr.com (Storybook, the /r registry, llms.txt) is Vercel's
+  # production deployment of the `release` branch: it moves only here, to
+  # the commit whose packages were just published and verified, so the site
+  # always matches npm `latest`. A fast-forward only (never a force push):
+  # an older release run finds the branch ahead and leaves it; a branch
+  # that doesn't lead to this commit is an error to resolve by hand.
+  promote:
+    needs: [publish, verify]
+    if: needs.publish.outputs.published == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # move the release branch
+    steps:
+      - name: Fast-forward the release branch to ${{ github.sha }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current=$(gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/heads/release" \
+            --jq '.[] | select(.ref == "refs/heads/release") | .object.sha')
+          if [ -z "$current" ]; then
+            gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" \
+              -f ref=refs/heads/release -f sha="$GITHUB_SHA" > /dev/null
+            echo "Created release at $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ "$current" = "$GITHUB_SHA" ]; then
+            echo "release is already at $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          status=$(gh api "repos/$GITHUB_REPOSITORY/compare/$current...$GITHUB_SHA" --jq .status)
+          case "$status" in
+            ahead)
+              gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/heads/release" \
+                -f sha="$GITHUB_SHA" -F force=false > /dev/null
+              echo "Fast-forwarded release from $current to $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            behind)
+              echo "::notice title=release not moved::release ($current) is already past $GITHUB_SHA: a newer release was promoted."
+              ;;
+            *)
+              echo "::error title=release has diverged::release ($current) is not an ancestor of $GITHUB_SHA ($status). Point it at a published release commit by hand (see CONTRIBUTING.md, Releases), then re-run this job."
+              exit 1
+              ;;
+          esac
+
+  # A CycloneDX SBOM of each published package (scripts/sbom.ts): what it
+  # pulls in, at the versions installed from bun.lock. Attached to the
+  # package's GitHub release (tag `<name>@<version>`) and kept as an
+  # artifact. Its own job, so that a failure is retried with "Re-run failed
+  # jobs" (the publish job's outputs are kept); for an older release, run
+  # this workflow with mode `sbom` on the release's tag or on `release`.
+  sbom:
+    needs: publish
+    if: >-
+      !cancelled() && (needs.publish.outputs.published == 'true' ||
+      (github.event_name == 'workflow_dispatch' && inputs.mode == 'sbom'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # upload the release assets
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      # npm sbom reads the installed tree; no install scripts needed.
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      # After a publish, the published packages. By hand, every package whose
+      # GitHub release for its version at this commit exists; only on a
+      # release tag or the release branch, whose lockfile is the release's.
+      - name: Choose the packages
+        id: packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLISHED: ${{ needs.publish.outputs.published-packages }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          if [ "$MODE" = sbom ]; then
+            case "$GITHUB_REF" in
+              refs/tags/*|refs/heads/release) ;;
+              *)
+                echo "::error title=Wrong ref::Run the sbom mode on a release tag or on the release branch, not on $GITHUB_REF."
+                exit 1
+                ;;
+            esac
+            names=()
+            for manifest in packages/*/package.json; do
+              name=$(jq -r 'select(.private != true) | .name' "$manifest")
+              version=$(jq -r .version "$manifest")
+              [ -n "$name" ] || continue
+              if gh release view "$name@$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+                names+=("$name")
+              fi
+            done
+          else
+            mapfile -t names < <(jq -r '.[].name' <<< "$PUBLISHED")
+          fi
+          if [ "${#names[@]}" -eq 0 ]; then
+            echo "::error title=No packages::No released package to describe at $GITHUB_SHA."
+            exit 1
+          fi
+          echo "names=${names[*]}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate SBOMs
+        env:
+          NAMES: ${{ steps.packages.outputs.names }}
+        run: |
+          read -r -a names <<< "$NAMES"
           bun scripts/sbom.ts sbom "${names[@]}" | tee sbom.tsv
 
       - name: Attach SBOMs to the GitHub releases
-        if: steps.sbom.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -228,7 +547,6 @@ jobs:
           done < sbom.tsv
 
       - name: Upload SBOMs
-        if: steps.sbom.outcome == 'success'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sbom
@@ -245,6 +563,7 @@ jobs:
     needs: gate
     if: needs.gate.outputs.passed == 'true' && inputs.mode == 'canary'
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     permissions:
       contents: read
       id-token: write # npm Trusted Publishing + provenance

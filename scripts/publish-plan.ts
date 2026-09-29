@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto'
+
 /** What `npm view <name>` answered: its exit status and its output. */
 export interface NpmLookup {
   status: number | null
@@ -38,3 +40,40 @@ export const classifyPackage = (
 /** Whether `RELEASE_DRY_RUN` asks for a dry run: `1` or `true`, nothing else. */
 export const isDryRun = (value: string | undefined): boolean =>
   value === '1' || value?.toLowerCase() === 'true'
+
+/** `publish-plan.json` as `changeset pack` writes it (the parts we check). */
+export interface PackedPlan {
+  version: number
+  plan: {
+    kind: string
+    name: string
+    version: string
+    tarball?: { path: string; integrity: string }
+  }[][]
+}
+
+/**
+ * What is wrong with the tarballs of a packed plan before they are
+ * published: a missing tarball, or one whose sha256 differs from the
+ * integrity `changeset pack` recorded (`sha256-<base64>`). `read` returns a
+ * tarball's bytes (by its path in the plan), or undefined when it is missing.
+ */
+export const tarballProblems = (
+  { version, plan }: PackedPlan,
+  read: (path: string) => Uint8Array | undefined,
+): string[] => {
+  if (version !== 1) return [`Unknown publish plan version ${version}`]
+  return plan.flat().flatMap((release) => {
+    if (release.kind !== 'publish') return []
+    const id = `${release.name}@${release.version}`
+    if (!release.tarball) return [`${id} has no tarball in the plan`]
+    const bytes = read(release.tarball.path)
+    if (!bytes) return [`${id}: ${release.tarball.path} is missing`]
+    const integrity = `sha256-${createHash('sha256').update(bytes).digest('base64')}`
+    return integrity === release.tarball.integrity
+      ? []
+      : [
+          `${id}: ${release.tarball.path} is ${integrity}, the pack job recorded ${release.tarball.integrity}`,
+        ]
+  })
+}

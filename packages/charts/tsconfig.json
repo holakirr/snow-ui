@@ -7,7 +7,11 @@
     // so a fresh clone doesn't need their dist. tsconfig.build.json resets it.
     "paths": {
       "@holakirr/snow-ui": ["../ui/src/index.ts"],
-      "@holakirr/snow-ui-icons": ["../icons/src/main.tsx"]
+      "@holakirr/snow-ui-icons": ["../icons/src/main.tsx"],
+      // The dist test imports this package by name; typecheck it against the
+      // sources so CI can typecheck before the build (vitest still loads dist).
+      "@holakirr/snow-ui-charts": ["./src/index.ts"],
+      "@holakirr/snow-ui-charts/recharts": ["./src/recharts.ts"]
     }
   },
   "include": ["src", "test", "*.config.ts", "workspace-aliases.ts"],

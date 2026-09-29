@@ -14,6 +14,18 @@
  * namespace (`Required<Messages>`). They become required in 6.0.
  */
 export type Messages = {
+  alert: {
+    /** The dismiss button of an `Alert` with `onDismiss`. */
+    dismiss: string
+    /** Screen-reader text before the content of an `info` alert. */
+    info: string
+    /** Screen-reader text before the content of a `success` alert. */
+    success: string
+    /** Screen-reader text before the content of a `warning` alert. */
+    warning: string
+    /** Screen-reader text before the content of an `error` alert. */
+    error: string
+  }
   avatarGroup?: {
     /** Screen-reader text of the "+N" avatar: the avatars not shown. */
     more: (count: number) => string
@@ -156,6 +168,13 @@ export type MessagesOverrides = {
 
 /** The English messages, used where no `SnowUIProvider` sets others. */
 export const defaultMessages: Required<Messages> = {
+  alert: {
+    dismiss: 'Dismiss',
+    info: 'Information',
+    success: 'Success',
+    warning: 'Warning',
+    error: 'Error',
+  },
   avatarGroup: {
     more: (count) => `${count} more`,
   },

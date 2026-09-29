@@ -18,6 +18,13 @@ const YEAR_FORMS: Partial<Record<Intl.LDMLPluralRule, string>> = {
 const years = (count: number) => YEAR_FORMS[ruPlural.select(count)] ?? 'лет'
 
 export const ruMessages: Messages = {
+  alert: {
+    dismiss: 'Закрыть',
+    info: 'Информация',
+    success: 'Успешно',
+    warning: 'Предупреждение',
+    error: 'Ошибка',
+  },
   avatarGroup: {
     more: (count) => `Ещё ${count}`,
   },

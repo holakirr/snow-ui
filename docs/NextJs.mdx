@@ -161,7 +161,7 @@ Reading `cookies()` makes the layout dynamic, which is what lets the server rend
 
 ## Theme without a flash
 
-Without `data-theme` on `<html>`, the tokens follow `prefers-color-scheme` in CSS, before any JavaScript runs, and `color-scheme` (native controls, scrollbars) follows too: the OS theme needs no code. A theme the user picked is `data-theme="light"` or `"dark"` on `<html>`. The server doesn't need to know it, since only CSS reads it: save it in `localStorage` and apply it with an inline script in `<head>`, which runs before the page paints (the reason for `suppressHydrationWarning` above).
+Without a mode on `<html>` (no `data-theme`, no `light` / `dark` class), the tokens follow `prefers-color-scheme` in CSS, before any JavaScript runs, and `color-scheme` (native controls, scrollbars) follows too: the OS theme needs no code. A theme the user picked is `data-theme="light"` or `"dark"` on `<html>`, or the `light` / `dark` class that [next-themes](https://github.com/pacocoursey/next-themes) sets with `attribute="class"` (see [Theming](?path=/docs/guides-theming--docs#dark-mode); next-themes does the same flash-free script for you). The server doesn't need to know it, since only CSS reads it: save it in `localStorage` and apply it with an inline script in `<head>`, which runs before the page paints (the reason for `suppressHydrationWarning` above).
 
 ```ts
 // app/theme.ts

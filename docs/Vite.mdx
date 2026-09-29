@@ -82,7 +82,7 @@ createRoot(root).render(
 
 ## Theme without a flash
 
-Without `data-theme` on `<html>`, the tokens follow the OS preference in CSS, before any JavaScript runs: nothing to do for "system". A theme the user picked is `data-theme="light"` or `"dark"`. Save it in `localStorage` and apply it with a small inline script in `index.html`, which runs before the page paints:
+Without a mode on `<html>` (no `data-theme`, no `light` / `dark` class), the tokens follow the OS preference in CSS, before any JavaScript runs: nothing to do for "system". A theme the user picked is `data-theme="light"` or `"dark"` (the `light` / `dark` class works too, see [Theming](?path=/docs/guides-theming--docs#dark-mode)). Save it in `localStorage` and apply it with a small inline script in `index.html`, which runs before the page paints:
 
 ```html
 <!-- index.html -->

@@ -12,5 +12,6 @@
     }
   },
   "include": ["src", "scripts", "test", "*.config.ts", "workspace-aliases.ts"],
-  "exclude": ["node_modules", "dist"]
+  // test/types checks the built declarations (`bun run test:dist`).
+  "exclude": ["node_modules", "dist", "test/types"]
 }

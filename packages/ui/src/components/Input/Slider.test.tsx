@@ -73,4 +73,27 @@ describe('Slider', () => {
     expect(track).toHaveClass('data-[disabled]:cursor-not-allowed')
     expect(track).toContainElement(container.querySelector('.bg-black'))
   })
+
+  it('describes the thumbs, not the role-less root', () => {
+    const { container } = render(
+      <>
+        <Slider
+          aria-label="Price"
+          aria-describedby="price-hint"
+          aria-invalid
+          defaultValue={[20, 80]}
+        />
+        <p id="price-hint">Between 10 and 90.</p>
+      </>,
+    )
+
+    for (const thumb of screen.getAllByRole('slider')) {
+      expect(thumb).toHaveAccessibleDescription('Between 10 and 90.')
+      expect(thumb).toHaveAttribute('aria-invalid', 'true')
+    }
+    const root = container.firstElementChild
+    expect(root).not.toHaveAttribute('aria-describedby')
+    expect(root).not.toHaveAttribute('aria-invalid')
+    expect(root).toHaveAttribute('data-invalid')
+  })
 })

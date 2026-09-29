@@ -36,27 +36,36 @@ const thumbLabel = (
 /**
  * Radix Slider with the Figma track. Keyboard and pointer input follow the
  * `dir` of `SnowUIProvider`: in right-to-left text the minimum is on the
- * right.
+ * right. `aria-label`, `aria-labelledby`, `aria-describedby` and
+ * `aria-invalid` go to the thumbs (the elements with `role="slider"`), so a
+ * `FormControl` around it describes them; an invalid slider gets a red
+ * track stroke and thumb border.
  */
 const Slider: FC<SliderProps> = ({
   className,
   thumbLabels,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
+  'aria-describedby': ariaDescribedBy,
+  'aria-invalid': ariaInvalid,
   ...props
 }) => {
   const messages = useMessages()
   const thumbs = props.value ?? props.defaultValue ?? [props.min ?? 0]
+  const invalid = ariaInvalid === true || ariaInvalid === 'true'
 
   return (
     <SliderPrimitive.Root
       className={twMerge(
-        'relative flex w-full touch-none select-none items-center',
+        'group/slider relative flex w-full touch-none select-none items-center',
         className,
       )}
+      data-invalid={invalid || undefined}
       {...props}
     >
-      <SliderPrimitive.Track className="relative h-[34px] w-full grow cursor-pointer overflow-hidden rounded-8 bg-black-4 data-[disabled]:cursor-not-allowed">
+      {/* Invalid (no Figma state): a 1px Secondary/Red stroke around it (an
+          inner one would be under the range). */}
+      <SliderPrimitive.Track className="relative h-[34px] w-full grow cursor-pointer overflow-hidden rounded-8 bg-black-4 group-data-invalid/slider:ring group-data-invalid/slider:ring-red data-[disabled]:cursor-not-allowed">
         <SliderPrimitive.Range className="absolute h-full bg-black data-[disabled]:bg-black-80" />
       </SliderPrimitive.Track>
       {thumbs.map((_, index) => (
@@ -68,7 +77,9 @@ const Slider: FC<SliderProps> = ({
             thumbLabel(messages.slider, ariaLabel, index, thumbs.length)
           }
           aria-labelledby={ariaLabelledBy}
-          className="block size-4 cursor-grab rounded-full border border-black-40 bg-white shadow-2 transition-colors focus-ring active:cursor-grabbing data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40"
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={ariaInvalid}
+          className="block size-4 cursor-grab rounded-full border border-black-40 bg-white shadow-2 transition-colors focus-ring active:cursor-grabbing aria-invalid:border-red data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40"
         />
       ))}
     </SliderPrimitive.Root>

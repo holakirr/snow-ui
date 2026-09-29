@@ -39,6 +39,7 @@ const FormField = <
 
 export {
   FormControl,
+  type FormControlProps,
   FormDescription,
   type FormDescriptionProps,
   FormItem,

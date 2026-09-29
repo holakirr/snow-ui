@@ -1,0 +1,81 @@
+name: Bug report
+description: A component, stylesheet, type or package that doesn't work as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Questions go to [Discussions](https://github.com/holakirr/snow-ui/discussions/categories/q-a), security problems to a [private report](https://github.com/holakirr/snow-ui/security/advisories/new). For keyboard, screen reader or contrast problems, use the [accessibility form](https://github.com/holakirr/snow-ui/issues/new?template=accessibility.yml).
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - "@holakirr/snow-ui"
+        - "@holakirr/snow-ui-icons"
+        - "@holakirr/snow-ui-charts"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: From `npm ls @holakirr/snow-ui` (or the package above). Please check the latest release too.
+      placeholder: "5.0.0"
+    validations:
+      required: true
+  - type: input
+    id: component
+    attributes:
+      label: Component, hook or file
+      placeholder: "Select, useToast, theme.css…"
+  - type: textarea
+    id: description
+    attributes:
+      label: What happens
+      description: What you did, what you expected, and what happened instead. Include the error and its stack trace, or a screenshot.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: The smallest code that shows the problem, or a link to a repository, StackBlitz or CodeSandbox. Reports with a reproduction get fixed first.
+      render: tsx
+    validations:
+      required: true
+  - type: checkboxes
+    id: browsers
+    attributes:
+      label: Browsers where it happens
+      options:
+        - label: Chrome or Edge
+        - label: Safari (macOS)
+        - label: Safari (iOS)
+        - label: Firefox
+        - label: Other or not browser-specific (server rendering, types, build)
+  - type: dropdown
+    id: styles
+    attributes:
+      label: How your app loads the styles
+      options:
+        - "theme.css in a Tailwind CSS v4 project"
+        - "index.css (precompiled)"
+        - "Other"
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: React version, framework and version (Next.js App Router, Vite, React Router…), whether the page is server-rendered, and the OS.
+      placeholder: |
+        React 19.2, Next.js 16 (App Router, server-rendered), macOS 26
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched the existing issues and found no report of this.
+          required: true
+        - label: It happens with the latest release of the package.

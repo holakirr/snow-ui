@@ -43,6 +43,21 @@ The charts' tests (`packages/charts`) render Recharts in jsdom, which has no lay
 
   Never set `a11y.test` to `'todo'` or `'off'` to get a PR through. Current exceptions: `aria-hidden-focus` on Select "Open" (Radix hides the page with `aria-hidden` while the listbox is open and traps focus in it, so the trigger can't be focused; axe doesn't see the focus trap).
 
+### Firefox and WebKit
+
+`bun run test:storybook:browsers` runs every story again in headless Firefox and WebKit (Safari's engine), in the light theme (`vitest.browsers.config.ts`, which reuses the root config's Storybook project): a story fails when it throws or its `play` function fails, so keyboard, focus and pointer behaviour is checked in all three engines. axe, the dark theme and coverage stay in Chromium, the gate above. The browsers need a one-time `bunx playwright install firefox webkit`; run one with `bunx vitest run -c vitest.browsers.config.ts --project storybook-webkit`. These projects live outside the root config so that `bun run test:storybook` and Storybook's test widget don't need them. In CI (the `storybook-browsers` job, one job per browser) a failing story is retried once, because Firefox and WebKit are slower on the runners and the charts' play functions wait for their font with a fixed timeout; a story that only passes on the retry shows up as flaky in the log.
+
+Write play functions that hold in every engine: query by role and name, await what appears (`findBy…`, `waitFor`), and don't depend on a browser's default focus behaviour (Safari doesn't focus buttons on click, for example); assert where focus goes explicitly after `userEvent.tab()` or `.keyboard()`.
+
+### Server rendering and hydration
+
+`bun run test:ssr` checks that every ui story works in a server-rendered app (`ssr/`). It runs two Vitest projects of `ssr/vitest.config.ts`, one after the other:
+
+1. `ssr-render` renders each story (with its decorators, like `composeStories` in the unit tests) with `renderToString` in Node, where there is no `window` or `document`, and writes the HTML to `.tmp/ssr/stories.json`. The story fails if it throws or React logs an error.
+2. `ssr-hydrate` puts each story's HTML in a page in headless Chromium and hydrates it with `hydrateRoot`. The story fails on any hydration mismatch (text, elements or attributes that differ between the server and the first client render; React then throws the server HTML away) or any other error React logs.
+
+Both phases pin the clock to the visual tests' date, so date-dependent stories match. The usual causes of a failure: reading `window`, `document`, `localStorage` or `matchMedia` during render (do it in an effect, or with `useSyncExternalStore` and a server snapshot), and values that differ between two renders (`Math.random()`, `Date.now()`, locale-dependent formatting without a fixed locale; use `useId` for ids). A story that can't be server-rendered by design (a demo of a browser-only API) opts out with the `skip-ssr` tag and the reason in a comment, like `skip-visual`.
+
 ### Coverage
 
 `bun run test:coverage` runs the ui and charts unit tests and both Storybook projects with [V8 coverage](https://vitest.dev/guide/coverage) and merges them into one report of `packages/ui/src` and `packages/charts/src` (stories, tests, the Foundations pages and the recipes are excluded) in `coverage/` (`coverage/index.html`). It fails when statements, branches, functions or lines drop below the thresholds in the root `vitest.config.ts`, which sit about 2 points under the measured coverage. CI runs it in the `storybook-tests` job, writes the totals to the job summary and uploads the report. When your PR raises coverage, raise the thresholds with it; don't lower them to make a PR pass: add tests (a unit test, or a `play` function) instead.
@@ -53,7 +68,7 @@ The charts' tests (`packages/charts`) render Recharts in jsdom, which has no lay
 
 Shots are full-page rather than clipped to `#storybook-root`, because dialogs, menus, popovers and toasts render in portals outside it. At 1280×720 the PNGs stay small (mostly flat backgrounds): about 600 baselines take about 10 MB. `.gitattributes` marks them `binary`.
 
-Baselines are Linux screenshots taken in the official Playwright Docker image (`mcr.microsoft.com/playwright:v<@playwright/test version>-noble`, `linux/amd64` like CI), because font rendering differs between operating systems. So the suite always runs in Docker; the Playwright config refuses to run on macOS/Windows.
+Baselines are Linux screenshots taken in the official Playwright Docker image (`mcr.microsoft.com/playwright:v<@playwright/test version>-noble`, `linux/amd64` like CI), because font rendering differs between operating systems. The image is pinned by digest in `visual/Dockerfile`, which `visual/docker.sh` and the CI job both read (nothing builds it), so a re-pushed tag can't change the browser under the baselines. So the suite always runs in Docker; the Playwright config refuses to run on macOS/Windows.
 
 ```bash
 bun run visual                   # build Storybook, compare with the baselines
@@ -64,13 +79,15 @@ VISUAL_SKIP_BUILD=1 bun run visual  # reuse the current storybook-static/
 
 Requirements: Docker (on Apple Silicon the amd64 image runs through Rosetta, a few minutes for the whole suite) and `bun install` done on the host (the container only uses the pure-JS `@playwright/test` from `node_modules`; Storybook is built on the host). No network is needed: Storybook bundles the self-hosted Inter (`packages/ui/src/fonts.css`). Failures leave the actual/expected/diff images in `test-results/visual/` and an HTML report in `playwright-report/` (`bunx playwright show-report`).
 
-**Updating baselines.** When a change to how something looks is intended, run `bun run visual:update` (always through Docker, never with `VISUAL_ALLOW_HOST`), review the changed PNGs in the diff and commit them with the change. A story added without a baseline fails the comparison; opt a story or a whole component out with the `skip-visual` tag. `visual:update` only writes new and changed images: after removing or renaming stories, delete their PNGs (or empty the folder and regenerate everything). Bumping `@playwright/test` changes the image (and Chromium), so regenerate the baselines in the same PR.
+**Updating baselines.** When a change to how something looks is intended, run `bun run visual:update` (always through Docker, never with `VISUAL_ALLOW_HOST`), review the changed PNGs in the diff and commit them with the change. A story added without a baseline fails the comparison; opt a story or a whole component out with the `skip-visual` tag. `visual:update` only writes new and changed images: after removing or renaming stories, delete their PNGs (or empty the folder and regenerate everything). Bumping `@playwright/test` changes the image (and Chromium): in the same PR, pin the new image in `visual/Dockerfile` (tag and digest, from `docker buildx imagetools inspect mcr.microsoft.com/playwright:v<version>-noble`; Build Check's `build` job fails while the two versions disagree) and regenerate the baselines.
 
 **In CI** the `visual` job blocks the PR on any difference. It runs in the Playwright image of the `@playwright/test` version from the lockfile (the same image as `bun run visual`, native amd64) against the Storybook built by the `build` job, with one retry. When it fails, download the `visual-diffs` artifact from the workflow run: `test-results/visual/` has the expected, actual and diff PNG of each failing story, and `playwright-report/` the HTML report (`bunx playwright show-report playwright-report`). If the change is intended, update the baselines as above; otherwise fix the regression. The job is skipped (with a notice) if `visual/__screenshots__/` has no baselines.
 
 ### Bundle size
 
 `bun run size` checks the budgets in `.size-limit.json` with [size-limit](https://github.com/ai/size-limit) (esbuild preset: minified and brotli-compressed, React and other peer dependencies excluded) against the built packages, so run `bun run build` first. It covers the full `@holakirr/snow-ui` import, single-component imports (tree-shaking), the `react-hook-form` entry, `dist/index.css`, a full and a single-icon import of `@holakirr/snow-ui-icons`, and a full import, `{ BarChart }`, `{ Sparkline }` (plain SVG, no Recharts) and `styles.css` of `@holakirr/snow-ui-charts` (Recharts, a dependency, included; `@holakirr/snow-ui`, a peer, excluded). When a change legitimately needs more, raise the limit in the same PR and say why in its description; keep limits about 10% above the measured size so regressions stay visible.
+
+**The per-component floor is tailwind-merge.** Every component merges its classes with the consumer's `className` through `twMerge` (`packages/ui/src/utils/tw-merge.ts`: tailwind-merge's default configuration, extended with the SnowUI token scales). That is about 7.5 kB of any single-component import, brotli-compressed (measured with esbuild: tailwind-merge's `twMerge` 7.47 kB, 7.79 kB with the token scales; `{ Button }` is 10.4 kB in all), and it is paid once: every other component reuses it, so a full import doesn't grow with it. The size is the class-group configuration tailwind-merge needs to resolve conflicts such as `px-3` against a consumer's `p-2`, so it can't be dropped or loaded lazily without giving up correct overrides (tailwind-merge already builds its lookup tables lazily, on the first call). Merging only when a `className` is passed would save run time, not bytes, and would need a change in every component. shadcn/ui makes the same trade.
 
 ### Package checks
 
@@ -125,7 +142,7 @@ The token names follow Tailwind (`color.black-80`), not Figma (`Black/80%`); eac
 
 ### Fonts
 
-`@holakirr/snow-ui/fonts.css` self-hosts Inter from `packages/ui/src/fonts/`: subsets of the rsms Inter 4.1 variable fonts (the Google Fonts build lacks the `ss01` / `cv01` features), split by unicode-range, with the OFL license in `src/fonts/LICENSE.txt` (hence the package's `MIT AND OFL-1.1` license). Besides Google Fonts' script ranges there is `ui-symbols` (≈10 kB: the arrows and keyboard symbols components and shortcut hints render, such as Link's ↗ and CommandPalette's ↩) and `symbols` (≈150 kB: everything else), so a single arrow doesn't pull in the big file; when a component starts rendering a new symbol, add its code point to `UI_SYMBOLS`. The design only uses upright Regular and Semibold, so the italic faces are opt-in (`fonts-italic.css`). The base layer sets `font-optical-sizing: none`: the Figma kit uses the "Inter" family (text optical size) at every size, not "Inter Display". The files are committed; `packages/ui/scripts/subset-inter.py` (Python, fontTools) regenerates them and both stylesheets, as described at the top of the script. Size budgets cover the Latin (upright and italic), Latin Extended, `symbols` and `ui-symbols` files.
+`@holakirr/snow-ui/fonts.css` self-hosts Inter from `packages/ui/src/fonts/`: subsets of the rsms Inter 4.1 variable fonts (the Google Fonts build lacks the `ss01` / `cv01` features), split by unicode-range, with the OFL license in `src/fonts/LICENSE.txt` (hence the package's `MIT AND OFL-1.1` license). Besides Google Fonts' script ranges there is `ui-symbols` (≈8 kB: the arrows and keyboard symbols components and shortcut hints render, such as Link's ↗ and CommandPalette's ↩) and `symbols` (≈100 kB: everything else), so a single arrow doesn't pull in the big file; when a component starts rendering a new symbol, add its code point to `UI_SYMBOLS`. The design only uses upright Regular and Semibold, so the italic faces are opt-in (`fonts-italic.css`). The base layer sets `font-optical-sizing: none`: the Figma kit uses the "Inter" family (text optical size) at every size, not "Inter Display". So the script pins the variable fonts' optical-size axis at 14 (fontTools `instancer`; the weight axis stays variable): the glyphs the browser draws are the same and the files are about 36% smaller (Latin: 105 kB → 69 kB). The files are committed; `packages/ui/scripts/subset-inter.py` (Python, fontTools) regenerates them and both stylesheets, as described at the top of the script. Size budgets cover the Latin (upright and italic), Latin Extended, `symbols` and `ui-symbols` files.
 
 ## Documentation
 
@@ -192,11 +209,26 @@ Pick the packages, the bump for each and write a summary. It is committed as a M
 - **minor**: new components, props, exports or options; deprecations.
 - **patch**: bug fixes, and internal or build changes that users don't need to act on.
 
+**Write hex colours in code spans** (`` `#333` ``), and any other `#` that isn't an issue or PR reference. The changelog generator (`.changeset/changelog.mjs`, which wraps `@changesets/changelog-github`) links every bare `#` followed by digits to that issue (`#12` → issue 12, as intended for references); inside a code span or a code block it leaves the text alone, and so does GitHub in the release notes.
+
 PRs that don't touch a published package (docs, Storybook stories, CI, tests) don't need one. The "changeset" job of Build Check warns on PRs that change packages without a changeset; if no release is needed, add an empty one with `bun changeset --empty`. You can edit or delete changeset files in your PR like any other file, and check what would be released with `bun changeset status`.
 
 ## Releases
 
-Maintainers don't bump versions or write changelogs by hand. After a PR with changesets is merged into `main`, a bot opens (or updates) the **"chore(release): version packages"** PR with the version bumps and changelog entries. Merging it publishes the packages to npm, tags them and creates GitHub releases. See [Releasing](README.md#releasing) for details.
+Maintainers don't bump versions or write changelogs by hand. After a PR with changesets is merged into `main` and its Build Check passes, the release workflow opens (or updates) the **"chore(release): version packages"** PR with the version bumps and changelog entries, and runs Build Check on it (a PR opened by a workflow triggers no checks by itself). Merging it publishes the packages to npm, tags them and creates GitHub releases with their SBOMs. Nothing is published from a commit whose Build Check hasn't passed. See [Releasing](README.md#releasing) for the details, and the [Versioning and support policy](VERSIONING.md) for which bump a change needs and how deprecations work.
+
+If a release didn't happen (Build Check failed and was fixed by a re-run, or a run was cancelled), re-running Build Check on `main` triggers it again, or run it by hand: Actions → Release → Run workflow on `main`, mode `release`.
+
+### Pre-releases and canaries
+
+**`next`: pre-releases of the next major.** Breaking changes don't go to `main`: they are collected on the `next` branch and published as pre-releases (`6.0.0-next.0`, `6.0.0-next.1`…) under the `next` npm dist-tag, while `main` keeps releasing 5.x minors and patches, including the deprecations.
+
+1. Start the channel once: create `next` from `main`, run `bun changeset pre enter next`, commit the new `.changeset/pre.json` and push. Build Check and the release workflow run on `next` as on `main`.
+2. Breaking PRs target `next`, with a `major` changeset. When one is merged, the release workflow opens the "chore(release): version packages (next)" PR (branch `changeset-release/next`); merging it publishes the pre-releases. Install one with `npm install @holakirr/snow-ui@next`.
+3. Merge `main` into `next` regularly (after each 5.x release), so fixes reach the major and the two don't drift apart. In the `version` fields of the `package.json` files keep `next`'s pre-release versions; keep both sides' changelog entries.
+4. To release the major: on a branch from `next`, run `bun changeset pre exit`, commit, and open a PR into `main`. After it is merged, the version PR on `main` has the final versions (`6.0.0`) and the full changelog; merging it publishes them as `latest`.
+
+**Canaries: one unreleased change, in your app.** Actions → Release → Run workflow, on the branch you want (it needs a green Build Check: a PR's counts, or run Build Check on the branch first), mode `canary`. It publishes `0.0.0-canary-<short sha>` versions of the packages that have pending changesets on that branch, and of the packages that depend on them, under the `canary` dist-tag, with provenance. The job summary lists the exact versions to install. Nothing is committed, tagged or released on GitHub, and `latest` doesn't move. Snapshots aren't possible in pre-release mode, so there are no canaries from `next`. Locally, `bun changeset version --snapshot canary` shows what a canary would publish (revert the changes afterwards).
 
 ### Publishing a new package
 

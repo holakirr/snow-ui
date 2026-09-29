@@ -1,11 +1,36 @@
 version: 2
 updates:
+  # Grouped, so a week's updates arrive as a few PRs: CodeQL default setup
+  # doesn't analyse Dependabot PRs, so the ruleset keeps them blocked and the
+  # maintainer merges their updates in one ordinary PR. Majors stay separate
+  # (they may need code changes). The cooldown leaves a new release a week
+  # on npm (to be yanked if it's compromised) before it is proposed; security
+  # updates don't wait.
   - package-ecosystem: "bun"
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
+    groups:
+      # What the published packages depend on (Radix, react-day-picker,
+      # Recharts…): their users get these.
+      runtime:
+        dependency-type: "production"
+        update-types: ["minor", "patch"]
+      # Build, test and docs tooling (Storybook, Vitest, Playwright,
+      # tsdown…). A @playwright/test bump needs visual/Dockerfile and the
+      # visual baselines updated in the same PR.
+      tooling:
+        dependency-type: "development"
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]

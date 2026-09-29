@@ -28,8 +28,9 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      # The `visual` job runs in the Playwright image of this version.
-      playwright-version: ${{ steps.playwright.outputs.version }}
+      # The `visual` job runs in this image: visual/Dockerfile's, pinned by
+      # digest, checked below against the installed @playwright/test.
+      playwright-image: ${{ steps.playwright.outputs.image }}
 
     steps:
       - name: Checkout code
@@ -45,9 +46,23 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Get Playwright version
+      # The visual tests run in the Playwright image that visual/Dockerfile
+      # pins by digest (locally through visual/docker.sh, and in the `visual`
+      # job). It must be the image of the installed @playwright/test, whose
+      # browser the baselines were taken with.
+      - name: Get Playwright image
         id: playwright
-        run: echo "version=$(jq -r .version node_modules/@playwright/test/package.json)" >> "$GITHUB_OUTPUT"
+        run: |
+          version=$(jq -r .version node_modules/@playwright/test/package.json)
+          image=$(sed -n 's/^FROM //p' visual/Dockerfile)
+          case "$image" in
+            "mcr.microsoft.com/playwright:v${version}-noble@sha256:"*) ;;
+            *)
+              echo "::error file=visual/Dockerfile,title=Playwright image mismatch::visual/Dockerfile pins '${image}', but @playwright/test is ${version}. Pin mcr.microsoft.com/playwright:v${version}-noble by digest there and regenerate the baselines (CONTRIBUTING.md, Visual regression tests)."
+              exit 1
+              ;;
+          esac
+          echo "image=$image" >> "$GITHUB_OUTPUT"
 
       # The DTCG tokens in packages/ui/tokens are the source of truth: the
       # committed files generated from them (CSS, Foundations data,
@@ -328,14 +343,14 @@ jobs:
 
   # Screenshot comparison of every story (light + dark) against the committed
   # Linux baselines in visual/__screenshots__, in the same Playwright image
-  # `bun run visual` uses locally (visual/docker.sh): the one of the installed
-  # @playwright/test version. Any difference fails the job; the diffs are
+  # `bun run visual` uses locally (visual/docker.sh): the one visual/Dockerfile
+  # pins by digest, of the installed @playwright/test version. Any difference fails the job; the diffs are
   # uploaded as the `visual-diffs` artifact.
   visual:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v${{ needs.build.outputs.playwright-version }}-noble
+      image: ${{ needs.build.outputs.playwright-image }}
       options: --ipc=host
 
     steps:

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Runs the visual regression suite (visual/stories.spec.ts) inside the
-# official Playwright Docker image, so screenshots match the committed Linux
-# baselines and CI byte for byte, whatever the host OS.
+# official Playwright Docker image pinned in visual/Dockerfile, so
+# screenshots match the committed Linux baselines and CI byte for byte,
+# whatever the host OS.
 #
 #   bun run visual                      # compare with visual/__screenshots__
 #   bun run visual:update               # write/refresh baselines
@@ -38,7 +39,13 @@ if [[ ! -f "$pkg_json" ]]; then
   exit 1
 fi
 version=$(sed -n 's/^  "version": "\(.*\)",$/\1/p' "$pkg_json")
-image="mcr.microsoft.com/playwright:v${version}-noble"
+# The image pinned by digest in visual/Dockerfile, as in CI.
+image=$(sed -n 's/^FROM //p' visual/Dockerfile)
+if [[ "$image" != "mcr.microsoft.com/playwright:v${version}-noble@sha256:"* ]]; then
+  echo "visual/Dockerfile pins '${image}', but @playwright/test is ${version}:" >&2
+  echo "pin mcr.microsoft.com/playwright:v${version}-noble by digest there (see the file)." >&2
+  exit 1
+fi
 platform="${VISUAL_DOCKER_PLATFORM:-linux/amd64}"
 snapshot_dir="${VISUAL_SNAPSHOT_DIR:-visual/__screenshots__}"
 if [[ "$snapshot_dir" == /* ]]; then

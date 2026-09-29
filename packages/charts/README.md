@@ -107,7 +107,7 @@ The plot is drawn once the web font of its text has loaded (Recharts measures la
 
 ## Localization and RTL
 
-Numbers follow the `locale` prop, else the language of the nearest `SnowUIProvider` (`locale.code`), else `en-US`. Right-to-left charts (the `dir` prop, the provider's `dir`, or the element's computed direction) mirror their axes: categories run from right to left, the value axis is on the right, the tooltip opens to the left. `emptyMessage`, `loadingLabel` and `keyboardHint` are props for your translations.
+Numbers follow the `locale` prop, else the language of the nearest `SnowUIProvider` (`locale.code`), else `en-US`. Right-to-left charts (the `dir` prop, the provider's `dir`, or the element's computed direction) mirror their axes: categories run from right to left, the value axis is on the right, the tooltip opens to the left. The built-in strings (the empty and loading states, the keyboard hint, the focusable plot's name, the table headers) come from `messages.charts` of `SnowUIProvider` (with `@holakirr/snow-ui` 5.1 or later; English before), and the props `emptyMessage`, `loadingLabel`, `keyboardHint`, `navigationLabel`, `valueLabel` and `categoryLabel` win over them.
 
 ## Why `@holakirr/snow-ui` is a peer dependency
 

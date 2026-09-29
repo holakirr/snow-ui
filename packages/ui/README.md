@@ -148,7 +148,7 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 - A scope sets the tokens and `color-scheme`, not a background or text colour: give it `bg-background-1 text-black` (or your own) to paint it.
 - Without `data-theme` on `<html>`, the page follows the OS preference; `<html data-theme="light">` or `"dark"` pins it. Scopes inside work either way.
 - `dark:` utilities follow the same scopes, with one limit: a dark scope inside a light scope inside a dark scope gets the dark tokens but not `dark:` utilities. Prefer the tokens, which switch at any depth.
-- Overlays are portalled: the content of `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope, so it takes the theme of `<html>`. Set the theme on `<html>` for the whole app, or give the content its own scope: `<PopoverContent data-theme="dark">` (the `*Content` components pass it through). Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
+- Overlays are portalled: the content of `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Select` and `CommandPalette` renders at the end of `<body>`, outside your scope. A plain `data-theme` attribute leaves it in the theme of `<html>`; a `ThemeScope` (`<ThemeScope theme="dark">`, or `asChild` on your element) scopes the tokens and passes the theme to the overlays opened inside it, as their `data-theme`. `SnowUIProvider`'s `theme` does the same without an element, and a `data-theme` on a `*Content` component wins. Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
 
 ## Components
 
@@ -232,8 +232,9 @@ import { ru } from 'react-day-picker/locale' // a date-fns locale plus day-picke
 
 // Module scope: the same object on every render (see below).
 const messages: Messages = {
-  /* every namespace: badge, breadcrumb, calendar, commandPalette, dialog, link,
-     pagination, search, sheet, sidebar, slider, tag, toast */
+  /* every namespace: avatarGroup, badge, breadcrumb, calendar, charts,
+     commandPalette, dialog, link, pagination, search, sheet, sidebar,
+     slider, tag, toast */
 }
 
 export const Providers = ({ children }: { children: ReactNode }) => (

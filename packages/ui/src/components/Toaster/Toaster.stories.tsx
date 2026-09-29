@@ -1,5 +1,6 @@
 import { StatusIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useEffect, useRef } from 'react'
 import { expect, waitFor } from 'storybook/test'
 
 import { toast } from '../../hooks'
@@ -233,6 +234,119 @@ export const Closable: Story = {
           canvas.queryByText('Stays until closed'),
         ).not.toBeInTheDocument(),
       )
+    })
+  },
+}
+
+const stackedToasts: Parameters<typeof toast>[0][] = [
+  { status: 'success', title: 'Report exported' },
+  { title: 'Invite sent', description: 'Byewind will get an email' },
+  { status: 'error', title: 'Sync failed' },
+  { status: 'success', title: 'Changes saved' },
+]
+
+const StackedExample = () => {
+  const shown = useRef<ReturnType<typeof toast>[]>([])
+  // Clears the stack when the story is left.
+  useEffect(
+    () => () => {
+      for (const handle of shown.current) handle.dismiss()
+    },
+    [],
+  )
+
+  return (
+    <>
+      <Button
+        variant="filled"
+        onClick={() => {
+          const next =
+            stackedToasts[shown.current.length % stackedToasts.length]
+          // Kept until closed, so the stack holds still.
+          shown.current.push(
+            toast({ ...next, size: 'lg', duration: Number.POSITIVE_INFINITY }),
+          )
+        }}
+      >
+        Show toast
+      </Button>
+      <Toaster limit={3} />
+    </>
+  )
+}
+
+/**
+ * `limit={3}`: up to three toasts at once. The newest is in front and the
+ * older ones peek out above it, smaller; hover the stack or move focus into
+ * it (F8) to spread it into a list, which also pauses their timers. A fourth
+ * toast closes the oldest. `expand` keeps the stack spread.
+ */
+export const Stacked: Story = {
+  render: () => <StackedExample />,
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const body = canvasElement.ownerDocument.body
+    const show = canvas.getByRole('button', { name: 'Show toast' })
+    const toastOf = (title: string) =>
+      canvas.getByText(title).closest('li') as HTMLElement
+    const viewport = () =>
+      canvas.getByRole('region', { name: /notifications/i }).querySelector('ol')
+
+    await step('three toasts stack, the newest in front', async () => {
+      await userEvent.click(show)
+      await userEvent.click(show)
+      await userEvent.click(show)
+      await expect(toastOf('Sync failed')).toHaveAttribute('data-front')
+      await expect(toastOf('Invite sent')).toHaveAttribute('data-collapsed')
+      await expect(toastOf('Report exported')).toHaveAttribute('data-collapsed')
+      // The viewport wraps the stack (its focus outline and hover area).
+      const box = (viewport() as HTMLElement).getBoundingClientRect()
+      const front = toastOf('Sync failed').getBoundingClientRect()
+      await expect(box.left).toBeLessThanOrEqual(front.left)
+      await expect(box.right).toBeGreaterThanOrEqual(front.right)
+      await expect(box.width).toBeLessThanOrEqual(front.width + 33)
+    })
+
+    await step('hovering spreads the stack into a list', async () => {
+      await userEvent.hover(toastOf('Sync failed'))
+      await waitFor(() => expect(viewport()).toHaveAttribute('data-expanded'))
+      await expect(toastOf('Report exported')).not.toHaveAttribute(
+        'data-collapsed',
+      )
+      // The toasts no longer overlap: each sits above the newer one (once
+      // the 300ms move has ended).
+      await waitFor(() =>
+        expect(
+          toastOf('Invite sent').getBoundingClientRect().bottom,
+        ).toBeLessThanOrEqual(
+          toastOf('Sync failed').getBoundingClientRect().top,
+        ),
+      )
+      await userEvent.unhover(toastOf('Sync failed'))
+      await userEvent.hover(body)
+      await waitFor(() =>
+        expect(viewport()).not.toHaveAttribute('data-expanded'),
+      )
+    })
+
+    await step('F8 moves focus into the stack and spreads it', async () => {
+      // Radix's hotkey matches the key's `code`.
+      await userEvent.keyboard('[F8]')
+      await expect(viewport()).toHaveFocus()
+      await waitFor(() => expect(viewport()).toHaveAttribute('data-expanded'))
+    })
+
+    await step('a fourth toast closes the oldest', async () => {
+      // Focus leaves the stack, which collapses again.
+      await userEvent.click(show)
+      await waitFor(() =>
+        expect(viewport()).not.toHaveAttribute('data-expanded'),
+      )
+      await waitFor(() =>
+        expect(canvas.queryByText('Report exported')).not.toBeInTheDocument(),
+      )
+      await expect(toastOf('Changes saved')).toHaveAttribute('data-front')
+      // No focus ring in the screenshot.
+      show.blur()
     })
   },
 }

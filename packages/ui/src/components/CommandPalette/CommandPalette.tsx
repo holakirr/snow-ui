@@ -483,7 +483,7 @@ const CommandPalette: FC<CommandPaletteProps> = ({
   closeOnSelect = true,
   className,
 }) => {
-  const { messages, dir } = useSnowUI()
+  const { messages, dir, theme } = useSnowUI()
   const label = labelProp ?? messages.commandPalette.label
   const [innerOpen, setInnerOpen] = useState(defaultOpen)
   const open = openProp ?? innerOpen
@@ -526,6 +526,7 @@ const CommandPalette: FC<CommandPaletteProps> = ({
       <DialogPrimitive.Portal>
         <DialogPrimitive.Content
           dir={dir}
+          data-theme={theme}
           aria-describedby={undefined}
           className={twMerge(
             // Figma SearchPopup: 480 wide, padding 16, radius 24, Background/3

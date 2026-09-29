@@ -39,7 +39,7 @@ import { Avatar, AvatarFallback, AvatarGroup, AvatarImage } from '@holakirr/snow
 1. **Row**: a flex `<div>`; each avatar overlaps the one before it by 8px.
 2. **Avatar wrappers**: a round `<span>` around each avatar, with a 2px `white` border (the per-mode token, so it separates the avatars in both modes). A hovered avatar comes to the front.
 3. **Avatars** (`children`): the first `items` (default 3) of them.
-4. **Overflow avatar**: when there are more children than `items`, an `Avatar` with an `AvatarFallback` of "+N", N being the number not shown. It takes the `size` of the first child (`lg` when the first child has none).
+4. **Overflow avatar**: when there are more children than `items`, an `Avatar` with an `AvatarFallback` of "+N", N being the number not shown. It takes the `size` of the first child (`lg` when the first child has none). Screen readers hear `messages.avatarGroup.more(N)` ("N more") instead of "+N".
 
 ## Sizes
 
@@ -58,8 +58,8 @@ The group has no size of its own: set `size` on the avatars, all the same.
 
 ## Accessibility
 
-- The row is a `<div>` and the wrappers are `<span>`s, with no roles: screen readers read each avatar in turn (the image `alt` or the fallback initials), then "+N".
-- "+N" alone doesn't say what it counts. Name the group, e.g. `role="group"` with `aria-label="Assigned to 5 people"`, or put the full list of names in visually hidden text and hide the row with `aria-hidden`.
+- The row is a `<div>` and the wrappers are `<span>`s, with no roles: screen readers read each avatar in turn (the image `alt` or the fallback initials), then "N more" (`messages.avatarGroup.more`; the visible "+N" is `aria-hidden`).
+- "N more" alone doesn't say what it counts. Name the group, e.g. `role="group"` with `aria-label="Assigned to 5 people"`, or put the full list of names in visually hidden text and hide the row with `aria-hidden`.
 - The avatars aren't interactive. To show who is hidden behind "+N", add a control next to the group (a [Button](?path=/docs/components-button--docs) that opens a [Popover](?path=/docs/components-popover--docs) with the list).
 
 No row of the README's table of deviations from the Figma kit applies to AvatarGroup.
@@ -78,7 +78,6 @@ No row of the README's table of deviations from the Figma kit applies to AvatarG
 
 - Don't mix avatar sizes in one group: the overflow avatar takes the first one's size.
 - Don't rely on "+N" alone to say how many people there are.
-- Don't pass `className` to lay out the group: it replaces the row's flex and overlap classes instead of adding to them.
 
 </Dont>
 </DoDont>

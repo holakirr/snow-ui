@@ -35,6 +35,7 @@ import {
   formatCompact,
   formatNumber,
 } from './format'
+import { useChartMessages } from './messages'
 
 /** Where a chart's legend goes: above, below or beside (after) the plot. */
 export type ChartLegendPosition = 'top' | 'bottom' | 'end'
@@ -64,21 +65,24 @@ export interface ChartContainerProps
   loading?: boolean
   /** Shows `emptyMessage` instead of the chart. */
   empty?: boolean
-  /** @default 'No data' */
+  /** @default messages.charts.empty of `SnowUIProvider`: 'No data' */
   emptyMessage?: ReactNode
-  /** Announced while `loading`. @default 'Loading chart' */
+  /**
+   * Announced while `loading`.
+   * @default messages.charts.loading: 'Loading chart'
+   */
   loadingLabel?: string
   /**
    * How to move between data points with the keyboard, for screen readers
    * (the chart's description). `false` for charts without keyboard
    * navigation.
-   * @default 'Use the left and right arrow keys to move between data points.'
+   * @default messages.charts.keyboardHint: 'Use the left and right arrow keys to move between data points.'
    */
   keyboardHint?: string | false
   /**
    * The name of the chart's focusable plot (Recharts' accessibility layer),
    * inside the named figure: what the keyboard moves through.
-   * @default 'Data points'
+   * @default messages.charts.navigation: 'Data points'
    */
   navigationLabel?: string
   /** The rows of the data table (usually the chart's `data`). */
@@ -154,10 +158,10 @@ export const ChartContainer = ({
   width = '100%',
   loading = false,
   empty = false,
-  emptyMessage = 'No data',
-  loadingLabel = 'Loading chart',
-  keyboardHint = 'Use the left and right arrow keys to move between data points.',
-  navigationLabel = 'Data points',
+  emptyMessage: emptyMessageProp,
+  loadingLabel: loadingLabelProp,
+  keyboardHint: keyboardHintProp,
+  navigationLabel: navigationLabelProp,
   data,
   categoryKey,
   categoryLabel,
@@ -178,6 +182,11 @@ export const ChartContainer = ({
   'aria-describedby': ariaDescribedBy,
   ...props
 }: ChartContainerProps) => {
+  const messages = useChartMessages()
+  const emptyMessage = emptyMessageProp ?? messages.empty
+  const loadingLabel = loadingLabelProp ?? messages.loading
+  const keyboardHint = keyboardHintProp ?? messages.keyboardHint
+  const navigationLabel = navigationLabelProp ?? messages.navigation
   const id = useId()
   const titleId = `${id}-title`
   const descriptionId = `${id}-description`

@@ -54,6 +54,7 @@ export const Providers = ({ children }: { children: ReactNode }) => (
 | `messages` | `MessagesOverrides` | English `defaultMessages` | the built-in strings, merged over the defaults (and over an outer provider's) |
 | `locale` | a date-fns `Locale` | `enUS` | `Calendar` month and weekday names, week start and day labels; `Scheduler` headers and times |
 | `dir` | `'ltr'` or `'rtl'` | inherited, else `ltr` | keyboard direction, `start` / `end` sides and the `dir` of portalled content |
+| `theme` | `'light'` or `'dark'` | inherited, else none | the `data-theme` of portalled content (dialogs, sheets, popovers, menus, selects, tooltips, the command palette); `ThemeScope` sets it together with the scope's element |
 | `children` | `ReactNode` | | the subtree it applies to |
 
 ## Messages
@@ -62,9 +63,11 @@ export const Providers = ({ children }: { children: ReactNode }) => (
 
 | Namespace | Component | Messages |
 | --- | --- | --- |
+| `avatarGroup` | [AvatarGroup](?path=/docs/components-avatar-avatargroup--docs) | `more(count)` |
 | `badge` | [Badge](?path=/docs/components-badge--docs) | `label` |
 | `breadcrumb` | [Breadcrumb](?path=/docs/components-breadcrumb--docs) | `label`, `more` |
 | `calendar` | [Calendar](?path=/docs/components-calendar--docs) | `navigation`, `previousMonth`, `nextMonth`, `today`, `lastSelection`, `previousYears(count)`, `nextYears(count)` |
+| `charts` | the charts of `@holakirr/snow-ui-charts` ([ChartContainer](?path=/docs/charts-chartcontainer--docs)) | `empty`, `loading`, `keyboardHint`, `navigation`, `value`, `point` |
 | `commandPalette` | [CommandPalette](?path=/docs/components-commandpalette--docs) | `label`, `placeholder`, `empty`, `loading` |
 | `dialog` | [Dialog](?path=/docs/components-dialog--docs) | `close` |
 | `link` | [Link](?path=/docs/components-link--docs) | `external` |
@@ -101,6 +104,12 @@ A nested provider that changes one string; a `removeLabel` wins over both:
 The layout and the `rtl:` styles follow the DOM, not the provider: set the same `dir` on `<html>` (or on the element you scope it to).
 
 <Canvas of={SnowUIProviderStories.RightToLeft} />
+
+## Scoped themes
+
+`theme` works like `dir`: portalled content renders at the end of `<body>`, outside a `data-theme` scope, so the provider gives it the theme as its `data-theme`. `ThemeScope` is the shortcut: it renders a `<div data-theme>` (or, with `asChild`, sets `data-theme` on its only child) inside a provider with that `theme`, so the subtree and its overlays share it. A `data-theme` passed to a `*Content` component wins. See the [Theming guide](?path=/docs/guides-theming--docs).
+
+<Canvas of={SnowUIProviderStories.ScopedTheme} />
 
 ## Hooks
 

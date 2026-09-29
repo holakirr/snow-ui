@@ -35,9 +35,9 @@ import { Badge, BadgeComponent } from '@holakirr/snow-ui'
 
 ## Anatomy
 
-1. **Wrapper** (`Badge` only): a `relative` `<div>` around `children`. Its props (other than `content` and `className`) go on this `<div>`.
+1. **Wrapper** (`Badge` only): a `relative` `<div>` around `children`. Its props, `className` included (other than `content` and `badgeClassName`), go on this `<div>`.
 2. **Children** (`Badge` only): the element the badge marks.
-3. **Badge**: a `<span>` with `role="status"`, on the top end corner (top right; top left in right-to-left text). `className` on `Badge` goes here, not on the wrapper.
+3. **Badge**: a `<span>` with `role="status"`, on the top end corner (top right; top left in right-to-left text). `badgeClassName` on `Badge` goes here (before 5.1, `className` did).
 4. **Content** (`content`, optional): the number or short text. Without it the badge is a dot.
 
 ## Variants

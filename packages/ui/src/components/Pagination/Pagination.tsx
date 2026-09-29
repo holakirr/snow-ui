@@ -5,32 +5,52 @@ import { Slot } from '@radix-ui/react-slot'
 import { cva } from 'class-variance-authority'
 import {
   type ComponentProps,
+  createContext,
   type FC,
   isValidElement,
+  type MouseEvent,
   type ReactNode,
+  useContext,
 } from 'react'
 import type { Size } from '../../types'
 import { slotted, withSlotContent } from '../../utils/slot'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
 
+const PaginationContext = createContext<{
+  onPageChange?: (page: number) => void
+}>({})
+
+type PaginationProps = ComponentProps<'nav'> & {
+  /**
+   * Client-side paging: called with the `page` of the item the user
+   * activates. Items with a `page` and no `href` render as buttons; items
+   * with both stay links (for a new tab, or without JavaScript) and a plain
+   * click calls this instead of navigating.
+   */
+  onPageChange?: (page: number) => void
+}
+
 /**
  * The pagination navigation landmark, named by `aria-label` (default:
  * `messages.pagination.label`, "Pagination").
  */
-const Pagination: FC<ComponentProps<'nav'>> = ({
+const Pagination: FC<PaginationProps> = ({
   className,
   'aria-label': ariaLabel,
+  onPageChange,
   ...props
-}: ComponentProps<'nav'>) => {
+}) => {
   const messages = useMessages()
 
   return (
-    <nav
-      aria-label={ariaLabel ?? messages.pagination.label}
-      className={twMerge('mx-auto flex w-full justify-center', className)}
-      {...props}
-    />
+    <PaginationContext.Provider value={{ onPageChange }}>
+      <nav
+        aria-label={ariaLabel ?? messages.pagination.label}
+        className={twMerge('mx-auto flex w-full justify-center', className)}
+        {...props}
+      />
+    </PaginationContext.Provider>
   )
 }
 Pagination.displayName = 'Pagination'
@@ -58,7 +78,7 @@ PaginationItem.displayName = 'PaginationItem'
  * Black/4% fill. `sm` is the Figma size.
  */
 const paginationLinkVariants = cva(
-  'inline-flex shrink-0 items-center justify-center gap-1 border-[0.5px] border-black-10 font-normal text-black transition-colors hover:bg-black-4 focus-ring aria-disabled:pointer-events-none aria-disabled:text-black-20',
+  'inline-flex shrink-0 items-center justify-center gap-1 border-[0.5px] border-black-10 font-normal text-black transition-colors hover:bg-black-4 focus-ring aria-disabled:pointer-events-none aria-disabled:text-black-20 disabled:pointer-events-none disabled:text-black-20',
   {
     variants: {
       size: {
@@ -86,8 +106,18 @@ type PaginationLinkProps = {
    * @default 'sm'
    */
   size?: Size
-  /** Disables the link (`aria-disabled`), e.g. "previous" on the first page. */
+  /**
+   * Disables the item, e.g. "previous" on the first page: a link loses its
+   * `href` and gets `aria-disabled`, a button (see `page`) gets `disabled`.
+   */
   disabled?: boolean
+  /**
+   * The page this item goes to, passed to `Pagination`'s `onPageChange`.
+   * Without `href`, the item is a `<button>` (client-side paging); with
+   * `href`, a link whose plain clicks call `onPageChange` instead of
+   * navigating (modified clicks still open it in a new tab or window).
+   */
+  page?: number
   /**
    * Render the only child element (a router link) instead of an `<a>`. A
    * disabled one gets `aria-disabled` and no pointer events; give it no
@@ -105,16 +135,55 @@ const PaginationLink: FC<PaginationLinkProps> = ({
   disabled,
   asChild = false,
   href,
+  page,
   onClick,
   children,
   ...props
 }) => {
+  const { onPageChange } = useContext(PaginationContext)
   const classes = twMerge(paginationLinkVariants({ size, isActive }), className)
+  const isButton = !asChild && href === undefined && page !== undefined
+
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    onClick?.(event)
+    if (page === undefined || !onPageChange || event.defaultPrevented) return
+    // A link opened in a new tab or window (a modified or middle click)
+    // navigates as usual.
+    const newContext =
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    if (!isButton) {
+      if (newContext) return
+      event.preventDefault()
+    }
+    onPageChange(page)
+  }
+
+  if (isButton) {
+    // Client-side paging without a URL: a button, natively disabled.
+    return (
+      <button
+        type="button"
+        disabled={disabled}
+        aria-current={isActive ? 'page' : undefined}
+        data-active={isActive || undefined}
+        {...(props as ComponentProps<'button'>)}
+        onClick={handleClick as unknown as ComponentProps<'button'>['onClick']}
+        className={classes}
+      >
+        {children}
+      </button>
+    )
+  }
+
   // A disabled link has no `href` (so it can't navigate or take focus) and
   // keeps `role="link"` with `aria-disabled`.
   const linkProps = {
     href: disabled ? undefined : href,
-    onClick: disabled ? undefined : onClick,
+    onClick: disabled ? undefined : handleClick,
     role: disabled ? 'link' : undefined,
     'aria-current': isActive ? ('page' as const) : undefined,
     'aria-disabled': disabled || undefined,
@@ -288,4 +357,5 @@ export {
   type PaginationLinkProps,
   PaginationNext,
   PaginationPrevious,
+  type PaginationProps,
 }

@@ -20,6 +20,9 @@ import {
 /** The text direction: left-to-right or right-to-left. */
 export type TextDirection = 'ltr' | 'rtl'
 
+/** A SnowUI colour theme: the `data-theme` values of `theme.css`. */
+export type SnowUITheme = 'light' | 'dark'
+
 export type SnowUIProviderProps = {
   /**
    * Translations of the components' built-in strings, merged over the
@@ -46,14 +49,29 @@ export type SnowUIProviderProps = {
    * @default inherited, else "ltr"
    */
   dir?: TextDirection
+  /**
+   * The theme of portalled content (dialogs, sheets, popovers, menus,
+   * selects, tooltips, the command palette): it renders at the end of
+   * `<body>`, outside a `data-theme` scope, and gets this as its
+   * `data-theme`. Set the same `data-theme` on the element you scope it to,
+   * or use `ThemeScope`, which does both.
+   * @default inherited, else none (portals take the theme of `<html>`)
+   */
+  theme?: SnowUITheme
   children?: ReactNode
 }
 
 export type SnowUIContextValue = {
-  messages: Messages
+  /** Every namespace: the provider's messages over the English defaults. */
+  messages: Required<Messages>
   locale?: Locale
   /** Undefined unless a provider sets it, so portals inherit `<html dir>`. */
   dir?: TextDirection
+  /**
+   * Undefined unless a provider (or a `ThemeScope`) sets it, so portals
+   * inherit `<html data-theme>`.
+   */
+  theme?: SnowUITheme
 }
 
 const SnowUIContext = createContext<SnowUIContextValue>({
@@ -89,6 +107,7 @@ export const SnowUIProvider = ({
   messages: messagesProp,
   locale,
   dir,
+  theme,
   children,
 }: SnowUIProviderProps) => {
   const parent = useContext(SnowUIContext)
@@ -105,8 +124,9 @@ export const SnowUIProvider = ({
       messages: mergeMessages(parent.messages, messages),
       locale: locale ?? parent.locale,
       dir: dir ?? parent.dir,
+      theme: theme ?? parent.theme,
     }),
-    [parent, messages, locale, dir],
+    [parent, messages, locale, dir, theme],
   )
 
   return (
@@ -124,10 +144,11 @@ SnowUIProvider.displayName = 'SnowUIProvider'
  * `defaultMessages` without one). Use it to localize your own components
  * together with the library's.
  */
-export const useMessages = (): Messages => useContext(SnowUIContext).messages
+export const useMessages = (): Required<Messages> =>
+  useContext(SnowUIContext).messages
 
 /**
- * Everything the nearest `SnowUIProvider` sets: `messages`, `locale` and
- * `dir` (`undefined` when no provider sets them).
+ * Everything the nearest `SnowUIProvider` sets: `messages`, `locale`, `dir`
+ * and `theme` (`undefined` when no provider sets them).
  */
 export const useSnowUI = (): SnowUIContextValue => useContext(SnowUIContext)

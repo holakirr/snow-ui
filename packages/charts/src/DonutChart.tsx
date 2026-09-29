@@ -9,11 +9,12 @@ import { paletteColor } from './colors'
 import { type ChartConfig, seriesColor } from './config'
 import { createFormatValue, useChartLocale } from './context'
 import { formatPercent, toNumber } from './format'
+import { useChartMessages } from './messages'
 import type { ChartFrameProps } from './shared'
 import { tooltipVariant } from './shared'
 
 export interface DonutChartProps<TDatum extends object>
-  extends Omit<ChartFrameProps, 'height' | 'keyboardHint'> {
+  extends Omit<ChartFrameProps, 'height' | 'keyboardHint' | 'navigationLabel'> {
   /** The slices: one row per category. */
   data: readonly TDatum[]
   /** Colours and labels by category (the values of `nameKey`). Missing categories take the palette. */
@@ -22,7 +23,10 @@ export interface DonutChartProps<TDatum extends object>
   nameKey: keyof TDatum & string
   /** The field with the slice's value. */
   valueKey: keyof TDatum & string
-  /** Header of the value column in the data table. @default 'Value' */
+  /**
+   * Header of the value column in the data table.
+   * @default messages.charts.value of `SnowUIProvider`: 'Value'
+   */
   valueLabel?: string
   /** Diameter in px. @default 120 */
   size?: number
@@ -73,7 +77,7 @@ export const DonutChart = <TDatum extends object>({
   config = NO_CONFIG,
   nameKey,
   valueKey,
-  valueLabel = 'Value',
+  valueLabel: valueLabelProp,
   size = 120,
   thickness = 30,
   padAngle = 3,
@@ -91,6 +95,8 @@ export const DonutChart = <TDatum extends object>({
   ...props
 }: DonutChartProps<TDatum>) => {
   const locale = useChartLocale(localeProp)
+  const messages = useChartMessages()
+  const valueLabel = valueLabelProp ?? messages.value
   const format = createFormatValue(locale, valueFormatter)
   const names = useMemo(
     () => data.map((row) => String((row as Record<string, unknown>)[nameKey])),

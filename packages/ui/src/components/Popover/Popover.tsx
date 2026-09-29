@@ -15,8 +15,9 @@ const PopoverAnchor = PopoverPrimitive.Anchor
 type PopoverContentProps = ComponentProps<typeof PopoverPrimitive.Content>
 
 /**
- * The popover, in a portal. It takes the `dir` of a `SnowUIProvider` (the
- * portal is outside your layout's `dir` scope).
+ * The popover, in a portal. It takes the `dir` and the `theme` of a
+ * `SnowUIProvider` or `ThemeScope` (the portal is outside your layout's
+ * `dir` and `data-theme` scopes).
  */
 const PopoverContent: FC<PopoverContentProps> = ({
   className,
@@ -24,12 +25,13 @@ const PopoverContent: FC<PopoverContentProps> = ({
   sideOffset = 4,
   ...props
 }) => {
-  const { dir } = useSnowUI()
+  const { dir, theme } = useSnowUI()
 
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
         dir={dir}
+        data-theme={theme}
         align={align}
         sideOffset={sideOffset}
         className={twMerge(

@@ -40,8 +40,9 @@ type TooltipContentProps = ComponentProps<typeof TooltipPrimitive.Content> &
   VariantProps<typeof tooltipVariants>
 
 /**
- * The tooltip, in a portal. It takes the `dir` of a `SnowUIProvider` (the
- * portal is outside your layout's `dir` scope).
+ * The tooltip, in a portal. It takes the `dir` and the `theme` of a
+ * `SnowUIProvider` or `ThemeScope` (the portal is outside your layout's
+ * `dir` and `data-theme` scopes).
  */
 const TooltipContent: FC<TooltipContentProps> = ({
   className,
@@ -49,12 +50,13 @@ const TooltipContent: FC<TooltipContentProps> = ({
   variant,
   ...props
 }) => {
-  const { dir } = useSnowUI()
+  const { dir, theme } = useSnowUI()
 
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         dir={dir}
+        data-theme={theme}
         sideOffset={sideOffset}
         data-variant={variant ?? 'dark'}
         className={twMerge(tooltipVariants({ variant }), className)}

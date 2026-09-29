@@ -11,8 +11,10 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useMemo,
   useState,
+  useSyncExternalStore,
 } from 'react'
 import { useIsMobile } from '../../hooks'
 import { resolveSide } from '../../utils/direction'
@@ -30,9 +32,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../Tooltip'
+import {
+  readSidebarState,
+  SIDEBAR_COOKIE_MAX_AGE,
+  SIDEBAR_COOKIE_NAME,
+} from './sidebar-cookie'
 
-const SIDEBAR_COOKIE_NAME = 'sidebar:state'
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 // Figma Sidebar: 212px wide.
 const SIDEBAR_WIDTH = '13.25rem'
 const SIDEBAR_WIDTH_MOBILE = '18rem'
@@ -48,6 +53,8 @@ type SidebarContext = {
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
   toggleSidebar: () => void
+  /** The id of the sidebar panel, for `SidebarTrigger`'s `aria-controls`. */
+  sidebarId: string
 }
 
 const SidebarContext = createContext<SidebarContext | null>(null)
@@ -61,22 +68,30 @@ function useSidebar() {
   return context
 }
 
+// The cookie only changes through `setOpen`, which also updates the state.
+const subscribeToCookie = () => () => {}
+const readClientCookie = () => readSidebarState()
+const readServerCookie = () => undefined
+
 /**
- * Reads the persisted sidebar state from the cookie (client only).
+ * Whether the shortcut was pressed in an editable element (a text field, a
+ * rich-text editor), where ⌘B / Ctrl+B is theirs (bold).
  */
-const readSidebarCookie = (): boolean | undefined => {
-  if (typeof document === 'undefined') return undefined
-  const value = document.cookie
-    .split('; ')
-    .find((cookie) => cookie.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
-    ?.split('=')[1]
-  if (value === 'true') return true
-  if (value === 'false') return false
-  return undefined
-}
+const isEditable = (target: EventTarget | null) =>
+  target instanceof HTMLElement &&
+  (target.isContentEditable ||
+    ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
 
 type SidebarProviderProps = ComponentProps<'div'> & {
+  /**
+   * Whether the sidebar starts open (uncontrolled). In the browser, the
+   * state saved in the `sidebar_state` cookie wins, after hydration: to
+   * server-render the saved state (and avoid a flash of the other one), read
+   * the cookie on the server with `readSidebarState` and pass it here.
+   * @default true
+   */
   defaultOpen?: boolean
+  /** Whether the sidebar is open (controlled). */
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
@@ -92,11 +107,21 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
 }) => {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = useState(false)
+  const sidebarId = useId()
 
-  // This is the internal state of the sidebar.
+  // The state saved in the cookie. The server (and hydration) renders
+  // `defaultOpen`; the browser then switches to the saved state, so the
+  // markup matches during hydration.
+  const savedOpen = useSyncExternalStore(
+    subscribeToCookie,
+    readClientCookie,
+    readServerCookie,
+  )
+
+  // This is the internal state of the sidebar, once the user has toggled it.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = useState(() => readSidebarCookie() ?? defaultOpen)
-  const open = openProp ?? _open
+  const [_open, _setOpen] = useState<boolean | undefined>(undefined)
+  const open = openProp ?? _open ?? savedOpen ?? defaultOpen
   const setOpen = useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === 'function' ? value(open) : value
@@ -108,7 +133,7 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
 
       // This sets the cookie to keep the sidebar state.
       // biome-ignore lint/suspicious/noDocumentCookie: it's necessary to set the cookie
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}; samesite=lax`
     },
     [setOpenProp, open],
   )
@@ -124,7 +149,9 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
         event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
-        (event.metaKey || event.ctrlKey)
+        (event.metaKey || event.ctrlKey) &&
+        !event.defaultPrevented &&
+        !isEditable(event.target)
       ) {
         event.preventDefault()
         toggleSidebar()
@@ -149,8 +176,18 @@ const SidebarProvider: FC<SidebarProviderProps> = ({
       openMobile,
       setOpenMobile,
       toggleSidebar,
+      sidebarId,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+    [
+      state,
+      open,
+      setOpen,
+      isMobile,
+      openMobile,
+      setOpenMobile,
+      toggleSidebar,
+      sidebarId,
+    ],
   )
 
   return (
@@ -196,21 +233,24 @@ const Sidebar: FC<SidebarProps> = ({
   variant = 'sidebar',
   collapsible = 'offcanvas',
   className,
+  style,
   children,
   ...props
 }) => {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile, sidebarId } = useSidebar()
   const messages = useMessages()
   const side = resolveSide(sideProp, useDirection())
 
   if (collapsible === 'none') {
     return (
       <div
+        id={sidebarId}
         className={twMerge(
           'flex h-full w-(--sidebar-width) flex-col border-black-10 bg-transparent py-2 text-black',
           side === 'left' ? 'border-r-[0.5px]' : 'border-l-[0.5px]',
           className,
         )}
+        style={style}
         {...props}
       >
         {children}
@@ -220,17 +260,25 @@ const Sidebar: FC<SidebarProps> = ({
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+      <Sheet open={openMobile} onOpenChange={setOpenMobile}>
         <SheetContent
+          id={sidebarId}
           data-sidebar="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-background-1 p-0 py-2 text-black [&>button]:hidden"
+          side={side}
+          // Your `className`, `style` and other props go on the sheet, as
+          // they go on the panel on larger screens.
+          {...props}
+          className={twMerge(
+            'w-(--sidebar-width) bg-background-1 p-0 py-2 text-black [&>button]:hidden',
+            className,
+          )}
           style={
             {
               '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
+              ...style,
             } as CSSProperties
           }
-          side={side}
         >
           <SheetTitle className="sr-only">{messages.sidebar.title}</SheetTitle>
           <SheetDescription className="sr-only">
@@ -262,8 +310,15 @@ const Sidebar: FC<SidebarProps> = ({
         )}
       />
       <div
+        id={sidebarId}
         className={twMerge(
-          'duration-200 fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] ease-linear md:flex',
+          'duration-200 fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width,visibility] ease-linear md:flex',
+          // Collapsed off-canvas, the panel is off-screen: `invisible` takes
+          // it out of the tab order and the accessibility tree once it has
+          // slid out (visibility switches at the end of the transition when
+          // hiding, at its start when showing). Not `inert`, which would
+          // also disable the `SidebarRail` that reopens it.
+          'group-data-[collapsible=offcanvas]:invisible',
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
@@ -274,6 +329,7 @@ const Sidebar: FC<SidebarProps> = ({
               'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r-[0.5px] group-data-[side=right]:border-l-[0.5px] border-black-10',
           className,
         )}
+        style={style}
         {...props}
       >
         <div
@@ -294,19 +350,23 @@ type SidebarTriggerProps = ButtonProps
 /**
  * Opens and closes the sidebar. Its accessible name is
  * `messages.sidebar.toggle` ("Toggle Sidebar"); pass `aria-label` to change
- * it. The icon points the other way in right-to-left text.
+ * it. It tells assistive technology whether the sidebar is open
+ * (`aria-expanded`) and which element it controls (`aria-controls`). The
+ * icon points the other way in right-to-left text.
  */
 const SidebarTrigger: FC<SidebarTriggerProps> = ({
   className,
   onClick,
   ...props
 }) => {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, isMobile, open, openMobile, sidebarId } = useSidebar()
   const messages = useMessages()
 
   return (
     <Button
       data-sidebar="trigger"
+      aria-expanded={isMobile ? openMobile : open}
+      aria-controls={sidebarId}
       className={className}
       // Radix convention: `event.preventDefault()` in your handler skips the
       // toggle.
@@ -349,7 +409,9 @@ const SidebarRail: FC<SidebarRailProps> = ({
         'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-black-10 group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
         '[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize',
         '[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize',
-        'group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-background-1',
+        // It stays visible at the screen edge when the sidebar is collapsed
+        // off-canvas (the panel around it is `invisible`), to reopen it.
+        'group-data-[collapsible=offcanvas]:visible group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-background-1',
         '[[data-side=left][data-collapsible=offcanvas]_&]:-right-2',
         '[[data-side=right][data-collapsible=offcanvas]_&]:-left-2',
         className,
@@ -498,8 +560,9 @@ const SidebarGroupAction: FC<SidebarGroupActionProps> = ({
       data-sidebar="group-action"
       className={twMerge(
         'absolute end-5 top-3 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
-        // Increases the hit area of the button on mobile.
-        'after:absolute after:-inset-2 after:md:hidden',
+        // The hit area: 36px on touch screens, 24px (WCAG 2.5.8) from `md` up,
+        // where a larger one would cover the label.
+        'after:absolute after:-inset-2 md:after:-inset-0.5',
         'group-data-[collapsible=icon]:hidden',
         className,
       )}
@@ -647,8 +710,9 @@ const SidebarMenuAction: FC<SidebarMenuActionProps> = ({
       data-sidebar="menu-action"
       className={twMerge(
         'absolute end-2 top-2 flex aspect-square w-5 items-center justify-center rounded-8 p-0 text-black transition-transform hover:bg-black-4 hover:text-black focus-ring peer-hover/menu-button:text-black [&>svg]:size-4 [&>svg]:shrink-0',
-        // Increases the hit area of the button on mobile.
-        'after:absolute after:-inset-2 after:md:hidden',
+        // The hit area: 36px on touch screens, 24px (WCAG 2.5.8) from `md` up,
+        // where a larger one would cover the menu button.
+        'after:absolute after:-inset-2 md:after:-inset-0.5',
         'peer-data-[size=sm]/menu-button:top-1',
         'peer-data-[size=default]/menu-button:top-2',
         'peer-data-[size=lg]/menu-button:top-3.5',

@@ -185,15 +185,14 @@ type RefTargets = {
   TabsTrigger: HTMLButtonElement
   Tag: HTMLDivElement
   Textarea: HTMLTextAreaElement
+  ThemeScope: HTMLDivElement
   Toast: HTMLLIElement
   ToastAction: HTMLButtonElement
   ToastClose: HTMLButtonElement
   ToastDescription: HTMLDivElement
   ToastProvider: null
   ToastTitle: HTMLDivElement
-  // Forwards its ref to the <ol>, but its props type still drops `ref`
-  // (`ComponentPropsWithoutRef`). Not checked until that is fixed.
-  ToastViewport: 'unchecked'
+  ToastViewport: HTMLOListElement
   Toaster: null
   Toggle: HTMLButtonElement
   ToggleGroup: HTMLDivElement

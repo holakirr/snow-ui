@@ -545,6 +545,31 @@ describe('SnowUIProvider', () => {
     expect(screen.getByTestId('sidebar')).toHaveClass('border-l-[0.5px]')
   })
 
+  it('accepts a full translation without the namespaces added in 5.1', () => {
+    // A `Messages` object written for 5.0 still type-checks: the new
+    // namespaces are optional and the defaults fill them in.
+    const {
+      avatarGroup: _avatarGroup,
+      charts: _charts,
+      ...v50
+    } = defaultMessages
+    const translation: Messages = { ...v50, dialog: { close: 'Schließen' } }
+    let seen: Required<Messages> | undefined
+    const Probe = () => {
+      seen = useMessages()
+      return null
+    }
+    render(
+      <SnowUIProvider messages={translation}>
+        <Probe />
+      </SnowUIProvider>,
+    )
+
+    expect(seen?.dialog.close).toBe('Schließen')
+    expect(seen?.avatarGroup.more(2)).toBe('2 more')
+    expect(seen?.charts.navigation).toBe('Data points')
+  })
+
   it('keeps the base message for an override set to undefined', () => {
     const merged = mergeMessages(defaultMessages, {
       dialog: { close: undefined },

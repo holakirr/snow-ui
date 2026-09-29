@@ -11,7 +11,7 @@ import {
   UsersThreeIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 
 import { Avatar, AvatarFallback, AvatarImage } from '../Avatar'
 import {
@@ -245,6 +245,84 @@ export const RTL: Story = {
     await expect(link.getBoundingClientRect().left).toBeGreaterThan(
       trigger.getBoundingClientRect().right,
     )
+  },
+}
+
+/**
+ * The default `collapsible="offcanvas"`: the trigger slides the sidebar off
+ * the screen. Once it is out, the sidebar is `visibility: hidden`, so Tab
+ * skips its links and screen readers don't find them; the trigger reports
+ * the state with `aria-expanded` and points to the sidebar with
+ * `aria-controls`.
+ */
+export const Offcanvas: Story = {
+  // The same picture as the other stories once the play function has
+  // reopened the sidebar.
+  tags: ['skip-visual'],
+  render: () => (
+    <SidebarProvider>
+      <Sidebar>
+        <Content />
+      </Sidebar>
+      <main className="flex flex-1 items-start gap-4 p-4">
+        <SidebarTrigger size="lg" />
+        <a href="#offcanvas" className="rounded-8 text-14 focus-ring">
+          Main content
+        </a>
+      </main>
+    </SidebarProvider>
+  ),
+  play: async ({ canvas, userEvent, step }) => {
+    const trigger = canvas.getByRole('button', { name: 'Toggle Sidebar' })
+    const main = canvas.getByRole('link', { name: 'Main content' })
+    const sidebar = document.getElementById(
+      trigger.getAttribute('aria-controls') ?? '',
+    )
+    const firstLink = canvas.getByRole('link', { name: 'Overview' })
+    await expect(sidebar).toContainElement(firstLink)
+
+    await step('expanded: Tab goes through the sidebar links', async () => {
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+      trigger.focus()
+      await userEvent.tab({ shift: true })
+      await expect(canvas.getByRole('link', { name: 'Social' })).toHaveFocus()
+    })
+
+    await step('collapsed: Tab skips the sidebar', async () => {
+      await userEvent.click(trigger)
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+      // Hidden once the 200ms slide has ended.
+      await waitFor(() =>
+        expect(
+          canvas.queryByRole('link', { name: 'Overview' }),
+        ).not.toBeInTheDocument(),
+      )
+      // The browser refuses to focus its links…
+      firstLink.focus()
+      await expect(firstLink).not.toHaveFocus()
+      // …and Tab goes from the trigger to the page, never into the sidebar.
+      trigger.focus()
+      await userEvent.tab({ shift: true })
+      await expect(sidebar).not.toContainElement(
+        document.activeElement as HTMLElement,
+      )
+      trigger.focus()
+      await userEvent.tab()
+      await expect(main).toHaveFocus()
+    })
+
+    await step('expanded again: the links are back', async () => {
+      // Also saves the open state (the sidebar_state cookie) for the other
+      // stories.
+      await userEvent.click(trigger)
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+      // Visible from the first frame of the slide.
+      await waitFor(() =>
+        expect(
+          canvas.getByRole('link', { name: 'Overview' }),
+        ).toBeInTheDocument(),
+      )
+    })
   },
 }
 

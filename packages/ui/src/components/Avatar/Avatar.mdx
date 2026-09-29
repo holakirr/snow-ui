@@ -36,7 +36,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@holakirr/snow-ui'
 
 1. **Frame** (`Avatar`): a round `<span>`, sized by `size`, that clips its content.
 2. **Image** (`AvatarImage`, optional): the `<img>`, rendered only once it has loaded.
-3. **Fallback** (`AvatarFallback`): the initials, 12/16 text on a `color-2` circle, shown until the image loads and when it fails. Its `delayMs` waits before showing it, so fast images don't flash the initials.
+3. **Fallback** (`AvatarFallback`): the initials on a `color-2` circle, shown until the image loads and when it fails. The text is 37.5% of the avatar's width, at least 12px, on a 16/12 line height. Its `delayMs` waits before showing it, so fast images don't flash the initials.
 
 ## Sizes
 
@@ -48,7 +48,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@holakirr/snow-ui'
 | `md` | 32px | lists and headers |
 | `lg` (default) | 64px | profiles |
 
-The fallback text is 12/16 at every size, `lg` included.
+The fallback text grows with the avatar: 12/16 at `sm` and `md`, 24/32 at `lg`. It follows the avatar's actual width (the avatar is a size container), so an avatar resized by its parent, such as the icon slot of an `IconBox`, gets initials that fit.
 
 ## States
 

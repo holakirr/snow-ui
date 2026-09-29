@@ -105,4 +105,102 @@ describe('Pagination', () => {
     expect(label.closest('[aria-hidden]')).toBeNull()
     expect(screen.getByText('…')).toHaveAttribute('aria-hidden')
   })
+
+  describe('client-side paging (onPageChange)', () => {
+    it('renders items with a page and no href as buttons', () => {
+      const onPageChange = vi.fn()
+      render(
+        <Pagination onPageChange={onPageChange}>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious page={1} disabled />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink page={1} isActive>
+                1
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink page={2}>2</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext page={2} />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>,
+      )
+
+      expect(screen.queryByRole('link')).not.toBeInTheDocument()
+      const current = screen.getByRole('button', { name: '1' })
+      expect(current).toHaveAttribute('type', 'button')
+      expect(current).toHaveAttribute('aria-current', 'page')
+      expect(current).toHaveClass('bg-black-4', 'h-6', 'rounded-12')
+
+      fireEvent.click(screen.getByRole('button', { name: '2' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Go to next page' }))
+      expect(onPageChange.mock.calls).toEqual([[2], [2]])
+
+      // Natively disabled: no focus, no click.
+      const previous = screen.getByRole('button', {
+        name: 'Go to previous page',
+      })
+      expect(previous).toBeDisabled()
+      expect(previous).toHaveClass('disabled:text-black-20')
+      fireEvent.click(previous)
+      expect(onPageChange).toHaveBeenCalledTimes(2)
+    })
+
+    it('handles plain clicks on links with a page, and lets modified clicks navigate', () => {
+      const onPageChange = vi.fn()
+      render(
+        <Pagination onPageChange={onPageChange}>
+          <PaginationLink href="?page=3" page={3}>
+            3
+          </PaginationLink>
+        </Pagination>,
+      )
+      const link = screen.getByRole('link', { name: '3' })
+      expect(link).toHaveAttribute('href', '?page=3')
+
+      // `fireEvent` returns false when the default action was prevented.
+      expect(fireEvent.click(link)).toBe(false)
+      expect(onPageChange).toHaveBeenCalledWith(3)
+
+      expect(fireEvent.click(link, { metaKey: true })).toBe(true)
+      expect(fireEvent.click(link, { ctrlKey: true })).toBe(true)
+      expect(onPageChange).toHaveBeenCalledTimes(1)
+    })
+
+    it("skips onPageChange when the item's onClick prevents the default", () => {
+      const onPageChange = vi.fn()
+      render(
+        <Pagination onPageChange={onPageChange}>
+          <PaginationLink page={2} onClick={(event) => event.preventDefault()}>
+            2
+          </PaginationLink>
+        </Pagination>,
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: '2' }))
+      expect(onPageChange).not.toHaveBeenCalled()
+    })
+
+    it('leaves links without a page, and without onPageChange, alone', () => {
+      render(
+        <Pagination>
+          <PaginationLink href="?page=2" page={2}>
+            2
+          </PaginationLink>
+          <PaginationLink href="?page=3">3</PaginationLink>
+        </Pagination>,
+      )
+
+      expect(fireEvent.click(screen.getByRole('link', { name: '2' }))).toBe(
+        true,
+      )
+      expect(fireEvent.click(screen.getByRole('link', { name: '3' }))).toBe(
+        true,
+      )
+    })
+  })
 })

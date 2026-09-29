@@ -225,6 +225,11 @@ type UseComboboxParams = Pick<
   onCreateOption: (query: string) => boolean
   /** Called when the list closes without a selection, with the query. */
   onDismiss?: (query: string | null) => void
+  /**
+   * The values (and their labels) already picked: "Create" isn't offered
+   * for them either, even when `options` doesn't have them (yet).
+   */
+  picked?: readonly string[]
 }
 
 /**
@@ -247,10 +252,13 @@ export const useCombobox = ({
   onSelectOption,
   onCreateOption,
   onDismiss,
+  picked = [],
 }: UseComboboxParams) => {
   const baseId = useId()
   const listId = `${baseId}-list`
   const [innerOpen, setInnerOpen] = useState(defaultOpen)
+  // Disabling closes an uncontrolled list for good.
+  if (disabled && innerOpen) setInnerOpen(false)
   const open = (openProp ?? innerOpen) && !disabled
   // `null`: the user hasn't typed since the list opened, so every option
   // shows (and a single Combobox shows the selected label).
@@ -294,13 +302,15 @@ export const useCombobox = ({
     [groups, filter, trimmed],
   )
 
-  // "Create" is offered unless an option already has this exact label.
+  // "Create" is offered unless an option already has this exact label, or a
+  // picked value has it as its value or label (case-insensitive): creating
+  // it again would call `onCreate` without changing the value.
+  const normalized = trimmed.toLowerCase()
   const createQuery =
     creatable &&
     trimmed !== '' &&
-    !allOptions.some(
-      (option) => option.label.toLowerCase() === trimmed.toLowerCase(),
-    )
+    !allOptions.some((option) => option.label.toLowerCase() === normalized) &&
+    !picked.some((text) => text.toLowerCase() === normalized)
       ? trimmed
       : undefined
 

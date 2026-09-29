@@ -116,6 +116,9 @@ export const useOpenState = (
   disabled: boolean,
 ) => {
   const [innerOpen, setInnerOpen] = useState(defaultOpen)
+  // Disabling closes an uncontrolled calendar for good (it doesn't reopen
+  // when the field is enabled again).
+  if (disabled && innerOpen) setInnerOpen(false)
   const open = (openProp ?? innerOpen) && !disabled
   const setOpen = (next: boolean) => {
     if (next === open || (next && disabled)) return

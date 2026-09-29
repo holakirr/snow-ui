@@ -53,10 +53,9 @@ export type SnowUIProviderProps = {
   /**
    * The theme of portalled content (dialogs, sheets, popovers, menus,
    * selects, comboboxes, date pickers, tooltips, the command palette): it
-   * renders at the end of
-   * `<body>`, outside a `data-theme` scope, and gets this as its
-   * `data-theme`. Set the same `data-theme` on the element you scope it to,
-   * or use `ThemeScope`, which does both.
+   * renders at the end of `<body>`, outside a `data-theme` scope, and gets
+   * this as its `data-theme`. Set the same `data-theme` on the element you
+   * scope it to, or use `ThemeScope`, which does both.
    * @default inherited, else none (portals take the theme of `<html>`)
    */
   theme?: SnowUITheme

@@ -408,6 +408,32 @@ describe('Combobox', () => {
     expect(field()).toHaveValue('docs')
   })
 
+  it('offers no "Create" for the picked value, even when options lacks it', () => {
+    const onCreate = vi.fn()
+    render(
+      <Combobox
+        aria-label="Label"
+        options={[]}
+        creatable
+        onCreate={onCreate}
+      />,
+    )
+
+    fireEvent.change(field(), { target: { value: 'docs' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    expect(onCreate).toHaveBeenCalledTimes(1)
+
+    fireEvent.change(field(), { target: { value: 'DOCS' } })
+    expect(
+      screen.queryByRole('option', { name: /Create/ }),
+    ).not.toBeInTheDocument()
+    // Another text is still offered.
+    fireEvent.change(field(), { target: { value: 'design' } })
+    expect(
+      screen.getByRole('option', { name: 'Create "design"' }),
+    ).toBeInTheDocument()
+  })
+
   it('stays closed and unchanged while disabled or read-only', () => {
     const { unmount } = renderCombobox({
       disabled: true,

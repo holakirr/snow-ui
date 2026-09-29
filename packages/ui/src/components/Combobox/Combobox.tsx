@@ -130,6 +130,13 @@ const Combobox: FC<ComboboxProps> = ({
     onDismiss: (query) => {
       if (clearable && query?.trim() === '') setValue(null)
     },
+    picked:
+      value === null
+        ? []
+        : [
+            value,
+            ...(picked.current?.value === value ? [picked.current.label] : []),
+          ],
   })
   const { inputRef, fieldRef, open: isOpen, query, activeId, listId } = state
   const setInputRef = useComposedRefs(inputRef, ref)

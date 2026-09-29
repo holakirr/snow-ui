@@ -80,17 +80,21 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
   // pointer, which previews the end.
   const [start, setStart] = useState<Date>()
   const [hovered, setHovered] = useState<Date>()
-  const [open, setOpenState] = useOpenState(
+  const [open, setOpen] = useOpenState(
     openProp,
     defaultOpen,
     onOpenChange,
     disabled,
   )
 
-  const setOpen = (next: boolean) => {
+  // A new range every time the calendar opens: drop a half-picked range
+  // whenever the open state changes, also when a controlled `open` (or
+  // `disabled`) closes it without `onOpenChange`.
+  const [wasOpen, setWasOpen] = useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
     setStart(undefined)
     setHovered(undefined)
-    setOpenState(next)
   }
 
   const setValue = (next: DateRange | null) => {

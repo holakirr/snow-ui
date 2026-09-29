@@ -132,6 +132,10 @@ const MultiSelect: FC<MultiSelectProps> = ({
       if (!values.includes(query)) setValues([...values, query])
       return true
     },
+    picked: [
+      ...values,
+      ...values.flatMap((item) => picked.current.get(item)?.label ?? []),
+    ],
   })
   const { inputRef, fieldRef, open: isOpen, query, activeId, listId } = state
   const setInputRef = useComposedRefs(inputRef, ref)

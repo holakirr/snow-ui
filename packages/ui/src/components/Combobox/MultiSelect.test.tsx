@@ -168,6 +168,25 @@ describe('MultiSelect', () => {
     expect(screen.getByText('Rust')).toBeVisible()
   })
 
+  it('offers no "Create" for a picked value, even when options lacks it', () => {
+    const onCreate = vi.fn()
+    // The parent doesn't add created values to `options`.
+    renderMultiSelect({ creatable: true, onCreate })
+
+    fireEvent.change(field(), { target: { value: 'Rust' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    expect(onCreate).toHaveBeenCalledTimes(1)
+
+    for (const query of ['Rust', 'rust', ' RUST ']) {
+      fireEvent.change(field(), { target: { value: query } })
+      expect(
+        screen.queryByRole('option', { name: /Create/ }),
+      ).not.toBeInTheDocument()
+    }
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    expect(onCreate).toHaveBeenCalledTimes(1)
+  })
+
   it('has no remove buttons and no list while disabled or read-only', () => {
     const { unmount } = renderMultiSelect({
       defaultValue: ['react'],

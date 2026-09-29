@@ -117,6 +117,48 @@ describe('DateRangePicker', () => {
     expect(cell(/January 14th, 2025/)).toHaveAttribute('aria-selected', 'true')
   })
 
+  it('starts over when a controlled open state closes it', () => {
+    const onValueChange = vi.fn()
+    const props = {
+      'aria-label': 'Stay',
+      defaultValue: january(13, 16),
+      onValueChange,
+    }
+    const { rerender } = render(<DateRangePicker {...props} open />)
+    fireEvent.click(day(/January 20th, 2025/))
+    expect(cell(/January 20th, 2025/)).toHaveAttribute('aria-selected', 'true')
+
+    // The parent closes and reopens it without onOpenChange.
+    rerender(<DateRangePicker {...props} open={false} />)
+    rerender(<DateRangePicker {...props} open />)
+    expect(cell(/January 20th, 2025/)).not.toHaveAttribute('aria-selected')
+
+    // The next click is a new start, not the end of the old half-range.
+    fireEvent.click(day(/January 22nd, 2025/))
+    expect(onValueChange).not.toHaveBeenCalled()
+    fireEvent.click(day(/January 23rd, 2025/))
+    expect(onValueChange).toHaveBeenCalledWith(january(22, 23))
+  })
+
+  it('starts over after being disabled while open', () => {
+    const onValueChange = vi.fn()
+    const props = {
+      'aria-label': 'Stay',
+      defaultValue: january(13, 16),
+      defaultOpen: true,
+      onValueChange,
+    }
+    const { rerender } = render(<DateRangePicker {...props} />)
+    fireEvent.click(day(/January 20th, 2025/))
+
+    rerender(<DateRangePicker {...props} disabled />)
+    rerender(<DateRangePicker {...props} />)
+    fireEvent.click(screen.getByRole('combobox'))
+    expect(cell(/January 20th, 2025/)).not.toHaveAttribute('aria-selected')
+    fireEvent.click(day(/January 22nd, 2025/))
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
   it('shows several months with numberOfMonths', () => {
     renderPicker({
       defaultValue: january(27, 31),

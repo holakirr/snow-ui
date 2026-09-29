@@ -1,5 +1,22 @@
-import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuPortal,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from './ContextMenu'
 import * as ContextMenuStories from './ContextMenu.stories'
 
 <Meta of={ContextMenuStories} />
@@ -75,9 +92,26 @@ import {
 
 - The content is `role="menu"`; items are `menuitem`, `menuitemcheckbox` (with `aria-checked`) or `menuitemradio`, separators `separator`, groups `group`.
 - It opens on the `contextmenu` event (usually a right-click) and on a 700ms long press with a touch or a pen, at the pointer. The trigger has no role and adds no keyboard access (by default it is a `<span>`, which is not focusable), so keyboard and screen-reader users may never find the menu. Offer every action somewhere else too.
-- In the open menu the keyboard works as in DropdownMenu: ArrowDown / ArrowUp, Home / End and typeahead move; Enter or Space selects and closes; ArrowRight opens a submenu (ArrowLeft in right-to-left text) and ArrowLeft closes it; Escape closes the menu, submenus included. To keep the menu open after a selection, call `event.preventDefault()` in the item's `onSelect`.
+- To keep the menu open after a selection, call `event.preventDefault()` in the item's `onSelect`.
 - The menu is modal by default (Radix `modal`): while it is open, focus stays in it, the rest of the page is hidden from assistive technology and ignores the pointer, and the page doesn't scroll. `modal={false}` turns this off.
+- When the menu closes, focus goes back to the element that had it before the menu opened (not after a click outside a `modal={false}` menu).
 - There are no built-in strings. A `ContextMenuShortcut` is a `<kbd>` with `aria-keyshortcuts`; it only shows the shortcut.
+
+### Keyboard
+
+In the open menu the keys are those of [DropdownMenu](?path=/docs/components-dropdownmenu--docs) (Radix Menu); disabled items are skipped:
+
+| Key | Action |
+| --- | --- |
+| Shift + F10, the Menu key | with focus on an element inside the trigger: open the menu on its first item. This is browser behaviour: the browser turns these keys into a `contextmenu` event, and not every browser or OS does. The default `<span>` trigger can't take focus |
+| ArrowDown / ArrowUp | move to the next / previous item; no wrapping unless `loop` is set on the content. After a right-click or a long press focus is on the menu itself: ArrowDown moves to the first item, ArrowUp to the last |
+| Home / End, PageUp / PageDown | move to the first / last item |
+| a character | move to the next item whose text starts with the typed characters (typeahead); once typing has started, Space is part of the search |
+| Enter, Space | select the item and close the menu (a checkbox item toggles, a radio item is picked); on a sub trigger, open the submenu on its first item |
+| ArrowRight (ArrowLeft in right-to-left text) | on a sub trigger: open the submenu and focus its first item |
+| ArrowLeft (ArrowRight in right-to-left text) | in a submenu: close it and focus its trigger |
+| Escape | close the menu, submenus included |
+| Tab, Shift + Tab | do nothing while the menu is open |
 
 ### Deviations from the Figma kit
 
@@ -138,4 +172,94 @@ Checkbox items take `checked` / `onCheckedChange` and a radio group `value` / `o
 
 ## Props
 
-<Controls />
+The parts are the [Radix Context Menu](https://www.radix-ui.com/primitives/docs/components/context-menu#api-reference) parts with the Figma Popover styles; `ContextMenuShortcut` is a [KBD](?path=/docs/components-text-kbd--docs). They take the props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### ContextMenu
+
+The root: it holds the open state and renders nothing. `open` / `onOpenChange` control it (there is no `defaultOpen`); `modal` is `true` by default; `dir` overrides the direction from `SnowUIProvider`.
+
+<ArgTypes of={ContextMenu} />
+
+### ContextMenuTrigger
+
+A `<span>` around the area that opens the menu on right-click or a long press; `asChild` renders your element instead. With `disabled` the browser's own menu shows.
+
+<ArgTypes of={ContextMenuTrigger} />
+
+### ContextMenuContent
+
+The `role="menu"` panel, in a portal, at the pointer. `loop` (off by default) makes the arrow keys wrap around; the `on…` handlers can prevent the menu from closing.
+
+<ArgTypes of={ContextMenuContent} />
+
+### ContextMenuItem
+
+A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text when the item's content isn't plain text; `inset` lines it up with check items.
+
+<ArgTypes of={ContextMenuItem} />
+
+### ContextMenuCheckboxItem
+
+A `menuitemcheckbox` with a check mark: `checked` and `onCheckedChange`.
+
+<ArgTypes of={ContextMenuCheckboxItem} />
+
+### ContextMenuRadioGroup
+
+A `group` of radio items; `value` and `onValueChange` hold the picked one.
+
+<ArgTypes of={ContextMenuRadioGroup} />
+
+### ContextMenuRadioItem
+
+A `menuitemradio` with a dot, checked when its `value` is the group's.
+
+<ArgTypes of={ContextMenuRadioItem} />
+
+### ContextMenuLabel
+
+A group title, a `<div>` that can't take focus.
+
+<ArgTypes of={ContextMenuLabel} />
+
+### ContextMenuSeparator
+
+A `separator` line between groups.
+
+<ArgTypes of={ContextMenuSeparator} />
+
+### ContextMenuShortcut
+
+A `KBD` at the end of an item: `keys` are the keys it shows. It takes the KBD props.
+
+<ArgTypes of={ContextMenuShortcut} />
+
+### ContextMenuGroup
+
+A `group` around related items.
+
+<ArgTypes of={ContextMenuGroup} />
+
+### ContextMenuPortal
+
+Renders its children in a portal, in `container` (`<body>` by default). `ContextMenuContent` already has one; wrap a `ContextMenuSubContent` in it to portal the submenu too.
+
+<ArgTypes of={ContextMenuPortal} />
+
+### ContextMenuSub
+
+A submenu's root: `open` / `defaultOpen` / `onOpenChange`. It renders nothing.
+
+<ArgTypes of={ContextMenuSub} />
+
+### ContextMenuSubTrigger
+
+A `menuitem` with an arrow at the end; it opens the submenu on hover, a click, Enter, Space or ArrowRight (ArrowLeft in right-to-left text). Takes `inset`.
+
+<ArgTypes of={ContextMenuSubTrigger} />
+
+### ContextMenuSubContent
+
+The submenu's `role="menu"` panel, beside its trigger (on the left in right-to-left text), on the same surface. `loop` makes its arrow keys wrap around.
+
+<ArgTypes of={ContextMenuSubContent} />

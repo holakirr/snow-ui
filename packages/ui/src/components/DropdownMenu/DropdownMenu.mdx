@@ -1,5 +1,22 @@
-import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from './DropdownMenu'
 import * as DropdownMenuStories from './DropdownMenu.stories'
 
 <Meta of={DropdownMenuStories} />
@@ -79,22 +96,26 @@ The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdown
 ## Accessibility
 
 - The trigger gets `aria-haspopup="menu"` and `aria-expanded`. The content is `role="menu"`; items are `menuitem`, `menuitemcheckbox` (with `aria-checked`) or `menuitemradio`, separators `separator`, groups `group`.
-- Keyboard, from the stories' interaction tests and Radix Dropdown Menu:
+- To keep the menu open after a selection, call `event.preventDefault()` in the item's `onSelect`.
+- The menu is modal by default (Radix `modal`): while it is open, focus stays in it, the rest of the page is hidden from assistive technology and ignores the pointer, and the page doesn't scroll. `modal={false}` turns this off.
+- When the menu closes, focus goes back to the trigger (not after a click outside a `modal={false}` menu).
+- There are no built-in strings. A `DropdownMenuShortcut` is a `<kbd>` with `aria-keyshortcuts`; it only shows the shortcut, so register the shortcut yourself.
 
-| Key | Does |
+### Keyboard
+
+From the stories' interaction tests and Radix Dropdown Menu; disabled items are skipped:
+
+| Key | Action |
 | --- | --- |
 | Enter, Space, ArrowDown (on the trigger) | open the menu and focus its first item |
-| ArrowDown / ArrowUp | move to the next / previous item (no wrapping; `loop` on the content wraps) |
-| Home / End | move to the first / last item |
-| a character | move to the next item that starts with it |
-| Enter, Space | select the item and close the menu (a checkbox or radio item changes, then closes) |
+| ArrowDown / ArrowUp | move to the next / previous item; no wrapping unless `loop` is set on the content. After a click on the trigger focus is on the menu itself: ArrowDown moves to the first item, ArrowUp to the last |
+| Home / End, PageUp / PageDown | move to the first / last item |
+| a character | move to the next item whose text starts with the typed characters (typeahead); once typing has started, Space is part of the search |
+| Enter, Space | select the item and close the menu (a checkbox item toggles, a radio item is picked); on a sub trigger, open the submenu on its first item |
 | ArrowRight (ArrowLeft in right-to-left text) | on a sub trigger: open the submenu and focus its first item |
 | ArrowLeft (ArrowRight in right-to-left text) | in a submenu: close it and focus its trigger |
 | Escape | close the menu, submenus included, and return focus to the trigger |
-
-- To keep the menu open after a selection, call `event.preventDefault()` in the item's `onSelect`.
-- The menu is modal by default (Radix `modal`): while it is open, focus stays in it, the rest of the page is hidden from assistive technology and ignores the pointer, and the page doesn't scroll. `modal={false}` turns this off.
-- There are no built-in strings. A `DropdownMenuShortcut` is a `<kbd>` with `aria-keyshortcuts`; it only shows the shortcut, so register the shortcut yourself.
+| Tab, Shift + Tab | do nothing while the menu is open |
 
 ### Deviations from the Figma kit
 
@@ -158,4 +179,94 @@ With `asChild`, calling `event.preventDefault()` in the child's handler skips th
 
 ## Props
 
-<Controls />
+The parts are the [Radix Dropdown Menu](https://www.radix-ui.com/primitives/docs/components/dropdown-menu#api-reference) parts with the Figma Popover styles; `DropdownMenuShortcut` is a [KBD](?path=/docs/components-text-kbd--docs). They take the props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### DropdownMenu
+
+The root: it holds the open state and renders nothing. Controlled with `open` and `onOpenChange`, or uncontrolled with `defaultOpen`; `modal` is `true` by default; `dir` overrides the direction from `SnowUIProvider`.
+
+<ArgTypes of={DropdownMenu} />
+
+### DropdownMenuTrigger
+
+A `<button>` with `aria-haspopup="menu"` and `aria-expanded` that toggles the menu; with `asChild` your element (usually a Button) is the trigger.
+
+<ArgTypes of={DropdownMenuTrigger} />
+
+### DropdownMenuContent
+
+The `role="menu"` panel, in a portal. It is placed below the trigger (`side="bottom"`), centred on it (`align="center"`), 4px away (`sideOffset`, 4 here instead of the Radix 0), and flips when there isn't room. `loop` (off by default) makes the arrow keys wrap around; the `on…` handlers can prevent the menu from closing.
+
+<ArgTypes of={DropdownMenuContent} />
+
+### DropdownMenuItem
+
+A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text when the item's content isn't plain text; `inset` lines it up with check items.
+
+<ArgTypes of={DropdownMenuItem} />
+
+### DropdownMenuCheckboxItem
+
+A `menuitemcheckbox` with a check mark: `checked` and `onCheckedChange`.
+
+<ArgTypes of={DropdownMenuCheckboxItem} />
+
+### DropdownMenuRadioGroup
+
+A `group` of radio items; `value` and `onValueChange` hold the picked one.
+
+<ArgTypes of={DropdownMenuRadioGroup} />
+
+### DropdownMenuRadioItem
+
+A `menuitemradio` with a dot, checked when its `value` is the group's.
+
+<ArgTypes of={DropdownMenuRadioItem} />
+
+### DropdownMenuLabel
+
+A group title, a `<div>` that can't take focus.
+
+<ArgTypes of={DropdownMenuLabel} />
+
+### DropdownMenuSeparator
+
+A `separator` line between groups.
+
+<ArgTypes of={DropdownMenuSeparator} />
+
+### DropdownMenuShortcut
+
+A `KBD` at the end of an item: `keys` are the keys it shows. It takes the KBD props.
+
+<ArgTypes of={DropdownMenuShortcut} />
+
+### DropdownMenuGroup
+
+A `group` around related items, with 4px above and below.
+
+<ArgTypes of={DropdownMenuGroup} />
+
+### DropdownMenuPortal
+
+Renders its children in a portal, in `container` (`<body>` by default). `DropdownMenuContent` already has one; wrap a `DropdownMenuSubContent` in it.
+
+<ArgTypes of={DropdownMenuPortal} />
+
+### DropdownMenuSub
+
+A submenu's root: `open` / `defaultOpen` / `onOpenChange`. It renders nothing.
+
+<ArgTypes of={DropdownMenuSub} />
+
+### DropdownMenuSubTrigger
+
+A `menuitem` with an arrow at the end; it opens the submenu on hover, a click, Enter, Space or ArrowRight (ArrowLeft in right-to-left text). Takes `inset`.
+
+<ArgTypes of={DropdownMenuSubTrigger} />
+
+### DropdownMenuSubContent
+
+The submenu's `role="menu"` panel, beside its trigger (on the left in right-to-left text), on the same surface. `loop` makes its arrow keys wrap around.
+
+<ArgTypes of={DropdownMenuSubContent} />

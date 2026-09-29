@@ -36,8 +36,9 @@
 /*
  * `dark:` utilities: on and inside a dark scope (`data-theme="dark"`, or the
  * `dark` class that next-themes and shadcn/ui set), or anywhere when the OS
- * prefers dark and <html> sets no mode (no data-theme, no `light` / `dark`
- * class) — but not on or inside a light scope (`data-theme="light"` or the
+ * prefers dark and <html> sets no light or dark mode (no data-theme="light"
+ * / "dark", no `light` / `dark` class; data-theme="system" or another value
+ * sets none) — but not on or inside a light scope (`data-theme="light"` or the
  * `light` class) within a dark scope. Selectors can't find the nearest scope
  * at any depth, so a dark scope inside a light scope inside a dark scope gets
  * the dark tokens (they follow any depth) but not `dark:` utilities.
@@ -57,8 +58,8 @@
   }
   @media (prefers-color-scheme: dark) {
     &:where(
-        :root:not([data-theme], .light, .dark),
-        :root:not([data-theme], .light, .dark) *
+        :root:not([data-theme="light"], .light, [data-theme="dark"], .dark),
+        :root:not([data-theme="light"], .light, [data-theme="dark"], .dark) *
       ):not(
         :where(
           :is([data-theme="light"], .light),

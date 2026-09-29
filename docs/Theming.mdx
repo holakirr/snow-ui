@@ -36,7 +36,7 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 The theme is light by default. It is dark:
 
 - with `data-theme="dark"` or the `dark` class on `<html>` (the class next-themes and shadcn/ui set: `<ThemeProvider attribute="class">`), or
-- with the OS dark preference, when `<html>` sets no mode: `data-theme="light"` or the `light` class pins the light theme.
+- with the OS dark preference, when `<html>` sets no light or dark mode: `data-theme="light"` or the `light` class pins the light theme, and any other `data-theme` value (`"system"`, a theme name) follows the OS.
 
 `color-scheme` follows, so native controls and scrollbars match. Components need no props for it: their colours are tokens.
 
@@ -115,7 +115,7 @@ Redeclare its variable in your own (unlayered) CSS, for each scope it should app
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme], .light, .dark) {
+  :root:not([data-theme="light"], .light, [data-theme="dark"], .dark) {
     --color-primary: #78a9ff;
   }
 }

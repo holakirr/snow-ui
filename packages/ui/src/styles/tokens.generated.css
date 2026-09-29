@@ -341,11 +341,12 @@
   }
 
   /*
-   * No mode on <html> (no data-theme, no light / dark class): dark when the OS
-   * prefers dark.
+   * No light or dark mode on <html> (no data-theme="light" / "dark", no light
+   * / dark class; data-theme="system" or another value sets none): dark when
+   * the OS prefers dark.
    */
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme], .light, .dark) {
+    :root:not([data-theme="light"], .light, [data-theme="dark"], .dark) {
       color-scheme: dark;
 
       --color-primary: #adadfb;

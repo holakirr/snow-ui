@@ -164,7 +164,10 @@ describe('theme scopes (compiled index.css)', () => {
     rule(':root, [data-theme="light"], .light', ['@layer base'])
   const dark = () => rule('[data-theme="dark"], .dark', ['@layer base'])
   const osDark = () =>
-    rule(':root:not([data-theme], .light, .dark)', ['@layer base', DARK_QUERY])
+    rule(
+      ':root:not([data-theme="light"], .light, [data-theme="dark"], .dark)',
+      ['@layer base', DARK_QUERY],
+    )
   const theme = () => rule(':root, :host', ['@layer theme'])
   const tokens = (scope: Rule) =>
     new Map([...scope.declarations].filter(([name]) => name.startsWith('--')))
@@ -218,6 +221,30 @@ describe('theme scopes (compiled index.css)', () => {
     expect(dark().declarations.get('--color-text-secondary')).toBe(
       'rgb(255 255 255 / 0.7)',
     )
+  })
+
+  it('follows the OS on <html> with no light or dark mode, whatever else data-theme says', () => {
+    const html = document.documentElement
+    const follows = (setup: (element: HTMLElement) => void) => {
+      html.removeAttribute('data-theme')
+      html.className = ''
+      setup(html)
+      const matches = html.matches(osDark().selector)
+      html.removeAttribute('data-theme')
+      html.className = ''
+      return matches
+    }
+    expect(follows(() => {})).toBe(true)
+    for (const value of ['system', 'auto', '', 'cupcake']) {
+      expect(
+        follows((el) => el.setAttribute('data-theme', value)),
+        value,
+      ).toBe(true)
+    }
+    for (const value of ['light', 'dark']) {
+      expect(follows((el) => el.setAttribute('data-theme', value))).toBe(false)
+      expect(follows((el) => el.classList.add(value))).toBe(false)
+    }
   })
 
   it('orders the scopes so that data-theme wins over :root', () => {
@@ -335,6 +362,12 @@ describe('theme scopes (compiled index.css)', () => {
       ['dark', ['.light'], false, false],
       [null, ['.dark', '.light'], true, false],
       [null, ['.light', 'dark'], true, true],
+      // Other data-theme values ("system", a theme name) set no mode: the
+      // OS decides, as in 5.0.
+      ['system', [], true, true],
+      ['system', [], false, false],
+      ['cupcake', [], true, true],
+      ['system', ['light'], true, false],
     ] as const)(
       '<html %s> > %j (OS dark: %s) → dark: %s',
       (root, themes, osDark, expected) => {

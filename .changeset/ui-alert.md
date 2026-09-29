@@ -9,4 +9,4 @@ New `Alert` (a callout), with `AlertTitle` and `AlertDescription`: a message in 
 - The status is read before the content as visually hidden text ("Error"), so it doesn't depend on colour.
 - `action` (e.g. a Button) sits after the text or under it when the alert is narrow; `onDismiss` adds a dismiss button. `icon` replaces the icon (`null` hides it).
 - `asChild` on `Alert`, `AlertTitle` and `AlertDescription` (a `<section>`, a heading, a paragraph).
-- New `SnowUIProvider` messages: `alert.dismiss` and `alert.info` / `success` / `warning` / `error`, overridden by `dismissLabel` and `statusLabel`.
+- New `SnowUIProvider` messages: `alert.dismiss` and `alert.info` / `success` / `warning` / `error`, overridden by `dismissLabel` and `statusLabel`. A full translation typed as `Messages` needs the new namespace too (or type a partial one as `MessagesOverrides`).

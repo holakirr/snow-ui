@@ -13,6 +13,16 @@ const years = (count: number) => {
 }
 
 export const ruMessages: Messages = {
+  alert: {
+    dismiss: 'Закрыть',
+    info: 'Информация',
+    success: 'Успешно',
+    warning: 'Предупреждение',
+    error: 'Ошибка',
+  },
+  alertDialog: {
+    cancel: 'Отмена',
+  },
   badge: {
     label: 'Значок уведомления',
   },
@@ -47,6 +57,11 @@ export const ruMessages: Messages = {
     next: 'Следующая страница',
     more: 'Другие страницы',
   },
+  progress: {
+    label: 'Ход выполнения',
+    // Russian puts a (narrow no-break) space before the percent sign.
+    value: (value, max) => `${Math.round((value / max) * 100)}\u202f%`,
+  },
   search: {
     placeholder: 'Поиск',
     clear: 'Очистить поиск',
@@ -63,6 +78,9 @@ export const ruMessages: Messages = {
     minimum: (label) => `${label}, минимум`,
     maximum: (label) => `${label}, максимум`,
     thumb: (label, position, count) => `${label}, ${position} из ${count}`,
+  },
+  spinner: {
+    label: 'Загрузка',
   },
   tag: {
     remove: (label) => `Удалить тег ${label}`,

@@ -81,7 +81,7 @@ const SheetContent: FC<SheetContentProps> = ({
   ...props
 }) => {
   const messages = useMessages()
-  const { dir, theme } = useSnowUI()
+  const { dir, theme, contrast } = useSnowUI()
   const direction = useDirection()
   const label = closeLabel ?? messages.sheet.close
   const physicalSide = resolveSide(side, direction)
@@ -92,6 +92,7 @@ const SheetContent: FC<SheetContentProps> = ({
       <SheetPrimitive.Content
         dir={dir}
         data-theme={theme}
+        data-contrast={contrast}
         data-side={physicalSide}
         className={twMerge(sheetVariants({ side: physicalSide }), className)}
         {...props}

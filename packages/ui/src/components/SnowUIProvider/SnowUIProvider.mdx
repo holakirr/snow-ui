@@ -100,16 +100,18 @@ The layout and the `rtl:` styles follow the DOM, not the provider: set the same 
 
 <Canvas of={SnowUIProviderStories.RightToLeft} />
 
-## Scoped themes
+## Scoped themes and contrast
 
-`theme` works like `dir`: portalled content renders at the end of `<body>`, outside a `data-theme` scope, so the provider gives it the theme as its `data-theme`. `ThemeScope` is the shortcut: it renders a `<div data-theme>` (or, with `asChild`, sets `data-theme` on its only child) inside a provider with that `theme`, so the subtree and its overlays share it. A `data-theme` passed to a `*Content` component wins. See the [Theming guide](?path=/docs/guides-theming--docs).
+`theme` works like `dir`: portalled content renders at the end of `<body>`, outside a `data-theme` scope, so the provider gives it the theme as its `data-theme`. `contrast` does the same for `data-contrast` (`more`: the high-contrast control borders and placeholders; `standard`: the Figma look). `ThemeScope` is the shortcut: it renders a `<div data-theme data-contrast>` (or, with `asChild`, sets them on its only child) inside a provider with that `theme` and `contrast`, so the subtree and its overlays share them; either can be left out. A `data-theme` or `data-contrast` passed to a `*Content` component wins. See the [Theming](?path=/docs/guides-theming--docs) and [Contrast](?path=/docs/guides-contrast--docs) guides.
 
 <Canvas of={SnowUIProviderStories.ScopedTheme} />
+
+<Canvas of={SnowUIProviderStories.ScopedContrast} />
 
 ## Hooks
 
 - `useMessages()` returns the nearest provider's messages (`defaultMessages` without one). Use it to label your own components with the library's strings.
-- `useSnowUI()` returns `messages`, `locale` and `dir`. `locale` and `dir` are `undefined` unless a provider sets them.
+- `useSnowUI()` returns `messages`, `locale`, `dir`, `theme` and `contrast`. All but `messages` are `undefined` unless a provider (or a `ThemeScope`) sets them.
 
 ```tsx
 import { ArrowRightIcon } from '@holakirr/snow-ui-icons'

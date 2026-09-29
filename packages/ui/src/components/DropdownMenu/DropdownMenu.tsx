@@ -75,12 +75,13 @@ const DropdownMenuSubContent: FC<DropdownMenuSubContentProps> = ({
   className,
   ...props
 }) => {
-  const { theme } = useSnowUI()
+  const { theme, contrast } = useSnowUI()
 
   return (
     <DropdownMenuPrimitive.SubContent
       // For a submenu you put in a `DropdownMenuPortal`.
       data-theme={theme}
+      data-contrast={contrast}
       className={twMerge(dropdownMenuContentStyles, className)}
       {...props}
     />
@@ -102,12 +103,13 @@ const DropdownMenuContent: FC<DropdownMenuContentProps> = ({
   sideOffset = 4,
   ...props
 }) => {
-  const { theme } = useSnowUI()
+  const { theme, contrast } = useSnowUI()
 
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
         data-theme={theme}
+        data-contrast={contrast}
         sideOffset={sideOffset}
         className={twMerge(dropdownMenuContentStyles, className)}
         {...props}

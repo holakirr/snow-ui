@@ -613,7 +613,7 @@ export const ComboboxPopup = ({
   createLabel,
   className,
 }: ComboboxPopupProps) => {
-  const { dir, theme } = useSnowUI()
+  const { dir, theme, contrast } = useSnowUI()
   const {
     listId,
     baseId,
@@ -675,6 +675,7 @@ export const ComboboxPopup = ({
         // The portal is outside your `data-theme` scope: a `ThemeScope`'s
         // theme follows it.
         data-theme={theme}
+        data-contrast={contrast}
         side="bottom"
         align="start"
         sideOffset={4}

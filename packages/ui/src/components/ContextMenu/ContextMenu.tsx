@@ -62,12 +62,13 @@ const ContextMenuSubContent: FC<ContextMenuSubContentProps> = ({
   className,
   ...props
 }) => {
-  const { theme } = useSnowUI()
+  const { theme, contrast } = useSnowUI()
 
   return (
     <CtxMenuPrimitive.SubContent
       // For a submenu you put in a `ContextMenuPortal`.
       data-theme={theme}
+      data-contrast={contrast}
       className={twMerge(contentClasses, className)}
       {...props}
     />
@@ -85,12 +86,13 @@ const ContextMenuContent: FC<ContextMenuContentProps> = ({
   className,
   ...props
 }) => {
-  const { theme } = useSnowUI()
+  const { theme, contrast } = useSnowUI()
 
   return (
     <CtxMenuPrimitive.Portal>
       <CtxMenuPrimitive.Content
         data-theme={theme}
+        data-contrast={contrast}
         className={twMerge(contentClasses, className)}
         {...props}
       />

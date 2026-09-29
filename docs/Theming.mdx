@@ -66,7 +66,7 @@ The theme is light by default. It is dark:
   </ThemeScope>
   ```
 
-  `SnowUIProvider`'s `theme` does the same for the overlays without rendering an element, and a `data-theme` on a `*Content` component still wins. Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
+  `SnowUIProvider`'s `theme` does the same for the overlays without rendering an element, and a `data-theme` on a `*Content` component still wins. `contrast` (`<ThemeScope contrast="more">`) carries a [contrast](?path=/docs/guides-contrast--docs) scope the same way. Toasts render inside `<Toaster />`, so they take the theme of wherever you place it.
 
 In this Storybook, the theme toolbar switches every story; stories named "Dark" pin the dark theme.
 

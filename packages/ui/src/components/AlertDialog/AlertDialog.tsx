@@ -50,7 +50,7 @@ AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName
 const AlertDialogContent: FC<
   ComponentProps<typeof AlertDialogPrimitive.Content>
 > = ({ className, ...props }) => {
-  const { dir, theme } = useSnowUI()
+  const { dir, theme, contrast } = useSnowUI()
 
   return (
     <AlertDialogPortal>
@@ -58,6 +58,7 @@ const AlertDialogContent: FC<
       <AlertDialogPrimitive.Content
         dir={dir}
         data-theme={theme}
+        data-contrast={contrast}
         className={twMerge(
           dialogPositionClasses,
           dialogPopupClasses,

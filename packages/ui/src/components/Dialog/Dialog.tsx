@@ -46,7 +46,7 @@ const DialogContent: FC<ComponentProps<typeof DialogPrimitive.Content>> = ({
   children,
   ...props
 }) => {
-  const { dir, theme } = useSnowUI()
+  const { dir, theme, contrast } = useSnowUI()
 
   return (
     <DialogPortal>
@@ -54,6 +54,7 @@ const DialogContent: FC<ComponentProps<typeof DialogPrimitive.Content>> = ({
       <DialogPrimitive.Content
         dir={dir}
         data-theme={theme}
+        data-contrast={contrast}
         className={twMerge(
           dialogPositionClasses,
           // Figma "Add data": 576px wide, the title row and the popup 28px apart.

@@ -50,13 +50,14 @@ const TooltipContent: FC<TooltipContentProps> = ({
   variant,
   ...props
 }) => {
-  const { dir, theme } = useSnowUI()
+  const { dir, theme, contrast } = useSnowUI()
 
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         dir={dir}
         data-theme={theme}
+        data-contrast={contrast}
         sideOffset={sideOffset}
         data-variant={variant ?? 'dark'}
         className={twMerge(tooltipVariants({ variant }), className)}

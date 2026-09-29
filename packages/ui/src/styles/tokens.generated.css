@@ -269,11 +269,18 @@
     --color-red-text: #d42020;
 
     /*
-     * The values of the contrast colours with contrast "more", in this theme;
-     * the contrast scopes below pick them or the standard ones.
+     * The values of the contrast colours in this theme, with the standard
+     * contrast and with more; the contrast scopes below pick one. Override
+     * these, not the colours themselves.
      */
+    --color-control-border--standard: var(--color-black-20);
     --color-control-border--more: rgb(0 0 0 / 0.5);
+    --color-control-border-strong--standard: var(--color-black-40);
+    --color-control-border-strong--more: var(--color-black-80);
+    --color-placeholder--standard: var(--color-black-20);
     --color-placeholder--more: rgb(0 0 0 / 0.6);
+    --color-control-border-invalid--standard: var(--color-red);
+    --color-control-border-invalid--more: var(--color-red-text);
 
     /*
      * @deprecated Use the `--color-*` tokens; removed in the next major.
@@ -319,11 +326,18 @@
     --color-red-text: #ff8080;
 
     /*
-     * The values of the contrast colours with contrast "more", in this theme;
-     * the contrast scopes below pick them or the standard ones.
+     * The values of the contrast colours in this theme, with the standard
+     * contrast and with more; the contrast scopes below pick one. Override
+     * these, not the colours themselves.
      */
+    --color-control-border--standard: var(--color-black-20);
     --color-control-border--more: rgb(255 255 255 / 0.5);
+    --color-control-border-strong--standard: var(--color-black-40);
+    --color-control-border-strong--more: var(--color-black-80);
+    --color-placeholder--standard: var(--color-black-20);
     --color-placeholder--more: rgb(255 255 255 / 0.75);
+    --color-control-border-invalid--standard: var(--color-red);
+    --color-control-border-invalid--more: var(--color-red-text);
 
     /*
      * @deprecated Use the `--color-*` tokens; removed in the next major.
@@ -373,11 +387,18 @@
       --color-red-text: #ff8080;
 
       /*
-       * The values of the contrast colours with contrast "more", in this
-       * theme; the contrast scopes below pick them or the standard ones.
+       * The values of the contrast colours in this theme, with the standard
+       * contrast and with more; the contrast scopes below pick one. Override
+       * these, not the colours themselves.
        */
+      --color-control-border--standard: var(--color-black-20);
       --color-control-border--more: rgb(255 255 255 / 0.5);
+      --color-control-border-strong--standard: var(--color-black-40);
+      --color-control-border-strong--more: var(--color-black-80);
+      --color-placeholder--standard: var(--color-black-20);
       --color-placeholder--more: rgb(255 255 255 / 0.75);
+      --color-control-border-invalid--standard: var(--color-red);
+      --color-control-border-invalid--more: var(--color-red-text);
 
       /*
        * @deprecated Use the `--color-*` tokens; removed in the next major.
@@ -467,25 +488,25 @@
       var(--color-control-border--more);
     --color-control-border: var(
       --color-control-border--more-on,
-      var(--color-black-20)
+      var(--color-control-border--standard)
     );
     --color-control-border-strong--more-on: var(--contrast-more)
-      var(--color-black-80);
+      var(--color-control-border-strong--more);
     --color-control-border-strong: var(
       --color-control-border-strong--more-on,
-      var(--color-black-40)
+      var(--color-control-border-strong--standard)
     );
     --color-placeholder--more-on: var(--contrast-more)
       var(--color-placeholder--more);
     --color-placeholder: var(
       --color-placeholder--more-on,
-      var(--color-black-20)
+      var(--color-placeholder--standard)
     );
     --color-control-border-invalid--more-on: var(--contrast-more)
-      var(--color-red-text);
+      var(--color-control-border-invalid--more);
     --color-control-border-invalid: var(
       --color-control-border-invalid--more-on,
-      var(--color-red)
+      var(--color-control-border-invalid--standard)
     );
   }
 }

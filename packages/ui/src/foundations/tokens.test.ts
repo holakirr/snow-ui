@@ -164,7 +164,7 @@ describe('generated tokens (tokens.generated.css ↔ tokens.generated.ts)', () =
     ).toEqual(colorTokens.map(({ name }) => name).sort())
   })
 
-  it('gives the contrast tokens their "more" values in the theme scopes', () => {
+  it('gives the contrast tokens their standard and "more" values in the theme scopes', () => {
     const contrasted = colorTokens.filter(({ contrastMore }) => contrastMore)
     expect(contrasted.map(({ name }) => name)).toEqual([
       'control-border',
@@ -172,16 +172,24 @@ describe('generated tokens (tokens.generated.css ↔ tokens.generated.ts)', () =
       'placeholder',
       'control-border-invalid',
     ])
-    // A "more" value that differs per theme is a variable of the theme
-    // scopes; one alias for both themes (Black/80%) is written in place.
-    const more = [...dark.keys()].filter((name) => name.endsWith('--more'))
-    expect(more).toEqual([
-      '--color-control-border--more',
-      '--color-placeholder--more',
-    ])
-    for (const { name, contrastMore } of contrasted) {
-      const value = dark.get(`--color-${name}--more`)
-      if (value) expect(value).toBe(normalize(contrastMore?.dark ?? ''))
+    // Every contrast token has both levels in every theme scope: the
+    // variables a theme of yours overrides.
+    const levels = [...dark.keys()].filter((name) =>
+      /--(standard|more)$/.test(name),
+    )
+    expect(levels).toEqual(
+      contrasted.flatMap(({ name }) => [
+        `--color-${name}--standard`,
+        `--color-${name}--more`,
+      ]),
+    )
+    for (const { name, dark: standard, contrastMore } of contrasted) {
+      expect(dark.get(`--color-${name}--standard`)).toBe(normalize(standard))
+      const more = dark.get(`--color-${name}--more`) ?? ''
+      // A raw colour, or an alias of one (Black/80%, red-text).
+      if (!more.startsWith('var(')) {
+        expect(more).toBe(normalize(contrastMore?.dark ?? ''))
+      }
     }
   })
 

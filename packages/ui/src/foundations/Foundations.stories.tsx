@@ -167,5 +167,35 @@ export const Contrast: Story = {
       'more',
     )
     await inScope('[data-contrast="standard"]', 'dark', 'standard')
+
+    // A theme of yours sets the levels in the theme scopes, like any token
+    // (Theming › Changing a token): each contrast scope still picks its own.
+    const panel = (level: Level, mode: Mode) =>
+      canvasElement.querySelector<HTMLElement>(
+        `[data-contrast="${level}"] [data-contrast-sample="${mode}"]`,
+      ) as HTMLElement
+    const style = canvasElement.ownerDocument.createElement('style')
+    style.textContent = `:root, [data-theme="light"], .light {
+      --color-control-border--standard: rgb(255 0 0);
+      --color-control-border--more: rgb(0 0 255);
+    }`
+    canvasElement.ownerDocument.head.append(style)
+    try {
+      await same(
+        colorOf('text-control-border', panel('standard', 'light')),
+        'rgb(255 0 0)',
+      )
+      await same(
+        colorOf('text-control-border', panel('more', 'light')),
+        'rgb(0 0 255)',
+      )
+      // The dark panels keep the dark levels.
+      await same(
+        colorOf('text-control-border', panel('more', 'dark')),
+        tokenColor('control-border', 'dark', 'more'),
+      )
+    } finally {
+      style.remove()
+    }
   },
 }

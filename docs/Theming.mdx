@@ -123,6 +123,17 @@ Redeclare its variable in your own (unlayered) CSS, for each scope it should app
 
 Check the contrast of text and controls on the new colour: the accessibility deviations of the components (see each component's page) were measured with the kit's values.
 
+The four contrast tokens (`control-border`, `control-border-strong`, `placeholder`, `control-border-invalid`) are computed in every theme and contrast scope from two levels: override `--color-<name>--standard` (the default contrast) and `--color-<name>--more` (more contrast) in the same scopes, not `--color-<name>` itself, which would lose one level (see [Contrast](?path=/docs/guides-contrast--docs)):
+
+```css
+:root,
+[data-theme="light"],
+.light {
+  --color-control-border--standard: #b8b8c4;
+  --color-control-border--more: #6b6b7a;
+}
+```
+
 Styling a single component: pass `className`. It is merged with the component's classes by a token-aware `twMerge`, so `className="rounded-8"` replaces the component's radius instead of fighting it in the stylesheet.
 
 ## Fonts

@@ -176,8 +176,9 @@ describe('theme scopes (compiled index.css)', () => {
     expect(light().declarations.get('color-scheme')).toBe('light')
     const themeValues = theme().declarations
     for (const [name, value] of tokens(light())) {
-      // `--color-<name>--more`: contrast values, only in the scopes.
-      if (name.startsWith('--color-') && !name.endsWith('--more')) {
+      // `--color-<name>--standard` / `--more`: contrast levels, only in the
+      // scopes.
+      if (name.startsWith('--color-') && !/--(standard|more)$/.test(name)) {
         expect(value).toBe(themeValues.get(name))
       }
     }
@@ -187,6 +188,8 @@ describe('theme scopes (compiled index.css)', () => {
     expect(dark().declarations.get('color-scheme')).toBe('dark')
     expect([...tokens(dark()).keys()]).toEqual([...tokens(light()).keys()])
     for (const [name, value] of tokens(dark())) {
+      // The contrast levels are declared in every scope, aliases included.
+      if (/--(standard|more)$/.test(name)) continue
       expect(value, name).not.toBe(tokens(light()).get(name))
     }
   })
@@ -418,10 +421,18 @@ describe('contrast scopes (compiled index.css)', () => {
     'picks the standard or the "more" value of --color-$name on every scope element',
     ({ name, light }) => {
       const variable = `--color-${name}`
-      expect(scopes().get(variable)).toBe(`var(${variable}--more-on, ${light})`)
-      expect(scopes().get(`${variable}--more-on`)).toMatch(
-        /^var\(--contrast-more\) \S/,
+      expect(scopes().get(variable)).toBe(
+        `var(${variable}--more-on, var(${variable}--standard))`,
       )
+      expect(scopes().get(`${variable}--more-on`)).toBe(
+        `var(--contrast-more) var(${variable}--more)`,
+      )
+      // The standard level is the Figma value, in every theme scope.
+      expect(
+        rule(':root, [data-theme="light"], .light', [
+          '@layer base',
+        ]).declarations.get(`${variable}--standard`),
+      ).toBe(light)
       // The default (the Tailwind theme variable) is the Figma value.
       expect(
         rule(':root, :host', ['@layer theme']).declarations.get(variable),

@@ -72,9 +72,12 @@ on:
         options: [release, canary]
         default: release
 
-# One release at a time per branch; a queued run waits for the running one.
+# One run at a time per branch (a workflow_run run's github.ref is the
+# default branch, so the triggers are grouped by the branch Build Check ran
+# on); a queued run waits for the running one, and a newer queued run
+# replaces an older queued one, which only ever skips an outdated commit.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}-${{ inputs.mode }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.workflow_run.head_branch || github.ref }}-${{ inputs.mode }}
   cancel-in-progress: false
 
 permissions: {}

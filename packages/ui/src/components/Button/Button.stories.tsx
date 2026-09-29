@@ -1,7 +1,7 @@
-import { StarIcon } from '@holakirr/snow-ui-icons'
+import { ArrowLineRightIcon, StarIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment } from 'react'
-import { expect } from 'storybook/test'
+import { expect, fn } from 'storybook/test'
 import { BUTTON_VARIANTS, ROLES, SIZES } from '../../constants'
 import { colorOf, settledColor } from '../../test/colors'
 import { Typography } from '../Text/Text'
@@ -241,8 +241,8 @@ export const Matrix: Story = {
                 variant={variant}
                 size={size}
                 label="Button"
-                leftContent={<StarIcon size={iconSizes[size].label} />}
-                rightContent={<StarIcon size={iconSizes[size].label} />}
+                startContent={<StarIcon size={iconSizes[size].label} />}
+                endContent={<StarIcon size={iconSizes[size].label} />}
               />
               <Button variant={variant} size={size} label="Button" />
               <Button
@@ -250,7 +250,7 @@ export const Matrix: Story = {
                 size={size}
                 label=""
                 title="Icon button"
-                leftContent={<StarIcon size={iconSizes[size].only} />}
+                startContent={<StarIcon size={iconSizes[size].only} />}
               />
             </div>
           ))}
@@ -266,37 +266,111 @@ export const WithChildren: Story = {
   },
 }
 
+/**
+ * `asChild` renders the child element (here an `<a>`; a router link works the
+ * same) with the button's styles, props and content: the label and the
+ * start / end content go inside it, around its own children.
+ */
 export const AsLink: Story = {
   args: {
-    as: 'a',
-    href: 'https://holakirr.com',
+    asChild: true,
+    // biome-ignore lint/a11y/useAnchorContent: the Button renders its label inside
+    children: <a href="https://holakirr.com" />,
   },
 }
 
-export const WithLeftContent: Story = {
-  parameters: {},
-  args: {
-    leftContent: leftIcon,
+/**
+ * The child's classes merge with the button's (the child's win conflicts),
+ * and the event handlers compose: the child's runs, then the button's.
+ */
+export const AsChildComposition: Story = {
+  args: { onClick: fn() },
+  render: (args) => (
+    <Button {...args} asChild variant="outline" label="Docs">
+      <button
+        type="button"
+        className="px-8"
+        data-clicks="0"
+        onClick={(event) => {
+          const target = event.currentTarget
+          target.dataset.clicks = String(Number(target.dataset.clicks) + 1)
+        }}
+      />
+    </Button>
+  ),
+  play: async ({ args, canvas, userEvent }) => {
+    const button = canvas.getByRole('button', { name: 'Docs' })
+    await expect(button).toHaveClass('px-8')
+    await expect(button).not.toHaveClass('px-3')
+    await expect(button).toHaveClass('inset-ring-black-10')
+    await userEvent.click(button)
+    await expect(button).toHaveAttribute('data-clicks', '1')
+    await expect(args.onClick).toHaveBeenCalledOnce()
   },
 }
 
-export const WithRightContent: Story = {
+export const WithStartContent: Story = {
   args: {
-    rightContent: rightIcon,
+    startContent: leftIcon,
   },
 }
 
-export const WithLeftAndRightContent: Story = {
+export const WithEndContent: Story = {
   args: {
-    leftContent: leftIcon,
-    rightContent: rightIcon,
+    endContent: rightIcon,
+  },
+}
+
+export const WithStartAndEndContent: Story = {
+  args: {
+    startContent: leftIcon,
+    endContent: rightIcon,
   },
 }
 
 export const IconButton: Story = {
   args: {
-    leftContent: leftIcon,
+    startContent: leftIcon,
     label: '',
     title: 'Icon Button',
+  },
+}
+
+/**
+ * Right-to-left text (`dir="rtl"` on `<html>` and `SnowUIProvider`):
+ * `startContent` is on the right. Directional icons are yours to mirror,
+ * e.g. with `rtl:-scale-x-100` (the library's own arrows do it).
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => (
+    <div className="flex items-center gap-4">
+      <Button
+        variant="filled"
+        size="md"
+        label="التالي"
+        startContent={<StarIcon size={16} />}
+        endContent={
+          <ArrowLineRightIcon size={16} className="rtl:-scale-x-100" />
+        }
+      />
+      <Button variant="outline" size="md" label="حفظ" />
+      <Button
+        variant="gray"
+        size="md"
+        title="المفضلة"
+        startContent={<StarIcon size={20} />}
+      />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole('button', { name: 'التالي' })
+    const [star, arrow] = Array.from(button.querySelectorAll('svg'))
+    // The start content is on the right.
+    await expect(star.getBoundingClientRect().left).toBeGreaterThan(
+      arrow.getBoundingClientRect().left,
+    )
+    // …and the arrow is mirrored.
+    await expect(getComputedStyle(arrow).scale).not.toBe('none')
   },
 }

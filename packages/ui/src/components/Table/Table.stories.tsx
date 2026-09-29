@@ -203,7 +203,7 @@ const columns: ColumnDef<typeof features, Order>[] = [
       <Button
         aria-label={`More actions for ${row.original.id}`}
         className="opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100"
-        leftContent={<DotsThreeOutlineHorizontalIcon size={16} />}
+        startContent={<DotsThreeOutlineHorizontalIcon size={16} />}
       />
     ),
     enableSorting: false,

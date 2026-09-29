@@ -4,33 +4,33 @@ import { describe, expect, it, vi } from 'vitest'
 import { Tag } from './Tag'
 
 describe('Tag', () => {
-  it('calls onClose once on click', () => {
-    const onClose = vi.fn()
+  it('calls onRemove once on click', () => {
+    const onRemove = vi.fn()
 
-    render(<Tag label="React" onClose={onClose} />)
+    render(<Tag label="React" onRemove={onRemove} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Remove tag React' }))
 
-    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(onRemove).toHaveBeenCalledTimes(1)
   })
 
-  it('calls onClose once when activated with Enter', () => {
-    const onClose = vi.fn()
+  it('calls onRemove once when activated with Enter', () => {
+    const onRemove = vi.fn()
 
-    render(<Tag label="React" onClose={onClose} />)
+    render(<Tag label="React" onRemove={onRemove} />)
 
     const button = screen.getByRole('button', { name: 'Remove tag React' })
     button.focus()
     // A native <button> turns Enter into a single click event; the keydown
-    // itself must not trigger onClose a second time.
+    // itself must not trigger onRemove a second time.
     fireEvent.keyDown(button, { key: 'Enter' })
     fireEvent.click(button)
 
     expect(button).toHaveFocus()
-    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(onRemove).toHaveBeenCalledTimes(1)
   })
 
-  it('does not render a close button without onClose', () => {
+  it('does not render a remove button without onRemove', () => {
     render(<Tag label="React" />)
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
@@ -49,18 +49,18 @@ describe('Tag', () => {
     expect(tag.className).not.toContain('hover:')
   })
 
-  it('renders the dot left icon, with the Figma paddings', () => {
+  it('renders the dot start icon, with the Figma paddings', () => {
     const { container } = render(<Tag label="React" data-testid="tag" dot />)
     const tag = screen.getByTestId('tag')
 
     expect(container.querySelector('.rounded-full')).toBeInTheDocument()
-    expect(tag).toHaveClass('pl-1', 'pr-2')
+    expect(tag).toHaveClass('ps-1', 'pe-2')
   })
 
   it('renders the arrow shapes without icons', () => {
-    const onClose = vi.fn()
+    const onRemove = vi.fn()
     const { container, rerender } = render(
-      <Tag label="React" shape="arrow-left" dot onClose={onClose} />,
+      <Tag label="React" shape="arrow-start" dot onRemove={onRemove} />,
     )
 
     const tip = container.querySelector('svg')
@@ -68,14 +68,14 @@ describe('Tag', () => {
     expect(tip?.nextElementSibling).toHaveTextContent('React')
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
 
-    rerender(<Tag label="React" shape="arrow-right" />)
+    rerender(<Tag label="React" shape="arrow-end" />)
     expect(
       container.querySelector('svg')?.previousElementSibling,
     ).toHaveTextContent('React')
   })
 
-  it('gives the close button a 24px hit area and a decorative icon', () => {
-    render(<Tag label="React" onClose={() => {}} />)
+  it('gives the remove button a 24px hit area and a decorative icon', () => {
+    render(<Tag label="React" onRemove={() => {}} />)
 
     const button = screen.getByRole('button', { name: 'Remove tag React' })
     const icon = button.querySelector('svg')

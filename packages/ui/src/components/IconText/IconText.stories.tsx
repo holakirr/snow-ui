@@ -58,12 +58,22 @@ export const VerticalFlip: Story = {
   args: { vertical: true, flip: true },
 }
 
+/** `asChild` makes the child element (a `<button>`, a link) the row. */
 export const Interactive: Story = {
-  args: { interactive: true, as: 'button' },
+  args: {
+    interactive: true,
+    asChild: true,
+    children: <button type="button">Text</button>,
+  },
 }
 
 export const Active: Story = {
-  args: { interactive: true, active: true, as: 'button' },
+  args: {
+    interactive: true,
+    active: true,
+    asChild: true,
+    children: <button type="button">Text</button>,
+  },
 }
 
 const Variants = () => (
@@ -120,42 +130,43 @@ export const Examples: Story = {
       </IconText>
 
       <IconText
-        as="button"
+        asChild
         interactive
         flip
         className="w-full justify-between bg-black-4"
         icon={
           <IconBox size={16} className="text-black-20">
-            <CaretRightIcon />
+            <CaretRightIcon className="rtl:-scale-x-100" />
           </IconBox>
         }
       >
-        <span className="flex flex-col">
-          <Typography size={14}>Email</Typography>
-          <Typography size={12} className="text-secondary">
-            Set a permanent password to login to your account.
-          </Typography>
-        </span>
+        <button type="button">
+          <span className="flex flex-col">
+            <Typography size={14}>Email</Typography>
+            <Typography size={12} className="text-secondary">
+              Set a permanent password to login to your account.
+            </Typography>
+          </span>
+        </button>
       </IconText>
 
       <nav aria-label="Pages" className="flex flex-col gap-1">
         <IconText
-          as="a"
-          href="#profile"
+          asChild
           interactive
           active
-          aria-current="page"
           icon={
             <IconBox size={20}>
               <IdentificationBadgeIcon weight="duotone" />
             </IconBox>
           }
         >
-          User Profile
+          <a href="#profile" aria-current="page">
+            User Profile
+          </a>
         </IconText>
         <IconText
-          as="a"
-          href="#account"
+          asChild
           interactive
           icon={
             <IconBox size={20}>
@@ -163,7 +174,7 @@ export const Examples: Story = {
             </IconBox>
           }
         >
-          Account
+          <a href="#account">Account</a>
         </IconText>
       </nav>
     </div>

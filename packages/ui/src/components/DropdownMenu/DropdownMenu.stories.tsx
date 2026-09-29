@@ -147,6 +147,83 @@ export const Default: Story = {
   ),
 }
 
+/**
+ * Right-to-left text: the menu content gets `dir` from `SnowUIProvider`,
+ * the check mark and shortcuts swap sides, the submenu arrow points left and
+ * ArrowLeft opens the submenu (to the left).
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="flex h-96 items-start justify-center">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="الحساب" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-60">
+          <DropdownMenuLabel>حسابي</DropdownMenuLabel>
+          <DropdownMenuItem>
+            الملف الشخصي
+            <DropdownMenuShortcut keys={['⌘', 'P']} />
+          </DropdownMenuItem>
+          <DropdownMenuCheckboxItem checked>
+            الوضع الداكن
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>دعوة المستخدمين</DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>البريد الإلكتروني</DropdownMenuItem>
+                <DropdownMenuItem>رسالة</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>تسجيل الخروج</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    canvas.getByRole('button', { name: 'الحساب' }).focus()
+    await userEvent.keyboard('{Enter}')
+    const menu = await page.findByRole('menu')
+    await expect(menu).toHaveAttribute('dir', 'rtl')
+
+    const item = page.getByRole('menuitem', { name: /^الملف الشخصي/ })
+    const shortcut = item.querySelector('kbd') as HTMLElement
+    // The shortcut is at the end of the item: on the left.
+    await expect(shortcut.getBoundingClientRect().left).toBeLessThan(
+      item.getBoundingClientRect().left + item.offsetWidth / 2,
+    )
+
+    const sub = page.getByRole('menuitem', { name: 'دعوة المستخدمين' })
+    sub.focus()
+    await userEvent.keyboard('{ArrowLeft}')
+    const submenu = (await page.findAllByRole('menu'))[1]
+    await waitFor(() =>
+      expect(
+        page.getByRole('menuitem', { name: 'البريد الإلكتروني' }),
+      ).toHaveFocus(),
+    )
+    // The submenu opens on the left of its trigger.
+    await waitFor(() =>
+      expect(submenu.getBoundingClientRect().right).toBeLessThanOrEqual(
+        sub.getBoundingClientRect().left + 1,
+      ),
+    )
+
+    // Close both menus, so axe checks the page in a stable state.
+    await userEvent.keyboard('{Escape}')
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() =>
+      expect(page.queryByRole('menu')).not.toBeInTheDocument(),
+    )
+  },
+}
+
 /** The Figma Popover as a menu, open: 36px items, a 12px radius, shortcuts. */
 export const Open: Story = {
   parameters: { layout: 'padded' },

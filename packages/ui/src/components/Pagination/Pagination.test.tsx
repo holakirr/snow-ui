@@ -69,7 +69,7 @@ describe('Pagination', () => {
     expect(previous.querySelector('span')).toBeNull()
 
     const next = screen.getByRole('link', { name: 'Go to next page' })
-    expect(next).toHaveClass('pr-2')
+    expect(next).toHaveClass('pe-2')
     expect(next).toHaveTextContent('Next')
   })
 

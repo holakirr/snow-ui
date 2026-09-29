@@ -18,9 +18,9 @@ const {
   Lg,
   WithChildren,
   AsLink,
-  WithLeftContent,
-  WithRightContent,
-  WithLeftAndRightContent,
+  WithStartContent,
+  WithEndContent,
+  WithStartAndEndContent,
   IconButton,
 } = composeStories(stories)
 
@@ -186,8 +186,8 @@ describe('Button', () => {
     expect(button).not.toHaveAttribute('aria-label', 'Button aria label')
   })
 
-  it('renders with left content', async () => {
-    await WithLeftContent.run()
+  it('renders with start content', async () => {
+    await WithStartContent.run()
 
     const button = screen.getByRole(ROLES.button)
     const icon = screen.getByRole(ROLES.img, { name: 'Left Icon' })
@@ -197,8 +197,8 @@ describe('Button', () => {
     expect(button).toContainElement(icon)
   })
 
-  it('renders with right content', async () => {
-    await WithRightContent.run()
+  it('renders with end content', async () => {
+    await WithEndContent.run()
 
     const button = screen.getByRole(ROLES.button)
     const icon = screen.getByRole(ROLES.img, { name: 'Right Icon' })
@@ -208,8 +208,8 @@ describe('Button', () => {
     expect(button).toContainElement(icon)
   })
 
-  it('renders with left and right content', async () => {
-    await WithLeftAndRightContent.run()
+  it('renders with start and end content', async () => {
+    await WithStartAndEndContent.run()
 
     const button = screen.getByRole(ROLES.button)
     const leftIcon = screen.getByRole(ROLES.img, { name: 'Left Icon' })
@@ -264,10 +264,10 @@ describe('Button', () => {
       <>
         <Button
           label="Sized by class"
-          leftContent={<svg className="size-6" />}
+          startContent={<svg className="size-6" />}
         />
-        <Button label="Sized by attribute" leftContent={<svg width="24" />} />
-        <Button label="Unsized" leftContent={<svg />} />
+        <Button label="Sized by attribute" startContent={<svg width="24" />} />
+        <Button label="Unsized" startContent={<svg />} />
       </>,
     )
     const [byClass, byAttribute, unsized] = Array.from(
@@ -290,7 +290,7 @@ describe('Button', () => {
     render(
       <Button
         size="md"
-        leftContent={<StarIcon size={24} data-testid="star" />}
+        startContent={<StarIcon size={24} data-testid="star" />}
         label=""
         title="Star"
       />,

@@ -1,5 +1,6 @@
 import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 
 import {
   Breadcrumb,
@@ -132,6 +133,73 @@ export const WithEllipsis: Story = {
         </BreadcrumbItem>
       </BreadcrumbList>
     ),
+  },
+}
+
+/**
+ * `asChild` renders a router link (here a plain `<a>` standing in for one)
+ * with the link styles.
+ */
+export const AsChild: Story = {
+  args: {
+    children: (
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <a href="#home" className="underline">
+              Home
+            </a>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>Settings</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    ),
+  },
+  play: async ({ canvas }) => {
+    const home = canvas.getByRole('link', { name: 'Home' })
+    await expect(home).toHaveAttribute('href', '#home')
+    await expect(home).toHaveClass('underline', 'rounded-12', 'px-3')
+  },
+}
+
+/**
+ * Right-to-left text: the trail starts on the right and icon separators (a
+ * chevron) point left. The ellipsis is announced as
+ * `messages.breadcrumb.more`.
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  args: {
+    children: (
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="#home">الرئيسية</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator>
+          <ArrowLineRightIcon />
+        </BreadcrumbSeparator>
+        <BreadcrumbItem>
+          <BreadcrumbEllipsis />
+        </BreadcrumbItem>
+        <BreadcrumbSeparator>
+          <ArrowLineRightIcon />
+        </BreadcrumbSeparator>
+        <BreadcrumbItem>
+          <BreadcrumbPage>لوحة التحكم</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    ),
+  },
+  play: async ({ canvas }) => {
+    const home = canvas.getByRole('link', { name: 'الرئيسية' })
+    const page = canvas.getByText('لوحة التحكم')
+    await expect(home.getBoundingClientRect().left).toBeGreaterThan(
+      page.getBoundingClientRect().left,
+    )
+    await expect(canvas.getByText('More pages')).toHaveClass('sr-only')
   },
 }
 

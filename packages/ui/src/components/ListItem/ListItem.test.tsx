@@ -55,8 +55,10 @@ describe('ListItem', () => {
   it('renders children after the text and passes events', () => {
     const onClick = vi.fn()
     const { container } = render(
-      <ListItem as="button" title="Drew Cano" onClick={onClick}>
-        <span>Online</span>
+      <ListItem asChild title="Drew Cano" onClick={onClick}>
+        <button type="button">
+          <span>Online</span>
+        </button>
       </ListItem>,
     )
 

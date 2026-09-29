@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
+import { expect } from 'storybook/test'
 import type { Size } from '../../types'
 import { Typography } from '../Text'
 import {
@@ -41,7 +42,7 @@ const Template = ({
   /** Several navigation landmarks on a page need distinct names. */
   label?: string
 }) => (
-  <Pagination aria-label={label ?? 'pagination'}>
+  <Pagination aria-label={label}>
     <PaginationContent>
       <PaginationItem>
         <PaginationPrevious size={size} href="#" disabled>
@@ -74,6 +75,61 @@ const Template = ({
 
 export const Default: Story = {
   render: () => <Template />,
+}
+
+/**
+ * Right-to-left text: page 1 is on the right and the previous / next arrows
+ * point right / left.
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => <Template labels />,
+  play: async ({ canvas }) => {
+    const previous = canvas.getByRole('link', { name: 'Go to previous page' })
+    const next = canvas.getByRole('link', { name: 'Go to next page' })
+    await expect(previous.getBoundingClientRect().left).toBeGreaterThan(
+      next.getBoundingClientRect().left,
+    )
+    for (const link of [previous, next]) {
+      await expect(
+        getComputedStyle(link.querySelector('svg') as SVGElement).scale,
+      ).not.toBe('none')
+    }
+  },
+}
+
+/** `asChild` renders router links (here plain `<a>`s) as the page links. */
+export const AsChild: Story = {
+  render: () => (
+    <Pagination>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious asChild>
+            <a href="#page-1">Prev</a>
+          </PaginationPrevious>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink asChild isActive>
+            <a href="#page-2">2</a>
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext asChild>
+            <a href="#page-3">Next</a>
+          </PaginationNext>
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  ),
+  play: async ({ canvas }) => {
+    const current = canvas.getByRole('link', { name: '2' })
+    await expect(current).toHaveAttribute('aria-current', 'page')
+    await expect(current).toHaveAttribute('href', '#page-2')
+    const next = canvas.getByRole('link', { name: 'Go to next page' })
+    await expect(next).toHaveAttribute('href', '#page-3')
+    await expect(next).toHaveTextContent('Next')
+    await expect(next.querySelector('svg')).not.toBeNull()
+  },
 }
 
 export const WithLabels: Story = {

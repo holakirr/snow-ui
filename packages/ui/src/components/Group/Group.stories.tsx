@@ -17,7 +17,7 @@ const iconButton = (label: string, icon: ReactNode) => (
   <Button
     key={label}
     aria-label={label}
-    leftContent={<IconBox size={16}>{icon}</IconBox>}
+    startContent={<IconBox size={16}>{icon}</IconBox>}
     className="p-1 rounded-12"
   />
 )

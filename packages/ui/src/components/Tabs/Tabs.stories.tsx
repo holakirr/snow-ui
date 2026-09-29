@@ -107,6 +107,48 @@ export const Default: Story = {
   ),
 }
 
+/**
+ * Right-to-left text: the tabs start on the right, and the arrow keys follow
+ * the reading direction (Radix reads `dir` from `SnowUIProvider`):
+ * ArrowLeft moves to the next tab.
+ */
+export const RTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => (
+    <Tabs defaultValue="account" className="w-[400px]">
+      <TabsList variant="pill">
+        <TabsTrigger value="account" icon={<StarIcon />}>
+          الحساب
+        </TabsTrigger>
+        <TabsTrigger value="password" icon={<CopyIcon />}>
+          كلمة المرور
+        </TabsTrigger>
+        <TabsTrigger value="team" icon={<TextAIcon />}>
+          الفريق
+        </TabsTrigger>
+      </TabsList>
+      <Panels values={['account', 'password', 'team']} />
+    </Tabs>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const account = canvas.getByRole('tab', { name: 'الحساب' })
+    const password = canvas.getByRole('tab', { name: 'كلمة المرور' })
+
+    // The first tab is on the right.
+    await expect(account.getBoundingClientRect().left).toBeGreaterThan(
+      password.getBoundingClientRect().left,
+    )
+
+    await userEvent.tab()
+    await expect(account).toHaveFocus()
+    await userEvent.keyboard('{ArrowLeft}')
+    await expect(password).toHaveFocus()
+    await expect(password).toHaveAttribute('aria-selected', 'true')
+    await userEvent.keyboard('{ArrowRight}')
+    await expect(account).toHaveFocus()
+  },
+}
+
 export const Pill: Story = {
   render: () => (
     <Tabs defaultValue="day">

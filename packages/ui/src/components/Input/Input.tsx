@@ -29,11 +29,14 @@ export const disabledInputClasses =
 
 /**
  * Figma "Focus": a Black/40% stroke plus the Focus effect (4px Black/4% ring).
- * Text fields follow the design exactly — the caret and the darker stroke mark
- * focus — instead of the `focus-ring` outline other controls use.
+ * Text fields follow the design — the caret and the darker stroke mark focus —
+ * instead of the `focus-ring` outline other controls use. That stroke is
+ * 0.5px (2.85:1 on the fill), so with more contrast it is 2px: its inner
+ * pixel was the fill, so the focused field differs from the unfocused one by
+ * at least 5.59:1 (`control-border-strong`: Black/80%; WCAG 2.4.7, 1.4.11).
  */
 export const focusInputClasses =
-  'focus:inset-ring-control-border-strong focus:ring-4 focus:ring-focus'
+  'focus:inset-ring-control-border-strong focus:ring-4 focus:ring-focus contrast-more:focus:inset-ring-2'
 
 /** Figma "Static" (read-only): the stroke doesn't react to hover or focus. */
 export const staticInputClasses =
@@ -56,9 +59,10 @@ export const invalidInputClasses =
 
 // The field shell: the same look, driven by the inner <input>. Focus is the
 // Figma "Focus" state: Black/40% stroke + the 4px Focus ring, while the
-// <input> is focused (by mouse or keyboard, like the design).
+// <input> is focused (by mouse or keyboard, like the design); a 2px stroke
+// with more contrast, as `focusInputClasses`.
 const fieldClasses =
-  'group/input relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all hover:inset-ring-control-border-strong focus-within:inset-ring-control-border-strong has-[input:focus]:ring-4 has-[input:focus]:ring-focus contrast-more:inset-ring-1'
+  'group/input relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all hover:inset-ring-control-border-strong focus-within:inset-ring-control-border-strong has-[input:focus]:ring-4 has-[input:focus]:ring-focus contrast-more:inset-ring-1 contrast-more:has-[input:focus]:inset-ring-2'
 
 const fieldStaticClasses =
   'hover:inset-ring-control-border focus-within:inset-ring-control-border'

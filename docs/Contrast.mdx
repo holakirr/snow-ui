@@ -48,7 +48,7 @@ Four colour tokens, library additions to the kit, carry the difference:
 
 With more contrast the components also:
 
-- draw the 0.5px strokes of text fields and the Select trigger at 1px (a 0.5px line renders as a half-intensity pixel on standard screens);
+- draw the 0.5px strokes of text fields and the Select trigger at 1px (a 0.5px line renders as a half-intensity pixel on standard screens), and the focus stroke of the text fields (`Input`, `InputSmall`, `Textarea`, `Search`) at 2px: its inner pixel was the fill, so the focused field differs from the unfocused one by at least 5.59:1, where the Figma 0.5px Black/40% stroke is 2.85:1 on the fill;
 - give the gray `InputSmall` and `Search` fields a stroke: their Black/4% fill alone is 1.1:1;
 - use the per-mode `white` for the Switch thumb: black on the dark-mode indigo track (10.14:1), where Figma's white thumb is 2.06:1;
 - add a 2px `black-80` ring, the colour of `focus-ring`, to the highlighted menu item (DropdownMenu, ContextMenu, Select) and CommandPalette option, whose Black/4% highlight is 1.1:1.
@@ -70,6 +70,8 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 | Gray field ring vs its Black/4% fill | dark | 1.68–1.76 (no ring) | 3.3–3.66 |
 | Hover / focus stroke vs the field fill | light | 2.84 | 12.55–12.63 |
 | Hover / focus stroke vs the field fill | dark | 2.94–3.21 | 6.71–7.82 |
+| Gray field focus stroke vs its unfocused Black/4% fill | light | 2.5–2.6 | 11.03–11.56 |
+| Gray field focus stroke vs its unfocused Black/4% fill | dark | 2.45–2.65 | 5.59–6.46 |
 | Switch off track vs the surface | light | 1.6 | 3.93–3.97 |
 | Switch off track vs the surface | dark | 1.81–1.88 | 3.99–4.43 |
 | Switch thumb vs the off track | light | 1.6–1.68 | 3.97–4.14 |

@@ -5,9 +5,12 @@ import {
 } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
-import { hasInsetRing } from '../../test/colors'
+import { hasInsetRing, hasMoreContrast } from '../../test/colors'
+import { Search } from '../Search'
 import { KBD } from '../Text'
 import { Input } from './Input'
+import { InputSmall } from './InputSmall'
+import { Textarea } from './Textarea'
 
 const meta: Meta<typeof Input> = {
   title: 'Components/Input/Input',
@@ -174,10 +177,111 @@ export const Invalid: Story = {
 
     await step('the stroke stays red on focus', async () => {
       await userEvent.click(input)
+      // 2px with more contrast: the focus indicator.
+      const width = hasMoreContrast(field) ? '2px' : '1px'
       await expect(
-        await hasInsetRing(field, 'text-control-border-invalid', '1px'),
+        await hasInsetRing(field, 'text-control-border-invalid', width),
       ).toBe(true)
       await userEvent.tab()
     })
+  },
+}
+
+/**
+ * Focus with more contrast (`data-contrast="more"` here, or the OS's
+ * `prefers-contrast: more`): every text field's focus stroke is 2px, in
+ * `control-border-strong` (Black/80%), `control-border` when read-only. Its
+ * inner pixel was the fill, so the focused field differs from the unfocused
+ * one by at least 5.59:1 (WCAG 2.4.7, 1.4.11). The standard contrast keeps
+ * the Figma 0.5px Black/40% stroke (2.85:1 on the fill).
+ */
+export const FocusWithMoreContrast: Story = {
+  // A behaviour check: the focus states with more contrast.
+  tags: ['skip-visual'],
+  render: () => (
+    <div className="flex gap-8">
+      <div data-contrast="standard" className="flex w-64 flex-col gap-4">
+        <Input title="Standard" defaultValue="Text" />
+      </div>
+      <div data-contrast="more" className="flex w-64 flex-col gap-4">
+        <Input title="Input" defaultValue="Text" />
+        <Input title="Read-only" defaultValue="Text" readOnly />
+        <Textarea aria-label="Textarea" defaultValue="Text" />
+        <InputSmall aria-label="Gray" defaultValue="Text" />
+        <InputSmall
+          aria-label="Outline"
+          variant="outline"
+          defaultValue="Text"
+        />
+        <Search defaultValue="Text" />
+      </div>
+    </div>
+  ),
+  play: async ({ canvas, userEvent, step }) => {
+    const shell = (input: HTMLElement) =>
+      input.closest('[data-slot="input"]') as HTMLElement
+    const fields: [string, HTMLElement, HTMLElement, string][] = [
+      [
+        'Input',
+        canvas.getByLabelText('Input'),
+        shell(canvas.getByLabelText('Input')),
+        'text-control-border-strong',
+      ],
+      [
+        'Read-only',
+        canvas.getByLabelText('Read-only'),
+        shell(canvas.getByLabelText('Read-only')),
+        'text-control-border',
+      ],
+      [
+        'Textarea',
+        canvas.getByLabelText('Textarea'),
+        canvas.getByLabelText('Textarea'),
+        'text-control-border-strong',
+      ],
+      [
+        'Gray',
+        canvas.getByLabelText('Gray'),
+        canvas.getByLabelText('Gray'),
+        'text-control-border-strong',
+      ],
+      [
+        'Outline',
+        canvas.getByLabelText('Outline'),
+        canvas.getByLabelText('Outline'),
+        'text-control-border-strong',
+      ],
+    ]
+    const search = canvas.getByRole('searchbox')
+    fields.push([
+      'Search',
+      search,
+      search.parentElement as HTMLElement,
+      'text-control-border-strong',
+    ])
+
+    for (const [name, input, ring, color] of fields) {
+      await step(`${name}: a 2px stroke on focus`, async () => {
+        await userEvent.click(input)
+        await expect(input).toHaveFocus()
+        await expect(await hasInsetRing(ring, color, '2px')).toBe(true)
+      })
+    }
+
+    await step(
+      'the standard contrast keeps the Figma 0.5px stroke',
+      async () => {
+        const input = canvas.getByLabelText('Standard')
+        await userEvent.click(input)
+        await expect(
+          await hasInsetRing(
+            shell(input),
+            'text-control-border-strong',
+            '0.5px',
+          ),
+        ).toBe(true)
+        await userEvent.tab()
+      },
+    )
   },
 }

@@ -216,11 +216,24 @@
 /*
  * An invisible pointer hit area of at least 24×24px, centred on a smaller
  * control (WCAG 2.5.8 Target Size): bare icon buttons, the Switch, the Slider
- * thumb, text buttons without a box. It is the element's `::after`, so the
- * element needs a position (`relative`) and no `::after` of its own; targets
- * closer than 24px share the overlap (the later one gets it).
+ * thumb, text buttons without a box. The element needs a position
+ * (`relative`) and no `::before` or `::after` of its own.
+ *
+ * The hit area is the `::after`, painted in tree order. The `::before` is the
+ * control's own box, raised over every hit area (`z-index: 1`) and as
+ * transparent: a later control's hit area never takes a click on an earlier
+ * one, so each control keeps its whole visible box and only the empty space
+ * around it is added to it. Two targets closer than 24px share the empty
+ * space between them (the later one gets it).
  */
 @utility hit-area {
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    border-radius: inherit;
+  }
   &::after {
     content: "";
     position: absolute;

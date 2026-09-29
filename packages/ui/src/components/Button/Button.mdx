@@ -114,6 +114,8 @@ The full table is in the package README.
 | Icon-only buttons: — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
 | Bare: no box, as small as its icon or text | an invisible hit area of at least 24×24px centred on it (`hit-area`) | 2.5.8 |
 
+The hit area only adds the empty space around a bare button: a neighbour's hit area never covers the button itself. Bare buttons closer than 24px, centre to centre, share the space between them (the later one gets it), so keep them that far apart or give them a box.
+
 With reduced motion (`prefers-reduced-motion: reduce`, WCAG 2.3.3) a pressed button doesn't shrink.
 
 ## Localization and RTL

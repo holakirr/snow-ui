@@ -41,26 +41,6 @@ The research report (`reports/Реестр компонентов в стиле 
 | Namespace, MCP, `include` | `shadcn search @snow-ui` and the MCP server read `/r/registry.json`; `add @snow-ui/x` resolves through `components.json`. `include` resolves an included registry's paths relative to that file; `registry validate` must run from the registry root. | Item dependencies are absolute URLs (they work before any namespace setup); `/r/registry.json` is the catalog. |
 | npm-only dependencies | `@phosphor-icons/react` is a devDependency inlined into the npm build; its `./dist/csr/*` exports work in apps. | A regular `dependency` of the items that use it. |
 
-## Pro registry (paid, private)
+## Other registries
 
-The planned Pro tier (Next.js page templates, Pro blocks) is a second registry built by the same generator from another config — the generator has no public-only assumptions: sources, namespace, target folder, base URL, output directory, extra items and the dependency style are all in the config (`src/config.ts`).
-
-- **Config**: a `registry.config.ts` in the private repository with `namespace: '@snow-ui-pro'`, `package`/`srcDir` pointing at its sources, `target: '@components/snow-ui-pro'` (or `@/app/…` via `target` for pages, `type: 'registry:page'`/`'registry:block'` groups), and `dependencyStyle: 'namespace'`: the CLI only sends the auth headers for URLs of a configured namespace, so Pro items must reference each other as `@snow-ui-pro/<name>`.
-- **Free items as dependencies**: Pro items import the copied free components (`@/components/snow-ui/components/Button/Button`). List them in `registryDependencies` as `@snow-ui/<name>` (or absolute URLs `https://snow-ui.holakirr.com/r/<name>.json`), which the build passes through unchanged. A small addition would map such imports automatically by reading the free `manifest.json` (target path → item).
-- **Users** add both namespaces to `components.json`:
-
-  ```json
-  "registries": {
-    "@snow-ui": "https://snow-ui.holakirr.com/r/{name}.json",
-    "@snow-ui-pro": {
-      "url": "https://pro.snow-ui.holakirr.com/r/{name}.json",
-      "headers": { "Authorization": "Bearer ${SNOW_UI_PRO_TOKEN}" }
-    }
-  }
-  ```
-- **Hosting with auth**, two options:
-  - *Vercel project + Edge Middleware* that checks the bearer token (against a store of issued licence keys, e.g. Edge Config or a small KV, with revocation and per-customer tokens) before serving the static `/r/*.json`. Pros: per-customer keys, revocation, usage logs, custom domain, works with the MCP server and `shadcn add` exactly like the public registry. Cons: a paid-plan feature set to maintain (key issuing, rate limits), the middleware must not be cached publicly (`Cache-Control: private`), and Vercel's bot protection must allow the CLI's requests.
-  - *Private GitHub registry* (`shadcn add owner/repo/item#ref` with `gh` auth or `GH_TOKEN`, supported since August 2026). Pros: no hosting, access = repository collaborators, pinning by git ref. Cons: every customer needs a GitHub account added to the repo (licensing = GitHub access management), no per-key revocation or analytics, the repo needs a committed buildable `registry.json` with the transformed files (the generator would commit its staged output), refs aren't inherited by dependencies, and tags fail in CI with HTTP 422 (#11986).
-  
-  For a paid product, the middleware option fits better (licence keys, revocation); the GitHub option is fine for a closed beta.
-- **Licence**: the ByeWind terms allow the free library and registry; paid sales owe ByeWind a commission, so Pro pricing has to account for it.
+The generator has no public-only assumptions: sources, namespace, target folder, base URL, output directory, extra items and the dependency style (`dependencyStyle: 'url' | 'namespace'`) are all in the config (`src/config.ts`), so another registry — for example a private one whose namespace sends auth headers from `components.json` — can be built from a different config. With `dependencyStyle: 'namespace'`, items reference each other as `@<namespace>/<name>`, because the shadcn CLI only sends a namespace's headers for its own URLs.

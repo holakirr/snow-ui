@@ -246,13 +246,14 @@ export const DatePickerField = ({
         <div
           className={twMerge(
             // The Figma Input field, as `SelectTrigger`: 12/16 padding, a
-            // 16px radius, Surface/1 with a 0.5px Black/20% inside stroke
-            // (Black/40% on hover and while open, with the 4px Focus ring).
-            'group/date-picker relative flex w-full rounded-16 bg-surface-1 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all hover:inset-ring-black-40',
-            'data-[state=open]:inset-ring-black-40 data-[state=open]:ring-4 data-[state=open]:ring-focus',
+            // 16px radius, Surface/1 with a 0.5px inside stroke (darker on
+            // hover and while open, with the 4px Focus ring). The stroke is
+            // the `control-border*` tokens, 1px with more contrast.
+            'group/date-picker relative flex w-full rounded-16 bg-surface-1 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all hover:inset-ring-control-border-strong contrast-more:inset-ring-1',
+            'data-[state=open]:inset-ring-control-border-strong data-[state=open]:ring-4 data-[state=open]:ring-focus',
             // Invalid, while the trigger has `aria-invalid="true"`: the 1px
-            // Red stroke of `Input`, also while the calendar is open.
-            'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red has-aria-invalid:data-[state=open]:inset-ring-red',
+            // `control-border-invalid` stroke of `Input`, also while open.
+            'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-aria-invalid:data-[state=open]:inset-ring-control-border-invalid',
             // The disabled look (the design has no Disabled state).
             'data-disabled:bg-black-4 data-disabled:text-black-20 data-disabled:inset-ring-0 data-disabled:hover:inset-ring-0',
             className,
@@ -291,8 +292,9 @@ export const DatePickerField = ({
               aria-label={clearLabel}
               title={clearLabel}
               onClick={clear}
-              // As in `Search`: 60% opacity meets the 3:1 of a control's icon.
-              className="absolute end-10 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
+              // As in `Search`: 60% opacity meets the 3:1 of a control's
+              // icon, and `hit-area` makes the 16px icon a 24px target.
+              className="absolute end-10 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hit-area hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
             >
               <XCircleIcon weight="fill" size={16} />
             </button>
@@ -300,7 +302,7 @@ export const DatePickerField = ({
           <CalendarBlank
             aria-hidden
             size={16}
-            className="pointer-events-none absolute end-4 top-1/2 shrink-0 -translate-y-1/2 text-black-40 group-data-disabled/date-picker:text-black-20"
+            className="pointer-events-none absolute end-4 top-1/2 shrink-0 -translate-y-1/2 text-control-border-strong group-data-disabled/date-picker:text-black-20"
           />
           {hiddenInputs}
         </div>

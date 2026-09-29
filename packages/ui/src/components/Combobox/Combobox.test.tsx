@@ -502,12 +502,20 @@ describe('Combobox', () => {
     expect(field()).not.toHaveAttribute('name')
   })
 
-  it('shows the red stroke while the input is invalid', () => {
+  it('uses the contrast tokens: stroke, placeholder and invalid stroke', () => {
     renderCombobox({ 'aria-invalid': true })
+    const shell = field().closest('[data-slot="combobox"]')
+    expect(shell).toHaveClass(
+      'inset-ring-[0.5px]',
+      'inset-ring-control-border',
+      'hover:inset-ring-control-border-strong',
+      'contrast-more:inset-ring-1',
+    )
+    expect(field()).toHaveClass('placeholder:text-placeholder')
     expect(field()).toBeInvalid()
-    expect(field().closest('[data-slot="combobox"]')).toHaveClass(
+    expect(shell).toHaveClass(
       'has-aria-invalid:inset-ring',
-      'has-aria-invalid:inset-ring-red',
+      'has-aria-invalid:inset-ring-control-border-invalid',
     )
   })
 

@@ -507,19 +507,21 @@ export type ComboboxState = ReturnType<typeof useCombobox>
 
 /**
  * The Figma Input field (12/16 padding, a 16px radius, Surface/1 with a
- * 0.5px Black/20% inside stroke, Black/40% on hover and focus, plus the 4px
- * Focus ring while the input is focused), as in `Input`. While the list is
- * open (`data-state="open"`) it keeps the focus look, as the Select trigger.
+ * 0.5px inside stroke, darker on hover and focus, plus the 4px Focus ring
+ * while the input is focused), as in `Input`: the stroke is the
+ * `control-border*` tokens, 1px with more contrast. While the list is open
+ * (`data-state="open"`) it keeps the focus look, as the Select trigger.
  */
 export const comboboxFieldClasses =
-  'group/combobox relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-black-20 transition-all hover:inset-ring-black-40 focus-within:inset-ring-black-40 has-[input:focus]:ring-4 has-[input:focus]:ring-focus data-[state=open]:inset-ring-black-40 data-[state=open]:ring-4 data-[state=open]:ring-focus'
+  'group/combobox relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all hover:inset-ring-control-border-strong focus-within:inset-ring-control-border-strong has-[input:focus]:ring-4 has-[input:focus]:ring-focus data-[state=open]:inset-ring-control-border-strong data-[state=open]:ring-4 data-[state=open]:ring-focus contrast-more:inset-ring-1'
 
 /**
  * Invalid, while the input has `aria-invalid="true"` (`FormControl` sets it):
- * the 1px Red stroke of `Input`, also while the list is open.
+ * the 1px `control-border-invalid` stroke of `Input`, also while the list is
+ * open.
  */
 export const comboboxInvalidClasses =
-  'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-red has-aria-invalid:data-[state=open]:inset-ring-red'
+  'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-aria-invalid:data-[state=open]:inset-ring-control-border-invalid'
 
 /** The disabled look (the design has no Disabled state), as in `Input`. */
 export const comboboxDisabledClasses =
@@ -527,10 +529,10 @@ export const comboboxDisabledClasses =
 
 /** Figma "Static" (read-only): the stroke doesn't react to hover or focus. */
 export const comboboxStaticClasses =
-  'hover:inset-ring-black-20 focus-within:inset-ring-black-20'
+  'hover:inset-ring-control-border focus-within:inset-ring-control-border'
 
 export const comboboxInputClasses =
-  'min-w-0 flex-1 bg-transparent text-inherit outline-none placeholder:text-black-20 disabled:cursor-not-allowed'
+  'min-w-0 flex-1 bg-transparent text-inherit outline-none placeholder:text-placeholder disabled:cursor-not-allowed'
 
 type ComboboxAdornmentsProps = {
   loading: boolean
@@ -565,8 +567,9 @@ export const ComboboxAdornments = ({
         aria-label={clearLabel}
         title={clearLabel}
         onClick={onClear}
-        // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon (WCAG 1.4.11).
-        className="flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
+        // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon
+        // (WCAG 1.4.11). A 16px icon: `hit-area` makes it 24px (2.5.8).
+        className="relative flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hit-area hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
       >
         <XCircleIcon weight="fill" size={16} />
       </button>
@@ -574,7 +577,7 @@ export const ComboboxAdornments = ({
     <ArrowLineUpDownIcon
       size={16}
       aria-hidden
-      className="shrink-0 fill-black-40 group-data-[disabled]/combobox:fill-black-20"
+      className="shrink-0 fill-control-border-strong group-data-[disabled]/combobox:fill-black-20"
     />
   </>
 )

@@ -255,8 +255,10 @@ describe('DatePicker', () => {
     expect(field()).toBeInvalid()
     expect(field()).toHaveAttribute('aria-required', 'true')
     expect(field().closest('[data-slot="date-picker"]')).toHaveClass(
+      'inset-ring-control-border',
+      'contrast-more:inset-ring-1',
       'has-aria-invalid:inset-ring',
-      'has-aria-invalid:inset-ring-red',
+      'has-aria-invalid:inset-ring-control-border-invalid',
     )
   })
 

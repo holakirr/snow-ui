@@ -1,5 +1,14 @@
 export * from './Checkbox'
-export * from './Input'
+// Explicit, so the invalid stroke classes the fields share
+// (`invalidInputClasses`) stay inside the package.
+export {
+  basicInputClasses,
+  disabledInputClasses,
+  focusInputClasses,
+  Input,
+  type InputProps,
+  staticInputClasses,
+} from './Input'
 export * from './InputSmall'
 export * from './RadioGroup'
 export * from './Select'

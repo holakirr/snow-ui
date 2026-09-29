@@ -50,6 +50,14 @@ describe('package exports', () => {
   ])('%s → dist/%s', (specifier, file) => {
     expect(require.resolve(specifier)).toBe(join(dist, file))
   })
+
+  it("keeps the fields' shared invalid classes internal", async () => {
+    const entry = await import(join(dist, 'index.js'))
+
+    // Never released: the fields share it, apps use the utilities.
+    expect(entry).not.toHaveProperty('invalidInputClasses')
+    expect(entry).toHaveProperty('staticInputClasses')
+  })
 })
 
 /** Preludes of the top-level rules and at-rules of a stylesheet. */

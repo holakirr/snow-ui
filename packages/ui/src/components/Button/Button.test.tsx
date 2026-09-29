@@ -1,6 +1,7 @@
 import { StarIcon } from '@holakirr/snow-ui-icons'
 import { composeStories } from '@storybook/react'
 import { render, screen, within } from '@testing-library/react'
+import { forwardRef, memo } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ROLES } from '../../constants'
 import { resetUnnamedIconOnlyWarnings } from '../../utils/accessible-name'
@@ -301,9 +302,51 @@ describe('Button', () => {
   })
 })
 
+// A self-closing i18n element, like react-intl's <FormattedMessage id /> or
+// react-i18next's <Trans i18nKey />: it renders text without children.
+const FormattedMessage = ({ id }: { id: string }) => <>{id}</>
+
+// Icons wrapped in forwardRef or memo, named like icons.
+const ArrowIcon = forwardRef<SVGSVGElement>((props, ref) => (
+  <svg ref={ref} {...props} />
+))
+ArrowIcon.displayName = 'ArrowIcon'
+const MemoStarIcon = memo(function StarGlyphIcon() {
+  return <svg />
+})
+
 describe('Button without an accessible name', () => {
   beforeEach(resetUnnamedIconOnlyWarnings)
   afterEach(() => vi.restoreAllMocks())
+
+  it.each([
+    [
+      'as the only child',
+      <Button key="b">{<FormattedMessage id="Save" />}</Button>,
+    ],
+    [
+      'as the start content',
+      <Button key="b" startContent={<FormattedMessage id="Save" />} />,
+    ],
+  ])('takes a text component %s for text, not an icon', (_, button) => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(button)
+
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
+    expect(warn).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['forwardRef', <ArrowIcon key="b" />],
+    ['memo', <MemoStarIcon key="b" />],
+  ])('recognises a %s icon component', (_, icon) => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    render(<Button>{icon}</Button>)
+
+    expect(warn).toHaveBeenCalledTimes(1)
+  })
 
   it('warns once in development about an unnamed icon-only button', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})

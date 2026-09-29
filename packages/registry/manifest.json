@@ -28,6 +28,52 @@
       "docs": "components-accordion"
     },
     {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "files": ["components/Alert/Alert.tsx"],
+      "dependencies": ["@holakirr/snow-ui-icons", "@radix-ui/react-slot"],
+      "registryDependencies": [
+        "button",
+        "snow-core",
+        "snow-slot-host",
+        "snow-ui-provider"
+      ],
+      "import": "components/Alert/Alert",
+      "exports": ["Alert", "AlertDescription", "AlertTitle"],
+      "types": ["AlertProps", "AlertStatus", "AlertTextProps"],
+      "docs": "components-alert"
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "AlertDialog",
+      "files": ["components/AlertDialog/AlertDialog.tsx"],
+      "dependencies": ["@radix-ui/react-alert-dialog"],
+      "registryDependencies": [
+        "button",
+        "dialog",
+        "snow-core",
+        "snow-ui-provider"
+      ],
+      "import": "components/AlertDialog/AlertDialog",
+      "exports": [
+        "AlertDialog",
+        "AlertDialogAction",
+        "AlertDialogCancel",
+        "AlertDialogContent",
+        "AlertDialogDescription",
+        "AlertDialogFooter",
+        "AlertDialogHeader",
+        "AlertDialogOverlay",
+        "AlertDialogPortal",
+        "AlertDialogTitle",
+        "AlertDialogTrigger"
+      ],
+      "types": ["AlertDialogActionProps"],
+      "docs": "components-alertdialog"
+    },
+    {
       "name": "avatar",
       "type": "registry:ui",
       "title": "Avatar",
@@ -210,7 +256,7 @@
       "name": "dialog",
       "type": "registry:ui",
       "title": "Dialog",
-      "files": ["components/Dialog/Dialog.tsx"],
+      "files": ["components/Dialog/Dialog.tsx", "components/Dialog/styles.ts"],
       "dependencies": ["@holakirr/snow-ui-icons", "@radix-ui/react-dialog"],
       "registryDependencies": [
         "button",
@@ -591,6 +637,36 @@
       "docs": "components-popover"
     },
     {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "files": [
+        "components/Progress/Progress.tsx",
+        "components/Progress/value.ts"
+      ],
+      "dependencies": ["@radix-ui/react-progress"],
+      "registryDependencies": ["snow-core", "snow-ui-provider", "strip"],
+      "import": "components/Progress/Progress",
+      "exports": ["Progress"],
+      "types": ["ProgressProps", "ProgressThickness"],
+      "docs": "components-progress"
+    },
+    {
+      "name": "progress-circle",
+      "type": "registry:ui",
+      "title": "ProgressCircle",
+      "files": [
+        "components/Progress/ProgressCircle.tsx",
+        "components/Progress/value.ts"
+      ],
+      "dependencies": ["@radix-ui/react-progress"],
+      "registryDependencies": ["snow-core", "snow-ui-provider", "spinner"],
+      "import": "components/Progress/ProgressCircle",
+      "exports": ["ProgressCircle"],
+      "types": ["ProgressCircleProps", "ProgressCircleSize"],
+      "docs": "components-progress"
+    },
+    {
       "name": "scheduler",
       "type": "registry:ui",
       "title": "Scheduler",
@@ -798,6 +874,21 @@
       "exports": ["ThemeScope"],
       "types": ["ThemeScopeProps"],
       "docs": "components-snowuiprovider"
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "files": [
+        "components/Spinner/Spinner.tsx",
+        "components/Spinner/ring.tsx"
+      ],
+      "dependencies": [],
+      "registryDependencies": ["snow-core", "snow-ui-provider"],
+      "import": "components/Spinner/Spinner",
+      "exports": ["Spinner"],
+      "types": ["SpinnerProps", "SpinnerSize"],
+      "docs": "components-spinner"
     },
     {
       "name": "strip",
@@ -1116,6 +1207,8 @@
       "description": "Every SnowUI component, hook and utility (with their npm dependencies).",
       "registryDependencies": [
         "accordion",
+        "alert",
+        "alert-dialog",
         "avatar",
         "avatar-group",
         "badge",
@@ -1146,6 +1239,8 @@
         "list-item",
         "pagination",
         "popover",
+        "progress",
+        "progress-circle",
         "scheduler",
         "search",
         "separator",
@@ -1154,6 +1249,7 @@
         "skeleton",
         "snow-ui-provider",
         "theme-scope",
+        "spinner",
         "strip",
         "table",
         "tabs",

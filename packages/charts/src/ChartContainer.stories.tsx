@@ -1,4 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { ChartContainer } from './ChartContainer'
+import { ChartLegend, ChartLegendContent } from './ChartLegend'
+import { ChartTooltip, ChartTooltipContent } from './ChartTooltip'
+import { type ChartConfig, seriesColor } from './config'
+// Recharts as the package re-exports it: one copy for the parts and the
+// container (`@holakirr/snow-ui-charts/recharts`).
 import {
   Bar,
   BarChart,
@@ -7,12 +14,7 @@ import {
   LineChart,
   XAxis,
   YAxis,
-} from 'recharts'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { ChartContainer } from './ChartContainer'
-import { ChartLegend, ChartLegendContent } from './ChartLegend'
-import { ChartTooltip, ChartTooltipContent } from './ChartTooltip'
-import { type ChartConfig, seriesColor } from './config'
+} from './recharts'
 import { DashboardCard } from './test/DashboardCard'
 import { chartSurface, visibleTooltip } from './test/play'
 
@@ -122,7 +124,11 @@ export const Composable: Story = {
       'var(--color-mint)',
     )
     const surface = await chartSurface(canvasElement)
-    expect(surface).toHaveAccessibleName('Visitors')
+    // Named once: the figure by the card title, its plot as the data points.
+    expect(
+      within(canvasElement).getByRole('figure', { name: 'Visitors' }),
+    ).toBeInTheDocument()
+    expect(surface).toHaveAccessibleName('Data points')
     // Keyboard focus shows the first month, → the next one.
     await userEvent.tab()
     let tooltip = await visibleTooltip(canvasElement)
@@ -132,7 +138,7 @@ export const Composable: Story = {
     tooltip = await visibleTooltip(canvasElement)
     await waitFor(() => expect(tooltip).toHaveTextContent('Feb'))
     expect(tooltip).toHaveTextContent('Mobile20,000')
-    const table = within(canvasElement).getByRole('table', { name: 'Visitors' })
+    const table = within(canvasElement).getByRole('table')
     expect(
       within(table).getByRole('columnheader', { name: 'Month' }),
     ).toBeInTheDocument()

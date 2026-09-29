@@ -48,10 +48,10 @@ const revenue = [
 | Component | For |
 | --- | --- |
 | `LineChart` | Trends: smooth 1px lines, `dashed` series, a dashed projection after `projectionFrom`, `fade`, `dots`. |
-| `AreaChart` | A line chart filled with a gradient of each series' colour (`opacity`, 10% by default), `stacked`. |
+| `AreaChart` | A line chart filled with a gradient of each series' colour (`opacity`, 10% by default); `stacked`, as lines can be too. |
 | `BarChart` | Amounts per category: grouped or `stacked`, `horizontal`, per-category colours (`colorBy="category"`), 28px bars with an 8px radius. |
 | `DonutChart` | Shares of a whole: a 120px ring with a legend of percentages, `centerLabel` / `centerValue`. |
-| `Sparkline` | A tiny trend line for KPI cards (`role="img"`). |
+| `Sparkline` | A tiny trend line for KPI cards: plain SVG (about 2.3 kB with its data table), rendered on the server too. |
 | `ChartContainer` | The frame of any Recharts chart: config → CSS variables, sizing, tooltip and legend context, accessibility. |
 | `ChartTooltip`, `ChartTooltipContent` | The SnowUI tooltip (`dark`, the Figma chart tooltip, or `light` glass). |
 | `ChartLegend`, `ChartLegendContent` | The SnowUI legend (a dot and a label, optional values). |
@@ -74,7 +74,7 @@ const config = {
 ### Composable charts
 
 ```tsx
-import { Bar, BarChart, XAxis } from 'recharts'
+import { Bar, BarChart, XAxis } from '@holakirr/snow-ui-charts/recharts'
 import { ChartContainer, ChartLegendContent, ChartTooltip, seriesColor } from '@holakirr/snow-ui-charts'
 
 <ChartContainer
@@ -93,10 +93,12 @@ import { ChartContainer, ChartLegendContent, ChartTooltip, seriesColor } from '@
 </ChartContainer>
 ```
 
+Import the Recharts parts from `@holakirr/snow-ui-charts/recharts`: it re-exports the Recharts this package depends on (the whole API), so your parts and `ChartContainer` / `ChartTooltip` share one copy (Recharts keeps the chart size and the tooltip state per copy). Importing `recharts` directly works only when it resolves to that same copy, i.e. the same version, deduplicated by your package manager.
+
 ## Accessibility
 
-- Every chart is a `<figure>` named by `title` (or `aria-label` / `aria-labelledby`, e.g. the card's heading) and described by `description`; a development warning flags a chart without a name.
-- The data is also a visually hidden `<table>` (caption, row and column headers, formatted values): the chart's text alternative for screen readers.
+- Every chart is a `<figure>` named by `title` (or `aria-label` / `aria-labelledby`, e.g. the card's heading) and described by `description`; a development warning flags a chart without a name. The name is given once: the table has no caption and the focusable plot is named "Data points" (`navigationLabel`).
+- The data is also a visually hidden `<table>` (row and column headers, formatted values): the chart's text alternative for screen readers.
 - Recharts' accessibility layer makes the chart focusable: Tab shows the first point, ← / → move between points (mirrored in right-to-left text), and the values are announced through a live region. The donut, whose legend already lists every value, is not a tab stop.
 - Axis labels use `text-secondary` (Figma: Black/40%), like all secondary text of the library. The pastel secondary colours are below 3:1 on light backgrounds; every value is also text (table, tooltip, donut legend), so colour is never the only way to read the chart.
 - Animations respect `prefers-reduced-motion`.

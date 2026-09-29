@@ -26,6 +26,10 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./recharts": {
+      "import": "./dist/recharts.js",
+      "require": "./dist/recharts.cjs"
+    },
     "./package.json": "./package.json",
     "./styles.css": "./dist/styles.css"
   },

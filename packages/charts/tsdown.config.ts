@@ -1,7 +1,9 @@
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  // The package, and `./recharts`: Recharts re-exported, so composable charts
+  // use the package's own copy.
+  entry: ['src/index.ts', 'src/recharts.ts'],
   format: ['esm', 'cjs'],
   platform: 'neutral',
   target: 'es2020',

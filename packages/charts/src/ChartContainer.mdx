@@ -18,7 +18,7 @@ bun add @holakirr/snow-ui-charts @holakirr/snow-ui react react-dom
 import '@holakirr/snow-ui/index.css' // or theme.css in a Tailwind v4 project
 import '@holakirr/snow-ui-charts/styles.css'
 
-import { Bar, BarChart, XAxis } from 'recharts'
+import { Bar, BarChart, XAxis } from '@holakirr/snow-ui-charts/recharts'
 import { ChartContainer, ChartTooltip, type ChartConfig, seriesColor } from '@holakirr/snow-ui-charts'
 
 const config = {
@@ -37,6 +37,8 @@ const config = {
 ```
 
 <Canvas of={ChartContainerStories.Composable} />
+
+Import the Recharts parts from `@holakirr/snow-ui-charts/recharts`: it re-exports the Recharts this package depends on (the whole API), so your parts and `ChartContainer` / `ChartTooltip` share one copy (Recharts keeps the chart size and the tooltip state per copy). Importing `recharts` directly works only when it resolves to that same copy, i.e. the same version, deduplicated by your package manager.
 
 ## When to use
 
@@ -63,7 +65,7 @@ A `ChartConfig` maps each data key to a `label`, a `color` and optionally an `ic
 
 - `color` takes a SnowUI token name: `primary` (black, indigo in dark mode), `black` and `black-80` … `black-10` (they flip to white), or a secondary colour: `purple`, `indigo`, `blue`, `cyan`, `mint`, `green`, `yellow`, `orange`, `red`. Any CSS colour works too (`'#7dbbff'`, `'var(--brand)'`).
 - Without a colour a series takes the palette in order: Primary, Blue, Green, Cyan, Purple, Mint, Indigo, Orange, Yellow, Red (`chartPalette`).
-- `ChartContainer` sets `--chart-<key>` on the figure (`--chart-desktop: var(--color-primary)`); `seriesColor('desktop')` returns `var(--chart-desktop)` for your Recharts elements. The values are CSS variables, so a chart follows the theme of wherever it is: dark mode and `data-theme` scopes work without re-rendering. Characters a CSS identifier can't hold are escaped (`'United States'` → `--chart-United_20States`).
+- `ChartContainer` sets `--chart-<key>` on the figure (`--chart-desktop: var(--color-primary)`); `seriesColor('desktop')` returns `var(--chart-desktop)` for your Recharts elements. The values are CSS variables, so a chart follows the theme of wherever it is: dark mode and `data-theme` scopes work without re-rendering. Characters a CSS identifier can't hold are escaped (`'United States'` → `--chart-United_20_States`).
 
 ## Tooltip and legend
 
@@ -87,17 +89,18 @@ A `ChartConfig` maps each data key to a `label`, a `color` and optionally an `ic
 A chart is a picture of numbers, so its text alternative is the numbers:
 
 - **Named figure.** The container is a `<figure>` named by `title` (a visually hidden `<figcaption>`), by `aria-label`, or by `aria-labelledby` pointing at the card's visible heading (the stories do this). `description` is its accessible description: say what the chart shows ("Revenue grew 20% since January"). Without a name, a development warning is logged.
-- **Data table.** With `data` and `categoryKey`, the values are also a visually hidden `<table>`: a caption (the title), the categories as row headers and the series as column headers, the values formatted like the tooltip. It is the text alternative screen reader users browse (WCAG 1.1.1, 1.3.1). `table={false}` turns it off, e.g. when the page already has the same table.
-- **Keyboard.** Recharts' accessibility layer makes the chart's `<svg>` a focusable `application`: Tab focuses it and shows the tooltip for the first point, ← and → move between points (mirrored in right-to-left charts), Enter toggles the tooltip. The svg is named like the figure and described by the `keyboardHint` ("Use the left and right arrow keys to move between data points"). While the chart has focus, the tooltip's text is announced through a polite live region (2.1.1, 4.1.3). Charts without keyboard navigation (the donut) pass `keyboardHint={false}`.
+- **Named once.** Only the figure carries the chart's name; the data table inside has no caption, and the focusable plot is named for what it is (`navigationLabel`, "Data points").
+- **Data table.** With `data` and `categoryKey`, the values are also a visually hidden `<table>`: the categories as row headers and the series as column headers, the values formatted like the tooltip. It is the text alternative screen reader users browse (WCAG 1.1.1, 1.3.1). `table={false}` turns it off, e.g. when the page already has the same table.
+- **Keyboard.** Recharts' accessibility layer makes the chart's `<svg>` a focusable `application`: Tab focuses it and shows the tooltip for the first point, ← and → move between points (mirrored in right-to-left charts), Enter toggles the tooltip. Inside the named figure, the svg is named by `navigationLabel` ("Data points") and described by the `keyboardHint` ("Use the left and right arrow keys to move between data points"). While the chart has focus, the tooltip's text is announced through a polite live region (2.1.1, 4.1.3). Charts without keyboard navigation (the donut) pass `keyboardHint={false}`.
 - **Focus.** The focused chart gets the library's focus ring: the Figma "Focus" ring plus a 2px Black/80% outline, offset by 2px (2.4.7).
 - **Contrast.** Axis labels are `text-secondary` (Figma: Black/40%, 2.85:1) like every secondary text of the library (1.4.3). Most secondary colours (Cyan, Mint, Blue, Green…) are below 3:1 against the light backgrounds; every value they draw is also text (the table, the tooltip, and a donut's legend), so the lines and bars aren't the only way to get the information (1.4.11). Use `primary` for the series that matters most, and don't tell series apart by colour alone: labels in the legend, a dashed style (`dashed`) for comparisons (1.4.1).
 - **Motion.** Recharts animates series on mount unless the user prefers reduced motion (`animate="auto"`).
 
 ## Localization and RTL
 
-- **Numbers** follow the `locale` prop, else the language of the nearest `SnowUIProvider` (its date-fns locale's `code`), else `en-US` (so the server and the browser render the same text). `valueFormatter` formats the tooltip, the legend values and the table; `categoryFormatter` the categories; the ready-made charts take `xTickFormatter` and `yTickFormatter` for the axes (compact numbers by default: `10K`).
-- **Strings**: `emptyMessage`, `loadingLabel` and `keyboardHint` are props; translate them with your messages.
-- **Direction** follows the `dir` prop, else the `SnowUIProvider`'s, else the computed direction of the chart's element (`<html dir="rtl">`). Right-to-left cartesian charts mirror: the category axis runs from right to left (`reversed`), the value axis moves to the right, the tooltip opens to the left, ← moves forward. The HTML parts (legend, tooltip) follow the text direction; the SVG keeps left-to-right text layout.
+- **Numbers** follow the `locale` prop, else the language of the nearest `SnowUIProvider` (its date-fns locale's `code`), else `en-US` (so the server and the browser render the same text). `valueFormatter` formats the tooltip, the legend values and the table; `categoryFormatter` the categories (by default their text; dates in the locale's medium date style, in UTC, so the server and the browser agree); the ready-made charts take `xTickFormatter` and `yTickFormatter` for the axes (compact numbers by default: `10K`).
+- **Strings**: `emptyMessage`, `loadingLabel`, `keyboardHint` and `navigationLabel` are props; translate them with your messages.
+- **Direction** follows the `dir` prop, else the `SnowUIProvider`'s, else the computed direction of the chart's element (`<html dir="rtl">`). Right-to-left cartesian charts mirror: the category axis runs from right to left (`reversed`), the value axis moves to the right, the tooltip opens to the left, ← moves forward. The figure gets the `dir` you pass (or the provider's), so its HTML parts (legend, tooltip, table) follow it even inside a left-to-right page; the SVG keeps left-to-right text layout.
 
 <Canvas of={ChartContainerStories.Formatters} />
 

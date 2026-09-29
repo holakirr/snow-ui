@@ -20,6 +20,7 @@ beforeAll(() => {
 describe('package exports', () => {
   it.each([
     ['@holakirr/snow-ui-charts', 'index.cjs'],
+    ['@holakirr/snow-ui-charts/recharts', 'recharts.cjs'],
     ['@holakirr/snow-ui-charts/styles.css', 'styles.css'],
   ])('%s → dist/%s', (specifier, file) => {
     expect(require.resolve(specifier)).toBe(join(dist, file))
@@ -48,6 +49,25 @@ describe('package exports', () => {
     }
   })
 
+  it('re-exports the Recharts it depends on as ./recharts', async () => {
+    const recharts = await import('recharts')
+    const esm = await import('@holakirr/snow-ui-charts/recharts')
+    const cjs = require('@holakirr/snow-ui-charts/recharts')
+    for (const name of [
+      'ResponsiveContainer',
+      'BarChart',
+      'XAxis',
+      'Tooltip',
+    ]) {
+      // The same objects: one Recharts, one context and tooltip store.
+      expect((esm as Record<string, unknown>)[name], name).toBe(
+        (recharts as Record<string, unknown>)[name],
+      )
+      expect(cjs[name], name).toBe(require('recharts')[name])
+    }
+    expect(Object.keys(esm).length).toBeGreaterThan(50)
+  })
+
   it('ships no stories, tests or fixtures', () => {
     expect(
       readdirSync(dist, { recursive: true }).filter((file) =>
@@ -59,7 +79,11 @@ describe('package exports', () => {
 
 describe("'use client'", () => {
   it('marks every module that uses React hooks or renders', () => {
-    const modules = readdirSync(dist).filter((file) => /\.(c?js)$/.test(file))
+    // recharts.js only re-exports Recharts (a client boundary can't
+    // `export *`), like importing Recharts itself.
+    const modules = readdirSync(dist).filter(
+      (file) => /\.(c?js)$/.test(file) && !/^recharts\./.test(file),
+    )
     const clientModules = modules.filter((file) =>
       /from "react"|require\("react"\)|from "recharts"|require\("recharts"\)/.test(
         read(file),

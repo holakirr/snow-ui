@@ -35,6 +35,16 @@ describe('classifyPackage', () => {
     )
   })
 
+  it('throws when npm view was interrupted, even after printing E404', () => {
+    expect(() =>
+      classifyPackage(
+        '@holakirr/snow-ui-charts',
+        { status: null, output: E404 },
+        [],
+      ),
+    ).toThrow(/npm view @holakirr\/snow-ui-charts failed/)
+  })
+
   it('throws on any other npm error', () => {
     expect(() =>
       classifyPackage(

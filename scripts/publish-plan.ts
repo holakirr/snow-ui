@@ -14,7 +14,7 @@ export interface NpmLookup {
  * - npm says E404 but the package has release tags: it was published, so
  *   the registry lookup is wrong (a misconfigured registry, an auth or scope
  *   problem); throw instead of skipping every package and passing.
- * - Any other npm error: throw.
+ * - Any other npm error, or `npm view` killed before it exited: throw.
  */
 export const classifyPackage = (
   name: string,
@@ -22,7 +22,8 @@ export const classifyPackage = (
   tags: readonly string[],
 ): 'published' | 'new' => {
   if (lookup.status === 0) return 'published'
-  if (!/\bE404\b/.test(lookup.output)) {
+  // Killed by a signal (no exit status): whatever it printed can't be trusted.
+  if (lookup.status === null || !/\bE404\b/.test(lookup.output)) {
     throw new Error(`npm view ${name} failed:\n${lookup.output}`)
   }
   const released = tags.filter((tag) => tag.startsWith(`${name}@`))

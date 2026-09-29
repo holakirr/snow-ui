@@ -5,8 +5,9 @@
 #     pending changesets (runs `bun run version-packages`: bumps versions,
 #     writes CHANGELOG.md, updates bun.lock), or
 #   - publishes every package whose version isn't on npm yet (runs
-#     `bun run release`: builds, then `changeset publish`), pushes the
-#     `<name>@<version>` git tags and creates a GitHub release per package.
+#     `bun run release`: builds, then scripts/publish.ts, which runs
+#     `changeset publish`), pushes the `<name>@<version>` git tags and
+#     creates a GitHub release per package.
 #
 # GitHub auth: the action uses the job's GITHUB_TOKEN through its
 # `github-token` input (default) and pushes the version commit and tags
@@ -18,6 +19,9 @@
 # npm auth: Trusted Publishing (OIDC, npm >= 11.5 from Node 24 and
 # `id-token: write`); no NPM_TOKEN. Each package's Trusted Publisher on
 # npmjs.com must point at repo holakirr/snow-ui, workflow file release.yml.
+# A package that isn't on npm yet can't have one: scripts/publish.ts skips it
+# with a warning until the owner publishes its first version by hand
+# (CONTRIBUTING.md, "Publishing a new package").
 
 name: Release
 

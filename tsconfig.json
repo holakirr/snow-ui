@@ -8,6 +8,7 @@
     ".storybook/*.ts",
     ".storybook/*.tsx",
     "vitest.config.ts",
-    "visual/*.ts"
+    "visual/*.ts",
+    "scripts/*.ts"
   ]
 }

@@ -222,6 +222,26 @@ describe('renderRegistry', () => {
     })
   })
 
+  it('floors a workspace package at its version at this commit', () => {
+    // Even where the source package declares a lower range for it: the
+    // items are built from this commit's sources, which the published
+    // version of this commit matches.
+    const files = writeFixture({
+      'pkg/package.json': JSON.stringify({
+        name: '@test/ui',
+        version: '1.2.3',
+        dependencies: { '@radix-ui/react-slot': '^1.3.0', clsx: '^2.1.0' },
+        peerDependencies: { react: '^19.0.0' },
+        devDependencies: { '@test/ui': '^1.0.0' },
+      }),
+    })
+    const { registry } = renderRegistry(createPlan(config, files), config, {
+      baseUrl: 'http://localhost:4173/r',
+    })
+    const base = registry.items.find((i) => i.name === 'base')
+    expect(base?.dependencies).toEqual(['@test/ui@^1.2.3'])
+  })
+
   it("keeps the header through the CLI's rewrite (getText, 'use client' removal)", () => {
     const project = new Project({ useInMemoryFileSystem: true })
     for (const [path, content] of rendered.files) {

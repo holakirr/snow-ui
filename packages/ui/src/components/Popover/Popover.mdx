@@ -1,5 +1,6 @@
-import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import { PopoverAnchor, PopoverContent, PopoverTrigger } from './Popover'
 import * as PopoverStories from './Popover.stories'
 
 <Meta of={PopoverStories} />
@@ -77,11 +78,22 @@ Open and closed only: `open` / `defaultOpen` / `onOpenChange` on `Popover`. The 
 - `PopoverContent` is a `role="dialog"` element with no name of its own: name it with `aria-labelledby` (pointing at its heading, as the Open story does) or `aria-label`.
 - The trigger gets `aria-haspopup="dialog"`, `aria-expanded` and, while open, `aria-controls`.
 - The popover is not modal (Radix `modal` is `false` by default):
-  - Opening moves focus into the content.
-  - Tab can leave it; focus or a click outside closes it.
+  - Opening moves focus into the content: its first focusable element, or the content itself.
+  - The rest of the page stays available to the pointer and to assistive technology. A click outside closes the popover.
+  - Focus still stays in the content while it is open: Tab doesn't leave it (see Keyboard).
   - Escape closes it and returns focus to the trigger. After a click outside, focus stays where the user put it.
 - `modal` on `Popover` traps focus inside the content, hides the rest of the page from assistive technology and blocks pointer events and scrolling outside it.
 - There are no built-in strings.
+
+### Keyboard
+
+Radix Popover; the controls inside the content keep their own keys:
+
+| Key | Action |
+| --- | --- |
+| Enter, Space | on the trigger: open the popover and move focus into it |
+| Tab / Shift + Tab | move to the next / previous focusable element in the content; after the last one focus wraps to the first (and back), so it doesn't leave an open popover, with or without `modal` |
+| Escape | close the popover and return focus to the trigger |
 
 The package README's deviations from the Figma kit don't apply to the popover surface itself; the menus built on it have theirs (see [DropdownMenu](?path=/docs/components-dropdownmenu--docs)).
 
@@ -139,4 +151,28 @@ const [open, setOpen] = useState(false)
 
 ## Props
 
+The parts are the [Radix Popover](https://www.radix-ui.com/primitives/docs/components/popover#api-reference) parts with the Figma Popover surface: they take the Radix props below, `className` (merged with the part's classes) and the attributes of the element they render.
+
+### Popover
+
+The root: it holds the open state and renders nothing. Controlled with `open` and `onOpenChange`, or uncontrolled with `defaultOpen`; `modal` is `false` by default.
+
 <Controls />
+
+### PopoverTrigger
+
+A `<button>` with `aria-haspopup="dialog"` and `aria-expanded` that toggles the popover; with `asChild` your element (usually a Button) is the trigger.
+
+<ArgTypes of={PopoverTrigger} />
+
+### PopoverAnchor
+
+A `<div>` the content is positioned against instead of the trigger; `asChild` makes your element the anchor, and `virtualRef` anchors it to any object with a `getBoundingClientRect()`, such as a text range.
+
+<ArgTypes of={PopoverAnchor} />
+
+### PopoverContent
+
+The `role="dialog"` panel, in a portal. Here `align` is `center` and `sideOffset` 4 by default; `side` is `bottom` (Radix), and the content flips when there isn't room (`avoidCollisions`). The `on…` handlers can prevent the focus moves or keep it open.
+
+<ArgTypes of={PopoverContent} />

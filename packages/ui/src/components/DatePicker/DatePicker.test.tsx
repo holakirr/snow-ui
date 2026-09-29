@@ -158,16 +158,37 @@ describe('DatePicker', () => {
     expect(screen.getByRole('button', { name: /next month/i })).toBeDisabled()
   })
 
-  it('passes weekStartsOn and calendarProps to the calendar', () => {
+  it('starts the week on the locale’s first day; weekStartsOn wins', () => {
+    // react-day-picker hides the weekday row from assistive technology.
+    const firstWeekday = () =>
+      screen.getAllByRole('columnheader', { hidden: true })[0]
+    const open = { defaultValue: new Date(2025, 0, 15), defaultOpen: true }
+
+    // en-US (no locale): Sunday.
+    const { unmount } = render(<DatePicker aria-label="Due" {...open} />)
+    expect(firstWeekday()).toHaveAccessibleName('Sunday')
+    unmount()
+
+    // Russian, from the provider: Monday.
+    const { unmount: unmountRu } = render(
+      <SnowUIProvider locale={ru}>
+        <DatePicker aria-label="Срок" {...open} />
+      </SnowUIProvider>,
+    )
+    expect(firstWeekday()).toHaveAccessibleName(/понедельник/i)
+    unmountRu()
+
+    // The prop wins over the locale.
+    render(<DatePicker aria-label="Due" weekStartsOn={1} {...open} />)
+    expect(firstWeekday()).toHaveAccessibleName('Monday')
+  })
+
+  it('passes calendarProps to the calendar', () => {
     renderDatePicker({
       defaultValue: new Date(2025, 0, 15),
-      weekStartsOn: 0,
       defaultOpen: true,
       calendarProps: { showTodayButton: true },
     })
-    // react-day-picker hides the weekday row from assistive technology.
-    const weekdays = screen.getAllByRole('columnheader', { hidden: true })
-    expect(weekdays[0]).toHaveAccessibleName('Sunday')
     expect(screen.getByRole('button', { name: 'Today' })).toBeInTheDocument()
   })
 

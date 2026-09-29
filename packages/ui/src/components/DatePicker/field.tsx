@@ -80,8 +80,9 @@ export type DatePickerSharedProps = Omit<
 
   /**
    * The first day of the week in the calendar: 0 for Sunday, 1 for Monday.
-   * Pass `locale.options?.weekStartsOn` to follow the locale.
-   * @default 1 (as `Calendar`)
+   * Wins over the locale's.
+   * @default the locale's first day of the week, as in `Calendar` (Sunday in
+   * en-US, Monday in ru)
    */
   weekStartsOn?: CalendarProps['weekStartsOn']
 

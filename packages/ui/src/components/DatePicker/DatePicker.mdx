@@ -95,7 +95,7 @@ The calendar has the deviations listed on the [Calendar](?path=/docs/components-
 ## Localization and RTL
 
 - `SnowUIProvider`'s `locale` formats the date ("20 янв. 2025 г." in Russian with the default `"PP"`) and localizes the calendar; the `locale` prop wins. `dateFormat` takes any date-fns `format` pattern.
-- The week starts on Monday, as in Calendar and the Figma DatePicker. Pass `weekStartsOn={0}` for Sunday, or `weekStartsOn={locale.options?.weekStartsOn}` to follow the locale.
+- The week starts on the locale's first day, as in Calendar: Sunday with the default English locale, Monday in Russian. `weekStartsOn` wins: `weekStartsOn={1}` starts on Monday, as the Figma DatePicker, whatever the locale.
 - `messages.datePicker` holds the built-in strings: `placeholder` ("Pick a date"), `dialog` ("Choose a date", the popover's name) and `clear` ("Clear date"). The `placeholder` and `clearLabel` props override them. The calendar's own strings come from `messages.calendar`.
 - In right-to-left text the icon and the clear button are on the left and the calendar mirrors; the popover takes `dir` from `SnowUIProvider`.
 

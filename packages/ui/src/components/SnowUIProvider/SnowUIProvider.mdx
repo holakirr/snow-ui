@@ -169,7 +169,7 @@ const NextButton = ({ onClick }: { onClick: () => void }) => {
 
 ### SnowUIProvider
 
-It renders no element: it takes the props below and `children`, the subtree they apply to. `locale` translates the dates of `Calendar` and `Scheduler` but doesn't set the first day of the week: both start on Monday unless you set their `weekStartsOn` / `startOfWeek`.
+It renders no element: it takes the props below and `children`, the subtree they apply to. `locale` translates the dates of `Calendar`, `DatePicker`, `DateRangePicker` and `Scheduler`, and sets the first day of the week of `Calendar` and the date pickers unless you set their `weekStartsOn`.
 
 <ArgTypes of={SnowUIProvider} />
 

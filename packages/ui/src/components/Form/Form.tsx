@@ -3,10 +3,15 @@
 import { useComposedRefs } from '@radix-ui/react-compose-refs'
 import { Slot } from '@radix-ui/react-slot'
 import {
+  Children,
   type ComponentProps,
+  cloneElement,
   createContext,
   type FC,
+  isValidElement,
+  type ReactElement,
   type ReactNode,
+  useCallback,
   useContext,
   useId,
   useLayoutEffect,
@@ -34,10 +39,15 @@ const FormFieldStateContext = createContext<FormFieldStateValue>({})
 
 const FormFieldState = FormFieldStateContext.Provider
 
+/** The parts that describe the control. */
+type FormPart = 'description' | 'message'
+
 type FormItemContextValue = FormFieldStateValue & {
   id: string
   /** The ids of the rendered description and message, for `FormControl`. */
   describedBy?: string
+  /** Marks a rendered part (with its id) until the returned cleanup. */
+  registerPart?: (part: FormPart, id: string) => () => void
 }
 
 const FormItemContext = createContext<FormItemContextValue | null>(null)
@@ -48,15 +58,99 @@ const formFieldIds = (id: string) => ({
   formMessageId: `${id}-form-item-message`,
 })
 
+/** What `FormMessage` shows: the error, or its children without one. */
+const messageBody = (error: ReactNode, children: ReactNode) =>
+  error && error !== true ? error : children
+
+/** Space-separated ids without repeats, or `undefined` when there are none. */
+const idList = (...ids: (string | undefined)[]) =>
+  [...new Set(ids.flatMap((id) => id?.split(/\s+/) ?? []))]
+    .filter(Boolean)
+    .join(' ') || undefined
+
+type PartProps = { id?: string; children?: ReactNode }
+
 /**
- * The ones of `ids` whose element is rendered inside `item`, space-separated
- * (an `aria-describedby` value), or `undefined` when none is.
+ * The ids of the description and message that the item's children will
+ * render, read from the element tree: what the server renders (no DOM
+ * there) and the first client render, so hydration matches. Parts inside
+ * your own components aren't visible here; the client adds them after the
+ * first render.
  */
-const renderedIds = (item: HTMLElement, ids: string[]) => {
-  const rendered = new Set(
-    Array.from(item.querySelectorAll('[id]'), (element) => element.id),
+const predictedIds = (
+  children: ReactNode,
+  { formDescriptionId, formMessageId }: ReturnType<typeof formFieldIds>,
+  error: ReactNode,
+) => {
+  const description: string[] = []
+  const message: string[] = []
+  const visit = (node: ReactNode) => {
+    Children.forEach(node, (child) => {
+      if (!isValidElement<PartProps>(child)) return
+      if (child.type === FormDescription) {
+        description.push(child.props.id ?? formDescriptionId)
+      } else if (child.type === FormMessage) {
+        if (messageBody(error, child.props.children)) {
+          message.push(child.props.id ?? formMessageId)
+        }
+      } else {
+        visit(child.props.children)
+      }
+    })
+  }
+  try {
+    visit(children)
+  } catch {
+    // Children React can't iterate: leave it to the client.
+  }
+  return idList(...description, ...message)
+}
+
+/** Marks our parts, which register themselves, for the DOM lookup. */
+const partSlots = new Set(['form-description', 'form-message'])
+
+/**
+ * The ids for `aria-describedby`: the registered `FormDescription` and
+ * `FormMessage` parts (in a portal too), and your own parts with the ids of
+ * `useFormField()` found in the item's document (or inside the item when it
+ * isn't attached to one). Descriptions come before messages. Our parts are
+ * left to their registration: a part's cleanup runs before React removes
+ * its element.
+ */
+const renderedIds = (
+  item: HTMLElement | null,
+  parts: Iterable<{ part: FormPart; id: string }>,
+  { formDescriptionId, formMessageId }: ReturnType<typeof formFieldIds>,
+) => {
+  const registered = [...parts]
+  const idsOf = (part: FormPart) =>
+    registered.filter((entry) => entry.part === part).map(({ id }) => id)
+  const root = item?.getRootNode()
+  const isRendered = (id: string) => {
+    if (!item) return false
+    const element =
+      root && 'getElementById' in root
+        ? (root as Document | ShadowRoot).getElementById(id)
+        : Array.from(item.querySelectorAll('[id]')).find(
+            (candidate) => candidate.id === id,
+          )
+    return !!element && !partSlots.has(element.getAttribute('data-slot') ?? '')
+  }
+  return idList(
+    ...idsOf('description'),
+    isRendered(formDescriptionId) ? formDescriptionId : undefined,
+    ...idsOf('message'),
+    isRendered(formMessageId) ? formMessageId : undefined,
   )
-  return ids.filter((id) => rendered.has(id)).join(' ') || undefined
+}
+
+/** Registers a rendered part (`id` undefined: not rendered) with its item. */
+const useFormPart = (part: FormPart, id: string | undefined) => {
+  const registerPart = useContext(FormItemContext)?.registerPart
+  useLayoutEffect(
+    () => (id && registerPart ? registerPart(part, id) : undefined),
+    [registerPart, part, id],
+  )
 }
 
 const useFormField = () => {
@@ -91,52 +185,86 @@ const FormItem: FC<FormItemProps> = ({
   error,
   invalid,
   ref,
+  children,
   ...props
 }) => {
   const id = useId()
   const fieldState = useContext(FormFieldStateContext)
+  const itemError = error ?? fieldState.error
   const itemRef = useRef<HTMLDivElement>(null)
   const setRef = useComposedRefs(itemRef, ref)
-  const [describedBy, setDescribedBy] = useState<string>()
-  const { formDescriptionId, formMessageId } = formFieldIds(id)
+  const parts = useRef(new Map<object, { part: FormPart; id: string }>())
+  // `aria-describedby` only lists the parts that are rendered. The server
+  // (and hydration) renders the ids predicted from the children; after
+  // that, the parts register while they are rendered, and your own parts
+  // are looked up by id.
+  const [describedBy, setDescribedBy] = useState(() =>
+    predictedIds(children, formFieldIds(id), itemError),
+  )
+  const current = useRef(describedBy)
 
-  // `aria-describedby` only lists the parts that are rendered: the
-  // description and the message (ours, or your own with the ids of
-  // `useFormField()`) come and go with the field's state. Checked after
-  // every render, before paint, and when the item's children change on
-  // their own.
-  useLayoutEffect(() => {
-    if (itemRef.current) {
-      setDescribedBy(
-        renderedIds(itemRef.current, [formDescriptionId, formMessageId]),
-      )
+  // Sets the state only when the ids change, so a check that finds nothing
+  // new (after a registration, say) doesn't render outside `act()`.
+  const update = useCallback(() => {
+    const next = renderedIds(
+      itemRef.current,
+      parts.current.values(),
+      formFieldIds(id),
+    )
+    if (next !== current.current) {
+      current.current = next
+      setDescribedBy(next)
     }
-  })
+  }, [id])
+
+  const registerPart = useCallback(
+    (part: FormPart, partId: string) => {
+      const key = {}
+      parts.current.set(key, { part, id: partId })
+      update()
+      return () => {
+        parts.current.delete(key)
+        update()
+      }
+    },
+    [update],
+  )
+
+  // After every render, before paint (your own parts that follow the
+  // field's state), and when the item's children or their ids change on
+  // their own.
+  useLayoutEffect(update)
   useLayoutEffect(() => {
     const item = itemRef.current
     if (!item || typeof MutationObserver === 'undefined') return
-    const observer = new MutationObserver(() =>
-      setDescribedBy(renderedIds(item, [formDescriptionId, formMessageId])),
-    )
-    observer.observe(item, { childList: true, subtree: true })
+    const observer = new MutationObserver(update)
+    observer.observe(item, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['id'],
+    })
     return () => observer.disconnect()
-  }, [formDescriptionId, formMessageId])
+  }, [update])
 
   return (
     <FormItemContext.Provider
       value={{
         id,
         name: name ?? fieldState.name,
-        error: error ?? fieldState.error,
+        error: itemError,
         invalid: invalid ?? fieldState.invalid,
         describedBy,
+        registerPart,
       }}
     >
       <div
         ref={setRef}
         className={twMerge('relative space-y-2', className)}
         {...props}
-      />
+      >
+        {children}
+      </div>
     </FormItemContext.Provider>
   )
 }
@@ -162,19 +290,40 @@ type FormControlProps = ComponentProps<typeof Slot>
 /**
  * Gives its only child the item's id, `aria-invalid`, and an
  * `aria-describedby` with the ids of the rendered `FormDescription` and
- * `FormMessage` (none when neither is rendered).
+ * `FormMessage` (none when neither is rendered), after any
+ * `aria-describedby` of its own or of the child.
  */
-const FormControl: FC<FormControlProps> = (props) => {
+const FormControl: FC<FormControlProps> = ({
+  'aria-describedby': ownDescribedBy,
+  children,
+  ...props
+}) => {
   const { invalid, formItemId } = useFormField()
   const describedBy = useContext(FormItemContext)?.describedBy
+  // The child's own value would replace the merged one (Slot lets the
+  // child's props win), so the child gets the merged list.
+  const child = isValidElement<{ 'aria-describedby'?: string }>(children)
+    ? children
+    : undefined
+  const merged = idList(
+    ownDescribedBy,
+    child?.props['aria-describedby'],
+    describedBy,
+  )
 
   return (
     <Slot
       id={formItemId}
-      aria-describedby={describedBy}
+      aria-describedby={merged}
       aria-invalid={invalid}
       {...props}
-    />
+    >
+      {child?.props['aria-describedby']
+        ? cloneElement(child as ReactElement<{ 'aria-describedby'?: string }>, {
+            'aria-describedby': merged,
+          })
+        : children}
+    </Slot>
   )
 }
 
@@ -188,13 +337,14 @@ const FormDescription: FC<FormDescriptionProps> = ({
   ...props
 }) => {
   const { formDescriptionId } = useFormField()
+  useFormPart('description', props.id ?? formDescriptionId)
 
   return (
     <Typography
       asChild
       className={twMerge('text-12 text-secondary', className)}
     >
-      <p id={formDescriptionId} {...props}>
+      <p id={formDescriptionId} data-slot="form-description" {...props}>
         {children}
       </p>
     </Typography>
@@ -206,17 +356,19 @@ FormDescription.displayName = 'FormDescription'
 type FormMessageProps = ComponentProps<'p'>
 
 /**
- * The field's error (or `children` without one), in `red-text`. It is an
- * alert (WCAG technique ARIA19), so screen readers announce it when it
- * appears; pass `role="status"` for a polite announcement.
+ * The field's error (or `children` without one), in `red-text`. While the
+ * field is invalid it is an alert (WCAG technique ARIA19), so screen readers
+ * announce the error when it appears; pass `role="status"` for a polite
+ * announcement. A message on a valid field is plain text.
  */
 const FormMessage: FC<FormMessageProps> = ({
   className,
   children,
   ...props
 }) => {
-  const { error, formMessageId } = useFormField()
-  const body = error && error !== true ? error : children
+  const { error, invalid, formMessageId } = useFormField()
+  const body = messageBody(error, children)
+  useFormPart('message', body ? (props.id ?? formMessageId) : undefined)
 
   if (!body) {
     return null
@@ -224,7 +376,12 @@ const FormMessage: FC<FormMessageProps> = ({
 
   return (
     <Typography asChild className={twMerge('text-12 text-red-text', className)}>
-      <p id={formMessageId} role="alert" {...props}>
+      <p
+        id={formMessageId}
+        data-slot="form-message"
+        role={invalid ? 'alert' : undefined}
+        {...props}
+      >
         {body}
       </p>
     </Typography>

@@ -7,7 +7,7 @@ import { userEvent } from 'storybook/test'
 import { describe, expect, it, vi } from 'vitest'
 
 import { SnowUIProvider } from '../SnowUIProvider'
-import { Calendar } from './Calendar'
+import { Calendar, type CalendarProps } from './Calendar'
 
 const RangeCalendar = () => {
   const [range, setRange] = useState<DateRange | undefined>({
@@ -171,7 +171,7 @@ describe('Calendar', () => {
 
       fireEvent.click(switcher)
       expect(switcher).toHaveAttribute('aria-expanded', 'true')
-      const yearView = screen.getByRole('group', { name: `${from} - ${to}` })
+      const yearView = screen.getByRole('grid', { name: `${from} - ${to}` })
       expect(switcher).toHaveAttribute('aria-controls', yearView.id)
       expect(yearView).toContainElement(
         screen.getByRole('button', { name: String(from) }),
@@ -180,18 +180,23 @@ describe('Calendar', () => {
       fireEvent.click(switcher)
       expect(switcher).toHaveAttribute('aria-expanded', 'false')
       expect(switcher).not.toHaveAttribute('aria-controls')
-      expect(screen.queryByRole('group')).toBeNull()
+      expect(
+        screen.queryByRole('grid', { name: `${from} - ${to}` }),
+      ).toBeNull()
     })
 
-    it("doesn't give the year view the day grid's roles and name", () => {
+    it("is a grid of its own, not the day grid's", () => {
       render(<RangeCalendar />)
       fireEvent.click(screen.getByRole('button', { name: 'January 2025' }))
 
-      // A group of buttons, not a multiselectable grid named by the month.
-      expect(screen.queryByRole('grid')).toBeNull()
-      const yearView = screen.getByRole('group', { name: `${from} - ${to}` })
+      // Named by its years, not multiselectable, not named by the month.
+      expect(screen.getAllByRole('grid')).toHaveLength(1)
+      const yearView = screen.getByRole('grid', { name: `${from} - ${to}` })
       expect(yearView).not.toHaveAttribute('aria-multiselectable')
-      expect(yearView).toHaveAccessibleName(`${from} - ${to}`)
+      // Rows of four years.
+      const rows = within(yearView).getAllByRole('row')
+      expect(rows).toHaveLength(3)
+      expect(within(rows[0]).getAllByRole('gridcell')).toHaveLength(4)
     })
 
     // The picked year is shown in the month of the selection.
@@ -209,9 +214,11 @@ describe('Calendar', () => {
 
       screen.getByRole('button', { name: 'January 2025' }).focus()
       await user.keyboard('{Enter}')
-      // The next years, then the first year.
+      // The next years, then the year view's tab stop: the year shown.
       await user.tab()
       await user.tab()
+      expect(screen.getByRole('button', { name: '2025' })).toHaveFocus()
+      await user.keyboard('{Control>}{Home}{/Control}')
       expect(screen.getByRole('button', { name: String(from) })).toHaveFocus()
 
       await user.keyboard('{Enter}')
@@ -246,6 +253,130 @@ describe('Calendar', () => {
       ])
       expect(switchers[0]).toHaveFocus()
       expect(document.body).not.toHaveFocus()
+    })
+
+    it('keeps the focus on the switcher of a later month', async () => {
+      // The year view shows one month: the second month's switcher is gone.
+      render(
+        <Calendar
+          mode="single"
+          numberOfMonths={2}
+          defaultMonth={new Date(2025, 0, 1)}
+        />,
+      )
+      const user = userEvent.setup()
+      screen.getByRole('button', { name: 'February 2025' }).focus()
+      await user.keyboard('{Enter}')
+      const switcher = screen.getByRole('button', { name: `${from} - ${to}` })
+      expect(switcher).toHaveFocus()
+      expect(switcher).toHaveAttribute('aria-expanded', 'true')
+    })
+  })
+
+  describe('year view keyboard (APG grid)', () => {
+    const current = new Date().getFullYear()
+    const from = current - 5
+    const to = from + 11
+    const year = (value: number) =>
+      screen.getByRole('button', { name: String(value) })
+    const cell = (value: number) => year(value).closest('[role="gridcell"]')
+
+    const open = async (props: Partial<CalendarProps> = {}) => {
+      render(
+        <Calendar
+          mode="single"
+          defaultMonth={new Date(from + 2, 5, 1)}
+          {...props}
+        />,
+      )
+      const user = userEvent.setup()
+      fireEvent.click(screen.getByRole('button', { name: /^\w+ \d{4}$/ }))
+      return user
+    }
+
+    it('has one tab stop, the year shown, which is selected', async () => {
+      await open()
+      const grid = screen.getByRole('grid', { name: `${from} - ${to}` })
+      const stops = within(grid)
+        .getAllByRole('button')
+        .filter((button) => button.tabIndex === 0)
+      expect(stops).toEqual([year(from + 2)])
+      expect(cell(from + 2)).toHaveAttribute('aria-selected', 'true')
+      expect(cell(from + 3)).toHaveAttribute('aria-selected', 'false')
+      // The current year is marked for assistive technologies too.
+      expect(cell(current)).toHaveAttribute('aria-current', 'date')
+      expect(cell(from + 2)).not.toHaveAttribute('aria-current')
+    })
+
+    it('moves the focus with the arrows, Home / End and Ctrl + Home / End', async () => {
+      const user = await open()
+      year(from + 2).focus()
+
+      await user.keyboard('{ArrowRight}')
+      expect(year(from + 3)).toHaveFocus()
+      expect(year(from + 3)).toHaveAttribute('tabindex', '0')
+      expect(year(from + 2)).toHaveAttribute('tabindex', '-1')
+      await user.keyboard('{ArrowDown}')
+      expect(year(from + 7)).toHaveFocus()
+      await user.keyboard('{ArrowLeft}')
+      expect(year(from + 6)).toHaveFocus()
+      await user.keyboard('{ArrowUp}')
+      expect(year(from + 2)).toHaveFocus()
+      await user.keyboard('{End}')
+      expect(year(from + 3)).toHaveFocus()
+      await user.keyboard('{Home}')
+      expect(year(from)).toHaveFocus()
+      await user.keyboard('{Control>}{End}{/Control}')
+      expect(year(to)).toHaveFocus()
+      await user.keyboard('{Control>}{Home}{/Control}')
+      expect(year(from)).toHaveFocus()
+    })
+
+    it('pages past the edges and with PageUp / PageDown', async () => {
+      const onNextClick = vi.fn()
+      const user = await open({ onNextClick })
+      year(to).focus()
+
+      await user.keyboard('{ArrowRight}')
+      expect(
+        screen.getByRole('grid', { name: `${to + 1} - ${to + 12}` }),
+      ).toBeInTheDocument()
+      expect(year(to + 1)).toHaveFocus()
+      expect(onNextClick).toHaveBeenCalledTimes(1)
+
+      await user.keyboard('{PageUp}')
+      expect(screen.getByRole('grid', { name: `${from} - ${to}` })).toBeTruthy()
+      expect(year(to + 1 - 12)).toHaveFocus()
+      await user.keyboard('{PageDown}')
+      expect(year(to + 1)).toHaveFocus()
+    })
+
+    it('flips ArrowLeft / ArrowRight in right-to-left text', async () => {
+      const user = await open({ dir: 'rtl' })
+      year(from + 2).focus()
+      await user.keyboard('{ArrowLeft}')
+      expect(year(from + 3)).toHaveFocus()
+      await user.keyboard('{ArrowRight}')
+      expect(year(from + 2)).toHaveFocus()
+    })
+
+    it("doesn't move to years outside startMonth / endMonth", async () => {
+      const user = await open({
+        startMonth: new Date(from + 1, 0, 1),
+        endMonth: new Date(to - 1, 11, 1),
+      })
+      expect(year(from)).toBeDisabled()
+      year(from + 1).focus()
+      await user.keyboard('{ArrowLeft}')
+      expect(year(from + 1)).toHaveFocus()
+      await user.keyboard('{Home}')
+      expect(year(from + 1)).toHaveFocus()
+      await user.keyboard('{Control>}{End}{/Control}')
+      expect(year(to - 1)).toHaveFocus()
+      await user.keyboard('{ArrowRight}')
+      expect(year(to - 1)).toHaveFocus()
+      await user.keyboard('{PageDown}')
+      expect(year(to - 1)).toHaveFocus()
     })
   })
 

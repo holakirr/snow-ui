@@ -257,21 +257,26 @@ export const MultipleSelected: Story = {
       await expect(switcher).toHaveAttribute('aria-expanded', 'false')
       await userEvent.keyboard('{Enter}')
       await expect(switcher).toHaveAttribute('aria-expanded', 'true')
-      const years = canvas.getByRole('group', {
+      const years = canvas.getByRole('grid', {
         name: `${from} - ${from + 11}`,
       })
       await expect(switcher).toHaveAttribute('aria-controls', years.id)
     })
 
-    await step('picking a year returns the focus to the switcher', async () => {
-      // Past the next-years button to the current year.
+    await step('the arrow keys move through the years', async () => {
+      // Past the next-years button to the grid's one tab stop: the year shown.
       await userEvent.tab()
-      for (let year = from; year <= currentYear; year++) {
-        await userEvent.tab()
+      await userEvent.tab()
+      await expect(canvas.getByRole('button', { name: '2025' })).toHaveFocus()
+      for (let year = 2025; year < currentYear; year++) {
+        await userEvent.keyboard('{ArrowRight}')
       }
       await expect(
         canvas.getByRole('button', { name: String(currentYear) }),
       ).toHaveFocus()
+    })
+
+    await step('picking a year returns the focus to the switcher', async () => {
       await userEvent.keyboard('{Enter}')
       // January (the month of the first selected day) of that year.
       const shown = canvas.getByRole('button', {
@@ -279,7 +284,9 @@ export const MultipleSelected: Story = {
       })
       await expect(shown).toHaveFocus()
       await expect(shown).toHaveAttribute('aria-expanded', 'false')
-      await expect(canvas.queryByRole('group')).not.toBeInTheDocument()
+      await expect(
+        canvas.queryByRole('grid', { name: `${from} - ${from + 11}` }),
+      ).not.toBeInTheDocument()
     })
 
     // At the pinned clock of the screenshots (2025) this is January 2025

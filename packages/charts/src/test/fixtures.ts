@@ -18,14 +18,7 @@ export const totalUsers = [
 
 export const totalUsersConfig = {
   thisYear: { label: 'This year', color: 'primary' },
-  lastYear: {
-    label: 'Last year',
-    // Figma: Secondary/Indigo in light; a neutral grey in dark, where Primary
-    // (this year) turns indigo itself.
-    color: 'light-dark(var(--color-indigo), var(--color-black-40))',
-    dashed: true,
-    opacity: 0,
-  },
+  lastYear: { label: 'Last year', color: 'cyan', dashed: true, opacity: 0 },
 } satisfies ChartConfig
 
 /** "Revenue": the current week, projected after Apr, against the previous week. */

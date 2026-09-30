@@ -19,7 +19,7 @@ export type LineChartProps<TDatum extends object> = SeriesChartProps<TDatum>
  *   xKey="month"
  *   config={{
  *     thisYear: { label: 'This year', color: 'primary' },
- *     lastYear: { label: 'Last year', color: 'indigo', dashed: true },
+ *     lastYear: { label: 'Last year', color: 'cyan', dashed: true },
  *   }}
  * />
  */

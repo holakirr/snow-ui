@@ -222,6 +222,11 @@ describe('AreaChart', () => {
     expect(stops(1)).toEqual(['0', '0'])
     const area = container.querySelector('.recharts-area-area')
     expect(area?.getAttribute('fill')).toMatch(/^url\(#snow-chart-.+-area-0\)$/)
+    // Figma "Total Users": last year is the dashed Secondary/Cyan line.
+    const figure = container.querySelector('[data-slot="chart"]') as HTMLElement
+    expect(figure.style.getPropertyValue('--chart-lastYear')).toBe(
+      'var(--color-cyan)',
+    )
   })
 })
 

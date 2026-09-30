@@ -1,15 +1,15 @@
 export * from './Checkbox'
+export { Input, type InputProps } from './Input'
+export * from './InputSmall'
 // Explicit, so the invalid stroke classes the fields share
-// (`invalidInputClasses`) stay inside the package.
+// (`invalidInputClasses`) stay inside the package; from a module without
+// 'use client', so server components get the strings.
 export {
   basicInputClasses,
   disabledInputClasses,
   focusInputClasses,
-  Input,
-  type InputProps,
   staticInputClasses,
-} from './Input'
-export * from './InputSmall'
+} from './inputClasses'
 export * from './RadioGroup'
 export * from './Select'
 export * from './Slider'

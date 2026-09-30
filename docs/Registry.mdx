@@ -10,7 +10,7 @@ Besides the npm package, every component is available as source code you copy in
 | --- | --- | --- |
 | You get | `@holakirr/snow-ui` in `node_modules` | The components' source in `components/snow-ui/`, yours to edit |
 | Updates | `npm update`, semver, changelog | Re-add an item and merge (`shadcn add … --diff`) |
-| Theme and fonts | `theme.css` / `index.css`, `fonts.css` | The same stylesheets, from the package (CSS only) |
+| Theme and fonts | `theme.css` / `index.css`, `fonts.css` | `theme-core.css` (the same theme without the npm components' classes) and `fonts.css`, from the package (CSS only) |
 | Icons, charts | npm packages | npm packages (not copied) |
 
 The registry is generated from the package's sources on every deployment of this site, so it follows the `main` branch; each item's JSON records the package version and commit it was built from (`meta`).
@@ -24,7 +24,7 @@ npx shadcn@latest init https://snow-ui.holakirr.com/r/snow-ui.json
 npx shadcn@latest add @snow-ui/button @snow-ui/dialog
 ```
 
-`init` writes `components.json` with the Radix UI style (`radix-nova`) and the `@snow-ui` registry, adds `@import "@holakirr/snow-ui/theme.css"` and `@import "@holakirr/snow-ui/fonts.css"` after your `@import "tailwindcss"`, installs `@holakirr/snow-ui` (for those stylesheets) and copies the core utilities and `SnowUIProvider`. Remove the starter styles your template put in the stylesheet (a `body` font, `--background` / `--foreground` and their `@theme inline` colours): they override the SnowUI tokens.
+`init` writes `components.json` with the Radix UI style (`radix-nova`) and the `@snow-ui` registry, adds `@import "@holakirr/snow-ui/theme-core.css"` and `@import "@holakirr/snow-ui/fonts.css"` after your `@import "tailwindcss"`, installs `@holakirr/snow-ui` (for those stylesheets) and copies the core utilities and `SnowUIProvider`. Remove the starter styles your template put in the stylesheet (a `body` font, `--background` / `--foreground` and their `@theme inline` colours): they override the SnowUI tokens.
 
 ```tsx
 import { Button } from '@/components/snow-ui/components/Button/Button'
@@ -54,9 +54,11 @@ npm install @holakirr/snow-ui
 
 ```css
 @import "tailwindcss";
-@import "@holakirr/snow-ui/theme.css";
+@import "@holakirr/snow-ui/theme-core.css";
 @import "@holakirr/snow-ui/fonts.css";
 ```
+
+`theme-core.css` is `theme.css` without the package's own components: `theme.css` makes Tailwind scan them, which would add the classes of every component to your CSS (in a Next.js app with one copied Button: about 140 kB of CSS instead of 55 kB, minified). If you also render components from the npm package, import `theme.css` instead.
 
 Things to know in an existing shadcn/ui project:
 
@@ -72,6 +74,8 @@ Items keep the package's source layout under your `components` alias: `@snow-ui/
 `SnowUIProvider` is optional, as with the package: without it, the components use the English messages and the `enUS` date locale.
 
 ## Updating
+
+Projects initialized before `theme-core.css` existed import `@holakirr/snow-ui/theme.css`: replace it with `@holakirr/snow-ui/theme-core.css` (once `@holakirr/snow-ui` is updated to the release that has it), so Tailwind stops generating the classes of the npm components.
 
 The shadcn CLI keeps no lockfile of what it installed. To update an item, compare it with the registry and merge the changes you want:
 

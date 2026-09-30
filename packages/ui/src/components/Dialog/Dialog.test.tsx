@@ -69,6 +69,9 @@ describe('Dialog', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'New' })
     expect(dialog).toHaveTextContent('Body')
-    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
+    const close = screen.getByRole('button', { name: 'Close' })
+    // Figma "Close": a Gray md icon button with radius 12.
+    expect(close).toHaveClass('rounded-12')
+    expect(close).not.toHaveClass('rounded-16')
   })
 })

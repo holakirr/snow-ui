@@ -114,7 +114,14 @@ const DialogHeader: FC<DialogHeaderProps> = ({
       <div className="w-10">{startContent ?? leftContent}</div>
       {children}
       <DialogPrimitive.Close asChild>
-        <Button variant="gray" size="md" startContent={<CloseIcon size={24} />}>
+        {/* Figma "Close": Button Medium "Gray", icon-only (padding 8, radius
+            12, 40px), with the kit's Close icon (an 11px X in a 24px box). */}
+        <Button
+          variant="gray"
+          size="md"
+          className="rounded-12"
+          startContent={<CloseIcon size={24} />}
+        >
           <Typography className="sr-only">
             {closeLabel ?? messages.dialog.close}
           </Typography>

@@ -27,7 +27,7 @@ const meta: Meta<typeof Pagination> = {
     docs: {
       description: {
         component:
-          'Pagination with page links and previous / next links. The items are the Figma pagination's: 28px high, a 0.5px Black/10% stroke, radius 12; the current page has a Black/4% fill.',
+          'Pagination with page links and previous / next links. The items are the Figma Button Small "Outline" (24px, radius 12, 0.5px Black/10% stroke); the current page has a Black/4% fill.',
       },
     },
   },

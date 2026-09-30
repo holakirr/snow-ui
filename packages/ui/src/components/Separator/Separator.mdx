@@ -48,7 +48,7 @@ A single `<div>` with `data-orientation`: a fill in the text colour (Black/10% b
 | --- | --- |
 | (default) | a 1px Black/10% line |
 | `hairline` | the same line scaled to half its thickness: one device pixel on a 2x screen; on a 1x screen it stays 1px and looks lighter |
-| `count` (2–8) | Figma Line `Count`: that many lines, 8px apart, stacked (vertical: side by side) |
+| `count` (2–8) | Figma Line `Count`: that many lines, stacked (vertical: side by side) and spread evenly like the Figma frames: the outer lines 8px apart for 2, 16 for 3, 32 for 4 and 5, 40 for 6 to 8 |
 | `arrow` | Figma Line `Layout` Left / Right arrow: a chevron at one end of a horizontal line; `start` and `end` follow the text direction, `left` and `right` don't |
 | `className` | any other colour or size: a `text-*` class (`text-black` is the Figma Line's Black/100%), or `bg-primary` for the single line |
 
@@ -56,7 +56,7 @@ A single `<div>` with `data-orientation`: a fill in the text colour (Black/10% b
 
 <Canvas of={SeparatorStories.CustomStyles} />
 
-The Figma "Line" set, in its Black/100% (`text-black`): 1 to 8 lines, horizontal and vertical, and the two arrow layouts. The Figma frames of 4 to 8 lines are 32 and 40px high, so their spacing varies; here the lines are always 8px apart.
+The Figma "Line" set, in its Black/100% (`text-black`): 1 to 8 lines, horizontal and vertical, and the two arrow layouts. As in the Figma frames (SPACE_BETWEEN, 8, 16, 32 or 40px between the outer lines), the spacing varies with the count: 8px for 2, 3 and 5 lines, about 10.7 for 4, 8 for 6, 6.7 for 7 and 5.7 for 8.
 
 <Canvas of={SeparatorStories.Lines} />
 

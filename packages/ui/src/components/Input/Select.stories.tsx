@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
+import { expectClosed } from '../../test/animations'
 import { colorOf, hasInsetRing } from '../../test/colors'
 
 import {
@@ -53,6 +54,7 @@ export const Default: Story = {
       // It fades in (only fades, with reduced motion): wait for it.
       await waitFor(() => expect(listbox).toBeVisible())
       await userEvent.click(page.getByRole('option', { name: 'Banana' }))
+      await expectClosed(listbox)
       await waitFor(() =>
         expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
       )
@@ -69,7 +71,9 @@ export const Default: Story = {
       await expect(
         page.getByRole('option', { name: 'Blueberry' }),
       ).toHaveFocus()
+      const listbox = page.getByRole('listbox')
       await userEvent.keyboard('{Enter}')
+      await expectClosed(listbox)
       await waitFor(() =>
         expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
       )
@@ -172,6 +176,7 @@ export const Scrollable: Story = {
     })
 
     await userEvent.keyboard('{Escape}')
+    await expectClosed(listbox)
     await waitFor(() =>
       expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
     )
@@ -280,7 +285,7 @@ export const Open: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (no Figma state). The trigger gets the red Input stroke, also while the list is open. Pair it with the error text: see Form.
+ * error (the kit's Error state, without its Warning icon yet). The trigger gets the red Input stroke, also while the list is open. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   render: () => (

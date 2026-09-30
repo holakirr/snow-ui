@@ -13,8 +13,9 @@ import {
   NotificationsCard,
 } from './ListCard'
 
-const person = (name: string, photo?: string) => (
-  <Avatar size="sm">
+// Figma: 24px avatars in Activities, 28px in Contacts.
+const person = (name: string, photo?: string, className?: string) => (
+  <Avatar size="sm" className={className}>
     {photo && <AvatarImage src={photo} alt="" />}
     <AvatarFallback className="bg-color-2 text-static-black">
       {name
@@ -24,6 +25,8 @@ const person = (name: string, photo?: string) => (
     </AvatarFallback>
   </Avatar>
 )
+
+const contact = (name: string, photo?: string) => person(name, photo, 'size-7')
 
 const notifications: NotificationItem[] = [
   {
@@ -90,19 +93,19 @@ const activities: ActivityItem[] = [
 ]
 
 const contacts: ContactItem[] = [
-  { id: 'byewind', avatar: person('ByeWind', photos[0]), name: 'ByeWind' },
+  { id: 'byewind', avatar: contact('ByeWind', photos[0]), name: 'ByeWind' },
   {
     id: 'natali',
-    avatar: person('Natali Craig', photos[1]),
+    avatar: contact('Natali Craig', photos[1]),
     name: 'Natali Craig',
   },
-  { id: 'drew', avatar: person('Drew Cano', photos[2]), name: 'Drew Cano' },
+  { id: 'drew', avatar: contact('Drew Cano', photos[2]), name: 'Drew Cano' },
   {
     id: 'orlando',
-    avatar: person('Orlando Diggs', photos[3]),
+    avatar: contact('Orlando Diggs', photos[3]),
     name: 'Orlando Diggs',
   },
-  { id: 'andi', avatar: person('Andi Lane'), name: 'Andi Lane' },
+  { id: 'andi', avatar: contact('Andi Lane'), name: 'Andi Lane' },
 ]
 
 const meta = {
@@ -118,7 +121,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The Figma Notifications, Activities and Contacts cards: a 14 Semibold title and ListItem rows on the popup surface (Background/3 with "Glass 2", radius 24, padding 16), 248px wide. `ListCard` takes any rows; `NotificationsCard`, `ActivitiesCard` and `ContactsCard` take the kit\'s content and a translated default title.',
+          'The Figma Notifications, Activities and Contacts cards: an 18 Semibold title and ListItem rows on the popup surface (Background/3 with "Glass 2", radius 24, padding 16), 248px wide. `ListCard` takes any rows; `NotificationsCard`, `ActivitiesCard` and `ContactsCard` take the kit\'s content and a translated default title.',
       },
     },
   },
@@ -197,15 +200,27 @@ export const KitCards: Story = {
     for (const name of ['Activities', 'Contacts', 'Notifications']) {
       await expect(canvas.getByRole('region', { name })).toBeInTheDocument()
     }
-    const contactsList = within(
+    // Figma: the cards are 356, 316 and 300 high: padding 16, a 44 title
+    // (18 Semibold 18/28, padding 4/8), rows 4px apart — 52 with a 24px
+    // avatar or tile and two lines, 44 with a 28px avatar and one line.
+    const heights = { Activities: 356, Contacts: 316, Notifications: 300 }
+    for (const [name, height] of Object.entries(heights)) {
+      const card = canvas.getByRole('region', { name })
+      await expect(card.getBoundingClientRect().height).toBe(height)
+      await expect(
+        within(card).getByRole('heading').getBoundingClientRect().height,
+      ).toBe(44)
+      await expect(
+        getComputedStyle(within(card).getByRole('list')).rowGap,
+      ).toBe('4px')
+    }
+    const contactRows = within(
       canvas.getByRole('region', { name: 'Contacts' }),
-    ).getByRole('list')
-    // Figma: one-line contact rows 8px apart, the others 4px.
-    await expect(getComputedStyle(contactsList).rowGap).toBe('8px')
-    const notificationsList = within(
-      canvas.getByRole('region', { name: 'Notifications' }),
-    ).getByRole('list')
-    await expect(getComputedStyle(notificationsList).rowGap).toBe('4px')
+    ).getAllByRole('listitem')
+    await expect(contactRows).toHaveLength(5)
+    for (const row of contactRows) {
+      await expect(row.getBoundingClientRect().height).toBe(44)
+    }
   },
 }
 

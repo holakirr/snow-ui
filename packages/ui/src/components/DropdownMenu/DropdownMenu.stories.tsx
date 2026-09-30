@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
 
+import { expectClosed } from '../../test/animations'
 import { colorOf } from '../../test/colors'
 import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
@@ -115,7 +116,10 @@ export const Default: Story = {
     })
 
     await step('Escape closes the menu and returns focus', async () => {
+      // The menu, and the submenu if it is still closing.
+      const menus = page.getAllByRole('menu')
       await userEvent.keyboard('{Escape}')
+      await expectClosed(...menus)
       await waitFor(() =>
         expect(page.queryByRole('menu')).not.toBeInTheDocument(),
       )
@@ -250,8 +254,10 @@ export const RTL: Story = {
     )
 
     // Close both menus, so axe checks the page in a stable state.
+    const menus = page.getAllByRole('menu')
     await userEvent.keyboard('{Escape}')
     await userEvent.keyboard('{Escape}')
+    await expectClosed(...menus)
     await waitFor(() =>
       expect(page.queryByRole('menu')).not.toBeInTheDocument(),
     )
@@ -322,6 +328,7 @@ export const Scrollable: Story = {
     })
 
     await userEvent.keyboard('{Escape}')
+    await expectClosed(menu)
     await waitFor(() =>
       expect(page.queryByRole('menu')).not.toBeInTheDocument(),
     )

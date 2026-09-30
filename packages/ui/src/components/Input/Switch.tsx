@@ -23,11 +23,13 @@ const Switch: FC<SwitchProps> = ({ className, ...props }) => (
       'peer group relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-80 p-0.5 inset-shadow-inner transition-colors hit-area',
       'data-[state=unchecked]:bg-control-border data-[state=checked]:bg-primary',
       'enabled:hover:data-[state=unchecked]:bg-control-border-strong enabled:hover:data-[state=checked]:bg-primary-hover-strong',
-      // Invalid (`aria-invalid`, no Figma state): a 1px Secondary/Red stroke.
+      // Invalid (`aria-invalid`): a 1px Secondary/Red stroke, as the kit's
+      // Error stroke on text fields.
       'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid',
       'focus-ring',
-      // Disabled (no Figma state): a Black/10% track (Black/20% when on) with
-      // the white thumb, so it stays visible in both modes.
+      // Disabled: a Black/10% track (Black/20% when on) with the white thumb,
+      // so it stays visible in both modes. The kit dims the whole switch to
+      // 20% with the arrow cursor: planned for 6.0.
       'disabled:cursor-not-allowed disabled:data-[state=unchecked]:bg-black-10 disabled:data-[state=checked]:bg-black-20 disabled:inset-shadow-none',
       className,
     )}

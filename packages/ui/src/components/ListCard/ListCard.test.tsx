@@ -31,7 +31,8 @@ describe('ListCard', () => {
       level: 2,
       name: 'Recent files',
     })
-    expect(heading).toHaveClass('text-14', 'font-semibold')
+    // Figma: the kit's `Text`, 18 Semibold 18/28 with padding 4/8.
+    expect(heading).toHaveClass('text-18', 'font-semibold', 'px-1', 'py-2')
     expect(card).toHaveAttribute('aria-labelledby', heading.id)
   })
 
@@ -162,7 +163,7 @@ describe('ActivitiesCard', () => {
 })
 
 describe('ContactsCard', () => {
-  it('has one-line rows 8px apart', () => {
+  it('has one-line rows 4px apart, like the other cards', () => {
     render(
       <ContactsCard
         items={[
@@ -177,8 +178,7 @@ describe('ContactsCard', () => {
     )
     const card = screen.getByRole('region', { name: 'Contacts' })
 
-    expect(card).toHaveClass('[--list-card-gap:--spacing(2)]')
-    expect(card).not.toHaveClass('[--list-card-gap:--spacing(1)]')
+    expect(within(card).getByRole('list')).toHaveClass('gap-1')
     expect(within(card).getByRole('button', { name: 'Drew Cano' })).toHaveClass(
       'items-center',
     )
@@ -188,7 +188,7 @@ describe('ContactsCard', () => {
     render(<ContactsCard items={[]} className="w-full" />)
     expect(screen.getByRole('region', { name: 'Contacts' })).toHaveClass(
       'w-full',
-      '[--list-card-gap:--spacing(2)]',
+      'p-4',
     )
   })
 })

@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../../react-hook-form'
+import { expectClosed } from '../../test/animations'
 import { Button } from '../Button'
 import { Label } from '../Label'
 import { Typography } from '../Text'
@@ -100,7 +101,9 @@ export const Default: Story = {
       await expect(
         page.getByRole('button', { name: /January 28th, 2025/ }),
       ).toHaveFocus()
+      const dialog = page.getByRole('dialog')
       await userEvent.keyboard('{Enter}')
+      await expectClosed(dialog)
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )
@@ -113,8 +116,9 @@ export const Default: Story = {
 
     await step('↓ opens it, Escape closes it without a change', async () => {
       await userEvent.keyboard('{ArrowDown}')
-      await page.findByRole('dialog')
+      const dialog = await page.findByRole('dialog')
       await userEvent.keyboard('{ArrowLeft}{Escape}')
+      await expectClosed(dialog)
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )
@@ -251,8 +255,10 @@ export const Typing: Story = {
     await expect(
       page.getByRole('spinbutton', { name: 'Year' }),
     ).toHaveAttribute('aria-valuenow', '2026')
+    const dialog = page.getByRole('dialog')
     await userEvent.keyboard('{Enter}')
     await expect(args.onValueChange).toHaveBeenCalledWith(new Date(2026, 2, 15))
+    await expectClosed(dialog)
     // The page is hidden from assistive technology until the popover is gone.
     await waitFor(() =>
       expect(canvas.getByRole('combobox')).toHaveTextContent('Mar 15, 2026'),
@@ -295,7 +301,7 @@ export const MinMaxAndDisabledDates: Story = {
     await userEvent.click(
       canvas.getByRole('combobox', { name: 'Delivery date' }),
     )
-    await page.findByRole('dialog')
+    const dialog = await page.findByRole('dialog')
     await expect(
       page.getByRole('button', { name: /January 5th, 2025/ }),
     ).toBeDisabled()
@@ -306,6 +312,7 @@ export const MinMaxAndDisabledDates: Story = {
       page.getByRole('button', { name: /previous month/i }),
     ).toBeDisabled()
     await userEvent.keyboard('{Escape}')
+    await expectClosed(dialog)
     await waitFor(() =>
       expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
     )
@@ -477,10 +484,11 @@ export const InForm: Story = {
 
     await step('picking a date clears it', async () => {
       await userEvent.keyboard('{Enter}')
-      await page.findByRole('dialog')
+      const dialog = await page.findByRole('dialog')
       await userEvent.click(
         page.getByRole('button', { name: /January 15th, 2025/ }),
       )
+      await expectClosed(dialog)
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )

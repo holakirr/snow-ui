@@ -555,7 +555,7 @@ export const comboboxFieldClasses =
 export const comboboxInvalidClasses =
   'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-aria-invalid:data-[state=open]:inset-ring-control-border-invalid'
 
-/** The disabled look (the design has no Disabled state), as in `Input`. */
+/** The disabled look of `Input` (`disabledInputClasses`). */
 export const comboboxDisabledClasses =
   'cursor-not-allowed bg-black-4 text-black-20 inset-ring-0 hover:inset-ring-0'
 

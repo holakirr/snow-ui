@@ -49,11 +49,11 @@ describe('Chip', () => {
     )
   })
 
-  it('is 14/20 with 10px padding when big', () => {
+  it('is a 14/20 pill when big: H 28, padding 12/4, radius 80', () => {
     render(<Chip big>Label</Chip>)
     const chip = screen.getByText('Label')
-    expect(chip).toHaveClass('text-14', 'px-2.5')
-    expect(chip).not.toHaveClass('text-12', 'px-1')
+    expect(chip).toHaveClass('text-14', 'rounded-80', 'px-3', 'py-1')
+    expect(chip).not.toHaveClass('text-12', 'rounded-4', 'px-1', 'py-0.5')
   })
 
   it('shows a decorative dot, and no tint, without background', () => {

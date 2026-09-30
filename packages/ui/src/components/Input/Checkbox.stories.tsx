@@ -95,7 +95,7 @@ export const States: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (no Figma state). The unchecked box gets a Secondary/Red ring, also on hover. Pair it with the error text: see Form.
+ * error (the kit draws its Error state on text fields; this extends their red stroke). The unchecked box gets a Secondary/Red ring, also on hover. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {

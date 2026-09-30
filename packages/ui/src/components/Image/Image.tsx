@@ -22,7 +22,7 @@ export type ImageSize =
   | 'free'
 
 type SizeSpec = {
-  /** The frame's size and corner radius (about 30% of the size). */
+  /** The frame's size and corner radius (the kit's, 4 to 20). */
   frame: string
   /** `icon`: the inset around the content, and the content's radius. */
   icon: string
@@ -32,8 +32,9 @@ type SizeSpec = {
 
 // The corners are the kit's squircle where the browser supports
 // `corner-shape` (a rounded square elsewhere), with the radius tokens. The
-// icon inset, the mark sizes and the radii are measured on the components
-// overview (the raw Figma data doesn't have them).
+// icon inset and the mark sizes are measured on the components overview
+// (the raw Figma data doesn't have them); the radii are read from the kit's
+// Image instances.
 const sizeSpecs: { [K in ImageSize]: SizeSpec } = {
   12: {
     frame: 'size-3 rounded-4',
@@ -81,7 +82,7 @@ const sizeSpecs: { [K in ImageSize]: SizeSpec } = {
     mark: [16, 'top-1.5 end-1.5'],
   },
   64: {
-    frame: 'size-16 rounded-16',
+    frame: 'size-16 rounded-20',
     icon: 'p-2.5 *:rounded-12',
     mark: [20, 'top-1.5 end-1.5'],
   },
@@ -91,12 +92,12 @@ const sizeSpecs: { [K in ImageSize]: SizeSpec } = {
     mark: [20, 'top-2 end-2'],
   },
   80: {
-    frame: 'size-20 rounded-24',
+    frame: 'size-20 rounded-20',
     icon: 'p-3 *:rounded-16',
     mark: [20, 'top-2 end-2'],
   },
   free: {
-    frame: 'rounded-16',
+    frame: 'rounded-20',
     icon: 'p-3 *:rounded-12',
     mark: [20, 'top-2 end-2'],
   },

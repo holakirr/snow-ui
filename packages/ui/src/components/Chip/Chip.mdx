@@ -43,7 +43,7 @@ import { Chip } from '@holakirr/snow-ui'
 
 | Prop | Figma | Look |
 | --- | --- | --- |
-| `background` (default) | Background=True | a tint of the colour: H 20, padding 4/2, radius 4 (`big`: H 24, padding 10/2) |
+| `background` (default) | Background=True | a tint of the colour: H 20, padding 4/2, radius 4 (`big`: a pill, H 28, padding 12/4, radius 80) |
 | `background={false}` | Background=False | a dot and coloured text: H 16, no padding (`big`: H 20) |
 | `big` | Big=True | 14/20 text, a 16px ring for the dot |
 
@@ -70,7 +70,7 @@ Chip has no states of its own: it is a label, not a control. Put interactive beh
 - Chip has no role: its text is the information, read in the flow of the table cell or row it sits in. The dot is `aria-hidden`.
 - The colour is never the only cue: always show the status name (WCAG 1.4.1).
 - **Contrast:** the Figma text is the Secondary colour itself, 1.5–2.4:1 on white. The text here mixes it with 45% `black` (white in dark mode): at least 4.63:1 on the tints over `background-2` and 5.13:1 on white in light mode, 5.66:1 in dark mode (1.4.3). Grey text is `text-secondary` (5.27:1 on its Black/4% tint). The same colours apply with more contrast; the tints and the dots stay the Figma ones, since the text carries the meaning.
-- A chip rendered as a link or a button with `asChild` is 20px high (16 without `background`): give it `relative hit-area` for a 24px pointer target (2.5.8), as the AsChild story does.
+- A chip rendered as a link or a button with `asChild` is 20px high (16 without `background`; `big`, 28 with it and 20 without): give one under 24px `relative hit-area` for a 24px pointer target (2.5.8), as the AsChild story does.
 
 Deviations from the Figma kit (the full table is in the package README): the text colours above.
 

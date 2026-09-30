@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
 
-import { animationsEnded } from '../../test/animations'
+import { expectClosed } from '../../test/animations'
 import { Button } from '../Button'
 import {
   Tooltip,
@@ -40,8 +40,7 @@ type Story = StoryObj<typeof Tooltip>
  */
 const expectHidden = async (tooltip: HTMLElement) => {
   const page = within(tooltip.ownerDocument.body)
-  await expect(tooltip).toHaveAttribute('data-state', 'closed')
-  await animationsEnded(tooltip)
+  await expectClosed(tooltip)
   await waitFor(() =>
     expect(page.queryByRole('tooltip')).not.toBeInTheDocument(),
   )

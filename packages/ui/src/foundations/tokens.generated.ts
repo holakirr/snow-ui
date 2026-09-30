@@ -385,7 +385,7 @@ export const colorTokens: ColorToken[] = [
       light: '#d42020',
       dark: '#ff8080',
     },
-    note: 'Accessibility addition (not in the Figma kit, which has no error state): the stroke of an invalid form control (`aria-invalid`: text fields, the Select trigger, Checkbox and Radio rings, Switch, Slider). Contrast "standard" (the default): Secondary/Red (3.36:1 on white, but 2.92:1 on a gray field on background-2). Contrast "more": red-text, at least 4.53:1 on every surface and field fill (WCAG 1.4.11).',
+    note: 'Accessibility addition (a token for the kit\'s Error stroke, Secondary/Red on its text fields, with a stronger value for more contrast): the stroke of an invalid form control (`aria-invalid`: text fields, the Select trigger, Checkbox and Radio rings, Switch, Slider). Contrast "standard" (the default): Secondary/Red (3.36:1 on white, but 2.92:1 on a gray field on background-2). Contrast "more": red-text, at least 4.53:1 on every surface and field fill (WCAG 1.4.11).',
   },
 ]
 

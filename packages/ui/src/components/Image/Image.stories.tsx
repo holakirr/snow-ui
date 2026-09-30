@@ -103,6 +103,22 @@ export const Picture: Story = {
   },
 }
 
+/** Figma radius of each `Size`. */
+const RADII: Record<(typeof SIZES)[number], number> = {
+  12: 4,
+  16: 4,
+  20: 4,
+  24: 8,
+  28: 8,
+  32: 8,
+  40: 12,
+  48: 12,
+  56: 16,
+  64: 20,
+  72: 20,
+  80: 20,
+}
+
 /** Figma `Size`: 12 to 80px. */
 export const Sizes: Story = {
   render: () => (
@@ -114,6 +130,17 @@ export const Sizes: Story = {
       ))}
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    for (const size of SIZES) {
+      const frame = canvasElement.querySelector(
+        `[data-size="${size}"]`,
+      ) as HTMLElement
+      await expect(frame.getBoundingClientRect().width).toBe(size)
+      await expect(getComputedStyle(frame).borderTopLeftRadius).toBe(
+        `${RADII[size]}px`,
+      )
+    }
+  },
 }
 
 /** `size="free"`: the frame takes the size of a class. */
@@ -127,6 +154,11 @@ export const Free: Story = {
     const img = canvas.getByRole('img')
     const box = img.getBoundingClientRect()
     await expect([box.width, box.height]).toEqual([160, 96])
+    // Figma: the Free frame's radius is 20.
+    await expect(
+      getComputedStyle(img.closest('[data-size]') as HTMLElement)
+        .borderTopLeftRadius,
+    ).toBe('20px')
   },
 }
 
@@ -228,7 +260,7 @@ const CoverPicker = () => {
         // target, arrow keys move the choice, the focus ring is the label's.
         <label
           key={name}
-          className="relative rounded-16 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-black-80"
+          className="relative rounded-20 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-black-80"
         >
           <input
             type="radio"

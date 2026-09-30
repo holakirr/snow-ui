@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
+import { expectClosed } from '../../test/animations'
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -298,6 +299,7 @@ export const ScopedContrast: Story = {
     await expect(border(list)).toBe(border(scope))
     await expect(border(list)).not.toBe(border(canvasElement))
     await userEvent.keyboard('{Escape}')
+    await expectClosed(list)
     await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
   },
 }

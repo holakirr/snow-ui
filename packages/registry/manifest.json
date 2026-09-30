@@ -1117,6 +1117,18 @@
       "docs": "components-text-text"
     },
     {
+      "name": "text-strip",
+      "type": "registry:ui",
+      "title": "TextStrip",
+      "files": ["components/TextStrip/TextStrip.tsx"],
+      "dependencies": [],
+      "registryDependencies": ["snow-core", "snow-slot-host"],
+      "import": "components/TextStrip/TextStrip",
+      "exports": ["TextStrip"],
+      "types": ["TextStripProps"],
+      "docs": "components-textstrip"
+    },
+    {
       "name": "toast",
       "type": "registry:ui",
       "title": "Toast",
@@ -1391,6 +1403,7 @@
         "tag",
         "kbd",
         "text",
+        "text-strip",
         "toast",
         "toaster",
         "tooltip",

@@ -170,7 +170,7 @@ With more contrast the 0.5px strokes are 1px and the text fields' focus stroke 2
 
 ## Components
 
-- **Base:** `Typography`, `KBD`, `IconBox`, `IconText`, `Group`, `Strip`, `Separator`, `Badge`, `Tag`, `Chip`, `Link`, `Avatar`, `AvatarGroup`, `Skeleton`.
+- **Base:** `Typography`, `KBD`, `IconBox`, `IconText`, `Group`, `Strip`, `Separator`, `Badge`, `Tag`, `Chip`, `TextStrip`, `Link`, `Avatar`, `AvatarGroup`, `Skeleton`.
 - **Controls:** `Button`, `Input`, `InputSmall`, `Search`, `Textarea`, `Checkbox`, `RadioGroup`, `Switch`, `Toggle`, `ToggleGroup`, `Select`, `Combobox`, `MultiSelect`, `DatePicker`, `DateRangePicker`, `Slider`, `Label`, `Form*`.
 - **Overlays:** `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Toaster`, `CommandPalette`, `AlertDialog`.
 - **Data and navigation:** `Card`, `Table`, `Tabs`, `Accordion`, `Breadcrumb`, `Pagination`, `Sidebar`, `ListItem`, `Calendar`, `Scheduler`.
@@ -363,6 +363,7 @@ Data, overlay and navigation components:
 - **Scheduler:** today's day label is static black on Secondary/Indigo (was white, 2.06:1) and semibold, with `aria-current="date"`, so today isn't told by colour alone (1.4.1); event times are 60% static black on Color 2 (5.5:1) instead of 40% (1.4.3). The week is a WAI-ARIA grid with one tab stop and arrow keys (see its page).
 - **Sidebar:** group labels (`SidebarGroupLabel`) are `black-80` (12.6:1 light, 8.7:1 dark). Figma's Black/40% is 2.85:1 at 14px (1.4.3).
 - **Chip:** the Figma text is the Secondary colour itself (1.5–2.4:1 on white). The text mixes it with 45% of `black` (white in dark mode): at least 4.63:1 on the tints and 5.13:1 on white, 5.66:1 in dark mode; grey text is `text-secondary` (1.4.3). The dots and the tints keep the Figma colours.
+- **TextStrip:** Figma's white text on the Secondary/Indigo strip is 2.07:1; it is static black (10.15:1), as on the Badge (1.4.3). With more contrast the Black/4% pill gets the `control-border` stroke and the strip a 2px `black-80` ring (1.4.11).
 - **Alert** (a library extension): the text is black and `text-secondary` on every status tint (at least 5.2:1). The status icons mix the Secondary colours with 40% of `black` (white in dark mode): at least 3.6:1 on the light tints and 5:1 on the dark ones, where Secondary/Green, Yellow and Blue alone are 1.5–2:1 on white (1.4.11). The status is also read out as text, not only shown by colour and icon (1.4.1).
 - **AlertDialog** (a library extension): the destructive action is `red-text` (#D42020, #FF8080 in dark mode) with the per-mode `white` label, 5.21:1 and 8.65:1; Secondary/Red under a white label would be 3.36:1 (1.4.3).
 - **Combobox, MultiSelect:** the kit has no combobox; they are built from the Input field and the Popover (the Select menu) and follow the rows above: group titles and the empty message in `text-secondary`, the clear button at 60% opacity. They are text fields, so they keep the Figma "Focus" state instead of the `focus-ring` outline.

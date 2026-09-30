@@ -210,6 +210,7 @@ type RefTargets = {
   TabsTrigger: HTMLButtonElement
   Tag: HTMLDivElement
   Textarea: HTMLTextAreaElement
+  TextStrip: HTMLDivElement
   ThemeScope: HTMLDivElement
   Toast: HTMLLIElement
   ToastAction: HTMLButtonElement

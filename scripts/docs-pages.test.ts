@@ -41,6 +41,7 @@ const STATIC_PAGES = new Set([
   'Spinner',
   'Strip',
   'Text',
+  'TextStrip',
 ])
 
 const walk = (dir: string): string[] =>

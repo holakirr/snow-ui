@@ -611,13 +611,15 @@ export const ScrollbarPage = () => (
     title="Scrollbar"
     intro={
       <>
-        The Figma "Scrollbar": a 4px rounded thumb that widens to 8px under the
-        pointer, in the <Code>control-border</Code> colour (the Figma Black/20%;
-        3:1 or more with more contrast), with no track. Add the{' '}
-        <Code>scrollbar-snow</Code> utility to a scroll container. Browsers with
-        the WebKit scrollbar pseudo-elements (Chrome, Edge, Safari) draw the
-        kit's thumb; Firefox draws its thin scrollbar in the same colour.
-        Nothing animates, and forced-colors mode keeps the system scrollbar.
+        The Figma "Scrollbar", with no track: a 4px rounded thumb in{' '}
+        <Code>black-10</Code> that widens to 8px in <Code>control-border</Code>{' '}
+        (the Figma Black/20%) while the pointer is over the scroll container.
+        With more contrast the resting thumb is <Code>control-border</Code> too
+        (3:1 or more). Add the <Code>scrollbar-snow</Code> utility to a scroll
+        container. Browsers with the WebKit scrollbar pseudo-elements (Chrome,
+        Edge, Safari) draw the kit's thumb; Firefox draws its thin scrollbar in
+        the same two colours, at its own width. Nothing animates, and
+        forced-colors mode keeps the system scrollbar.
       </>
     }
   >

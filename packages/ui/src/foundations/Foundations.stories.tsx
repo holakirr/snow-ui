@@ -44,9 +44,10 @@ export const Spacing: Story = { render: () => <SpacingPage /> }
 export const Effects: Story = { render: () => <EffectsPage /> }
 
 /**
- * The `scrollbar-snow` utility: the kit's 4px thumb in an 8px gutter in
- * Chromium and WebKit, the thin scrollbar in Firefox. Headless browsers hide
- * scrollbars, so the screenshots don't show them.
+ * The `scrollbar-snow` utility: the kit's 4px Black/10% thumb in an 8px
+ * gutter in Chromium and WebKit, 8px in `control-border` while the pointer is
+ * over the container; the thin scrollbar in those colours in Firefox.
+ * Headless browsers hide scrollbars, so the screenshots don't show them.
  */
 export const Scrollbar: Story = {
   render: () => <ScrollbarPage />,
@@ -71,6 +72,25 @@ export const Scrollbar: Story = {
     }
     for (const sheet of Array.from(document.styleSheets)) walk(sheet.cssRules)
     const selectors = rules.map((rule) => rule.selectorText)
+    // The resting thumb is Black/10%, or `control-border` with more contrast
+    // (the `storybook-prefs` project); a hover on the container switches it
+    // to an 8px `control-border` thumb.
+    const more = window.matchMedia('(prefers-contrast: more)').matches
+    const style = getComputedStyle(snow)
+    const token = (name: string) => style.getPropertyValue(name).trim()
+    await expect(token('--scrollbar-snow-thumb')).toBe(
+      token(more ? '--color-control-border' : '--color-black-10'),
+    )
+    await expect(token('--scrollbar-snow-inset')).toBe('2px')
+    const hover = rules.find(
+      (rule) => rule.selectorText === '.scrollbar-snow:hover',
+    )
+    await expect(
+      hover?.style.getPropertyValue('--scrollbar-snow-thumb').trim(),
+    ).toBe('var(--color-control-border)')
+    await expect(
+      hover?.style.getPropertyValue('--scrollbar-snow-inset').trim(),
+    ).toBe('0px')
     if (CSS.supports('selector(::-webkit-scrollbar)')) {
       await expect(selectors).toContain(
         '.scrollbar-snow::-webkit-scrollbar-thumb',

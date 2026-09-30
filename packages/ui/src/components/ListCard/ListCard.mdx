@@ -1,0 +1,165 @@
+import { ArgTypes, Canvas, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import {
+  ActivitiesCard,
+  ContactsCard,
+  ListCard,
+  NotificationsCard,
+} from './ListCard'
+import * as ListCardStories from './ListCard.stories'
+
+<Meta of={ListCardStories} />
+
+<Title />
+
+<FigmaLinks />
+<InstallTabs item="list-card" />
+
+ListCard is a titled list of [ListItem](?path=/docs/components-listitem--docs) rows on the kit's popup surface: the Figma Notifications, Activities and Contacts cards of the dashboard's right sidebar. `NotificationsCard`, `ActivitiesCard` and `ContactsCard` take the kit's content (an icon and a time, an avatar and a time, an avatar and a name) and a translated default title; `ListCard` takes any rows.
+
+```tsx
+import { ActivitiesCard, ListCard, NotificationsCard } from '@holakirr/snow-ui'
+
+<NotificationsCard
+  items={[
+    { id: '1', icon: <BugBeetleIcon />, title: 'You fixed a bug.', time: 'Just now', href: '/notifications/1' },
+  ]}
+/>
+
+<ListCard
+  title="Recent files"
+  items={[{ id: 'q3', title: 'Q3 report.pdf', description: 'Edited 2 hours ago', href: '/files/q3' }]}
+/>
+```
+
+<Primary />
+
+## When to use
+
+- A short feed next to the main content: notifications, recent activity, people to contact.
+- A handful of recent records, each opening its page.
+
+## When not to use
+
+- A long or paginated list, or one people search and filter: a [Table](?path=/docs/components-table--docs) or a page of its own.
+- Commands or options to pick from: [DropdownMenu](?path=/docs/components-dropdownmenu--docs), [CommandPalette](?path=/docs/components-commandpalette--docs) or [Select](?path=/docs/components-input-select--docs).
+- Rows in a layout of your own (no card, another surface): use [ListItem](?path=/docs/components-listitem--docs) directly.
+
+## Anatomy
+
+1. **Card:** a `<section>` named by its title, 248px wide (the right sidebar's 280 minus its 16px padding), padding 16, radius 24, Background/3 with the Figma "Glass 2" effect (the `glass-2` utility).
+2. **Title** (`title`): 14 Semibold, a heading (`<h2>` by default, `headingLevel`), padding 4/8.
+3. **List:** a `<ul>` of `<li>` rows, 4px apart (8px in `ContactsCard`).
+4. **Row:** a [ListItem](?path=/docs/components-listitem--docs): a 24px icon or avatar, a 14 Regular title and a 12 Regular `text-secondary` description or time, each one truncated line. A row with `href` is a link, with `onSelect` a `<button type="button">`; both get the Figma "Frame" hover. A row with neither is static text.
+
+| Component | Row content | Figma |
+| --- | --- | --- |
+| `NotificationsCard` | `icon` (16px, on a 24px Black/4% [IconBox](?path=/docs/components-iconbox--docs) tile), `title`, `time` | Notifications |
+| `ActivitiesCard` | `avatar` (24px: `Avatar size="sm"`, `Image size={24}`), `title`, `time` | Activities |
+| `ContactsCard` | `avatar`, `name` (one line, rows 8px apart) | Contacts |
+| `ListCard` | `icon`, `title`, `description` | — |
+
+## Variants
+
+The three cards of the kit's components overview:
+
+<Canvas of={ListCardStories.KitCards} />
+
+The same in dark mode:
+
+<Canvas of={ListCardStories.KitCardsDark} />
+
+The width is the Figma one; `className="w-full"` fills a sidebar instead. The rows' text truncates to fit.
+
+## States
+
+- **Hover** (link and button rows): the Black/4% fill of the Figma "Frame".
+- **Keyboard focus** (link and button rows): the `focus-ring` of the other controls, on `:focus-visible`.
+- Static rows have no states.
+
+## Accessibility
+
+- The card is a `<section>` labelled by its title (`aria-labelledby`), so it is a region landmark screen readers can jump to. Pick `headingLevel` to fit the page's outline: the default `<h2>` suits a sidebar next to the page's `<h1>`.
+- The rows are `<li>` in a `<ul>`: screen readers announce the list and its number of items.
+- A link row's accessible name is its whole text: the title, the time and an avatar's initials. Give avatar images an empty `alt` when the name is in the title.
+- Icons are decorative: pass them without a label, or `aria-hidden`.
+- Truncated text is cut only visually; screen readers read all of it.
+- A link or button row is at least 40px high (a 24px icon plus 8px padding), above the 24px target size (2.5.8).
+
+### Keyboard
+
+The rows are links and buttons, so the keyboard is the browser's:
+
+| Key | Action |
+| --- | --- |
+| Tab | move focus to the next link or button row; static rows are not tab stops |
+| Shift + Tab | move focus to the previous row |
+| Enter | follow the link, or press the button |
+| Space | press a button row |
+
+<Canvas of={ListCardStories.Keyboard} />
+
+### Deviations from the Figma kit
+
+The full table is in the package README.
+
+| Figma | Library | WCAG |
+| --- | --- | --- |
+| Times and descriptions in Black/40%: 2.85:1 on white | `text-secondary`: Black/60% in light mode, White/70% in dark mode (see [ListItem](?path=/docs/components-listitem--docs)) | 1.4.3 |
+| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the ring plus a 2px `black-80` outline | 2.4.7, 1.4.11 |
+
+## Localization and RTL
+
+- The default titles come from `SnowUIProvider` messages (`listCards.notifications`, `listCards.activities`, `listCards.contacts`); a `title` prop wins over them. The rows are yours to translate, times and dates included.
+
+<Canvas of={ListCardStories.Localized} />
+
+- The rows follow the text direction: the icon or avatar is on the start side, on the right in right-to-left text.
+
+<Canvas of={ListCardStories.RTL} />
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Keep a card to a few rows, and link to the full list from the page.
+- Make a row a link when it opens a record, a button when it does something in place.
+- Use a 24px avatar or a 16px icon, as the Figma cards do.
+
+</Do>
+<Dont>
+
+- Don't put a button inside a link or button row.
+- Don't use a ListCard for data people compare in columns.
+- Don't leave the title empty: it names the region.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [ListItem](?path=/docs/components-listitem--docs): the row.
+- [Avatar](?path=/docs/components-avatar-avatar--docs) and [Image](?path=/docs/components-image--docs): the pictures in Activities and Contacts.
+- [IconBox](?path=/docs/components-iconbox--docs): the notification icon tiles.
+- [Card](?path=/docs/components-card--docs): a card of your own content.
+
+## Props
+
+The props below, `className` and the attributes of a `<section>`. The kit cards take the same props as `ListCard` except `items` (their own rows) and an optional `title`.
+
+### ListCard
+
+<ArgTypes of={ListCard} />
+
+### NotificationsCard
+
+<ArgTypes of={NotificationsCard} />
+
+### ActivitiesCard
+
+<ArgTypes of={ActivitiesCard} />
+
+### ContactsCard
+
+<ArgTypes of={ContactsCard} />

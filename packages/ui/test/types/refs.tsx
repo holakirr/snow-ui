@@ -29,6 +29,7 @@ type RefTargets = {
   AccordionContent: HTMLDivElement
   AccordionItem: HTMLDivElement
   AccordionTrigger: HTMLButtonElement
+  ActivitiesCard: HTMLElement
   Alert: HTMLDivElement
   AlertDescription: HTMLDivElement
   AlertDialog: null
@@ -61,10 +62,12 @@ type RefTargets = {
   Calendar: null
   Card: HTMLDivElement
   Checkbox: HTMLButtonElement
+  Chip: HTMLSpanElement
   // A dialog with its own trigger: there is no single element to point at.
   // The <input role="combobox">, as react-hook-form needs to focus it.
   Combobox: HTMLInputElement
   CommandPalette: null
+  ContactsCard: HTMLElement
   ContextMenu: null
   ContextMenuCheckboxItem: HTMLDivElement
   ContextMenuContent: HTMLDivElement
@@ -119,15 +122,18 @@ type RefTargets = {
   Group: HTMLDivElement
   IconBox: HTMLSpanElement
   IconText: HTMLElement
+  Image: HTMLSpanElement
   Input: HTMLInputElement
   InputSmall: HTMLInputElement
   KBD: HTMLElement
   Label: HTMLLabelElement
   Link: HTMLAnchorElement
+  ListCard: HTMLElement
   // Generic, so `ComponentProps` can't see its ref: see the JSX below.
   ListItem: 'jsx'
   // The <input role="combobox"> after the tags.
   MultiSelect: HTMLInputElement
+  NotificationsCard: HTMLElement
   Pagination: HTMLElement
   PaginationContent: HTMLUListElement
   PaginationEllipsis: HTMLSpanElement
@@ -210,6 +216,7 @@ type RefTargets = {
   TabsTrigger: HTMLButtonElement
   Tag: HTMLDivElement
   Textarea: HTMLTextAreaElement
+  TextStrip: HTMLDivElement
   ThemeScope: HTMLDivElement
   Toast: HTMLLIElement
   ToastAction: HTMLButtonElement

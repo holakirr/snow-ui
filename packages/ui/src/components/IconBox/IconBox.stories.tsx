@@ -1,5 +1,6 @@
 import { BellIcon, BugBeetleIcon, UserIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 import { Avatar, AvatarFallback } from '../Avatar'
 import { BadgeComponent } from '../Badge'
 import { Typography } from '../Text'
@@ -38,6 +39,7 @@ const meta = {
       control: { type: 'select' },
     },
     background: { control: { type: 'boolean' } },
+    glass: { control: { type: 'boolean' } },
     badge: { control: { type: 'boolean' } },
   },
   args: {
@@ -53,6 +55,38 @@ export const Default: Story = {}
 
 export const WithBackground: Story = {
   args: { background: true },
+}
+
+const GlassRow = () => (
+  // Glass is for icons over a picture or a colour: a pastel gradient here.
+  <div className="flex items-center gap-4 rounded-24 bg-linear-to-br from-indigo to-mint p-6 text-static-black">
+    {([16, 24, 40, 80] as const).map((size) => (
+      <IconBox key={size} size={size} glass>
+        <BellIcon />
+      </IconBox>
+    ))}
+    <IconBox size={24} glass badge badgeLabel="Unread notifications">
+      <BugBeetleIcon />
+    </IconBox>
+  </div>
+)
+
+/**
+ * The Figma `Glass` tile: White/20% with the "Glass 1" effect (a background
+ * blur and a soft shadow), over a picture or a colour.
+ */
+export const Glass: Story = {
+  render: () => <GlassRow />,
+  play: async ({ canvasElement }) => {
+    const box = canvasElement.querySelector('[data-glass]') as HTMLElement
+    await expect(box).toHaveClass('glass-1', 'p-1', 'rounded-8')
+    await expect(getComputedStyle(box).backdropFilter).toContain('blur')
+  },
+}
+
+export const GlassDark: Story = {
+  render: () => <GlassRow />,
+  globals: { theme: 'dark' },
 }
 
 export const WithBadge: Story = {

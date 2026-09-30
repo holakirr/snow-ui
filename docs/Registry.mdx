@@ -58,7 +58,7 @@ npm install @holakirr/snow-ui
 @import "@holakirr/snow-ui/fonts.css";
 ```
 
-`theme-core.css` is `theme.css` without the package's own components: `theme.css` makes Tailwind scan them, which would add the classes of every component to your CSS (in a Next.js app with one copied Button: 135 kB of CSS instead of 52 kB, minified). If you also render components from the npm package, import `theme.css` instead.
+`theme-core.css` is `theme.css` without the package's own components: `theme.css` makes Tailwind scan them, which would add the classes of every component to your CSS (in a Next.js app with one copied Button: about 140 kB of CSS instead of 55 kB, minified). If you also render components from the npm package, import `theme.css` instead.
 
 Things to know in an existing shadcn/ui project:
 

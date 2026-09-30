@@ -112,33 +112,64 @@ export const fieldLayout = (
   return layout
 }
 
+// Per language: the locale data doesn't change, and the fields render often.
+const hourCycles = new Map<string, HourCycle>()
+const periods = new Map<string, [string, string]>()
+const monthNames = new Map<string, string[]>()
+
 /** 12-hour time in the locale (en-US), else 24-hour (ru). */
 export const localeHourCycle = (lang: string): HourCycle => {
-  try {
-    const cycle = new Intl.DateTimeFormat(lang, {
-      hour: 'numeric',
-    }).resolvedOptions().hourCycle
-    return cycle === 'h11' || cycle === 'h12' ? 12 : 24
-  } catch {
-    return 12
+  let cycle = hourCycles.get(lang)
+  if (cycle === undefined) {
+    try {
+      const resolved = new Intl.DateTimeFormat(lang, {
+        hour: 'numeric',
+      }).resolvedOptions().hourCycle
+      cycle = resolved === 'h11' || resolved === 'h12' ? 12 : 24
+    } catch {
+      cycle = 12
+    }
+    hourCycles.set(lang, cycle)
   }
+  return cycle
 }
 
 /** The locale's AM and PM, e.g. ["AM", "PM"]. */
 export const dayPeriodLabels = (lang: string): [string, string] => {
-  const label = (hour: number) => {
-    try {
-      return new Intl.DateTimeFormat(lang, {
-        hour: 'numeric',
-        hourCycle: 'h12',
-      })
+  const cached = periods.get(lang)
+  if (cached) return cached
+  let labels: [string, string] = ['AM', 'PM']
+  try {
+    const format = new Intl.DateTimeFormat(lang, {
+      hour: 'numeric',
+      hourCycle: 'h12',
+    })
+    const label = (hour: number) =>
+      format
         .formatToParts(new Date(2026, 0, 1, hour))
         .find((part) => part.type === 'dayPeriod')?.value
+    labels = [label(4) ?? 'AM', label(16) ?? 'PM']
+  } catch {}
+  periods.set(lang, labels)
+  return labels
+}
+
+/** The locale's name of a month (1–12), e.g. "October". */
+export const monthName = (lang: string, month: number): string => {
+  let names = monthNames.get(lang)
+  if (!names) {
+    let format: Intl.DateTimeFormat
+    try {
+      format = new Intl.DateTimeFormat(lang, { month: 'long' })
     } catch {
-      return undefined
+      format = new Intl.DateTimeFormat('en-US', { month: 'long' })
     }
+    names = Array.from({ length: 12 }, (_, i) =>
+      format.format(new Date(2026, i, 1)),
+    )
+    monthNames.set(lang, names)
   }
-  return [label(4) ?? 'AM', label(16) ?? 'PM']
+  return names[month - 1] ?? ''
 }
 
 const daysIn = (year: number | undefined, month: number | undefined) =>

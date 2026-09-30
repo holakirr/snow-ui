@@ -16,6 +16,7 @@ import {
   dayPeriodForKey,
   fieldLayout,
   type HourCycle,
+  monthName,
   partsOf,
   type Segment,
   segmentRange,
@@ -323,12 +324,8 @@ export const DateField = ({
       edit?.segment === segment && edit.buffer !== '' && segment === 'year'
     const text = typing ? edit.buffer : segmentText(segment, shown, periods)
     const [min, max] = segmentRange(segment, parts ?? placeholder, hourCycle)
-    const monthName =
-      segment === 'month' && !empty
-        ? new Intl.DateTimeFormat(lang, { month: 'long' }).format(
-            new Date(2026, shown - 1, 1),
-          )
-        : undefined
+    const name =
+      segment === 'month' && !empty ? monthName(lang, shown) : undefined
 
     return (
       <span
@@ -340,7 +337,7 @@ export const DateField = ({
         aria-valuemax={max}
         aria-valuenow={empty ? undefined : shown}
         aria-valuetext={
-          empty ? messages.empty : monthName ? `${text} – ${monthName}` : text
+          empty ? messages.empty : name ? `${text} – ${name}` : text
         }
         data-segment={segment}
         data-placeholder={empty || undefined}

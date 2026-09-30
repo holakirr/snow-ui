@@ -613,13 +613,17 @@ export const ScrollbarPage = () => (
       <>
         The Figma "Scrollbar", with no track: a 4px rounded thumb in{' '}
         <Code>black-10</Code> that widens to 8px in <Code>control-border</Code>{' '}
-        (the Figma Black/20%) while the pointer is over the scroll container.
-        With more contrast the resting thumb is <Code>control-border</Code> too
-        (3:1 or more). Add the <Code>scrollbar-snow</Code> utility to a scroll
-        container. Browsers with the WebKit scrollbar pseudo-elements (Chrome,
-        Edge, Safari) draw the kit's thumb; Firefox draws its thin scrollbar in
-        the same two colours, at its own width. Nothing animates, and
-        forced-colors mode keeps the system scrollbar.
+        (the Figma Black/20%) under the pointer and while it is dragged. With
+        more contrast the resting thumb is <Code>control-border</Code> too (3:1
+        or more). Add the <Code>scrollbar-snow</Code> utility to a scroll
+        container. The kit shows the bar only while the pointer is over the
+        scroll area; here the thumb stays visible, so keyboard and touch users
+        can find it. Browsers with the WebKit scrollbar pseudo-elements (Chrome,
+        Edge, Safari) draw the kit's thumb in an 8px gutter, where the kit
+        overlays it. Firefox can't style a hovered thumb: its thin scrollbar
+        keeps its own width and turns <Code>control-border</Code> while the
+        pointer is over the container. Nothing animates, and forced-colors mode
+        keeps the system scrollbar.
       </>
     }
   >

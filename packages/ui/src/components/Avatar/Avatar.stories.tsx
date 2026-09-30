@@ -65,9 +65,9 @@ export const FallbackOnly: Story = {
  * under the pointer: the play function's `userEvent` fires events, which
  * don't set `:hover`, so the rules are matched as if everything was hovered.
  */
-const hoverValues = (element: Element, property: string) => {
-  const values: string[] = []
-  const walk = (rules: CSSRuleList) => {
+const hoverRules = (element: Element, property: string) => {
+  const found: { value: string; media: string[] }[] = []
+  const walk = (rules: CSSRuleList, media: string[]) => {
     for (const rule of rules) {
       // Everything hovered: `:hover` (not the escaped `\:hover` of a class
       // name) matches any element.
@@ -81,14 +81,23 @@ const hoverValues = (element: Element, property: string) => {
         element.matches(selector as string)
       ) {
         const value = rule.style.getPropertyValue(property)
-        if (value) values.push(value)
+        if (value) found.push({ value, media })
       }
-      if ('cssRules' in rule) walk(rule.cssRules as CSSRuleList)
+      if ('cssRules' in rule) {
+        walk(
+          rule.cssRules as CSSRuleList,
+          rule instanceof CSSMediaRule ? [...media, rule.conditionText] : media,
+        )
+      }
     }
   }
-  for (const sheet of element.ownerDocument.styleSheets) walk(sheet.cssRules)
-  return values
+  for (const sheet of element.ownerDocument.styleSheets)
+    walk(sheet.cssRules, [])
+  return found
 }
+
+const hoverValues = (element: Element, property: string) =>
+  hoverRules(element, property).map(({ value }) => value)
 
 /** `background` as the browser computes it, inside `container`. */
 const resolvedBackground = (background: string, container: Element) => {
@@ -176,6 +185,31 @@ export const Interactive: Story = {
       await expect(hoverValues(initials, 'font-weight')).toEqual([
         'var(--font-weight-semibold)',
       ])
+    })
+
+    await step('only where the pointer can hover, as `hover:`', async () => {
+      // A tap on a touch screen doesn't leave the hover on.
+      const initials = canvas.getByText('F')
+      const rules = [
+        ...hoverRules(
+          canvas.getByRole('link').firstElementChild as Element,
+          'background-color',
+        ),
+        ...hoverRules(
+          canvas
+            .getByRole('button', { name: 'Sign in' })
+            .querySelector('svg')
+            ?.closest('.bg-color-2') as Element,
+          'background-color',
+        ),
+        ...hoverRules(initials, 'font-weight'),
+      ]
+      await expect(rules.length).toBeGreaterThan(0)
+      for (const { media } of rules) {
+        await expect(media.join(' ').replace(/\s/g, '')).toContain(
+          '(hover:hover)',
+        )
+      }
     })
 
     await step('an avatar on its own has no hover', async () => {

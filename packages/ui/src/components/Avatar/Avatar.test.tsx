@@ -34,8 +34,9 @@ describe('AvatarFallback', () => {
 describe('Avatar hover', () => {
   // The kit's hover, by kind, only in a link or a button (the browser
   // checks of the rules are in the "Interactive" story).
+  // As `hover:`, only where the pointer can hover (no sticky touch hover).
   const inInteractive =
-    'in-[a[href]:hover,button:enabled:hover,[role=button]:hover]'
+    '[@media(hover:hover)]:in-[a[href]:hover,button:enabled:hover,[role=button]:hover]'
 
   it('has no blanket brightness hover', () => {
     render(

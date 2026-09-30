@@ -75,9 +75,10 @@ const PaginationItem: FC<ComponentProps<'li'>> = ({ className, ...props }) => (
 PaginationItem.displayName = 'PaginationItem'
 
 /*
- * Figma Pagination (Table page): Button Small "Outline" items, a 0.5px
- * Black/10% stroke, radius 12, 12 Regular text; the current page has a
- * Black/4% fill. `sm` is the Figma size.
+ * Figma Pagination (Order List, `32728:395827`): a 28px row of Button Small
+ * items 8px apart, 24px high, radius 12, 12/16 Regular text. The other
+ * pages are "Outline" (a 0.5px Black/10% stroke, no fill), the current
+ * page "Gray" (a Black/4% fill, no stroke). `sm` is the Figma size.
  */
 const paginationLinkVariants = cva(
   'inline-flex shrink-0 items-center justify-center gap-1 border-[0.5px] border-black-10 font-normal text-black transition-colors hover:bg-black-4 focus-ring aria-disabled:pointer-events-none aria-disabled:text-black-20',
@@ -89,7 +90,9 @@ const paginationLinkVariants = cva(
         lg: 'h-10 min-w-10 rounded-12 px-4 text-16',
       },
       isActive: {
-        true: 'bg-black-4',
+        // Figma Button "Gray": the fill without the outline's stroke (kept
+        // transparent, so the size doesn't change).
+        true: 'bg-black-4 border-transparent',
         false: 'bg-transparent',
       },
     },
@@ -101,7 +104,7 @@ const paginationLinkVariants = cva(
 )
 
 type PaginationItemProps = {
-  /** The current page: a Black/4% fill and `aria-current="page"`. */
+  /** The current page: a Black/4% fill without the stroke, and `aria-current="page"`. */
   isActive?: boolean
   /**
    * `sm` is the Figma size (24px).

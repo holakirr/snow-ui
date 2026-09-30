@@ -38,6 +38,42 @@ export const Disabled: Story = {
 }
 
 /**
+ * Figma "Textarea" with its counter (`showCount`): "4/200" against the
+ * `maxLength`, in the bottom-end corner next to the resize handle. Screen
+ * readers read "4 of 200 characters" with the field.
+ */
+export const WithCount: Story = {
+  args: {
+    defaultValue: 'Text',
+    maxLength: 200,
+    showCount: true,
+    containerClassName: 'w-60',
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const textarea = canvas.getByRole('textbox', { name: 'Message' })
+    const count = canvasElement.querySelector(
+      '[data-slot="textarea-count"]',
+    ) as HTMLElement
+
+    await expect(count).toHaveTextContent('4/200')
+    await expect(textarea).toHaveAccessibleDescription('4 of 200 characters')
+
+    // Figma: 4px above the bottom edge, 20px from the end (the corner is the
+    // resize handle's).
+    const field = textarea.getBoundingClientRect()
+    const box = count.getBoundingClientRect()
+    await expect(field.bottom - box.bottom).toBe(4)
+    await expect(field.right - box.right).toBe(20)
+
+    await userEvent.type(textarea, '!')
+    await expect(count).toHaveTextContent('5/200')
+    await userEvent.clear(textarea)
+    await userEvent.type(textarea, 'Text')
+    textarea.blur()
+  },
+}
+
+/**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
  * error (no Figma state). The Input stroke in Secondary/Red, 1px. Pair it with the error text: see Form.
  */

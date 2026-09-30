@@ -258,7 +258,7 @@ const messages: Messages = {
   /* every namespace: alert, alertDialog, avatarGroup, badge, breadcrumb,
      calendar, charts, combobox, commandPalette, datePicker, dialog, link,
      listCards, pagination, progress, search, sheet, sidebar, slider,
-     spinner, tag, toast */
+     spinner, tag, textarea, toast */
 }
 
 export const Providers = ({ children }: { children: ReactNode }) => (
@@ -342,7 +342,7 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Secondary text: Breadcrumb parents, Table headers, Calendar weekdays and outside days, Dialog / Sheet / Form descriptions, `Label` (and the Input title), ListItem descriptions, menu group labels (DropdownMenu, ContextMenu, Select), CommandPalette headings and empty message, Scheduler day and hour labels, the Pagination ellipsis | Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`, at least 5.5:1 on `background-2`, the Black/4% hover and the Color 1/2 tints), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
 | Inactive tabs (every `TabsList` variant), off `Toggle` / `ToggleGroup` items, Bare buttons | 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus (`primary` for the active Underline tab); disabled items keep Black/20% | 1.4.3, 1.4.11 |
 | The Tag close icon | 40% layer opacity: 2.85:1 | 80%: at least 3.46:1 on every tag, the active indigo one included (60% would be 2.43:1 there); 100% on hover and keyboard focus | 1.4.11 |
-| Select placeholder, the Search shortcut hint, the CommandPalette Enter hint | Black/20%: 1.6:1 | `text-secondary`. The Select placeholder is the trigger's visible text, not a native placeholder; the Search hint has no fill of its own (a second Black/4% layer on the hovered dark field took it under 4.5:1) | 1.4.3 |
+| Select placeholder, the Search shortcut hint, the CommandPalette Enter hint, the Textarea counter | Black/20%: 1.6:1 | `text-secondary`. The Select placeholder is the trigger's visible text, not a native placeholder; the Search hint has no fill of its own (a second Black/4% layer on the hovered dark field took it under 4.5:1) | 1.4.3 |
 | Error text: `FormMessage`, an invalid `FormLabel` | Secondary/Red `#FF4747`: 3.36:1 on white, 3.76:1 on #333 | `red-text`: `#D42020` in light mode, `#FF8080` in dark mode (5.21:1 on `background-1` in both) | 1.4.3 |
 | `TooltipShortcut` | 40% opacity: 2.8:1 | 70%: at least 5.5:1 on both tooltip variants in both modes | 1.4.3 |
 | Search clear button | 40% opacity: 2.85:1 | 60% (5.74:1) | 1.4.11 |

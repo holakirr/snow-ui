@@ -59,6 +59,30 @@ describe('package exports', () => {
     // Never released: the fields share it, apps use the utilities.
     expect(entry).not.toHaveProperty('invalidInputClasses')
     expect(entry).toHaveProperty('staticInputClasses')
+    // Importing the whole entry through Vitest's transforms takes seconds.
+  }, 30_000)
+})
+
+/** Whether a built module starts with the 'use client' directive. */
+const isClientModule = (code: string) => /^\s*["']use client["']/.test(code)
+
+describe('server components', () => {
+  it('Textarea reads its class strings from modules without use client', () => {
+    // A server component that reads a value from a 'use client' module gets
+    // a client reference, not the value (twMerge would throw on it). The only
+    // client module Textarea may import is the counter it renders.
+    const file = join(dist, 'components/Input/Textarea.js')
+    const code = readFileSync(file, 'utf8')
+    const imports = [...code.matchAll(/from\s+["'](\.[^"']+)["']/g)].map(
+      ([, path]) => path,
+    )
+
+    expect(isClientModule(code)).toBe(false)
+    expect(imports).toContain('./inputClasses.js')
+    for (const path of imports) {
+      const imported = readFileSync(join(dirname(file), path), 'utf8')
+      expect(isClientModule(imported), path).toBe(path === './TextareaCount.js')
+    }
   })
 })
 

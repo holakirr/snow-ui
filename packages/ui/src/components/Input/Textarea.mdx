@@ -9,7 +9,7 @@ import * as TextareaStories from './Textarea.stories'
 <FigmaLinks page="25559:12043" />
 <InstallTabs item="textarea" />
 
-Textarea is a multi-line text field. It is the Figma "Textarea": the Input field (padding, radius, stroke, text style and states) on a native `<textarea>`. `readOnly` gives the Figma "Static" state.
+Textarea is a multi-line text field. It is the Figma "Textarea": the Input field (padding, radius, stroke, text style and states) on a native `<textarea>`, with the Figma character counter (`showCount`). `readOnly` gives the Figma "Static" state.
 
 ```tsx
 import { Label, Textarea } from '@holakirr/snow-ui'
@@ -31,7 +31,8 @@ import { Label, Textarea } from '@holakirr/snow-ui'
 
 ## Anatomy
 
-1. **Textarea**: the native `<textarea>`, the only element. Every prop goes to it; `className` merges with its classes. It is full width and at least 44px (one row) high; `rows` or a height class sets the height. It has 12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% inside stroke, 14/20 text and a Black/20% placeholder.
+1. **Textarea**: the native `<textarea>`. Every prop except `showCount` and `containerClassName` goes to it; `className` merges with its classes. It is full width and at least 44px (one row) high; `rows` or a height class sets the height. It has 12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% inside stroke, 14/20 text and a Black/20% placeholder.
+2. **Counter** (`showCount`): "12/200" against the `maxLength` (just "12" without one), 12/16, 4px above the bottom edge and 20px from the end, next to the resize handle in the corner. The textarea's bottom padding is then 20px, so the text stops above the counter (one row is 52px; the Figma 44px frame lets the last line run under it). The textarea and the counter are then in a `<div data-slot="textarea-field">`: size the field with `containerClassName` on it (a width on the textarea would leave the counter at the div's edge). Switching `showCount` on or off remounts the textarea (an uncontrolled value is lost).
 
 There is no `title` prop: label it with a [Label](?path=/docs/components-label--docs), a `FormLabel` or `aria-label`.
 
@@ -47,13 +48,20 @@ There is no `title` prop: label it with a [Label](?path=/docs/components-label--
 
 <Canvas of={TextareaStories.Invalid} />
 
+## Counter
+
+<Canvas of={TextareaStories.WithCount} />
+
+With `showCount` the counter shows how many characters are used, against the `maxLength` if there is one (the browser stops typing at the limit), as the Figma Textarea does. It is opt-in in 5.x, because it wraps the textarea in a `<div>`: layout classes on `className` (a width, `flex-1`, a grid span) and `peer-*` siblings of the textarea would no longer apply. It counts `value` when you control the field, and follows typing, a new `defaultValue` of an unedited field, a value the browser restores and a reset of the form otherwise; control the field when you set its value from code (e.g. react-hook-form's `setValue` on a registered field).
+
 ## Accessibility
 
 - It renders a native `<textarea>`.
 - Give it an accessible name: a `Label` with `htmlFor` and the same `id`, a `FormLabel` inside a [Form](?path=/docs/components-form--docs) item, or `aria-label` (as the stories do). A placeholder is not a label.
 - `disabled` removes the field from the tab order; a `readOnly` field stays focusable and its text can be selected and copied.
+- The counter is `aria-hidden`. The field is described instead by a hidden "12 of 200 characters" (`aria-describedby`, after any description of its own, e.g. from `FormControl`): screen readers read it with the field when it gets focus, and a live region doesn't announce every keystroke.
 
-No row of the package README's deviation table applies. Known gaps with the default contrast, which keeps the Figma values: the 0.5px Black/20% stroke (1.6:1) and the Black/20% placeholder (it is never the field's only label). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border` (Black/50%, at least 3.79:1) and the placeholder Black/60% (at least 5.25:1), White/50% and White/75% in dark mode.
+Deviation from the Figma kit: the counter is `text-secondary` (5.74:1) instead of Black/20% (1.6:1), as the Search shortcut hint. Known gaps with the default contrast, which keeps the Figma values: the 0.5px Black/20% stroke (1.6:1) and the Black/20% placeholder (it is never the field's only label). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border` (Black/50%, at least 3.79:1) and the placeholder Black/60% (at least 5.25:1), White/50% and White/75% in dark mode.
 
 ### Keyboard
 
@@ -66,7 +74,8 @@ Keyboard behaviour is the browser's:
 
 ## Localization and RTL
 
-- Textarea renders no built-in strings.
+- The only built-in string is the counter's description, `messages.textarea.count`: "12 of 200 characters", or "12 characters" without a `maxLength`.
+- The counter goes to the end (the left in right-to-left text), with the resize handle; its digits read left to right.
 - The text follows the direction of the page or of a `dir` attribute on the field.
 
 ## Controlled and uncontrolled
@@ -100,6 +109,6 @@ Textarea is a native field: pass `value` with `onChange` to control it, or `defa
 
 ## Props
 
-Textarea takes `className` (merged with its classes) and the attributes of the native `<textarea>` it renders, `ref` included.
+Textarea takes `className` (merged with its classes), `showCount`, `containerClassName` and the attributes of the native `<textarea>` it renders, `ref` included.
 
 <Controls />

@@ -13,49 +13,16 @@ import {
 import { twMerge } from '../../utils/tw-merge'
 import { Label } from '../Label'
 
-/**
- * The Figma Input field: 12/16 padding, a 16px radius, Surface/1 with a 0.5px
- * Black/20% inside stroke (Black/40% on hover and focus), 14/20 text and a
- * Black/20% placeholder. Shared by `Textarea`. The stroke and placeholder
- * colours are the `control-border*` and `placeholder` tokens: the Figma
- * values, or WCAG AA ones with more contrast, where the stroke is also 1px.
- */
-export const basicInputClasses =
-  'peer rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all placeholder:text-placeholder hover:inset-ring-control-border-strong contrast-more:inset-ring-1'
-
-/** The disabled look (the design has no Disabled state). */
-export const disabledInputClasses =
-  'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0'
-
-/**
- * Figma "Focus": a Black/40% stroke plus the Focus effect (4px Black/4% ring).
- * Text fields follow the design — the caret and the darker stroke mark focus —
- * instead of the `focus-ring` outline other controls use. That stroke is
- * 0.5px (2.85:1 on the fill), so with more contrast it is 2px: its inner
- * pixel was the fill, so the focused field differs from the unfocused one by
- * at least 5.59:1 (`control-border-strong`: Black/80%; WCAG 2.4.7, 1.4.11).
- */
-export const focusInputClasses =
-  'focus:inset-ring-control-border-strong focus:ring-4 focus:ring-focus contrast-more:focus:inset-ring-2'
-
-/** Figma "Static" (read-only): the stroke doesn't react to hover or focus. */
-export const staticInputClasses =
-  'read-only:hover:inset-ring-control-border read-only:focus:inset-ring-control-border'
-
-/**
- * Invalid, while the field has `aria-invalid="true"` (`FormControl` sets it):
- * a 1px `control-border-invalid` stroke in every state: Secondary/Red (3.36:1
- * on white), `red-text` with more contrast. The design has no error state;
- * the error text is the `FormMessage`.
- *
- * The read-only states repeat it, because the Static ones (`read-only:hover:`)
- * would outweigh `aria-invalid:`.
- *
- * Shared by the fields, not exported from the package: for a field of your
- * own, use these utilities directly.
- */
-export const invalidInputClasses =
-  'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid aria-invalid:read-only:hover:inset-ring-control-border-invalid aria-invalid:read-only:focus:inset-ring-control-border-invalid'
+// The class strings the text fields share live in a module without
+// 'use client', so a server component (Textarea) can read them; re-exported
+// here for code that imports them from this file.
+export {
+  basicInputClasses,
+  disabledInputClasses,
+  focusInputClasses,
+  invalidInputClasses,
+  staticInputClasses,
+} from './inputClasses'
 
 // The field shell: the same look, driven by the inner <input>. Focus is the
 // Figma "Focus" state: Black/40% stroke + the 4px Focus ring, while the
@@ -79,10 +46,18 @@ const adornmentClasses =
 
 type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
   /**
-   * The Figma "2 row" title: a 12/16 label above the value, in
-   * `text-secondary` (Figma: Black/40%, 2.85:1).
+   * The Figma "2 row" title: a 12/16 label in `text-secondary` (Figma:
+   * Black/40%, 2.85:1), above the value or before it (`titleLayout`).
    */
   title?: string
+
+  /**
+   * Where the `title` goes: `vertical` above the value (Figma "2 row
+   * vertical", 68px high), `horizontal` at the start of the one 44px row with
+   * the value at the end (Figma "2 row horizontal").
+   * @default "vertical"
+   */
+  titleLayout?: 'vertical' | 'horizontal'
 
   /**
    * Content before the value, e.g. a 16px icon.
@@ -106,9 +81,9 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
 }
 
 /**
- * Input component: the Figma Input (1 row, or 2 rows with a `title`), with
- * optional leading and trailing content. `readOnly` gives the Figma "Static"
- * state.
+ * Input component: the Figma Input (1 row, or 2 rows with a `title`: above
+ * the value, or beside it with `titleLayout="horizontal"`), with optional
+ * leading and trailing content. `readOnly` gives the Figma "Static" state.
  */
 const Input: FC<InputProps> = ({
   className,
@@ -117,6 +92,7 @@ const Input: FC<InputProps> = ({
   inputStyle,
   id,
   title,
+  titleLayout = 'vertical',
   startContent,
   endContent,
   disabled,
@@ -128,6 +104,7 @@ const Input: FC<InputProps> = ({
   const inputId = id ?? (title ? generatedId : undefined)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const setRef = useComposedRefs(inputRef, ref)
+  const horizontal = !!title && titleLayout === 'horizontal'
 
   // Clicks on the padding or the adornments focus the input.
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
@@ -158,11 +135,28 @@ const Input: FC<InputProps> = ({
       onPointerDown={handlePointerDown}
     >
       {startContent && <span className={adornmentClasses}>{startContent}</span>}
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        {title && <Label htmlFor={inputId}>{title}</Label>}
+      <div
+        className={twMerge(
+          'flex min-w-0 flex-1 gap-2',
+          // Figma "2 row horizontal": the title, then the value at the end.
+          horizontal ? 'items-center' : 'flex-col',
+        )}
+      >
+        {title && (
+          <Label
+            htmlFor={inputId}
+            // A long title is cut at half the row, so the value keeps room.
+            className={twMerge(
+              horizontal && 'max-w-1/2 min-w-0 shrink-0 truncate',
+            )}
+          >
+            {title}
+          </Label>
+        )}
         <input
           className={twMerge(
             'w-full min-w-0 bg-transparent text-inherit outline-none placeholder:text-placeholder disabled:cursor-not-allowed',
+            horizontal && 'text-end',
             inputClassName,
           )}
           style={inputStyle}

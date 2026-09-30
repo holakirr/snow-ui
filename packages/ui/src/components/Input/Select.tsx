@@ -17,7 +17,7 @@ import {
   popoverSurfaceClasses,
 } from '../Popover/surface'
 import { useSnowUI } from '../SnowUIProvider'
-import { invalidInputClasses } from './Input'
+import { invalidInputClasses } from './inputClasses'
 
 const Select = SelectPrimitive.Root
 

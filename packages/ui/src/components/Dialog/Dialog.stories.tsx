@@ -120,12 +120,13 @@ export const Default: Story = {
 }
 
 /**
- * The Figma "Add data" title row's start icon: an Icon of size 48 holding the
- * Add glyph at 36×36, Black/100%.
+ * The Figma "Add data" title row's start icon: a 48px Add icon, Black/100%.
+ * The kit's plus is 36px; our AddIcon at size 48 draws a 30px one (our icon
+ * set's inset).
  */
 const addDataIcon = (
   <span className="flex size-12 items-center justify-center text-black">
-    <AddIcon size={36} />
+    <AddIcon size={48} />
   </span>
 )
 
@@ -225,4 +226,42 @@ export const RTL: Story = {
 export const AddDataDark: Story = {
   ...AddData,
   globals: { theme: 'dark' },
+}
+
+/**
+ * A long title next to the 48px start icon: the start slot keeps its width
+ * (it doesn't shrink back to 40px under the icon) and the title wraps.
+ */
+export const LongTitle: Story = {
+  args: {},
+  tags: ['!autodocs', 'skip-visual'],
+  parameters: { layout: 'fullscreen', storyWrapper: false },
+  render: () => (
+    <div className="h-svh w-full bg-background-1">
+      <Dialog defaultOpen>
+        <DialogContent aria-describedby={undefined}>
+          <DialogHeader startContent={addDataIcon}>
+            <DialogTitle>Add a new customer to the orders list</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <Input placeholder="Please enter your email" type="email" />
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const dialog = await page.findByRole('dialog', {
+      name: 'Add a new customer to the orders list',
+    })
+    await settleLayout(dialog)
+    const title = within(dialog).getByRole('heading')
+    const slot = title.previousElementSibling as HTMLElement
+    const icon = slot.querySelector('svg') as SVGSVGElement
+    await expect(slot.getBoundingClientRect().width).toBe(48)
+    await expect(icon.getBoundingClientRect().right).toBeLessThanOrEqual(
+      title.getBoundingClientRect().left,
+    )
+  },
 }

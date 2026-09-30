@@ -80,15 +80,18 @@ describe('Dialog', () => {
       <Dialog defaultOpen>
         <DialogContent aria-describedby={undefined}>
           <DialogHeader startContent={<span data-testid="start" />}>
-            <DialogTitle>New</DialogTitle>
+            <DialogTitle>Add a new customer to the orders list</DialogTitle>
           </DialogHeader>
         </DialogContent>
       </Dialog>,
     )
 
-    // At least the close button's 40px, not capped at it.
+    // At least the close button's 40px, not capped at it, and it doesn't
+    // shrink under a long title: an explicit min-width replaces the flex
+    // auto minimum. The Dialog LongTitle story measures the 48px in a
+    // browser.
     const slot = screen.getByTestId('start').parentElement
-    expect(slot).toHaveClass('min-w-10')
+    expect(slot).toHaveClass('min-w-10', 'shrink-0')
     expect(slot).not.toHaveClass('w-10')
   })
 })

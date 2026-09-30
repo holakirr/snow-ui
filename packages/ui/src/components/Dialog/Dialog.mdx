@@ -73,7 +73,7 @@ import {
 2. **Trigger** (`DialogTrigger`, optional): the element that opens the dialog, usually a Button (`asChild`).
 3. **Mask** (`DialogOverlay`, rendered by `DialogContent`): covers the page with the Figma "Mask", a gradient from #CBDDFF at 50% to #D7D0FF at 20%, and "Background blur 40" (20px).
 4. **Content** (`DialogContent`): the `role="dialog"` element, in a portal, centred in the viewport. It is 576px wide at most (`max-w-xl`) and 16px from each side on narrow screens. It has no fill: it stacks the title row and the popup 28px apart.
-5. **Title row** (`DialogHeader`): a start slot at least 40px wide (`startContent`; the kit's "Add data" dialog has a 48px icon there, the Add glyph at 36×36), the title, and a close button (the Figma "Close": a Gray `md` icon button, 40×40px with radius 12, and the kit's Close icon, an 11px X in a 24px box). 8px padding on each side.
+5. **Title row** (`DialogHeader`): a start slot at least 40px wide (`startContent`; the kit's "Add data" dialog has a 48px Add icon there: its plus is 36px, ours at size 48 draws a 30px one, our icon set's inset), the title, and a close button (the Figma "Close": a Gray `md` icon button, 40×40px with radius 12, and the kit's Close icon, an 11px X in a 24px box). 8px padding on each side.
 6. **Title** (`DialogTitle`): 48/56 semibold, centred. It names the dialog.
 7. **Popup** (`DialogBody`): the card: `background-3` (Figma Background/3), a 32px radius, a 20px background blur and 32px padding (80px from the `md` breakpoint).
 8. **Description** (`DialogDescription`, optional): 14/20 `text-secondary`, centred. It describes the dialog.
@@ -153,7 +153,7 @@ const [open, setOpen] = useState(false)
     <DialogHeader
       startContent={
         <span className="flex size-12 items-center justify-center">
-          <AddIcon size={36} />
+          <AddIcon size={48} />
         </span>
       }
     >

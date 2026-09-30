@@ -159,9 +159,11 @@ export const Lines: Story = {
         await expect(lines).toHaveLength(Number(count))
         const centre = (rect: DOMRect) =>
           axis === 'y' ? rect.top + rect.height / 2 : rect.left + rect.width / 2
-        await expect(centre(lines[lines.length - 1]) - centre(lines[0])).toBe(
-          span,
-        )
+        // Within half a pixel: WebKit rounds the lines' positions (39.94
+        // for 40); the spans differ by 8px or more.
+        await expect(
+          centre(lines[lines.length - 1]) - centre(lines[0]),
+        ).toBeCloseTo(span, 0)
       }
     }
     const arrow = canvasElement.querySelector(
@@ -169,8 +171,9 @@ export const Lines: Story = {
     ) as SVGElement
     const row = arrow.parentElement as HTMLElement
     // Right arrow: the head at the right end.
-    await expect(arrow.getBoundingClientRect().right).toBe(
+    await expect(arrow.getBoundingClientRect().right).toBeCloseTo(
       row.getBoundingClientRect().right,
+      0,
     )
   },
 }

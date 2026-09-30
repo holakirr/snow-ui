@@ -1,9 +1,10 @@
 import { expect } from 'storybook/test'
 
 /**
- * Waits for the CSS animations running on `element` and inside it to end,
- * such as an overlay's exit animation: Radix keeps a closed overlay in the
- * DOM until its `animationend`, and only then removes it.
+ * Waits for the CSS animations and transitions running on `element` and
+ * inside it to end, such as an overlay's exit animation: Radix keeps a
+ * closed overlay in the DOM until its `animationend`, and only then removes
+ * it.
  *
  * Waiting for the removal alone raced `waitFor`'s 1 s timeout against the
  * animation: a busy test runner may not render the animation's frames in

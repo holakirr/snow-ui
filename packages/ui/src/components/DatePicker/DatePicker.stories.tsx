@@ -258,8 +258,8 @@ export const Typing: Story = {
     const dialog = page.getByRole('dialog')
     await userEvent.keyboard('{Enter}')
     await expect(args.onValueChange).toHaveBeenCalledWith(new Date(2026, 2, 15))
-    // The page is hidden from assistive technology until the popover is gone.
     await expectClosed(dialog)
+    // The page is hidden from assistive technology until the popover is gone.
     await waitFor(() =>
       expect(canvas.getByRole('combobox')).toHaveTextContent('Mar 15, 2026'),
     )

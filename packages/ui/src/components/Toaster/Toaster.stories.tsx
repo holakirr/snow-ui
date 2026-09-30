@@ -318,7 +318,7 @@ export const Stacked: Story = {
         'data-collapsed',
       )
       // The toasts no longer overlap: each sits above the newer one (once
-      // the 300ms move has ended).
+      // the 150ms move has ended).
       await animationsEnded(viewport() as HTMLElement)
       await waitFor(() =>
         expect(

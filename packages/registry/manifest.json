@@ -847,7 +847,7 @@
       "registryDependencies": ["snow-core"],
       "import": "components/Separator/Separator",
       "exports": ["Separator"],
-      "types": ["SeparatorProps"],
+      "types": ["SeparatorArrow", "SeparatorCount", "SeparatorProps"],
       "docs": "components-separator"
     },
     {

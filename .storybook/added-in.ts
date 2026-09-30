@@ -16,4 +16,7 @@ export const addedIn: Readonly<Record<string, string>> = {
   'progress-circle': '5.1',
   spinner: '5.1',
   'theme-scope': '5.1',
+  chip: '5.1',
+  'text-strip': '5.1',
+  image: '5.1',
 }

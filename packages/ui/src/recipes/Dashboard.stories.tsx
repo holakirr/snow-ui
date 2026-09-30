@@ -50,6 +50,10 @@ import {
   SidebarProvider,
   Strip,
   searchStyles,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Typography,
 } from '../components'
 
@@ -149,6 +153,33 @@ const NavList = ({ items }: { items: NavItem[] }) => (
   </ul>
 )
 
+const ShortcutList = ({
+  prefix,
+  items,
+}: {
+  prefix: string
+  items: string[]
+}) => (
+  <ul className="flex flex-col gap-1">
+    {items.map((label) => (
+      <li key={label}>
+        <IconText
+          asChild
+          interactive
+          className="flex"
+          icon={
+            <IconBox size={16} className="text-black-20">
+              <span className="size-1.5! rounded-full bg-current" />
+            </IconBox>
+          }
+        >
+          <a href={`#${prefix}-${label.toLowerCase()}`}>{label}</a>
+        </IconText>
+      </li>
+    ))}
+  </ul>
+)
+
 const DashboardSidebar = () => (
   <Sidebar
     collapsible="none"
@@ -159,42 +190,22 @@ const DashboardSidebar = () => (
       <IconText interactive icon={avatar('BW')}>
         ByeWind
       </IconText>
-      <div className="flex flex-col gap-1">
-        <Group gap={8} aria-label="Shortcuts" className="px-2">
-          {/* Figma: Black/40% and Black/20% (2.85:1, 1.6:1), a design
-              exception to the contrast check (see `parameters.a11y`); with
-              more contrast they are AA: Black/80% and text-secondary. */}
-          <Typography
-            size={14}
-            data-contrast-exception
-            className="text-black-40 contrast-more:text-black-80"
-          >
-            Favorites
-          </Typography>
-          <Typography
-            size={14}
-            data-contrast-exception
-            className="text-black-20 contrast-more:text-secondary"
-          >
-            Recently
-          </Typography>
-        </Group>
-        {['Overview', 'Projects'].map((label) => (
-          <IconText
-            key={label}
-            asChild
-            interactive
-            className="flex"
-            icon={
-              <IconBox size={16} className="text-black-20">
-                <span className="size-1.5! rounded-full bg-current" />
-              </IconBox>
-            }
-          >
-            <a href={`#fav-${label.toLowerCase()}`}>{label}</a>
-          </IconText>
-        ))}
-      </div>
+      {/* Figma: two text tabs, Favorites in Black/40% and Recently in
+          Black/20% (2.85:1 and 1.6:1, under AA). Here they are the library's
+          Tabs, which are readable and switch the list: the selected tab in
+          Primary with its line, the other in text-secondary. */}
+      <Tabs defaultValue="favorites" className="flex flex-col gap-1">
+        <TabsList aria-label="Shortcuts" className="justify-start gap-2 px-2">
+          <TabsTrigger value="favorites">Favorites</TabsTrigger>
+          <TabsTrigger value="recently">Recently</TabsTrigger>
+        </TabsList>
+        <TabsContent value="favorites" className="mt-0">
+          <ShortcutList prefix="fav" items={['Overview', 'Projects']} />
+        </TabsContent>
+        <TabsContent value="recently" className="mt-0">
+          <ShortcutList prefix="recent" items={['eCommerce', 'Blog']} />
+        </TabsContent>
+      </Tabs>
     </SidebarHeader>
     <SidebarContent className="gap-4">
       <nav aria-label="Dashboards" className="flex flex-col gap-1">
@@ -271,7 +282,9 @@ const DashboardHeader = ({
   searchOpen?: boolean
   onToggleRightSidebar: () => void
 }) => (
-  // Figma: "Header is always fixed at the top".
+  // Figma: "Header is always fixed at the top". In an app, give the page a
+  // matching `scroll-padding-top` so focused content below never scrolls
+  // under it (WCAG 2.4.11).
   <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b-[0.5px] border-black-10 bg-background-1 px-7 py-5">
     <div className="flex items-center gap-2">
       {/* Figma: the 28px icon buttons are ≈32px apart, so 4px gaps. */}
@@ -563,24 +576,10 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
     storyWrapper: false,
-    a11y: {
-      config: {
-        rules: [
-          {
-            // Design exception: the sidebar's Favorites / Recently labels
-            // are the kit's Black/40% and Black/20% (under AA; AA with more
-            // contrast). Only the elements marked `data-contrast-exception`
-            // skip the check; everything else is still checked.
-            id: 'color-contrast',
-            selector: '*:not([data-contrast-exception])',
-          },
-        ],
-      },
-    },
     docs: {
       description: {
         component:
-          'The SnowUI dashboard layout built from the library: `Sidebar` (212px, IconText nav items), a sticky header (`Group` of icon `Button`s, `Breadcrumb`, a Search-styled trigger for the `CommandPalette` — press "/"), the content (`Card variant="block"` tiles and blocks, `Strip`) and a 280px right sidebar (`ListItem` rows for Notifications, Activities and Contacts). A recipe, not an exported component: copy it and adapt it.',
+          'The SnowUI dashboard layout built from the library: `Sidebar` (212px, `Tabs` for Favorites / Recently, IconText nav items), a sticky header (`Group` of icon `Button`s, `Breadcrumb`, a Search-styled trigger for the `CommandPalette` — press "/"), the content (`Card variant="block"` tiles and blocks, `Strip`) and a 280px right sidebar (`ListItem` rows for Notifications, Activities and Contacts). A recipe, not an exported component: copy it and adapt it.',
       },
       story: { inline: false, height: '900px' },
     },

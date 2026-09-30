@@ -55,7 +55,7 @@ const groups: CommandPaletteGroup[] = [
 4. **Group heading** (`heading` of a group, optional): 14/20 `text-secondary`.
 5. **Item**: at least 36px high, 8px padding, a 12px radius, 14/20 text; an optional `icon` (a 16px icon or a 24px avatar) 8px before the label. Long labels are truncated.
 6. **Enter hint**: a ↩ in `text-secondary` at the end of the highlighted item.
-7. **List**: scrolls past 484px or 60% of the viewport height, whichever is smaller.
+7. **List**: scrolls past 484px or 60% of the viewport height, whichever is smaller, with the kit's scrollbar (`scrollbar-snow`, in an 8px gutter at the end while it scrolls).
 8. **Empty message**: "No results" (`emptyMessage`) in 14/20 `text-secondary`, when nothing matches.
 
 Items are `{ id, label, icon?, keywords?, disabled?, onSelect? }`, in groups of `{ id, heading?, items }`. Ids must be unique within their group.

@@ -3,22 +3,33 @@
 import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
-import type { ComponentProps, FC } from 'react'
+import type { ComponentProps, FC, ReactNode } from 'react'
 import { TEXT_SIZES } from '../../constants'
 import { twMerge } from '../../utils/tw-merge'
 import {
   popoverAnimationClasses,
+  popoverChevronClasses,
+  popoverHintClasses,
   popoverItemClasses,
   popoverLabelClasses,
+  popoverScrollClasses,
   popoverSeparatorClasses,
+  popoverShortcutClasses,
+  popoverShortcutEndClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
 import { useSnowUI } from '../SnowUIProvider'
 import { KBD, type KBDProps } from '../Text'
 
+/**
+ * A menu taller than the room on its side scrolls, with the kit's scrollbar
+ * (a submenu too). Portal submenus (`DropdownMenuPortal`): the menu clips
+ * its content, as it did before it scrolled.
+ */
 const dropdownMenuContentStyles = twMerge(
-  'z-50 min-w-[8rem] overflow-hidden',
+  'z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] overflow-x-hidden overflow-y-auto',
   popoverSurfaceClasses,
+  popoverScrollClasses,
   popoverAnimationClasses,
 )
 
@@ -28,12 +39,16 @@ const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
 
 type DropdownMenuGroupProps = ComponentProps<typeof DropdownMenuPrimitive.Group>
 
+/**
+ * 4px margins above and below: next to a separator they merge into its 8px,
+ * so a line between two groups keeps the Figma 8 + 0.5 + 8.
+ */
 const DropdownMenuGroup: FC<DropdownMenuGroupProps> = ({
   className,
   ...props
 }) => (
   <DropdownMenuPrimitive.Group
-    className={twMerge('py-1', className)}
+    className={twMerge('my-1', className)}
     {...props}
   />
 )
@@ -48,22 +63,37 @@ type DropdownMenuSubTriggerProps = ComponentProps<
   typeof DropdownMenuPrimitive.SubTrigger
 > & {
   inset?: boolean
+  /**
+   * The submenu's current value, shown before the chevron in 12/16
+   * `text-secondary` text (Figma: the value hint of a Popover row). It is
+   * part of the item's accessible name.
+   */
+  hint?: ReactNode
 }
 
 const DropdownMenuSubTrigger: FC<DropdownMenuSubTriggerProps> = ({
   className,
   inset,
+  hint,
   children,
   ...props
-}) => (
-  <DropdownMenuPrimitive.SubTrigger
-    className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
-    {...props}
-  >
-    {children}
-    <ArrowLineRightIcon className="ms-auto rtl:-scale-x-100" />
-  </DropdownMenuPrimitive.SubTrigger>
-)
+}) => {
+  const hasHint = hint != null && hint !== false
+
+  return (
+    <DropdownMenuPrimitive.SubTrigger
+      className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
+      {...props}
+    >
+      {children}
+      {hasHint && <span className={popoverHintClasses}>{hint}</span>}
+      {/* Figma: the submenu item ends in a 16px ArrowLineRight chevron. */}
+      <ArrowLineRightIcon
+        className={twMerge(popoverChevronClasses, hasHint && 'ms-0')}
+      />
+    </DropdownMenuPrimitive.SubTrigger>
+  )
+}
 DropdownMenuSubTrigger.displayName =
   DropdownMenuPrimitive.SubTrigger.displayName
 
@@ -224,12 +254,22 @@ DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
 
 type DropdownMenuShortcutProps = KBDProps
 
+/**
+ * A `<kbd>` at the end of the item, in the kit's plain `text-secondary`
+ * text. Pass a `variant` (`solid`, `border`) for the `KBD` badge.
+ */
 const DropdownMenuShortcut: FC<DropdownMenuShortcutProps> = ({
   className,
+  variant,
   ...props
 }) => (
   <KBD
-    className={twMerge('ms-auto', className)}
+    className={twMerge(
+      popoverShortcutEndClasses,
+      variant == null && popoverShortcutClasses,
+      className,
+    )}
+    variant={variant}
     size={TEXT_SIZES[12]}
     {...props}
   />

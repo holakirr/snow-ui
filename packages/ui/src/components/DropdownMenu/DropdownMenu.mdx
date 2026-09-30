@@ -45,7 +45,7 @@ import {
   <DropdownMenuContent align="start" className="w-60">
     <DropdownMenuItem onSelect={openProfile}>
       Profile
-      <DropdownMenuShortcut keys={['⌘', 'P']} />
+      <DropdownMenuShortcut keys={['⌘', 'P']} separator="" />
     </DropdownMenuItem>
     <DropdownMenuItem onSelect={logOut}>Log out</DropdownMenuItem>
   </DropdownMenuContent>
@@ -72,14 +72,14 @@ import {
 
 1. **Root** (`DropdownMenu`): holds the open state. It renders nothing itself.
 2. **Trigger** (`DropdownMenuTrigger`): the element that opens the menu, usually a Button (`asChild`).
-3. **Content** (`DropdownMenuContent`): the `role="menu"` panel, in a portal, 4px from the trigger (`sideOffset={4}`), at least 128px wide. The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2.
+3. **Content** (`DropdownMenuContent`): the `role="menu"` panel, in a portal, 4px from the trigger (`sideOffset={4}`), at least 128px wide. The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2. Taller than the room on its side of the trigger, it stops at the edge of the window and scrolls, with the kit's scrollbar (`scrollbar-snow`, in an 8px gutter at the end while it scrolls); submenus too. Portal submenus (`DropdownMenuPortal`): the content clips what overflows it.
 4. **Item** (`DropdownMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `inset` adds 32px of start padding, e.g. to line up items without an icon with items that have one.
 5. **Checkbox item** (`DropdownMenuCheckboxItem`) and **radio item** (`DropdownMenuRadioItem`, in a `DropdownMenuRadioGroup`): a 16px check mark in a slot 8px from the end, like Select's (the Figma selected item). Both kinds show the check; the role (`menuitemcheckbox`, `menuitemradio`) tells them apart.
 6. **Label** (`DropdownMenuLabel`, optional): a group title, 12/16 `text-secondary`, 28px high; takes `inset`.
-7. **Group** (`DropdownMenuGroup`, optional): groups items, with 4px above and below.
-8. **Separator** (`DropdownMenuSeparator`): a 0.5px `black-10` line, 4px from its neighbours.
-9. **Shortcut** (`DropdownMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`.
-10. **Submenu** (`DropdownMenuSub`): a `DropdownMenuSubTrigger` (an item with an arrow at the end) and a `DropdownMenuSubContent` on the same surface. Wrap the sub content in `DropdownMenuPortal`, as the stories do.
+7. **Group** (`DropdownMenuGroup`, optional): groups items, with a 4px margin above and below (it merges into a separator's 8px).
+8. **Separator** (`DropdownMenuSeparator`): a 0.5px `black-10` line, 8px from its neighbours (the Figma 8 + 0.5 + 8 between groups).
+9. **Shortcut** (`DropdownMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`, as the kit's plain text in `text-secondary` (Figma: "⌘C" in Black/40%, no key cap). `separator=""` joins symbol keys as in the kit (`⌘C`, not `⌘+C`); a `variant` (`solid`, `border`) brings back the KBD key cap.
+10. **Submenu** (`DropdownMenuSub`): a `DropdownMenuSubTrigger` (an item with a 16px `text-secondary` chevron at the end, and an optional `hint` with the current value before it) and a `DropdownMenuSubContent` on the same surface. Wrap the sub content in `DropdownMenuPortal`, as the stories do.
 
 The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdownmenu--open).
 
@@ -124,7 +124,8 @@ The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
-| Group labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+| Group labels, shortcuts and submenu value hints in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+| Submenu chevron in Black/20%: 1.6:1 | `text-secondary`, as the Select chevron: Black/60% in light mode (at least 5.5:1, on the highlighted item too), White/70% in dark mode (at least 4.82:1) | 1.4.11 |
 
 The Black/4% item highlight (1.1:1) keeps the Figma value with the default contrast: the README lists it as a known gap. With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the highlighted item also gets a 2px `black-80` ring.
 
@@ -237,13 +238,13 @@ A `separator` line between groups.
 
 ### DropdownMenuShortcut
 
-A `KBD` at the end of an item: `keys` are the keys it shows. It takes the KBD props.
+A `KBD` at the end of an item, in plain `text-secondary` text (dimmed with a disabled item): `keys` are the keys it shows. It takes the KBD props; with a `variant` it keeps the KBD key cap.
 
 <ArgTypes of={DropdownMenuShortcut} />
 
 ### DropdownMenuGroup
 
-A `group` around related items, with 4px above and below.
+A `group` around related items, with a 4px margin above and below. Next to a `DropdownMenuSeparator` the margins merge, so the line stays 8px from the items.
 
 <ArgTypes of={DropdownMenuGroup} />
 
@@ -261,7 +262,7 @@ A submenu's root: `open` / `defaultOpen` / `onOpenChange`. It renders nothing.
 
 ### DropdownMenuSubTrigger
 
-A `menuitem` with an arrow at the end; it opens the submenu on hover, a click, Enter, Space or ArrowRight (ArrowLeft in right-to-left text). Takes `inset`.
+A `menuitem` with a 16px chevron at the end, in `text-secondary`; it opens the submenu on hover, a click, Enter, Space or ArrowRight (ArrowLeft in right-to-left text). Takes `inset`, and `hint`: the submenu's current value (the Figma value hint, such as "Multi-Select"), in 12/16 `text-secondary` text 8px before the chevron. The hint is part of the item's accessible name.
 
 <ArgTypes of={DropdownMenuSubTrigger} />
 

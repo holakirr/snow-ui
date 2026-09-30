@@ -55,10 +55,12 @@ The fallback text grows with the avatar: 12/16 at `sm` and `md`, 24/32 at `lg`. 
 ## States
 
 - **Loading and error:** the fallback shows until the image loads, and stays when the image fails or has no `src`.
-- **Hover:** the avatar's brightness goes up to 105%.
-- There is no focus, pressed or disabled state: the avatar isn't interactive. Wrap it in a link or a button to make it one.
+- **Hover:** only in a link or a button (`<a href>`, an enabled `<button>`, `role="button"`), which makes the avatar interactive, where the pointer can hover (not after a tap on a touch screen), and by kind (the Figma Component state): a photo gets a `color-1` underlay, seen through a cut-out picture; an icon fallback (an `<svg>` in `AvatarFallback`) a Black/20% fill, a static gray like the fallback's `color-2`, so its black icon reads in both modes; initials turn semibold. The avatar at rest doesn't change, and one on its own has no hover. In forced-colors mode the fills give way to the system colours; the semibold initials stay.
+- There is no focus, pressed or disabled state of its own: the avatar isn't interactive. Wrap it in a link or a button to make it one; the link or button draws the focus ring.
 
 <Canvas of={AvatarStories.FallbackOnly} />
+
+<Canvas of={AvatarStories.Interactive} />
 
 ## Accessibility
 

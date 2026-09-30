@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
 import { expectClosed } from '../../test/animations'
-import { hasInsetRing } from '../../test/colors'
+import { colorOf, hasInsetRing } from '../../test/colors'
 
 import {
   Select,
@@ -40,6 +40,13 @@ export const Default: Story = {
     const page = within(canvasElement.ownerDocument.body)
     const trigger = canvas.getByRole('combobox', { name: 'Fruit' })
     await expect(trigger).toHaveTextContent('Select a fruit')
+
+    await step('the chevron is text-secondary (3:1 or more)', async () => {
+      const chevron = trigger.querySelector('svg') as SVGElement
+      await expect(getComputedStyle(chevron).fill).toBe(
+        colorOf('text-secondary', trigger),
+      )
+    })
 
     await step('selects an option with the pointer', async () => {
       await userEvent.click(trigger)
@@ -135,7 +142,45 @@ export const WithDisabledOption: Story = {
   ),
 }
 
+/**
+ * A list longer than the menu scrolls with the kit's scrollbar
+ * (`scrollbar-snow`), which Radix would hide, and keeps the scroll buttons.
+ */
 export const Scrollable: Story = {
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(canvas.getByRole('combobox', { name: 'Timezone' }))
+    const listbox = await page.findByRole('listbox')
+    await waitFor(() => expect(listbox).toBeVisible())
+
+    await step('the list scrolls, with the kit scrollbar', async () => {
+      const viewport = listbox.querySelector(
+        '[data-radix-select-viewport]',
+      ) as HTMLElement
+      await expect(viewport).toHaveClass('scrollbar-snow')
+      await expect(viewport.scrollHeight).toBeGreaterThan(viewport.clientHeight)
+      // Radix sets `scrollbar-width: none`. Chrome, Edge and Safari draw
+      // the utility's thumb with `auto`, Firefox its thin scrollbar.
+      // Headless Firefox hides every scrollbar (`none` on any element):
+      // nothing to compare there.
+      const { scrollbarWidth } = getComputedStyle(viewport)
+      const probe = document.createElement('div')
+      document.body.append(probe)
+      const allHidden = getComputedStyle(probe).scrollbarWidth === 'none'
+      probe.remove()
+      if (scrollbarWidth !== undefined && !allHidden) {
+        await expect(scrollbarWidth).toBe(
+          CSS.supports('selector(::-webkit-scrollbar)') ? 'auto' : 'thin',
+        )
+      }
+    })
+
+    await userEvent.keyboard('{Escape}')
+    await expectClosed(listbox)
+    await waitFor(() =>
+      expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
+    )
+  },
   render: () => (
     <Select>
       <SelectTrigger className="w-[280px]" aria-label="Timezone">

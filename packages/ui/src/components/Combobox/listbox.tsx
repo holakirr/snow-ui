@@ -26,6 +26,7 @@ import { twMerge } from '../../utils/tw-merge'
 import {
   popoverItemClasses,
   popoverLabelClasses,
+  popoverScrollClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
 import { useSnowUI } from '../SnowUIProvider'
@@ -605,7 +606,7 @@ export const ComboboxAdornments = ({
     <ArrowLineUpDownIcon
       size={16}
       aria-hidden
-      className="shrink-0 fill-control-border-strong group-data-[disabled]/combobox:fill-black-20"
+      className="shrink-0 fill-text-secondary group-data-[disabled]/combobox:fill-black-20"
     />
   </>
 )
@@ -742,7 +743,10 @@ export const ComboboxPopup = ({
           aria-labelledby={labelledBy}
           aria-multiselectable={multiple || undefined}
           aria-busy={loading || undefined}
-          className="relative min-h-0 overflow-y-auto p-3 empty:hidden"
+          className={twMerge(
+            'relative min-h-0 overflow-y-auto p-3 empty:hidden',
+            popoverScrollClasses,
+          )}
         >
           {visibleGroups.map((group) => {
             if (group.label === undefined) {

@@ -1,5 +1,5 @@
 import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 import {
@@ -9,6 +9,7 @@ import {
   ContextMenuItem,
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
+  ContextMenuShortcut,
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
@@ -22,8 +23,11 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from './DropdownMenu'
+import { Select, SelectTrigger, SelectValue } from './Input'
 import {
   Tooltip,
   TooltipContent,
@@ -91,6 +95,13 @@ describe('DropdownMenu', () => {
     // The Figma Popover surface and 36px items with a 12px radius.
     expect(menu).toHaveClass('p-3', 'rounded-16', 'border-surface-1')
     expect(profile).toHaveClass('p-2', 'rounded-12', 'text-14')
+    // Taller than the room on its side, it scrolls, with the kit scrollbar.
+    expect(menu).toHaveClass(
+      'max-h-(--radix-dropdown-menu-content-available-height)',
+      'overflow-x-hidden',
+      'overflow-y-auto',
+      'scrollbar-snow',
+    )
     expect(profile).toHaveFocus()
     expect(screen.getByText('⌘+P').tagName).toBe('KBD')
   })
@@ -110,10 +121,70 @@ describe('ContextMenu', () => {
     fireEvent.contextMenu(screen.getByText('Area'))
 
     const menu = await screen.findByRole('menu')
-    expect(menu).toHaveClass('p-3', 'bg-background-3')
+    expect(menu).toHaveClass('p-3', 'bg-background-3', 'scrollbar-snow')
+    // It doesn't scroll by default: that would clip a submenu that isn't
+    // portalled.
+    expect(menu.className).not.toMatch(/overflow/)
     expect(screen.getByRole('menuitem', { name: 'Back' })).toHaveClass(
       'rounded-12',
     )
+  })
+})
+
+describe('menu shortcuts', () => {
+  it('are plain text-secondary text, and keep the KBD key cap with a variant', () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Edit</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>
+            Copy
+            <DropdownMenuShortcut keys={['⌘', 'C']} separator="" />
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            Paste
+            <DropdownMenuShortcut keys={['⌘', 'V']} variant="solid" />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+
+    const plain = screen.getByText('⌘C')
+    expect(plain.tagName).toBe('KBD')
+    expect(plain).toHaveAttribute('aria-keyshortcuts', '⌘C')
+    expect(plain).toHaveClass('ms-auto', 'text-secondary', 'bg-transparent')
+    // At the end of a right-to-left item too: the `<kbd>` is `dir="ltr"`.
+    expect(plain).toHaveClass(
+      'in-[[role=menu][dir=rtl]]:mr-auto',
+      'in-[[role=menu][dir=rtl]]:ml-0',
+    )
+    expect(plain).not.toHaveClass('bg-black-4', 'text-black', 'min-w-7')
+    // Dimmed with its item when the item is disabled.
+    expect(plain).toHaveClass('in-data-[disabled]:text-black-20')
+
+    const cap = screen.getByText('⌘+V')
+    expect(cap).toHaveClass('ms-auto', 'bg-black-4', 'text-black', 'min-w-7')
+    expect(cap).not.toHaveClass('text-secondary')
+  })
+
+  it('look the same in ContextMenu', () => {
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Area</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>
+            Reload
+            <ContextMenuShortcut keys={['⌘', 'R']} />
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText('Area'))
+
+    const shortcut = screen.getByText('⌘+R')
+    expect(shortcut.tagName).toBe('KBD')
+    expect(shortcut).toHaveClass('ms-auto', 'text-secondary', 'bg-transparent')
+    expect(shortcut).not.toHaveClass('bg-black-4')
   })
 })
 
@@ -182,5 +253,79 @@ describe('menu check marks', () => {
     expect(chevron?.innerHTML).toBe(
       render(<ArrowLineRightIcon />).container.querySelector('svg')?.innerHTML,
     )
+    // The kit's Black/20% chevron is 1.6:1: `text-secondary`, 3:1 or more.
+    expect(chevron).toHaveClass('ms-auto', 'text-secondary')
+  })
+})
+
+describe('submenu value hint', () => {
+  /** The hint before the chevron, which follows it at the item's gap. */
+  const expectHint = (name: string, hint: string) => {
+    const item = screen.getByRole('menuitem', { name: new RegExp(`^${name}`) })
+    const hintElement = within(item).getByText(hint)
+    expect(hintElement).toHaveClass('ms-auto', 'text-12', 'text-secondary')
+    expect(hintElement.nextElementSibling?.tagName).toBe('svg')
+    expect(item.querySelector('svg:last-child')).toHaveClass('ms-0')
+    expect(item).toHaveTextContent(`${name}${hint}`)
+  }
+
+  it('shows the hint before the chevron in DropdownMenu', () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>View</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger hint="Multi-Select">
+              Type
+            </DropdownMenuSubTrigger>
+          </DropdownMenuSub>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>Plain</DropdownMenuSubTrigger>
+          </DropdownMenuSub>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+
+    expectHint('Type', 'Multi-Select')
+    // Without a hint: no hint element, the chevron takes the free space.
+    const plain = screen.getByRole('menuitem', { name: 'Plain' })
+    expect(plain.querySelectorAll('span')).toHaveLength(0)
+    expect(plain.querySelector('svg')).toHaveClass('ms-auto')
+  })
+
+  it('shows the hint before the chevron in ContextMenu', () => {
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Area</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuSub>
+            <ContextMenuSubTrigger hint="Grid">Layout</ContextMenuSubTrigger>
+          </ContextMenuSub>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText('Area'))
+
+    expectHint('Layout', 'Grid')
+  })
+})
+
+describe('Select chevron', () => {
+  it('is text-secondary (3:1 or more), dimmed when disabled', () => {
+    render(
+      <Select>
+        <SelectTrigger aria-label="Fruit">
+          <SelectValue placeholder="Pick" />
+        </SelectTrigger>
+      </Select>,
+    )
+    const chevron = screen
+      .getByRole('combobox', { name: 'Fruit' })
+      .querySelector('svg')
+    expect(chevron).toHaveClass(
+      'fill-text-secondary',
+      'group-disabled:fill-black-20',
+    )
+    expect(chevron?.getAttribute('class')).not.toMatch(/control-border/)
   })
 })

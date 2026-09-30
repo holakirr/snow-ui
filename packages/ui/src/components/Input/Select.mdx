@@ -56,15 +56,15 @@ The menu, open: [Open story](?path=/story/components-input-select--open).
 ## Anatomy
 
 1. **Root** (`Select`): holds the value and the open state; renders no element of its own.
-2. **Trigger** (`SelectTrigger`): a `<button role="combobox">` in the Figma Input field style (12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% stroke, 14/20 text) and a 16px ArrowLineUpDown icon at the end. Full width by default. With `title`, the Figma "2 row" field of a form: the title (12/16, `text-secondary`) above the value, as `Input`'s `title`; it names the trigger (`aria-labelledby`) unless `aria-label` or `aria-labelledby` does.
+2. **Trigger** (`SelectTrigger`): a `<button role="combobox">` in the Figma Input field style (12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% stroke, 14/20 text) and a 16px ArrowLineUpDown icon at the end, in `text-secondary`. Full width by default. With `title`, the Figma "2 row" field of a form: the title (12/16, `text-secondary`) above the value, as `Input`'s `title`; it names the trigger (`aria-labelledby`) unless `aria-label` or `aria-labelledby` does.
 
 <Canvas of={SelectStories.WithTitle} />
 3. **Value** (`SelectValue`): the selected item's text, or `placeholder` in `text-secondary`.
 4. **Content** (`SelectContent`): the list, portalled to the end of `<body>`. The Popover surface: Background/3 with a 1px Surface/1 stroke, a 16px radius, the "Glass 2" blur and shadow, and 12px padding around the items. At least the trigger's width and 128px, at most 384px high, 4px from the trigger.
 5. **Group** and **Label** (`SelectGroup`, `SelectLabel`, optional): a titled group of items; the label is 12/16 `text-secondary`.
 6. **Item** (`SelectItem`): an option, 36px high (8px padding, 14/20 text) with a 12px radius and a Black/4% highlight. The selected item has a 16px check at the end.
-7. **Separator** (`SelectSeparator`, optional): a 0.5px Black/10% line between groups.
-8. **Scroll buttons** (`SelectScrollUpButton`, `SelectScrollDownButton`): arrows at the top and bottom of a list that overflows. `SelectContent` renders them.
+7. **Separator** (`SelectSeparator`, optional): a 0.5px Black/10% line between groups, 8px from the items on each side.
+8. **Scroll buttons** (`SelectScrollUpButton`, `SelectScrollDownButton`): arrows at the top and bottom of a list that overflows. `SelectContent` renders them. The list also shows the kit's scrollbar (`scrollbar-snow`, in an 8px gutter at the end), which Radix hides by default.
 
 ## States
 
@@ -114,8 +114,9 @@ The full table is in the package README.
 | "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Placeholder in Black/20%: 1.6:1 | `text-secondary`; the placeholder is the trigger's visible text, not a native placeholder | 1.4.3 |
 | Group labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
+| Chevron in Black/40%: 2.85:1 | `text-secondary`: Black/60% in light mode (at least 5.72:1 on the trigger), White/70% in dark mode (at least 5.58:1) | 1.4.11 |
 
-Known gaps with the default contrast, which keeps the Figma values: the 0.5px Black/20% trigger stroke (1.6:1) and the Black/4% highlight of the items (1.1:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border` (Black/50%, at least 3.79:1), the chevron Black/80%, and the highlighted item gets a 2px `black-80` ring.
+Known gaps with the default contrast, which keeps the Figma values: the 0.5px Black/20% trigger stroke (1.6:1) and the Black/4% highlight of the items (1.1:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border` (Black/50%, at least 3.79:1) and the highlighted item gets a 2px `black-80` ring.
 
 ## Localization and RTL
 

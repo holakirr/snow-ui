@@ -3,12 +3,17 @@
 import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as CtxMenuPrimitive from '@radix-ui/react-context-menu'
-import type { ComponentProps, FC } from 'react'
+import type { ComponentProps, FC, ReactNode } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import {
+  popoverChevronClasses,
+  popoverHintClasses,
   popoverItemClasses,
   popoverLabelClasses,
+  popoverScrollClasses,
   popoverSeparatorClasses,
+  popoverShortcutClasses,
+  popoverShortcutEndClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
 import { useSnowUI } from '../SnowUIProvider'
@@ -30,28 +35,48 @@ type ContextMenuSubTriggerProps = ComponentProps<
   typeof CtxMenuPrimitive.SubTrigger
 > & {
   inset?: boolean
+  /**
+   * The submenu's current value, shown before the chevron in 12/16
+   * `text-secondary` text (Figma: the value hint of a Popover row). It is
+   * part of the item's accessible name.
+   */
+  hint?: ReactNode
 }
 
 const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
   className,
   inset,
+  hint,
   children,
   ...props
-}) => (
-  <CtxMenuPrimitive.SubTrigger
-    className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
-    {...props}
-  >
-    {children}
-    {/* Figma: the submenu item ends in a 16px ArrowLineRight chevron. */}
-    <ArrowLineRightIcon className="ms-auto rtl:-scale-x-100" />
-  </CtxMenuPrimitive.SubTrigger>
-)
+}) => {
+  const hasHint = hint != null && hint !== false
+
+  return (
+    <CtxMenuPrimitive.SubTrigger
+      className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
+      {...props}
+    >
+      {children}
+      {hasHint && <span className={popoverHintClasses}>{hint}</span>}
+      {/* Figma: the submenu item ends in a 16px ArrowLineRight chevron. */}
+      <ArrowLineRightIcon
+        className={twMerge(popoverChevronClasses, hasHint && 'ms-0')}
+      />
+    </CtxMenuPrimitive.SubTrigger>
+  )
+}
 ContextMenuSubTrigger.displayName = CtxMenuPrimitive.SubTrigger.displayName
 
+/**
+ * The menu doesn't scroll by default: a scroll container would clip a
+ * submenu that isn't portalled. With `max-h-* overflow-y-auto` (and portalled
+ * submenus) it scrolls with the kit's scrollbar.
+ */
 const contentClasses = twMerge(
   'z-50 min-w-60',
   popoverSurfaceClasses,
+  popoverScrollClasses,
   'data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom',
 )
 
@@ -204,10 +229,25 @@ ContextMenuSeparator.displayName = CtxMenuPrimitive.Separator.displayName
 
 type ContextMenuShortcutProps = KBDProps
 
+/**
+ * A `<kbd>` at the end of the item, in the kit's plain `text-secondary`
+ * text. Pass a `variant` (`solid`, `border`) for the `KBD` badge.
+ */
 const ContextMenuShortcut: FC<ContextMenuShortcutProps> = ({
   className,
+  variant,
   ...props
-}) => <KBD className={twMerge('ms-auto', className)} {...props} />
+}) => (
+  <KBD
+    className={twMerge(
+      popoverShortcutEndClasses,
+      variant == null && popoverShortcutClasses,
+      className,
+    )}
+    variant={variant}
+    {...props}
+  />
+)
 ContextMenuShortcut.displayName = 'ContextMenuShortcut'
 
 export {

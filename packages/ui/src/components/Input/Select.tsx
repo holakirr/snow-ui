@@ -13,6 +13,7 @@ import {
   popoverAnimationClasses,
   popoverItemClasses,
   popoverLabelClasses,
+  popoverScrollClasses,
   popoverSeparatorClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
@@ -90,7 +91,7 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
         <ArrowLineUpDownIcon
           size={16}
           className={twMerge(
-            'shrink-0 fill-control-border-strong group-disabled:fill-black-20',
+            'shrink-0 fill-text-secondary group-disabled:fill-black-20',
             // In the middle of the 20px value line.
             title && 'mb-0.5',
           )}
@@ -144,6 +145,17 @@ SelectScrollDownButton.displayName =
 
 type SelectContentProps = ComponentProps<typeof SelectPrimitive.Content>
 
+/**
+ * Radix hides the viewport's scrollbar with an unlayered style (its scroll
+ * buttons stand in for it), which beats the `scrollbar-snow` utility: show it
+ * again (`!important`). Chrome, Edge and Safari draw the utility's thumb only
+ * with `scrollbar-width: auto`; Firefox gets the utility's thin scrollbar, and
+ * forced-colors mode the system one (a thin one in Chrome, which then ignores
+ * the WebKit scrollbar styles). The scroll buttons stay.
+ */
+const selectViewportScrollbarClasses =
+  '[scrollbar-width:auto]! [&::-webkit-scrollbar]:block! not-supports-[selector(::-webkit-scrollbar)]:[scrollbar-width:thin]! forced-colors:[scrollbar-width:thin]!'
+
 const SelectContent: FC<SelectContentProps> = ({
   className,
   children,
@@ -176,6 +188,8 @@ const SelectContent: FC<SelectContentProps> = ({
         <SelectPrimitive.Viewport
           className={twMerge(
             'p-3',
+            popoverScrollClasses,
+            selectViewportScrollbarClasses,
             position === 'popper' &&
               'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]',
           )}

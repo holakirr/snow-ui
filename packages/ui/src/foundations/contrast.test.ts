@@ -38,6 +38,24 @@ describe('form controls with more contrast', () => {
   )
 })
 
+describe('the Select and submenu chevrons', () => {
+  // `text-secondary`, not a contrast token: 3:1 in both themes and at both
+  // contrast levels, with no known gap.
+  const chevrons = cases.filter(({ pair }) => pair.control.includes('chevron'))
+
+  it('are there', () => {
+    expect(chevrons).toHaveLength(3 * modes.length * 3)
+  })
+
+  it.each(chevrons)(
+    '$pair.control, $mode, on $surface: 3:1 at both levels',
+    ({ ratio }) => {
+      expect(ratio('standard')).toBeGreaterThanOrEqual(AA.nonText)
+      expect(ratio('more')).toBeGreaterThanOrEqual(AA.nonText)
+    },
+  )
+})
+
 describe('form controls with the standard (Figma) contrast', () => {
   const ratio = (control: string, mode: Mode) => {
     const found = cases.find(

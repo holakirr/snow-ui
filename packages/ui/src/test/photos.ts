@@ -16,3 +16,11 @@ export const photos = [
   photo('#6be6d3'),
   photo('#ffb55b'),
 ] as const
+
+/**
+ * A cut-out picture, as the kit's avatars are: a dark silhouette on a
+ * transparent background, so what is behind the avatar shows around it.
+ */
+export const cutout = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="26" r="12" fill="#1c1c1c"/><rect x="12" y="42" width="40" height="30" rx="15" fill="#1c1c1c"/></svg>',
+)}`

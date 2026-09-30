@@ -44,7 +44,7 @@ import {
   <ContextMenuContent>
     <ContextMenuItem onSelect={reload}>
       Reload
-      <ContextMenuShortcut keys={['⌘', 'R']} />
+      <ContextMenuShortcut keys={['⌘', 'R']} separator="" />
     </ContextMenuItem>
     <ContextMenuItem onSelect={remove}>Delete</ContextMenuItem>
   </ContextMenuContent>
@@ -68,14 +68,14 @@ import {
 
 1. **Root** (`ContextMenu`): holds the open state. It renders nothing itself.
 2. **Trigger** (`ContextMenuTrigger`): a `<span>` around the area that opens the menu; style it (e.g. `block`) to size the area.
-3. **Content** (`ContextMenuContent`): the `role="menu"` panel, in a portal, at the pointer (Radix places it 2px to the right of the point, aligned to its top). At least 240px wide (`min-w-60`). The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2.
+3. **Content** (`ContextMenuContent`): the `role="menu"` panel, in a portal, at the pointer (Radix places it 2px to the right of the point, aligned to its top). At least 240px wide (`min-w-60`). The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2. It doesn't scroll by default, since a scroll area would clip a submenu that isn't portalled. For a long menu, add `max-h-(--radix-context-menu-content-available-height) overflow-y-auto` and wrap submenus in `ContextMenuPortal`: it scrolls with the kit's scrollbar (`scrollbar-snow`).
 4. **Item** (`ContextMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `inset` adds 32px of start padding.
 5. **Checkbox item** (`ContextMenuCheckboxItem`) and **radio item** (`ContextMenuRadioItem`, in a `ContextMenuRadioGroup`): a 16px check mark in a slot 8px from the end, like Select's (the Figma selected item). Both kinds show the check; the role (`menuitemcheckbox`, `menuitemradio`) tells them apart.
 6. **Label** (`ContextMenuLabel`, optional): a group title, 12/16 `text-secondary`, 28px high; takes `inset`.
 7. **Group** (`ContextMenuGroup`, optional): groups items (no spacing of its own).
-8. **Separator** (`ContextMenuSeparator`): a 0.5px `black-10` line, 4px from its neighbours.
-9. **Shortcut** (`ContextMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`.
-10. **Submenu** (`ContextMenuSub`): a `ContextMenuSubTrigger` (an item with a 16px chevron at the end, as in DropdownMenu) and a `ContextMenuSubContent` on the same surface. `ContextMenuPortal` is exported to portal it.
+8. **Separator** (`ContextMenuSeparator`): a 0.5px `black-10` line, 8px from its neighbours (the Figma 8 + 0.5 + 8 between groups).
+9. **Shortcut** (`ContextMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`, as the kit's plain text in `text-secondary` (Figma: "⌘C" in Black/40%, no key cap). `separator=""` joins symbol keys as in the kit (`⌘C`, not `⌘+C`); a `variant` (`solid`, `border`) brings back the KBD key cap.
+10. **Submenu** (`ContextMenuSub`): a `ContextMenuSubTrigger` (an item with a 16px `text-secondary` chevron at the end and an optional `hint` with the current value before it, as in DropdownMenu) and a `ContextMenuSubContent` on the same surface. `ContextMenuPortal` is exported to portal it.
 
 ## States
 
@@ -120,7 +120,8 @@ The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
-| Group labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+| Group labels, shortcuts and submenu value hints in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+| Submenu chevron in Black/20%: 1.6:1 | `text-secondary`, as the Select chevron: Black/60% in light mode (at least 5.5:1, on the highlighted item too), White/70% in dark mode (at least 4.82:1) | 1.4.11 |
 
 The Black/4% item highlight (1.1:1) keeps the Figma value with the default contrast: the README lists it as a known gap. With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the highlighted item also gets a 2px `black-80` ring.
 
@@ -231,7 +232,7 @@ A `separator` line between groups.
 
 ### ContextMenuShortcut
 
-A `KBD` at the end of an item: `keys` are the keys it shows. It takes the KBD props.
+A `KBD` at the end of an item, in plain `text-secondary` text (dimmed with a disabled item): `keys` are the keys it shows. It takes the KBD props; with a `variant` it keeps the KBD key cap.
 
 <ArgTypes of={ContextMenuShortcut} />
 
@@ -255,7 +256,7 @@ A submenu's root: `open` / `defaultOpen` / `onOpenChange`. It renders nothing.
 
 ### ContextMenuSubTrigger
 
-A `menuitem` with an arrow at the end; it opens the submenu on hover, a click, Enter, Space or ArrowRight (ArrowLeft in right-to-left text). Takes `inset`.
+A `menuitem` with a 16px chevron at the end, in `text-secondary`; it opens the submenu on hover, a click, Enter, Space or ArrowRight (ArrowLeft in right-to-left text). Takes `inset`, and `hint`: the submenu's current value (the Figma value hint, such as "Multi-Select"), in 12/16 `text-secondary` text 8px before the chevron. The hint is part of the item's accessible name.
 
 <ArgTypes of={ContextMenuSubTrigger} />
 

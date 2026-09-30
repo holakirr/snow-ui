@@ -9,7 +9,7 @@ import * as InputStories from './Input.stories'
 <FigmaLinks page="25559:12043" />
 <InstallTabs item="input" />
 
-Input is a single-line text field. It is the Figma "Input": "1 row", or "2 row vertical" with a `title` above the value, with optional content before and after the value. `readOnly` gives the Figma "Static" state.
+Input is a single-line text field. It is the Figma "Input": "1 row", "2 row vertical" with a `title` above the value, or "2 row horizontal" with the `title` before it (`titleLayout="horizontal"`), with optional content before and after the value. `readOnly` gives the Figma "Static" state.
 
 ```tsx
 import { Input } from '@holakirr/snow-ui'
@@ -36,7 +36,7 @@ import { Input } from '@holakirr/snow-ui'
 
 1. **Field** (`className`, `style`): the `<div data-slot="input">` that draws the fill, the stroke and the focus ring. Clicks on its padding or on the start and end content focus the input.
 2. **Start content** (`startContent`, optional): before the value (on the right in right-to-left text), in Black/40%. An `<svg>` passed directly is sized 16px.
-3. **Title** (`title`, optional): a 12/16 [Label](?path=/docs/components-label--docs) 8px above the value, linked to the input. An id is generated when you don't pass `id`.
+3. **Title** (`title`, optional): a 12/16 [Label](?path=/docs/components-label--docs) 8px above the value (`titleLayout="horizontal"`: 8px before it, on the same row), linked to the input. An id is generated when you don't pass `id`.
 4. **Input** (`inputClassName`, `inputStyle`, and every other prop): the native `<input>`, 14/20 text with a Black/20% placeholder. `ref` points at it.
 5. **End content** (`endContent`, optional): after the value, e.g. an icon, a button or a [KBD](?path=/docs/components-text-kbd--docs).
 
@@ -48,6 +48,9 @@ import { Input } from '@holakirr/snow-ui'
 | --- | --- | --- | --- |
 | no `title` (default) | 1 row | 44px: 12px padding, 14/20 text | fields labelled outside the field, or by `aria-label` |
 | `title` | 2 row vertical | 68px: a 12/16 title 8px above the value | form fields with a built-in label |
+| `title`, `titleLayout="horizontal"` | 2 row horizontal | 44px: the title at the start of the row, the value at the end | compact fields and settings rows, e.g. a value next to its name |
+
+<Canvas of={InputStories.WithHorizontalTitle} />
 
 Both share the Figma field: 12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% inside stroke.
 

@@ -3,7 +3,7 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
 import { twMerge } from '../../utils/tw-merge'
-import { invalidInputClasses } from './Input'
+import { invalidInputClasses } from './inputClasses'
 
 /**
  * The Figma "Search" field without its icons: 28px high, 4/8 padding, a 16px

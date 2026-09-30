@@ -791,9 +791,9 @@ const mergeClassNames = (
 /**
  * A calendar built on react-day-picker, styled like the Figma DatePicker:
  * the week starts on Monday, the selected day is Primary, today is
- * Secondary/Indigo with a dot under the number (in dark mode a selected day
- * is indigo too) and days outside the month are `text-secondary` (Figma:
- * Black/40%, 2.85:1).
+ * Secondary/Indigo (with a dot under the number in dark mode, where a
+ * selected day is indigo too, and while selected) and days outside the
+ * month are `text-secondary` (Figma: Black/40%, 2.85:1).
  *
  * Localized by `SnowUIProvider`: its `locale` (a date-fns or
  * react-day-picker locale) names the months and weekdays; its `weekStartsOn`
@@ -982,11 +982,12 @@ function Calendar({
             ),
             // Figma "Today": Secondary/Indigo, unless selected. The text is
             // static black (10:1) instead of Figma's white (2.07:1). Plus the
-            // dot of `todayMarkClassName`, selected or not: in dark mode a
-            // selected day is indigo too.
+            // dot of `todayMarkClassName` where the fill doesn't tell today
+            // apart: in dark mode (a selected day is indigo too), while
+            // selected, and with forced colours.
             today: twMerge(
               'not-aria-selected:[&>button]:bg-indigo not-aria-selected:[&>button]:text-static-black not-aria-selected:[&>button]:hover:bg-indigo/80',
-              '[&>button]:relative [&>button]:after:pointer-events-none [&>button]:after:absolute [&>button]:after:inset-x-0 [&>button]:after:bottom-[5px] [&>button]:after:mx-auto [&>button]:after:size-1 [&>button]:after:rounded-full [&>button]:after:bg-current forced-colors:[&>button]:after:forced-color-adjust-none',
+              '[&>button]:relative [&>button]:after:pointer-events-none [&>button]:after:absolute [&>button]:after:inset-x-0 [&>button]:after:bottom-[5px] [&>button]:after:mx-auto [&>button]:after:hidden [&>button]:after:size-1 [&>button]:after:rounded-full [&>button]:after:bg-current aria-selected:[&>button]:after:block dark:[&>button]:after:block forced-colors:[&>button]:after:block forced-colors:[&>button]:after:forced-color-adjust-none',
               todayClassName,
             ),
             outside: twMerge('day-outside text-secondary', outsideClassName),

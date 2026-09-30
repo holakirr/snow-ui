@@ -2,7 +2,11 @@
 
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { twMerge } from '../../utils/tw-merge'
-import { selectedForcedClassName, todayMarkClassName } from '../Calendar/styles'
+import {
+  selectedForcedClassName,
+  todayMarkClassName,
+  todayMarkShownClassName,
+} from '../Calendar/styles'
 
 /** A choice of a picker grid: a month, a year, an hour, a minute… */
 export type GridOption = {
@@ -187,6 +191,9 @@ export const OptionGrid = ({
                       !option.selected &&
                       'bg-indigo text-static-black hover:bg-indigo/80',
                     option.current && todayMarkClassName,
+                    option.current &&
+                      option.selected &&
+                      todayMarkShownClassName,
                   )}
                   onClick={() => onSelect(option.value)}
                   onFocus={() => setFocused(option.value)}

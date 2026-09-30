@@ -243,16 +243,23 @@
 }
 
 /*
- * The Figma "Scrollbar" (33509:100029) on a scroll container: a 4px
- * rounded thumb that widens to 8px under the pointer, in the
- * `control-border` colour (the Figma Black/20%; 3:1 or more with more
- * contrast), on no track. Where the browser has the WebKit scrollbar
- * pseudo-elements (Chrome, Edge, Safari) the thumb is a 4px bar in an 8px
- * gutter; elsewhere (Firefox) the standard thin scrollbar in that colour.
- * Nothing animates. In forced-colors mode the system scrollbar stays.
+ * The Figma "Scrollbar" (33509:100029) on a scroll container, on no track: a
+ * 4px rounded thumb in Black/10% (`black-10`) that widens to 8px in Black/20%
+ * (`control-border`) under the pointer and while it is dragged. With more
+ * contrast the resting thumb is `control-border` too (3:1 or more). The kit
+ * shows the thumb only while the pointer is over the container; it stays
+ * visible here, for keyboard and touch users. Where the browser has the WebKit
+ * scrollbar pseudo-elements (Chrome, Edge, Safari) the thumb sits in an 8px
+ * gutter (the kit overlays it). Firefox can't style a hovered thumb: its thin
+ * scrollbar keeps its own width and turns `control-border` while the pointer
+ * is over the container. Nothing animates. In forced-colors mode the system
+ * scrollbar stays.
  */
 @utility scrollbar-snow {
   @media not (forced-colors: active) {
+    /* Set only with more contrast (the `--contrast-more` switch). */
+    --scrollbar-snow-more: var(--contrast-more) var(--color-control-border);
+    --scrollbar-snow-thumb: var(--scrollbar-snow-more, var(--color-black-10));
     @supports selector(::-webkit-scrollbar) {
       &::-webkit-scrollbar {
         width: 8px;
@@ -262,10 +269,12 @@
       &::-webkit-scrollbar-thumb {
         border: 2px solid transparent;
         border-radius: 9999px;
-        background: var(--color-control-border) padding-box;
+        background: var(--scrollbar-snow-thumb) padding-box;
       }
-      &::-webkit-scrollbar-thumb:hover {
+      &::-webkit-scrollbar-thumb:hover,
+      &::-webkit-scrollbar-thumb:active {
         border-width: 0;
+        background-color: var(--color-control-border);
       }
       &::-webkit-scrollbar-track,
       &::-webkit-scrollbar-corner {
@@ -274,7 +283,10 @@
     }
     @supports not selector(::-webkit-scrollbar) {
       scrollbar-width: thin;
-      scrollbar-color: var(--color-control-border) transparent;
+      scrollbar-color: var(--scrollbar-snow-thumb) transparent;
+      &:hover {
+        scrollbar-color: var(--color-control-border) transparent;
+      }
     }
   }
 }

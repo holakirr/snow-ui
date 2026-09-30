@@ -651,11 +651,12 @@ const SidebarMenuItem: FC<SidebarMenuItemProps> = ({ className, ...props }) => (
 SidebarMenuItem.displayName = 'SidebarMenuItem'
 
 /*
- * Figma nav item ("Frame"): padding 8, radius 12, 14 Regular text, 20px icons,
- * a Black/4% fill on hover and on the active item.
+ * Figma nav item ("Frame", `34611:43851`): padding 8, a 4px gap, radius 12,
+ * 14 Regular text, 20px icons, a Black/4% fill on hover and on the active
+ * item.
  */
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-12 p-2 text-start text-black text-14 font-normal transition-[width,height,padding] motion-reduce:transition-none hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pe-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
+  'peer/menu-button flex w-full cursor-pointer items-center gap-1 overflow-hidden rounded-12 p-2 text-start text-black text-14 font-normal transition-[width,height,padding] motion-reduce:transition-none hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pe-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -840,7 +841,8 @@ const SidebarMenuSub: FC<SidebarMenuSubProps> = ({ className, ...props }) => (
   <ul
     data-sidebar="menu-sub"
     className={twMerge(
-      'mx-3.5 flex min-w-0 translate-x-px rtl:-translate-x-px flex-col gap-1 border-s border-black-10 px-2.5 py-0.5',
+      // Figma: the sub-items are indented, without a line.
+      'mx-3.5 flex min-w-0 flex-col gap-1 px-2.5 py-0.5',
       'group-data-[collapsible=icon]:hidden',
       className,
     )}
@@ -877,7 +879,7 @@ const SidebarMenuSubButton: FC<SidebarMenuSubButtonProps> = ({
       data-size={size}
       data-active={isActive}
       className={twMerge(
-        'flex h-9 min-w-0 -translate-x-px rtl:translate-x-px items-center gap-2 overflow-hidden rounded-12 px-2 font-normal text-black hover:bg-black-4 hover:text-black focus-ring active:bg-black-4 active:text-black disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-black',
+        'flex h-9 min-w-0 items-center gap-2 overflow-hidden rounded-12 px-2 font-normal text-black hover:bg-black-4 hover:text-black focus-ring active:bg-black-4 active:text-black disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-black',
         'data-[active=true]:bg-black-4 data-[active=true]:text-black',
         size === 'sm' && 'h-7 text-12',
         size === 'md' && 'text-14',

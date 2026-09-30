@@ -304,8 +304,9 @@ export const Scrollable: Story = {
       await expect(style.overflowY).toBe('auto')
       await expect(menu).toHaveClass('scrollbar-snow')
       await expect(menu.scrollHeight).toBeGreaterThan(menu.clientHeight)
+      // Radix may place it half a pixel off.
       await expect(menu.getBoundingClientRect().bottom).toBeLessThanOrEqual(
-        window.innerHeight,
+        window.innerHeight + 1,
       )
     })
 

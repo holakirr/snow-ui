@@ -150,8 +150,14 @@ export const Scrollable: Story = {
       await expect(viewport.scrollHeight).toBeGreaterThan(viewport.clientHeight)
       // Radix sets `scrollbar-width: none`. Chrome, Edge and Safari draw
       // the utility's thumb with `auto`, Firefox its thin scrollbar.
+      // Headless Firefox hides every scrollbar (`none` on any element):
+      // nothing to compare there.
       const { scrollbarWidth } = getComputedStyle(viewport)
-      if (scrollbarWidth !== undefined) {
+      const probe = document.createElement('div')
+      document.body.append(probe)
+      const allHidden = getComputedStyle(probe).scrollbarWidth === 'none'
+      probe.remove()
+      if (scrollbarWidth !== undefined && !allHidden) {
         await expect(scrollbarWidth).toBe(
           CSS.supports('selector(::-webkit-scrollbar)') ? 'auto' : 'thin',
         )

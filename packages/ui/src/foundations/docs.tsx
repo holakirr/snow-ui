@@ -617,14 +617,14 @@ export const ScrollbarPage = () => (
         more contrast the resting thumb is <Code>control-border</Code> too (3:1
         or more). Add the <Code>scrollbar-snow</Code> utility to a scroll
         container; the Select, Combobox, MultiSelect, DropdownMenu,
-        CommandPalette and Sidebar scroll areas already have it. The kit shows the bar only while the pointer is over the
-        scroll area; here the thumb stays visible, so keyboard and touch users
-        can find it. Browsers with the WebKit scrollbar pseudo-elements (Chrome,
-        Edge, Safari) draw the kit's thumb in an 8px gutter, where the kit
-        overlays it. Firefox can't style a hovered thumb: its thin scrollbar
-        keeps its own width and turns <Code>control-border</Code> while the
-        pointer is over the container. Nothing animates, and forced-colors mode
-        keeps the system scrollbar.
+        CommandPalette and Sidebar scroll areas already have it. The kit shows
+        the bar only while the pointer is over the scroll area; here the thumb
+        stays visible, so keyboard and touch users can find it. Browsers with
+        the WebKit scrollbar pseudo-elements (Chrome, Edge, Safari) draw the
+        kit's thumb in an 8px gutter, where the kit overlays it. Firefox can't
+        style a hovered thumb: its thin scrollbar keeps its own width and turns{' '}
+        <Code>control-border</Code> while the pointer is over the container.
+        Nothing animates, and forced-colors mode keeps the system scrollbar.
       </>
     }
   >

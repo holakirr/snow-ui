@@ -31,6 +31,31 @@ describe('AvatarFallback', () => {
   })
 })
 
+describe('Avatar hover', () => {
+  // The kit's hover, by kind, only in a link or a button (the browser
+  // checks of the rules are in the "Interactive" story).
+  const inInteractive =
+    'in-[a[href]:hover,button:enabled:hover,[role=button]:hover]'
+
+  it('has no blanket brightness hover', () => {
+    render(
+      <Avatar data-testid="avatar">
+        <AvatarFallback>HK</AvatarFallback>
+      </Avatar>,
+    )
+    const avatar = screen.getByTestId('avatar')
+    expect(avatar.className).not.toMatch(/brightness/)
+    // A photo: a `color-1` underlay.
+    expect(avatar).toHaveClass(`${inInteractive}:has-[>img]:bg-color-1`)
+    // Initials: semibold.
+    expect(screen.getByText('HK')).toHaveClass(`${inInteractive}:font-semibold`)
+    // An icon: a static Black/20% fill.
+    expect(screen.getByText('HK').parentElement?.className).toContain(
+      `${inInteractive}:has-[svg]:bg-[color-mix(`,
+    )
+  })
+})
+
 describe('AvatarGroup', () => {
   it('shows `items` avatars and names the rest for screen readers', () => {
     render(<AvatarGroup>{people}</AvatarGroup>)

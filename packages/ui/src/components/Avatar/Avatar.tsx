@@ -8,9 +8,19 @@ import type { Size } from '../../types'
 import { twMerge } from '../../utils/tw-merge'
 import { Typography } from '../Text'
 
+/*
+ * Hover (Figma Component state), only for an avatar in a link or a button,
+ * by kind; the avatar at rest doesn't change:
+ * - a photo gets a `color-1` underlay, seen through a transparent picture;
+ * - the icon fallback (an `<svg>` child) a Black/20% fill, as a static gray
+ *   like the fallback's `color-2`, so its black icon reads in both themes;
+ * - the initials turn semibold.
+ * The variants are spelt out in each class (Tailwind reads them as written):
+ * `in-[a[href]:hover,button:enabled:hover,[role=button]:hover]`.
+ */
 const avatarStyles = cva(
   // `@container`: the fallback's initials are sized by the avatar's width.
-  '@container brightness-100 hover:brightness-105 rounded-full transition-all overflow-hidden aspect-square flex items-center justify-center',
+  '@container rounded-full transition-colors overflow-hidden aspect-square flex items-center justify-center in-[a[href]:hover,button:enabled:hover,[role=button]:hover]:has-[>img]:bg-color-1',
   {
     variants: {
       size: {
@@ -60,7 +70,8 @@ const AvatarFallback: FC<AvatarFallbackProps> = ({
   <AvatarPrimitive.Fallback
     className={twMerge(
       // `color-2` doesn't flip in dark mode, so the text stays static black.
-      'flex h-full w-full items-center justify-center rounded-full bg-color-2 text-static-black',
+      'flex h-full w-full items-center justify-center rounded-full bg-color-2 text-static-black transition-colors',
+      'in-[a[href]:hover,button:enabled:hover,[role=button]:hover]:has-[svg]:bg-[color-mix(in_srgb,var(--color-static-black)_20%,var(--color-static-white))]',
       className,
     )}
     {...props}
@@ -70,7 +81,7 @@ const AvatarFallback: FC<AvatarFallbackProps> = ({
         slots), on a 16/12 line height like the 12px text style. */}
     <Typography
       size={12}
-      className="text-[length:max(0.75rem,37.5cqi)] leading-[1.3333]"
+      className="text-[length:max(0.75rem,37.5cqi)] leading-[1.3333] in-[a[href]:hover,button:enabled:hover,[role=button]:hover]:font-semibold"
     >
       {children}
     </Typography>

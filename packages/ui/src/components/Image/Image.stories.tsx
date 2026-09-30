@@ -73,6 +73,36 @@ export const Default: Story = {
   },
 }
 
+/** A 16:9 picture, to show that the frame crops it. */
+const wide = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="160" height="90" viewBox="0 0 160 90"><rect width="160" height="90" fill="#7dbbff"/><path d="M0 70 Q40 40 80 60 T160 55 V90 H0Z" fill="#6be6d3"/></svg>',
+)}`
+
+/**
+ * A `<picture>` (art direction, modern formats) fills the frame like an
+ * `<img>`: its `<img>` is stretched and cropped too.
+ */
+export const Picture: Story = {
+  // A behaviour check: the same look as Default.
+  tags: ['!autodocs', 'skip-visual'],
+  render: () => (
+    <Image size={40}>
+      <picture>
+        <source srcSet={wide} type="image/svg+xml" />
+        <img src={wide} alt="Hills under a blue sky" />
+      </picture>
+    </Image>
+  ),
+  play: async ({ canvas }) => {
+    const img = canvas.getByRole('img', {
+      name: 'Hills under a blue sky',
+    }) as HTMLImageElement
+    await img.decode()
+    const box = img.getBoundingClientRect()
+    await expect([box.width, box.height]).toEqual([40, 40])
+  },
+}
+
 /** Figma `Size`: 12 to 80px. */
 export const Sizes: Story = {
   render: () => (

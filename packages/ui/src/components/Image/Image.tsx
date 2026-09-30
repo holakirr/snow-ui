@@ -182,11 +182,11 @@ const Image: FC<ImageProps> = ({
       {...props}
     >
       {/* The content fills the frame (or, `icon`, the inset tile) and is
-          cropped to its corners. */}
+          cropped to its corners; so does the `<img>` of a `<picture>`. */}
       <span
         data-slot="image-content"
         className={twMerge(
-          'flex size-full items-center justify-center *:size-full *:shrink-0 *:object-cover',
+          'flex size-full items-center justify-center *:size-full *:shrink-0 *:object-cover [&>picture]:overflow-hidden [&>picture>img]:size-full [&>picture>img]:object-cover',
           icon && spec.icon,
         )}
       >

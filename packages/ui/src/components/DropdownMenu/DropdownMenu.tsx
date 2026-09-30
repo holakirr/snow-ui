@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLineRightIcon, DotIcon } from '@holakirr/snow-ui-icons'
+import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import type { ComponentProps, FC } from 'react'
@@ -148,16 +148,17 @@ const DropdownMenuCheckboxItem: FC<DropdownMenuCheckboxItemProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.CheckboxItem
-    className={twMerge(popoverItemClasses, 'ps-8', className)}
+    className={twMerge(popoverItemClasses, 'pe-8', className)}
     checked={checked}
     {...props}
   >
-    <span className="absolute start-2 flex size-4 items-center justify-center">
+    {children}
+    {/* Figma: a trailing 16px Check on the selected item, as in Select. */}
+    <span className="absolute end-2 flex size-4 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
         <Check size={16} />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
-    {children}
   </DropdownMenuPrimitive.CheckboxItem>
 )
 DropdownMenuCheckboxItem.displayName =
@@ -173,15 +174,17 @@ const DropdownMenuRadioItem: FC<DropdownMenuRadioItemProps> = ({
   ...props
 }) => (
   <DropdownMenuPrimitive.RadioItem
-    className={twMerge(popoverItemClasses, 'ps-8', className)}
+    className={twMerge(popoverItemClasses, 'pe-8', className)}
     {...props}
   >
-    <span className="absolute start-2 flex size-4 items-center justify-center">
+    {children}
+    {/* Figma: the chosen item of a single-choice list ends in the same
+        16px Check as Select's (the role says it is a radio item). */}
+    <span className="absolute end-2 flex size-4 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        <DotIcon size={16} className="fill-current" weight="fill" />
+        <Check size={16} />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
-    {children}
   </DropdownMenuPrimitive.RadioItem>
 )
 DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName

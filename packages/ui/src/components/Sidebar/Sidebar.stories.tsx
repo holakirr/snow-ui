@@ -14,6 +14,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { expect, waitFor } from 'storybook/test'
 
+import { animationsEnded } from '../../test/animations'
 import { photos } from '../../test/photos'
 import { Avatar, AvatarFallback, AvatarImage } from '../Avatar'
 import {
@@ -321,6 +322,7 @@ export const Offcanvas: Story = {
       await userEvent.click(trigger)
       await expect(trigger).toHaveAttribute('aria-expanded', 'false')
       // Hidden once the 200ms slide has ended.
+      await animationsEnded(sidebar as HTMLElement)
       await waitFor(() =>
         expect(
           canvas.queryByRole('link', { name: 'Overview' }),

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
+import { expectClosed } from '../../test/animations'
 import { hasInsetRing } from '../../test/colors'
 
 import {
@@ -46,6 +47,7 @@ export const Default: Story = {
       // It fades in (only fades, with reduced motion): wait for it.
       await waitFor(() => expect(listbox).toBeVisible())
       await userEvent.click(page.getByRole('option', { name: 'Banana' }))
+      await expectClosed(listbox)
       await waitFor(() =>
         expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
       )
@@ -62,7 +64,9 @@ export const Default: Story = {
       await expect(
         page.getByRole('option', { name: 'Blueberry' }),
       ).toHaveFocus()
+      const listbox = page.getByRole('listbox')
       await userEvent.keyboard('{Enter}')
+      await expectClosed(listbox)
       await waitFor(() =>
         expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
       )

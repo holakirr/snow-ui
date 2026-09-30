@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../../react-hook-form'
+import { expectClosed } from '../../test/animations'
 import { Button } from '../Button'
 import { Label } from '../Label'
 import { Typography } from '../Text'
@@ -88,7 +89,9 @@ export const Default: Story = {
 
     await step('two clicks pick a new range and close it', async () => {
       await userEvent.click(field)
-      await page.findByRole('dialog', { name: 'Choose a date range' })
+      const dialog = await page.findByRole('dialog', {
+        name: 'Choose a date range',
+      })
       await waitFor(() => expect(day(/January 13th, 2025/)).toHaveFocus())
       await userEvent.click(day(/January 22nd, 2025/))
       // The old range is gone; the end follows the pointer.
@@ -100,6 +103,7 @@ export const Default: Story = {
         day(/January 14th, 2025/).closest('[role="gridcell"]'),
       ).not.toHaveAttribute('aria-selected')
       await userEvent.click(day(/January 20th, 2025/))
+      await expectClosed(dialog)
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )
@@ -114,9 +118,10 @@ export const Default: Story = {
 
     await step('the keyboard picks a range too', async () => {
       await userEvent.keyboard('{Enter}')
-      await page.findByRole('dialog')
+      const dialog = await page.findByRole('dialog')
       await waitFor(() => expect(day(/January 20th, 2025/)).toHaveFocus())
       await userEvent.keyboard('{Enter}{ArrowDown}{Enter}')
+      await expectClosed(dialog)
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )
@@ -125,8 +130,9 @@ export const Default: Story = {
 
     await step('closing after one day keeps the old range', async () => {
       await userEvent.keyboard('{Enter}')
-      await page.findByRole('dialog')
+      const dialog = await page.findByRole('dialog')
       await userEvent.keyboard('{ArrowRight}{Enter}{Escape}')
+      await expectClosed(dialog)
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )
@@ -366,13 +372,14 @@ export const InForm: Story = {
 
     await step('picking a range clears it', async () => {
       await userEvent.keyboard('{Enter}')
-      await page.findByRole('dialog')
+      const dialog = await page.findByRole('dialog')
       await userEvent.click(
         page.getByRole('button', { name: /January 10th, 2025/ }),
       )
       await userEvent.click(
         page.getByRole('button', { name: /January 12th, 2025/ }),
       )
+      await expectClosed(dialog)
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )

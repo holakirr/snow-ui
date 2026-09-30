@@ -80,14 +80,15 @@ const keyOf = ({ day, hour, eventId }: Position): string =>
   eventId === undefined ? `${day}:${hour}` : `${day}:${hour}:${eventId}`
 
 /**
- * The day columns, shared by the grid and its rows (`--scheduler-columns`).
- * The rows repeat them, and are subgrids of the grid where `subgrid` is
- * supported (Chrome and Edge 117+): the same layout, and a `grid-cols-*`
- * of yours on the grid reaches them there.
+ * The day columns, declared on the grid (`--scheduler-columns`). The rows are
+ * subgrids of it where `subgrid` is supported (Chrome and Edge 117+), so a
+ * `grid-cols-*` or `gap-x-*` of yours on the grid reaches them; elsewhere
+ * they repeat the grid's columns and inherit its column gap.
  */
 const GRID_CLASSES =
   'grid [--scheduler-columns:59px_repeat(7,100px)] grid-cols-(--scheduler-columns) gap-x-4'
-const ROW_CLASSES = `col-span-full ${GRID_CLASSES} supports-[grid-template-columns:subgrid]:grid-cols-subgrid`
+const ROW_CLASSES =
+  'col-span-full grid grid-cols-(--scheduler-columns) [column-gap:inherit] supports-[grid-template-columns:subgrid]:grid-cols-subgrid'
 
 /**
  * The current time, to the minute, for "today" and the current-time line:

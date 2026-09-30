@@ -246,8 +246,11 @@ export const MultipleSelected: Story = {
   },
   play: async ({ canvas, canvasElement, userEvent, step }) => {
     // The year view shows 12 years from five years before the current one.
+    // The year view opens on the page of 12 years, counted from five years
+    // before the current one, that holds the year shown (2025).
     const currentYear = new Date().getFullYear()
-    const from = currentYear - 5
+    const first = currentYear - 5
+    const from = first + 12 * Math.floor((2025 - first) / 12)
     const switcher = canvas.getByRole('button', { name: 'January 2025' })
 
     await step('Enter on the year switcher opens the year view', async () => {

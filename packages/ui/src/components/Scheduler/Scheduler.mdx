@@ -41,7 +41,7 @@ const events: CalendarEvent[] = [
 
 ## Anatomy
 
-1. **Grid**: a `<div>` CSS grid with a 59px hour column and seven 100px day columns, 16px apart, and 48px rows. Each row is a subgrid of these columns. Other `div` props, `className` and `style` go to it.
+1. **Grid**: a `<div>` CSS grid with a 59px hour column and seven 100px day columns, 16px apart, and 48px rows. Each row is a subgrid of these columns where `subgrid` is supported (Chrome and Edge 117+), and repeats them elsewhere. Other `div` props, `className` and `style` go to it.
 2. **Day labels**: the header row, the short weekday and the day number in 12px `text-secondary`, with radius 4 and padding 2 / 4px. Today's label has a Secondary/Indigo fill with static black text, and is semibold.
 3. **Day separators**: Black/4% vertical lines between the days.
 4. **Hour labels**: 12px `text-secondary` hours in the locale's clock ("9 AM" in `en-US`). The rows run from 7 to 20 (8 pm) and grow to fit the events of the shown week (events of other weeks don't change them). An event that ends on the hour doesn't add that hour's row, and the rows make room for an event's minimum 48px block. The labels don't depend on today's date, so a daylight saving change doesn't repeat or skip one.

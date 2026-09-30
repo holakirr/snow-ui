@@ -159,8 +159,10 @@ describe('Calendar', () => {
   })
 
   describe('year switcher', () => {
-    // The year view starts five years before the current year (12 years).
-    const from = new Date().getFullYear() - 5
+    // The year view opens on the page of 12 years, counted from five years
+    // before the current year, that holds the year shown (2025 here).
+    const first = new Date().getFullYear() - 5
+    const from = first + 12 * Math.floor((2025 - first) / 12)
     const to = from + 11
 
     it('is a disclosure of the year view', () => {
@@ -361,6 +363,73 @@ describe('Calendar', () => {
       expect(year(from + 3)).toHaveFocus()
       await user.keyboard('{ArrowRight}')
       expect(year(from + 2)).toHaveFocus()
+    })
+
+    it('leaves modified keys to the browser', async () => {
+      const user = await open()
+      year(from + 2).focus()
+      await user.keyboard('{Alt>}{ArrowRight}{/Alt}')
+      await user.keyboard('{Shift>}{ArrowDown}{/Shift}')
+      await user.keyboard('{Control>}{PageDown}{/Control}')
+      await user.keyboard('{Meta>}{ArrowLeft}{/Meta}')
+      expect(year(from + 2)).toHaveFocus()
+      expect(screen.getByRole('grid', { name: `${from} - ${to}` })).toBeTruthy()
+    })
+
+    it('stops on the next page with fewer than four years', async () => {
+      render(
+        <Calendar
+          mode="single"
+          yearRange={2}
+          defaultMonth={new Date(current, 0, 1)}
+        />,
+      )
+      const user = userEvent.setup()
+      fireEvent.click(screen.getByRole('button', { name: /^\w+ \d{4}$/ }))
+      const grid = screen.getByRole('grid')
+      const [pageFrom, pageTo] = (grid.getAttribute('aria-label') ?? '')
+        .split(' - ')
+        .map(Number)
+      year(pageFrom).focus()
+      await user.keyboard('{ArrowDown}')
+      // Not four years on, past the next page: the last year of the next one.
+      expect(year(pageTo + 2)).toHaveFocus()
+    })
+
+    it('opens on the years of the month shown', () => {
+      // Before, it opened on the current years: all after endMonth here,
+      // with no tab stop.
+      render(
+        <Calendar
+          mode="single"
+          defaultMonth={new Date(2000, 5, 1)}
+          endMonth={new Date(2008, 11, 1)}
+        />,
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'June 2000' }))
+      expect(year(2000)).toBeEnabled()
+      expect(year(2000)).toHaveAttribute('tabindex', '0')
+      expect(
+        screen.getByRole('button', { name: /next \d+ years/i }),
+      ).toBeDisabled()
+    })
+
+    it('reaches a year partly inside startMonth / endMonth', async () => {
+      // startMonth in June: its year is enabled and one page back.
+      const user = await open({ startMonth: new Date(from - 1, 5, 1) })
+      year(from).focus()
+      await user.keyboard('{ArrowLeft}')
+      expect(year(from - 1)).toHaveFocus()
+      expect(year(from - 1)).toBeEnabled()
+      expect(
+        screen.getByRole('button', { name: /previous \d+ years/i }),
+      ).toBeDisabled()
+    })
+
+    it('disables the years after endMonth, whatever its day', async () => {
+      await open({ endMonth: new Date(to - 1, 11, 31) })
+      expect(year(to - 1)).toBeEnabled()
+      expect(year(to)).toBeDisabled()
     })
 
     it("doesn't move to years outside startMonth / endMonth", async () => {

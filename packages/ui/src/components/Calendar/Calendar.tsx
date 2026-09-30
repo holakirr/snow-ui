@@ -190,16 +190,6 @@ const getSelectedMonth = (value: unknown): number => {
   return new Date().getMonth()
 }
 
-const isYearOutOfRange = (
-  date: Date,
-  startMonth?: Date,
-  endMonth?: Date,
-): boolean =>
-  Boolean(
-    (startMonth && differenceInCalendarDays(date, startMonth) < 0) ||
-      (endMonth && differenceInCalendarDays(date, endMonth) > 0),
-  )
-
 const CHEVRONS = {
   left: ArrowLineLeftIcon,
   right: ArrowLineRightIcon,
@@ -252,21 +242,28 @@ const useCalendarNav = () => {
 
   const yearsCount = displayYears.to - displayYears.from + 1
 
+  // In the year view, the previous years are out of reach when all of them
+  // are before `startMonth`, the next ones when all are after `endMonth`:
+  // from years past `endMonth` you can still go back.
   const isPreviousDisabled =
     navView === 'years'
-      ? isYearOutOfRange(
-          new Date(displayYears.from - 1, 0, 1),
-          startMonth,
-          endMonth,
+      ? Boolean(
+          startMonth &&
+            differenceInCalendarDays(
+              new Date(displayYears.from - 1, 11, 31),
+              startMonth,
+            ) < 0,
         )
       : !previousMonth
 
   const isNextDisabled =
     navView === 'years'
-      ? isYearOutOfRange(
-          new Date(displayYears.to + 1, 0, 1),
-          startMonth,
-          endMonth,
+      ? Boolean(
+          endMonth &&
+            differenceInCalendarDays(
+              new Date(displayYears.to + 1, 0, 1),
+              endMonth,
+            ) > 0,
         )
       : !nextMonth
 
@@ -472,10 +469,12 @@ const CalendarCaptionLabel: CustomComponents['CaptionLabel'] = ({
     navView,
     setNavView,
     displayYears,
+    setDisplayYears,
     showYearSwitcher,
     yearViewId,
     focusYearSwitcher,
   } = useCalendarContext()
+  const { months } = useDayPicker()
   const ref = useRef<HTMLButtonElement>(null)
 
   // After a year is picked, focus comes back here instead of falling to
@@ -510,6 +509,19 @@ const CalendarCaptionLabel: CustomComponents['CaptionLabel'] = ({
       )}
       onClick={() => {
         focusYearSwitcher.current = true
+        // Open on the page of years that holds the year shown.
+        const shown = months[0]?.date.getFullYear()
+        if (navView === 'days' && shown !== undefined) {
+          setDisplayYears((prev) => {
+            const count = prev.to - prev.from + 1
+            const pages = Math.floor((shown - prev.from) / count)
+            if (pages === 0) return prev
+            return {
+              from: prev.from + pages * count,
+              to: prev.to + pages * count,
+            }
+          })
+        }
         setNavView((prev) => (prev === 'days' ? 'years' : 'days'))
       }}
     >
@@ -587,7 +599,7 @@ const CalendarYearGrid = ({
       (startMonth &&
         differenceInCalendarDays(new Date(year, 11, 31), startMonth) < 0) ||
         (endMonth &&
-          differenceInCalendarDays(new Date(year, 0, 0), endMonth) > 0),
+          differenceInCalendarDays(new Date(year, 0, 1), endMonth) > 0),
     )
   const isEnabled = (year: number) =>
     year >= from && year <= to && !isDisabled(year)
@@ -601,15 +613,16 @@ const CalendarYearGrid = ({
       (year): year is number => year !== undefined && isEnabled(year),
     ) ?? years.find((year) => !isDisabled(year))
 
-  const moveTo = (year: number) => {
+  const moveTo = (target: number) => {
+    // At most to the page before or after (with fewer than four years a
+    // row move would skip one).
+    const year = Math.min(
+      Math.max(target, from - years.length),
+      to + years.length,
+    )
     if (isDisabled(year)) return
-    if (year < from) {
-      if (previous.disabled) return
-      previous.onClick()
-    } else if (year > to) {
-      if (next.disabled) return
-      next.onClick()
-    }
+    if (year < from) previous.onClick()
+    else if (year > to) next.onClick()
     setFocusedYear(year)
     pendingFocus.current = year
     if (year >= from && year <= to) buttons.current.get(year)?.focus()
@@ -624,7 +637,11 @@ const CalendarYearGrid = ({
       Array.from({ length: b - a + 1 }, (_, i) => a + i).find(isEnabled)
     const lastIn = (a: number, b: number) =>
       Array.from({ length: b - a + 1 }, (_, i) => b - i).find(isEnabled)
+    // Alt and Shift combinations, and Ctrl / ⌘ with anything but Home and
+    // End, stay the browser's (tabs, history).
+    if (event.altKey || event.shiftKey) return
     const ctrl = event.ctrlKey || event.metaKey
+    if (ctrl && event.key !== 'Home' && event.key !== 'End') return
     const targets: Record<string, number | undefined> = {
       ArrowRight: year + forward,
       ArrowLeft: year - forward,

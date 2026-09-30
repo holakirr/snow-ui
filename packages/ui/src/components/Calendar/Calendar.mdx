@@ -53,7 +53,7 @@ The Figma "Date only" DatePicker, with a header, both actions and a short month 
 
 ### Year view
 
-With `showYearSwitcher`, the caption label opens a view of `yearRange` years (12 by default, starting five years before the current year) in four columns. Each year is a 40px button with radius 12; the current year has a Black/4% fill, and years outside `startMonth` / `endMonth` are disabled. The previous and next buttons page through the years ("Go to the previous 12 years"). Picking a year shows it in the days view, in the month of the selection (or the current month), and returns the focus to the caption label. With several months, the year view shows one caption; after a year is picked the months come back and the first month's caption label has the focus.
+With `showYearSwitcher`, the caption label opens a view of `yearRange` years (12 by default) in four columns: the page that holds the year shown, where pages are counted from five years before the current year. Each year is a 40px button with radius 12; the current year has a Black/4% fill, and years wholly outside `startMonth` / `endMonth` are disabled. The previous and next buttons page through the years ("Go to the previous 12 years"). Picking a year shows it in the days view, in the month of the selection (or the current month), and returns the focus to the caption label. With several months, the year view shows one caption; after a year is picked the months come back and the first month's caption label has the focus.
 
 ## Variants
 
@@ -123,7 +123,7 @@ In the year view:
 | Ctrl + Home / Ctrl + End | move focus to the first / last year shown |
 | PageDown / PageUp | show the next / previous years (as the next / previous buttons) and move focus as far |
 
-The moves skip disabled days, turn the month when focus leaves the months shown, and stop at `startMonth` / `endMonth`. In the year view the moves show the next or previous years when focus leaves the years shown, and stop at the years outside `startMonth` / `endMonth`; Tab moves from the next button to the years and on (Shift+Tab back to the switcher and the previous button). Opening or closing the year view keeps the focus on the switcher, also with several months, where the year view shows one. Escape isn't handled by the year view: in a [Popover](?path=/docs/components-popover--docs) it closes the popover.
+The moves skip disabled days, turn the month when focus leaves the months shown, and stop at `startMonth` / `endMonth`. In the year view the moves show the next or previous years when focus leaves the years shown, and stop at the years outside `startMonth` / `endMonth`; Tab reaches the years after the next button, and Shift+Tab goes back through the next button, the switcher and the previous button. Alt and Shift combinations, and Ctrl or ⌘ with keys other than Home and End, are left to the browser. Opening or closing the year view keeps the focus on the switcher, also with several months, where the year view shows one. Escape isn't handled by the year view: in a [Popover](?path=/docs/components-popover--docs) it closes the popover.
 
 ### Deviations from the Figma kit
 

@@ -1235,8 +1235,9 @@ describe('Scheduler', () => {
       const container = document.createElement('div')
       container.innerHTML = html
       document.body.append(container)
+      let root: ReturnType<typeof hydrateRoot> | undefined
       await act(async () => {
-        hydrateRoot(container, app(), {
+        root = hydrateRoot(container, app(), {
           onRecoverableError: (error) => errors.push(String(error)),
         })
       })
@@ -1256,6 +1257,7 @@ describe('Scheduler', () => {
       )
       await act(async () => monday?.focus())
       expect(stops()).toEqual([at(28, 9).toLocaleString('en-US')])
+      act(() => root?.unmount())
       container.remove()
     })
 
@@ -1268,6 +1270,9 @@ describe('Scheduler', () => {
           'supports-[grid-template-columns:subgrid]:grid-cols-subgrid',
         )
         expect(row).not.toHaveClass('grid-cols-subgrid')
+        // The columns and the gap are the grid's, so yours reach the rows.
+        expect(row).toHaveClass('[column-gap:inherit]')
+        expect(row.className).not.toMatch(/--scheduler-columns:|gap-x-/)
       }
     })
 

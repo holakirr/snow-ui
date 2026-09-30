@@ -58,7 +58,13 @@ export const totalUsers = [
 
 export const totalUsersConfig = {
   thisYear: { color: 'primary' },
-  lastYear: { color: 'cyan', dashed: true, opacity: 0 },
+  lastYear: {
+    // Figma: Secondary/Indigo in light; a neutral grey in dark, where Primary
+    // (this year) turns indigo itself.
+    color: 'light-dark(var(--color-indigo), var(--color-black-40))',
+    dashed: true,
+    opacity: 0,
+  },
 } satisfies ChartConfig
 
 /** "Traffic by Website": a share of 6 segments per site. */

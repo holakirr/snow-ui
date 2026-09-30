@@ -21,12 +21,14 @@ import { AreaChart } from '@holakirr/snow-ui-charts'
   xKey="month"
   config={{
     thisYear: { label: 'This year', color: 'primary' },
-    lastYear: { label: 'Last year', color: 'cyan', dashed: true, opacity: 0 },
+    lastYear: { label: 'Last year', color: 'indigo', dashed: true, opacity: 0 },
   }}
   grid={false}
   fade
 />
 ```
+
+In the dark theme Primary turns indigo, so the Figma dashboard draws last year in a neutral grey there. A CSS colour can switch with the theme: `color: 'light-dark(var(--color-indigo), var(--color-black-40))'`, as the story below does.
 
 <Canvas of={AreaChartStories.TotalUsers} />
 

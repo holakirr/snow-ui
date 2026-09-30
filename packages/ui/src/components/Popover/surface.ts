@@ -8,6 +8,17 @@ export const popoverSurfaceClasses =
   'rounded-16 border border-surface-1 bg-background-3 p-3 text-14 text-black shadow-glass-2 backdrop-blur-bg-40'
 
 /**
+ * The Figma "Scrollbar" on a popover's scroll area (`scrollbar-snow`: a 4px
+ * Black/10% thumb, 8px Black/20% under the pointer, in an 8px gutter at the
+ * end of the area while it scrolls). The track starts and ends 12px in, level
+ * with the padding, so the 16px corners don't clip the thumb (Chrome, Edge
+ * and Safari; Firefox draws its own thin scrollbar). `scrollbar-gutter`
+ * stays `auto`: a list that doesn't scroll keeps its padding on both sides.
+ */
+export const popoverScrollClasses =
+  'scrollbar-snow [&::-webkit-scrollbar-track]:my-3'
+
+/**
  * Figma popover items: 36px high (8px padding), a 12px radius, 14/20 text,
  * 16px icons with an 8px gap, and a Black/4% highlight. Disabled items show
  * the not-allowed cursor (Radix ignores their selection). The highlight marks

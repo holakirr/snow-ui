@@ -55,6 +55,14 @@ describe('CommandPalette', () => {
     expect(combobox).toHaveAttribute('aria-controls', listbox.id)
   })
 
+  it('scrolls the results with the kit scrollbar', () => {
+    renderOpen({})
+    expect(screen.getByRole('listbox', { name: 'Search' })).toHaveClass(
+      'overflow-y-auto',
+      'scrollbar-snow',
+    )
+  })
+
   it('groups the options under their headings', () => {
     renderOpen({})
 

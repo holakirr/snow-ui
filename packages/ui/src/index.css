@@ -24,7 +24,7 @@
 @source not "./code-connect";
 
 /*
- * Theme utilities for your own markup, which no component uses: generated
- * anyway, since index.css projects have no Tailwind to generate them.
+ * Theme utilities for your own markup: generated whether or not a component
+ * uses them, since index.css projects have no Tailwind to generate them.
  */
 @source inline("scrollbar-snow");

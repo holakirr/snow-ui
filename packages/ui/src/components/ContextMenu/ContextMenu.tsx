@@ -10,6 +10,7 @@ import {
   popoverHintClasses,
   popoverItemClasses,
   popoverLabelClasses,
+  popoverScrollClasses,
   popoverSeparatorClasses,
   popoverShortcutClasses,
   popoverSurfaceClasses,
@@ -66,9 +67,15 @@ const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
 }
 ContextMenuSubTrigger.displayName = CtxMenuPrimitive.SubTrigger.displayName
 
+/**
+ * The menu doesn't scroll by default: a scroll container would clip a
+ * submenu that isn't portalled. With `max-h-* overflow-y-auto` (and portalled
+ * submenus) it scrolls with the kit's scrollbar.
+ */
 const contentClasses = twMerge(
   'z-50 min-w-60',
   popoverSurfaceClasses,
+  popoverScrollClasses,
   'data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom',
 )
 

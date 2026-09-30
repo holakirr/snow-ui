@@ -99,7 +99,7 @@ The sidebar is fixed to the edge of the viewport, so the stories below with a co
 1. **Provider** (`SidebarProvider`): holds the state and renders a flex `<div>` at least the viewport's height. It sets `--sidebar-width` (212px) and `--sidebar-width-icon` (52px), which its `style` can override, and a `TooltipProvider` without delay. `useSidebar()` reads the state inside it.
 2. **Sidebar** (`Sidebar`): the panel. `side`, `variant` and `collapsible` set its place, look and collapsed form.
 3. **Header and footer** (`SidebarHeader`, `SidebarFooter`): columns at the top and bottom, padding 8 / 16px, 8px gap.
-4. **Content** (`SidebarContent`): the middle, which scrolls; groups are 8px apart.
+4. **Content** (`SidebarContent`): the middle, which scrolls with the kit's scrollbar (`scrollbar-snow`); groups are 8px apart.
 5. **Group** (`SidebarGroup`): a section, padding 8 / 16px, with:
    - `SidebarGroupLabel`: the heading, 28px high, 12px side padding, radius 12, 14px Regular in `black-80`;
    - `SidebarGroupAction` (optional): a 20px button at the heading's end, with a 24px hit area (36px below 768px);

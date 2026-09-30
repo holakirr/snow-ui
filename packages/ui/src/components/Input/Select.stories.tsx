@@ -131,7 +131,38 @@ export const WithDisabledOption: Story = {
   ),
 }
 
+/**
+ * A list longer than the menu scrolls with the kit's scrollbar
+ * (`scrollbar-snow`), which Radix would hide, and keeps the scroll buttons.
+ */
 export const Scrollable: Story = {
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(canvas.getByRole('combobox', { name: 'Timezone' }))
+    const listbox = await page.findByRole('listbox')
+    await waitFor(() => expect(listbox).toBeVisible())
+
+    await step('the list scrolls, with the kit scrollbar', async () => {
+      const viewport = listbox.querySelector(
+        '[data-radix-select-viewport]',
+      ) as HTMLElement
+      await expect(viewport).toHaveClass('scrollbar-snow')
+      await expect(viewport.scrollHeight).toBeGreaterThan(viewport.clientHeight)
+      // Radix sets `scrollbar-width: none`. Chrome, Edge and Safari draw
+      // the utility's thumb with `auto`, Firefox its thin scrollbar.
+      const { scrollbarWidth } = getComputedStyle(viewport)
+      if (scrollbarWidth !== undefined) {
+        await expect(scrollbarWidth).toBe(
+          CSS.supports('selector(::-webkit-scrollbar)') ? 'auto' : 'thin',
+        )
+      }
+    })
+
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() =>
+      expect(page.queryByRole('listbox')).not.toBeInTheDocument(),
+    )
+  },
   render: () => (
     <Select>
       <SelectTrigger className="w-[280px]" aria-label="Timezone">

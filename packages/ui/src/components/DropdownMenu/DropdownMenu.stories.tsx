@@ -256,6 +256,87 @@ export const RTL: Story = {
   },
 }
 
+const regions = [
+  'Africa',
+  'Antarctica',
+  'Asia',
+  'Australia',
+  'Caribbean',
+  'Central America',
+  'Central Asia',
+  'East Asia',
+  'Eastern Europe',
+  'Middle East',
+  'North Africa',
+  'North America',
+  'Northern Europe',
+  'Oceania',
+  'South America',
+  'South Asia',
+  'Southeast Asia',
+  'Southern Europe',
+  'Sub-Saharan Africa',
+  'Western Europe',
+  'West Africa',
+  'Pacific Islands',
+  'Polar regions',
+  'Everywhere else',
+]
+
+/**
+ * A menu taller than the room below its trigger stops at the edge of the
+ * window and scrolls, with the kit's scrollbar (`scrollbar-snow`).
+ */
+export const Scrollable: Story = {
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(canvas.getByRole('button', { name: 'Region' }))
+    const menu = await page.findByRole('menu')
+    await settleLayout(menu)
+
+    await step('the menu fits in the window and scrolls', async () => {
+      const style = getComputedStyle(menu)
+      await expect(style.maxHeight).toBe(
+        style
+          .getPropertyValue('--radix-dropdown-menu-content-available-height')
+          .trim(),
+      )
+      await expect(style.overflowY).toBe('auto')
+      await expect(menu).toHaveClass('scrollbar-snow')
+      await expect(menu.scrollHeight).toBeGreaterThan(menu.clientHeight)
+      await expect(menu.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        window.innerHeight,
+      )
+    })
+
+    await step('the keyboard scrolls the last item into view', async () => {
+      await userEvent.keyboard('{End}')
+      const last = page.getByRole('menuitem', { name: 'Everywhere else' })
+      await waitFor(() => expect(last).toHaveFocus())
+      await expect(last.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        menu.getBoundingClientRect().bottom,
+      )
+    })
+
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() =>
+      expect(page.queryByRole('menu')).not.toBeInTheDocument(),
+    )
+  },
+  render: () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" label="Region" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-60">
+        {regions.map((region) => (
+          <DropdownMenuItem key={region}>{region}</DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+}
+
 /** The Figma Popover as a menu, open: 36px items, a 12px radius, shortcuts. */
 export const Open: Story = {
   parameters: { layout: 'padded' },

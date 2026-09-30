@@ -370,7 +370,7 @@ const CommandPaletteList: FC<ListProps> = ({
         role="listbox"
         aria-label={label}
         aria-busy={loading || undefined}
-        className="-mx-1 max-h-[min(30.25rem,60vh)] overflow-y-auto px-1 pt-2 empty:hidden"
+        className="scrollbar-snow -mx-1 max-h-[min(30.25rem,60vh)] overflow-y-auto px-1 pt-2 empty:hidden"
       >
         {visibleGroups.map((group) => {
           const headingId = `${baseId}-group-${group.groupIndex}`

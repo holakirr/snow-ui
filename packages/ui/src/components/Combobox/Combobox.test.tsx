@@ -82,6 +82,18 @@ describe('Combobox', () => {
     expect(activeOption()).toHaveAttribute('data-highlighted', 'true')
   })
 
+  it('scrolls the list with the kit scrollbar', () => {
+    renderCombobox()
+    fireEvent.keyDown(field(), { key: 'ArrowDown' })
+
+    expect(screen.getByRole('listbox')).toHaveClass(
+      'overflow-y-auto',
+      'scrollbar-snow',
+      // The track stays clear of the popover's 16px corners.
+      '[&::-webkit-scrollbar-track]:my-3',
+    )
+  })
+
   it('opens with ↑ on the last enabled option; Alt+↑ closes it', () => {
     renderCombobox()
     fireEvent.keyDown(field(), { key: 'ArrowUp' })

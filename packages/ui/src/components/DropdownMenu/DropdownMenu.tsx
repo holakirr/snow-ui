@@ -12,6 +12,7 @@ import {
   popoverHintClasses,
   popoverItemClasses,
   popoverLabelClasses,
+  popoverScrollClasses,
   popoverSeparatorClasses,
   popoverShortcutClasses,
   popoverSurfaceClasses,
@@ -19,9 +20,15 @@ import {
 import { useSnowUI } from '../SnowUIProvider'
 import { KBD, type KBDProps } from '../Text'
 
+/**
+ * A menu taller than the room on its side scrolls, with the kit's scrollbar
+ * (a submenu too). Portal submenus (`DropdownMenuPortal`): the menu clips
+ * its content, as it did before it scrolled.
+ */
 const dropdownMenuContentStyles = twMerge(
-  'z-50 min-w-[8rem] overflow-hidden',
+  'z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] overflow-x-hidden overflow-y-auto',
   popoverSurfaceClasses,
+  popoverScrollClasses,
   popoverAnimationClasses,
 )
 

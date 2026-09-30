@@ -94,6 +94,13 @@ describe('DropdownMenu', () => {
     // The Figma Popover surface and 36px items with a 12px radius.
     expect(menu).toHaveClass('p-3', 'rounded-16', 'border-surface-1')
     expect(profile).toHaveClass('p-2', 'rounded-12', 'text-14')
+    // Taller than the room on its side, it scrolls, with the kit scrollbar.
+    expect(menu).toHaveClass(
+      'max-h-(--radix-dropdown-menu-content-available-height)',
+      'overflow-x-hidden',
+      'overflow-y-auto',
+      'scrollbar-snow',
+    )
     expect(profile).toHaveFocus()
     expect(screen.getByText('⌘+P').tagName).toBe('KBD')
   })
@@ -113,7 +120,10 @@ describe('ContextMenu', () => {
     fireEvent.contextMenu(screen.getByText('Area'))
 
     const menu = await screen.findByRole('menu')
-    expect(menu).toHaveClass('p-3', 'bg-background-3')
+    expect(menu).toHaveClass('p-3', 'bg-background-3', 'scrollbar-snow')
+    // It doesn't scroll by default: that would clip a submenu that isn't
+    // portalled.
+    expect(menu.className).not.toMatch(/overflow/)
     expect(screen.getByRole('menuitem', { name: 'Back' })).toHaveClass(
       'rounded-12',
     )

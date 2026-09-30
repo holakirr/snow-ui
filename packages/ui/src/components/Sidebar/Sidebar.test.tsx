@@ -13,6 +13,7 @@ import {
 
 import {
   Sidebar,
+  SidebarContent,
   SidebarGroupAction,
   SidebarMenuAction,
   SidebarProvider,
@@ -377,5 +378,15 @@ describe('Sidebar', () => {
       expect(trigger).toHaveAttribute('aria-expanded', 'true')
       expect(trigger).toHaveAttribute('aria-controls', sheet.id)
     })
+  })
+})
+
+describe('SidebarContent', () => {
+  it('scrolls with the kit scrollbar', () => {
+    render(<SidebarContent data-testid="content" />)
+    expect(screen.getByTestId('content')).toHaveClass(
+      'overflow-auto',
+      'scrollbar-snow',
+    )
   })
 })

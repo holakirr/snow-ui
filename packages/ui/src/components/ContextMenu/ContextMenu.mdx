@@ -75,7 +75,7 @@ import {
 7. **Group** (`ContextMenuGroup`, optional): groups items (no spacing of its own).
 8. **Separator** (`ContextMenuSeparator`): a 0.5px `black-10` line, 8px from its neighbours (the Figma 8 + 0.5 + 8 between groups).
 9. **Shortcut** (`ContextMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`, as the kit's plain text in `text-secondary` (Figma: "⌘C" in Black/40%, no key cap). `separator=""` joins symbol keys as in the kit (`⌘C`, not `⌘+C`); a `variant` (`solid`, `border`) brings back the KBD key cap.
-10. **Submenu** (`ContextMenuSub`): a `ContextMenuSubTrigger` (an item with a 16px chevron at the end, as in DropdownMenu) and a `ContextMenuSubContent` on the same surface. `ContextMenuPortal` is exported to portal it.
+10. **Submenu** (`ContextMenuSub`): a `ContextMenuSubTrigger` (an item with a 16px `control-border-strong` chevron at the end and an optional `hint` with the current value before it, as in DropdownMenu) and a `ContextMenuSubContent` on the same surface. `ContextMenuPortal` is exported to portal it.
 
 ## States
 
@@ -120,7 +120,8 @@ The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
-| Group labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+| Group labels, shortcuts and submenu value hints in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
+| Submenu chevron in Black/20%: 1.6:1 | `control-border-strong`: Black/40% (2.85:1), Black/80% with more contrast (12.6:1), as the Select chevron | 1.4.11 |
 
 The Black/4% item highlight (1.1:1) keeps the Figma value with the default contrast: the README lists it as a known gap. With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the highlighted item also gets a 2px `black-80` ring.
 
@@ -255,7 +256,7 @@ A submenu's root: `open` / `defaultOpen` / `onOpenChange`. It renders nothing.
 
 ### ContextMenuSubTrigger
 
-A `menuitem` with an arrow at the end; it opens the submenu on hover, a click, Enter, Space or ArrowRight (ArrowLeft in right-to-left text). Takes `inset`.
+A `menuitem` with a 16px chevron at the end, in `control-border-strong`; it opens the submenu on hover, a click, Enter, Space or ArrowRight (ArrowLeft in right-to-left text). Takes `inset`, and `hint`: the submenu's current value (the Figma value hint, such as "Multi-Select"), in 12/16 `text-secondary` text 8px before the chevron. The hint is part of the item's accessible name.
 
 <ArgTypes of={ContextMenuSubTrigger} />
 

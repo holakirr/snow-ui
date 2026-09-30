@@ -3,9 +3,11 @@
 import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as CtxMenuPrimitive from '@radix-ui/react-context-menu'
-import type { ComponentProps, FC } from 'react'
+import type { ComponentProps, FC, ReactNode } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import {
+  popoverChevronClasses,
+  popoverHintClasses,
   popoverItemClasses,
   popoverLabelClasses,
   popoverSeparatorClasses,
@@ -31,23 +33,37 @@ type ContextMenuSubTriggerProps = ComponentProps<
   typeof CtxMenuPrimitive.SubTrigger
 > & {
   inset?: boolean
+  /**
+   * The submenu's current value, shown before the chevron in 12/16
+   * `text-secondary` text (Figma: the value hint of a Popover row). It is
+   * part of the item's accessible name.
+   */
+  hint?: ReactNode
 }
 
 const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
   className,
   inset,
+  hint,
   children,
   ...props
-}) => (
-  <CtxMenuPrimitive.SubTrigger
-    className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
-    {...props}
-  >
-    {children}
-    {/* Figma: the submenu item ends in a 16px ArrowLineRight chevron. */}
-    <ArrowLineRightIcon className="ms-auto rtl:-scale-x-100" />
-  </CtxMenuPrimitive.SubTrigger>
-)
+}) => {
+  const hasHint = hint != null && hint !== false
+
+  return (
+    <CtxMenuPrimitive.SubTrigger
+      className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
+      {...props}
+    >
+      {children}
+      {hasHint && <span className={popoverHintClasses}>{hint}</span>}
+      {/* Figma: the submenu item ends in a 16px ArrowLineRight chevron. */}
+      <ArrowLineRightIcon
+        className={twMerge(popoverChevronClasses, hasHint && 'ms-0')}
+      />
+    </CtxMenuPrimitive.SubTrigger>
+  )
+}
 ContextMenuSubTrigger.displayName = CtxMenuPrimitive.SubTrigger.displayName
 
 const contentClasses = twMerge(

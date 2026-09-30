@@ -1,5 +1,5 @@
 import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 import {
@@ -23,6 +23,8 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from './DropdownMenu'
 import {
@@ -235,5 +237,59 @@ describe('menu check marks', () => {
     expect(chevron?.innerHTML).toBe(
       render(<ArrowLineRightIcon />).container.querySelector('svg')?.innerHTML,
     )
+    // The kit's Black/20% chevron is 1.6:1: `control-border-strong`.
+    expect(chevron).toHaveClass('ms-auto', 'text-control-border-strong')
+  })
+})
+
+describe('submenu value hint', () => {
+  /** The hint before the chevron, which follows it at the item's gap. */
+  const expectHint = (name: string, hint: string) => {
+    const item = screen.getByRole('menuitem', { name: new RegExp(`^${name}`) })
+    const hintElement = within(item).getByText(hint)
+    expect(hintElement).toHaveClass('ms-auto', 'text-12', 'text-secondary')
+    expect(hintElement.nextElementSibling?.tagName).toBe('svg')
+    expect(item.querySelector('svg:last-child')).toHaveClass('ms-0')
+    expect(item).toHaveTextContent(`${name}${hint}`)
+  }
+
+  it('shows the hint before the chevron in DropdownMenu', () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>View</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger hint="Multi-Select">
+              Type
+            </DropdownMenuSubTrigger>
+          </DropdownMenuSub>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>Plain</DropdownMenuSubTrigger>
+          </DropdownMenuSub>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+
+    expectHint('Type', 'Multi-Select')
+    // Without a hint: no hint element, the chevron takes the free space.
+    const plain = screen.getByRole('menuitem', { name: 'Plain' })
+    expect(plain.querySelectorAll('span')).toHaveLength(0)
+    expect(plain.querySelector('svg')).toHaveClass('ms-auto')
+  })
+
+  it('shows the hint before the chevron in ContextMenu', () => {
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Area</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuSub>
+            <ContextMenuSubTrigger hint="Grid">Layout</ContextMenuSubTrigger>
+          </ContextMenuSub>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText('Area'))
+
+    expectHint('Layout', 'Grid')
   })
 })

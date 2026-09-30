@@ -266,7 +266,7 @@ export const Open: Story = {
 
     await step('a separator is 8px from the items on each side', async () => {
       const above = page
-        .getByRole('menuitem', { name: 'Invite users' })
+        .getByRole('menuitem', { name: /^Density/ })
         .getBoundingClientRect()
       const line = within(menu).getByRole('separator').getBoundingClientRect()
       const below = page
@@ -284,6 +284,35 @@ export const Open: Story = {
       await expect(style.color).toBe(colorOf('text-secondary', menu))
       await expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
       await expect(style.fontSize).toBe('12px')
+      await expect(style.color).not.toBe(
+        getComputedStyle(shortcut.parentElement as HTMLElement).color,
+      )
+    })
+
+    await step('the submenu chevron is control-border-strong', async () => {
+      const chevron = page
+        .getByRole('menuitem', { name: 'Invite users' })
+        .querySelector('svg') as SVGElement
+      await expect(getComputedStyle(chevron).color).toBe(
+        colorOf('text-control-border-strong', menu),
+      )
+    })
+
+    await step('a value hint sits 8px before the chevron', async () => {
+      const item = page.getByRole('menuitem', { name: 'Density Compact' })
+      const hint = within(item).getByText('Compact')
+      const chevron = item.querySelector('svg') as SVGElement
+      await expect(getComputedStyle(hint).color).toBe(
+        colorOf('text-secondary', menu),
+      )
+      await expect(getComputedStyle(hint).fontSize).toBe('12px')
+      const hintBox = hint.getBoundingClientRect()
+      const chevronBox = chevron.getBoundingClientRect()
+      await expect(chevronBox.left - hintBox.right).toBeCloseTo(8, 1)
+      // The chevron stays at the end of the item (8px padding).
+      await expect(
+        item.getBoundingClientRect().right - chevronBox.right,
+      ).toBeCloseTo(8, 1)
     })
   },
   render: () => (
@@ -302,6 +331,11 @@ export const Open: Story = {
           <DropdownMenuCheckboxItem checked>Dark mode</DropdownMenuCheckboxItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
+          </DropdownMenuSub>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger hint="Compact">
+              Density
+            </DropdownMenuSubTrigger>
           </DropdownMenuSub>
           <DropdownMenuSeparator />
           <DropdownMenuItem disabled>API</DropdownMenuItem>

@@ -35,6 +35,22 @@ export const popoverSeparatorClasses = 'my-2 h-[0.5px] bg-black-10'
 export const popoverShortcutClasses =
   'min-w-0 rounded-none bg-transparent px-0 text-secondary in-data-[disabled]:text-black-20'
 
+/**
+ * The chevron at the end of a submenu item: the kit's 16px `ArrowLineRight`
+ * in Black/20%, which is 1.6:1, so `control-border-strong` (3:1 or more, as
+ * Select's chevron). Dimmed with a disabled item; points left in RTL.
+ */
+export const popoverChevronClasses =
+  'ms-auto text-control-border-strong rtl:-scale-x-100 in-data-[disabled]:text-black-20'
+
+/**
+ * The value hint of a submenu item, before its chevron: the kit's 12/16
+ * text in Black/40%, in `text-secondary`, 8px from the chevron (the item's
+ * gap). Dimmed with a disabled item.
+ */
+export const popoverHintClasses =
+  'ms-auto whitespace-nowrap text-12 text-secondary in-data-[disabled]:text-black-20'
+
 /** The popover open/close animations. */
 export const popoverAnimationClasses =
   'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:animate-zoom-out-95 data-[state=open]:animate-zoom-in-95 data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom'

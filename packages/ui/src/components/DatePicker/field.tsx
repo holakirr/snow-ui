@@ -104,9 +104,8 @@ export type DatePickerSharedProps = Omit<
    * `withTime` "PP, h:mm a" or "PP, HH:mm" (the hour cycle), with seconds
    * "PP, h:mm:ss a" or "PP, HH:mm:ss". Without it (and without time)
    * DateRangePicker writes a range within one month with the month and the
-   * year once, in the locale's order: "Feb 2 – 10, 2026". Its dates are
-   * then Intl's medium date, which is "PP" in English ("2 февр. 2026 г."
-   * in Russian, where "PP" abbreviates February "фев.").
+   * year once, in the locale's order: "Feb 2 – 10, 2026", "2–10 фев.
+   * 2026 г." in Russian.
    */
   dateFormat?: string
 

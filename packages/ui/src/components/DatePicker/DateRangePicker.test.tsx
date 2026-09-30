@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
+import type { Locale } from 'date-fns'
 import { useState } from 'react'
-import { ru } from 'react-day-picker/locale'
+import { ja, ru } from 'react-day-picker/locale'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { SnowUIProvider } from '../SnowUIProvider'
 import {
@@ -77,9 +78,9 @@ describe('DateRangePicker', () => {
   })
 
   it('writes the month and year once in the locale’s order', () => {
-    const inRussian = (value: DateRange) => {
+    const inLocale = (locale: Locale, value: DateRange) => {
       const { unmount } = render(
-        <SnowUIProvider locale={ru}>
+        <SnowUIProvider locale={locale}>
           <DateRangePicker aria-label="Период" defaultValue={value} />
         </SnowUIProvider>,
       )
@@ -87,16 +88,40 @@ describe('DateRangePicker', () => {
       unmount()
       return text
     }
-    // ICU versions write the dash as "–" or "—".
-    expect(inRussian(range([2026, 1, 2], [2026, 1, 10]))).toMatch(
-      /^2[–—]10 февр\. 2026 г\.$/,
+    // Intl's order and dash (ICU versions write "–" or "—"), date-fns's
+    // month: "фев.", as DatePicker's "PP", not Intl's "февр.".
+    expect(inLocale(ru, range([2026, 1, 2], [2026, 1, 10]))).toMatch(
+      /^2[–—]10 фев\. 2026 г\.$/,
     )
-    expect(inRussian(range([2026, 1, 2], [2026, 2, 3]))).toBe(
-      '2 февр. 2026 г. – 3 мар. 2026 г.',
+    expect(inLocale(ru, range([2026, 1, 2], [2026, 2, 3]))).toBe(
+      '2 фев. 2026 г. – 3 мар. 2026 г.',
     )
-    expect(inRussian(range([2025, 11, 29], [2026, 0, 4]))).toBe(
+    expect(inLocale(ru, range([2025, 11, 29], [2026, 0, 4]))).toBe(
       '29 дек. 2025 г. – 4 янв. 2026 г.',
     )
+    // Where Intl's range repeats the month anyway (Japanese), the field
+    // shows two "PP" dates.
+    expect(inLocale(ja, range([2026, 1, 2], [2026, 1, 10]))).toBe(
+      '2026/02/02 – 2026/02/10',
+    )
+  })
+
+  it('writes an out-of-order controlled range as two dates', () => {
+    expect(textOf({ value: range([2026, 1, 10], [2026, 1, 2]) })).toBe(
+      'Feb 10, 2026 – Feb 2, 2026',
+    )
+  })
+
+  it('falls back to two dates when Intl has no range format', () => {
+    const formatRangeToParts = vi
+      .spyOn(Intl.DateTimeFormat.prototype, 'formatRangeToParts')
+      .mockImplementation(() => {
+        throw new RangeError('unsupported')
+      })
+    expect(textOf({ value: range([2026, 1, 2], [2026, 1, 10]) })).toBe(
+      'Feb 2, 2026 – Feb 10, 2026',
+    )
+    formatRangeToParts.mockRestore()
   })
 
   it('keeps two full dates with a dateFormat, the time or a range message', () => {

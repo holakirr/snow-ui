@@ -74,4 +74,21 @@ describe('Dialog', () => {
     expect(close).toHaveClass('rounded-12')
     expect(close).not.toHaveClass('rounded-16')
   })
+
+  it('widens the start slot for a 48px icon (Figma "Add data")', () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent aria-describedby={undefined}>
+          <DialogHeader startContent={<span data-testid="start" />}>
+            <DialogTitle>New</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>,
+    )
+
+    // At least the close button's 40px, not capped at it.
+    const slot = screen.getByTestId('start').parentElement
+    expect(slot).toHaveClass('min-w-10')
+    expect(slot).not.toHaveClass('w-10')
+  })
 })

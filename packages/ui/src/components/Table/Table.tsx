@@ -183,15 +183,16 @@ TableCell.displayName = 'TableCell'
 type TableToolbarProps = ComponentProps<'div'>
 
 /**
- * The Figma table "function bar": a rounded Background/2 strip above the
- * table for its actions (add, filter, sort) and a Search. Its children are
- * laid out in a row, 8px apart; `ms-auto` pushes one to the end.
+ * The Figma table "function bar": a Background/2 strip with radius 12 above
+ * the table for its actions (add, filter, sort) and a Search. It is padded
+ * 8px and at least 44px high; its children are laid out in a row, 16px
+ * apart; `ms-auto` pushes one to the end.
  */
 const TableToolbar: FC<TableToolbarProps> = ({ className, ...props }) => (
   <div
     data-slot="table-toolbar"
     className={twMerge(
-      'flex min-h-11 flex-wrap items-center gap-2 rounded-16 bg-background-2 p-2 text-black',
+      'flex min-h-11 flex-wrap items-center gap-4 rounded-12 bg-background-2 p-2 text-black',
       className,
     )}
     {...props}

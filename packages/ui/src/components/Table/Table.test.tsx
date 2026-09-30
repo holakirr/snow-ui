@@ -126,7 +126,7 @@ describe('Table', () => {
 })
 
 describe('TableToolbar and TableCell reveal', () => {
-  it('draws the function bar: a rounded Background/2 row padded 8px', () => {
+  it('draws the function bar: a Background/2 row, radius 12, padded 8px, gap 16', () => {
     render(
       <TableToolbar aria-label="Orders" role="group" className="mb-2">
         <button type="button">Add</button>
@@ -137,12 +137,16 @@ describe('TableToolbar and TableCell reveal', () => {
     expect(toolbar).toHaveClass(
       'flex',
       'items-center',
-      'gap-2',
-      'rounded-16',
+      'min-h-11',
+      'gap-4',
+      'rounded-12',
       'bg-background-2',
       'p-2',
       'mb-2',
     )
+    // Figma "Table A function bar": radius 12 and gap 16 (not 16 and 8).
+    expect(toolbar).not.toHaveClass('rounded-16')
+    expect(toolbar).not.toHaveClass('gap-2')
     expect(
       within(toolbar).getByRole('button', { name: 'Add' }),
     ).toBeInTheDocument()

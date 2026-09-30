@@ -167,7 +167,7 @@ export const OrdersTable = ({ captionId }: { captionId: string }) => {
 
   return (
     <div className="flex flex-col gap-3">
-      <TableToolbar className="justify-between gap-3">
+      <TableToolbar className="justify-between">
         <Typography
           size={12}
           className="px-2 text-secondary"

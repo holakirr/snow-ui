@@ -74,8 +74,9 @@ DialogContent.displayName = DialogPrimitive.Content.displayName
 
 type DialogHeaderProps = ComponentProps<'div'> & {
   /**
-   * Content before the title (on the left in left-to-right text), in a 40px
-   * slot that balances the close button.
+   * Content before the title (on the left in left-to-right text), in a slot
+   * at least 40px wide that balances the close button. The Figma "Add data"
+   * dialog puts a 48px icon there: the Add glyph at 36×36 in a 48px box.
    */
   startContent?: ReactNode
   /**
@@ -111,7 +112,9 @@ const DialogHeader: FC<DialogHeaderProps> = ({
       className={twMerge('flex justify-between items-center px-2', className)}
       {...props}
     >
-      <div className="w-10">{startContent ?? leftContent}</div>
+      {/* At least 40px, the close button's width; it widens for larger
+          content, such as the Figma "Add data" 48px icon. */}
+      <div className="min-w-10">{startContent ?? leftContent}</div>
       {children}
       <DialogPrimitive.Close asChild>
         {/* Figma "Close": Button Medium "Gray", icon-only (padding 8, radius

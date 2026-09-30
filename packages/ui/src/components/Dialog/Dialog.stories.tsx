@@ -119,6 +119,16 @@ export const Default: Story = {
   },
 }
 
+/**
+ * The Figma "Add data" title row's start icon: an Icon of size 48 holding the
+ * Add glyph at 36×36, Black/100%.
+ */
+const addDataIcon = (
+  <span className="flex size-12 items-center justify-center text-black">
+    <AddIcon size={36} />
+  </span>
+)
+
 /** The Figma "Add data" screen, open. */
 export const AddData: Story = {
   args: {},
@@ -128,7 +138,7 @@ export const AddData: Story = {
     <div className="h-svh w-full bg-background-1">
       <Dialog defaultOpen>
         <DialogContent aria-describedby={undefined}>
-          <DialogHeader startContent={<AddIcon size={24} />}>
+          <DialogHeader startContent={addDataIcon}>
             <DialogTitle>New</DialogTitle>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
@@ -173,7 +183,7 @@ export const RTL: Story = {
     <div className="h-svh w-full bg-background-1">
       <Dialog defaultOpen>
         <DialogContent aria-describedby={undefined}>
-          <DialogHeader startContent={<AddIcon size={24} />}>
+          <DialogHeader startContent={addDataIcon}>
             <DialogTitle>جديد</DialogTitle>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">

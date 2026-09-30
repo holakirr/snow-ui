@@ -103,6 +103,13 @@ export type Messages = {
     selected: (labels: string[]) => string
     /** `MultiSelect`: announced when a tag is removed. */
     removed: (label: string) => string
+    /**
+     * The browser's message for a `required` Combobox with typed text that
+     * picked no option (an empty field gets the browser's own message).
+     */
+    required: string
+    /** The browser's message for a `required` MultiSelect with no tag. */
+    requiredMultiple: string
   }
   commandPalette: {
     /** Accessible name of the dialog, the search field and the list. */
@@ -248,6 +255,8 @@ export const defaultMessages: Required<Messages> = {
     create: (query) => `Create "${query}"`,
     selected: (labels) => `Selected: ${labels.join(', ')}`,
     removed: (label) => `${label} removed`,
+    required: 'Select an item in the list.',
+    requiredMultiple: 'Select at least one item in the list.',
   },
   commandPalette: {
     label: 'Search',

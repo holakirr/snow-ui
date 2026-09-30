@@ -164,7 +164,12 @@
         "date-fns",
         "react-day-picker"
       ],
-      "registryDependencies": ["button", "snow-core", "snow-ui-provider"],
+      "registryDependencies": [
+        "button",
+        "snow-core",
+        "snow-date",
+        "snow-ui-provider"
+      ],
       "import": "components/Calendar/Calendar",
       "exports": ["Calendar"],
       "types": ["CalendarProps"],
@@ -959,7 +964,8 @@
         "SnowUIContrast",
         "SnowUIProviderProps",
         "SnowUITheme",
-        "TextDirection"
+        "TextDirection",
+        "WeekStart"
       ],
       "docs": "components-snowuiprovider"
     },
@@ -1237,7 +1243,8 @@
         "getEarliestScheduleHour",
         "getLatestScheduleHour",
         "getScheduleHours",
-        "getWeekDates"
+        "getWeekDates",
+        "resolveWeekStart"
       ],
       "types": ["ScheduleSegment"]
     },
@@ -1270,6 +1277,8 @@
         "utils/deprecation.ts",
         "utils/direction.ts",
         "utils/env.ts",
+        "utils/form-field.tsx",
+        "utils/keyboard.ts",
         "utils/slot.ts",
         "utils/token-scales.generated.ts",
         "utils/tw-merge.ts"

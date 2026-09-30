@@ -95,3 +95,18 @@ export const getLatestScheduleHour = (
  */
 export const getScheduleHours = (earliest: number, latest: number): number[] =>
   Array.from({ length: latest - earliest + 1 }, (_, i) => i + earliest)
+
+/**
+ * The first day of the week of Calendar, the date pickers and Scheduler
+ * when their own prop isn't set: `SnowUIProvider`'s `weekStartsOn` (a day,
+ * or `'locale'` for `locale.options.weekStartsOn`, Sunday for `enUS`), else
+ * Monday, the Figma kit's (and 5.0's) default.
+ */
+export const resolveWeekStart = (
+  setting: StartOfWeek | 'locale' | undefined,
+  // A date-fns or react-day-picker locale.
+  locale: { options?: { weekStartsOn?: number } } | undefined,
+): StartOfWeek =>
+  setting === 'locale'
+    ? ((locale?.options?.weekStartsOn ?? 0) as StartOfWeek)
+    : (setting ?? 1)

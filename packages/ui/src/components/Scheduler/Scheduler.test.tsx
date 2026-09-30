@@ -6,7 +6,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
-import { ru } from 'date-fns/locale'
+import { enUS, ru } from 'date-fns/locale'
 import { userEvent } from 'storybook/test'
 import {
   afterAll,
@@ -23,15 +23,12 @@ import { SnowUIProvider } from '../SnowUIProvider'
 import { HOUR_HEIGHT, PAGE_HOURS } from './constants'
 import { Scheduler, type SchedulerProps } from './Scheduler'
 
-// The tests use the Figma kit's Monday-first week unless they test the
-// week start itself (the default follows the locale).
 const renderScheduler = (props: Partial<SchedulerProps> = {}) => {
   const onDateClick = vi.fn()
   const onEventClick = vi.fn()
   const scheduler = (next: Partial<SchedulerProps>) => (
     <Scheduler
       currentDate={new Date(2026, 8, 29, 10, 37, 12, 345)}
-      startOfWeek={1}
       onDateClick={onDateClick}
       onEventClick={onEventClick}
       {...next}
@@ -133,22 +130,9 @@ describe('Scheduler', () => {
       expect(getDays()[6]).toBe('9/27/2026')
     })
 
-    it("starts the week on the locale's first day: Sunday in en-US", () => {
-      // Tuesday, September 29: the en-US week runs from Sunday the 27th.
+    it('starts on Monday whatever the locale by default', () => {
       render(
-        <Scheduler
-          currentDate={new Date(2026, 8, 29, 12)}
-          onDateClick={() => {}}
-          onEventClick={() => {}}
-        />,
-      )
-      expect(getDays()[0]).toBe('9/27/2026')
-      expect(getDays()[6]).toBe('10/3/2026')
-    })
-
-    it("starts the week on the provider locale's first day: Monday in ru", () => {
-      render(
-        <SnowUIProvider locale={ru}>
+        <SnowUIProvider locale={enUS}>
           <Scheduler
             currentDate={new Date(2026, 8, 29, 12)}
             onDateClick={() => {}}
@@ -156,14 +140,56 @@ describe('Scheduler', () => {
           />
         </SnowUIProvider>,
       )
-      // The labels are in the ru format too.
+      expect(getDays()[0]).toBe('9/28/2026')
+    })
+
+    it('follows the locale\'s first day with the provider\'s weekStartsOn="locale"', () => {
+      // Tuesday, September 29: the en-US week runs from Sunday the 27th.
+      const { unmount } = render(
+        <SnowUIProvider weekStartsOn="locale">
+          <Scheduler
+            currentDate={new Date(2026, 8, 29, 12)}
+            onDateClick={() => {}}
+            onEventClick={() => {}}
+          />
+        </SnowUIProvider>,
+      )
+      expect(getDays()[0]).toBe('9/27/2026')
+      expect(getDays()[6]).toBe('10/3/2026')
+      unmount()
+
+      // A nested provider inherits it; the ru week starts on Monday, and
+      // the labels are in the ru format too.
+      render(
+        <SnowUIProvider weekStartsOn="locale">
+          <SnowUIProvider locale={ru}>
+            <Scheduler
+              currentDate={new Date(2026, 8, 29, 12)}
+              onDateClick={() => {}}
+              onEventClick={() => {}}
+            />
+          </SnowUIProvider>
+        </SnowUIProvider>,
+      )
       expect(getDays()[0]).toBe('28.09.2026')
       expect(getDays()[6]).toBe('04.10.2026')
     })
 
-    it('lets startOfWeek win over the locale', () => {
+    it("takes a day from the provider's weekStartsOn; startOfWeek wins", () => {
+      const { unmount } = render(
+        <SnowUIProvider weekStartsOn={0}>
+          <Scheduler
+            currentDate={new Date(2026, 8, 29, 12)}
+            onDateClick={() => {}}
+            onEventClick={() => {}}
+          />
+        </SnowUIProvider>,
+      )
+      expect(getDays()[0]).toBe('9/27/2026')
+      unmount()
+
       render(
-        <SnowUIProvider locale={ru}>
+        <SnowUIProvider locale={ru} weekStartsOn="locale">
           <Scheduler
             currentDate={new Date(2026, 8, 29, 12)}
             startOfWeek={0}
@@ -838,7 +864,6 @@ describe('Scheduler', () => {
     describe('right-to-left', () => {
       const scheduler = (props: Partial<SchedulerProps> = {}) => (
         <Scheduler
-          startOfWeek={1}
           currentDate={TODAY}
           onDateClick={() => {}}
           onEventClick={() => {}}

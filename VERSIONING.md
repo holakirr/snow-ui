@@ -15,7 +15,7 @@ The DOM structure, the internal class names and anything not exported from an en
 
 | Bump | When |
 | --- | --- |
-| **major** | Something that worked stops working: a removed or renamed export, prop, value or token; a narrower type; a new required peer dependency or a higher minimum version of one; dropping a supported browser, React or Node.js version. |
+| **major** | Something that worked stops working: a removed or renamed export, prop, value or token; a narrower type; a changed default; a new required peer dependency or a higher minimum version of one; dropping a supported browser, React or Node.js version. |
 | **minor** | New components, props, exports, tokens or options; deprecations. |
 | **patch** | Bug fixes, and internal or build changes that users don't need to act on. |
 
@@ -40,6 +40,8 @@ A breaking change follows these steps:
 1. **Deprecate in the current major (N.x), in a minor release.** The old API keeps working. It is marked `@deprecated` in its JSDoc (editors strike it through), it logs a warning once in development builds (`warnDeprecated` in `packages/ui/src/utils/deprecation.ts`; never in production), and the changelog entry shows the replacement. A deprecation ships at least one minor release before the major that removes it.
 2. **Pre-release the major on `next`** (`N+1.0.0-next.*`) for at least four weeks, so apps can try the upgrade with `npm install @holakirr/snow-ui@next`.
 3. **Remove it in the next major (N+1.0.0)**, never within a major. The major comes with a migration guide (every breaking change, before and after), and with a codemod when the change is mechanical, such as a renamed prop, component, export or token.
+
+A changed default follows the same path: the new behaviour ships first as an opt-in in a minor, and becomes the default in the major. For example, `SnowUIProvider`'s `weekStartsOn="locale"` makes the date components start the week on the locale's first day in 5.x; 6.0 makes it the default instead of Monday.
 
 Security fixes are the exception: if a vulnerability can only be fixed by a breaking change, the fix may ship in a minor or patch release, with the reason and the migration in the release notes and the advisory.
 

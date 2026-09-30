@@ -15,6 +15,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { isComposingKey } from '../../utils/keyboard'
 import { twMerge } from '../../utils/tw-merge'
 import { Search } from '../Search'
 import { useSnowUI } from '../SnowUIProvider'
@@ -314,7 +315,8 @@ const CommandPaletteList: FC<ListProps> = ({
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.nativeEvent.isComposing) return
+    // An IME composition's keys, the Enter that commits one included.
+    if (isComposingKey(event)) return
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault()

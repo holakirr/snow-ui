@@ -97,6 +97,22 @@ describe('CommandPalette', () => {
     expect(activeOption()).toHaveAccessibleName('Projects')
   })
 
+  it('ignores the Enter that commits an IME composition (WebKit)', () => {
+    const onSelect = vi.fn()
+    renderOpen({ onSelect })
+    const combobox = screen.getByRole('combobox')
+
+    fireEvent.compositionStart(combobox)
+    fireEvent.change(combobox, { target: { value: 'proj' } })
+    fireEvent.compositionEnd(combobox, { data: 'proj' })
+    // WebKit: after compositionend, Enter with keyCode 229 and isComposing
+    // false.
+    fireEvent.keyDown(combobox, { key: 'Enter', keyCode: 229 })
+    expect(onSelect).not.toHaveBeenCalled()
+    fireEvent.keyDown(combobox, { key: 'Enter' })
+    expect(onSelect).toHaveBeenCalledTimes(1)
+  })
+
   it('filters as the user types and resets the highlight', () => {
     renderOpen({})
     const combobox = screen.getByRole('combobox')

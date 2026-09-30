@@ -3,9 +3,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
-import { ru } from 'react-day-picker/locale'
+import { enUS, ru } from 'react-day-picker/locale'
 import { expect } from 'storybook/test'
 
+import { SnowUIProvider } from '../SnowUIProvider'
 import { Calendar } from './Calendar'
 
 const meta: Meta<typeof Calendar> = {
@@ -22,7 +23,7 @@ const meta: Meta<typeof Calendar> = {
     docs: {
       description: {
         component:
-          'The Figma DatePicker: a glass surface (Background/3, "Glass 2", 1px Surface/1 stroke, radius 16), weeks starting on the locale’s first day (Sunday in English, Monday in Russian; `weekStartsOn` wins), 12 Regular days, the selected day in Primary, today in Secondary/Indigo and outside days in `text-secondary` (Figma: Black/40%, 2.85:1). `header` adds the top row (e.g. a date input); `showTodayButton` and `lastSelection` add the "Today" and "Last selection" actions.',
+          'The Figma DatePicker: a glass surface (Background/3, "Glass 2", 1px Surface/1 stroke, radius 16), weeks starting on Monday (`weekStartsOn` sets another day; `SnowUIProvider`’s `weekStartsOn="locale"` follows the locale), 12 Regular days, the selected day in Primary, today in Secondary/Indigo and outside days in `text-secondary` (Figma: Black/40%, 2.85:1). `header` adds the top row (e.g. a date input); `showTodayButton` and `lastSelection` add the "Today" and "Last selection" actions.',
       },
     },
   },
@@ -145,8 +146,6 @@ export const DatePicker: Story = {
         onSelect={setDate}
         today={FIGMA_TODAY}
         defaultMonth={FIGMA_MONTH}
-        // The Figma frame starts the week on Monday.
-        weekStartsOn={1}
         showYearSwitcher={false}
         formatters={{
           formatCaption: (month) =>
@@ -291,21 +290,49 @@ export const MultipleSelected: Story = {
   },
 }
 
-/**
- * `weekStartsOn={1}` starts the week on Monday, as the Figma DatePicker,
- * whatever the locale (the default follows the locale: Sunday in English).
- */
-export const WeekStartsOnMonday: Story = {
+/** `weekStartsOn={0}` restores a Sunday start. */
+export const WeekStartsOnSunday: Story = {
   render: () => (
     <Calendar
       mode="single"
-      weekStartsOn={1}
+      weekStartsOn={0}
       defaultMonth={new Date(2025, 0, 1)}
     />
   ),
   play: async ({ canvasElement }) => {
     const weekdays = canvasElement.querySelectorAll('th[aria-label]')
-    await expect(weekdays[0]).toHaveAttribute('aria-label', 'Monday')
+    await expect(weekdays[0]).toHaveAttribute('aria-label', 'Sunday')
+  },
+}
+
+/**
+ * `SnowUIProvider`'s `weekStartsOn="locale"` starts the week on the
+ * locale's first day (`locale.options.weekStartsOn`): Sunday in English,
+ * Monday in Russian. A calendar's own `weekStartsOn` still wins.
+ */
+export const LocaleWeekStart: Story = {
+  render: () => (
+    <SnowUIProvider weekStartsOn="locale">
+      <div className="flex flex-wrap items-start gap-4">
+        <SnowUIProvider locale={enUS}>
+          <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
+        </SnowUIProvider>
+        <SnowUIProvider locale={ru}>
+          <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
+        </SnowUIProvider>
+      </div>
+    </SnowUIProvider>
+  ),
+  play: async ({ canvasElement }) => {
+    const [en, russian] = canvasElement.querySelectorAll('table')
+    await expect(en?.querySelector('th[aria-label]')).toHaveAttribute(
+      'aria-label',
+      'Sunday',
+    )
+    await expect(russian?.querySelector('th[aria-label]')).toHaveAttribute(
+      'aria-label',
+      'понедельник',
+    )
   },
 }
 

@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { userEvent } from 'storybook/test'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import {
   Form,
@@ -615,5 +616,266 @@ describe('defaultComboboxFilter', () => {
     expect(defaultComboboxFilter(option, 'york new')).toBe(true)
     expect(defaultComboboxFilter(option, 'USA')).toBe(true)
     expect(defaultComboboxFilter(option, 'york paris')).toBe(false)
+  })
+})
+
+describe('Combobox in a form', () => {
+  const formOf = (container: HTMLElement) =>
+    container.querySelector('form') as HTMLFormElement
+
+  it('never submits the form with Enter while the list is open', async () => {
+    const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault())
+    render(
+      <form onSubmit={(event) => onSubmit(event.nativeEvent as SubmitEvent)}>
+        <Combobox aria-label="Fruit" options={fruits} name="fruit" />
+        <button type="submit">Save</button>
+      </form>,
+    )
+    // No match: nothing is highlighted, and Enter doesn't submit.
+    await userEvent.click(field())
+    await userEvent.keyboard('zzz{Enter}')
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(field()).toHaveAttribute('aria-expanded', 'true')
+
+    // With the list closed, Enter submits as usual.
+    await userEvent.keyboard('{Escape}')
+    await userEvent.keyboard('{Enter}')
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+  })
+
+  it('is invalid while required and nothing is picked, even with typed text', () => {
+    const { container } = render(
+      <form>
+        <Combobox aria-label="Fruit" options={fruits} name="fruit" required />
+      </form>,
+    )
+    const form = formOf(container)
+    expect(form.checkValidity()).toBe(false)
+
+    fireEvent.change(field(), { target: { value: 'zzz' } })
+    expect(form.checkValidity()).toBe(false)
+    expect((field() as HTMLInputElement).validationMessage).toBe(
+      'Select an item in the list.',
+    )
+
+    fireEvent.change(field(), { target: { value: 'ban' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    expect(form.checkValidity()).toBe(true)
+    expect(new FormData(form).get('fruit')).toBe('banana')
+  })
+
+  it('goes back to its initial value when the form resets', async () => {
+    const { container } = render(
+      <form>
+        <Combobox
+          aria-label="Fruit"
+          options={fruits}
+          name="fruit"
+          defaultValue="apple"
+        />
+      </form>,
+    )
+    const form = formOf(container)
+    fireEvent.change(field(), { target: { value: 'ban' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    fireEvent.change(field(), { target: { value: 'gr' } })
+    expect(new FormData(form).get('fruit')).toBe('banana')
+
+    await act(async () => form.reset())
+    expect(new FormData(form).get('fruit')).toBe('apple')
+    expect(field()).toHaveValue('Apple')
+    expect(field()).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('keeps its value when the reset is cancelled', async () => {
+    const { container } = render(
+      <form onReset={(event) => event.preventDefault()}>
+        <Combobox
+          aria-label="Fruit"
+          options={fruits}
+          name="fruit"
+          defaultValue="apple"
+        />
+      </form>,
+    )
+    const form = formOf(container)
+    fireEvent.change(field(), { target: { value: 'ban' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+
+    await act(async () => form.reset())
+    expect(new FormData(form).get('fruit')).toBe('banana')
+    expect(field()).toHaveValue('Banana')
+  })
+
+  it('keeps a custom validity message the app set', () => {
+    render(
+      <Combobox aria-label="Fruit" options={fruits} required name="fruit" />,
+    )
+    const input = field() as HTMLInputElement
+    // Typed text that picks nothing: the field's own message.
+    fireEvent.change(input, { target: { value: 'zzz' } })
+    expect(input.validationMessage).toBe('Select an item in the list.')
+
+    // The app's message (a server error) replaces it, and stays when the
+    // field's own reason goes away: an option is picked.
+    act(() => input.setCustomValidity('Server says no'))
+    fireEvent.change(input, { target: { value: 'ban' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(input).toHaveValue('Banana')
+    expect(input.validationMessage).toBe('Server says no')
+  })
+
+  it('asks a controlled parent for its initial value on reset', async () => {
+    const onValueChange = vi.fn()
+    const { container } = render(
+      <form>
+        <Combobox
+          aria-label="Fruit"
+          options={fruits}
+          value="banana"
+          onValueChange={onValueChange}
+        />
+      </form>,
+    )
+    await act(async () => formOf(container).reset())
+    expect(onValueChange).not.toHaveBeenCalled()
+
+    const { container: other } = render(
+      <form>
+        <Combobox
+          aria-label="Other"
+          options={fruits}
+          value="apple"
+          onValueChange={onValueChange}
+        />
+      </form>,
+    )
+    fireEvent.change(screen.getByRole('combobox', { name: 'Other' }), {
+      target: { value: 'gr' },
+    })
+    fireEvent.keyDown(screen.getByRole('combobox', { name: 'Other' }), {
+      key: 'Enter',
+    })
+    expect(onValueChange).toHaveBeenLastCalledWith('grapes')
+    await act(async () => formOf(other).reset())
+    // Still `value="apple"`: nothing to report.
+    expect(onValueChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('resets after a React 19 form action', async () => {
+    const received: (string | null)[] = []
+    render(
+      <form
+        action={async (data: FormData) => {
+          received.push(data.get('fruit') as string | null)
+        }}
+      >
+        <Combobox aria-label="Fruit" options={fruits} name="fruit" />
+        <button type="submit">Save</button>
+      </form>,
+    )
+    fireEvent.change(field(), { target: { value: 'ban' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    })
+    await waitFor(() => expect(received).toEqual(['banana']))
+    await waitFor(() => expect(field()).toHaveValue(''))
+  })
+
+  it('submits and resets with a form outside it (form="id")', async () => {
+    render(
+      <>
+        <form id="filters" data-testid="form" />
+        <Combobox
+          aria-label="Fruit"
+          options={fruits}
+          name="fruit"
+          form="filters"
+          defaultValue="apple"
+        />
+      </>,
+    )
+    const form = screen.getByTestId('form') as HTMLFormElement
+    expect(new FormData(form).get('fruit')).toBe('apple')
+
+    fireEvent.change(field(), { target: { value: 'gr' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    expect(new FormData(form).get('fruit')).toBe('grapes')
+    await act(async () => form.reset())
+    expect(new FormData(form).get('fruit')).toBe('apple')
+  })
+
+  it('closes and takes no pick when it becomes read-only', () => {
+    const onValueChange = vi.fn()
+    const onOpenChange = vi.fn()
+    const props = {
+      'aria-label': 'Fruit',
+      options: fruits,
+      onValueChange,
+      onOpenChange,
+    }
+    const { rerender } = render(<Combobox {...props} />)
+    fireEvent.keyDown(field(), { key: 'ArrowDown' })
+    const banana = screen.getByRole('option', { name: 'Banana' })
+
+    rerender(<Combobox {...props} readOnly />)
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+    fireEvent.click(banana)
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
+  it('shows no list while read-only, even with defaultOpen', () => {
+    render(
+      <Combobox aria-label="Fruit" options={fruits} defaultOpen readOnly />,
+    )
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+  })
+
+  it('drops the query and closes when disabled while typing', () => {
+    const onQueryChange = vi.fn()
+    const onOpenChange = vi.fn()
+    const props = {
+      'aria-label': 'Fruit',
+      options: fruits,
+      defaultValue: 'apple',
+      onQueryChange,
+      onOpenChange,
+    }
+    const { rerender } = render(<Combobox {...props} />)
+    fireEvent.change(field(), { target: { value: 'gr' } })
+
+    rerender(<Combobox {...props} disabled />)
+    expect(field()).toHaveValue('Apple')
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+    expect(onQueryChange).toHaveBeenLastCalledWith('')
+
+    rerender(<Combobox {...props} />)
+    expect(field()).toHaveValue('Apple')
+    expect(field()).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('ignores the Enter that commits an IME composition (WebKit)', () => {
+    const onValueChange = vi.fn()
+    render(
+      <Combobox
+        aria-label="City"
+        options={[
+          { value: 'tokyo', label: '東京' },
+          { value: 'kyoto', label: '京都' },
+        ]}
+        onValueChange={onValueChange}
+      />,
+    )
+    fireEvent.compositionStart(field())
+    fireEvent.change(field(), { target: { value: '京' } })
+    fireEvent.compositionEnd(field(), { data: '京' })
+    // WebKit: after compositionend, an Enter with keyCode 229 and
+    // isComposing false.
+    fireEvent.keyDown(field(), { key: 'Enter', keyCode: 229 })
+    expect(onValueChange).not.toHaveBeenCalled()
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    expect(onValueChange).toHaveBeenCalledWith('tokyo')
   })
 })

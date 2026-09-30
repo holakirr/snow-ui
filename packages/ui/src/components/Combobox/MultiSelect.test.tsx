@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { SnowUIProvider } from '../SnowUIProvider'
@@ -263,5 +263,162 @@ describe('MultiSelect', () => {
     expect(field()).toHaveAccessibleDescription('Gewählt: React und Figma')
     fireEvent.click(screen.getByRole('button', { name: 'Figma entfernen' }))
     expect(screen.getByRole('status')).toHaveTextContent('Figma entfernt')
+  })
+})
+
+describe('MultiSelect in a form', () => {
+  const formOf = (container: HTMLElement) =>
+    container.querySelector('form') as HTMLFormElement
+
+  it('goes back to its initial values when the form resets', async () => {
+    const { container } = render(
+      <form>
+        <MultiSelect
+          aria-label="Skills"
+          options={skills}
+          name="skills"
+          defaultValue={['react']}
+        />
+      </form>,
+    )
+    const form = formOf(container)
+    fireEvent.click(screen.getByRole('button', { name: 'Remove tag React' }))
+    fireEvent.change(field(), { target: { value: 'fig' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    expect(new FormData(form).getAll('skills')).toEqual(['figma'])
+
+    await act(async () => form.reset())
+    expect(new FormData(form).getAll('skills')).toEqual(['react'])
+    expect(field()).toHaveValue('')
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent('')
+  })
+
+  it('keeps its tags when the reset is cancelled', async () => {
+    const { container } = render(
+      <form onReset={(event) => event.preventDefault()}>
+        <MultiSelect
+          aria-label="Skills"
+          options={skills}
+          name="skills"
+          defaultValue={['react']}
+        />
+      </form>,
+    )
+    const form = formOf(container)
+    fireEvent.click(screen.getByRole('button', { name: 'Remove tag React' }))
+
+    await act(async () => form.reset())
+    expect(new FormData(form).getAll('skills')).toEqual([])
+  })
+
+  it('keeps a custom validity message the app set', () => {
+    renderMultiSelect({ required: true })
+    const input = field() as HTMLInputElement
+    expect(input.validationMessage).toBe(
+      'Select at least one item in the list.',
+    )
+
+    act(() => input.setCustomValidity('Server says no'))
+    fireEvent.change(input, { target: { value: 'fig' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(
+      screen.getByRole('button', { name: 'Remove tag Figma' }),
+    ).toBeInTheDocument()
+    expect(input.validationMessage).toBe('Server says no')
+  })
+
+  it('submits and resets with a form outside it (form="id")', async () => {
+    render(
+      <>
+        <form id="profile" data-testid="form" />
+        <MultiSelect
+          aria-label="Skills"
+          options={skills}
+          name="skills"
+          form="profile"
+          defaultValue={['react', 'figma']}
+        />
+      </>,
+    )
+    const form = screen.getByTestId('form') as HTMLFormElement
+    expect(new FormData(form).getAll('skills')).toEqual(['react', 'figma'])
+    fireEvent.keyDown(field(), { key: 'Backspace' })
+    expect(new FormData(form).getAll('skills')).toEqual(['react'])
+    await act(async () => form.reset())
+    expect(new FormData(form).getAll('skills')).toEqual(['react', 'figma'])
+  })
+
+  it('blocks the form while required and empty', () => {
+    const { container } = render(
+      <form>
+        <MultiSelect aria-label="Skills" options={skills} required />
+      </form>,
+    )
+    const form = formOf(container)
+    expect(form.checkValidity()).toBe(false)
+    expect((field() as HTMLInputElement).validationMessage).toBe(
+      'Select at least one item in the list.',
+    )
+    fireEvent.change(field(), { target: { value: 'rea' } })
+    fireEvent.keyDown(field(), { key: 'Enter' })
+    expect(form.checkValidity()).toBe(true)
+  })
+
+  it('announces a removal once, not again after loading', () => {
+    const Async = () => {
+      const [loading, setLoading] = useState(false)
+      return (
+        <>
+          <MultiSelect
+            aria-label="Skills"
+            options={skills}
+            defaultValue={['react', 'figma']}
+            loading={loading}
+            onQueryChange={(query) => setLoading(query !== '')}
+          />
+          <button type="button" onClick={() => setLoading(false)}>
+            Done
+          </button>
+        </>
+      )
+    }
+    render(<Async />)
+    const status = () => screen.getByRole('status')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove tag Figma' }))
+    expect(status()).toHaveTextContent('Figma removed')
+    fireEvent.change(field(), { target: { value: 'ty' } })
+    expect(status()).toHaveTextContent('Loading')
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+    expect(status()).not.toHaveTextContent('Figma removed')
+  })
+
+  it('ignores the Enter that commits an IME composition (WebKit)', () => {
+    const onValueChange = vi.fn()
+    renderMultiSelect({ onValueChange })
+    fireEvent.compositionStart(field())
+    fireEvent.change(field(), { target: { value: 'fig' } })
+    fireEvent.compositionEnd(field(), { data: 'fig' })
+    fireEvent.keyDown(field(), { key: 'Enter', keyCode: 229 })
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
+  it('takes no pick from a click once read-only', () => {
+    const onValueChange = vi.fn()
+    const { rerender } = renderMultiSelect({ onValueChange })
+    fireEvent.keyDown(field(), { key: 'ArrowDown' })
+    const react = screen.getByRole('option', { name: 'React' })
+    rerender(
+      <MultiSelect
+        aria-label="Skills"
+        options={skills}
+        onValueChange={onValueChange}
+        readOnly
+      />,
+    )
+    fireEvent.click(react)
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
   })
 })

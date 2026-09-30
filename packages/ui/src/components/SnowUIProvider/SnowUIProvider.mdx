@@ -111,7 +111,7 @@ The layout and the `rtl:` styles follow the DOM, not the provider: set the same 
 ## Hooks
 
 - `useMessages()` returns the nearest provider's messages (`defaultMessages` without one). Use it to label your own components with the library's strings.
-- `useSnowUI()` returns `messages`, `locale`, `dir`, `theme` and `contrast`. All but `messages` are `undefined` unless a provider (or a `ThemeScope`) sets them.
+- `useSnowUI()` returns `messages`, `locale`, `dir`, `theme`, `contrast` and `weekStartsOn`. All but `messages` are `undefined` unless a provider (or a `ThemeScope`) sets them.
 
 ```tsx
 import { ArrowRightIcon } from '@holakirr/snow-ui-icons'
@@ -171,7 +171,7 @@ const NextButton = ({ onClick }: { onClick: () => void }) => {
 
 ### SnowUIProvider
 
-It renders no element: it takes the props below and `children`, the subtree they apply to. `locale` translates the dates of `Calendar`, `DatePicker`, `DateRangePicker` and `Scheduler`, and sets the first day of the week of `Calendar` and the date pickers unless you set their `weekStartsOn`.
+It renders no element: it takes the props below and `children`, the subtree they apply to. `locale` translates the dates of `Calendar`, `DatePicker`, `DateRangePicker` and `Scheduler`. Their week starts on Monday unless you set their own `weekStartsOn` / `startOfWeek` or the provider's `weekStartsOn`: a day (`0` for Sunday … `6`), or `"locale"` for the locale's first day (`locale.options.weekStartsOn`: Sunday for `enUS`, Monday for `ru`). 6.0 makes `"locale"` the default.
 
 <ArgTypes of={SnowUIProvider} />
 

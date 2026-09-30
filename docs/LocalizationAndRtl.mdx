@@ -66,7 +66,7 @@ For several languages, pass the language (a string) from the layout and pick the
 ## Dates
 
 - `locale` goes to `Calendar` (month and weekday names, day labels; its own `locale` prop wins), to the dates `DatePicker` and `DateRangePicker` show and to `Scheduler`'s day, time and cell labels (`locale.code`; `en-US` without a locale, so the server and the browser render the same text).
-- The first day of the week in `Calendar`, `DatePicker`, `DateRangePicker` and `Scheduler` is the locale's (`locale.options.weekStartsOn`): Sunday with the default `enUS`, Monday with `ru`. Their `weekStartsOn` prop (`startOfWeek` on `Scheduler`) wins; `1` keeps the Figma kit's Monday whatever the locale.
+- The first day of the week in `Calendar`, `DatePicker`, `DateRangePicker` and `Scheduler` is Monday, as in the Figma kit, whatever the locale. `SnowUIProvider`'s `weekStartsOn` changes it for the subtree: a day (`0` for Sunday … `6`), or `"locale"` for the locale's first day (`locale.options.weekStartsOn`: Sunday with the default `enUS`, Monday with `ru`). Their own `weekStartsOn` prop (`startOfWeek` on `Scheduler`) wins. 6.0 makes `"locale"` the default.
 - A react-day-picker locale (`react-day-picker/locale`) also translates the day picker's own labels (day buttons, dropdowns…).
 - `messages.calendar.previousMonth`, `nextMonth` and `navigation` name the month navigation, so it translates with a plain date-fns locale too. Their English defaults give way to a react-day-picker locale's labels; a translated message wins over those, and `Calendar`'s `labels` prop over both.
 

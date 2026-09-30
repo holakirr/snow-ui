@@ -257,9 +257,9 @@ export const useCombobox = ({
   const baseId = useId()
   const listId = `${baseId}-list`
   const [innerOpen, setInnerOpen] = useState(defaultOpen)
-  // Disabling closes an uncontrolled list for good.
-  if (disabled && innerOpen) setInnerOpen(false)
-  const open = (openProp ?? innerOpen) && !disabled
+  // A disabled or read-only field shows no list and takes no picks.
+  const inactive = disabled || readOnly
+  const open = (openProp ?? innerOpen) && !inactive
   // `null`: the user hasn't typed since the list opened, so every option
   // shows (and a single Combobox shows the selected label).
   const [query, setQueryState] = useState<string | null>(null)
@@ -279,6 +279,22 @@ export const useCombobox = ({
     if ((query ?? '') !== (next ?? '')) onQueryChange?.(next ?? '')
     setQueryState(next)
   }
+
+  // Disabling the field (or making it read-only) closes the list and drops
+  // the query, as dismissing it does, but keeps the value: the parent hears
+  // `onOpenChange(false)` and `onQueryChange('')`. An uncontrolled list
+  // stays closed when the field is enabled again.
+  const wasInactive = useRef(inactive)
+  useEffect(() => {
+    const becameInactive = inactive && !wasInactive.current
+    wasInactive.current = inactive
+    if (!inactive) return
+    if (innerOpen) setInnerOpen(false)
+    if (!becameInactive) return
+    if (openProp ?? innerOpen) onOpenChange?.(false)
+    setQuery(null)
+    setActiveKey(undefined)
+  })
 
   const groups = useMemo(() => toGroups(options), [options])
   const allOptions = useMemo(
@@ -364,6 +380,16 @@ export const useCombobox = ({
     setOpen(true)
   }
 
+  /**
+   * Back to rest, for a form reset: the list closes and the query goes,
+   * without `onDismiss` (the caller resets the value).
+   */
+  const reset = () => {
+    setOpen(false)
+    setQuery(null)
+    setActiveKey(undefined)
+  }
+
   /** Closes the list without a selection; the query is dropped. */
   const dismiss = () => {
     if (!open && query === null) return
@@ -374,6 +400,7 @@ export const useCombobox = ({
   }
 
   const activate = (entry: Entry) => {
+    if (inactive) return
     const keepOpen =
       entry.create !== undefined
         ? onCreateOption(entry.create)
@@ -430,9 +457,11 @@ export const useCombobox = ({
         else move(-1)
         return true
       case 'Enter':
-        if (!open || !active) return false
+        if (!open) return false
+        // Never submit the form from an open list, even with nothing
+        // highlighted (no match, or results still loading).
         event.preventDefault()
-        activate(active)
+        if (active) activate(active)
         return true
       case 'Escape':
         // Radix closes an open list first (and prevents the event), so this
@@ -473,6 +502,7 @@ export const useCombobox = ({
   }
 
   return {
+    reset,
     baseId,
     listId,
     open,
@@ -569,7 +599,8 @@ export const ComboboxAdornments = ({
         onClick={onClear}
         // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon
         // (WCAG 1.4.11). A 16px icon: `hit-area` makes it 24px (2.5.8).
-        className="relative flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hit-area hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
+        // Keyboard focus: the `focus-ring` outline, at full opacity.
+        className="relative flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 transition-opacity hit-area hover:opacity-80 focus-ring focus-visible:opacity-100"
       >
         <XCircleIcon weight="fill" size={16} />
       </button>

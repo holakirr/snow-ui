@@ -2,13 +2,17 @@
 '@holakirr/snow-ui': minor
 ---
 
-New **`DatePicker`**: a form field for a date that opens the `Calendar` in a popover. The field looks like the Select trigger with a calendar icon; it is a `<button role="combobox">` that opens a modal dialog with focus on the picked day (or today). The arrow keys move between days, Enter picks one and closes the calendar, Escape closes it without a change; ↓ on the field opens it, Backspace or Delete clears it.
+New **`DatePicker`**: a form field for a date (and a time) that opens the Figma DatePicker in a popover. The field looks like the Select trigger with a calendar icon; it is a `<button role="combobox">` that opens a modal dialog with focus on the picked day (or today). The arrow keys move between days, Enter picks one and closes the calendar, Escape closes it without a change; ↓ on the field opens it, Backspace or Delete clears it.
+
+- **The Figma popup**, 360px wide: a top area with the date typed by parts in the locale's order ("10 / 22 / 2026", "22 . 10 . 2026" in Russian), as React Aria's DateField — each part a spinbutton that digits fill and the arrow keys step, Backspace empties, Enter confirms; today, dimmed, while there is no date. A typed date that can't be picked (`minDate`, `maxDate`, `disabledDates`) turns red and isn't taken. Then "Today" and "Last selection" (the value when it opened), the short month ("‹ Feb ›", a button to the months) and the days. The month and the year of the top area open the months and years grids ("This month", "This year", "‹ 2026 ›", "‹ Back"). Closing the popover confirms the date (Enter in the top area, a click outside, a picked day); Escape cancels.
+- **Time:** `withTime` (the Figma "Date and time" type) adds the time to the top area ("04 : 08 AM") and `withSeconds` the seconds; `hourCycle` is 12 or 24 (the locale's by default: 12 in English, 24 in Russian). Its parts open the hours, minutes and seconds grids ("System time", AM / PM); 13 typed into a 12-hour hour is 01 PM. A picked day keeps the time and the popover open. The field shows "Jan 20, 2025, 4:08 PM" and a form gets `2025-01-20T16:08`.
+- **`title`:** the Figma "2 row" field of a form, the title inside the field above the date; it names the field.
 
 - `value` / `defaultValue` / `onValueChange` (a `Date`, `null` once cleared) and `open` / `defaultOpen` / `onOpenChange`.
 - `minDate`, `maxDate` and `disabledDates` (react-day-picker matchers) limit the days; `calendarProps` passes any other `Calendar` prop (`captionLayout`, `showTodayButton`…).
 - The date is formatted with date-fns (`dateFormat`, `"PP"` by default) in `SnowUIProvider`'s `locale` (or the `locale` prop); the week starts on Monday, as in `Calendar` (`weekStartsOn`, or `SnowUIProvider`'s, sets another day). `clearable` (on by default) shows a clear button.
 - Button props (`id`, `aria-*`, `onBlur`, `ref`) go to the trigger, so it works in `FormControl` and with react-hook-form; `name` submits the date as `yyyy-MM-dd` with a hidden input; `aria-invalid` gives it a red stroke; `required` sets `aria-required`.
-- Right-to-left aware, with its strings in the new `messages.datePicker` namespace (`placeholder`, `dialog`, `clear`), optional in the `Messages` type like `messages.combobox`, so a full translation typed as `Messages` for 5.0 keeps compiling.
+- Right-to-left aware (the typed date reads left to right), with its strings in the new `messages.datePicker` namespace (`placeholder`, `dialog`, `clear`; the top area's `date`, `time`, `year`, `month`, `day`, `hour`, `minute`, `second`, `dayPeriod`, `empty`; the views' `thisMonth`, `thisYear`, `systemTime`, `back`, `chooseMonth`, `chooseYear`, `previousYear`, `nextYear`), optional in the `Messages` type like `messages.combobox`, so a full translation typed as `Messages` for 5.0 keeps compiling.
 
 The deprecated `DatePickerType` and `RangePickerType` types are unrelated to it and unchanged.
 

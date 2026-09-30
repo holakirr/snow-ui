@@ -56,7 +56,9 @@ The menu, open: [Open story](?path=/story/components-input-select--open).
 ## Anatomy
 
 1. **Root** (`Select`): holds the value and the open state; renders no element of its own.
-2. **Trigger** (`SelectTrigger`): a `<button role="combobox">` in the Figma Input field style (12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% stroke, 14/20 text) and a 16px ArrowLineUpDown icon at the end. Full width by default.
+2. **Trigger** (`SelectTrigger`): a `<button role="combobox">` in the Figma Input field style (12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% stroke, 14/20 text) and a 16px ArrowLineUpDown icon at the end. Full width by default. With `title`, the Figma "2 row" field of a form: the title (12/16, `text-secondary`) above the value, as `Input`'s `title`; it names the trigger (`aria-labelledby`) unless `aria-label` or `aria-labelledby` does.
+
+<Canvas of={SelectStories.WithTitle} />
 3. **Value** (`SelectValue`): the selected item's text, or `placeholder` in `text-secondary`.
 4. **Content** (`SelectContent`): the list, portalled to the end of `<body>`. The Popover surface: Background/3 with a 1px Surface/1 stroke, a 16px radius, the "Glass 2" blur and shadow, and 12px padding around the items. At least the trigger's width and 128px, at most 384px high, 4px from the trigger.
 5. **Group** and **Label** (`SelectGroup`, `SelectLabel`, optional): a titled group of items; the label is 12/16 `text-secondary`.

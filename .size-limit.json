@@ -4,7 +4,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "129 kB"
+    "limit": "143 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Button }",
@@ -74,14 +74,14 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ DatePicker }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "65 kB"
+    "limit": "68 kB"
   },
   {
     "name": "@holakirr/snow-ui: { DateRangePicker }",
     "path": "packages/ui/dist/index.js",
     "import": "{ DateRangePicker }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "65 kB"
+    "limit": "68.5 kB"
   },
   {
     "name": "@holakirr/snow-ui/react-hook-form: full import (ESM)",

@@ -9,7 +9,7 @@ import * as DateRangePickerStories from './DateRangePicker.stories'
 <FigmaLinks label="DatePicker component set" page="29706:37201" note="The field is the Figma Input; the calendar is the Figma DatePicker in range mode." />
 <InstallTabs item="date-range-picker" />
 
-DateRangePicker is a form field for a range of dates: it shows the picked range and opens a [Calendar](?path=/docs/components-calendar--docs) in range mode to pick another. The first pick is the start, the second the end, and the calendar closes. Everything else — the field, the popover, the limits, the keyboard, localization and forms — works as in [DatePicker](?path=/docs/components-datepicker--docs).
+DateRangePicker is a form field for a range of dates (and times, with `withTime`): it shows the picked range and opens the Figma DatePicker in range mode to pick another. The top area shows the start and the end ("10 / 22 / 2026 – 10 / 29 / 2026"), the one being picked in black and the other dimmed. The first pick is the start, the second the end, and the calendar closes. Everything else — the field, the top area, the views, the limits, the keyboard, localization and forms — works as in [DatePicker](?path=/docs/components-datepicker--docs).
 
 ```tsx
 import { type DateRange, DateRangePicker, Label } from '@holakirr/snow-ui'
@@ -33,11 +33,12 @@ const [stay, setStay] = useState<DateRange | null>(null)
 
 ## Anatomy
 
-As in [DatePicker](?path=/docs/components-datepicker--docs#anatomy). The field shows "Jan 13, 2025 – Jan 16, 2025" (`messages.datePicker.range(start, end)` with the dates in the `dateFormat`), or the placeholder "Pick a date range". `numberOfMonths` shows several months side by side (one by default, so the popover fits a phone).
+As in [DatePicker](?path=/docs/components-datepicker--docs#anatomy). The field shows "Jan 13, 2025 – Jan 16, 2025" (`messages.datePicker.range(start, end)` with the dates in the `dateFormat`), or the placeholder "Pick a date range". The top area has the start date, "–" and the end date (the one not being picked in `text-secondary`), then the time of the one being picked with `withTime`. `numberOfMonths` shows several months side by side (one by default, so the popover fits a phone).
 
 ## Picking a range
 
 - Every time the calendar opens, a new range starts: the first click (or Enter) picks the start, the second the end, and the calendar closes. If the end comes before the start, the two are swapped. The same day twice is a one-day range.
+- The date being picked is the active one in the top area, and it switches by itself: the start, then the end. A click on the other date in the top area picks that one instead, keeping the date that is already there (a new end for the same start, say). Typing an end before the start, or a start after the end, turns the date red and isn't taken.
 - While the end is being picked, the range follows the pointer.
 - Closing the calendar after the first pick (Escape, a click outside) keeps the range the field had.
 - `onValueChange` is called once, with the complete range `{ from, to }`, or with `null` when the field is cleared. Picking the range the field already has calls nothing.
@@ -46,7 +47,15 @@ As in [DatePicker](?path=/docs/components-datepicker--docs#anatomy). The field s
 
 <Canvas of={DateRangePickerStories.Open} />
 
+<Canvas of={DateRangePickerStories.PickingTheEnd} />
+
 <Canvas of={DateRangePickerStories.TwoMonths} />
+
+## Date range and time
+
+`withTime` (and `withSeconds`, `hourCycle`) is the Figma "Date range and time" type: the time in the top area is the one of the date being picked, the start's while the start is active, the end's while the end is. A picked end keeps the popover open to set its time; Enter in the top area or a click outside closes it with the range.
+
+<Canvas of={DateRangePickerStories.DateRangeAndTime} />
 
 Dark theme, open: [OpenDark story](?path=/story/components-daterangepicker--open-dark).
 
@@ -56,12 +65,17 @@ As in [DatePicker](?path=/docs/components-datepicker--docs#states). In the calen
 
 <Canvas of={DateRangePickerStories.States} />
 
+With `title`, the Figma "2 row" field of a form:
+
+<Canvas of={DateRangePickerStories.WithTitle} />
+
 <Canvas of={DateRangePickerStories.MinMaxAndDisabledDates} />
 
 ## Accessibility
 
 - As in [DatePicker](?path=/docs/components-datepicker--docs#accessibility): a `<button role="combobox">` that opens a modal `dialog`, here named "Choose a date range", with focus on the range's start (or today).
 - The calendar is a `grid` with `aria-multiselectable`; the days of the range are `aria-selected`.
+- The top area has two groups of spinbuttons, "Start date" and "End date"; the one being picked has `aria-current`. Focusing a date (or clicking it) makes it the one being picked; the time group is "Start time" or "End time" to match.
 - `name` adds a hidden input with the range as an ISO 8601 interval: `2025-01-13/2025-01-16` (see [Native forms](#native-forms)).
 
 ### Keyboard
@@ -74,6 +88,7 @@ As in [DatePicker](?path=/docs/components-datepicker--docs#keyboard), except tha
 | Backspace, Delete | on the field: clear the range (`clearable`) |
 | Arrow keys, Page Up / Page Down, Home / End | in the calendar: move between days, weeks and months |
 | Enter, Space | in the calendar: pick the start, then the end; the second pick closes the calendar and focus returns to the field |
+| 0–9, arrow keys, Backspace, Enter | in the top area: as in DatePicker, for the start and the end dates and the time |
 | Escape | close the calendar; after only a start, the field keeps its previous range |
 
 ### Deviations from the Figma kit
@@ -83,7 +98,7 @@ As in [DatePicker](?path=/docs/components-datepicker--docs#deviations-from-the-f
 ## Localization and RTL
 
 - As in DatePicker: `SnowUIProvider`'s `locale` formats the dates and localizes the calendar, `dateFormat` sets the format, the week starts on Monday unless you pass `weekStartsOn` or set `SnowUIProvider`'s `weekStartsOn`.
-- `messages.datePicker` holds `rangePlaceholder` ("Pick a date range"), `rangeDialog` ("Choose a date range"), `range(start, end)` ("start – end") and `clear` ("Clear date").
+- `messages.datePicker` holds `rangePlaceholder` ("Pick a date range"), `rangeDialog` ("Choose a date range"), `range(start, end)` ("start – end") and `clear` ("Clear date"); the top area's `startDate`, `endDate`, `startTime` and `endTime`, and the rest as in DatePicker.
 - In right-to-left text the range reads from the right.
 
 <Canvas of={DateRangePickerStories.RTL} />
@@ -98,7 +113,7 @@ Bind `value` and `onValueChange` (a `DateRange`, or `null`); pass `field.ref`, `
 
 | | What happens |
 | --- | --- |
-| Submits | `name=yyyy-MM-dd/yyyy-MM-dd`, an ISO 8601 interval (e.g. `2025-01-13/2025-01-16`), or `name=` (empty) with no range or a range without an end |
+| Submits | `name=yyyy-MM-dd/yyyy-MM-dd`, an ISO 8601 interval (e.g. `2025-01-13/2025-01-16`; with `withTime` `2025-01-13T09:30/2025-01-16T18:00`), or `name=` (empty) with no range or a range without an end |
 | `required` | the form doesn't submit until both ends are set |
 | `form="id"`, reset, `disabled` | as in [DatePicker](?path=/docs/components-datepicker--docs#native-forms): a form reset drops a half-picked range and brings back the range the field had on mount (a controlled field gets `onValueChange` with it) |
 

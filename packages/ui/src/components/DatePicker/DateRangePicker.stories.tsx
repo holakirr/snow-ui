@@ -161,6 +161,68 @@ export const OpenDark: Story = {
   globals: { theme: 'dark' },
 }
 
+/**
+ * The first click picks the start; the end is next, in black in the top
+ * area while the start is dimmed. Clicking a date in the top area picks
+ * that end instead.
+ */
+export const PickingTheEnd: Story = {
+  args: {
+    defaultValue: { from: new Date(2025, 0, 13), to: new Date(2025, 0, 16) },
+    defaultOpen: true,
+  },
+  parameters: openParameters,
+  render: Open.render,
+  play: async ({ canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(
+      await page.findByRole('button', { name: /January 21st, 2025/ }),
+    )
+    await expect(page.getByRole('group', { name: 'End date' })).toHaveAttribute(
+      'aria-current',
+      'true',
+    )
+    await userEvent.hover(
+      page.getByRole('button', { name: /January 24th, 2025/ }),
+    )
+  },
+}
+
+/**
+ * The Figma "Date range and time" type: the time in the top area is the
+ * one of the date being picked, the start's, then the end's.
+ */
+export const DateRangeAndTime: Story = {
+  args: {
+    defaultValue: {
+      from: new Date(2025, 0, 13, 9, 30),
+      to: new Date(2025, 0, 16, 18, 0),
+    },
+    defaultOpen: true,
+    withTime: true,
+  },
+  parameters: openParameters,
+  render: Open.render,
+}
+
+/** `title`: the Figma "2 row" field of a form. */
+export const WithTitle: Story = {
+  args: {
+    title: 'Stay',
+    defaultValue: { from: new Date(2026, 1, 1), to: new Date(2026, 1, 8) },
+  },
+  render: (args) => (
+    <div className="w-80">
+      <DateRangePicker {...args} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('combobox', { name: 'Stay' }),
+    ).toHaveTextContent('Feb 1, 2026 – Feb 8, 2026')
+  },
+}
+
 /** `numberOfMonths={2}`: two months side by side, for ranges across months. */
 export const TwoMonths: Story = {
   args: {

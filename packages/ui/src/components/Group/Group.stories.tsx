@@ -1,9 +1,14 @@
+import { ArrowLineLeftIcon } from '@holakirr/snow-ui-icons'
 import {
   BellIcon,
+  BookmarkSimpleIcon,
   ClockCounterClockwiseIcon,
+  FolderIcon,
+  HouseIcon,
   SidebarIcon,
   StarIcon,
   SunIcon,
+  UsersIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ReactNode } from 'react'
@@ -130,5 +135,93 @@ export const AllVariants: Story = {
 
 export const AllVariantsDark: Story = {
   render: () => <Variants />,
+  globals: { theme: 'dark' },
+}
+
+const navItems = [
+  { label: 'Home', icon: <HouseIcon /> },
+  { label: 'History', icon: <ClockCounterClockwiseIcon /> },
+  { label: 'User', icon: <UsersIcon /> },
+  { label: 'Folder', icon: <FolderIcon /> },
+  { label: 'Bookmark', icon: <BookmarkSimpleIcon /> },
+]
+
+// Navigation goes to pages, so the items are links styled as buttons.
+const navButtons = (vertical?: boolean) =>
+  navItems.map(({ label, icon }, index) => (
+    <Button
+      key={label}
+      asChild
+      size="md"
+      variant={index === 0 ? 'filled' : 'borderless'}
+      startContent={<IconBox size={16}>{icon}</IconBox>}
+      className={vertical ? 'justify-start' : undefined}
+    >
+      <a
+        href={`#${label.toLowerCase()}`}
+        aria-current={index === 0 ? 'page' : undefined}
+      >
+        {label}
+      </a>
+    </Button>
+  ))
+
+/*
+ * The button groups of the Figma Button and Group pages: Sign up + Sign in
+ * (Small, 8px apart), Previous + Submit (Medium, ≈183px wide, 16px apart)
+ * and top and side navigation (Medium buttons in a 12px-padded outlined
+ * group).
+ */
+const ButtonGroupSet = () => (
+  <div className="flex flex-col items-start gap-8">
+    <Group aria-label="Account">
+      <Button variant="gray">Sign up</Button>
+      <Button variant="filled">Sign in</Button>
+    </Group>
+    <Group gap={16} aria-label="Form steps">
+      <Button
+        variant="gray"
+        size="md"
+        startContent={
+          <IconBox size={16}>
+            <ArrowLineLeftIcon className="rtl:-scale-x-100" />
+          </IconBox>
+        }
+        className="w-[183px]"
+      >
+        Previous
+      </Button>
+      <Button variant="filled" size="md" className="w-[183px]">
+        Submit
+      </Button>
+    </Group>
+    <nav aria-label="Top navigation">
+      <Group
+        gap={4}
+        aria-label="Pages"
+        className="rounded-20 p-3 inset-ring-[0.5px] inset-ring-black-10"
+      >
+        {navButtons()}
+      </Group>
+    </nav>
+    <nav aria-label="Side navigation">
+      <Group
+        vertical
+        gap={4}
+        aria-label="Pages"
+        className="items-stretch rounded-20 p-3 inset-ring-[0.5px] inset-ring-black-10"
+      >
+        {navButtons(true)}
+      </Group>
+    </nav>
+  </div>
+)
+
+export const ButtonGroups: Story = {
+  render: () => <ButtonGroupSet />,
+}
+
+export const ButtonGroupsDark: Story = {
+  render: () => <ButtonGroupSet />,
   globals: { theme: 'dark' },
 }

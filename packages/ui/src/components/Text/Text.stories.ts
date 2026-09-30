@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 
 import { Typography } from './Text'
 
@@ -31,4 +32,18 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {},
+}
+
+/**
+ * Figma Text `State`: `interactive` gives the text the Hover state's 4px of
+ * padding on each side while the pointer is over it (hover it).
+ */
+export const Interactive: Story = {
+  args: { interactive: true, children: 'Hover me' },
+  play: async ({ canvas }) => {
+    const text = canvas.getByText('Hover me')
+    // Simulated pointer events don't apply :hover, so check the rule.
+    await expect(text).toHaveClass('hover:px-1')
+    await expect(getComputedStyle(text).paddingInlineStart).toBe('0px')
+  },
 }

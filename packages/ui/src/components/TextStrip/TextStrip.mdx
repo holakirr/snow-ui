@@ -1,0 +1,100 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as TextStripStories from './TextStrip.stories'
+
+<Meta of={TextStripStories} />
+
+<Title />
+
+<FigmaLinks />
+<InstallTabs item="text-strip" />
+
+TextStrip is a pill-shaped line of text, 160×28: a label that stands out as a block, such as the name of a plan, a step or a section. It is the Figma "TextStrip": Black/4% with semibold text, or, with `strip`, Secondary/Indigo to highlight one of several.
+
+```tsx
+import { TextStrip } from '@holakirr/snow-ui'
+
+<TextStrip>Starter</TextStrip>
+<TextStrip strip>Pro</TextStrip>
+```
+
+<Primary />
+
+## When to use
+
+- A short label shown as a block of equal width, often in a column: plans, steps, categories.
+- Highlighting the current one of those blocks with `strip`.
+
+## When not to use
+
+- A status or a category inside a line of data: use [Chip](?path=/docs/components-chip--docs).
+- Switching between views: use [ToggleGroup](?path=/docs/components-input-togglegroup--docs) or [Tabs](?path=/docs/components-tabs--docs), which manage the selection and the keyboard.
+- A segmented progress bar: use [Strip](?path=/docs/components-strip--docs).
+
+## Anatomy
+
+A single `<div>` (or the `asChild` element): 160×28 (`w-40 h-7`), fully rounded, 12px of padding on each side, with its text centred on one 14px line and cut with an ellipsis when it doesn't fit.
+
+## Variants
+
+<Canvas of={TextStripStories.Strip} />
+
+| `strip` | Figma | Look |
+| --- | --- | --- |
+| `false` (default) | Strip=False | Black/4% (White/10% in dark mode), 14 Semibold black text |
+| `true` | Strip=True | Secondary/Indigo (the same in both themes), 14 Regular static black text |
+
+The width is a default: pass a class to change it (`className="w-60"`, `w-full`).
+
+<Canvas of={TextStripStories.LongText} />
+
+## States
+
+`strip` sets `data-state="on"` (otherwise `"off"`) for your own styles. TextStrip has no hover or focus state of its own: with `asChild` on a button or a link, style those on your element (the AsButtons story adds `focus-ring`).
+
+## Accessibility
+
+- TextStrip has no role: its text is read in the flow of the page. When `strip` marks the current or the selected item, say so in the markup too — `aria-pressed` on a toggle button, `aria-current` on a link or a step — since the colour alone isn't read out (WCAG 1.3.1, 1.4.1).
+- **Contrast:** Figma's white text on Secondary/Indigo is 2.07:1; the text is static black (10.15:1), as on the Badge (1.4.3). The pills themselves are close to the page (Black/4% is 1.1:1, the indigo 2.07:1 on white): with more contrast, the Black/4% pill gets the `control-border` stroke and the strip a 2px `black-80` ring, so the highlighted one differs by more than its colour (1.4.11).
+
+<Canvas of={TextStripStories.AsButtons} />
+
+Deviations from the Figma kit (the full table is in the package README): the static black text on the strip.
+
+## Localization and RTL
+
+- TextStrip renders no built-in strings.
+- The text is centred in both directions; in right-to-left text the ellipsis is on the left.
+
+## Composition (asChild)
+
+`asChild` renders the only child with the strip's classes and `data-state`, merged with the child's own classes (which win conflicts): a `<button>` in a group of choices, a link, a heading.
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Keep the text short enough to fit 160px, or widen the strip.
+- Mark the strip in the markup (`aria-pressed`, `aria-current`) when it means "selected" or "current".
+
+</Do>
+<Dont>
+
+- Don't use TextStrip for long text: it is cut to one line.
+- Don't build a tab bar from TextStrips: use Tabs.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Chip](?path=/docs/components-chip--docs): a short coloured label inside content.
+- [Strip](?path=/docs/components-strip--docs): segmented strips and progress bars.
+- [ToggleGroup](?path=/docs/components-input-togglegroup--docs): a set of buttons with one pressed.
+
+## Props
+
+A `<div>` (or the `asChild` element) that takes the props below, `className` and the attributes of a `<div>`.
+
+<Controls />

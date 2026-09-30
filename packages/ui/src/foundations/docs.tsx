@@ -566,6 +566,75 @@ export const EffectsPage = () => (
   </Page>
 )
 
+const ScrollBox = ({
+  label,
+  className,
+  horizontal = false,
+}: {
+  label: string
+  className?: string
+  horizontal?: boolean
+}) => (
+  <div className="flex flex-col gap-2">
+    <section
+      // A scroll container is a tab stop, so keyboard users can scroll it.
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region needs to be focusable
+      tabIndex={0}
+      aria-label={label}
+      data-scrollbar-sample={label}
+      className={twMerge(
+        'h-40 w-56 rounded-16 bg-background-2 p-3 focus-ring',
+        horizontal ? 'overflow-x-auto' : 'overflow-y-auto',
+        className,
+      )}
+    >
+      <div
+        className={twMerge(
+          'flex gap-2 text-12 text-secondary',
+          horizontal ? 'w-[40rem] flex-row' : 'flex-col',
+        )}
+      >
+        {Array.from({ length: horizontal ? 12 : 16 }, (_, index) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: static sample rows
+          <span key={index} className="shrink-0 rounded-8 bg-black-4 px-2 py-1">
+            Row {index + 1}
+          </span>
+        ))}
+      </div>
+    </section>
+    <Code>{className ?? 'the browser default'}</Code>
+  </div>
+)
+
+export const ScrollbarPage = () => (
+  <Page
+    title="Scrollbar"
+    intro={
+      <>
+        The Figma "Scrollbar": a 4px rounded thumb that widens to 8px under the
+        pointer, in the <Code>control-border</Code> colour (the Figma Black/20%;
+        3:1 or more with more contrast), with no track. Add the{' '}
+        <Code>scrollbar-snow</Code> utility to a scroll container. Browsers with
+        the WebKit scrollbar pseudo-elements (Chrome, Edge, Safari) draw the
+        kit's thumb; Firefox draws its thin scrollbar in the same colour.
+        Nothing animates, and forced-colors mode keeps the system scrollbar.
+      </>
+    }
+  >
+    <Section title="Vertical and horizontal">
+      <div className="flex flex-wrap gap-6">
+        <ScrollBox label="Default scrollbar" />
+        <ScrollBox label="SnowUI scrollbar" className="scrollbar-snow" />
+        <ScrollBox
+          label="SnowUI scrollbar, horizontal"
+          className="scrollbar-snow"
+          horizontal
+        />
+      </div>
+    </Section>
+  </Page>
+)
+
 export const MotionPage = () => (
   <Page
     title="Motion"

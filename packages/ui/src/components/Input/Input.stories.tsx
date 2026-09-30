@@ -108,6 +108,26 @@ export const WithHorizontalTitle: Story = {
   },
 }
 
+/** A long horizontal title is cut at half the row; the value keeps room. */
+export const WithLongHorizontalTitle: Story = {
+  tags: ['!autodocs'],
+  args: {
+    title: 'The billing address of the company',
+    titleLayout: 'horizontal',
+    defaultValue: 'Text',
+    className: 'w-60',
+  },
+  play: async ({ canvas }) => {
+    const input = canvas.getByLabelText('The billing address of the company')
+    const field = input.closest('[data-slot="input"]') as HTMLElement
+
+    await expect(field.getBoundingClientRect().height).toBe(44)
+    await expect(input.getBoundingClientRect().width).toBeGreaterThan(
+      field.getBoundingClientRect().width / 3,
+    )
+  },
+}
+
 export const WithTitleAndValue: Story = {
   args: {
     placeholder: 'Input with title and value',

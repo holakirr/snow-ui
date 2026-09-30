@@ -19,7 +19,7 @@ type TextareaWithCountProps = ComponentProps<'textarea'> & {
 
 /** The number of characters of a textarea value, as `maxLength` counts them. */
 const lengthOf = (value: ComponentProps<'textarea'>['value']) =>
-  value === undefined || value === null ? 0 : String(value).length
+  value == null ? 0 : String(value).length
 
 /**
  * A `Textarea` with the Figma counter: "12/200" in the bottom-end corner,
@@ -42,23 +42,29 @@ const TextareaWithCount: FC<TextareaWithCountProps> = ({
   const countId = useId()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const setRef = useComposedRefs(textareaRef, ref)
-  const controlled = value !== undefined
+  // `value={null}` leaves the field uncontrolled, as React does.
+  const controlled = value != null
+  const limit = maxLength ?? undefined
   const [ownLength, setOwnLength] = useState(() => lengthOf(defaultValue))
   const length = controlled ? lengthOf(value) : ownLength
 
-  // An uncontrolled value can also change without `onChange`: restored by
-  // the browser, or by a reset of its form.
+  // An uncontrolled value can also change without `onChange`: a new
+  // `defaultValue` of a field the user hasn't edited, a value the browser
+  // restores, or a reset of its form. (One set through the element's
+  // `value` from code isn't seen: control the field for that.)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-read when `defaultValue` changes
   useEffect(() => {
     const textarea = textareaRef.current
     if (controlled || !textarea) return
     setOwnLength(textarea.value.length)
     const { form } = textarea
-    // `reset` fires before the form resets its fields.
-    const handleReset = () =>
-      setTimeout(() => setOwnLength(textarea.value.length))
+    // `reset` fires before the form restores its fields' default values, so
+    // the count is set to what it will restore, at once (inside the event,
+    // so tests don't need act()).
+    const handleReset = () => setOwnLength(textarea.defaultValue.length)
     form?.addEventListener('reset', handleReset)
     return () => form?.removeEventListener('reset', handleReset)
-  }, [controlled])
+  }, [controlled, defaultValue])
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     if (!controlled) setOwnLength(event.target.value.length)
@@ -74,24 +80,25 @@ const TextareaWithCount: FC<TextareaWithCountProps> = ({
         ref={setRef}
         value={value}
         defaultValue={defaultValue}
-        maxLength={maxLength}
+        maxLength={limit}
         aria-describedby={[describedBy, countId].filter(Boolean).join(' ')}
         onChange={handleChange}
         {...props}
       />
       {/* Figma: "0/200" 12/16 in Black/20% (1.6:1), 4px from the bottom and
           20px from the end (the resize handle is in the corner);
-          `text-secondary` here. Digits read left to right. */}
+          `text-secondary` here, Black/20% like the text when disabled.
+          Digits read left to right. */}
       <span
         aria-hidden
         dir="ltr"
-        className="pointer-events-none absolute end-5 bottom-1 text-12 text-secondary tabular-nums"
+        className="pointer-events-none absolute end-5 bottom-1 text-12 text-secondary tabular-nums peer-disabled:text-black-20"
         data-slot="textarea-count"
       >
-        {maxLength === undefined ? length : `${length}/${maxLength}`}
+        {limit === undefined ? length : `${length}/${limit}`}
       </span>
       <span id={countId} hidden>
-        {messages.textarea.count(length, maxLength)}
+        {messages.textarea.count(length, limit)}
       </span>
     </div>
   )

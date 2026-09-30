@@ -9,7 +9,7 @@ import * as TextareaStories from './Textarea.stories'
 <FigmaLinks page="25559:12043" />
 <InstallTabs item="textarea" />
 
-Textarea is a multi-line text field. It is the Figma "Textarea": the Input field (padding, radius, stroke, text style and states) on a native `<textarea>`, with the Figma character counter when it has a `maxLength`. `readOnly` gives the Figma "Static" state.
+Textarea is a multi-line text field. It is the Figma "Textarea": the Input field (padding, radius, stroke, text style and states) on a native `<textarea>`, with the Figma character counter (`showCount`). `readOnly` gives the Figma "Static" state.
 
 ```tsx
 import { Label, Textarea } from '@holakirr/snow-ui'
@@ -32,7 +32,7 @@ import { Label, Textarea } from '@holakirr/snow-ui'
 ## Anatomy
 
 1. **Textarea**: the native `<textarea>`. Every prop except `showCount` and `containerClassName` goes to it; `className` merges with its classes. It is full width and at least 44px (one row) high; `rows` or a height class sets the height. It has 12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% inside stroke, 14/20 text and a Black/20% placeholder.
-2. **Counter** (with a `maxLength`, or `showCount`): "12/200" (just "12" without a `maxLength`), 12/16, 4px above the bottom edge and 20px from the end, next to the resize handle in the corner. The textarea and the counter are then in a `<div data-slot="textarea-field">`: size the field with `containerClassName` on it (a width on the textarea would leave the counter at the div's edge). `showCount={false}` hides the counter.
+2. **Counter** (`showCount`): "12/200" against the `maxLength` (just "12" without one), 12/16, 4px above the bottom edge and 20px from the end, next to the resize handle in the corner. The textarea's bottom padding is then 20px, so the text stops above the counter (one row is 52px; the Figma 44px frame lets the last line run under it). The textarea and the counter are then in a `<div data-slot="textarea-field">`: size the field with `containerClassName` on it (a width on the textarea would leave the counter at the div's edge). Switching `showCount` on or off remounts the textarea (an uncontrolled value is lost).
 
 There is no `title` prop: label it with a [Label](?path=/docs/components-label--docs), a `FormLabel` or `aria-label`.
 
@@ -52,7 +52,7 @@ There is no `title` prop: label it with a [Label](?path=/docs/components-label--
 
 <Canvas of={TextareaStories.WithCount} />
 
-With a `maxLength` the counter shows how many characters are used, as the Figma Textarea does; the browser stops typing at the limit. `showCount` shows a count without a limit, or (`false`) hides it. It counts `value` when you control the field, and follows typing, a value the browser restores and a reset of the form otherwise.
+With `showCount` the counter shows how many characters are used, against the `maxLength` if there is one (the browser stops typing at the limit), as the Figma Textarea does. It is opt-in in 5.x, because it wraps the textarea in a `<div>`: layout classes on `className` (a width, `flex-1`, a grid span) and `peer-*` siblings of the textarea would no longer apply. It counts `value` when you control the field, and follows typing, a new `defaultValue` of an unedited field, a value the browser restores and a reset of the form otherwise; control the field when you set its value from code (e.g. react-hook-form's `setValue` on a registered field).
 
 ## Accessibility
 

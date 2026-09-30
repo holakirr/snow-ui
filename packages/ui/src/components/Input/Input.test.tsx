@@ -241,6 +241,19 @@ describe('Input', () => {
     expect(input).toHaveClass('text-end')
   })
 
+  it('cuts a long horizontal title at half the row', () => {
+    render(
+      <Input
+        title="A very long title that would take the whole row"
+        titleLayout="horizontal"
+      />,
+    )
+
+    expect(
+      screen.getByText('A very long title that would take the whole row'),
+    ).toHaveClass('max-w-1/2', 'truncate')
+  })
+
   it('ignores titleLayout without a title', () => {
     render(<Input aria-label="Name" titleLayout="horizontal" />)
 

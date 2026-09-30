@@ -6,15 +6,17 @@ import {
   focusInputClasses,
   invalidInputClasses,
   staticInputClasses,
-} from './Input'
+} from './inputClasses'
 import { TextareaWithCount } from './TextareaCount'
 
 type TextareaProps = ComponentProps<'textarea'> & {
   /**
-   * Shows the Figma character counter ("12/200", or "12" without a
-   * `maxLength`) in the bottom-end corner. Screen readers get "12 of 200
-   * characters" as the field's description.
-   * @default true when `maxLength` is set
+   * Shows the Figma character counter in the bottom-end corner: "12/200"
+   * against `maxLength`, or "12" without one. Screen readers get "12 of 200
+   * characters" as the field's description. Off by default in 5.x (it wraps
+   * the textarea in a `<div>`); switching it on or off remounts the
+   * textarea.
+   * @default false
    */
   showCount?: boolean
 
@@ -29,8 +31,7 @@ type TextareaProps = ComponentProps<'textarea'> & {
 /**
  * Figma "Textarea": the Input field (12/16 padding, 16px radius, 0.5px
  * stroke, 14/20 text), at least one row (44px) high, with the Figma counter
- * when it has a `maxLength` (or `showCount`). `readOnly` gives the Figma
- * "Static" state.
+ * when `showCount` is set. `readOnly` gives the Figma "Static" state.
  */
 const Textarea: FC<TextareaProps> = ({
   className,
@@ -49,9 +50,11 @@ const Textarea: FC<TextareaProps> = ({
   )
 
   // Without the counter, a plain <textarea> (no client code).
-  return (showCount ?? props.maxLength !== undefined) ? (
+  return showCount ? (
     <TextareaWithCount
-      className={classes}
+      // The text stops above the counter (the Figma 44px frame lets it run
+      // under it): one row is 52px high.
+      className={twMerge(classes, 'pb-5')}
       containerClassName={containerClassName}
       {...props}
     />

@@ -38,18 +38,15 @@ export const Disabled: Story = {
 }
 
 /**
- * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (no Figma state). The Input stroke in Secondary/Red, 1px. Pair it with the error text: see Form.
- */
-/**
- * Figma "Textarea" with its counter: with a `maxLength` (or `showCount`),
- * "4/200" sits in the bottom-end corner next to the resize handle. Screen
+ * Figma "Textarea" with its counter (`showCount`): "4/200" against the
+ * `maxLength`, in the bottom-end corner next to the resize handle. Screen
  * readers read "4 of 200 characters" with the field.
  */
 export const WithCount: Story = {
   args: {
     defaultValue: 'Text',
     maxLength: 200,
+    showCount: true,
     containerClassName: 'w-60',
   },
   play: async ({ canvas, canvasElement, userEvent }) => {
@@ -76,6 +73,10 @@ export const WithCount: Story = {
   },
 }
 
+/**
+ * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
+ * error (no Figma state). The Input stroke in Secondary/Red, 1px. Pair it with the error text: see Form.
+ */
 export const Invalid: Story = {
   args: {
     defaultValue: 'Too short',

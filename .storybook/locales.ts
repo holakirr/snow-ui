@@ -127,6 +127,12 @@ export const ruMessages: Messages = {
   tag: {
     remove: (label) => `Удалить тег ${label}`,
   },
+  textarea: {
+    count: (length, maxLength) =>
+      maxLength === undefined
+        ? `Символов: ${length}`
+        : `Символов: ${length} из ${maxLength}`,
+  },
   toast: {
     close: 'Закрыть',
     label: 'Уведомление',

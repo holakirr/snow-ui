@@ -544,7 +544,10 @@
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
-      "files": ["components/Input/Input.tsx"],
+      "files": [
+        "components/Input/Input.tsx",
+        "components/Input/inputClasses.ts"
+      ],
       "dependencies": ["@radix-ui/react-compose-refs"],
       "registryDependencies": ["label", "snow-core"],
       "import": "components/Input/Input",
@@ -563,9 +566,12 @@
       "name": "input-small",
       "type": "registry:ui",
       "title": "InputSmall",
-      "files": ["components/Input/InputSmall.tsx"],
+      "files": [
+        "components/Input/InputSmall.tsx",
+        "components/Input/inputClasses.ts"
+      ],
       "dependencies": ["class-variance-authority"],
-      "registryDependencies": ["input", "snow-core"],
+      "registryDependencies": ["snow-core"],
       "import": "components/Input/InputSmall",
       "exports": ["InputSmall"],
       "types": ["InputSmallProps"],
@@ -587,18 +593,16 @@
       "name": "select",
       "type": "registry:ui",
       "title": "Select",
-      "files": ["components/Input/Select.tsx"],
+      "files": [
+        "components/Input/Select.tsx",
+        "components/Input/inputClasses.ts"
+      ],
       "dependencies": [
         "@holakirr/snow-ui-icons",
         "@phosphor-icons/react",
         "@radix-ui/react-select"
       ],
-      "registryDependencies": [
-        "input",
-        "popover",
-        "snow-core",
-        "snow-ui-provider"
-      ],
+      "registryDependencies": ["popover", "snow-core", "snow-ui-provider"],
       "import": "components/Input/Select",
       "exports": [
         "Select",
@@ -651,9 +655,13 @@
       "name": "textarea",
       "type": "registry:ui",
       "title": "Textarea",
-      "files": ["components/Input/Textarea.tsx"],
-      "dependencies": [],
-      "registryDependencies": ["input", "snow-core"],
+      "files": [
+        "components/Input/Textarea.tsx",
+        "components/Input/TextareaCount.tsx",
+        "components/Input/inputClasses.ts"
+      ],
+      "dependencies": ["@radix-ui/react-compose-refs"],
+      "registryDependencies": ["snow-core", "snow-ui-provider"],
       "import": "components/Input/Textarea",
       "exports": ["Textarea"],
       "types": ["TextareaProps"],

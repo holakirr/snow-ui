@@ -53,7 +53,7 @@ The Figma "Date only" DatePicker, with a header, both actions and a short month 
 
 ### Year view
 
-With `showYearSwitcher`, the caption label opens a view of `yearRange` years (12 by default, starting five years before the current year) in four columns. Each year is a 40px button with radius 12; the current year has a Black/4% fill, and years outside `startMonth` / `endMonth` are disabled. The previous and next buttons page through the years ("Go to the previous 12 years"). Picking a year shows it in the days view, in the month of the selection (or the current month), and returns the focus to the caption label. With several months, the year view shows one caption; after a year is picked the months come back and the first month's caption label has the focus.
+With `showYearSwitcher`, the caption label opens a view of `yearRange` years (12 by default) in four columns: the page that holds the year shown, where pages are counted from five years before the current year. Each year is a 40px button with radius 12; the current year has a Black/4% fill, and years wholly outside `startMonth` / `endMonth` are disabled. The previous and next buttons page through the years ("Go to the previous 12 years"). Picking a year shows it in the days view, in the month of the selection (or the current month), and returns the focus to the caption label. With several months, the year view shows one caption; after a year is picked the months come back and the first month's caption label has the focus.
 
 ## Variants
 
@@ -95,7 +95,7 @@ The week starts on Monday, as in the Figma DatePicker, whatever the locale. `wee
 
 - react-day-picker renders each month as a `grid` named by the month ("January 2025"), with `gridcell`s that carry `aria-selected` and, with a `mode` (or `onDayClick`), a day button named by its full date. In `multiple` and `range` mode the grid is `aria-multiselectable`.
 - The previous and next buttons are named "Go to the previous month" and "Go to the next month" and sit in a `navigation` landmark named "Month navigation". With several months there is still one landmark. They are disabled at `startMonth` / `endMonth`.
-- The toolbar actions and the year switcher are native buttons. The year switcher is a disclosure: it has `aria-expanded`, and `aria-controls` pointing to the year view while that is open. The year view is a `group` named by its years ("2021 - 2032") of native buttons.
+- The toolbar actions and the year switcher are native buttons. The year switcher is a disclosure: it has `aria-expanded`, and `aria-controls` pointing to the year view while that is open. The year view is a `grid` named by its years ("2021 - 2032"): rows of four `gridcell`s, each with a native button named by its year. The year shown in the days view is `aria-selected`, the current year `aria-current="date"` (not only its Black/4% fill).
 
 ### Keyboard
 
@@ -103,7 +103,7 @@ The days of all the months shown share one tab stop (react-day-picker v10):
 
 | Key | Action |
 | --- | --- |
-| Tab / Shift + Tab | move through the header, the toolbar buttons (the actions, previous, the year switcher, next) and the days. The days' tab stop is the last focused day, else the selected day, else today, else the first enabled day. In the year view each year is a tab stop of its own |
+| Tab / Shift + Tab | move through the header, the toolbar buttons (the actions, previous, the year switcher, next) and the days. The days' tab stop is the last focused day, else the selected day, else today, else the first enabled day. The years share one tab stop too: the last focused year, else the year shown, else the current year, else the first enabled year |
 | ArrowRight / ArrowLeft | move focus to the next / previous day; in right-to-left text ArrowLeft moves to the next day |
 | ArrowDown / ArrowUp | move focus to the same day of the next / previous week |
 | Shift + ArrowRight / Shift + ArrowLeft | move focus a month forward / back (the other way round in right-to-left text) |
@@ -113,7 +113,17 @@ The days of all the months shown share one tab stop (react-day-picker v10):
 | Enter, Space | select the focused day (with a `mode`) and call `onDayClick`; on a toolbar button, activate it; on the year switcher, open or close the year view |
 | Enter, Space (on a year) | show that year in the days view and return the focus to the year switcher |
 
-The moves skip disabled days, turn the month when focus leaves the months shown, and stop at `startMonth` / `endMonth`. The arrow keys do nothing in the year view: there, Tab moves through the next button and the years (Shift+Tab back to the switcher and the previous button). Escape isn't handled by the year view: in a [Popover](?path=/docs/components-popover--docs) it closes the popover.
+In the year view:
+
+| Key | Action |
+| --- | --- |
+| ArrowRight / ArrowLeft | move focus to the next / previous year; in right-to-left text ArrowLeft moves to the next year |
+| ArrowDown / ArrowUp | move focus four years forward / back (the year below / above) |
+| Home / End | move focus to the first / last year of the row |
+| Ctrl + Home / Ctrl + End | move focus to the first / last year shown |
+| PageDown / PageUp | show the next / previous years (as the next / previous buttons) and move focus as far |
+
+The moves skip disabled days, turn the month when focus leaves the months shown, and stop at `startMonth` / `endMonth`. In the year view the moves show the next or previous years when focus leaves the years shown, and stop at the years outside `startMonth` / `endMonth`; Tab reaches the years after the next button, and Shift+Tab goes back through the next button, the switcher and the previous button. Alt and Shift combinations, and Ctrl or ⌘ with keys other than Home and End, are left to the browser. Opening or closing the year view keeps the focus on the switcher, also with several months, where the year view shows one. Escape isn't handled by the year view: in a [Popover](?path=/docs/components-popover--docs) it closes the popover.
 
 ### Deviations from the Figma kit
 

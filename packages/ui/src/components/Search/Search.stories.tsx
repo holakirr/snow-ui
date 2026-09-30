@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { expect } from 'storybook/test'
+import { expect, userEvent, waitFor } from 'storybook/test'
 import { hasInsetRing } from '../../test/colors'
 import { Typography } from '../Text'
 import { Search } from './Search'
@@ -46,6 +46,24 @@ export const Outline: Story = {
 
 export const Typing: Story = {
   args: { defaultValue: 'Typing' },
+}
+
+/** The clear button's keyboard focus: `focus-ring`, at full opacity. */
+export const ClearButtonFocus: Story = {
+  // A behaviour check: the same look as Typing plus the focus ring.
+  tags: ['skip-visual'],
+  args: { defaultValue: 'Typing' },
+  play: async ({ canvas }) => {
+    await userEvent.tab()
+    await userEvent.tab()
+    const clear = canvas.getByRole('button', { name: 'Clear search' })
+    await expect(clear).toHaveFocus()
+    await waitFor(() => expect(getComputedStyle(clear).opacity).toBe('1'))
+    const style = getComputedStyle(clear)
+    await expect(style.outlineStyle).toBe('solid')
+    await expect(style.outlineWidth).toBe('2px')
+    await expect(style.outlineOffset).toBe('2px')
+  },
 }
 
 export const WithoutShortcut: Story = {

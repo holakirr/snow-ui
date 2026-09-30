@@ -48,7 +48,7 @@ Four colour tokens, library additions to the kit, carry the difference:
 
 With more contrast the components also:
 
-- draw the 0.5px strokes of text fields and the Select trigger at 1px (a 0.5px line renders as a half-intensity pixel on standard screens);
+- draw the 0.5px strokes of text fields and the Select trigger at 1px (a 0.5px line renders as a half-intensity pixel on standard screens), and the focus stroke of the text fields (`Input`, `InputSmall`, `Textarea`, `Search`, `Combobox`, `MultiSelect`) at 2px: its inner pixel was the fill, so the focused field differs from the unfocused one by at least 5.59:1, where the Figma 0.5px Black/40% stroke is 2.85:1 on the fill;
 - give the gray `InputSmall` and `Search` fields a stroke: their Black/4% fill alone is 1.1:1;
 - use the per-mode `white` for the Switch thumb: black on the dark-mode indigo track (10.14:1), where Figma's white thumb is 2.06:1;
 - add a 2px `black-80` ring, the colour of `focus-ring`, to the highlighted menu item (DropdownMenu, ContextMenu, Select) and CommandPalette option, whose Black/4% highlight is 1.1:1.
@@ -70,6 +70,8 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 | Gray field ring vs its Black/4% fill | dark | 1.68–1.76 (no ring) | 3.3–3.66 |
 | Hover / focus stroke vs the field fill | light | 2.84 | 12.55–12.63 |
 | Hover / focus stroke vs the field fill | dark | 2.94–3.21 | 6.71–7.82 |
+| Gray field focus stroke vs its unfocused Black/4% fill | light | 2.5–2.6 | 11.03–11.56 |
+| Gray field focus stroke vs its unfocused Black/4% fill | dark | 2.45–2.65 | 5.59–6.46 |
 | Switch off track vs the surface | light | 1.6 | 3.93–3.97 |
 | Switch off track vs the surface | dark | 1.81–1.88 | 3.99–4.43 |
 | Switch thumb vs the off track | light | 1.6–1.68 | 3.97–4.14 |
@@ -101,7 +103,9 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 
 The values live in the DTCG tokens (`packages/ui/tokens`), the single source of truth. The resolver has a `contrast` modifier next to `theme`: its default context, "standard", is `color.contrast-standard.tokens.json`, which aliases the four tokens to the Figma palette (the same aliases in both themes); the "more" context adds nothing, so the values in `color.light.tokens.json` and `color.dark.tokens.json` apply. Every combination of theme and contrast resolves correctly in any DTCG tool.
 
-`bun run tokens` turns this into CSS scopes (`src/styles/tokens.generated.css`). The theme scopes declare each theme's "more" values (`--color-control-border--more`); a switch, `--contrast-more`, is a space inside a "more" scope and `initial` (invalid) elsewhere; and every scope element (`:root`, `[data-theme]`, `.light`, `.dark`, `[data-contrast]`) re-declares `--color-control-border: var(--color-control-border--more-on, var(--color-black-20))`, where `--color-control-border--more-on: var(--contrast-more) var(--color-control-border--more)` is only valid when the switch is on. So the value follows the nearest theme and the nearest contrast scope independently, at any depth.
+`bun run tokens` turns this into CSS scopes (`src/styles/tokens.generated.css`). The theme scopes declare each theme's two levels (`--color-control-border--standard`, `--color-control-border--more`); a switch, `--contrast-more`, is a space inside a "more" scope and `initial` (invalid) elsewhere; and every scope element (`:root`, `[data-theme]`, `.light`, `.dark`, `[data-contrast]`) re-declares `--color-control-border: var(--color-control-border--more-on, var(--color-control-border--standard))`, where `--color-control-border--more-on: var(--contrast-more) var(--color-control-border--more)` is only valid when the switch is on. So the value follows the nearest theme and the nearest contrast scope independently, at any depth.
+
+**Changing them.** Each token has two levels in every theme scope, `--color-control-border--standard` and `--color-control-border--more` (the same for the others), and every scope picks one. Override the levels in your theme scopes, as for any token (see [Theming › Changing a token](?path=/docs/guides-theming--docs)); a value set on `--color-control-border` itself replaces the pick, so it would ignore the contrast level.
 
 For your own controls, use the tokens for boundaries and placeholders, and the `contrast-more:` variant for other changes: `theme.css` redefines it to follow the same scopes as the tokens (Tailwind's reads only the OS preference; like `dark:`, it sees one level of nesting): `className="inset-ring-[0.5px] contrast-more:inset-ring-1"`.
 

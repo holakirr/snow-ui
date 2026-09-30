@@ -383,3 +383,59 @@ export const RTL: Story = {
     await expect(getComputedStyle(arrow).scale).not.toBe('none')
   },
 }
+
+/**
+ * Bare icon buttons 2px apart: each has a 24px hit area (`hit-area`), but a
+ * neighbour's hit area never covers a button's own box, so a click on its
+ * visible edge is that button's, and only the empty space around it is
+ * added.
+ */
+export const BareHitAreas: Story = {
+  // A behaviour check: the same look as Bare.
+  tags: ['skip-visual'],
+  parameters: {
+    targetSize: {
+      exceptions: [
+        {
+          selector: 'button',
+          reason:
+            'Deliberately 2px apart to test the overlap: too close for WCAG 2.5.8, keep 24px between the centres of bare controls.',
+        },
+      ],
+    },
+  },
+  render: () => (
+    <div className="flex gap-0.5">
+      <Button
+        variant="bare"
+        aria-label="Star"
+        startContent={<StarIcon size={16} />}
+      />
+      <Button
+        variant="bare"
+        aria-label="Next"
+        startContent={<ArrowLineRightIcon size={16} />}
+      />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const document = canvasElement.ownerDocument
+    const star = canvas.getByRole('button', { name: 'Star' })
+    const next = canvas.getByRole('button', { name: 'Next' })
+    const hit = (x: number, y: number) =>
+      document.elementFromPoint(x, y)?.closest('button')
+    const a = star.getBoundingClientRect()
+    const b = next.getBoundingClientRect()
+    const y = a.top + a.height / 2
+    // The visible edges belong to their own buttons, the earlier one's
+    // too (the later one's hit area used to cover it)…
+    await expect(hit(a.right - 1, y)).toBe(star)
+    await expect(hit(b.left + 1, y)).toBe(next)
+    // …the gap between them is shared (the later one gets it)…
+    await expect(hit(a.right + 1, y)).toBe(next)
+    // …and the empty space around a button is its hit area.
+    await expect(hit(a.left - 3, y)).toBe(star)
+    await expect(hit(b.right + 3, y)).toBe(next)
+    await expect(hit(a.left + a.width / 2, a.top - 3)).toBe(star)
+  },
+}

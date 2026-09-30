@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
-import { hasInsetRing } from '../../test/colors'
+import { hasInsetRing, hasMoreContrast } from '../../test/colors'
 
 import { InputSmall } from './InputSmall'
 
@@ -83,13 +83,16 @@ export const InvalidReadOnly: Story = {
   args: { ...Invalid.args, readOnly: true },
   play: async ({ canvas, userEvent }) => {
     for (const input of canvas.getAllByRole('textbox', { name: 'Name' })) {
-      const isRed = () =>
-        hasInsetRing(input, 'text-control-border-invalid', '1px')
+      const isRed = (width = '1px') =>
+        hasInsetRing(input, 'text-control-border-invalid', width)
       await userEvent.hover(input)
       await expect(await isRed()).toBe(true)
       await userEvent.click(input)
       await expect(input).toHaveFocus()
-      await expect(await isRed()).toBe(true)
+      // 2px on focus with more contrast: the focus indicator.
+      await expect(await isRed(hasMoreContrast(input) ? '2px' : '1px')).toBe(
+        true,
+      )
     }
   },
 }

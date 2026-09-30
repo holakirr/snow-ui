@@ -15,8 +15,10 @@ import type {
  *   `@theme static` (light values), and the theme scopes in `@layer base`:
  *   the tokens that differ between the `theme` modifier's contexts on
  *   `:root, [data-theme="light"], .light`, `[data-theme="dark"], .dark` and,
- *   for the OS preference when <html> sets no mode, `:root:not([data-theme],
- *   .light, .dark)`; plus `[data-theme], .light, .dark`, which re-declares
+ *   for the OS preference when <html> sets no light or dark mode,
+ *   `:root:not([data-theme="light"], .light, [data-theme="dark"], .dark)`
+ *   (another `data-theme` value, such as "system", follows the OS); plus
+ *   `[data-theme], .light, .dark`, which re-declares
  *   the tokens whose value refers to a switching token. The `light` / `dark`
  *   classes are the ones next-themes and shadcn/ui set.
  *   The `contrast` modifier's contexts become contrast scopes: the colours
@@ -752,25 +754,37 @@ function declaration(name: string, value: string, indent: string) {
 /** Selectors of the light and the dark scopes. */
 const LIGHT_SCOPES = ['[data-theme="light"]', '.light']
 const DARK_SCOPES = ['[data-theme="dark"]', '.dark']
-/** Every element that sets a mode (the OS preference applies to none). */
+/**
+ * Every element that may set a mode: the theme scopes re-declare the tokens
+ * built on switching ones there. `data-theme` values other than light and
+ * dark ("system", a daisyUI theme…) set none.
+ */
 const SCOPES = ['[data-theme]', '.light', '.dark']
+/** <html> with no light or dark mode follows the OS preference. */
+const OS_SCOPE = `:root:not(${[...LIGHT_SCOPES, ...DARK_SCOPES].join(', ')})`
 
 function renderCss({ sections, contrastColors }: Model) {
-  // The per-theme "more" values of the contrast colours, as scope-only
-  // variables of the theme scopes (see renderContrast).
-  const moreVariables: Variable[] = contrastColors
-    .filter(({ more }) => more.light !== more.dark)
-    .map(({ name, more }, index) => ({
-      name: `${name}--more`,
-      ...more,
-      scopeOnly: true,
-      ...(index === 0
-        ? {
-            groupComment:
-              'The values of the contrast colours with contrast "more", in this theme; the contrast scopes below pick them or the standard ones.',
-          }
-        : {}),
-    }))
+  // The values of each contrast colour in each theme, with the standard and
+  // with more contrast, as scope-only variables of the theme scopes: the
+  // contrast scopes pick one (see renderContrast). They are what a theme of
+  // yours overrides, like any token; `--X` itself is computed from them.
+  const moreVariables: Variable[] = contrastColors.flatMap(
+    ({ name, standard, more }, index) => [
+      {
+        name: `${name}--standard`,
+        light: standard,
+        dark: standard,
+        scopeOnly: true,
+        ...(index === 0
+          ? {
+              groupComment:
+                'The values of the contrast colours in this theme, with the standard contrast and with more; the contrast scopes below pick one. Override these, not the colours themselves.',
+            }
+          : {}),
+      },
+      { name: `${name}--more`, ...more, scopeOnly: true },
+    ],
+  )
   const all = sections.flatMap((section) =>
     section.namespace === 'color'
       ? [...section.variables, ...moreVariables]
@@ -860,11 +874,11 @@ function renderCss({ sections, contrastColors }: Model) {
     scope(DARK_SCOPES.join(',\n  '), 'dark', '  '),
     '',
     comment(
-      'No mode on <html> (no data-theme, no light / dark class): dark when the OS prefers dark.',
+      'No light or dark mode on <html> (no data-theme="light" / "dark", no light / dark class; data-theme="system" or another value sets none): dark when the OS prefers dark.',
       '  ',
     ),
     '  @media (prefers-color-scheme: dark) {',
-    scope(`:root:not(${SCOPES.join(', ')})`, 'dark', '    '),
+    scope(OS_SCOPE, 'dark', '    '),
     '  }',
     ...(rederived.length
       ? [
@@ -894,11 +908,12 @@ function renderCss({ sections, contrastColors }: Model) {
  *
  * - `--contrast-more` is the switch: a space ("on") inside a "more" scope,
  *   `initial` (the guaranteed-invalid value, "off") elsewhere.
- * - `--X--more-on: var(--contrast-more) <more value>` is the "more" value
- *   when the switch is on and invalid when it is off, so
- *   `--X: var(--X--more-on, <standard value>)` falls back to the standard
- *   value. The per-theme "more" values come from the theme scopes
- *   (`--X--more`).
+ * - `--X--more-on: var(--contrast-more) var(--X--more)` is the "more"
+ *   value when the switch is on and invalid when it is off, so
+ *   `--X: var(--X--more-on, var(--X--standard))` falls back to the standard
+ *   value. Both values come from the theme scopes (`--X--standard`,
+ *   `--X--more`), where a theme of yours overrides them: overriding `--X`
+ *   itself would lose one of the levels.
  * - var() is computed where a custom property is declared, so every scope
  *   element (`:root`, the theme scopes — `[data-theme]` and the `light` /
  *   `dark` classes — and `[data-contrast]`) re-declares them.
@@ -931,13 +946,17 @@ function renderContrast(colors: ContrastColor[]) {
       '  ',
     ),
     `  ${[':root', ...SCOPES, '[data-contrast]'].join(',\n  ')} {`,
-    ...colors.flatMap(({ name, standard, more }) => [
+    ...colors.flatMap(({ name }) => [
       declaration(
         `${name}--more-on`,
-        `var(--contrast-more) ${more.light === more.dark ? more.light : `var(${name}--more)`}`,
+        `var(--contrast-more) var(${name}--more)`,
         indent,
       ),
-      declaration(name, `var(${name}--more-on, ${standard})`, indent),
+      declaration(
+        name,
+        `var(${name}--more-on, var(${name}--standard))`,
+        indent,
+      ),
     ]),
     '  }',
   ]

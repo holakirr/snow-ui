@@ -14,12 +14,13 @@ import { invalidInputClasses } from './Input'
  *   and focus.
  *
  * The stroke and placeholder colours are the `control-border*` and
- * `placeholder` tokens. With more contrast the stroke is 1px and the gray
- * field gets one too: its Black/4% fill alone is 1.1:1 (WCAG 1.4.11).
+ * `placeholder` tokens. With more contrast the stroke is 1px, 2px while
+ * focused (the focus indicator, WCAG 2.4.7), and the gray field gets one
+ * too: its Black/4% fill alone is 1.1:1 (WCAG 1.4.11).
  */
 const inputVariants = cva(
   [
-    'rounded-16 px-2 py-1 text-14 text-black backdrop-blur-[10px] transition-all placeholder:text-placeholder contrast-more:inset-ring-1 contrast-more:focus:inset-ring-1',
+    'rounded-16 px-2 py-1 text-14 text-black backdrop-blur-[10px] transition-all placeholder:text-placeholder contrast-more:inset-ring-1 contrast-more:focus:inset-ring-2',
     'focus:ring-4 focus:ring-focus',
     'disabled:cursor-not-allowed disabled:text-black-20',
     invalidInputClasses,

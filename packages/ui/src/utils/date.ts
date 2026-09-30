@@ -36,9 +36,10 @@ export type ScheduleSegment = {
 
 /**
  * Returns the parts of `events` on `day`: the events that start on it, and
- * the rest of those that started earlier and run past its midnight. An event
- * that ends at midnight belongs to the day before; one that ends before it
- * starts is treated as having no duration.
+ * the rest of those that started earlier and run past its midnight, in the
+ * order they start on the day, whatever the order of `events`.
+ * An event that ends at midnight belongs to the day before; one that ends
+ * before it starts is treated as having no duration.
  */
 export const getDaySegments = (
   events: CalendarEvent[],
@@ -47,7 +48,7 @@ export const getDaySegments = (
   const dayStart = startOfDay(day)
   const dayEnd = addDays(dayStart, 1)
 
-  return events.flatMap((event) => {
+  const segments = events.flatMap((event) => {
     const { date } = event
     const endsAt = max([date, event.endsAt])
     const startsToday = date >= dayStart && date < dayEnd
@@ -59,6 +60,8 @@ export const getDaySegments = (
     // When clocks fall back, a later time can read earlier on the clock.
     return [{ event, start, end: Math.max(start, end) }]
   })
+  // Stable: events that start together keep the order of `events`.
+  return segments.sort((a, b) => a.start - b.start)
 }
 
 /**

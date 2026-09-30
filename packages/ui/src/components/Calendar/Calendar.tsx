@@ -8,8 +8,10 @@ import {
 } from '@holakirr/snow-ui-icons'
 import { differenceInCalendarDays } from 'date-fns'
 import {
+  type ComponentProps,
   createContext,
   type Dispatch,
+  type KeyboardEvent,
   type ReactNode,
   type RefObject,
   type SetStateAction,
@@ -188,16 +190,6 @@ const getSelectedMonth = (value: unknown): number => {
   return new Date().getMonth()
 }
 
-const isYearOutOfRange = (
-  date: Date,
-  startMonth?: Date,
-  endMonth?: Date,
-): boolean =>
-  Boolean(
-    (startMonth && differenceInCalendarDays(date, startMonth) < 0) ||
-      (endMonth && differenceInCalendarDays(date, endMonth) > 0),
-  )
-
 const CHEVRONS = {
   left: ArrowLineLeftIcon,
   right: ArrowLineRightIcon,
@@ -250,21 +242,28 @@ const useCalendarNav = () => {
 
   const yearsCount = displayYears.to - displayYears.from + 1
 
+  // In the year view, the previous years are out of reach when all of them
+  // are before `startMonth`, the next ones when all are after `endMonth`:
+  // from years past `endMonth` you can still go back.
   const isPreviousDisabled =
     navView === 'years'
-      ? isYearOutOfRange(
-          new Date(displayYears.from - 1, 0, 1),
-          startMonth,
-          endMonth,
+      ? Boolean(
+          startMonth &&
+            differenceInCalendarDays(
+              new Date(displayYears.from - 1, 11, 31),
+              startMonth,
+            ) < 0,
         )
       : !previousMonth
 
   const isNextDisabled =
     navView === 'years'
-      ? isYearOutOfRange(
-          new Date(displayYears.to + 1, 0, 1),
-          startMonth,
-          endMonth,
+      ? Boolean(
+          endMonth &&
+            differenceInCalendarDays(
+              new Date(displayYears.to + 1, 0, 1),
+              endMonth,
+            ) > 0,
         )
       : !nextMonth
 
@@ -470,15 +469,19 @@ const CalendarCaptionLabel: CustomComponents['CaptionLabel'] = ({
     navView,
     setNavView,
     displayYears,
+    setDisplayYears,
     showYearSwitcher,
     yearViewId,
     focusYearSwitcher,
   } = useCalendarContext()
+  const { months } = useDayPicker()
   const ref = useRef<HTMLButtonElement>(null)
 
   // After a year is picked, focus comes back here instead of falling to
-  // <body> with the removed year button. With several months, the first
-  // month's switcher runs its effect first and takes it.
+  // <body> with the removed year button; and after the switcher toggles the
+  // view, as the year view shows one month: a later month's switcher is
+  // removed. With several months, the first month's switcher runs its
+  // effect first and takes it.
   useEffect(() => {
     if (!focusYearSwitcher.current || !ref.current) return
     focusYearSwitcher.current = false
@@ -504,7 +507,23 @@ const CalendarCaptionLabel: CustomComponents['CaptionLabel'] = ({
         'h-7 rounded-8 px-1 transition-colors hover:bg-black-4 focus-ring',
         className,
       )}
-      onClick={() => setNavView((prev) => (prev === 'days' ? 'years' : 'days'))}
+      onClick={() => {
+        focusYearSwitcher.current = true
+        // Open on the page of years that holds the year shown.
+        const shown = months[0]?.date.getFullYear()
+        if (navView === 'days' && shown !== undefined) {
+          setDisplayYears((prev) => {
+            const count = prev.to - prev.from + 1
+            const pages = Math.floor((shown - prev.from) / count)
+            if (pages === 0) return prev
+            return {
+              from: prev.from + pages * count,
+              to: prev.to + pages * count,
+            }
+          })
+        }
+        setNavView((prev) => (prev === 'days' ? 'years' : 'days'))
+      }}
     >
       {navView === 'days'
         ? children
@@ -518,16 +537,7 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
   children,
   ...props
 }) => {
-  const {
-    navView,
-    setNavView,
-    displayYears,
-    startMonth,
-    endMonth,
-    yearViewId,
-    focusYearSwitcher,
-  } = useCalendarContext()
-  const { goToMonth, selected } = useDayPicker()
+  const { navView } = useCalendarContext()
 
   if (navView !== 'years') {
     return (
@@ -537,60 +547,172 @@ const CalendarMonthGrid: CustomComponents['MonthGrid'] = ({
     )
   }
 
-  // The day grid's role, `aria-multiselectable` and month name don't fit a
-  // list of year buttons (axe rejects a grid without rows).
+  // The day grid's `aria-multiselectable` and month name don't fit the year
+  // view, which has its own.
   const {
     role: _role,
     'aria-multiselectable': _multiselectable,
     'aria-label': _monthLabel,
     ...yearViewProps
   } = props
-  const currentYear = new Date().getFullYear()
 
+  return <CalendarYearGrid className={className} {...yearViewProps} />
+}
+
+/** The years in a row of the year view. */
+const YEARS_PER_ROW = 4
+
+/**
+ * The year view: an APG grid of the years, four to a row, with one tab stop
+ * (roving tabindex) that the arrow keys move. Its value is the year shown
+ * in the days view (`aria-selected`); the current year is `aria-current`.
+ */
+const CalendarYearGrid = ({
+  className,
+  ...props
+}: Omit<ComponentProps<'div'>, 'children'>) => {
+  const {
+    setNavView,
+    displayYears,
+    startMonth,
+    endMonth,
+    yearViewId,
+    focusYearSwitcher,
+  } = useCalendarContext()
+  const { goToMonth, selected, months, dayPickerProps } = useDayPicker()
+  const { previous, next } = useCalendarNav()
+  const [focusedYear, setFocusedYear] = useState<number>()
+  const buttons = useRef(new Map<number, HTMLButtonElement>())
+  // A year to focus once it is rendered (after paging).
+  const pendingFocus = useRef<number>(undefined)
+
+  useEffect(() => {
+    if (pendingFocus.current === undefined) return
+    buttons.current.get(pendingFocus.current)?.focus()
+    pendingFocus.current = undefined
+  })
+
+  const { from, to } = displayYears
+  const years = Array.from({ length: to - from + 1 }, (_, i) => from + i)
+  const isDisabled = (year: number) =>
+    Boolean(
+      (startMonth &&
+        differenceInCalendarDays(new Date(year, 11, 31), startMonth) < 0) ||
+        (endMonth &&
+          differenceInCalendarDays(new Date(year, 0, 1), endMonth) > 0),
+    )
+  const isEnabled = (year: number) =>
+    year >= from && year <= to && !isDisabled(year)
+  const currentYear = new Date().getFullYear()
+  const shownYear = months[0]?.date.getFullYear()
+
+  // The tab stop: the last focused year, else the year shown, else the
+  // current year, else the first enabled one.
+  const tabStop =
+    [focusedYear, shownYear, currentYear].find(
+      (year): year is number => year !== undefined && isEnabled(year),
+    ) ?? years.find((year) => !isDisabled(year))
+
+  const moveTo = (target: number) => {
+    // At most to the page before or after (with fewer than four years a
+    // row move would skip one).
+    const year = Math.min(
+      Math.max(target, from - years.length),
+      to + years.length,
+    )
+    if (isDisabled(year)) return
+    if (year < from) previous.onClick()
+    else if (year > to) next.onClick()
+    setFocusedYear(year)
+    pendingFocus.current = year
+    if (year >= from && year <= to) buttons.current.get(year)?.focus()
+  }
+
+  const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>, year: number) => {
+    const forward = dayPickerProps.dir === 'rtl' ? -1 : 1
+    const column = (year - from) % YEARS_PER_ROW
+    const rowStart = year - column
+    const rowEnd = Math.min(rowStart + YEARS_PER_ROW - 1, to)
+    const firstIn = (a: number, b: number) =>
+      Array.from({ length: b - a + 1 }, (_, i) => a + i).find(isEnabled)
+    const lastIn = (a: number, b: number) =>
+      Array.from({ length: b - a + 1 }, (_, i) => b - i).find(isEnabled)
+    // Alt and Shift combinations, and Ctrl / ⌘ with anything but Home and
+    // End, stay the browser's (tabs, history).
+    if (event.altKey || event.shiftKey) return
+    const ctrl = event.ctrlKey || event.metaKey
+    if (ctrl && event.key !== 'Home' && event.key !== 'End') return
+    const targets: Record<string, number | undefined> = {
+      ArrowRight: year + forward,
+      ArrowLeft: year - forward,
+      ArrowDown: year + YEARS_PER_ROW,
+      ArrowUp: year - YEARS_PER_ROW,
+      PageDown: year + years.length,
+      PageUp: year - years.length,
+      Home: ctrl ? firstIn(from, to) : firstIn(rowStart, rowEnd),
+      End: ctrl ? lastIn(from, to) : lastIn(rowStart, rowEnd),
+    }
+    if (!(event.key in targets)) return
+    event.preventDefault()
+    const target = targets[event.key]
+    if (target !== undefined && target !== year) moveTo(target)
+  }
+
+  const rows = Array.from(
+    { length: Math.ceil(years.length / YEARS_PER_ROW) },
+    (_, row) => years.slice(row * YEARS_PER_ROW, (row + 1) * YEARS_PER_ROW),
+  )
+
+  // <div>s with the grid roles, laid out as the Figma four columns.
+  // biome-ignore-start lint/a11y/useSemanticElements: ARIA grid roles on a flex / CSS grid layout
+  // biome-ignore-start lint/a11y/useFocusableInteractive: the year buttons in the cells take focus (roving tabIndex)
   return (
-    // biome-ignore lint/a11y/useSemanticElements: a <fieldset> groups form fields under a <legend>; these are buttons named by the years they show
     <div
       id={yearViewId}
-      role="group"
-      aria-label={`${displayYears.from} - ${displayYears.to}`}
-      className={twMerge('grid grid-cols-4 gap-y-2', className)}
-      {...yearViewProps}
+      role="grid"
+      aria-label={`${from} - ${to}`}
+      className={twMerge('flex flex-col gap-y-2', className)}
+      {...props}
     >
-      {Array.from(
-        { length: displayYears.to - displayYears.from + 1 },
-        (_, i) => {
-          const year = displayYears.from + i
-          const isBefore = Boolean(
-            startMonth &&
-              differenceInCalendarDays(new Date(year, 11, 31), startMonth) < 0,
-          )
-          const isAfter = Boolean(
-            endMonth &&
-              differenceInCalendarDays(new Date(year, 0, 0), endMonth) > 0,
-          )
-
-          return (
-            <button
-              type="button"
+      {rows.map((row) => (
+        <div key={row[0]} role="row" className="grid grid-cols-4">
+          {row.map((year) => (
+            <div
               key={year}
-              className={twMerge(
-                'h-10 w-full rounded-12 text-12 text-black transition-colors hover:bg-black-4 focus-ring disabled:text-black-20 disabled:hover:bg-transparent',
-                year === currentYear && 'bg-black-4',
-              )}
-              onClick={() => {
-                focusYearSwitcher.current = true
-                setNavView('days')
-                goToMonth(new Date(year, getSelectedMonth(selected)))
-              }}
-              disabled={isBefore || isAfter}
+              role="gridcell"
+              aria-selected={year === shownYear}
+              aria-current={year === currentYear ? 'date' : undefined}
             >
-              {year}
-            </button>
-          )
-        },
-      )}
+              <button
+                ref={(node) => {
+                  if (node) buttons.current.set(year, node)
+                  else buttons.current.delete(year)
+                }}
+                type="button"
+                tabIndex={year === tabStop ? 0 : -1}
+                className={twMerge(
+                  'h-10 w-full rounded-12 text-12 text-black transition-colors hover:bg-black-4 focus-ring disabled:text-black-20 disabled:hover:bg-transparent',
+                  year === currentYear && 'bg-black-4',
+                )}
+                onClick={() => {
+                  focusYearSwitcher.current = true
+                  setNavView('days')
+                  goToMonth(new Date(year, getSelectedMonth(selected)))
+                }}
+                onFocus={() => setFocusedYear(year)}
+                onKeyDown={(event) => onKeyDown(event, year)}
+                disabled={isDisabled(year)}
+              >
+                {year}
+              </button>
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   )
+  // biome-ignore-end lint/a11y/useFocusableInteractive: the year buttons in the cells take focus (roving tabIndex)
+  // biome-ignore-end lint/a11y/useSemanticElements: ARIA grid roles on a flex / CSS grid layout
 }
 
 /**

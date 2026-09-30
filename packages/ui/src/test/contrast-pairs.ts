@@ -81,6 +81,14 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['surface-1'],
   },
   {
+    // With more contrast the focus stroke is 2px: its inner pixel was the
+    // fill (the unfocused stroke is 1px), so it is the change of state.
+    control: 'Gray field focus stroke vs its unfocused Black/4% fill',
+    kind: 'nonText',
+    foreground: () => ['surface-1', 'control-border-strong'],
+    background: () => ['black-4'],
+  },
+  {
     control: 'Switch off track vs the surface',
     kind: 'nonText',
     foreground: () => ['control-border'],

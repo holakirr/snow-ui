@@ -632,7 +632,7 @@
       "type": "registry:ui",
       "title": "Slider",
       "files": ["components/Input/Slider.tsx"],
-      "dependencies": ["@radix-ui/react-slider"],
+      "dependencies": ["@radix-ui/react-direction", "@radix-ui/react-slider"],
       "registryDependencies": ["snow-core", "snow-ui-provider"],
       "import": "components/Input/Slider",
       "exports": ["Slider"],

@@ -337,7 +337,7 @@ export const colorTokens: ColorToken[] = [
       light: 'rgb(0 0 0 / 0.5)',
       dark: 'rgb(255 255 255 / 0.5)',
     },
-    note: 'Accessibility addition (not in the Figma kit): the boundary of form controls — the rings of unchecked Checkbox and Radio, the strokes of the text fields and the Select trigger, the Switch\'s off track. Contrast "standard" (the default): the Figma Black/20% (1.6:1 on background-1). Contrast "more" (prefers-contrast: more, data-contrast="more"): Black/50%, at least 3.79:1 on every surface and field fill (WCAG 1.4.11).',
+    note: 'Accessibility addition (not in the Figma kit): the boundary of form controls — the rings of unchecked Checkbox and Radio, the strokes of the text fields and the Select trigger, the Switch\'s off track; with more contrast, the stroke of the Slider bar and the Slider range\'s track. Contrast "standard" (the default): the Figma Black/20% (1.6:1 on background-1). Contrast "more" (prefers-contrast: more, data-contrast="more"): Black/50%, at least 3.79:1 on every surface and field fill (WCAG 1.4.11).',
   },
   {
     name: 'control-border-strong',
@@ -353,7 +353,7 @@ export const colorTokens: ColorToken[] = [
       light: 'rgb(0 0 0 / 0.8)',
       dark: 'rgb(255 255 255 / 0.8)',
     },
-    note: 'Accessibility addition (not in the Figma kit): the hover and focus boundary of form controls (text field strokes, Checkbox and Radio rings, the Switch\'s off track), the Slider thumb\'s border, the Select chevron and the hovered Search icon. Contrast "standard" (the default): the Figma Black/40% (2.85:1). Contrast "more": Black/80% (12.6:1), stronger than control-border.',
+    note: 'Accessibility addition (not in the Figma kit): the hover and focus boundary of form controls (text field strokes, Checkbox and Radio rings, the Switch\'s off track), the Select chevron and the hovered Search icon; with more contrast, the border of the Slider range\'s thumbs. Contrast "standard" (the default): the Figma Black/40% (2.85:1). Contrast "more": Black/80% (12.6:1), stronger than control-border.',
   },
   {
     name: 'placeholder',

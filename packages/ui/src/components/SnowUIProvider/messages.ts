@@ -193,6 +193,13 @@ export type Messages = {
     maximum: (label: string) => string
     /** A thumb of a slider with three or more thumbs (`position` from 1). */
     thumb: (label: string, position: number, count: number) => string
+    /**
+     * The value a slider shows with `showValue` and its thumbs read out
+     * (`aria-valuetext`), unless it has a `valueFormatter`: the value's
+     * position between `min` and `max`, in percent. Optional until 6.0, like
+     * the namespaces added in 5.1.
+     */
+    value?: (value: number, min: number, max: number) => string
   }
   spinner?: {
     /** The screen-reader text of a `Spinner`. */
@@ -224,6 +231,17 @@ export type Messages = {
 export type MessagesOverrides = {
   [Namespace in keyof Messages]?: Partial<NonNullable<Messages[Namespace]>>
 }
+
+/**
+ * The English `messages.slider.value`: the value's position between `min`
+ * and `max`, in percent ("28%"). Slider also falls back on it.
+ */
+export const sliderValueText = (
+  value: number,
+  min: number,
+  max: number,
+): string =>
+  `${Math.round(max > min ? ((Math.min(max, Math.max(min, value)) - min) / (max - min)) * 100 : 0)}%`
 
 /** The English messages, used where no `SnowUIProvider` sets others. */
 export const defaultMessages: Required<Messages> = {
@@ -326,6 +344,7 @@ export const defaultMessages: Required<Messages> = {
     minimum: (label) => `${label}, minimum`,
     maximum: (label) => `${label}, maximum`,
     thumb: (label, position, count) => `${label}, ${position} of ${count}`,
+    value: sliderValueText,
   },
   spinner: {
     label: 'Loading',

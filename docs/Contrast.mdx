@@ -41,8 +41,8 @@ Four colour tokens, library additions to the kit, carry the difference:
 
 | Token | Standard (Figma) | More contrast | Used by |
 | --- | --- | --- | --- |
-| `control-border` | Black/20% | Black/50%; White/50% in dark mode | Unchecked Checkbox and Radio rings, text field and Select strokes, the Switch's off track |
-| `control-border-strong` | Black/40% | Black/80%; White/80% in dark mode | Their hover and focus states, the Slider thumb border, the Select chevron, the hovered Search icon |
+| `control-border` | Black/20% | Black/50%; White/50% in dark mode | Unchecked Checkbox and Radio rings, text field and Select strokes, the Switch's off track; with more contrast only, the Slider bar's stroke and the range's track |
+| `control-border-strong` | Black/40% | Black/80%; White/80% in dark mode | Their hover and focus states, the Select chevron, the hovered Search icon; with more contrast only, the border of the Slider range's thumbs |
 | `placeholder` | Black/20% | Black/60%; White/75% in dark mode | Placeholders of `Input`, `InputSmall`, `Textarea` and `Search`, the Search icon |
 | `control-border-invalid` | Secondary/Red | `red-text` (#D42020; #FF8080 in dark mode) | The stroke of an invalid control (`aria-invalid`): text fields, the Select trigger, Checkbox and Radio rings, Switch, Slider |
 
@@ -50,6 +50,7 @@ With more contrast the components also:
 
 - draw the 0.5px strokes of text fields and the Select trigger at 1px (a 0.5px line renders as a half-intensity pixel on standard screens), and the focus stroke of the text fields (`Input`, `InputSmall`, `Textarea`, `Search`, `Combobox`, `MultiSelect`) at 2px: its inner pixel was the fill, so the focused field differs from the unfocused one by at least 5.59:1, where the Figma 0.5px Black/40% stroke is 2.85:1 on the fill;
 - give the gray `InputSmall` and `Search` fields a stroke: their Black/4% fill alone is 1.1:1;
+- give the Slider bar a `control-border` stroke and the Slider range a `control-border` track (both Black/4%, 1.09:1) and `control-border-strong` thumb borders (its static white thumbs are 1:1 on white);
 - use the per-mode `white` for the Switch thumb: black on the dark-mode indigo track (10.14:1), where Figma's white thumb is 2.06:1;
 - add a 2px `black-80` ring, the colour of `focus-ring`, to the highlighted menu item (DropdownMenu, ContextMenu, Select) and CommandPalette option, whose Black/4% highlight is 1.1:1.
 - show the Link arrow and external icon at full opacity instead of 40% (2.85:1).
@@ -78,8 +79,18 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 | Switch thumb vs the off track | dark | 5.81–6.7 | 7.37–7.91 |
 | Switch thumb vs the on track | light | 21 | 21 |
 | Switch thumb vs the on track | dark | 2.06 | 10.14 |
-| Slider thumb border vs the track | light | 2.48–2.6 | 10.99–11.56 |
-| Slider thumb border vs the track | dark | 1.36–1.6 | 4.87–5.74 |
+| Slider bar (Black/4%) vs the surface | light | 1.09 | 4.22–4.26 |
+| Slider bar (Black/4%) vs the surface | dark | 1.35–1.36 | 4.47–5.02 |
+| Slider range track vs the surface | light | 1.09 | 3.93–3.97 |
+| Slider range track vs the surface | dark | 1.35–1.36 | 3.99–4.43 |
+| Slider range thumb vs the surface | light | 1–1.05 | 12–12.63 |
+| Slider range thumb vs the surface | dark | 10.58–12.63 | 10.58–12.63 |
+| Slider value on the track | light | 5.5–5.59 | 5.5–5.59 |
+| Slider value on the track | dark | 4.82–5.51 | 4.82–5.51 |
+| Slider label and handle on the fill | light | 21 | 21 |
+| Slider label and handle on the fill | dark | 10.14 | 10.14 |
+| Slider value on the fill | light | 9.95 | 9.95 |
+| Slider value on the fill | dark | 5.84 | 5.84 |
 | Invalid stroke vs the surface | light | 3.19–3.36 | 4.95–5.21 |
 | Invalid stroke vs the surface | dark | 3.14–3.75 | 4.35–5.2 |
 | Invalid stroke vs the field fill | light | 3.32–3.36 | 5.16–5.21 |

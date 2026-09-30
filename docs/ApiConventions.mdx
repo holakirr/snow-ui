@@ -163,13 +163,13 @@ The attributes in these tables are part of the public API: renaming or removing 
 
 ## Built-in text and labels
 
-Every string a component renders on its own comes from the `SnowUIProvider` messages (see [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs)), and a prop on the component wins over them. Most of those props are named `…Label` after what they name: `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `loadingLabel` (`CommandPalette`), `todayLabel` and `lastSelectionLabel` (`Calendar`), `thumbLabels` (`Slider`). The others: `label` names the component itself (`CommandPalette`, `BreadcrumbEllipsis`, `PaginationEllipsis`); `Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger` and `Badge` take a plain `aria-label`; `placeholder` and `emptyMessage` keep their usual names.
+Every string a component renders on its own comes from the `SnowUIProvider` messages (see [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs)), and a prop on the component wins over them. Most of those props are named `…Label` after what they name: `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `loadingLabel` (`CommandPalette`), `todayLabel` and `lastSelectionLabel` (`Calendar`), `thumbLabels` (`Slider`). The others: `label` names the component itself (`CommandPalette`, `BreadcrumbEllipsis`, `PaginationEllipsis`, and `Slider`, where it is also the text inside the bar); `Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger` and `Badge` take a plain `aria-label`; `placeholder` and `emptyMessage` keep their usual names.
 
 **Planned for 6.0:** `…Label` everywhere a component names one of its own elements.
 
 ## Accessible names you provide
 
-Components without text need a name from you: icon-only buttons, toggles and tabs (`aria-label` or `aria-labelledby`; `Button`, `Toggle`, `ToggleGroupItem` and `TabsTrigger` warn in development without one), `Checkbox`, `Switch`, `Slider` and `Select` without a visible `Label` (use `<Label htmlFor>` or `aria-label`), and several tab lists or groups on one page (`aria-label` on `TabsList`, `Group`). Charts warn in development when they have no `title`, `aria-label` or `aria-labelledby`.
+Components without text need a name from you: icon-only buttons, toggles and tabs (`aria-label` or `aria-labelledby`; `Button`, `Toggle`, `ToggleGroupItem` and `TabsTrigger` warn in development without one), `Checkbox`, `Switch` and `Select` without a visible `Label` (use `<Label htmlFor>` or `aria-label`), `Slider` (its `label`, `aria-label`, or `aria-labelledby` pointing at a visible label: its root isn't an element a `<label for>` can name), and several tab lists or groups on one page (`aria-label` on `TabsList`, `Group`). Charts warn in development when they have no `title`, `aria-label` or `aria-labelledby`.
 
 ## Deprecated in 5.x, removed in 6.0
 

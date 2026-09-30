@@ -117,6 +117,9 @@ export const ruMessages: Messages = {
     minimum: (label) => `${label}, минимум`,
     maximum: (label) => `${label}, максимум`,
     thumb: (label, position, count) => `${label}, ${position} из ${count}`,
+    // Russian puts a (narrow no-break) space before the percent sign.
+    value: (value, min, max) =>
+      `${Math.round(max > min ? ((value - min) / (max - min)) * 100 : 0)}\u202f%`,
   },
   spinner: {
     label: 'Загрузка',

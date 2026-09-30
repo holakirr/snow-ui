@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
 
+import { animationsEnded } from '../../test/animations'
 import { Button } from '../Button'
 import {
   Tooltip,
@@ -32,6 +33,20 @@ const meta: Meta<typeof Tooltip> = {
 export default meta
 type Story = StoryObj<typeof Tooltip>
 
+/**
+ * `tooltip` closes at once, and Radix removes it when its exit animation
+ * ends: wait for the animation (a busy runner may take longer than
+ * `waitFor`'s timeout to render it), then for the removal.
+ */
+const expectHidden = async (tooltip: HTMLElement) => {
+  const page = within(tooltip.ownerDocument.body)
+  await expect(tooltip).toHaveAttribute('data-state', 'closed')
+  await animationsEnded(tooltip)
+  await waitFor(() =>
+    expect(page.queryByRole('tooltip')).not.toBeInTheDocument(),
+  )
+}
+
 export const Default: Story = {
   args: {},
   play: async ({ canvas, canvasElement, userEvent, step }) => {
@@ -50,23 +65,19 @@ export const Default: Story = {
     )
 
     await step('Escape hides it and keeps the focus', async () => {
+      const tooltip = page.getByRole('tooltip')
       await userEvent.keyboard('{Escape}')
-      await waitFor(() =>
-        expect(page.queryByRole('tooltip')).not.toBeInTheDocument(),
-      )
+      await expectHidden(tooltip)
       await expect(trigger).toHaveFocus()
     })
 
     await step('it shows again on the next focus', async () => {
       await userEvent.tab({ shift: true })
       await userEvent.tab()
-      await expect(await page.findByRole('tooltip')).toHaveTextContent(
-        'Add to library',
-      )
+      const tooltip = await page.findByRole('tooltip')
+      await expect(tooltip).toHaveTextContent('Add to library')
       await userEvent.tab()
-      await waitFor(() =>
-        expect(page.queryByRole('tooltip')).not.toBeInTheDocument(),
-      )
+      await expectHidden(tooltip)
     })
   },
   render: () => (

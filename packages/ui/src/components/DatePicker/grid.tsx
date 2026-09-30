@@ -25,8 +25,10 @@ type OptionGridProps = {
   /**
    * Called by the arrow keys past the first or last row and by PageUp /
    * PageDown, e.g. to page the years; the focus stays in the same column.
+   * Returns `false` when there is no page there (past `minDate` or
+   * `maxDate`): the focus stays.
    */
-  onPage?: (delta: -1 | 1) => void
+  onPage?: (delta: -1 | 1) => boolean
   /** `aria-current` of the current option. */
   currentKind?: 'date' | 'time'
   rtl?: boolean
@@ -114,8 +116,7 @@ export const OptionGrid = ({
     if (event.key === 'PageUp' || event.key === 'PageDown') {
       if (!onPage) return
       event.preventDefault()
-      pendingFocus.current = index
-      onPage(event.key === 'PageUp' ? -1 : 1)
+      if (onPage(event.key === 'PageUp' ? -1 : 1)) pendingFocus.current = index
       return
     }
     const target = targets[event.key]
@@ -126,9 +127,10 @@ export const OptionGrid = ({
       if (!onPage || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) {
         return
       }
-      pendingFocus.current =
-        target < 0 ? target + options.length : target - options.length
-      onPage(target < 0 ? -1 : 1)
+      if (onPage(target < 0 ? -1 : 1)) {
+        pendingFocus.current =
+          target < 0 ? target + options.length : target - options.length
+      }
       return
     }
     focusIndex(target)

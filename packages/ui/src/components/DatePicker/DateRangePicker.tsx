@@ -190,6 +190,24 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
     return same(a?.from, b?.from) && same(a?.to, b?.to)
   }
 
+  // The value changes while the calendar is open (a controlled value, or the
+  // range just confirmed while a controlled `open` stays true): a session
+  // with nothing picked shows it, and closing doesn't bring back the old one.
+  const [sessionValue, setSessionValue] = useState(value)
+  if (!sameRange(sessionValue, value)) {
+    setSessionValue(value)
+    setSession((current) =>
+      current.fresh
+        ? {
+            ...current,
+            from: value?.from ?? null,
+            to: value?.to ?? null,
+            last: value,
+          }
+        : current,
+    )
+  }
+
   /** Whether `range` covers a day that can't be picked (`excludeDisabled`). */
   const coversDisabled = (range: { from: Date; to: Date }) =>
     excludeDisabled && rangeContainsModifiers(range, matchers)

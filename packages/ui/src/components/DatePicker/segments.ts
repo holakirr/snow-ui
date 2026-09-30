@@ -14,11 +14,16 @@ export type HourCycle = 12 | 24
 
 /**
  * A date while it is typed, part by part (`month` 1–12, `hour` 0–23). A
- * missing part shows the placeholder's value, dimmed.
+ * missing part shows the placeholder's value, dimmed. `period` is AM (0) or
+ * PM (1) while the hour is empty: an erased 12-hour hour keeps it.
  */
 export type DateParts = Partial<
   Record<'year' | 'month' | 'day' | 'hour' | 'minute' | 'second', number>
->
+> & { period?: 0 | 1 }
+
+/** Whether the parts are in the afternoon: the hour's, else `period`'s. */
+const isPm = (parts: DateParts) =>
+  parts.hour === undefined ? parts.period === 1 : parts.hour >= 12
 
 /** The order of the segments and their separators in a locale. */
 export type FieldLayout = {
@@ -207,7 +212,7 @@ export const segmentValue = (
   hourCycle: HourCycle,
 ): number | undefined => {
   if (segment === 'dayPeriod') {
-    return parts.hour === undefined ? undefined : parts.hour >= 12 ? 1 : 0
+    return parts.hour === undefined ? parts.period : parts.hour >= 12 ? 1 : 0
   }
   if (segment === 'hour' && hourCycle === 12 && parts.hour !== undefined) {
     return parts.hour % 12 || 12
@@ -224,11 +229,13 @@ export const setSegment = (
 ): DateParts => {
   let next: DateParts
   if (segment === 'dayPeriod') {
-    const hour = parts.hour ?? 0
-    next = { ...parts, hour: (hour % 12) + (value ? 12 : 0) }
+    // An empty hour stays empty: AM / PM waits for it.
+    next =
+      parts.hour === undefined
+        ? { ...parts, period: value ? 1 : 0 }
+        : { ...parts, hour: (parts.hour % 12) + (value ? 12 : 0) }
   } else if (segment === 'hour' && hourCycle === 12) {
-    const pm = (parts.hour ?? 0) >= 12
-    next = { ...parts, hour: (value % 12) + (pm ? 12 : 0) }
+    next = { ...parts, hour: (value % 12) + (isPm(parts) ? 12 : 0) }
   } else {
     next = { ...parts, [segment]: value }
   }
@@ -310,7 +317,7 @@ export const typeDigit = (
   if (value < min) return { buffer: text, parts, done: false }
   let next: DateParts
   if (segment === 'hour' && hourCycle === 12) {
-    const pm = (parts.hour ?? 0) >= 12
+    const pm = isPm(parts)
     next = {
       ...parts,
       hour:
@@ -343,7 +350,7 @@ export const dayPeriodForKey = (
 }
 
 /** A date's parts. */
-export const partsOf = (date: Date): Required<DateParts> => ({
+export const partsOf = (date: Date): Required<Omit<DateParts, 'period'>> => ({
   year: date.getFullYear(),
   month: date.getMonth() + 1,
   day: date.getDate(),
@@ -351,6 +358,18 @@ export const partsOf = (date: Date): Required<DateParts> => ({
   minute: date.getMinutes(),
   second: date.getSeconds(),
 })
+
+/**
+ * Empties a segment. An erased 12-hour hour keeps its AM / PM (`period`),
+ * as React Aria's; AM / PM itself isn't erased.
+ */
+export const clearSegment = (parts: DateParts, segment: Segment): DateParts => {
+  if (segment === 'dayPeriod') return parts
+  if (segment === 'hour' && parts.hour !== undefined) {
+    return { ...parts, hour: undefined, period: parts.hour >= 12 ? 1 : 0 }
+  }
+  return { ...parts, [segment]: undefined }
+}
 
 /**
  * The date of complete parts, or `null` while one is missing. Without

@@ -6,6 +6,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
+import { useState } from 'react'
 import { ru } from 'react-day-picker/locale'
 import { userEvent } from 'storybook/test'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
@@ -18,7 +19,11 @@ import {
 } from '../Input'
 import { SnowUIProvider } from '../SnowUIProvider'
 import { DatePicker, type DatePickerProps } from './DatePicker'
-import { DateRangePicker, type DateRangePickerProps } from './DateRangePicker'
+import {
+  type DateRange,
+  DateRangePicker,
+  type DateRangePickerProps,
+} from './DateRangePicker'
 
 beforeAll(() => {
   // Radix positions the popover with ResizeObserver; jsdom has none.
@@ -222,6 +227,77 @@ describe('DatePicker popup', () => {
     expect(onValueChange).not.toHaveBeenCalled()
   })
 
+  it("doesn't page the months or the years past maxDate", async () => {
+    renderPicker({ maxDate: new Date(2025, 11, 31) })
+    fireEvent.click(screen.getByRole('button', { name: 'Jan, choose a month' }))
+    const january = screen.getByRole('button', { name: 'January 2025' })
+    await waitFor(() => expect(january).toHaveFocus())
+    // There is no 2026: PageDown, and ↓ from the last row, stay in 2025.
+    const september = screen.getByRole('button', { name: 'September 2025' })
+    act(() => september.focus())
+    fireEvent.keyDown(september, { key: 'PageDown' })
+    fireEvent.keyDown(september, { key: 'ArrowDown' })
+    expect(screen.getByRole('grid', { name: '2025' })).toBeInTheDocument()
+    expect(september).toHaveFocus()
+
+    fireEvent.click(screen.getByRole('button', { name: '2025, choose a year' }))
+    const years = screen.getByRole('grid', { name: '2020 – 2031' })
+    const year = within(years).getByRole('button', { name: '2025' })
+    await waitFor(() => expect(year).toHaveFocus())
+    fireEvent.keyDown(year, { key: 'PageDown' })
+    expect(screen.getByRole('grid', { name: '2020 – 2031' })).toBe(years)
+    expect(year).toHaveFocus()
+  })
+
+  it('follows a value changed while it is open; closing keeps it', async () => {
+    const onValueChange = vi.fn()
+    let setOuter: (date: Date | null) => void = () => {}
+    const Controlled = () => {
+      const [value, setValue] = useState<Date | null>(new Date(2025, 0, 20))
+      setOuter = setValue
+      return (
+        <DatePicker
+          aria-label="Due"
+          defaultOpen
+          calendarProps={{ today: TODAY }}
+          value={value}
+          onValueChange={onValueChange}
+        />
+      )
+    }
+    render(<Controlled />)
+    act(() => setOuter(new Date(2025, 0, 25)))
+    expect(segment('Day')).toHaveAttribute('aria-valuenow', '25')
+    await userEvent.click(document.documentElement)
+    await waitFor(() =>
+      expect(field()).toHaveAttribute('aria-expanded', 'false'),
+    )
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(field()).toHaveTextContent('Jan 25, 2025')
+  })
+
+  it('shows the picked day while a controlled open stays true', () => {
+    const Controlled = () => {
+      const [value, setValue] = useState<Date | null>(new Date(2025, 0, 20))
+      return (
+        <DatePicker
+          aria-label="Due"
+          open
+          calendarProps={{ today: TODAY }}
+          value={value}
+          onValueChange={setValue}
+        />
+      )
+    }
+    render(<Controlled />)
+    fireEvent.click(day(/January 22nd, 2025/))
+    expect(field()).toHaveTextContent('Jan 22, 2025')
+    expect(segment('Day')).toHaveAttribute('aria-valuenow', '22')
+    expect(
+      day(/January 22nd, 2025/).closest('[role="gridcell"]'),
+    ).toHaveAttribute('aria-selected', 'true')
+  })
+
   it('shows the short month in the caption', () => {
     renderPicker({ defaultValue: new Date(2025, 1, 20) })
     expect(
@@ -252,6 +328,21 @@ describe('DatePicker withTime', () => {
     // The picked day again confirms.
     fireEvent.click(day(/January 22nd, 2025/))
     expect(onValueChange).toHaveBeenCalledWith(new Date(2025, 0, 22, 16, 8))
+  })
+
+  it('keeps PM when the hour is erased and typed again', () => {
+    const onValueChange = vi.fn()
+    renderPicker({
+      defaultValue: new Date(2025, 0, 20, 16, 8),
+      withTime: true,
+      hourCycle: 12,
+      onValueChange,
+    })
+    press(segment('Hour'), 'Backspace')
+    expect(segment('Hour')).toHaveAttribute('aria-valuetext', 'Empty')
+    expect(segment('AM/PM')).toHaveAttribute('aria-valuetext', 'PM')
+    press(segment('Hour'), '0', '5', 'Enter')
+    expect(onValueChange).toHaveBeenCalledWith(new Date(2025, 0, 20, 17, 8))
   })
 
   it('switches a typed 13 to 01 PM', () => {
@@ -374,6 +465,38 @@ describe('DateRangePicker popup', () => {
       from: new Date(2025, 0, 13),
       to: new Date(2025, 0, 20),
     })
+  })
+
+  it('follows a range changed while it is open; closing keeps it', async () => {
+    const onValueChange = vi.fn()
+    let setOuter: (range: DateRange | null) => void = () => {}
+    const Controlled = () => {
+      const [value, setValue] = useState<DateRange | null>({
+        from: new Date(2025, 0, 13),
+        to: new Date(2025, 0, 16),
+      })
+      setOuter = setValue
+      return (
+        <DateRangePicker
+          aria-label="Stay"
+          defaultOpen
+          calendarProps={{ today: TODAY }}
+          value={value}
+          onValueChange={onValueChange}
+        />
+      )
+    }
+    render(<Controlled />)
+    act(() =>
+      setOuter({ from: new Date(2025, 0, 20), to: new Date(2025, 0, 24) }),
+    )
+    expect(segment('Day', 'Start date')).toHaveAttribute('aria-valuenow', '20')
+    await userEvent.click(document.documentElement)
+    await waitFor(() =>
+      expect(field()).toHaveAttribute('aria-expanded', 'false'),
+    )
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(field()).toHaveTextContent('Jan 20, 2025 – Jan 24, 2025')
   })
 
   it("doesn't take a typed end before the start", () => {

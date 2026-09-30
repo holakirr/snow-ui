@@ -11,6 +11,7 @@ import {
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
 import {
+  clearSegment,
   composeDate,
   type DateParts,
   dayPeriodForKey,
@@ -259,13 +260,7 @@ export const DateField = ({
         update(
           index,
           segment,
-          (parts) => ({
-            parts: {
-              ...parts,
-              [segment]: undefined,
-              // The 12-hour hour keeps its AM / PM in `hour`.
-            },
-          }),
+          (parts) => ({ parts: clearSegment(parts, segment) }),
           element,
         )
         return
@@ -289,17 +284,7 @@ export const DateField = ({
             index,
             segment,
             (parts) => ({
-              parts: setSegment(
-                parts.hour === undefined
-                  ? {
-                      ...parts,
-                      hour: partsOf(placeholders[index] as Date).hour,
-                    }
-                  : parts,
-                'dayPeriod',
-                period,
-                hourCycle,
-              ),
+              parts: setSegment(parts, 'dayPeriod', period, hourCycle),
               done: true,
             }),
             element,

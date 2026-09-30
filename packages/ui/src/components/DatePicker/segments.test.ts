@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  clearSegment,
   composeDate,
   type DateParts,
   dayPeriodForKey,
@@ -128,6 +129,20 @@ describe('date segments', () => {
     expect(stepSegment({ hour: 4 }, 'dayPeriod', 1, 12).hour).toBe(16)
     // An empty segment starts at its minimum.
     expect(stepSegment({}, 'day', 1, 24).day).toBe(2)
+  })
+
+  it('keeps AM / PM when the 12-hour hour is erased', () => {
+    const erased = clearSegment({ hour: 16, minute: 8 }, 'hour')
+    expect(erased).toEqual({ hour: undefined, minute: 8, period: 1 })
+    expect(segmentValue(erased, 'dayPeriod', 12)).toBe(1)
+    expect(type(erased, 'hour', '05', 12).parts.hour).toBe(17)
+    expect(setSegment(erased, 'hour', 9, 12).hour).toBe(21)
+    // AM / PM on an empty hour waits for it; AM / PM itself isn't erased.
+    expect(setSegment(erased, 'dayPeriod', 0, 12)).toMatchObject({
+      hour: undefined,
+      period: 0,
+    })
+    expect(clearSegment({ hour: 16 }, 'dayPeriod')).toEqual({ hour: 16 })
   })
 
   it('composes a date only from complete parts', () => {

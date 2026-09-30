@@ -119,6 +119,18 @@ const DatePicker: FC<DatePickerProps> = ({
     setWasOpen(open)
     setSession(newSession())
   }
+  // The value changes while the calendar is open (a controlled value, or the
+  // date just confirmed while a controlled `open` stays true): a session
+  // with nothing picked shows it, and closing doesn't bring back the old one.
+  const [sessionValue, setSessionValue] = useState(value)
+  if (!sameDate(sessionValue, value)) {
+    setSessionValue(value)
+    setSession((current) =>
+      sameDate(current.draft, current.last)
+        ? { ...current, draft: value, last: value }
+        : current,
+    )
+  }
   const setDraft = (draft: Date | null) =>
     setSession((current) => ({ ...current, draft }))
 

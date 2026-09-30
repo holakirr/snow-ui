@@ -351,7 +351,11 @@ export const DatePickerPanel = ({
             columns={4}
             rtl={rtl}
             onSelect={(m) => pickMonth(shownYear, m)}
-            onPage={(delta) => goToMonth(addMonths(month, delta * 12))}
+            onPage={(delta) => {
+              if (yearOutOfRange(shownYear + delta)) return false
+              goToMonth(addMonths(month, delta * 12))
+              return true
+            }}
           />
         </>
       )
@@ -365,8 +369,14 @@ export const DatePickerPanel = ({
         current: today.getFullYear() === year,
         disabled: yearOutOfRange(year),
       }))
-      const page = (delta: -1 | 1) =>
+      // No page of years past `minDate` or `maxDate`.
+      const canPage = (delta: -1 | 1) =>
+        !yearOutOfRange(delta < 0 ? yearsFrom - 1 : yearsFrom + YEARS)
+      const page = (delta: -1 | 1) => {
+        if (!canPage(delta)) return false
         setYearsFrom((from) => from + delta * YEARS)
+        return true
+      }
       const pickYear = (year: number) =>
         pickMonth(year, (activeDate ?? month).getMonth())
       return (
@@ -378,12 +388,12 @@ export const DatePickerPanel = ({
             arrows(
               {
                 label: messages.calendar.previousYears(YEARS),
-                disabled: yearOutOfRange(yearsFrom - 1),
+                disabled: !canPage(-1),
                 onClick: () => page(-1),
               },
               {
                 label: messages.calendar.nextYears(YEARS),
-                disabled: yearOutOfRange(yearsFrom + YEARS),
+                disabled: !canPage(1),
                 onClick: () => page(1),
               },
             ),

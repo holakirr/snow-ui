@@ -203,6 +203,7 @@ type RefTargets = {
   TableHead: HTMLTableCellElement
   TableHeader: HTMLTableSectionElement
   TableRow: HTMLTableRowElement
+  TableToolbar: HTMLDivElement
   Tabs: HTMLDivElement
   TabsContent: HTMLDivElement
   TabsList: HTMLDivElement

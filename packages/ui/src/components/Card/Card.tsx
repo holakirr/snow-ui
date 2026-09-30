@@ -95,7 +95,9 @@ const Card: FC<CardProps> = ({
         cardStyles({ variant, interactive, bordered, selected }),
         // The mark sits in the padding's corner: keep the content clear of
         // it (the padding plus the 20px mark and a 4px gap).
-        marker && ['group relative', block ? 'pe-12' : 'pe-10'],
+        // A named group, so an outer `group` (the Sidebar's) doesn't show
+        // the mark.
+        marker && ['group/card relative', block ? 'pe-12' : 'pe-10'],
         className,
       )}
       {...props}
@@ -103,6 +105,7 @@ const Card: FC<CardProps> = ({
       {children}
       {marker && (
         <RadioMark
+          host="card"
           checked={Boolean(selected)}
           className={twMerge(
             'absolute transition-opacity motion-reduce:transition-none',
@@ -110,7 +113,7 @@ const Card: FC<CardProps> = ({
             // Figma: no mark on the Default and Static cards, an empty one
             // on Hover.
             !selected &&
-              'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 group-has-focus-visible:opacity-100',
+              'opacity-0 group-hover/card:opacity-100 group-focus-visible/card:opacity-100 group-has-focus-visible/card:opacity-100',
           )}
         />
       )}

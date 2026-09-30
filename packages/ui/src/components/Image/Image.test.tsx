@@ -114,8 +114,11 @@ describe('Image', () => {
       'top-2',
       'end-2',
       'inset-ring-control-border',
-      'group-hover:inset-ring-control-border-strong',
+      // The frame is a named group: an outer `group` doesn't reach the mark.
+      'group-hover/image:inset-ring-control-border-strong',
     )
+    expect(frame).toHaveClass('group/image')
+    expect(frame).not.toHaveClass('group')
 
     rerender(
       <Image size={80} option selected>

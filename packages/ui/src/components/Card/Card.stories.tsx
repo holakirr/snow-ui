@@ -183,6 +183,34 @@ export const Selectable: Story = {
   },
 }
 
+/**
+ * A card with `marker` inside another `group` (the Sidebar's root is one):
+ * the mark answers to the card's own hover and focus only.
+ */
+export const MarkerInsideAGroup: Story = {
+  // A behaviour check: the same look as Selectable.
+  tags: ['!autodocs', 'skip-visual'],
+  play: async ({ canvas, canvasElement }) => {
+    const elsewhere = canvas.getByRole('button', { name: 'Elsewhere' })
+    elsewhere.focus()
+    await expect(elsewhere.matches(':focus-visible')).toBe(true)
+    // Past the opacity transition.
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    const mark = canvasElement.querySelector(
+      '[data-slot="radio-mark"]',
+    ) as HTMLElement
+    await expect(getComputedStyle(mark).opacity).toBe('0')
+  },
+  render: () => (
+    <div className="group flex flex-col items-start gap-4">
+      <Button>Elsewhere</Button>
+      <Card marker className="w-[160px]">
+        <Typography semibold>Pro</Typography>
+      </Card>
+    </div>
+  ),
+}
+
 /** The dashboard block: radius 20, padding 24, Background/2. */
 export const Block: Story = {
   args: { variant: 'block', className: 'w-[420px] flex flex-col gap-4' },

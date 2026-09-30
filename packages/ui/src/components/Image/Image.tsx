@@ -169,7 +169,7 @@ const Image: FC<ImageProps> = ({
       data-size={size}
       data-state={selected ? 'selected' : undefined}
       className={twMerge(
-        'group relative inline-flex shrink-0 overflow-hidden bg-black-4 align-middle [corner-shape:squircle]',
+        'group/image relative inline-flex shrink-0 overflow-hidden bg-black-4 align-middle [corner-shape:squircle]',
         spec.frame,
         interactive &&
           // Figma "Image hover": an inner shadow over the top edge.
@@ -194,6 +194,7 @@ const Image: FC<ImageProps> = ({
       </span>
       {option && (
         <RadioMark
+          host="image"
           checked={selected}
           size={markSize}
           className={twMerge('absolute z-20', markInset)}

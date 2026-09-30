@@ -58,7 +58,9 @@ describe('Card', () => {
     let mark = card.querySelector('[data-slot="radio-mark"]') as HTMLElement
 
     // Clear of the mark: the padding plus the 20px mark and a 4px gap.
-    expect(card).toHaveClass('group', 'relative', 'pe-10')
+    // A named group: an outer `group` (the Sidebar's) doesn't reach the mark.
+    expect(card).toHaveClass('group/card', 'relative', 'pe-10')
+    expect(card).not.toHaveClass('group')
     expect(mark).toHaveAttribute('aria-hidden', 'true')
     expect(mark).toHaveAttribute('data-state', 'unchecked')
     expect(mark).toHaveClass(
@@ -68,8 +70,9 @@ describe('Card', () => {
       'size-5',
       // Figma: an empty mark only on hover (and keyboard focus here).
       'opacity-0',
-      'group-hover:opacity-100',
-      'group-has-focus-visible:opacity-100',
+      'group-hover/card:opacity-100',
+      'group-has-focus-visible/card:opacity-100',
+      'group-hover/card:inset-ring-control-border-strong',
     )
     cleanup()
 

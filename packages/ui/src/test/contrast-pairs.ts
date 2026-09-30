@@ -99,10 +99,28 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['primary'],
   },
   {
-    control: 'Slider thumb border vs the track',
+    control: 'Slider bar (Black/4%) vs the surface',
     kind: 'nonText',
-    foreground: () => ['white', 'control-border-strong'],
-    background: () => ['black-4'],
+    // With more contrast, a `control-border` stroke inside the bar.
+    foreground: (level) =>
+      level === 'more' ? ['black-4', 'control-border'] : ['black-4'],
+    background: () => [],
+  },
+  {
+    control: 'Slider range track vs the surface',
+    kind: 'nonText',
+    foreground: (level) => [level === 'more' ? 'control-border' : 'black-4'],
+    background: () => [],
+  },
+  {
+    control: 'Slider range thumb vs the surface',
+    kind: 'nonText',
+    // With more contrast, a `control-border-strong` border.
+    foreground: (level) =>
+      level === 'more'
+        ? ['static-white', 'control-border-strong']
+        : ['static-white'],
+    background: () => [],
   },
   {
     control: 'Invalid stroke vs the surface',

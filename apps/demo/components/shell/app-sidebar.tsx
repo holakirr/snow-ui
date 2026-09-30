@@ -64,9 +64,10 @@ const SoonItem = ({
 
 /**
  * The Figma dashboard Sidebar (212px): the user, Favorites / Recently, the
- * Dashboards and Pages groups, with Duotone icons (Fill on the current page). A Server Component: only the links (active
- * state) and the shortcut tabs are client components. It collapses off
- * canvas with the header's toggle (⌘B) and is a sheet on small screens.
+ * Dashboards and Pages groups, with Duotone icons (Fill on the current
+ * page). A Server Component: only the links (active state) and the shortcut
+ * tabs are client components. It collapses off canvas with the header's
+ * toggle (⌘B) and is a sheet on small screens.
  */
 export const AppSidebar = ({ dict }: { dict: Dictionary }) => (
   // Padding on the parts, not on Sidebar: its className goes to the fixed

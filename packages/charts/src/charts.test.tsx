@@ -222,6 +222,11 @@ describe('AreaChart', () => {
     expect(stops(1)).toEqual(['0', '0'])
     const area = container.querySelector('.recharts-area-area')
     expect(area?.getAttribute('fill')).toMatch(/^url\(#snow-chart-.+-area-0\)$/)
+    // Figma "Total Users": last year is the dashed Secondary/Cyan line.
+    const figure = container.querySelector('[data-slot="chart"]') as HTMLElement
+    expect(figure.style.getPropertyValue('--chart-lastYear')).toBe(
+      'var(--color-cyan)',
+    )
   })
 })
 
@@ -440,7 +445,15 @@ describe('DonutChart', () => {
       ).toHaveLength(4),
     )
     const sectors = [...container.querySelectorAll('.recharts-pie-sector path')]
-    expect(sectors[0]).toHaveAttribute('fill', 'var(--chart-United_20_States)')
+    // Figma: the Primary slice shades from its colour towards grey.
+    const shade = sectors[0]?.getAttribute('fill')?.match(/^url\(#(.+)\)$/)?.[1]
+    expect(shade).toBeTruthy()
+    const gradient = container.querySelector(`linearGradient[id="${shade}"]`)
+    expect(gradient?.querySelector('stop')).toHaveAttribute(
+      'stop-color',
+      'var(--chart-United_20_States)',
+    )
+    expect(sectors[1]).toHaveAttribute('fill', 'var(--chart-Canada)')
     const legend = container.querySelector(
       '[data-slot="chart-legend"]',
     ) as HTMLElement

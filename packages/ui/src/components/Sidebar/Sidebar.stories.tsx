@@ -139,7 +139,8 @@ const Content = () => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild isActive={item.isActive}>
                 <a href={item.url}>
-                  <item.icon />
+                  {/* Figma: Duotone icons, Fill on the active item. */}
+                  <item.icon weight={item.isActive ? 'fill' : 'duotone'} />
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>
@@ -228,7 +229,9 @@ export const RTL: Story = {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild isActive={item.isActive}>
                         <a href="#rtl">
-                          <item.icon />
+                          <item.icon
+                            weight={item.isActive ? 'fill' : 'duotone'}
+                          />
                           <span>{item.title}</span>
                         </a>
                       </SidebarMenuButton>
@@ -434,7 +437,7 @@ export const Dashboard: Story = {
                 {dashboards.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={item.isActive}>
-                      <a href={item.url} className="gap-1">
+                      <a href={item.url}>
                         {item.isActive ? (
                           <span className="size-4 shrink-0" />
                         ) : (
@@ -458,14 +461,14 @@ export const Dashboard: Story = {
                 {pages.map((item, index) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url} className="gap-1">
+                      <a href={item.url}>
                         <Chevron open={index === 0} />
                         <item.icon weight="duotone" />
                         <span className="ml-1">{item.title}</span>
                       </a>
                     </SidebarMenuButton>
                     {index === 0 && (
-                      <SidebarMenuSub className="ml-12 mr-0 border-l-0 px-0">
+                      <SidebarMenuSub className="ml-12 mr-0 px-0">
                         {profilePages.map((title) => (
                           <SidebarMenuSubItem key={title}>
                             <SidebarMenuSubButton href="#">

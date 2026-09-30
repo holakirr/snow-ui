@@ -74,8 +74,10 @@ DialogContent.displayName = DialogPrimitive.Content.displayName
 
 type DialogHeaderProps = ComponentProps<'div'> & {
   /**
-   * Content before the title (on the left in left-to-right text), in a 40px
-   * slot that balances the close button.
+   * Content before the title (on the left in left-to-right text), in a slot
+   * at least 40px wide that balances the close button. The Figma "Add data"
+   * dialog puts a 48px Add icon there (the kit's plus is 36px; our AddIcon at
+   * size 48 draws a 30px one, our icon set's inset).
    */
   startContent?: ReactNode
   /**
@@ -111,10 +113,21 @@ const DialogHeader: FC<DialogHeaderProps> = ({
       className={twMerge('flex justify-between items-center px-2', className)}
       {...props}
     >
-      <div className="w-10">{startContent ?? leftContent}</div>
+      {/* At least 40px, the close button's width; it widens for larger
+          content, such as the Figma "Add data" 48px icon. shrink-0: the
+          explicit min-width replaces the flex auto minimum, so a long title
+          would otherwise shrink it back to 40px under a wider icon. */}
+      <div className="min-w-10 shrink-0">{startContent ?? leftContent}</div>
       {children}
       <DialogPrimitive.Close asChild>
-        <Button variant="gray" size="md" startContent={<CloseIcon size={24} />}>
+        {/* Figma "Close": Button Medium "Gray", icon-only (padding 8, radius
+            12, 40px), with the kit's Close icon (an 11px X in a 24px box). */}
+        <Button
+          variant="gray"
+          size="md"
+          className="rounded-12"
+          startContent={<CloseIcon size={24} />}
+        >
           <Typography className="sr-only">
             {closeLabel ?? messages.dialog.close}
           </Typography>

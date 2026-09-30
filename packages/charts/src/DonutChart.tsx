@@ -11,7 +11,7 @@ import { createFormatValue, useChartLocale } from './context'
 import { formatPercent, toNumber } from './format'
 import { useChartMessages, withDefault } from './messages'
 import type { ChartFrameProps } from './shared'
-import { tooltipVariant } from './shared'
+import { tooltipVariant, useSvgId } from './shared'
 
 export interface DonutChartProps<TDatum extends object>
   extends Omit<ChartFrameProps, 'height' | 'keyboardHint' | 'navigationLabel'> {
@@ -123,14 +123,24 @@ export const DonutChart = <TDatum extends object>({
     [data, valueKey],
   )
   const total = values.reduce((sum, value) => sum + Math.max(0, value), 0)
+  const svgId = useSvgId()
+  // Figma "Traffic by Location": the Primary slice (black in the light
+  // theme) fades to a grey from top to bottom; in the dark theme (lavender)
+  // it is flat, which `light-dark()` follows from the theme's color-scheme.
+  const shaded = useMemo(
+    () => names.map((name) => fullConfig[name]?.color === 'primary'),
+    [names, fullConfig],
+  )
   const slices = useMemo(
     () =>
       data.map((row, index) => ({
         ...(row as Record<string, unknown>),
-        fill: seriesColor(names[index] as string),
+        fill: shaded[index]
+          ? `url(#${svgId}-shade-${index})`
+          : seriesColor(names[index] as string),
         fillOpacity: fullConfig[names[index] as string]?.opacity ?? 1,
       })),
-    [data, names, fullConfig],
+    [data, names, fullConfig, shaded, svgId],
   )
 
   const legendValues =
@@ -197,6 +207,32 @@ export const DonutChart = <TDatum extends object>({
         aria-hidden
         margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
       >
+        <defs>
+          {names.map((name, index) =>
+            shaded[index] ? (
+              <linearGradient
+                // biome-ignore lint/suspicious/noArrayIndexKey: one gradient per slice, in data order
+                key={index}
+                id={`${svgId}-shade-${index}`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop offset="0" stopColor={seriesColor(name)} />
+                <stop
+                  offset="1"
+                  // The attribute is the fallback where light-dark() isn't
+                  // supported: flat.
+                  stopColor={seriesColor(name)}
+                  style={{
+                    stopColor: `light-dark(color-mix(in srgb, ${seriesColor(name)} 60%, white), ${seriesColor(name)})`,
+                  }}
+                />
+              </linearGradient>
+            ) : null,
+          )}
+        </defs>
         <Pie
           data={slices}
           dataKey={valueKey}

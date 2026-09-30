@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRightIcon } from '@holakirr/snow-ui-icons'
+import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as CtxMenuPrimitive from '@radix-ui/react-context-menu'
 import type { ComponentProps, FC } from 'react'
@@ -43,7 +43,8 @@ const ContextMenuSubTrigger: FC<ContextMenuSubTriggerProps> = ({
     {...props}
   >
     {children}
-    <ArrowRightIcon className="ms-auto rtl:-scale-x-100" />
+    {/* Figma: the submenu item ends in a 16px ArrowLineRight chevron. */}
+    <ArrowLineRightIcon className="ms-auto rtl:-scale-x-100" />
   </CtxMenuPrimitive.SubTrigger>
 )
 ContextMenuSubTrigger.displayName = CtxMenuPrimitive.SubTrigger.displayName
@@ -130,16 +131,17 @@ const ContextMenuCheckboxItem: FC<ContextMenuCheckboxItemProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.CheckboxItem
-    className={twMerge(itemClasses, 'ps-8', className)}
+    className={twMerge(itemClasses, 'pe-8', className)}
     checked={checked}
     {...props}
   >
-    <span className="absolute start-2 flex size-4 items-center justify-center">
+    {children}
+    {/* Figma: a trailing 16px Check on the selected item, as in Select. */}
+    <span className="absolute end-2 flex size-4 items-center justify-center">
       <CtxMenuPrimitive.ItemIndicator>
         <Check />
       </CtxMenuPrimitive.ItemIndicator>
     </span>
-    {children}
   </CtxMenuPrimitive.CheckboxItem>
 )
 ContextMenuCheckboxItem.displayName = CtxMenuPrimitive.CheckboxItem.displayName
@@ -154,15 +156,17 @@ const ContextMenuRadioItem: FC<ContextMenuRadioItemProps> = ({
   ...props
 }) => (
   <CtxMenuPrimitive.RadioItem
-    className={twMerge(itemClasses, 'ps-8', className)}
+    className={twMerge(itemClasses, 'pe-8', className)}
     {...props}
   >
-    <span className="absolute start-2 flex size-4 items-center justify-center">
+    {children}
+    {/* Figma: the chosen item of a single-choice list ends in the same
+        16px Check as Select's (the role says it is a radio item). */}
+    <span className="absolute end-2 flex size-4 items-center justify-center">
       <CtxMenuPrimitive.ItemIndicator>
-        <span className="block size-1.5 rounded-full bg-current" />
+        <Check />
       </CtxMenuPrimitive.ItemIndicator>
     </span>
-    {children}
   </CtxMenuPrimitive.RadioItem>
 )
 ContextMenuRadioItem.displayName = CtxMenuPrimitive.RadioItem.displayName

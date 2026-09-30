@@ -9,6 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableToolbar,
 } from './Table'
 import * as stories from './Table.stories'
 
@@ -121,6 +122,71 @@ describe('Table', () => {
       'aria-sort',
       'descending',
     )
+  })
+})
+
+describe('TableToolbar and TableCell reveal', () => {
+  it('draws the function bar: a Background/2 row, radius 12, padded 8px, gap 16', () => {
+    render(
+      <TableToolbar aria-label="Orders" role="group" className="mb-2">
+        <button type="button">Add</button>
+      </TableToolbar>,
+    )
+    const toolbar = screen.getByRole('group', { name: 'Orders' })
+    expect(toolbar).toHaveAttribute('data-slot', 'table-toolbar')
+    expect(toolbar).toHaveClass(
+      'flex',
+      'items-center',
+      'min-h-11',
+      'gap-4',
+      'rounded-12',
+      'bg-background-2',
+      'p-2',
+      'mb-2',
+    )
+    // Figma "Table A function bar": radius 12 and gap 16 (not 16 and 8).
+    expect(toolbar).not.toHaveClass('rounded-16')
+    expect(toolbar).not.toHaveClass('gap-2')
+    expect(
+      within(toolbar).getByRole('button', { name: 'Add' }),
+    ).toBeInTheDocument()
+  })
+
+  it("hides a reveal cell's elements only where the pointer can hover", () => {
+    render(
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell reveal>
+              <button type="button">More</button>
+            </TableCell>
+            <TableCell>Plain</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    )
+    const [reveal, plain] = screen.getAllByRole('cell')
+    const hide = [...(reveal?.classList ?? [])].find((name) =>
+      name.endsWith(':opacity-0'),
+    )
+    // One rule: hover media, a row that is neither hovered nor selected, a
+    // cell without focus, a checked box or an open menu.
+    expect(hide).toMatch(/^\[@media\(hover:hover\)\]:/)
+    for (const condition of [
+      ':hover',
+      '[data-state=selected]',
+      ':focus-within',
+      '[aria-checked=true]',
+      '[aria-checked=mixed]',
+      // A native checkbox, checked or indeterminate.
+      '[type=checkbox]:checked',
+      '[type=checkbox]:indeterminate',
+      '[aria-expanded=true]',
+    ]) {
+      expect(hide).toContain(condition)
+    }
+    expect(reveal).not.toHaveAttribute('reveal')
+    expect(plain?.className).not.toContain('opacity-0')
   })
 })
 

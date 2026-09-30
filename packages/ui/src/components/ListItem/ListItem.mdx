@@ -6,7 +6,7 @@ import * as ListItemStories from './ListItem.stories'
 
 <Title />
 
-<FigmaLinks note="The closest Figma pattern is a row of the dashboard's Notifications, Activities and Contacts lists (the right sidebar), drawn with IconText." />
+<FigmaLinks label="Notifications list" note="A row of the Figma Notifications, Activities and Contacts lists (the dashboard's right sidebar), drawn with IconText. The DashboardLists story links all three." />
 <InstallTabs item="list-item" />
 
 ListItem is a row of the dashboard lists: an icon or avatar, a title and an optional description or timestamp. It is an [IconText](?path=/docs/components-icontext--docs), so `interactive`, `active`, `flip` and `asChild` work the same way; with `asChild` it renders your `<li>`, link or button.
@@ -67,7 +67,7 @@ The IconText states (Figma "Frame"):
 
 <Canvas of={ListItemStories.Active} />
 
-The Figma right-sidebar lists: Notifications (icon tiles), Activities (avatars with a timeline line) and Contacts (title only), each a `<ul>` of `<li>` rows in a labelled section:
+The Figma Notifications (icon tiles), Activities (avatars) and Contacts (title only) lists, as cards with a 14 Semibold title like the kit's components overview; each is a `<ul>` of `<li>` rows in a labelled section:
 
 <Canvas of={ListItemStories.DashboardLists} />
 

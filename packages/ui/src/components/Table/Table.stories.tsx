@@ -1,4 +1,10 @@
 import { DotsThreeOutlineHorizontalIcon } from '@holakirr/snow-ui-icons'
+import {
+  ArrowsDownUpIcon,
+  CalendarBlankIcon,
+  FunnelSimpleIcon,
+  PlusIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   type ColumnDef,
@@ -15,7 +21,8 @@ import {
   tableFeatures,
   useTable,
 } from '@tanstack/react-table'
-import { expect, within } from 'storybook/test'
+import { type KeyboardEvent, useRef } from 'react'
+import { expect, waitFor, within } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarGroup } from '../Avatar'
 import { Button } from '../Button'
 import { Card } from '../Card'
@@ -28,6 +35,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../Pagination'
+import { Search } from '../Search'
 import {
   Table,
   TableBody,
@@ -37,6 +45,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableToolbar,
 } from './Table'
 
 const meta: Meta<typeof Table> = {
@@ -51,7 +60,7 @@ const meta: Meta<typeof Table> = {
     docs: {
       description: {
         component:
-          'Figma Table: 12 Regular text, 40px rows, a Black/20% line under the header, Black/4% row separators and a Black/4% rounded highlight on hovered rows and on rows with `data-state="selected"`. `TableHead` becomes a sort button with `sortDirection` / `onSort`.',
+          'Figma Table: 12 Regular text, 40px rows, a Black/20% line under the header, Black/4% row separators and a Black/4% rounded highlight on hovered rows and on rows with `data-state="selected"`. `TableHead` becomes a sort button with `sortDirection` / `onSort`; `TableToolbar` is the function bar above the table, and `TableCell reveal` shows row controls on hover.',
       },
     },
   },
@@ -64,6 +73,7 @@ type Order = {
   id: string
   user: string
   project: string
+  address: string
   date: string
   status: 'In Progress' | 'Complete' | 'Pending' | 'Approved' | 'Rejected'
 }
@@ -73,6 +83,7 @@ const orders: Order[] = [
     id: '#CM9801',
     user: 'Natali Craig',
     project: 'Landing Page',
+    address: 'Meadow Lane Oakland',
     date: 'Just now',
     status: 'In Progress',
   },
@@ -80,6 +91,7 @@ const orders: Order[] = [
     id: '#CM9802',
     user: 'Kate Morrison',
     project: 'CRM Admin pages',
+    address: 'Larry San Francisco',
     date: 'A minute ago',
     status: 'Complete',
   },
@@ -87,6 +99,7 @@ const orders: Order[] = [
     id: '#CM9803',
     user: 'Drew Cano',
     project: 'Client Project',
+    address: 'Bagwell Avenue Ocala',
     date: '1 hour ago',
     status: 'Pending',
   },
@@ -94,6 +107,7 @@ const orders: Order[] = [
     id: '#CM9804',
     user: 'Orlando Diggs',
     project: 'Admin Dashboard',
+    address: 'Washburn Baton Rouge',
     date: 'Yesterday',
     status: 'Approved',
   },
@@ -101,6 +115,7 @@ const orders: Order[] = [
     id: '#CM9805',
     user: 'Andi Lane',
     project: 'App Landing Page',
+    address: 'Nest Lane Olivette',
     date: 'Feb 2, 2026',
     status: 'Rejected',
   },
@@ -108,6 +123,7 @@ const orders: Order[] = [
     id: '#CM9806',
     user: 'Koray Okumus',
     project: 'Blog Redesign',
+    address: 'Pine Street Denver',
     date: 'Feb 1, 2026',
     status: 'Complete',
   },
@@ -187,7 +203,18 @@ const columns: ColumnDef<typeof features, Order>[] = [
     ),
   },
   { accessorKey: 'project', header: 'Project' },
-  { accessorKey: 'date', header: 'Date', enableSorting: false },
+  { accessorKey: 'address', header: 'Address', enableSorting: false },
+  {
+    accessorKey: 'date',
+    header: 'Date',
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="flex items-center gap-1">
+        <CalendarBlankIcon size={16} aria-hidden className="shrink-0" />
+        {row.original.date}
+      </span>
+    ),
+  },
   {
     accessorKey: 'status',
     header: 'Status',
@@ -207,7 +234,6 @@ const columns: ColumnDef<typeof features, Order>[] = [
     cell: ({ row }) => (
       <Button
         aria-label={`More actions for ${row.original.id}`}
-        className="opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100"
         startContent={<DotsThreeOutlineHorizontalIcon size={16} />}
       />
     ),
@@ -215,16 +241,62 @@ const columns: ColumnDef<typeof features, Order>[] = [
   },
 ]
 
+// The row checkbox and the "…" action show on hover (TableCell `reveal`).
+const REVEALED = new Set(['select', 'actions'])
+
 /**
- * The Figma "Table A" (Order List): selectable rows (`data-state="selected"`,
- * select-all with an indeterminate state, Space toggles a focused checkbox),
- * sortable headers, a row action on hover and the pagination footer.
+ * The Figma "Table A" (Order List): the function bar (TableToolbar: add,
+ * filter and sort buttons, a Search that "/" focuses from within the
+ * table), selectable rows (`data-state="selected"`, select-all with an
+ * indeterminate state, Space
+ * toggles a focused checkbox) whose checkbox and "…" action show on hover,
+ * sortable headers and the pagination footer.
  */
 export const TableA: Story = {
   play: async ({ canvas, userEvent, step }) => {
     const header = canvas.getByRole('columnheader', { name: /Order ID/ })
     const firstId = () =>
       within(canvas.getAllByRole('row')[1]).getAllByRole('cell')[1].textContent
+    const opacity = (element: Element) =>
+      Number(getComputedStyle(element).opacity)
+
+    await step('row controls show on focus and on selected rows', async () => {
+      // Hover media only: a device without hover always shows them.
+      if (!matchMedia('(hover: hover)').matches) return
+      const row = canvas
+        .getByRole('cell', { name: '#CM9801' })
+        .closest('tr') as HTMLElement
+      const more = within(row).getByRole('button', { name: /More actions/ })
+      await expect(opacity(more)).toBe(0)
+      await expect(opacity(within(row).getByRole('checkbox'))).toBe(0)
+      // The selected row (#CM9804) keeps its checkbox.
+      await expect(
+        opacity(canvas.getByRole('checkbox', { name: 'Select #CM9804' })),
+      ).toBe(1)
+      more.focus()
+      await waitFor(() => expect(opacity(more)).toBe(1))
+      more.blur()
+      await waitFor(() => expect(opacity(more)).toBe(0))
+    })
+
+    await step(
+      '"/" in the table focuses the Search, which filters the users',
+      async () => {
+        const search = canvas.getByRole('searchbox', { name: 'Search users' })
+        // Outside the table "/" does nothing (WCAG 2.1.4).
+        await userEvent.keyboard('/')
+        await expect(search).not.toHaveFocus()
+        canvas.getByRole('button', { name: 'Add order' }).focus()
+        await userEvent.keyboard('/')
+        await expect(search).toHaveFocus()
+        await expect(search).toHaveValue('')
+        await userEvent.type(search, 'andi')
+        await expect(canvas.getAllByRole('row')).toHaveLength(2)
+        await userEvent.keyboard('{Escape}')
+        await expect(canvas.getAllByRole('row')).toHaveLength(6)
+        search.blur()
+      },
+    )
 
     await step('a sortable header sorts and sets aria-sort', async () => {
       await expect(header).toHaveAttribute('aria-sort', 'none')
@@ -290,9 +362,51 @@ export const TableA: Story = {
       },
     })
     const pageIndex = table.store.state.pagination.pageIndex
+    const search = useRef<HTMLInputElement>(null)
+    // The "/" hint of the Search is only a hint: the shortcut is bound here,
+    // to the table's own region, not the document: a single-character
+    // shortcut must only work while its component has focus (WCAG 2.1.4).
+    const focusSearch = (event: KeyboardEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement
+      if (
+        event.key !== '/' ||
+        target.isContentEditable ||
+        target.closest('input, textarea, select')
+      )
+        return
+      event.preventDefault()
+      search.current?.focus()
+    }
 
     return (
-      <div className="flex w-[892px] flex-col gap-4">
+      // biome-ignore lint/a11y/noStaticElementInteractions: it only handles the "/" of the controls inside
+      <div className="flex w-[892px] flex-col gap-4" onKeyDown={focusSearch}>
+        <TableToolbar>
+          <Button
+            aria-label="Add order"
+            startContent={<PlusIcon size={16} />}
+          />
+          <Button
+            aria-label="Filter"
+            startContent={<FunnelSimpleIcon size={16} />}
+          />
+          <Button
+            aria-label="Sort"
+            startContent={<ArrowsDownUpIcon size={16} />}
+          />
+          <Search
+            ref={search}
+            variant="outline"
+            shortcut={['/']}
+            placeholder="Search"
+            aria-label="Search users"
+            className="ms-auto w-40"
+            value={(table.getColumn('user')?.getFilterValue() as string) ?? ''}
+            onChange={(event) =>
+              table.getColumn('user')?.setFilterValue(event.target.value)
+            }
+          />
+        </TableToolbar>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -320,12 +434,12 @@ export const TableA: Story = {
             {table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                className="group/row"
                 data-state={row.getIsSelected() ? 'selected' : undefined}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
+                    reveal={REVEALED.has(cell.column.id)}
                     className={cell.column.id === 'select' ? 'w-8 px-2' : ''}
                   >
                     <table.FlexRender cell={cell} />
@@ -417,9 +531,12 @@ export const Filtered: Story = {
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className="group/row">
+                <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      reveal={REVEALED.has(cell.column.id)}
+                    >
                       <table.FlexRender cell={cell} />
                     </TableCell>
                   ))}

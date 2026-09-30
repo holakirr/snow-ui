@@ -16,11 +16,15 @@ import type { ReactNode } from 'react'
 export const NavLink = ({
   href,
   icon,
+  activeIcon = icon,
   arrow = false,
   children,
 }: {
   href: Route
+  /** The icon of the row (Figma: Duotone). */
   icon: ReactNode
+  /** The icon on the current page (Figma: Fill). */
+  activeIcon?: ReactNode
   /** The kit's expand arrow before the icon (dashboard and page items). */
   arrow?: boolean
   children: ReactNode
@@ -43,7 +47,7 @@ export const NavLink = ({
             </IconBox>
           )}
           <IconBox size={20} aria-hidden>
-            {icon}
+            {active ? activeIcon : icon}
           </IconBox>
         </span>
       }

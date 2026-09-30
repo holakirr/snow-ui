@@ -119,6 +119,17 @@ export const Default: Story = {
   },
 }
 
+/**
+ * The Figma "Add data" title row's start icon: a 48px Add icon, Black/100%.
+ * The kit's plus is 36px; our AddIcon at size 48 draws a 30px one (our icon
+ * set's inset).
+ */
+const addDataIcon = (
+  <span className="flex size-12 items-center justify-center text-black">
+    <AddIcon size={48} />
+  </span>
+)
+
 /** The Figma "Add data" screen, open. */
 export const AddData: Story = {
   args: {},
@@ -128,7 +139,7 @@ export const AddData: Story = {
     <div className="h-svh w-full bg-background-1">
       <Dialog defaultOpen>
         <DialogContent aria-describedby={undefined}>
-          <DialogHeader startContent={<AddIcon size={24} />}>
+          <DialogHeader startContent={addDataIcon}>
             <DialogTitle>New</DialogTitle>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
@@ -173,7 +184,7 @@ export const RTL: Story = {
     <div className="h-svh w-full bg-background-1">
       <Dialog defaultOpen>
         <DialogContent aria-describedby={undefined}>
-          <DialogHeader startContent={<AddIcon size={24} />}>
+          <DialogHeader startContent={addDataIcon}>
             <DialogTitle>جديد</DialogTitle>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
@@ -215,4 +226,42 @@ export const RTL: Story = {
 export const AddDataDark: Story = {
   ...AddData,
   globals: { theme: 'dark' },
+}
+
+/**
+ * A long title next to the 48px start icon: the start slot keeps its width
+ * (it doesn't shrink back to 40px under the icon) and the title wraps.
+ */
+export const LongTitle: Story = {
+  args: {},
+  tags: ['!autodocs', 'skip-visual'],
+  parameters: { layout: 'fullscreen', storyWrapper: false },
+  render: () => (
+    <div className="h-svh w-full bg-background-1">
+      <Dialog defaultOpen>
+        <DialogContent aria-describedby={undefined}>
+          <DialogHeader startContent={addDataIcon}>
+            <DialogTitle>Add a new customer to the orders list</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <Input placeholder="Please enter your email" type="email" />
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const dialog = await page.findByRole('dialog', {
+      name: 'Add a new customer to the orders list',
+    })
+    await settleLayout(dialog)
+    const title = within(dialog).getByRole('heading')
+    const slot = title.previousElementSibling as HTMLElement
+    const icon = slot.querySelector('svg') as SVGSVGElement
+    await expect(slot.getBoundingClientRect().width).toBe(48)
+    await expect(icon.getBoundingClientRect().right).toBeLessThanOrEqual(
+      title.getBoundingClientRect().left,
+    )
+  },
 }

@@ -70,17 +70,17 @@ import {
 2. **Trigger** (`ContextMenuTrigger`): a `<span>` around the area that opens the menu; style it (e.g. `block`) to size the area.
 3. **Content** (`ContextMenuContent`): the `role="menu"` panel, in a portal, at the pointer (Radix places it 2px to the right of the point, aligned to its top). At least 240px wide (`min-w-60`). The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2.
 4. **Item** (`ContextMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `inset` adds 32px of start padding.
-5. **Checkbox item** (`ContextMenuCheckboxItem`) and **radio item** (`ContextMenuRadioItem`, in a `ContextMenuRadioGroup`): a 16px check mark, or a 6px dot, in a 16px slot 8px from the start.
+5. **Checkbox item** (`ContextMenuCheckboxItem`) and **radio item** (`ContextMenuRadioItem`, in a `ContextMenuRadioGroup`): a 16px check mark in a slot 8px from the end, like Select's (the Figma selected item). Both kinds show the check; the role (`menuitemcheckbox`, `menuitemradio`) tells them apart.
 6. **Label** (`ContextMenuLabel`, optional): a group title, 12/16 `text-secondary`, 28px high; takes `inset`.
 7. **Group** (`ContextMenuGroup`, optional): groups items (no spacing of its own).
 8. **Separator** (`ContextMenuSeparator`): a 0.5px `black-10` line, 4px from its neighbours.
 9. **Shortcut** (`ContextMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`.
-10. **Submenu** (`ContextMenuSub`): a `ContextMenuSubTrigger` (an item with an arrow at the end) and a `ContextMenuSubContent` on the same surface. `ContextMenuPortal` is exported to portal it.
+10. **Submenu** (`ContextMenuSub`): a `ContextMenuSubTrigger` (an item with a 16px chevron at the end, as in DropdownMenu) and a `ContextMenuSubContent` on the same surface. `ContextMenuPortal` is exported to portal it.
 
 ## States
 
 - **Highlighted** (hover or keyboard focus): Black/4% fill. A sub trigger keeps it while its submenu is open.
-- **Checked:** a check mark (`checked` on a checkbox item) or a dot (the radio group's `value`).
+- **Checked:** a check mark at the end (`checked` on a checkbox item, or the radio group's `value`).
 - **Disabled** (`disabled` on an item): Black/20% text and a not-allowed cursor; the arrow keys and typeahead skip it.
 - **Disabled trigger** (`disabled` on `ContextMenuTrigger`): the area opens no menu, and the browser's own menu shows instead.
 - **Open and closed:** `open` / `onOpenChange` on `ContextMenu`. The trigger has `data-state="open"` while its menu is open.
@@ -128,7 +128,7 @@ The Black/4% item highlight (1.1:1) keeps the Figma value with the default contr
 
 - The menu renders no text of its own: labels and shortcuts are yours to translate.
 - The content takes `dir` from `SnowUIProvider`; without a provider (or a Radix `DirectionProvider`) it is `ltr`, whatever `<html dir>` says.
-- In right-to-left text the check marks, `inset` padding and shortcuts swap sides, the submenu arrow points left, and ArrowLeft opens a submenu.
+- In right-to-left text the check marks (at the left end), `inset` padding and shortcuts swap sides, the submenu arrow points left, and ArrowLeft opens a submenu.
 
 ## Composition (asChild)
 
@@ -195,13 +195,13 @@ The `role="menu"` panel, in a portal, at the pointer. `loop` (off by default) ma
 
 ### ContextMenuItem
 
-A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text when the item's content isn't plain text; `inset` lines it up with check items.
+A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text when the item's content isn't plain text; `inset` adds 32px of start padding.
 
 <ArgTypes of={ContextMenuItem} />
 
 ### ContextMenuCheckboxItem
 
-A `menuitemcheckbox` with a check mark: `checked` and `onCheckedChange`.
+A `menuitemcheckbox` with a check mark at the end: `checked` and `onCheckedChange`.
 
 <ArgTypes of={ContextMenuCheckboxItem} />
 
@@ -213,7 +213,7 @@ A `group` of radio items; `value` and `onValueChange` hold the picked one.
 
 ### ContextMenuRadioItem
 
-A `menuitemradio` with a dot, checked when its `value` is the group's.
+A `menuitemradio` with a check mark at the end, checked when its `value` is the group's.
 
 <ArgTypes of={ContextMenuRadioItem} />
 

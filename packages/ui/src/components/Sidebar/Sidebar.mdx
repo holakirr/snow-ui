@@ -105,11 +105,11 @@ The sidebar is fixed to the edge of the viewport, so the stories below with a co
    - `SidebarGroupAction` (optional): a 20px button at the heading's end, with a 24px hit area (36px below 768px);
    - `SidebarGroupContent`: the section's menu, 14px text.
 6. **Menu** (`SidebarMenu`, a `<ul>` with 4px gaps, and `SidebarMenuItem`, an `<li>`), with:
-   - `SidebarMenuButton`: the Figma nav item ("Frame"), a `<button>` or, with `asChild`, your link. Padding 8px, radius 12, an 8px gap, 14px text and 20px icons. `isActive`, `variant`, `size` and `tooltip` (see below);
+   - `SidebarMenuButton`: the Figma nav item ("Frame"), a `<button>` or, with `asChild`, your link. Padding 8px, radius 12, a 4px gap (the Figma nav item), 14px text and 20px icons. `isActive`, `variant`, `size` and `tooltip` (see below);
    - `SidebarMenuAction` (optional): a 20px button at the item's end, with a 24px hit area (36px below 768px); `showOnHover` hides it on desktop until the item is hovered or focused;
    - `SidebarMenuBadge` (optional): a 20px-high count at the item's end, 12px tabular figures;
    - `SidebarMenuSkeleton`: a 36px loading row, with a 20px icon placeholder when `showIcon`.
-7. **Submenu** (`SidebarMenuSub`, `SidebarMenuSubItem`, `SidebarMenuSubButton`): a nested list with a 1px Black/10% line on its start side. Sub buttons are `<a>`s, 36px (`size="md"`, the default) or 28px (`sm`) high, with 16px icons and `isActive`.
+7. **Submenu** (`SidebarMenuSub`, `SidebarMenuSubItem`, `SidebarMenuSubButton`): a nested list, indented like the Figma sub-items, without a line. Sub buttons are `<a>`s, 36px (`size="md"`, the default) or 28px (`sm`) high, with 16px icons and `isActive`.
 8. **Separator** (`SidebarSeparator`): a Separator with 16px side margins.
 9. **Input** (`SidebarInput`): an Input, 32px high and full width.
 10. **Trigger** (`SidebarTrigger`): a Button with the sidebar icon that opens and closes the sidebar.
@@ -198,7 +198,7 @@ The full table is in the package README.
 
 - Built-in strings come from `messages.sidebar`: `toggle` (`SidebarTrigger` and `SidebarRail`), `title` and `description` (the small-screen sheet). `aria-label` on `SidebarTrigger` overrides `toggle`.
 - `side="start"` (the default) and `"end"` follow the `dir` of `SnowUIProvider`: in right-to-left text a `start` sidebar is on the right. The rendered element gets the physical side as `data-side`; `left` and `right` stay physical.
-- In right-to-left text the edge line moves to the sidebar's left, the trigger icon is mirrored, actions and badges sit at the left end of items, the submenu line on the right, and tooltips open to the left.
+- In right-to-left text the edge line moves to the sidebar's left, the trigger icon is mirrored, actions and badges sit at the left end of items, submenus are indented from the right, and tooltips open to the left.
 
 <Canvas of={SidebarStories.RTL} story={{ inline: false, height: '360px' }} />
 
@@ -248,6 +248,7 @@ The small-screen sheet's state isn't a prop: use `useSidebar()`, which returns `
 
 - Keep a visible `SidebarTrigger`: the rail is for pointers and the shortcut for keyboards.
 - Mark the current page with `isActive` and `aria-current="page"` on its link.
+- Draw the item icons in Phosphor's `duotone` weight and the active item's in `fill`, as the Figma sidebar does.
 - Give menu buttons a `tooltip` when the sidebar collapses to icons.
 - Wrap the navigation in a `<nav>` with an `aria-label`, and the page in `SidebarInset`.
 - Put the label of a menu button in a `<span>` last, so it truncates.

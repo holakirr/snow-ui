@@ -18,7 +18,7 @@ import * as PaginationStories from './Pagination.stories'
 <FigmaLinks label="Pagination on the Table page" page="25596:130955" pageLabel="Table page" />
 <InstallTabs item="pagination" />
 
-Pagination moves between the pages of a long list or table. It is a navigation landmark with a list of page links, previous / next links and ellipses. The items are the Figma Button Small "Outline" of the Table page's pagination: 24px high, radius 12, a 0.5px Black/10% stroke; the current page has a Black/4% fill.
+Pagination moves between the pages of a long list or table. It is a navigation landmark with a list of page links, previous / next links and ellipses. The items are the Figma Button Small of the Order List pagination (a 28px row, items 8px apart): 24px high, radius 12, "Outline" (a 0.5px Black/10% stroke) for the other pages and "Gray" (a Black/4% fill, no stroke) for the current one.
 
 ```tsx
 import {
@@ -123,7 +123,7 @@ Keep an `href` next to the `page` when the page also has a URL (the table footer
 
 - **Hover:** a Black/4% fill.
 - **Keyboard focus:** the `focus-ring` utility.
-- **Current page** (`isActive`): a Black/4% fill and `aria-current="page"`.
+- **Current page** (`isActive`): the Figma Button "Gray": a Black/4% fill without the stroke, and `aria-current="page"`.
 - **Disabled** (`disabled`): Black/20% text and no pointer events. A link loses its `href`, so it neither navigates nor, outside client-side paging, takes focus. A client-side button gets `aria-disabled` and ignores clicks, but stays focusable, like a disabled link with `onPageChange`: "next" disabled under the keyboard's focus on the last page keeps it. An `asChild` link gets `aria-disabled` and `tabIndex={-1}`, and its clicks are blocked. Use it for "previous" on the first page and "next" on the last.
 
 ## Accessibility

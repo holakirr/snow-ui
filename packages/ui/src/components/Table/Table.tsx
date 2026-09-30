@@ -10,7 +10,9 @@ import { twMerge } from '../../utils/tw-merge'
 /*
  * Figma Table: 12 Regular text, 40px rows, cells padded 8/12, a Black/20%
  * line under the header, Black/4% separators between rows, and a Black/4%
- * rounded (12) highlight on hovered and selected rows.
+ * rounded (12) highlight on hovered and selected rows. Table A (Order List)
+ * adds a function bar above it (TableToolbar) and row controls that show on
+ * hover (TableCell `reveal`).
  *
  * The table uses the separate border model (`border-separate border-spacing-0`)
  * because cells can't have rounded corners in the collapsed model, so the
@@ -148,19 +150,55 @@ const TableHead: FC<TableHeadProps> = ({
 }
 TableHead.displayName = 'TableHead'
 
-type TableCellProps = ComponentProps<'td'>
+type TableCellProps = ComponentProps<'td'> & {
+  /**
+   * Shows the cell's elements only while their row is hovered or selected
+   * (`data-state="selected"`), or while they hold the focus, a checked
+   * checkbox or an open menu: the Figma row checkbox and "…" action. On
+   * devices without hover they always show.
+   */
+  reveal?: boolean
+}
 
-const TableCell: FC<TableCellProps> = ({ className, ...props }) => (
+// `reveal`: one rule with every condition in it, so no other utility has to
+// win over it. A checked box is a custom one (`aria-checked`) or a native
+// `<input type="checkbox">`. Only where the pointer can hover (touch screens
+// can't).
+const REVEAL =
+  '*:transition-opacity [@media(hover:hover)]:[tr:not(:hover,[data-state=selected])>&:not(:focus-within,:has([aria-checked=true],[aria-checked=mixed],[type=checkbox]:checked,[type=checkbox]:indeterminate,[aria-expanded=true]))>*]:opacity-0'
+
+const TableCell: FC<TableCellProps> = ({ className, reveal, ...props }) => (
   <td
     role={ROLES.cell}
     className={twMerge(
       'h-10 px-3 py-2 align-middle font-normal text-black border-b border-black-4 [&:has([role=checkbox])]:pe-0 [&>[role=checkbox]]:translate-y-[2px]',
+      reveal && REVEAL,
       className,
     )}
     {...props}
   />
 )
 TableCell.displayName = 'TableCell'
+
+type TableToolbarProps = ComponentProps<'div'>
+
+/**
+ * The Figma table "function bar": a Background/2 strip with radius 12 above
+ * the table for its actions (add, filter, sort) and a Search. It is padded
+ * 8px and at least 44px high; its children are laid out in a row, 16px
+ * apart; `ms-auto` pushes one to the end.
+ */
+const TableToolbar: FC<TableToolbarProps> = ({ className, ...props }) => (
+  <div
+    data-slot="table-toolbar"
+    className={twMerge(
+      'flex min-h-11 flex-wrap items-center gap-4 rounded-12 bg-background-2 p-2 text-black',
+      className,
+    )}
+    {...props}
+  />
+)
+TableToolbar.displayName = 'TableToolbar'
 
 type TableCaptionProps = ComponentProps<'caption'>
 
@@ -193,4 +231,6 @@ export {
   TableRow,
   type TableRowProps,
   type TableSortDirection,
+  TableToolbar,
+  type TableToolbarProps,
 }

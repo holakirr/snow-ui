@@ -1110,7 +1110,8 @@
         "TableFooter",
         "TableHead",
         "TableHeader",
-        "TableRow"
+        "TableRow",
+        "TableToolbar"
       ],
       "types": [
         "TableBodyProps",
@@ -1121,7 +1122,8 @@
         "TableHeaderProps",
         "TableProps",
         "TableRowProps",
-        "TableSortDirection"
+        "TableSortDirection",
+        "TableToolbarProps"
       ],
       "docs": "components-table"
     },

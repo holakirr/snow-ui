@@ -35,20 +35,27 @@ const renderPagination = () =>
   )
 
 describe('Pagination', () => {
-  it('marks the active page with aria-current and the Black/4% fill', () => {
+  it('marks the active page with aria-current, a Black/4% fill and no stroke', () => {
     renderPagination()
 
+    // Figma Button "Gray": the fill, the stroke transparent.
     const active = screen.getByRole('link', { name: '1' })
     expect(active).toHaveAttribute('aria-current', 'page')
-    expect(active).toHaveClass('bg-black-4')
+    expect(active).toHaveClass('bg-black-4', 'border-transparent')
+    expect(active).not.toHaveClass('border-black-10')
 
+    // Figma Button "Outline": the 0.5px Black/10% stroke, no fill.
     const inactive = screen.getByRole('link', { name: '2' })
     expect(inactive).not.toHaveAttribute('aria-current')
-    expect(inactive).toHaveClass('bg-transparent', 'hover:bg-black-4')
+    expect(inactive).toHaveClass(
+      'bg-transparent',
+      'border-black-10',
+      'hover:bg-black-4',
+    )
     expect(inactive).not.toHaveClass('bg-black-4')
   })
 
-  it('uses the Figma Button Small outline for every item', () => {
+  it('uses the Figma Button Small size for every item', () => {
     renderPagination()
 
     for (const name of ['1', '2']) {
@@ -57,7 +64,6 @@ describe('Pagination', () => {
         'rounded-12',
         'text-12',
         'border-[0.5px]',
-        'border-black-10',
       )
     }
   })

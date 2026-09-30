@@ -17,6 +17,20 @@ describe('Card', () => {
     expect(card).not.toHaveAttribute('data-state')
   })
 
+  it('adds no layout, so existing content keeps its flow', () => {
+    // A display or gap here would stretch a Button child to the card's
+    // width and break inline text into rows: the layout is the user's
+    // (`flex flex-col gap-1` for the Figma Card's stack).
+    for (const variant of ['default', 'block'] as const) {
+      const { unmount } = render(<Card data-testid="card" variant={variant} />)
+      const card = screen.getByTestId('card')
+      for (const name of ['flex', 'grid', 'flex-col', 'gap-1']) {
+        expect(card).not.toHaveClass(name)
+      }
+      unmount()
+    }
+  })
+
   it('renders the dashboard block with variant="block"', () => {
     const card = renderCard({ variant: 'block' })
 

@@ -107,7 +107,7 @@ const BarLayer: FC<{
     >
       {label ? (
         // Figma: Static White on the fill; the per-mode `white` keeps it
-        // readable on the dark-mode fill, which is white.
+        // readable on the dark-mode fill, Primary, which is indigo there.
         <span
           className={twMerge(
             'truncate',
@@ -125,9 +125,10 @@ const BarLayer: FC<{
             'ms-auto shrink-0 tabular-nums',
             fill && 'forced-colors:text-[HighlightText]!',
             // Figma: Black/20% (Black/40% active) and White/40% on the fill,
-            // 1.6:1 and 3.66:1; text needs 4.5:1 (WCAG 1.4.3).
+            // 1.6:1 and 3.66:1; text needs 4.5:1 (WCAG 1.4.3). On the fill,
+            // 70%: black at 60% is 4.41:1 on the dark-mode indigo.
             fill
-              ? 'text-white/60 group-hover/slider:text-white-80 group-active/slider:text-white-80 group-has-focus-visible/slider:text-white-80 group-data-disabled/slider:text-white/60!'
+              ? 'text-white/70 group-hover/slider:text-white-80 group-active/slider:text-white-80 group-has-focus-visible/slider:text-white-80 group-data-disabled/slider:text-white/70!'
               : 'text-secondary group-hover/slider:text-black-80 group-active/slider:text-black-80 group-has-focus-visible/slider:text-black-80 group-data-disabled/slider:text-secondary!',
           )}
         >
@@ -153,7 +154,7 @@ const BarLayer: FC<{
 }
 
 /**
- * The single-value bar (Figma "Slider2"): the Black/4% track, the black
+ * The single-value bar (Figma "Slider2"): the Black/4% track, the Primary
  * fill (Radix's Range, rounded at both ends) and the two content layers.
  * The last layer draws the invalid stroke and, with more contrast, the
  * bar's `control-border` boundary, over the fill; with forced colours, a
@@ -169,7 +170,7 @@ const BarTrack: FC<{
   return (
     <SliderPrimitive.Track className="relative h-full w-full grow overflow-hidden rounded-8 bg-black-4">
       <BarLayer tone="track" {...layer} />
-      <SliderPrimitive.Range className="absolute inset-y-0 rounded-8 bg-black forced-colors:bg-[Highlight] forced-colors:forced-color-adjust-none" />
+      <SliderPrimitive.Range className="absolute inset-y-0 rounded-8 bg-primary forced-colors:bg-[Highlight] forced-colors:forced-color-adjust-none" />
       <BarLayer
         tone="fill"
         {...layer}
@@ -199,7 +200,10 @@ const RangeValue: FC<{
   <span
     aria-hidden
     className={twMerge(
-      'grid shrink-0 text-14 text-black tabular-nums *:col-start-1 *:row-start-1',
+      // No kerning: with tabular figures, texts of the same length are then
+      // equally wide ("$1" kerns differently from "$5"), also where glyph
+      // advances round to whole pixels (Linux).
+      'grid shrink-0 text-14 text-black tabular-nums [font-kerning:none] *:col-start-1 *:row-start-1',
       align === 'end' ? 'justify-items-end' : 'justify-items-start',
     )}
   >
@@ -215,12 +219,14 @@ const RangeValue: FC<{
 
 /**
  * Radix Slider in the Figma kit's two looks. One value: the "Slider2" bar,
- * a 32px Black/4% bar that fills with black up to the value, with an
- * optional `label` inside at its start and the value (`showValue`) at its
- * end; its Active state (hover, drag, keyboard focus) shows a 2×8px handle
- * line at the fill's end and darkens the value. Two or more values: the
- * "SliderBar" range, a thin track with a black range between 24px round
- * thumbs, and the values at its ends with `showValue`.
+ * a 32px Black/4% bar that fills with Primary (black; indigo in the dark
+ * theme) up to the value, with an optional `label` inside at its start and
+ * the value (`showValue`) at its end; its Active state (hover, drag,
+ * keyboard focus) shows a 2×8px handle line at the fill's end and darkens
+ * the value. Two or more values: the "SliderBar" range, a 3px track with a
+ * Primary range between 28px round thumbs, and the values at its ends with
+ * `showValue` (then 16px from the track, with 16px / 12px padding: 56px
+ * high, as in the kit).
  *
  * Keyboard and pointer input follow the `dir` of `SnowUIProvider`: in
  * right-to-left text the minimum is on the right. `aria-label`,
@@ -306,10 +312,12 @@ const Slider: FC<SliderProps> = ({
       aria-valuetext={valueText(value)}
       className={
         range
-          ? // Figma "SliderBar": a 24px static white thumb with "Drop shadow
-            // 2", like the Switch thumb. With more contrast it gets a
-            // `control-border-strong` border (it is 1:1 on white).
-            'relative block size-6 cursor-grab rounded-full bg-static-white shadow-2 transition-colors focus-ring hit-area active:cursor-grabbing contrast-more:not-aria-invalid:border contrast-more:not-aria-invalid:border-control-border-strong aria-invalid:border aria-invalid:border-control-border-invalid data-disabled:cursor-not-allowed forced-colors:border'
+          ? // Figma "SliderBar": a 28px Static White circle (in a 32px
+            // frame, the root's height) with a raw drop shadow, 0 2px 8px
+            // #000 at 20%, not a style: black in both themes. With more
+            // contrast it gets a `control-border-strong` border (it is 1:1
+            // on white).
+            'relative block size-7 cursor-grab rounded-full bg-static-white shadow-[0_2px_8px_rgb(0_0_0/0.2)] transition-colors focus-ring hit-area active:cursor-grabbing contrast-more:not-aria-invalid:border contrast-more:not-aria-invalid:border-control-border-strong aria-invalid:border aria-invalid:border-control-border-invalid data-disabled:cursor-not-allowed forced-colors:border'
           : // The bar's thumb is invisible: a 1px-wide, full-height target at
             // the value, with a 24px hit area (`hit-area`, WCAG 2.5.8). The
             // bar shows the handle line and the focus ring for it.
@@ -328,7 +336,7 @@ const Slider: FC<SliderProps> = ({
         'group/slider relative flex w-full touch-none select-none items-center',
         range
           ? twMerge(
-              'h-6 cursor-pointer data-disabled:cursor-not-allowed',
+              'h-8 cursor-pointer data-disabled:cursor-not-allowed',
               wrapped ? 'min-w-0 grow' : 'data-disabled:opacity-40',
             )
           : // Figma "Slider2": 32px high, an 8px radius. The focus-ring look
@@ -347,11 +355,12 @@ const Slider: FC<SliderProps> = ({
       {...props}
     >
       {range ? (
-        // Figma "SliderBar": a 3px Black/4% track and a black range between
-        // the thumbs. With more contrast the track is `control-border`; with
-        // forced colours GrayText and Highlight, and the thumbs get a border.
+        // Figma "SliderBar": a 3px Black/4% track and a Primary range
+        // between the thumbs. With more contrast the track is
+        // `control-border`; with forced colours GrayText and Highlight, and
+        // the thumbs get a border.
         <SliderPrimitive.Track className="relative h-[3px] grow overflow-hidden rounded-full bg-black-4 contrast-more:bg-control-border forced-colors:bg-[GrayText] forced-colors:forced-color-adjust-none">
-          <SliderPrimitive.Range className="absolute h-full rounded-full bg-black forced-colors:bg-[Highlight]" />
+          <SliderPrimitive.Range className="absolute h-full rounded-full bg-primary forced-colors:bg-[Highlight]" />
         </SliderPrimitive.Track>
       ) : (
         <BarTrack
@@ -374,7 +383,9 @@ const Slider: FC<SliderProps> = ({
   return (
     <div
       className={twMerge(
-        'flex w-full items-center gap-3 data-disabled:opacity-40',
+        // Figma "SliderBar": 16px between the values and the track, 16px /
+        // 12px padding.
+        'flex w-full items-center gap-4 px-4 py-3 data-disabled:opacity-40',
         className,
       )}
       data-disabled={disabled ? '' : undefined}

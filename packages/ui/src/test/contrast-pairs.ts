@@ -146,12 +146,20 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['black-4'],
   },
   {
+    control: 'Slider label and handle on the fill',
+    kind: 'text',
+    // The per-mode `white` on the Primary fill: white on black, black on
+    // the dark-mode indigo (the Figma Static White is 2.07:1 there).
+    foreground: () => ['primary', 'white'],
+    background: () => ['primary'],
+  },
+  {
     control: 'Slider value on the fill',
     kind: 'text',
-    // The per-mode `white` at 60%: white on the black fill, black on the
-    // white dark-mode fill.
-    foreground: () => ['black', 'white/60'],
-    background: () => ['black'],
+    // The per-mode `white` at 70% on the Primary fill: white on black,
+    // black on the dark-mode indigo.
+    foreground: () => ['primary', 'white/70'],
+    background: () => ['primary'],
   },
   {
     control: 'Invalid stroke vs the surface',

@@ -139,7 +139,7 @@ export const Disabled: Story = {
 
 /**
  * Two or more values: the Figma "SliderBar", a 3px Black/4% track with a
- * black range between 24px thumbs.
+ * Primary range between 28px thumbs.
  */
 export const WithTwoValues: Story = {
   args: {
@@ -170,15 +170,21 @@ export const RangeWithValues: Story = {
     await expect(maximum).toHaveAttribute('aria-valuetext', '$380')
 
     const track = rootOf(minimum).firstElementChild
+    if (!track) throw new Error('No track')
     // The layout requests Inter; measure once it has replaced the fallback.
-    track?.getBoundingClientRect()
+    track.getBoundingClientRect()
     await document.fonts.ready
-    const before = track?.getBoundingClientRect().width
+    const before = track.getBoundingClientRect().width
     minimum.focus()
     await userEvent.keyboard('{Home}')
     await expect(minimum).toHaveAttribute('aria-valuetext', '$0')
     await expect(args.onValueChange).toHaveBeenLastCalledWith([0, 380])
-    await expect(track?.getBoundingClientRect().width).toBe(before)
+    // Within a pixel: where glyph advances round to whole pixels (Linux),
+    // "$120" and "$500" may differ by one. Without the reserved width the
+    // track moves by about 18px.
+    await expect(
+      Math.abs(track.getBoundingClientRect().width - before),
+    ).toBeLessThanOrEqual(1)
   },
 }
 
@@ -237,7 +243,7 @@ export const RTL: Story = {
   play: async ({ canvas, userEvent }) => {
     const thumb = canvas.getByRole('slider', { name: 'الصوت' })
     const bar = rootOf(thumb)
-    const fill = bar.querySelector('span[data-orientation].bg-black')
+    const fill = bar.querySelector('span[data-orientation].bg-primary')
     await waitFor(() =>
       expect(fill?.getBoundingClientRect().right).toBeCloseTo(
         bar.getBoundingClientRect().right,

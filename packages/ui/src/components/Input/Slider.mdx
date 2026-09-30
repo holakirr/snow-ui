@@ -37,19 +37,19 @@ A single value, the Figma "Slider2" bar:
 
 1. **Root** (`className`): a `<span>`, full width (the Figma component is 160px wide), 32px high with an 8px radius. It has no role; `aria-label` and `aria-labelledby` are passed on to the thumb. The whole bar takes the pointer: pressing anywhere moves the value there.
 2. **Track**: Black/4%.
-3. **Fill**: black, from the start up to the value, with an 8px radius at both ends; none at the minimum.
+3. **Fill**: Primary (black; indigo in the dark theme), from the start up to the value, with an 8px radius at both ends; none at the minimum.
 4. **Label** (`label`, optional): 12/16 Regular, 8px from the start; white where the fill is under it, black on the track (a letter the fill's end crosses is split between the two).
-5. **Value** (`showValue`, optional): 12/16 Regular with tabular figures, 8px from the end, `text-secondary` on the track and the per-mode `white` at 60% on the fill.
+5. **Value** (`showValue`, optional): 12/16 Regular with tabular figures, 8px from the end, `text-secondary` on the track and the per-mode `white` at 70% on the fill.
 6. **Handle**: a 2×8px line, vertically centred, 4px inside the fill's end (4px from the start at the minimum), white on the fill and black on the track. It shows in the Active state only.
 7. **Thumb**: the `role="slider"` element, invisible: a 1px-wide, full-height target at the value with a 24×32px hit area (`hit-area`, WCAG 2.5.8).
 
 Two or more values, the Figma "SliderBar" range:
 
-1. **Root** (`className`): the same `<span>`, 24px high. With `showValue`, a `<div>` wraps it and the values, and takes `className`.
+1. **Root** (`className`): the same `<span>`, 32px high (the Figma thumbs' frame). With `showValue`, a `<div>` wraps it and the values with 16px / 12px padding (56px high, the Figma SliderBar), and takes `className`: `className="p-0"` drops the padding, to line the track up with the fields around it.
 2. **Track**: 3px high, rounded, Black/4%.
-3. **Range**: black, between the first and the last thumb.
-4. **Thumbs**: 24px static white circles with "Drop shadow 2", one per value, each a `role="slider"`.
-5. **Values** (`showValue`, optional): 14/20 Regular, black, 12px from the track, the first value by the minimum and the last by the maximum. Each is as wide as the widest of the `min` and `max` texts, so the track doesn't move while they change.
+3. **Range**: Primary (black; indigo in the dark theme), between the first and the last thumb.
+4. **Thumbs**: 28px static white circles with the Figma drop shadow (0 2px 8px, black at 20%, not a style), one per value, each a `role="slider"`.
+5. **Values** (`showValue`, optional): 14/20 Regular, black, 16px from the track, the first value by the minimum and the last by the maximum. Each is as wide as the widest of the `min` and `max` texts, so the track doesn't move while they change.
 
 ## Variants
 
@@ -105,8 +105,8 @@ The full table is in the package README.
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark), on the bar while its thumb has keyboard focus | 2.4.7, 1.4.11 |
-| The value: Black/20% on the track (1.6:1; Black/40% active), White/40% on the fill (3.66:1) | `text-secondary` on the track (`black-80` active), the per-mode `white` at 60% on the fill (`white-80` active): at least 4.82:1 and 5.74:1 (5.5:1 and 7.37:1 in light mode) | 1.4.3 |
-| The label and handle on the fill: Static White, 1:1 on the dark-mode fill (Black/100% is white there) | the per-mode `white`: black on the white dark-mode fill | 1.4.3, 1.4.11 |
+| The value: Black/20% on the track (1.6:1; Black/40% active), White/40% on the fill (3.66:1) | `text-secondary` on the track (`black-80` active), the per-mode `white` at 70% on the fill (`white-80` active): at least 4.82:1 and 5.84:1 (5.5:1 and 9.95:1 in light mode) | 1.4.3 |
+| The label and handle on the fill: Static White, 2.07:1 on the dark-mode fill (Primary is indigo there) | the per-mode `white`: black on the indigo dark-mode fill (10.15:1) | 1.4.3, 1.4.11 |
 | A 2×8px handle | the same look, with a 24×32px hit area on the thumb, and the whole bar takes the pointer | 2.5.8 |
 
 Known gaps with the default contrast, which keeps the Figma values: the Black/4% bar and range track (1.09:1 on white) and the range's static white thumbs on white (1:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`) the bar gets a `control-border` stroke, the range track turns `control-border` and its thumbs get a `control-border-strong` border (see [Contrast](?path=/docs/guides-contrast--docs)).

@@ -76,7 +76,7 @@ describe('Slider', () => {
       'cursor-pointer',
       'data-disabled:cursor-not-allowed',
     )
-    expect(root).toContainElement(container.querySelector('.bg-black'))
+    expect(root).toContainElement(container.querySelector('.bg-primary'))
   })
 
   it('describes the thumbs, not the role-less root', () => {

@@ -87,14 +87,24 @@ const ExampleSet = () => (
       <Typography size={12} className="text-black">
         Users <span className="text-secondary">86 of 100 Used</span>
       </Typography>
-      <Strip
-        count={7}
-        value={6}
-        thickness={8}
-        rounded
+      {/* Figma: seven filled segments on one long Black/4% track that runs
+          under them to the end (the segments cover ≈60% of it). The
+          wrapper is the track and the progressbar; the strip is decoration. */}
+      <div
+        role="progressbar"
         aria-label="Users"
-        className="w-full [&>:first-child]:bg-indigo"
-      />
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={86}
+        className="w-full rounded-full bg-black-4"
+      >
+        <Strip
+          count={7}
+          thickness={8}
+          rounded
+          className="w-3/5 [&>:first-child]:bg-indigo"
+        />
+      </div>
     </div>
 
     <div className="flex flex-col gap-2">

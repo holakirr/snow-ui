@@ -102,7 +102,10 @@ export type DatePickerSharedProps = Omit<
    * the `locale`.
    * @default "PP" (e.g. "Jan 20, 2025"; "20 янв. 2025 г." in Russian), with
    * `withTime` "PP, h:mm a" or "PP, HH:mm" (the hour cycle), with seconds
-   * "PP, h:mm:ss a" or "PP, HH:mm:ss"
+   * "PP, h:mm:ss a" or "PP, HH:mm:ss". Without it (and without time)
+   * DateRangePicker writes a range within one month with the month and the
+   * year once, in the locale's order: "Feb 2 – 10, 2026", "2–10 фев.
+   * 2026 г." in Russian.
    */
   dateFormat?: string
 
@@ -408,7 +411,7 @@ export const DatePickerField = ({
             // Invalid, while the trigger has `aria-invalid="true"`: the 1px
             // `control-border-invalid` stroke of `Input`, also while open.
             'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-aria-invalid:data-[state=open]:inset-ring-control-border-invalid',
-            // The disabled look (the design has no Disabled state).
+            // The disabled look of Input (`disabledInputClasses`).
             'data-disabled:bg-black-4 data-disabled:text-black-20 data-disabled:inset-ring-0 data-disabled:hover:inset-ring-0',
             className,
           )}

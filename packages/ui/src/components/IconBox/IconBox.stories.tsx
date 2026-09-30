@@ -81,6 +81,19 @@ export const Glass: Story = {
     const box = canvasElement.querySelector('[data-glass]') as HTMLElement
     await expect(box).toHaveClass('glass-1', 'p-1', 'rounded-8')
     await expect(getComputedStyle(box).backdropFilter).toContain('blur')
+    // Figma Glass set: 24 → 32 (padding 4, radius 12), 80 → 88 (padding 4,
+    // radius 24).
+    for (const [size, box, radius] of [
+      [24, 32, '12px'],
+      [80, 88, '24px'],
+    ] as const) {
+      const tile = canvasElement.querySelector(
+        `[data-glass][data-size="${size}"]`,
+      ) as HTMLElement
+      const rect = tile.getBoundingClientRect()
+      await expect([rect.width, rect.height]).toEqual([box, box])
+      await expect(getComputedStyle(tile).borderTopLeftRadius).toBe(radius)
+    }
   },
 }
 

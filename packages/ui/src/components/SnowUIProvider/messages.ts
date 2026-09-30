@@ -133,7 +133,12 @@ export type Messages = {
     rangeDialog: string
     /** The clear button. */
     clear: string
-    /** A picked range, from its two formatted dates (`DateRangePicker`). */
+    /**
+     * A picked range, from its two formatted dates (`DateRangePicker`). By
+     * default a range within one month skips it and writes the month and
+     * the year once ("Feb 2 – 10, 2026"); passing your own (or a
+     * `dateFormat`, or `withTime`) uses it for every range.
+     */
     range: (start: string, end: string) => string
     /** The date field at the top of the calendar (`DatePicker`). */
     date: string

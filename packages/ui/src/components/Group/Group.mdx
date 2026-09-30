@@ -67,6 +67,12 @@ import { Group } from '@holakirr/snow-ui'
 | `12` | `gap-3` | 12px |
 | `16` | `gap-4` | 16px |
 
+## Examples
+
+Button groups from the Figma Button and Group pages: Sign up + Sign in (Small, `gap` 8), Previous + Submit (Medium, 16px apart) and top and side navigation (links styled as Medium buttons with `Button asChild`, in an outlined group inside a `<nav>`; the current page is `filled` with `aria-current="page"`):
+
+<Canvas of={GroupStories.ButtonGroups} />
+
 ## Accessibility
 
 - It renders `role="group"`. Give the group a name with `aria-label` (or `aria-labelledby`) when the items need context, e.g. "Toolbar" or "Text formatting".

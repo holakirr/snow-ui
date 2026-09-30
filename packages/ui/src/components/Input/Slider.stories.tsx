@@ -194,7 +194,7 @@ export const RangeWithValues: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (no Figma state). It goes to the thumbs (the elements with
+ * error (the kit draws its Error state on text fields; this extends their red stroke). It goes to the thumbs (the elements with
  * `role="slider"`), with `aria-describedby`; the bar gets a 1px
  * Secondary/Red stroke, a range red thumb borders. Pair it with the error
  * text: see Form.

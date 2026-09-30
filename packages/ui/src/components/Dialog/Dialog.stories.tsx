@@ -1,8 +1,10 @@
 import { AddIcon } from '@holakirr/snow-ui-icons'
+import { CalendarBlankIcon, UserIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
 import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
+import { IconBox } from '../IconBox'
 import { Input } from '../Input'
 import { Typography } from '../Text'
 import {
@@ -130,6 +132,14 @@ const addDataIcon = (
   </span>
 )
 
+/*
+ * The Figma "Add data" form: an 80px avatar, the name fields 56px high and
+ * the titled Email and Date fields 88px high, all with 20px side padding;
+ * the Date value has a CalendarBlank icon before it, under the title.
+ */
+const nameField = 'h-14 px-5'
+const titledField = 'h-22 px-5'
+
 /** The Figma "Add data" screen, open. */
 export const AddData: Story = {
   args: {},
@@ -143,13 +153,45 @@ export const AddData: Story = {
             <DialogTitle>New</DialogTitle>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
+            <span
+              aria-hidden
+              className="flex size-20 items-center justify-center rounded-full bg-black-4 text-black"
+            >
+              <UserIcon size={40} />
+            </span>
             <div className="flex flex-col gap-4 [&_.relative]:w-full [&_input]:w-full">
               <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="First Name" />
-                <Input placeholder="Last Name" />
+                {/* No title in Figma: the placeholder is not a label. */}
+                <Input
+                  aria-label="First name"
+                  placeholder="First Name"
+                  className={nameField}
+                />
+                <Input
+                  aria-label="Last name"
+                  placeholder="Last Name"
+                  className={nameField}
+                />
               </div>
-              <Input placeholder="Please enter your email" type="email" />
-              <Input placeholder="February 24th, 2026 at 8:00 AM" />
+              <Input
+                title="Email"
+                placeholder="Please enter your email address."
+                type="email"
+                className={titledField}
+              />
+              <Input
+                title="Date"
+                placeholder="February 24th, 2026 at 8:00 AM"
+                // The icon sits on the value row (22px from the bottom),
+                // under the title, not before both rows.
+                startContent={
+                  <IconBox size={20}>
+                    <CalendarBlankIcon />
+                  </IconBox>
+                }
+                className={`${titledField} *:first:absolute *:first:start-5 *:first:bottom-[22px]`}
+                inputClassName="ps-7"
+              />
             </div>
             <div className="flex gap-4">
               <DialogClose asChild>

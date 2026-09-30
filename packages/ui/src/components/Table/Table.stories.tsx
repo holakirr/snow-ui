@@ -42,7 +42,6 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -502,73 +501,90 @@ export const TableADark: Story = {
   globals: { theme: 'dark' },
 }
 
-/** A filterable list, as in the Figma "Search results" guidance. */
-export const Filtered: Story = {
-  render: () => {
-    const table = useTable({
-      features,
-      data: orders,
-      columns: columns.filter((column) => column.id !== 'select'),
-    })
+const filteredColumns = columns.filter((column) => column.id !== 'select')
 
-    return (
-      <div className="flex w-[720px] flex-col gap-4">
-        <Input
-          placeholder="Filter projects..."
-          value={(table.getColumn('project')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('project')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    <table.FlexRender header={header} />
-                  </TableHead>
+/** A filterable list, as in the Figma "Search results" guidance. */
+const FilteredTable = ({ filter }: { filter?: string }) => {
+  const table = useTable({
+    features,
+    data: orders,
+    columns: filteredColumns,
+    initialState: {
+      columnFilters: filter ? [{ id: 'project', value: filter }] : [],
+    },
+  })
+
+  return (
+    <div className="flex w-[720px] flex-col gap-4">
+      <Input
+        placeholder="Filter projects..."
+        value={(table.getColumn('project')?.getFilterValue() as string) ?? ''}
+        onChange={(event) =>
+          table.getColumn('project')?.setFilterValue(event.target.value)
+        }
+        className="max-w-sm"
+      />
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  <table.FlexRender header={header} />
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    reveal={REVEALED.has(cell.column.id)}
+                  >
+                    <table.FlexRender cell={cell} />
+                  </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      reveal={REVEALED.has(cell.column.id)}
-                    >
-                      <table.FlexRender cell={cell} />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-secondary"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    )
-  },
+            ))
+          ) : (
+            <TableRow>
+              {/* Figma: one 40px row, at the start, Black/40% (here
+                  text-secondary, its AA stand-in). */}
+              <TableCell
+                colSpan={filteredColumns.length}
+                className="text-secondary"
+              >
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
 }
 
-/** Table B: a compact table inside a dashboard block. */
+export const Filtered: Story = {
+  render: () => <FilteredTable />,
+}
+
+/** Figma "No results": the filter matches no row. */
+export const NoResults: Story = {
+  render: () => <FilteredTable filter="Typing" />,
+}
+
+/**
+ * Table B: a compact table inside a dashboard block. Figma: no lines between
+ * the rows, the first column's text on the caption's edge, and no total row.
+ */
 export const TableB: Story = {
   render: () => (
     <Card variant="block" className="w-[560px]">
-      <Table>
+      <Table className="[&_td]:border-b-0 [&_td:first-child]:ps-0 [&_th:first-child]:ps-0">
         <TableCaption>Tasks</TableCaption>
         <TableHeader>
           <TableRow>
@@ -591,7 +607,7 @@ export const TableB: Story = {
             <TableCell>3hr 20min</TableCell>
             <TableCell>In Progress</TableCell>
           </TableRow>
-          <TableRow data-state="selected">
+          <TableRow>
             <TableCell>Drinking bottle graphics</TableCell>
             <TableCell>
               <AvatarGroup>
@@ -607,12 +623,6 @@ export const TableB: Story = {
             <TableCell>Complete</TableCell>
           </TableRow>
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={2}>Total</TableCell>
-            <TableCell colSpan={2}>6hr 40min</TableCell>
-          </TableRow>
-        </TableFooter>
       </Table>
     </Card>
   ),

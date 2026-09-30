@@ -41,8 +41,8 @@ There is no `title` prop: label it with a [Label](?path=/docs/components-label--
 - **Hover:** the stroke turns Black/40%.
 - **Focus:** the Figma "Focus" state on any focus, by mouse or keyboard: a Black/40% stroke and the 4px Focus ring. Text fields don't get the `focus-ring` outline. With more contrast the focus stroke is 2px (Black/80%, the stroke colour when read-only): the Figma 0.5px Black/40% stroke is 2.85:1 on the fill.
 - **Static** (`readOnly`): the stroke stays Black/20% on hover and focus; the 4px Focus ring still shows while it has focus.
-- **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. The Figma set has no Disabled state, so this look is the library's own, shared with Input.
-- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): the Input's 1px Secondary/Red stroke, also on hover and focus (no Figma state).
+- **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. It is Input's, from the kit's Forms guidance; the kit's Component state draws Disabled as the whole control at 20% opacity with the default arrow cursor; that look is planned for 6.0.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): the Input's 1px Secondary/Red stroke, also on hover and focus (the kit's Error state, as on Input, without its `Warning` icon yet).
 
 <Canvas of={TextareaStories.Disabled} />
 

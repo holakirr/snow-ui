@@ -53,8 +53,8 @@ import { Label, RadioGroup, RadioGroupItem } from '@holakirr/snow-ui'
 - **Unselected** (Figma False): Background/3 with a 2px Black/20% ring; on hover a Black 8% fill and a Black/40% ring.
 - **Selected** (Figma True): the same circle with the Primary dot; on hover the dot is Primary under White/40%.
 - **Keyboard focus:** the `focus-ring` utility on the focused item (see Accessibility).
-- **Disabled** (`disabled` on an item, or on the group for all of them): a Black/4% circle with a Black/10% ring and a Black/20% dot. The Figma set has no Disabled state, so this look is the library's own, visible in both modes.
-- **Invalid** (`aria-invalid` on the group, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): every circle gets a Secondary/Red ring, also on hover (no Figma state).
+- **Disabled** (`disabled` on an item, or on the group for all of them): a Black/4% circle with a Black/10% ring and a Black/20% dot. The kit dims the whole radio to 20% with the default arrow cursor (planned for 6.0); 5.x keeps this look, visible in both modes.
+- **Invalid** (`aria-invalid` on the group, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): every circle gets a Secondary/Red ring, also on hover (the kit draws its Error state on text fields; this extends their red stroke).
 
 <Canvas of={RadioGroupStories.WithDisabled} />
 

@@ -24,11 +24,13 @@ export type SearchSize = 'sm' | 'lg'
 // background blur 20 (= 10px in CSS). Gray: Black/4% → Black/10% on hover;
 // Outline: Surface/1 with a 0.5px Black/20% stroke → Black/40% on hover. On
 // focus both become Surface/1 + 0.5px Black/40% + the Focus ring. Invalid
-// (the <input> has `aria-invalid="true"`; no Figma state): a 1px
-// Secondary/Red stroke in every state, like Input. The stroke colours are
-// the `control-border*` tokens; with more contrast the stroke is 1px, 2px
-// while focused (the focus indicator, WCAG 2.4.7), and the gray field gets
-// one too (its fill alone is 1.1:1, WCAG 1.4.11).
+// (the <input> has `aria-invalid="true"`): the kit's 1px Secondary/Red Error
+// stroke in every state, like Input (without the kit's Warning icon).
+// Disabled: 40% opacity (the kit: 20% with the arrow cursor, planned for
+// 6.0). The stroke colours are the `control-border*` tokens; with more
+// contrast the stroke is 1px, 2px while focused (the focus indicator, WCAG
+// 2.4.7), and the gray field gets one too (its fill alone is 1.1:1, WCAG
+// 1.4.11).
 const searchStyles = cva(
   'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-control-border-strong focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-disabled:pointer-events-none has-disabled:opacity-40 contrast-more:inset-ring-1 contrast-more:focus-within:inset-ring-2',
   {

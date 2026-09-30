@@ -14,21 +14,24 @@ export const colorOf = (className: string, container: HTMLElement): string => {
 }
 
 /**
- * Finishes the CSS transitions and animations running on `element`, so its
- * computed style is their end state. Playing them out made the checks as
- * slow as the runner renders frames: at 20× slower, the Input "Focus With
- * More Contrast" story's nine focus transitions took 28 s, past the test's
- * 15 s timeout. Infinite animations (spinners) keep running.
+ * Finishes the CSS transitions and animations running on `element` and
+ * inside it, so their computed style is the end state. Playing them out made
+ * the checks as slow as the runner renders frames: at 20× slower, the Input
+ * "Focus With More Contrast" story's nine focus transitions took 28 s, past
+ * the test's 15 s timeout. Infinite animations (spinners) keep running.
  */
 const finishTransitions = (element: Element) => {
-  for (const animation of element.getAnimations()) {
+  for (const animation of element.getAnimations({ subtree: true })) {
     if (animation.effect?.getComputedTiming().endTime !== Infinity) {
       animation.finish()
     }
   }
 }
 
-/** The computed `color` of `element` at the end of its CSS transitions. */
+/**
+ * The computed `color` of `element` at the end of the CSS transitions on it
+ * and inside it.
+ */
 export const settledColor = async (element: HTMLElement): Promise<string> => {
   finishTransitions(element)
   return getComputedStyle(element).color
@@ -37,8 +40,8 @@ export const settledColor = async (element: HTMLElement): Promise<string> => {
 /**
  * Whether `element` has an inset ring (Tailwind `inset-ring-*`, a stroke) of
  * `width` in the colour of `colorClass` (e.g. `text-control-border-invalid`),
- * at the end of its CSS transitions. The colour is resolved next to the
- * element, in its theme and contrast scopes.
+ * at the end of the CSS transitions on it and inside it. The colour is
+ * resolved next to the element, in its theme and contrast scopes.
  */
 export const hasInsetRing = async (
   element: Element,

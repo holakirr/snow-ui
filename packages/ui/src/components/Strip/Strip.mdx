@@ -59,7 +59,7 @@ Without `value` every segment is filled. With `value`, the first `value` segment
 
 `count` is rounded down and is at least 1; `value` is clamped between 0 and `count`. Pass a whole number: a fraction is rounded up on screen (2.5 fills 3 segments) but not in `aria-valuenow`.
 
-Segments have `data-state`, so you can recolour them: `[&>[data-state=filled]]:bg-…`, or `[&>:first-child]:bg-indigo` for the first one. The examples from the Figma Strip page (a quota, a password strength meter and a bar chart):
+Segments have `data-state`, so you can recolour them: `[&>[data-state=filled]]:bg-…`, or `[&>:first-child]:bg-indigo` for the first one. The examples from the Figma Strip page (a quota, a password strength meter and a bar chart). The quota's long Black/4% track is a rounded wrapper that is also the `progressbar`, with a decorative strip on it:
 
 <Canvas of={StripStories.Examples} />
 

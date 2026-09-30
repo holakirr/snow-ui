@@ -496,7 +496,7 @@ describe('DateRangePicker popup', () => {
       expect(field()).toHaveAttribute('aria-expanded', 'false'),
     )
     expect(onValueChange).not.toHaveBeenCalled()
-    expect(field()).toHaveTextContent('Jan 20, 2025 – Jan 24, 2025')
+    expect(field()).toHaveTextContent('Jan 20 – 24, 2025')
   })
 
   it("doesn't take a typed end before the start", () => {

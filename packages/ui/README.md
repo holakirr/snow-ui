@@ -355,7 +355,7 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 
 The colour of those inactive items and Bare buttons is a custom property (`--segment-fg` for segmented items and `Toggle`, `--tab-fg` for Underline tabs, `--button-fg` for Bare buttons) that hover, focus and the selected state change. A `text-*` class passed as `className` sets the colour in every state; to change only the rest colour, set the property: `className="[--button-fg:var(--color-red-text)]"`. The state colours don't depend on `:enabled`, so a `TabsTrigger` or `Toggle` rendered as a link (`asChild`) gets them too.
 
-Text fields (`Input`, `InputSmall`, `Textarea`, `Search`) keep the Figma "Focus" state exactly: a Black/40% stroke and the 4px Focus ring on any focus (mouse or keyboard); the caret and the stroke mark focus, so they don't get the `focus-ring` outline.
+Text fields (`Input`, `InputSmall`, `Textarea`, `Search`, and the `Combobox` and `MultiSelect` fields) keep the Figma "Focus" state: a Black/40% stroke and the 4px Focus ring on any focus (mouse or keyboard); the caret and the stroke mark focus, so they don't get the `focus-ring` outline. With more contrast the focus stroke is 2px.
 
 Data, overlay and navigation components:
 

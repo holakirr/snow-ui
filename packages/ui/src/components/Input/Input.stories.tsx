@@ -6,6 +6,7 @@ import {
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
 import { hasInsetRing, hasMoreContrast } from '../../test/colors'
+import { Combobox, MultiSelect } from '../Combobox'
 import { Search } from '../Search'
 import { KBD } from '../Text'
 import { Input } from './Input'
@@ -187,6 +188,11 @@ export const Invalid: Story = {
   },
 }
 
+const fruits = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+]
+
 /**
  * Focus with more contrast (`data-contrast="more"` here, or the OS's
  * `prefers-contrast: more`): every text field's focus stroke is 2px, in
@@ -214,6 +220,8 @@ export const FocusWithMoreContrast: Story = {
           defaultValue="Text"
         />
         <Search defaultValue="Text" />
+        <Combobox aria-label="Combobox" options={fruits} />
+        <MultiSelect aria-label="MultiSelect" options={fruits} />
       </div>
     </div>
   ),
@@ -259,6 +267,18 @@ export const FocusWithMoreContrast: Story = {
       search.parentElement as HTMLElement,
       'text-control-border-strong',
     ])
+    for (const [name, slot] of [
+      ['Combobox', 'combobox'],
+      ['MultiSelect', 'multi-select'],
+    ]) {
+      const input = canvas.getByRole('combobox', { name })
+      fields.push([
+        name,
+        input,
+        input.closest(`[data-slot="${slot}"]`) as HTMLElement,
+        'text-control-border-strong',
+      ])
+    }
 
     for (const [name, input, ring, color] of fields) {
       await step(`${name}: a 2px stroke on focus`, async () => {

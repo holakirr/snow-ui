@@ -201,7 +201,12 @@
         "@radix-ui/react-compose-refs",
         "@radix-ui/react-popover"
       ],
-      "registryDependencies": ["popover", "snow-core", "snow-ui-provider"],
+      "registryDependencies": [
+        "popover",
+        "snow-core",
+        "snow-ui-provider",
+        "spinner"
+      ],
       "import": "components/Combobox/Combobox",
       "exports": ["Combobox"],
       "types": ["ComboboxProps"],
@@ -225,6 +230,7 @@
         "popover",
         "snow-core",
         "snow-ui-provider",
+        "spinner",
         "tag"
       ],
       "import": "components/Combobox/MultiSelect",

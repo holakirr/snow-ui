@@ -3,7 +3,6 @@
 import {
   AddIcon,
   ArrowLineUpDownIcon,
-  LoadingAIcon,
   XCircleIcon,
 } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
@@ -30,6 +29,7 @@ import {
   popoverSurfaceClasses,
 } from '../Popover/surface'
 import { useSnowUI } from '../SnowUIProvider'
+import { LoadingRing } from '../Spinner/ring'
 
 /**
  * An option of a `Combobox` or `MultiSelect`.
@@ -539,11 +539,12 @@ export type ComboboxState = ReturnType<typeof useCombobox>
  * The Figma Input field (12/16 padding, a 16px radius, Surface/1 with a
  * 0.5px inside stroke, darker on hover and focus, plus the 4px Focus ring
  * while the input is focused), as in `Input`: the stroke is the
- * `control-border*` tokens, 1px with more contrast. While the list is open
+ * `control-border*` tokens, 1px with more contrast (2px while the input is
+ * focused: the focus indicator, as in `Input`). While the list is open
  * (`data-state="open"`) it keeps the focus look, as the Select trigger.
  */
 export const comboboxFieldClasses =
-  'group/combobox relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all hover:inset-ring-control-border-strong focus-within:inset-ring-control-border-strong has-[input:focus]:ring-4 has-[input:focus]:ring-focus data-[state=open]:inset-ring-control-border-strong data-[state=open]:ring-4 data-[state=open]:ring-focus contrast-more:inset-ring-1'
+  'group/combobox relative flex w-full cursor-text items-center gap-2 rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all hover:inset-ring-control-border-strong focus-within:inset-ring-control-border-strong has-[input:focus]:ring-4 has-[input:focus]:ring-focus data-[state=open]:inset-ring-control-border-strong data-[state=open]:ring-4 data-[state=open]:ring-focus contrast-more:inset-ring-1 contrast-more:has-[input:focus]:inset-ring-2'
 
 /**
  * Invalid, while the input has `aria-invalid="true"` (`FormControl` sets it):
@@ -583,13 +584,9 @@ export const ComboboxAdornments = ({
 }: ComboboxAdornmentsProps) => (
   <>
     {loading && (
-      <LoadingAIcon
-        size={16}
-        // Drawn for a 24×24 box, like CommandPalette's spinner.
-        viewBox="0 0 24 24"
-        aria-hidden
-        className="shrink-0 text-black-40"
-      />
+      // The Spinner ring, turned by CSS so it stops for reduced motion
+      // (LoadingAIcon's SVG `<animate>` doesn't), as in CommandPalette.
+      <LoadingRing className="size-4 shrink-0 text-black-40" />
     )}
     {canClear && (
       <button

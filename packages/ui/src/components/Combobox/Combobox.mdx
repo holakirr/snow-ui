@@ -45,7 +45,7 @@ const fruits: ComboboxOption[] = [
 1. **Field**: the Figma Input field (12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% inside stroke, 14/20 text), full width. `className` and `style` style it.
 2. **Start content** (`startContent`, optional): a 16px icon before the text, in Black/40%.
 3. **Input**: an `<input role="combobox">` with the selected option's label, or the text being typed. `placeholder`, `id`, `aria-*`, `onBlur`, `ref` and other input props go to it; `inputClassName` styles it.
-4. **Spinner** (while `loading`): the 16px LoadingA icon.
+4. **Spinner** (while `loading`): the 16px ring of the LoadingA icon in Black/40%, turned by CSS: with reduced motion it stops turning and pulses, like [Spinner](?path=/docs/components-spinner--docs).
 5. **Clear button** (`clearable`, on by default, while there is a value): the Search clear button, a 16px filled XCircle at 60% opacity.
 6. **Chevron**: the 16px ArrowLineUpDown icon of the Select trigger.
 7. **List**: portalled below the field, as wide as the field, on the Popover surface (Background/3, a 1px Surface/1 stroke, a 16px radius, the "Glass 2" blur and shadow) with 12px padding. It scrolls past 352px or the room below the field. `contentClassName` styles it.
@@ -59,7 +59,7 @@ Options are `{ value, label, icon?, keywords?, disabled? }`; pass them flat, in 
 ## States
 
 - **Hover:** the stroke turns Black/40%.
-- **Focus** (the input is focused) and **open:** a Black/40% stroke and the 4px Focus ring, the Figma "Focus" of the Input.
+- **Focus** (the input is focused) and **open:** a Black/40% stroke and the 4px Focus ring, the Figma "Focus" of the Input. With more contrast the stroke is 2px while the input is focused, as in [Input](?path=/docs/components-input-input--docs).
 - **Highlighted option:** Black/4%; the pointer and ↑ / ↓ move the highlight. While filtering, the first match is highlighted, so Enter picks it; when the list opens, the selected option is.
 - **Static** (`readOnly`): the Figma "Static" Input; the list doesn't open and the value can't be cleared.
 - **Invalid** (`aria-invalid`, set by `FormControl` when the field has an error): a Red stroke.

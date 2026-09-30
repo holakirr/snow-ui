@@ -21,7 +21,7 @@ import {
   tableFeatures,
   useTable,
 } from '@tanstack/react-table'
-import { useEffect, useRef } from 'react'
+import { type KeyboardEvent, useRef } from 'react'
 import { expect, waitFor, within } from 'storybook/test'
 import { Avatar, AvatarFallback, AvatarGroup } from '../Avatar'
 import { Button } from '../Button'
@@ -246,8 +246,9 @@ const REVEALED = new Set(['select', 'actions'])
 
 /**
  * The Figma "Table A" (Order List): the function bar (TableToolbar: add,
- * filter and sort buttons, a Search focused by "/"), selectable rows
- * (`data-state="selected"`, select-all with an indeterminate state, Space
+ * filter and sort buttons, a Search that "/" focuses from within the
+ * table), selectable rows (`data-state="selected"`, select-all with an
+ * indeterminate state, Space
  * toggles a focused checkbox) whose checkbox and "…" action show on hover,
  * sortable headers and the pagination footer.
  */
@@ -278,17 +279,24 @@ export const TableA: Story = {
       await waitFor(() => expect(opacity(more)).toBe(0))
     })
 
-    await step('"/" focuses the Search, which filters the users', async () => {
-      const search = canvas.getByRole('searchbox', { name: 'Search users' })
-      await userEvent.keyboard('/')
-      await expect(search).toHaveFocus()
-      await expect(search).toHaveValue('')
-      await userEvent.type(search, 'andi')
-      await expect(canvas.getAllByRole('row')).toHaveLength(2)
-      await userEvent.keyboard('{Escape}')
-      await expect(canvas.getAllByRole('row')).toHaveLength(6)
-      search.blur()
-    })
+    await step(
+      '"/" in the table focuses the Search, which filters the users',
+      async () => {
+        const search = canvas.getByRole('searchbox', { name: 'Search users' })
+        // Outside the table "/" does nothing (WCAG 2.1.4).
+        await userEvent.keyboard('/')
+        await expect(search).not.toHaveFocus()
+        canvas.getByRole('button', { name: 'Add order' }).focus()
+        await userEvent.keyboard('/')
+        await expect(search).toHaveFocus()
+        await expect(search).toHaveValue('')
+        await userEvent.type(search, 'andi')
+        await expect(canvas.getAllByRole('row')).toHaveLength(2)
+        await userEvent.keyboard('{Escape}')
+        await expect(canvas.getAllByRole('row')).toHaveLength(6)
+        search.blur()
+      },
+    )
 
     await step('a sortable header sorts and sets aria-sort', async () => {
       await expect(header).toHaveAttribute('aria-sort', 'none')
@@ -355,25 +363,24 @@ export const TableA: Story = {
     })
     const pageIndex = table.store.state.pagination.pageIndex
     const search = useRef<HTMLInputElement>(null)
-    // The "/" hint of the Search is only a hint: the shortcut is bound here.
-    useEffect(() => {
-      const focusSearch = (event: KeyboardEvent) => {
-        const target = event.target as HTMLElement
-        if (
-          event.key !== '/' ||
-          target.isContentEditable ||
-          target.closest('input, textarea, select')
-        )
-          return
-        event.preventDefault()
-        search.current?.focus()
-      }
-      document.addEventListener('keydown', focusSearch)
-      return () => document.removeEventListener('keydown', focusSearch)
-    }, [])
+    // The "/" hint of the Search is only a hint: the shortcut is bound here,
+    // to the table's own region, not the document: a single-character
+    // shortcut must only work while its component has focus (WCAG 2.1.4).
+    const focusSearch = (event: KeyboardEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement
+      if (
+        event.key !== '/' ||
+        target.isContentEditable ||
+        target.closest('input, textarea, select')
+      )
+        return
+      event.preventDefault()
+      search.current?.focus()
+    }
 
     return (
-      <div className="flex w-[892px] flex-col gap-4">
+      // biome-ignore lint/a11y/noStaticElementInteractions: it only handles the "/" of the controls inside
+      <div className="flex w-[892px] flex-col gap-4" onKeyDown={focusSearch}>
         <TableToolbar>
           <Button
             aria-label="Add order"

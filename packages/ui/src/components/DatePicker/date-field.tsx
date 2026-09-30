@@ -70,7 +70,6 @@ export type DateFieldProps = {
   onBlankPointer: () => void
   /** Enter: the calendar closes with the date. */
   onEnter: () => void
-  rtl: boolean
 }
 
 /**
@@ -99,7 +98,6 @@ export const DateField = ({
   onSegmentPointer,
   onBlankPointer,
   onEnter,
-  rtl,
 }: DateFieldProps) => {
   const messages = useMessages().datePicker
   const layout = fieldLayout(lang, hourCycle, withSeconds)
@@ -189,7 +187,6 @@ export const DateField = ({
     if (event.altKey || event.ctrlKey || event.metaKey) return
     const element = event.currentTarget
     const { key } = event
-    const forward: -1 | 1 = rtl ? -1 : 1
     if (/^\d$/.test(key)) {
       event.preventDefault()
       update(
@@ -202,34 +199,38 @@ export const DateField = ({
     }
     switch (key) {
       case 'ArrowUp':
-      case 'ArrowDown':
+      case 'ArrowDown': {
         event.preventDefault()
+        // An empty segment takes the placeholder's value first.
+        const shown = partsFor(index)
+        const empty =
+          !shown || segmentValue(shown, segment, hourCycle) === undefined
         update(
           index,
           segment,
           (parts) => ({
-            parts:
-              segmentValue(parts, segment, hourCycle) === undefined
-                ? setSegment(
-                    parts,
+            parts: empty
+              ? setSegment(
+                  parts,
+                  segment,
+                  segmentValue(
+                    partsOf(placeholders[index] as Date),
                     segment,
-                    segmentValue(
-                      partsOf(placeholders[index] as Date),
-                      segment,
-                      hourCycle,
-                    ) ?? 0,
                     hourCycle,
-                  )
-                : stepSegment(
-                    parts,
-                    segment,
-                    key === 'ArrowUp' ? 1 : -1,
-                    hourCycle,
-                  ),
+                  ) ?? 0,
+                  hourCycle,
+                )
+              : stepSegment(
+                  parts,
+                  segment,
+                  key === 'ArrowUp' ? 1 : -1,
+                  hourCycle,
+                ),
           }),
           element,
         )
         return
+      }
       case 'Home':
       case 'End':
         event.preventDefault()
@@ -270,7 +271,9 @@ export const DateField = ({
       case 'ArrowRight':
       case 'ArrowLeft':
         event.preventDefault()
-        focusSibling(element, key === 'ArrowRight' ? forward : -forward)
+        // The parts read left to right (`dir="ltr"`), also in right-to-left
+        // text.
+        focusSibling(element, key === 'ArrowRight' ? 1 : -1)
         return
       case 'Enter':
         event.preventDefault()
@@ -386,6 +389,8 @@ export const DateField = ({
         aria-invalid={invalid || undefined}
         aria-current={dates.length > 1 && index === active ? 'true' : undefined}
         data-slot="date-field"
+        // Numeric dates read left to right in right-to-left text too.
+        dir="ltr"
         className="flex items-center"
         onFocus={() => {
           if (index !== active) onActiveChange?.(index)
@@ -414,6 +419,7 @@ export const DateField = ({
         aria-label={timeLabel}
         aria-invalid={invalid || undefined}
         data-slot="time-field"
+        dir="ltr"
         className="ms-auto flex items-center"
       >
         {layout.time.map((segment, i) => {

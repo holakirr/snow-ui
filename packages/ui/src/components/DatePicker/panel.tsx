@@ -521,7 +521,6 @@ export const DatePickerPanel = ({
           }}
           onBlankPointer={() => switchView('days', false)}
           onEnter={onConfirm}
-          rtl={rtl}
         />
         <div ref={body} data-slot="date-picker-view" data-view={view}>
           {view === 'days' ? (

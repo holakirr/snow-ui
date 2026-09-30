@@ -69,8 +69,8 @@ A button or a link in the start or end content keeps its own clicks; any other c
 - **Hover:** the stroke turns Black/40%.
 - **Focus:** the Figma "Focus" state while the input has focus, by mouse or keyboard: a Black/40% stroke and the 4px Focus ring. The caret and the stroke mark focus, so text fields don't get the `focus-ring` outline. With more contrast the focus stroke is 2px (Black/80%, the stroke colour when read-only): the Figma 0.5px Black/40% stroke is 2.85:1 on the fill.
 - **Static** (`readOnly`): the stroke stays Black/20% on hover and focus; the 4px Focus ring still shows while the input has focus.
-- **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. The Figma set has no Disabled state, so this look is the library's own.
-- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets while the field has an error): a 1px Secondary/Red stroke, also on hover and focus. The Figma set has no error state, so this look is the library's own; the error text is the `FormMessage`.
+- **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. This is the kit's Forms guidance look; the kit's Component state draws Disabled as the whole control at 20% opacity with the default arrow cursor; that look is planned for 6.0.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets while the field has an error): a 1px Secondary/Red stroke, also on hover and focus. This is the kit's Error stroke. The kit also puts a 16px `Warning` icon at the end of the field and keeps the title grey; here there is no icon yet, and an invalid `FormLabel` turns `red-text`. The error text is the `FormMessage`.
 
 <Canvas of={InputStories.Static} />
 

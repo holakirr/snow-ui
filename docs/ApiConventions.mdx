@@ -119,7 +119,7 @@ The styles read these props, not `aria-current` or `aria-selected`: pass both wh
 
 ## Invalid state
 
-The invalid state is `aria-invalid="true"` on the control, and the fields style it themselves: `Input`, `InputSmall`, `Textarea`, `Search`, `SelectTrigger` and `Switch` get a 1px Secondary/Red stroke (kept on hover, focus and while a Select is open), an unchecked `Checkbox` and the radios of an invalid `RadioGroup` a red ring, and the `Slider` passes it on to its thumbs. The Figma kit has no error state, so the look is the library's own, from the Secondary/Red token.
+The invalid state is `aria-invalid="true"` on the control, and the fields style it themselves: `Input`, `InputSmall`, `Textarea`, `Search`, `SelectTrigger` and `Switch` get a 1px Secondary/Red stroke (kept on hover, focus and while a Select is open), an unchecked `Checkbox` and the radios of an invalid `RadioGroup` a red ring, and the `Slider` passes it on to its thumbs. The stroke is the kit's Error state, drawn on its text fields (the kit adds a 16px `Warning` icon, not drawn here yet), and the other controls take the same Secondary/Red token.
 
 - **In a form:** `FormItem` takes `error` (a message; truthy marks the field invalid) or `invalid`. `FormControl` then sets `aria-invalid` and an `aria-describedby` with the rendered description and message on the control, `FormLabel` turns `red-text`, and `FormMessage` shows the error as an alert (`role="alert"`).
 - **Outside a form:** set `aria-invalid` on the control yourself.

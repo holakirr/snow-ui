@@ -412,7 +412,7 @@ export const DatePickerField = ({
             // Invalid, while the trigger has `aria-invalid="true"`: the 1px
             // `control-border-invalid` stroke of `Input`, also while open.
             'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-aria-invalid:data-[state=open]:inset-ring-control-border-invalid',
-            // The disabled look (the design has no Disabled state).
+            // The disabled look of Input (`disabledInputClasses`).
             'data-disabled:bg-black-4 data-disabled:text-black-20 data-disabled:inset-ring-0 data-disabled:hover:inset-ring-0',
             className,
           )}

@@ -24,8 +24,10 @@ export type SearchSize = 'sm' | 'lg'
 // background blur 20 (= 10px in CSS). Gray: Black/4% → Black/10% on hover;
 // Outline: Surface/1 with a 0.5px Black/20% stroke → Black/40% on hover. On
 // focus both become Surface/1 + 0.5px Black/40% + the Focus ring. Invalid
-// (the <input> has `aria-invalid="true"`; no Figma state): a 1px
-// Secondary/Red stroke in every state, like Input. The stroke colours are
+// (the <input> has `aria-invalid="true"`): the kit's 1px Secondary/Red Error
+// stroke in every state, like Input (without the kit's Warning icon).
+// Disabled: 40% opacity (the kit: 20% with the arrow cursor, planned for
+// 6.0). The stroke colours are
 // the `control-border*` tokens; with more contrast the stroke is 1px, 2px
 // while focused (the focus indicator, WCAG 2.4.7), and the gray field gets
 // one too (its fill alone is 1.1:1, WCAG 1.4.11).

@@ -29,6 +29,7 @@ type RefTargets = {
   AccordionContent: HTMLDivElement
   AccordionItem: HTMLDivElement
   AccordionTrigger: HTMLButtonElement
+  ActivitiesCard: HTMLElement
   Alert: HTMLDivElement
   AlertDescription: HTMLDivElement
   AlertDialog: null
@@ -66,6 +67,7 @@ type RefTargets = {
   // The <input role="combobox">, as react-hook-form needs to focus it.
   Combobox: HTMLInputElement
   CommandPalette: null
+  ContactsCard: HTMLElement
   ContextMenu: null
   ContextMenuCheckboxItem: HTMLDivElement
   ContextMenuContent: HTMLDivElement
@@ -126,10 +128,12 @@ type RefTargets = {
   KBD: HTMLElement
   Label: HTMLLabelElement
   Link: HTMLAnchorElement
+  ListCard: HTMLElement
   // Generic, so `ComponentProps` can't see its ref: see the JSX below.
   ListItem: 'jsx'
   // The <input role="combobox"> after the tags.
   MultiSelect: HTMLInputElement
+  NotificationsCard: HTMLElement
   Pagination: HTMLElement
   PaginationContent: HTMLUListElement
   PaginationEllipsis: HTMLSpanElement

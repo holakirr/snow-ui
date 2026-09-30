@@ -174,7 +174,7 @@ With more contrast the 0.5px strokes are 1px and the text fields' focus stroke 2
 - **Base:** `Typography`, `KBD`, `IconBox`, `IconText`, `Group`, `Strip`, `Separator`, `Badge`, `Tag`, `Chip`, `TextStrip`, `Link`, `Avatar`, `AvatarGroup`, `Image`, `Skeleton`.
 - **Controls:** `Button`, `Input`, `InputSmall`, `Search`, `Textarea`, `Checkbox`, `RadioGroup`, `Switch`, `Toggle`, `ToggleGroup`, `Select`, `Combobox`, `MultiSelect`, `DatePicker`, `DateRangePicker`, `Slider`, `Label`, `Form*`.
 - **Overlays:** `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Toaster`, `CommandPalette`, `AlertDialog`.
-- **Data and navigation:** `Card`, `Table`, `Tabs`, `Accordion`, `Breadcrumb`, `Pagination`, `Sidebar`, `ListItem`, `Calendar`, `Scheduler`.
+- **Data and navigation:** `Card`, `Table`, `Tabs`, `Accordion`, `Breadcrumb`, `Pagination`, `Sidebar`, `ListItem`, `ListCard`, `Calendar`, `Scheduler`.
 - **Feedback:** `Alert`, `Progress`, `ProgressCircle`, `Spinner`.
 
 The components that map to the SnowUI Figma base components:
@@ -186,6 +186,7 @@ The components that map to the SnowUI Figma base components:
 - **`Search`** — the 28px search field (`gray` / `outline`, `sm` / `lg`) with a search icon, a keyboard shortcut hint (`shortcut={['/']}`) and a clear button (also Escape) that calls `onChange` with an empty value and `onClear`.
 - **`CommandPalette`** — the Figma "SearchPopup": a dialog with a search combobox and a grouped listbox. Pass `groups` of items (`label`, `icon`, `keywords`, `disabled`, `onSelect`); ↑ / ↓ move the highlight, Enter or a click selects (`onSelect(item, event)` — check `event.metaKey` to open in a new tab), Escape closes. `hotkey` (`'/'`, `'mod+k'`) opens it, `filter={false}` + `onQueryChange` + `loading` serve results from a server, `emptyMessage` replaces "No results".
 - **`ListItem`** — a row of the dashboard Notifications / Activities / Contacts lists: `icon`, `title` and a `text-secondary` `description` or timestamp (Figma: Black/40%); an `IconText`, so `interactive`, `active` and `asChild` work too.
+- **`ListCard`** — the Figma Notifications, Activities and Contacts cards: a titled `<section>` of ListItem rows on the popup surface (`glass-2`, radius 24, 248px wide); rows with `href` are links, with `onSelect` buttons. `NotificationsCard`, `ActivitiesCard` and `ContactsCard` take the kit's content and a translated default title (`listCards` messages).
 
 Storybook's "Recipes/Dashboard" composes them with `Sidebar`, `Breadcrumb`, `Card` and `Button` into the SnowUI dashboard layout (sidebar, header, content, right sidebar).
 
@@ -254,8 +255,8 @@ import { ru } from 'react-day-picker/locale' // a date-fns locale plus day-picke
 const messages: Messages = {
   /* every namespace: alert, alertDialog, avatarGroup, badge, breadcrumb,
      calendar, charts, combobox, commandPalette, datePicker, dialog, link,
-     pagination, progress, search, sheet, sidebar, slider, spinner, tag,
-     toast */
+     listCards, pagination, progress, search, sheet, sidebar, slider,
+     spinner, tag, toast */
 }
 
 export const Providers = ({ children }: { children: ReactNode }) => (
@@ -285,7 +286,7 @@ For several languages, pass the language (a string) from the layout and pick the
 - **Typed:** `Messages` is grouped by component (`messages.pagination.previous`, `messages.dialog.close`…). Strings with values are functions, so a translation can order and inflect them: `tag: { remove: (label) => \`Удалить тег ${label}\` }`, `calendar: { previousYears: (count) => … }`.
 - **Partial:** `messages` takes any subset (`MessagesOverrides`) and merges it over the defaults, namespace by namespace; a message set to `undefined` keeps the default. Providers nest: an inner one overrides the outer one for its subtree.
 - **Stable:** define `messages` at module scope (or `useMemo` it). The provider recognises an equal inline object, but inline function messages are new functions on every render, which re-renders every component that reads the messages.
-- **Component props win:** `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` and `placeholder` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `label` (`BreadcrumbEllipsis`, `PaginationEllipsis`), `label` / `placeholder` / `emptyMessage` / `loadingLabel` (`CommandPalette`), `emptyMessage` / `loadingLabel` / `clearLabel` / `createLabel` (`Combobox`, `MultiSelect`), `placeholder` / `clearLabel` (`DatePicker`, `DateRangePicker`), `thumbLabels` (`Slider`), `todayLabel` / `lastSelectionLabel` / `labels` (`Calendar`), `statusLabel` / `dismissLabel` (`Alert`), the children or `label` of `AlertDialogCancel`, `getValueLabel` (`Progress`, `ProgressCircle`), `label` (`Spinner`) and `aria-label` (`Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger`, `Badge`, `Progress`, `ProgressCircle`) override the provider.
+- **Component props win:** `closeLabel` (`DialogHeader`, `SheetContent`), `clearLabel` and `placeholder` (`Search`), `removeLabel` (`Tag`), `externalLabel` (`Link`), `label` (`BreadcrumbEllipsis`, `PaginationEllipsis`), `label` / `placeholder` / `emptyMessage` / `loadingLabel` (`CommandPalette`), `emptyMessage` / `loadingLabel` / `clearLabel` / `createLabel` (`Combobox`, `MultiSelect`), `placeholder` / `clearLabel` (`DatePicker`, `DateRangePicker`), `thumbLabels` (`Slider`), `todayLabel` / `lastSelectionLabel` / `labels` (`Calendar`), `statusLabel` / `dismissLabel` (`Alert`), the children or `label` of `AlertDialogCancel`, `getValueLabel` (`Progress`, `ProgressCircle`), `label` (`Spinner`), `title` (`NotificationsCard`, `ActivitiesCard`, `ContactsCard`) and `aria-label` (`Breadcrumb`, `Pagination`, the previous / next links, `ToastClose`, `SidebarTrigger`, `Badge`, `Progress`, `ProgressCircle`) override the provider.
 - **Dates:** `locale` goes to `Calendar` (month and weekday names, day labels; its own `locale` prop wins), to `DatePicker` and `DateRangePicker` (the same, and the dates they show) and to `Scheduler`'s day, time and cell labels (`locale.code`; `en-US` without a locale, so the server and the browser render the same text). A react-day-picker locale (`react-day-picker/locale`) also translates the day picker's own labels (day buttons, dropdowns…). The week starts on Monday in all of them; `weekStartsOn` sets another day, or `"locale"` for the locale's first day (the default in 6.0), and their own `weekStartsOn` / `startOfWeek` wins.
 - **Calendar navigation:** `messages.calendar.previousMonth`, `nextMonth` and `navigation` name the previous / next month buttons and their landmark, so they translate with a plain date-fns locale too. Their English defaults give way to a react-day-picker locale's own labels; a translated message wins over them, and `Calendar`'s `labels` prop over both.
 - **Your components:** `useMessages()` returns the current messages, `useSnowUI()` the messages, `locale` and `dir`.

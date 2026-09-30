@@ -712,6 +712,39 @@
       "docs": "components-link"
     },
     {
+      "name": "list-card",
+      "type": "registry:ui",
+      "title": "ListCard",
+      "files": ["components/ListCard/ListCard.tsx"],
+      "dependencies": [],
+      "registryDependencies": [
+        "icon-box",
+        "list-item",
+        "snow-core",
+        "snow-ui-provider",
+        "text"
+      ],
+      "import": "components/ListCard/ListCard",
+      "exports": [
+        "ActivitiesCard",
+        "ContactsCard",
+        "ListCard",
+        "NotificationsCard"
+      ],
+      "types": [
+        "ActivitiesCardProps",
+        "ActivityItem",
+        "ContactItem",
+        "ContactsCardProps",
+        "ListCardHeadingLevel",
+        "ListCardItem",
+        "ListCardProps",
+        "NotificationItem",
+        "NotificationsCardProps"
+      ],
+      "docs": "components-listcard"
+    },
+    {
       "name": "list-item",
       "type": "registry:ui",
       "title": "ListItem",
@@ -1397,6 +1430,7 @@
         "toggle-group",
         "label",
         "link",
+        "list-card",
         "list-item",
         "pagination",
         "popover",

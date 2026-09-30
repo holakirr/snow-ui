@@ -19,4 +19,5 @@ export const addedIn: Readonly<Record<string, string>> = {
   chip: '5.1',
   'text-strip': '5.1',
   image: '5.1',
+  'list-card': '5.1',
 }

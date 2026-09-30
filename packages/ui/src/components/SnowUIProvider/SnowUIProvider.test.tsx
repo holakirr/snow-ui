@@ -557,6 +557,7 @@ describe('SnowUIProvider', () => {
       charts: _charts,
       combobox: _combobox,
       datePicker: _datePicker,
+      listCards: _listCards,
       progress: _progress,
       spinner: _spinner,
       ...v50
@@ -582,6 +583,7 @@ describe('SnowUIProvider', () => {
     expect(seen?.datePicker.placeholder).toBe('Pick a date')
     expect(seen?.progress.value(1, 4)).toBe('25%')
     expect(seen?.spinner.label).toBe('Loading')
+    expect(seen?.listCards.contacts).toBe('Contacts')
   })
 
   it('keeps the base message for an override set to undefined', () => {

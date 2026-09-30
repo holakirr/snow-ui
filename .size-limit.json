@@ -100,13 +100,13 @@
     "name": "@holakirr/snow-ui/theme.css (compiled by the consumer's Tailwind)",
     "path": "packages/ui/dist/theme.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "9.8 kB"
+    "limit": "10.6 kB"
   },
   {
     "name": "@holakirr/snow-ui/theme-core.css (theme.css without the components' @source)",
     "path": "packages/ui/dist/theme-core.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "9.8 kB"
+    "limit": "10.6 kB"
   },
   {
     "name": "@holakirr/snow-ui/fonts.css",

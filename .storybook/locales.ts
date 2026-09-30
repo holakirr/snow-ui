@@ -85,6 +85,11 @@ export const ruMessages: Messages = {
   link: {
     external: '(откроется в новой вкладке)',
   },
+  listCards: {
+    notifications: 'Уведомления',
+    activities: 'Активность',
+    contacts: 'Контакты',
+  },
   pagination: {
     label: 'Навигация по страницам',
     previous: 'Предыдущая страница',

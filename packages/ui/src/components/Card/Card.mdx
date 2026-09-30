@@ -71,13 +71,24 @@ Dashboard stat tiles are blocks with a `color-1` or `color-2` fill and `text-sta
 
 <Canvas of={CardStories.States} />
 
-The radio-like marker in the Hover and Selected cards is part of the stories, not of Card.
+### Selection mark
+
+`marker` adds the Figma selection mark (the kit's RadioAlt, `33400:44123`) on the top end corner, 12/16px in (24/24 on a `block`), as the Hover and Selected cards show it:
+
+| Card | Mark |
+| --- | --- |
+| `selected` | checked: a Primary ring 6px wide on Background/3 |
+| not selected, hovered or with the keyboard focus inside | empty: Background/3 with the `control-border` ring (`control-border-strong` on hover) |
+| not selected, at rest | hidden, as on the Figma Default and Static cards |
+
+The mark is `aria-hidden`, and the card gets 40px (48px on a `block`) of padding on the end side so the content stays clear of it. The mark fades in and out; the fade stops for reduced motion.
 
 ## Accessibility
 
 - Card is a `<div>` with no role and isn't focusable: `interactive` and `selected` change only the look.
 - For a clickable card, put a real control inside (a [Link](?path=/docs/components-link--docs) or a [Button](?path=/docs/components-button--docs) on the title), or give the card a role, `tabIndex={0}` and keyboard handlers. The `focus-ring` shows only on a focusable card.
 - `selected` isn't announced. Pair it with state a screen reader gets: `aria-checked`, `aria-selected` or `aria-pressed`, whichever fits the role.
+- The mark of `marker` is decorative too: it shows what `aria-checked` (or the control inside) says. Its empty ring uses the `control-border` token: the Figma Black/20% by default, 3:1 or more with more contrast (1.4.11).
 - The Selectable story makes the cards radios: `role="radio"` and `aria-checked` in a `role="radiogroup"`, each with `tabIndex={0}` and a key handler. A complete radio group also has a single tab stop and moves with the arrow keys, which the story leaves out; for a plain choice of options prefer [RadioGroup](?path=/docs/components-input-radiogroup--docs).
 
 <Canvas of={CardStories.Selectable} />

@@ -1,0 +1,121 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ImageStories from './Image.stories'
+
+<Meta of={ImageStories} />
+
+<Title />
+
+<FigmaLinks />
+<InstallTabs item="image" />
+
+Image frames a picture, a logo or an icon as the kit's rounded square: a cover, a product photo, a workspace logo, a choice in an image picker. It is the Figma "Image": 12 to 80px or any size (`free`), with the Hover and Selected states and the Option mark.
+
+```tsx
+import { Image } from '@holakirr/snow-ui'
+
+<Image size={64}>
+  <img src="/covers/hills.jpg" alt="Hills under a lilac sky" />
+</Image>
+```
+
+<Primary />
+
+## When to use
+
+- A picture or a logo shown as a rounded square: a thumbnail in a list, a product, a workspace.
+- An image picker: covers, themes, templates, with the selection mark (`option`).
+
+## When not to use
+
+- A person: use [Avatar](?path=/docs/components-avatar-avatar--docs), which is round and shows initials until the photo loads.
+- An icon at the Figma icon sizes, with a tile and a badge: use [IconBox](?path=/docs/components-iconbox--docs).
+- A large content image in an article: use your own `<img>` or framework image.
+
+## Anatomy
+
+1. **Frame**: a `<span>` of `size`, on a Black/4% placeholder, with rounded corners (about 30% of the size; the kit's squircle where the browser supports `corner-shape`). It crops its content to its corners.
+2. **Content** (the children): your `<img>`, `<picture>`, framework image or icon, stretched to the frame (`object-fit: cover`). With `icon` it sits inset on the tile.
+3. **Option mark** (`option`, optional): the kit's RadioAlt on the top end corner, `aria-hidden`.
+
+## Sizes
+
+<Canvas of={ImageStories.Sizes} />
+
+| `size` | Radius | Icon inset | Option mark |
+| --- | --- | --- | --- |
+| 12, 16, 20 | 4 | 2 | 8 (10 at 20), in the corner |
+| 24, 28, 32 | 8 | 4 | 10–12, 2–4 from the corner |
+| 40 (default), 48 | 12 | 6–8 | 12–16, 4 from the corner |
+| 56, 64 | 16 | 8–10 | 16–20, 6 from the corner |
+| 72 | 20 | 12 | 20, 8 from the corner |
+| 80 | 24 | 12 | 20, 8 from the corner |
+| `free` | 16 | 12 | 20, 8 from the corner |
+
+With `free`, set the size with a class: `className="h-24 w-40"`.
+
+<Canvas of={ImageStories.Free} />
+
+## Variants
+
+`icon` (Figma `Icon=True`) insets the content on the Black/4% tile, with smaller corners: for a logo or an icon rather than a photo.
+
+<Canvas of={ImageStories.Icon} />
+
+## States
+
+<Canvas of={ImageStories.States} />
+
+- **Hover** (`interactive`, Figma `State=Hover`): the Figma "Image hover" inner shadow over the top edge on hover, and a pointer cursor. The shadow's transition stops for reduced motion.
+- **Selected** (`selected`, Figma `State=Selected`): the option mark is checked; without `option`, a 2px Primary ring shows it. `data-state="selected"` is set for your own styles.
+- **Option** (`option`, Figma `Option=True`): the mark, unchecked (a Background/3 disc with the `control-border` ring, `control-border-strong` on hover) or checked (a Primary ring about 30% of its diameter).
+
+<Canvas of={ImageStories.OptionSizes} />
+
+## Accessibility
+
+- The frame has no role: give the `<img>` its `alt` (empty when the image is decorative, as in a picker whose control is named).
+- **Selection:** the frame is not a control. For an image picker, make each Image the label of a control that is announced and operable — a visually hidden native radio (as in the Picker story: arrow keys move the choice), a checkbox for several — and name it; the mark and the ring only show what the control says (WCAG 4.1.2, 1.4.1). Show the keyboard focus on the label (`has-focus-visible:outline-*`).
+- **Contrast:** the unchecked mark's ring is the `control-border` token: the Figma Black/20% by default, WCAG AA (3:1) with more contrast. The checked mark and the selected ring are Primary (black; indigo in dark mode).
+
+<Canvas of={ImageStories.Picker} />
+
+None of the package's deviations from the Figma kit apply to Image.
+
+## Localization and RTL
+
+- Image renders no built-in strings.
+- The option mark is on the top end corner: top right, top left in right-to-left text.
+
+<Canvas of={ImageStories.RTL} />
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Give every meaningful image an `alt`.
+- Put picker images in real controls (a native radio or checkbox) with names.
+- Use one size per list or grid.
+
+</Do>
+<Dont>
+
+- Don't use Image for people: use Avatar.
+- Don't rely on the mark alone to say what is selected.
+- Don't stretch a photo with `free` without a class that keeps its proportions.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Avatar](?path=/docs/components-avatar-avatar--docs): a round picture of a person with initials as the fallback.
+- [IconBox](?path=/docs/components-iconbox--docs): sizes an icon, with a tile and a badge.
+- [Card](?path=/docs/components-card--docs): its `marker` is the same selection mark.
+
+## Props
+
+A `<span>` that takes the props below, `className` and the attributes of a `<span>`.
+
+<Controls />

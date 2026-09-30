@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps, FC } from 'react'
+import { RadioMark } from '../../utils/radio-mark'
 import { twMerge } from '../../utils/tw-merge'
 
 /*
@@ -64,6 +65,15 @@ type CardProps = ComponentProps<'div'> &
      * @default false
      */
     bordered?: boolean
+    /**
+     * Shows the Figma selection mark (the kit's RadioAlt) on the top end
+     * corner, as the Hover and Selected cards do: checked when `selected`,
+     * and, when not selected, only while the card is hovered or has the
+     * keyboard focus. Decorative: say what is selected with `aria-checked`
+     * (a `role="radio"` card) or a control inside.
+     * @default false
+     */
+    marker?: boolean
   }
 
 const Card: FC<CardProps> = ({
@@ -71,18 +81,45 @@ const Card: FC<CardProps> = ({
   interactive,
   bordered,
   selected,
+  marker = false,
   className,
+  children,
   ...props
-}) => (
-  <div
-    data-state={selected ? 'selected' : undefined}
-    className={twMerge(
-      cardStyles({ variant, interactive, bordered, selected }),
-      className,
-    )}
-    {...props}
-  />
-)
+}) => {
+  const block = variant === 'block'
+
+  return (
+    <div
+      data-state={selected ? 'selected' : undefined}
+      className={twMerge(
+        cardStyles({ variant, interactive, bordered, selected }),
+        // The mark sits in the padding's corner: keep the content clear of
+        // it (the padding plus the 20px mark and a 4px gap).
+        // A named group, so an outer `group` (the Sidebar's) doesn't show
+        // the mark.
+        marker && ['group/card relative', block ? 'pe-12' : 'pe-10'],
+        className,
+      )}
+      {...props}
+    >
+      {children}
+      {marker && (
+        <RadioMark
+          host="card"
+          checked={Boolean(selected)}
+          className={twMerge(
+            'absolute transition-opacity motion-reduce:transition-none',
+            block ? 'top-6 end-6' : 'top-3 end-4',
+            // Figma: no mark on the Default and Static cards, an empty one
+            // on Hover.
+            !selected &&
+              'opacity-0 group-hover/card:opacity-100 group-focus-visible/card:opacity-100 group-has-focus-visible/card:opacity-100',
+          )}
+        />
+      )}
+    </div>
+  )
+}
 Card.displayName = 'Card'
 
 export { Card, type CardProps }

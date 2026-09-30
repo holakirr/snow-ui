@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 
 import { Typography } from '../Text'
-import { Separator } from './Separator'
+import { Separator, type SeparatorCount } from './Separator'
 
 const meta: Meta<typeof Separator> = {
   title: 'Components/Separator',
@@ -32,6 +33,13 @@ const meta: Meta<typeof Separator> = {
     decorative: {
       control: 'boolean',
       description: 'Whether the separator is purely decorative',
+    },
+    count: {
+      control: { type: 'range', min: 1, max: 8 },
+    },
+    arrow: {
+      control: 'select',
+      options: [undefined, 'start', 'end', 'left', 'right'],
     },
     className: {
       control: 'text',
@@ -98,4 +106,95 @@ export const CustomStyles: Story = {
       <Typography>Below content</Typography>
     </div>
   ),
+}
+
+const COUNTS: SeparatorCount[] = [1, 2, 3, 4, 5, 6, 7, 8]
+
+const LineMatrix = () => (
+  <div className="flex flex-col gap-8 text-black">
+    <div className="flex items-start gap-6">
+      {COUNTS.map((count) => (
+        <Separator key={count} count={count} className="w-20 text-black" />
+      ))}
+    </div>
+    <div className="flex h-20 items-stretch gap-6">
+      {COUNTS.map((count) => (
+        <Separator
+          key={count}
+          count={count}
+          orientation="vertical"
+          className="text-black"
+        />
+      ))}
+    </div>
+    <div className="flex w-20 flex-col gap-4">
+      <Separator arrow="right" className="text-black" />
+      <Separator arrow="left" className="text-black" />
+    </div>
+  </div>
+)
+
+/**
+ * The Figma "Line" set: `count` 1 to 8 (stacked, or side by side when
+ * vertical, 8px apart) and the Left / Right arrow layouts (`arrow`), in the
+ * Figma Black/100% (`text-black`).
+ */
+export const Lines: Story = {
+  render: () => <LineMatrix />,
+  play: async ({ canvasElement }) => {
+    const three = canvasElement.querySelector('[data-count="3"]') as HTMLElement
+    const lines = three.querySelectorAll('[data-slot="separator-line"]')
+    await expect(lines).toHaveLength(3)
+    // 8px apart: 1px lines at 0, 9 and 18.
+    await expect(three.getBoundingClientRect().height).toBe(19)
+    const arrow = canvasElement.querySelector(
+      '[data-slot="separator-arrow"]',
+    ) as SVGElement
+    const row = arrow.parentElement as HTMLElement
+    // Right arrow: the head at the right end.
+    await expect(arrow.getBoundingClientRect().right).toBe(
+      row.getBoundingClientRect().right,
+    )
+  },
+}
+
+export const LinesDark: Story = {
+  render: () => <LineMatrix />,
+  globals: { theme: 'dark' },
+}
+
+/**
+ * Right-to-left text: `end` points left, `start` right; `left` and
+ * `right` keep their direction.
+ */
+export const ArrowsRTL: Story = {
+  tags: ['!autodocs'],
+  globals: { dir: 'rtl' },
+  render: () => (
+    <div className="flex w-40 flex-col gap-4 text-black">
+      {(['end', 'start', 'right', 'left'] as const).map((arrow) => (
+        <div key={arrow} className="flex items-center gap-3">
+          <Typography size={12} className="w-10 text-secondary">
+            {arrow}
+          </Typography>
+          <Separator arrow={arrow} data-arrow={arrow} className="text-black" />
+        </div>
+      ))}
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const headAtLeft = (arrow: string) => {
+      const row = canvasElement.querySelector(
+        `[data-arrow="${arrow}"]`,
+      ) as HTMLElement
+      const head = row.querySelector('[data-slot="separator-arrow"]') as Element
+      return (
+        head.getBoundingClientRect().left < row.getBoundingClientRect().left + 8
+      )
+    }
+    await expect(headAtLeft('end')).toBe(true)
+    await expect(headAtLeft('start')).toBe(false)
+    await expect(headAtLeft('right')).toBe(false)
+    await expect(headAtLeft('left')).toBe(true)
+  },
 }

@@ -9,10 +9,11 @@
  * wins over the provider.
  *
  * The namespaces added in 5.1 (`alert`, `alertDialog`, `avatarGroup`,
- * `charts`, `combobox`, `datePicker`, `progress`, `spinner`) are optional,
- * so a translation typed as `Messages` before they existed still compiles;
- * the English defaults fill them in, and `useMessages()` always returns
- * every namespace (`Required<Messages>`). They become required in 6.0.
+ * `charts`, `combobox`, `datePicker`, `listCards`, `progress`, `spinner`)
+ * are optional, so a translation typed as `Messages` before they existed
+ * still compiles; the English defaults fill them in, and `useMessages()`
+ * always returns every namespace (`Required<Messages>`). They become
+ * required in 6.0.
  */
 export type Messages = {
   alert?: {
@@ -142,6 +143,14 @@ export type Messages = {
   link: {
     /** Screen-reader text appended to `external` links. */
     external: string
+  }
+  listCards?: {
+    /** The default title of a `NotificationsCard`. */
+    notifications: string
+    /** The default title of an `ActivitiesCard`. */
+    activities: string
+    /** The default title of a `ContactsCard`. */
+    contacts: string
   }
   pagination: {
     /** The `Pagination` navigation landmark. */
@@ -285,6 +294,11 @@ export const defaultMessages: Required<Messages> = {
   },
   link: {
     external: '(opens in a new tab)',
+  },
+  listCards: {
+    notifications: 'Notifications',
+    activities: 'Activities',
+    contacts: 'Contacts',
   },
   pagination: {
     label: 'Pagination',

@@ -110,6 +110,14 @@ export type IconBoxProps = ComponentProps<'span'> & {
   background?: boolean
 
   /**
+   * The Figma `Glass` tile: the icon on White/20% with the "Glass 1" effect
+   * (the `glass-1` utility: a background blur and a soft shadow) instead of
+   * Black/4%, for icons over a picture or a colour. Implies `background`.
+   * @default false
+   */
+  glass?: boolean
+
+  /**
    * Show a badge on the top end corner (top right; top left in right-to-left
    * text): `true` renders the Figma dot, any other node (e.g. a `<Badge>`
    * with a count) is centred on the same spot.
@@ -130,6 +138,7 @@ export type IconBoxProps = ComponentProps<'span'> & {
 const IconBox: FC<IconBoxProps> = ({
   size = ICON_BOX_SIZES[24],
   background = false,
+  glass = false,
   badge,
   badgeLabel,
   className,
@@ -138,13 +147,15 @@ const IconBox: FC<IconBoxProps> = ({
 }) => {
   const spec = sizeSpecs[size]
   const hasBadge = badge !== undefined && badge !== false && badge !== null
+  const tile = background || glass
 
   return (
     <span
       data-size={size}
+      data-glass={glass || undefined}
       className={twMerge(
         'relative inline-flex size-fit shrink-0 items-center justify-center',
-        background && ['bg-black-4', spec.background],
+        tile && [glass ? 'glass-1' : 'bg-black-4', spec.background],
         className,
       )}
       {...props}
@@ -164,7 +175,7 @@ const IconBox: FC<IconBoxProps> = ({
           className={twMerge(
             'absolute flex items-center justify-center',
             spec.badge,
-            spec.badgeOffset[background ? 1 : 0],
+            spec.badgeOffset[tile ? 1 : 0],
           )}
         >
           {badge === true ? (

@@ -23,6 +23,13 @@ concurrency:
 permissions:
   contents: read
 
+# Every `run:` step in bash with pipefail (`bash --noprofile --norc -eo
+# pipefail {0}`): without an explicit shell GitHub runs `bash -e {0}`, and a
+# failing command piped into `tee` or `jq` would pass unnoticed.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     runs-on: ubuntu-latest

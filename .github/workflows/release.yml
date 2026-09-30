@@ -94,6 +94,13 @@ concurrency:
 
 permissions: {}
 
+# Every `run:` step in bash with pipefail (`bash --noprofile --norc -eo
+# pipefail {0}`): without an explicit shell GitHub runs `bash -e {0}`, and a
+# failing command piped into `tee` or `jq` would pass unnoticed.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   # workflow_run: dispatch the release for the commit Build Check passed on.
   # Only for Build Check runs of pushes to this repository (not of PRs, even

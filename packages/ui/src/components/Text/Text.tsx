@@ -38,6 +38,11 @@ const textStyles = cva(['font-sans font-normal transition-all'], {
     underline: {
       true: 'underline',
     },
+    // Figma Text State=Hover: 4px of padding on each side (0/4), the hover
+    // of the Button label; no animation for reduced motion.
+    interactive: {
+      true: 'hover:px-1 motion-reduce:transition-none',
+    },
   },
   defaultVariants: {
     // Figma's Text component defaults to "14 Regular".
@@ -85,6 +90,15 @@ export type TextProps<C extends ElementType = typeof defaultTag> =
        * @default "start"
        */
       align?: 'start' | 'left' | 'center' | 'right' | 'end'
+
+      /**
+       * The Figma Text `State=Hover` on hover: 4px of padding on each side,
+       * as the Button label gets (the text grows by 8px, so give it room).
+       * The padding animates, except for reduced motion. The Figma
+       * `Default` and `Static` states are the text without it.
+       * @default false
+       */
+      interactive?: boolean
     }
 
 /**
@@ -98,6 +112,7 @@ function Typography<C extends ElementType = typeof defaultTag>({
   align,
   italic,
   underline,
+  interactive,
   className,
   children,
   ref,
@@ -111,7 +126,7 @@ function Typography<C extends ElementType = typeof defaultTag>({
   }
 
   const classes = twMerge(
-    textStyles({ size, semibold, align, italic, underline }),
+    textStyles({ size, semibold, align, italic, underline, interactive }),
     className,
   )
 

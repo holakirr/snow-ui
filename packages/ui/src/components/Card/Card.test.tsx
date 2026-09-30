@@ -17,11 +17,38 @@ describe('Card', () => {
     expect(card).not.toHaveAttribute('data-state')
   })
 
+  it('stacks its children like the Figma Card, 4px apart', () => {
+    expect(renderCard()).toHaveClass('flex', 'flex-col', 'gap-1')
+  })
+
+  it('keeps the layout set in className', () => {
+    const { rerender } = render(
+      <Card data-testid="card" className="grid grid-cols-2" />,
+    )
+    const card = screen.getByTestId('card')
+    // A display of yours: no stack, and no gap added to your grid.
+    expect(card).toHaveClass('grid', 'grid-cols-2')
+    expect(card).not.toHaveClass('flex', 'flex-col', 'gap-1')
+
+    rerender(<Card data-testid="card" className="flex flex-col gap-4" />)
+    expect(card).toHaveClass('flex', 'flex-col', 'gap-4')
+    expect(card).not.toHaveClass('gap-1')
+
+    rerender(<Card data-testid="card" className="block md:flex" />)
+    expect(card).not.toHaveClass('flex-col')
+
+    // Other classes keep the stack.
+    rerender(<Card data-testid="card" className="w-60 gap-2" />)
+    expect(card).toHaveClass('flex', 'flex-col', 'gap-2', 'w-60')
+  })
+
   it('renders the dashboard block with variant="block"', () => {
     const card = renderCard({ variant: 'block' })
 
     expect(card).toHaveClass('rounded-20', 'p-6', 'bg-background-2')
     expect(card).not.toHaveClass('rounded-16', 'bg-surface-1')
+    // The block has no layout of its own.
+    expect(card).not.toHaveClass('flex')
   })
 
   it('shows the hover stroke only when interactive', () => {

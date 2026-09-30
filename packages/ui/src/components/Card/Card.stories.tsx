@@ -58,7 +58,7 @@ const Marker = ({ checked }: { checked?: boolean }) => (
 )
 
 export const Default: Story = {
-  args: { className: 'w-[180px] flex flex-col gap-1' },
+  args: { className: 'w-[180px]' },
   render: (args) => (
     <Card {...args}>
       <Rows count={2} />
@@ -71,7 +71,7 @@ export const Count: Story = {
   render: (args) => (
     <div className="flex items-start gap-4">
       {[1, 2, 3, 4].map((count) => (
-        <Card key={count} {...args} className="w-[120px] flex flex-col gap-1">
+        <Card key={count} {...args} className="w-[120px]">
           <Rows count={count} />
         </Card>
       ))}
@@ -95,7 +95,7 @@ export const States: Story = {
           <Typography size={12} className="text-secondary">
             {label}
           </Typography>
-          <Card {...props} className="relative w-[180px] flex flex-col gap-1">
+          <Card {...props} className="relative w-[180px]">
             <Rows count={2} />
             {'marker' in rest && <Marker checked={rest.marker === 'checked'} />}
           </Card>
@@ -132,7 +132,7 @@ export const Selectable: Story = {
                 setValue(plan)
               }
             }}
-            className="relative w-[160px] flex flex-col gap-1"
+            className="relative w-[160px]"
           >
             <Typography semibold>{plan}</Typography>
             <Typography size={12} className="text-secondary">

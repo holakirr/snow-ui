@@ -39,7 +39,7 @@ import { Card } from '@holakirr/snow-ui'
 
 1. **Surface**: a `<div>` with the variant's fill, radius and padding, and `text-black`.
 2. **Stroke** (`interactive` on hover, `bordered`, `selected`): an inset ring, so it doesn't change the card's size (Figma draws strokes inside the frame).
-3. **Content** (`children`): anything. Card adds no layout, so set `flex flex-col gap-…` or a grid on it.
+3. **Content** (`children`): anything. The `default` card stacks it like the Figma Card, a vertical auto-layout 4px apart (`flex flex-col gap-1`); a display in your `className` (`flex`, `grid`, `block`…) replaces that layout, and `gap-…` changes the spacing. `block` adds no layout: set `flex flex-col gap-…` or a grid on it.
 
 ## Variants
 
@@ -111,7 +111,7 @@ Card renders no built-in strings, and its padding is the same on both sides, so 
 - Use `block` for dashboard sections and `default` for small items.
 - Make a clickable card keyboard-reachable, or put the link or button inside it.
 - Pair `selected` with an ARIA state.
-- Set the content's layout (`flex flex-col gap-…`) on the card or inside it.
+- Let a `default` card stack its rows, or set your own layout (`grid`, `flex gap-…`) in `className`; give a `block` card its layout.
 
 </Do>
 <Dont>

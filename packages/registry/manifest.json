@@ -517,6 +517,18 @@
       "docs": "components-icontext"
     },
     {
+      "name": "image",
+      "type": "registry:ui",
+      "title": "Image",
+      "files": ["components/Image/Image.tsx"],
+      "dependencies": [],
+      "registryDependencies": ["snow-core"],
+      "import": "components/Image/Image",
+      "exports": ["Image"],
+      "types": ["ImageProps", "ImageSize"],
+      "docs": "components-image"
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -1310,6 +1322,7 @@
         "utils/env.ts",
         "utils/form-field.tsx",
         "utils/keyboard.ts",
+        "utils/radio-mark.tsx",
         "utils/slot.ts",
         "utils/token-scales.generated.ts",
         "utils/tw-merge.ts"
@@ -1371,6 +1384,7 @@
         "group",
         "icon-box",
         "icon-text",
+        "image",
         "checkbox",
         "input",
         "input-small",

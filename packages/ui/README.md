@@ -170,7 +170,7 @@ With more contrast the 0.5px strokes are 1px and the text fields' focus stroke 2
 
 ## Components
 
-- **Base:** `Typography`, `KBD`, `IconBox`, `IconText`, `Group`, `Strip`, `Separator`, `Badge`, `Tag`, `Chip`, `TextStrip`, `Link`, `Avatar`, `AvatarGroup`, `Skeleton`.
+- **Base:** `Typography`, `KBD`, `IconBox`, `IconText`, `Group`, `Strip`, `Separator`, `Badge`, `Tag`, `Chip`, `TextStrip`, `Link`, `Avatar`, `AvatarGroup`, `Image`, `Skeleton`.
 - **Controls:** `Button`, `Input`, `InputSmall`, `Search`, `Textarea`, `Checkbox`, `RadioGroup`, `Switch`, `Toggle`, `ToggleGroup`, `Select`, `Combobox`, `MultiSelect`, `DatePicker`, `DateRangePicker`, `Slider`, `Label`, `Form*`.
 - **Overlays:** `Dialog`, `Sheet`, `Popover`, `DropdownMenu`, `ContextMenu`, `Tooltip`, `Toaster`, `CommandPalette`, `AlertDialog`.
 - **Data and navigation:** `Card`, `Table`, `Tabs`, `Accordion`, `Breadcrumb`, `Pagination`, `Sidebar`, `ListItem`, `Calendar`, `Scheduler`.

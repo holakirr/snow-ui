@@ -120,6 +120,7 @@ type RefTargets = {
   Group: HTMLDivElement
   IconBox: HTMLSpanElement
   IconText: HTMLElement
+  Image: HTMLSpanElement
   Input: HTMLInputElement
   InputSmall: HTMLInputElement
   KBD: HTMLElement

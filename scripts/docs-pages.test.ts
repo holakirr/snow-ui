@@ -31,6 +31,7 @@ const STATIC_PAGES = new Set([
   'Group',
   'IconBox',
   'Icons',
+  'Image',
   'KBD',
   'Label',
   'Progress',

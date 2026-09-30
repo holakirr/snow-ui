@@ -170,6 +170,9 @@ export const RangeWithValues: Story = {
     await expect(maximum).toHaveAttribute('aria-valuetext', '$380')
 
     const track = rootOf(minimum).firstElementChild
+    // The layout requests Inter; measure once it has replaced the fallback.
+    track?.getBoundingClientRect()
+    await document.fonts.ready
     const before = track?.getBoundingClientRect().width
     minimum.focus()
     await userEvent.keyboard('{Home}')

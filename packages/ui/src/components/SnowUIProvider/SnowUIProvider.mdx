@@ -111,7 +111,7 @@ The layout and the `rtl:` styles follow the DOM, not the provider: set the same 
 ## Hooks
 
 - `useMessages()` returns the nearest provider's messages (`defaultMessages` without one). Use it to label your own components with the library's strings.
-- `useSnowUI()` returns `messages`, `locale`, `dir`, `theme` and `contrast`. All but `messages` are `undefined` unless a provider (or a `ThemeScope`) sets them.
+- `useSnowUI()` returns `messages`, `locale`, `dir`, `theme`, `contrast` and `weekStartsOn`. All but `messages` are `undefined` unless a provider (or a `ThemeScope`) sets them.
 
 ```tsx
 import { ArrowRightIcon } from '@holakirr/snow-ui-icons'

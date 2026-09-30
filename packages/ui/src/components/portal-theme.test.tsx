@@ -284,9 +284,18 @@ describe('portalled content in a contrast scope', () => {
     render(
       <SnowUIProvider contrast="more">
         <Combobox aria-label="Fruit" options={options} defaultOpen />
+        <MultiSelect aria-label="Fruits" options={options} defaultOpen />
         <DatePicker
           aria-label="Due"
           defaultValue={new Date(2025, 0, 20)}
+          defaultOpen
+        />
+        <DateRangePicker
+          aria-label="Stay"
+          defaultValue={{
+            from: new Date(2025, 0, 13),
+            to: new Date(2025, 0, 16),
+          }}
           defaultOpen
         />
         <Select defaultOpen defaultValue="a">
@@ -304,7 +313,7 @@ describe('portalled content in a contrast scope', () => {
       ...screen.getAllByRole('listbox', { hidden: true }),
       ...screen.getAllByRole('dialog', { hidden: true }),
     ]
-    expect(popups.length).toBeGreaterThanOrEqual(3)
+    expect(popups.length).toBeGreaterThanOrEqual(5)
     for (const popup of popups) expect(contrastOf(popup)).toBe('more')
   })
 

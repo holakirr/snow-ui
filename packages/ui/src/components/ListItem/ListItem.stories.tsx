@@ -2,6 +2,7 @@ import { BroadcastIcon, BugBeetleIcon, UserIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ReactNode } from 'react'
 import { Avatar, AvatarFallback } from '../Avatar'
+import { Card } from '../Card'
 import { IconBox } from '../IconBox'
 import { Typography } from '../Text'
 import { ListItem } from './ListItem'
@@ -27,6 +28,12 @@ const meta = {
   component: ListItem,
   parameters: {
     layout: 'centered',
+    // The Figma Notifications list; Contacts and Activities are in the
+    // DashboardLists story.
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33534-151148',
+    },
     docs: {
       description: {
         component:
@@ -98,12 +105,15 @@ const Section = ({
   title: string
   children: ReactNode
 }) => (
-  <section aria-label={title} className="flex w-62 flex-col gap-1">
-    <Typography asChild size={14} className="px-1 py-2 text-black">
-      <h2>{title}</h2>
-    </Typography>
-    <ul className="flex flex-col gap-1">{children}</ul>
-  </section>
+  // Figma: each list is a 248px card with a 14 Semibold title.
+  <Card className="w-62">
+    <section aria-label={title} className="flex flex-col gap-1">
+      <Typography asChild size={14} semibold className="px-1 py-2">
+        <h2>{title}</h2>
+      </Typography>
+      <ul className="flex flex-col gap-1">{children}</ul>
+    </section>
+  </Card>
 )
 
 const notifications = [
@@ -199,7 +209,7 @@ const Lists = () => (
     </Section>
 
     <Section title="Activities">
-      {activities.map((item, index) => (
+      {activities.map((item) => (
         <ListItem
           key={item.time}
           asChild
@@ -207,17 +217,8 @@ const Lists = () => (
           icon={avatar(item.initials, `${item.tint} text-static-black`)}
           title={item.title}
           description={item.time}
-          className="relative"
         >
-          <li>
-            {/* The Figma timeline: a Black/10% strip between the avatars. */}
-            {index < activities.length - 1 && (
-              <span
-                aria-hidden
-                className="absolute top-[39px] start-[19.5px] h-[17px] w-px bg-black-10"
-              />
-            )}
-          </li>
+          <li />
         </ListItem>
       ))}
     </Section>
@@ -238,12 +239,34 @@ const Lists = () => (
   </div>
 )
 
-/** The Figma RightSidebar lists: Notifications, Activities and Contacts. */
+/**
+ * The Figma Notifications, Activities and Contacts lists, as the kit's
+ * components overview shows them: cards with a semibold title.
+ */
 export const DashboardLists: Story = {
   render: () => <Lists />,
+  parameters: {
+    design: [
+      {
+        name: 'Notifications',
+        type: 'figma',
+        url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33534-151148',
+      },
+      {
+        name: 'Contacts',
+        type: 'figma',
+        url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33534-138393',
+      },
+      {
+        name: 'Activities (components overview)',
+        type: 'figma',
+        url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33320-7465',
+      },
+    ],
+  },
 }
 
 export const DashboardListsDark: Story = {
-  render: () => <Lists />,
+  ...DashboardLists,
   globals: { theme: 'dark' },
 }

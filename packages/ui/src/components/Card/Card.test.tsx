@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { Card } from './Card'
@@ -51,6 +51,39 @@ describe('Card', () => {
     const card = renderCard({ bordered: true })
 
     expect(card).toHaveClass('inset-ring-[0.5px]', 'inset-ring-black-40')
+  })
+
+  it('shows the selection mark with `marker`, checked when selected', () => {
+    let card = renderCard({ marker: true })
+    let mark = card.querySelector('[data-slot="radio-mark"]') as HTMLElement
+
+    // Clear of the mark: the padding plus the 20px mark and a 4px gap.
+    expect(card).toHaveClass('group', 'relative', 'pe-10')
+    expect(mark).toHaveAttribute('aria-hidden', 'true')
+    expect(mark).toHaveAttribute('data-state', 'unchecked')
+    expect(mark).toHaveClass(
+      'absolute',
+      'top-3',
+      'end-4',
+      'size-5',
+      // Figma: an empty mark only on hover (and keyboard focus here).
+      'opacity-0',
+      'group-hover:opacity-100',
+      'group-has-focus-visible:opacity-100',
+    )
+    cleanup()
+
+    card = renderCard({ marker: true, selected: true, variant: 'block' })
+    mark = card.querySelector('[data-slot="radio-mark"]') as HTMLElement
+    expect(card).toHaveClass('pe-12')
+    expect(mark).toHaveAttribute('data-state', 'checked')
+    expect(mark).toHaveClass('top-6', 'end-6', 'inset-ring-[6px]')
+    expect(mark).not.toHaveClass('opacity-0')
+  })
+
+  it('has no mark without `marker`', () => {
+    const card = renderCard({ selected: true })
+    expect(card.querySelector('[data-slot="radio-mark"]')).toBeNull()
   })
 
   it('lets className override the defaults', () => {

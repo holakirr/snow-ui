@@ -112,13 +112,17 @@ describe('index.css (precompiled)', () => {
   })
 
   it('has the theme utilities no component uses, for your own markup', () => {
-    // `scrollbar-snow`: the WebKit thumb and the standard thin scrollbar,
-    // outside forced-colors mode.
+    // `scrollbar-snow`: outside forced-colors mode, the thumb's colour and
+    // inset (more contrast at rest, `control-border` and none on hover), the
+    // WebKit thumb and the standard thin scrollbar.
     expect(read('index.css')).toMatch(
-      /@media not all and \(forced-colors:\s*active\)\{@supports selector\(::-webkit-scrollbar\)\{\.scrollbar-snow::-webkit-scrollbar\{/,
+      /@media not all and \(forced-colors:\s*active\)\{\.scrollbar-snow\{--scrollbar-snow-more:var\(--contrast-more\) var\(--color-control-border\);--scrollbar-snow-thumb:var\(--scrollbar-snow-more,var\(--color-black-10\)\);--scrollbar-snow-inset:2px\}\.scrollbar-snow:hover\{--scrollbar-snow-thumb:var\(--color-control-border\);--scrollbar-snow-inset:0px\}@supports selector\(::-webkit-scrollbar\)\{\.scrollbar-snow::-webkit-scrollbar\{/,
     )
     expect(read('index.css')).toMatch(
-      /\.scrollbar-snow\{scrollbar-width:thin;scrollbar-color:var\(--color-control-border\) transparent\}/,
+      /\.scrollbar-snow::-webkit-scrollbar-thumb\{border:var\(--scrollbar-snow-inset\) solid transparent;background:var\(--scrollbar-snow-thumb\) padding-box;/,
+    )
+    expect(read('index.css')).toMatch(
+      /\.scrollbar-snow\{scrollbar-width:thin;scrollbar-color:var\(--scrollbar-snow-thumb\) transparent\}/,
     )
   })
 })

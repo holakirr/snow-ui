@@ -79,7 +79,12 @@ const Separator: FC<SeparatorProps> = ({
   ...props
 }) => {
   const horizontal = orientation === 'horizontal'
-  const lines = Math.min(8, Math.max(1, Math.floor(count))) as SeparatorCount
+  // An untyped count (JavaScript, a parsed string) is clamped to 1–8, and
+  // anything that isn't a number (NaN) is one line.
+  const lines = Math.min(
+    8,
+    Math.max(1, Math.floor(count) || 1),
+  ) as SeparatorCount
   const withArrow = Boolean(arrow) && horizontal
 
   if (lines === 1 && !withArrow) {

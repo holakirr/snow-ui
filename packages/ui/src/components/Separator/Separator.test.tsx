@@ -81,6 +81,25 @@ describe('Separator', () => {
   })
 
   it.each([
+    [0, 1],
+    [-3, 1],
+    [2.7, 2],
+    [Number.NaN, 1],
+  ])('draws %s lines as %i', (count, drawn) => {
+    render(<Separator data-testid="separator" count={count as 1} />)
+    const separator = screen.getByTestId('separator')
+
+    // One line is the plain divider: no `data-count`, no line children.
+    if (drawn === 1) {
+      expect(separator).not.toHaveAttribute('data-count')
+      expect(separator).toHaveClass('h-px', 'w-full')
+    } else {
+      expect(separator).toHaveAttribute('data-count', String(drawn))
+      expect(linesOf(separator)).toHaveLength(drawn)
+    }
+  })
+
+  it.each([
     ['end', ['order-last', 'rtl:-scale-x-100']],
     ['start', ['order-first', '-scale-x-100', 'rtl:scale-x-100']],
     ['right', ['order-last', 'rtl:order-first']],

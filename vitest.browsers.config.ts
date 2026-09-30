@@ -26,9 +26,17 @@ import { storybookProject } from './vitest.config'
 // 36617263390, "The webkit page crashed"). The CI job also splits WebKit in
 // two shards, each in a fresh browser, and retries a shard whose page
 // crashed; a retry doesn't help a crashed page, which fails the whole run.
+//
+// Vitest runs projects with different `maxWorkers` together only in
+// different groups (`sequence.groupOrder`), one group after the other, and
+// throws otherwise. So `bun run test:storybook:browsers` runs Firefox, then
+// WebKit; CI runs one project per job, where the order doesn't apply.
 const crossBrowser = (
   project: TestProjectInlineConfiguration,
-  options: { maxWorkers?: number } = {},
+  options: Pick<
+    NonNullable<TestProjectInlineConfiguration['test']>,
+    'maxWorkers' | 'sequence'
+  > = {},
 ): TestProjectInlineConfiguration => ({
   ...project,
   test: { ...project.test, ...options, retry: process.env.CI ? 1 : 0 },
@@ -40,6 +48,7 @@ export default defineConfig({
       crossBrowser(storybookProject('storybook-firefox', 'light', 'firefox')),
       crossBrowser(storybookProject('storybook-webkit', 'light', 'webkit'), {
         maxWorkers: 2,
+        sequence: { groupOrder: 1 },
       }),
     ],
   },

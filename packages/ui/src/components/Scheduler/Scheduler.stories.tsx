@@ -9,6 +9,7 @@ import {
 import { useState } from 'react'
 import { expect, fn, waitFor, within } from 'storybook/test'
 
+import { expectClosed } from '../../test/animations'
 import type { CalendarEvent } from '../../types'
 import { Button } from '../Button'
 import { DropdownMenuItem } from '../DropdownMenu'
@@ -236,8 +237,9 @@ export const WithEvents: Story = {
       await expect(args.onEventClick).toHaveBeenLastCalledWith(
         expect.objectContaining({ title: 'Lunch Break' }),
       )
-      await page.findByRole('menu')
+      const menu = await page.findByRole('menu')
       await userEvent.keyboard('{Escape}')
+      await expectClosed(menu)
       await waitFor(() =>
         expect(page.queryByRole('menu')).not.toBeInTheDocument(),
       )

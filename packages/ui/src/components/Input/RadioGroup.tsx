@@ -27,12 +27,13 @@ const RadioGroupItem: FC<RadioGroupItemProps> = ({ className, ...props }) => (
     className={twMerge(
       'peer group aspect-square size-7 shrink-0 cursor-pointer rounded-full bg-background-3 text-black inset-ring-2 inset-ring-control-border transition-all',
       'enabled:hover:bg-black/8 enabled:hover:inset-ring-control-border-strong',
-      // Invalid (an `aria-invalid` group, no Figma state): Secondary/Red
-      // rings, hovered or not.
+      // Invalid (an `aria-invalid` group): Secondary/Red rings, hovered or
+      // not, as the kit's Error stroke on text fields.
       'group-aria-invalid/radio-group:inset-ring-control-border-invalid enabled:hover:group-aria-invalid/radio-group:inset-ring-control-border-invalid',
       'focus-ring',
-      // Disabled (no Figma state): a Black/4% circle with a Black/10% ring
-      // and a Black/20% dot. Visible in both modes.
+      // Disabled: a Black/4% circle with a Black/10% ring and a Black/20%
+      // dot. Visible in both modes. The kit dims the whole radio to 20% with
+      // the arrow cursor: planned for 6.0.
       'disabled:cursor-not-allowed disabled:bg-black-4 disabled:inset-ring-black-10',
       className,
     )}

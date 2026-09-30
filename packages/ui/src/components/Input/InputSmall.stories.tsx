@@ -49,7 +49,7 @@ export const Outline: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (no Figma state). A 1px Secondary/Red stroke on both variants. Pair it with the error text: see Form.
+ * error (the kit's Error state, without its Warning icon yet). A 1px Secondary/Red stroke on both variants. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {

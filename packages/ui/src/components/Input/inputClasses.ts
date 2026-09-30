@@ -11,7 +11,12 @@
 export const basicInputClasses =
   'peer rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all placeholder:text-placeholder hover:inset-ring-control-border-strong contrast-more:inset-ring-1'
 
-/** The disabled look (the design has no Disabled state). */
+/**
+ * The disabled look: Black/4% fill, no stroke, Black/20% text, as in the
+ * kit's Forms guidance. The kit's Component state draws Disabled as the
+ * whole field at 20% opacity with the arrow cursor; that look is planned for
+ * 6.0, and 5.x keeps this one and the not-allowed cursor.
+ */
 export const disabledInputClasses =
   'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0'
 
@@ -33,8 +38,10 @@ export const staticInputClasses =
 /**
  * Invalid, while the field has `aria-invalid="true"` (`FormControl` sets it):
  * a 1px `control-border-invalid` stroke in every state: Secondary/Red (3.36:1
- * on white), `red-text` with more contrast. The design has no error state;
- * the error text is the `FormMessage`.
+ * on white), `red-text` with more contrast: the kit's Error stroke. The kit
+ * also puts a 16px `Warning` icon at the end of the field and keeps the
+ * title grey; here there is no icon yet, and the error text is the
+ * `FormMessage` (an invalid `FormLabel` turns `red-text`).
  *
  * The read-only states repeat it, because the Static ones (`read-only:hover:`)
  * would outweigh `aria-invalid:`.

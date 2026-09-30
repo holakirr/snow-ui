@@ -75,7 +75,7 @@ export const WithCount: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (no Figma state). The Input stroke in Secondary/Red, 1px. Pair it with the error text: see Form.
+ * error (the kit's Error state, without its Warning icon yet). The Input stroke in Secondary/Red, 1px. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {

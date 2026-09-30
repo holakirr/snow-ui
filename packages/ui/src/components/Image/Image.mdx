@@ -34,7 +34,7 @@ import { Image } from '@holakirr/snow-ui'
 
 ## Anatomy
 
-1. **Frame**: a `<span>` of `size`, on a Black/4% placeholder, with rounded corners (about 30% of the size; the kit's squircle where the browser supports `corner-shape`). It crops its content to its corners.
+1. **Frame**: a `<span>` of `size`, on a Black/4% placeholder, with rounded corners (the kit's radius for the size, 4 to 20, in the table below; the kit's squircle where the browser supports `corner-shape`). It crops its content to its corners.
 2. **Content** (the children): your `<img>`, `<picture>`, framework image or icon, stretched to the frame (`object-fit: cover`). With `icon` it sits inset on the tile.
 3. **Option mark** (`option`, optional): the kit's RadioAlt on the top end corner, `aria-hidden`.
 
@@ -47,10 +47,10 @@ import { Image } from '@holakirr/snow-ui'
 | 12, 16, 20 | 4 | 2 | 8 (10 at 20), in the corner |
 | 24, 28, 32 | 8 | 4 | 10–12, 2–4 from the corner |
 | 40 (default), 48 | 12 | 6–8 | 12–16, 4 from the corner |
-| 56, 64 | 16 | 8–10 | 16–20, 6 from the corner |
-| 72 | 20 | 12 | 20, 8 from the corner |
-| 80 | 24 | 12 | 20, 8 from the corner |
-| `free` | 16 | 12 | 20, 8 from the corner |
+| 56 | 16 | 8 | 16, 6 from the corner |
+| 64 | 20 | 10 | 20, 6 from the corner |
+| 72, 80 | 20 | 12 | 20, 8 from the corner |
+| `free` | 20 | 12 | 20, 8 from the corner |
 
 With `free`, set the size with a class: `className="h-24 w-40"`.
 

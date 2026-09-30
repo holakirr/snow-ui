@@ -421,12 +421,13 @@ export const DateField = ({
 
   return (
     // The area around the segments activates the whole field (Figma:
-    // "Input status"); the segments open their views.
+    // "Input status"); the segments open their views. 56px high with its
+    // 0.5px line, so the panel is the kit's 360×360 with a five-week month.
     // biome-ignore lint/a11y/noStaticElementInteractions: a pointer shortcut; the segments are the keyboard targets
     <div
       ref={container}
       data-slot="date-picker-top-area"
-      className="flex min-h-13 items-center gap-1 border-b-[0.5px] border-black-10 px-4 py-3.5 text-14"
+      className="flex min-h-14 items-center gap-1 border-b-[0.5px] border-black-10 px-4 py-3.5 text-14"
       onPointerDown={(event: PointerEvent<HTMLDivElement>) => {
         if ((event.target as Element).closest('[role="spinbutton"]')) return
         event.preventDefault()

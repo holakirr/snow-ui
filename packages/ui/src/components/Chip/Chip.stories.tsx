@@ -33,7 +33,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The Figma "Chip": a short coloured label in seven colours, tinted (`background`, H 20, padding 4/2, radius 4) or a dot and coloured text (H 16), in 12/16 or, `big`, 14/20. The text mixes the Secondary colour with 45% of black (white in dark mode), so it reads at 4.5:1 or more.',
+          'The Figma "Chip": a short coloured label in seven colours, tinted (`background`, H 20, padding 4/2, radius 4; `big`, a 28px pill) or a dot and coloured text (H 16), in 12/16 or, `big`, 14/20. The text mixes the Secondary colour with 45% of black (white in dark mode), so it reads at 4.5:1 or more.',
       },
     },
   },
@@ -102,7 +102,15 @@ export const AllVariants: Story = {
   play: async ({ canvas }) => {
     const labels = canvas.getAllByText('Label')
     // Rows of seven: dot, background, big dot, big background.
-    const [dot, bigDot] = [labels[0], labels[14]]
+    const [dot, tinted, bigDot, bigTinted] = [0, 7, 14, 21].map(
+      (index) => labels[index],
+    )
+    // Figma: H 20, radius 4 with the tint; Big, a pill: H 28, radius 80.
+    await expect(tinted.getBoundingClientRect().height).toBe(20)
+    await expect(getComputedStyle(tinted).borderTopLeftRadius).toBe('4px')
+    await expect(bigTinted.getBoundingClientRect().height).toBe(28)
+    await expect(getComputedStyle(bigTinted).borderTopLeftRadius).toBe('80px')
+    await expect(getComputedStyle(bigTinted).paddingInlineStart).toBe('12px')
     // Figma: H 16 with the dot in a 12px box; Big, H 20 with a 16px ring.
     await expect(dot.getBoundingClientRect().height).toBe(16)
     await expect(

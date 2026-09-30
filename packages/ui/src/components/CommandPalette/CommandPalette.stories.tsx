@@ -2,6 +2,7 @@ import { SearchIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type ComponentProps, useEffect, useState } from 'react'
 import { expect, fn, waitFor, within } from 'storybook/test'
+import { expectClosed } from '../../test/animations'
 import { Avatar, AvatarFallback } from '../Avatar'
 import { Button } from '../Button'
 import { IconBox } from '../IconBox'
@@ -174,11 +175,13 @@ export const Default: Story = {
     })
 
     await step('Enter selects it and closes the palette', async () => {
+      const dialog = page.getByRole('dialog', { name: 'Search' })
       await userEvent.keyboard('{Enter}')
       await expect(args.onSelect).toHaveBeenCalledWith(
         expect.objectContaining({ id: 'tokens', label: 'Design tokens' }),
         expect.anything(),
       )
+      await expectClosed(dialog)
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )
@@ -187,13 +190,14 @@ export const Default: Story = {
 
     await step('the hotkey opens it, Escape closes it', async () => {
       await userEvent.keyboard('/')
-      await page.findByRole('dialog', { name: 'Search' })
+      const dialog = await page.findByRole('dialog', { name: 'Search' })
       await userEvent.keyboard('{ArrowDown}')
       await expect(page.getAllByRole('option')[1]).toHaveAttribute(
         'aria-selected',
         'true',
       )
       await userEvent.keyboard('{Escape}')
+      await expectClosed(dialog)
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )

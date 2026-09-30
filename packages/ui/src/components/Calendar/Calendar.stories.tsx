@@ -37,6 +37,21 @@ type Story = StoryObj<typeof Calendar>
 const FIGMA_TODAY = new Date(2023, 1, 10)
 const FIGMA_MONTH = new Date(2023, 1, 1)
 
+/**
+ * Whether today's dot (the `::after` of its day button) shows: where the
+ * indigo fill doesn't tell today apart, in dark mode, while selected and with
+ * forced colours; not in the light theme, as in the kit.
+ */
+const todayDotShown = (canvasElement: HTMLElement) => {
+  const today = canvasElement.querySelector<HTMLElement>(
+    '[data-today] > button',
+  )
+  if (!today) throw new Error('No today in the calendar')
+  return getComputedStyle(today, '::after').display !== 'none'
+}
+const isDark = (canvasElement: HTMLElement) =>
+  canvasElement.closest('[data-theme]')?.getAttribute('data-theme') === 'dark'
+
 /** The Figma top row: month / day / year segments and "/" (Figma: Black/20%; `text-secondary` here). */
 const DateDisplay = ({ date }: { date?: Date }) => {
   const parts = date
@@ -180,6 +195,36 @@ export const States: Story = {
         defaultMonth={FIGMA_MONTH}
       />
     )
+  },
+  play: async ({ canvasElement }) => {
+    // Today (the 10th) is the indigo fill alone in the light theme; in dark
+    // mode, where the selected 17th is indigo too, it also has the dot.
+    await expect(todayDotShown(canvasElement)).toBe(
+      isDark(canvasElement) || matchMedia('(forced-colors: active)').matches,
+    )
+  },
+}
+
+/**
+ * Today selected: the Primary fill hides the indigo, so the dot under the
+ * number marks today in both themes.
+ */
+export const TodaySelected: Story = {
+  render: () => {
+    const [date, setDate] = useState<Date | undefined>(FIGMA_TODAY)
+
+    return (
+      <Calendar
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        today={FIGMA_TODAY}
+        defaultMonth={FIGMA_MONTH}
+      />
+    )
+  },
+  play: async ({ canvasElement }) => {
+    await expect(todayDotShown(canvasElement)).toBe(true)
   },
 }
 

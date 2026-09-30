@@ -66,8 +66,8 @@ The number of values in `value` or `defaultValue` picks the look: `[28]` is the 
 - **Active** (the Figma "Active" property): while the pointer is over the bar or drags it, and while its thumb has keyboard focus, the handle line shows and the value turns `black-80` (White/80% on the fill). The line fades in over 150ms, at once with reduced motion.
 - **Keyboard focus:** the bar gets the `focus-ring` look (the Figma "Focus" ring plus a 2px `black-80` outline) while its thumb has keyboard focus; a range's thumbs get `focus-ring` themselves.
 - **Hover:** a pointer cursor on the bar and a grab cursor on the thumbs (grabbing while you drag).
-- **Disabled** (`disabled`): 40% opacity and a not-allowed cursor, without the Active state. The thumbs leave the tab order.
-- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): a 1px `control-border-invalid` stroke inside the bar, over the fill, or red borders on the range's thumbs (no Figma state).
+- **Disabled** (`disabled`): 40% opacity and a not-allowed cursor, without the Active state (the kit: 20% with the default arrow cursor, planned for 6.0). The thumbs leave the tab order.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): a 1px `control-border-invalid` stroke inside the bar, over the fill, or red borders on the range's thumbs (the kit draws its Error state on text fields; this extends their red stroke).
 
 <Canvas of={SliderStories.Active} />
 

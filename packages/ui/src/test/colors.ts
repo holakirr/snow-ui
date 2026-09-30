@@ -3,6 +3,8 @@
  * (Chromium, with the compiled Tailwind CSS). Not part of the package.
  */
 
+import { animationsEnded } from './animations'
+
 /** The computed `color` of an element with `className`, inside `container`. */
 export const colorOf = (className: string, container: HTMLElement): string => {
   const probe = container.ownerDocument.createElement('span')
@@ -13,24 +15,27 @@ export const colorOf = (className: string, container: HTMLElement): string => {
   return color
 }
 
-/** The computed `color` of `element` once its CSS transitions have ended. */
+/**
+ * The computed `color` of `element` once the CSS transitions on it and inside
+ * it have ended (see `animationsEnded`).
+ */
 export const settledColor = async (element: HTMLElement): Promise<string> => {
-  await Promise.all(element.getAnimations().map(({ finished }) => finished))
+  await animationsEnded(element)
   return getComputedStyle(element).color
 }
 
 /**
  * Whether `element` has an inset ring (Tailwind `inset-ring-*`, a stroke) of
  * `width` in the colour of `colorClass` (e.g. `text-control-border-invalid`),
- * once its CSS transitions have ended. The colour is resolved next to the
- * element, in its theme and contrast scopes.
+ * once the CSS transitions on it and inside it have ended. The colour is
+ * resolved next to the element, in its theme and contrast scopes.
  */
 export const hasInsetRing = async (
   element: Element,
   colorClass: string,
   width: string,
 ): Promise<boolean> => {
-  await Promise.all(element.getAnimations().map(({ finished }) => finished))
+  await animationsEnded(element)
   const color = colorOf(
     colorClass,
     element.parentElement ?? element.ownerDocument.body,

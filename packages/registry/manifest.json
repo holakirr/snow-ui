@@ -627,9 +627,12 @@
       "name": "textarea",
       "type": "registry:ui",
       "title": "Textarea",
-      "files": ["components/Input/Textarea.tsx"],
-      "dependencies": [],
-      "registryDependencies": ["input", "snow-core"],
+      "files": [
+        "components/Input/Textarea.tsx",
+        "components/Input/TextareaCount.tsx"
+      ],
+      "dependencies": ["@radix-ui/react-compose-refs"],
+      "registryDependencies": ["input", "snow-core", "snow-ui-provider"],
       "import": "components/Input/Textarea",
       "exports": ["Textarea"],
       "types": ["TextareaProps"],

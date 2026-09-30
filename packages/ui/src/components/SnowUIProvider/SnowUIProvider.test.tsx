@@ -559,6 +559,7 @@ describe('SnowUIProvider', () => {
       datePicker: _datePicker,
       progress: _progress,
       spinner: _spinner,
+      textarea: _textarea,
       ...v50
     } = defaultMessages
     const translation: Messages = { ...v50, dialog: { close: 'Schließen' } }
@@ -582,6 +583,7 @@ describe('SnowUIProvider', () => {
     expect(seen?.datePicker.placeholder).toBe('Pick a date')
     expect(seen?.progress.value(1, 4)).toBe('25%')
     expect(seen?.spinner.label).toBe('Loading')
+    expect(seen?.textarea.count(3, 10)).toBe('3 of 10 characters')
   })
 
   it('keeps the base message for an override set to undefined', () => {

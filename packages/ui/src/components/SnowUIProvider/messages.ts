@@ -193,6 +193,14 @@ export type Messages = {
     /** The remove button of a `Tag`. */
     remove: (label: string) => string
   }
+  textarea?: {
+    /**
+     * The screen-reader text of a `Textarea`'s character counter, read with
+     * the field: "12 of 200 characters", or "12 characters" without a
+     * `maxLength`.
+     */
+    count: (length: number, maxLength?: number) => string
+  }
   toast: {
     /** The close button of a toast. */
     close: string
@@ -310,6 +318,12 @@ export const defaultMessages: Required<Messages> = {
   },
   tag: {
     remove: (label) => `Remove tag ${label}`,
+  },
+  textarea: {
+    count: (length, maxLength) =>
+      maxLength === undefined
+        ? `${length} ${length === 1 ? 'character' : 'characters'}`
+        : `${length} of ${maxLength} characters`,
   },
   toast: {
     close: 'Close',

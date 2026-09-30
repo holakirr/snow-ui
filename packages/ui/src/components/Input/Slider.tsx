@@ -2,9 +2,18 @@
 
 import { useDirection } from '@radix-ui/react-direction'
 import * as SliderPrimitive from '@radix-ui/react-slider'
-import { type ComponentProps, type FC, type ReactNode, useState } from 'react'
+import {
+  type ComponentProps,
+  type FC,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import { isDevelopment } from '../../utils/env'
 import { twMerge } from '../../utils/tw-merge'
 import { type Messages, useMessages } from '../SnowUIProvider'
+import { sliderValueText } from '../SnowUIProvider/messages'
 
 export type SliderProps = ComponentProps<typeof SliderPrimitive.Root> & {
   /**
@@ -60,10 +69,6 @@ const percentOf = (value: number, min: number, max: number): number =>
     ? Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100))
     : 0
 
-/** The English `messages.slider.value`, for a translation without it. */
-const percentText = (value: number, min: number, max: number): string =>
-  `${Math.round(percentOf(value, min, max))}%`
-
 /*
  * The Figma "Active" state of the single-value bar (the handle line, the
  * darker value): while the pointer is over it or drags it, and while its
@@ -92,14 +97,24 @@ const BarLayer: FC<{
   return (
     <span
       aria-hidden
-      className="pointer-events-none absolute inset-0 flex items-center gap-2 px-2 text-12"
+      className={twMerge(
+        'pointer-events-none absolute inset-0 flex items-center gap-2 px-2 text-12',
+        // Forced colours (Windows High Contrast) drop the fill's background:
+        // the fill is Highlight there, its layer HighlightText.
+        fill && 'forced-colors:forced-color-adjust-none',
+      )}
       style={clip ? { clipPath: clip } : undefined}
     >
       {label ? (
         // Figma: Static White on the fill; the per-mode `white` keeps it
         // readable on the dark-mode fill, which is white.
         <span
-          className={twMerge('truncate', fill ? 'text-white' : 'text-black')}
+          className={twMerge(
+            'truncate',
+            fill
+              ? 'text-white forced-colors:text-[HighlightText]'
+              : 'text-black',
+          )}
         >
           {label}
         </span>
@@ -108,6 +123,7 @@ const BarLayer: FC<{
         <span
           className={twMerge(
             'ms-auto shrink-0 tabular-nums',
+            fill && 'forced-colors:text-[HighlightText]!',
             // Figma: Black/20% (Black/40% active) and White/40% on the fill,
             // 1.6:1 and 3.66:1; text needs 4.5:1 (WCAG 1.4.3).
             fill
@@ -123,7 +139,9 @@ const BarLayer: FC<{
       <span
         className={twMerge(
           'absolute top-1/2 h-2 w-0.5 -translate-y-1/2 rounded-full',
-          fill ? 'bg-white' : 'bg-black',
+          fill
+            ? 'bg-white forced-colors:bg-[HighlightText]'
+            : 'bg-black forced-colors:forced-color-adjust-none forced-colors:bg-[CanvasText]',
           activeLine,
         )}
         style={{
@@ -138,7 +156,8 @@ const BarLayer: FC<{
  * The single-value bar (Figma "Slider2"): the Black/4% track, the black
  * fill (Radix's Range, rounded at both ends) and the two content layers.
  * The last layer draws the invalid stroke and, with more contrast, the
- * bar's `control-border` boundary, over the fill.
+ * bar's `control-border` boundary, over the fill; with forced colours, a
+ * border (the bar's Black/4% background is dropped there).
  */
 const BarTrack: FC<{
   label?: string
@@ -150,7 +169,7 @@ const BarTrack: FC<{
   return (
     <SliderPrimitive.Track className="relative h-full w-full grow overflow-hidden rounded-8 bg-black-4">
       <BarLayer tone="track" {...layer} />
-      <SliderPrimitive.Range className="absolute inset-y-0 rounded-8 bg-black" />
+      <SliderPrimitive.Range className="absolute inset-y-0 rounded-8 bg-black forced-colors:bg-[Highlight] forced-colors:forced-color-adjust-none" />
       <BarLayer
         tone="fill"
         {...layer}
@@ -162,7 +181,7 @@ const BarTrack: FC<{
       />
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-8 inset-ring-control-border contrast-more:inset-ring group-data-invalid/slider:inset-ring group-data-invalid/slider:inset-ring-control-border-invalid"
+        className="pointer-events-none absolute inset-0 rounded-8 inset-ring-control-border contrast-more:inset-ring group-data-invalid/slider:inset-ring group-data-invalid/slider:inset-ring-control-border-invalid forced-colors:border"
       />
     </SliderPrimitive.Track>
   )
@@ -241,6 +260,21 @@ const Slider: FC<SliderProps> = ({
     if (valueProp === undefined) setOwnValues(next)
     onValueChange?.(next)
   }
+  // Radix always gets a controlled value now, so the warning it gave for a
+  // slider that switches between controlled and uncontrolled is ours.
+  const controlled = valueProp !== undefined
+  const wasControlled = useRef(controlled)
+  useEffect(() => {
+    if (wasControlled.current !== controlled && isDevelopment()) {
+      const [from, to] = controlled
+        ? ['uncontrolled', 'controlled']
+        : ['controlled', 'uncontrolled']
+      console.warn(
+        `Slider is changing from ${from} to ${to}. Pass \`value\` for the slider's whole life, or \`defaultValue\` only.`,
+      )
+    }
+    wasControlled.current = controlled
+  }, [controlled])
 
   const invalid = ariaInvalid === true || ariaInvalid === 'true'
   const range = values.length > 1
@@ -249,7 +283,8 @@ const Slider: FC<SliderProps> = ({
   const fromLeft = (direction === 'ltr') !== inverted
   const format =
     valueFormatter ??
-    ((value: number) => (messages.slider.value ?? percentText)(value, min, max))
+    ((value: number) =>
+      (messages.slider.value ?? sliderValueText)(value, min, max))
   // The thumbs read out the text the slider shows.
   const valueText = (value: number) =>
     showValue || valueFormatter ? format(value) : undefined
@@ -266,13 +301,15 @@ const Slider: FC<SliderProps> = ({
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
       aria-invalid={ariaInvalid}
+      // Radix sets it only on the role-less root.
+      aria-disabled={disabled || undefined}
       aria-valuetext={valueText(value)}
       className={
         range
           ? // Figma "SliderBar": a 24px static white thumb with "Drop shadow
             // 2", like the Switch thumb. With more contrast it gets a
             // `control-border-strong` border (it is 1:1 on white).
-            'relative block size-6 cursor-grab rounded-full bg-static-white shadow-2 transition-colors focus-ring hit-area active:cursor-grabbing contrast-more:not-aria-invalid:border contrast-more:not-aria-invalid:border-control-border-strong aria-invalid:border aria-invalid:border-control-border-invalid data-disabled:cursor-not-allowed'
+            'relative block size-6 cursor-grab rounded-full bg-static-white shadow-2 transition-colors focus-ring hit-area active:cursor-grabbing contrast-more:not-aria-invalid:border contrast-more:not-aria-invalid:border-control-border-strong aria-invalid:border aria-invalid:border-control-border-invalid data-disabled:cursor-not-allowed forced-colors:border'
           : // The bar's thumb is invisible: a 1px-wide, full-height target at
             // the value, with a 24px hit area (`hit-area`, WCAG 2.5.8). The
             // bar shows the handle line and the focus ring for it.
@@ -291,7 +328,7 @@ const Slider: FC<SliderProps> = ({
         'group/slider relative flex w-full touch-none select-none items-center',
         range
           ? twMerge(
-              'h-6',
+              'h-6 cursor-pointer data-disabled:cursor-not-allowed',
               wrapped ? 'min-w-0 grow' : 'data-disabled:opacity-40',
             )
           : // Figma "Slider2": 32px high, an 8px radius. The focus-ring look
@@ -311,9 +348,10 @@ const Slider: FC<SliderProps> = ({
     >
       {range ? (
         // Figma "SliderBar": a 3px Black/4% track and a black range between
-        // the thumbs. With more contrast the track is `control-border`.
-        <SliderPrimitive.Track className="relative h-[3px] grow overflow-hidden rounded-full bg-black-4 contrast-more:bg-control-border">
-          <SliderPrimitive.Range className="absolute h-full rounded-full bg-black" />
+        // the thumbs. With more contrast the track is `control-border`; with
+        // forced colours GrayText and Highlight, and the thumbs get a border.
+        <SliderPrimitive.Track className="relative h-[3px] grow overflow-hidden rounded-full bg-black-4 contrast-more:bg-control-border forced-colors:bg-[GrayText] forced-colors:forced-color-adjust-none">
+          <SliderPrimitive.Range className="absolute h-full rounded-full bg-black forced-colors:bg-[Highlight]" />
         </SliderPrimitive.Track>
       ) : (
         <BarTrack
@@ -340,6 +378,8 @@ const Slider: FC<SliderProps> = ({
         className,
       )}
       data-disabled={disabled ? '' : undefined}
+      // Radix sets `dir` on its root; the texts beside it follow it too.
+      dir={direction}
     >
       <RangeValue sizes={sizes} align="end">
         {inverted ? last : first}

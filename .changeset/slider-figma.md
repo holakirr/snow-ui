@@ -9,6 +9,8 @@
 - New `label`: the text inside the bar at its start (white over the fill, black over the track). It names the thumb when there is no `aria-label`.
 - New `showValue`: the value inside the bar at its end, or at both ends of a range (as wide as the widest of `min` and `max`, so the track doesn't move). The thumbs read the same text out (`aria-valuetext`).
 - New `valueFormatter(value)`: formats the value for `showValue` and `aria-valuetext`. The default is a new optional message, `messages.slider.value(value, min, max)`: the position between `min` and `max` in percent ("28%").
-- The value text is `text-secondary` on the track (`black-80` when active) and White/60% on the fill (White/80% when active), not the Figma Black/20% and White/40% (1.6:1 and 3.66:1; WCAG 1.4.3). With more contrast the bar and the range's track get a `control-border` boundary and the range's thumbs a `control-border-strong` border.
-- Invalid (`aria-invalid`): a 1px `control-border-invalid` stroke inside the bar, over the fill, or red borders on the range's thumbs. Disabled: 40% opacity.
+- The value text is `text-secondary` on the track (`black-80` when active) and the per-mode `white` at 60% on the fill (`white-80` when active), not the Figma Black/20% and White/40% (1.6:1 and 3.66:1; WCAG 1.4.3). With more contrast the bar and the range's track get a `control-border` boundary and the range's thumbs a `control-border-strong` border.
+- Invalid (`aria-invalid`): a 1px `control-border-invalid` stroke inside the bar, over the fill, or red borders on the range's thumbs. Disabled: 40% opacity, and the thumbs get `aria-disabled` (Radix set it only on the role-less root).
+- Forced-colours mode (Windows High Contrast): the bar gets a border and a `Highlight` fill, the range a `GrayText` track, a `Highlight` range and bordered thumbs.
+- Switching a slider between controlled and uncontrolled still logs a development warning (Radix's own no longer fires: it always gets a controlled value now).
 - A range with `showValue` renders a wrapper `<div>` around the texts and the slider: `className` goes on it, the other props on the Radix root as before.

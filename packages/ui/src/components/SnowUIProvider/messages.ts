@@ -215,6 +215,17 @@ export type MessagesOverrides = {
   [Namespace in keyof Messages]?: Partial<NonNullable<Messages[Namespace]>>
 }
 
+/**
+ * The English `messages.slider.value`: the value's position between `min`
+ * and `max`, in percent ("28%"). Slider also falls back on it.
+ */
+export const sliderValueText = (
+  value: number,
+  min: number,
+  max: number,
+): string =>
+  `${Math.round(max > min ? ((Math.min(max, Math.max(min, value)) - min) / (max - min)) * 100 : 0)}%`
+
 /** The English messages, used where no `SnowUIProvider` sets others. */
 export const defaultMessages: Required<Messages> = {
   alert: {
@@ -311,8 +322,7 @@ export const defaultMessages: Required<Messages> = {
     minimum: (label) => `${label}, minimum`,
     maximum: (label) => `${label}, maximum`,
     thumb: (label, position, count) => `${label}, ${position} of ${count}`,
-    value: (value, min, max) =>
-      `${Math.round(max > min ? ((value - min) / (max - min)) * 100 : 0)}%`,
+    value: sliderValueText,
   },
   spinner: {
     label: 'Loading',

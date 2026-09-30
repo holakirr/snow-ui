@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { SnowUIProvider } from '../SnowUIProvider'
 import { Slider } from './Slider'
@@ -324,5 +324,66 @@ describe('Slider', () => {
 
     expect(thumb).toHaveAttribute('aria-valuenow', '40')
     expect(container.querySelector('form')).toHaveTextContent('40%')
+  })
+
+  it('gives a range wrapper the direction of a dir prop', () => {
+    const { container } = render(
+      <Slider aria-label="Price" dir="rtl" showValue defaultValue={[20, 80]} />,
+    )
+
+    const wrapper = container.firstElementChild
+    expect(wrapper).toHaveAttribute('dir', 'rtl')
+    expect(wrapper?.querySelector('[data-orientation]')).toHaveAttribute(
+      'dir',
+      'rtl',
+    )
+  })
+
+  it('clips the fill layer from the right of an inverted bar', () => {
+    const { container } = render(
+      <Slider aria-label="Volume" inverted defaultValue={[25]} />,
+    )
+
+    const clipped = container.querySelector<HTMLElement>('[style*="clip-path"]')
+    expect(clipped?.style.clipPath).toBe(
+      'inset(0 0 0 75% round var(--radius-8))',
+    )
+  })
+
+  it('commits once per key press', () => {
+    const commits: number[][] = []
+    render(
+      <Slider
+        aria-label="Volume"
+        defaultValue={[10]}
+        onValueCommit={(next) => commits.push(next)}
+      />,
+    )
+
+    const thumb = screen.getByRole('slider')
+    fireEvent.keyDown(thumb, { key: 'ArrowRight' })
+    fireEvent.keyDown(thumb, { key: 'End' })
+
+    expect(commits).toEqual([[11], [100]])
+  })
+
+  it('marks the thumbs of a disabled slider disabled', () => {
+    render(<Slider aria-label="Price" disabled defaultValue={[20, 80]} />)
+
+    for (const thumb of screen.getAllByRole('slider')) {
+      expect(thumb).toHaveAttribute('aria-disabled', 'true')
+      expect(thumb).not.toHaveAttribute('tabindex')
+    }
+  })
+
+  it('warns when it switches between controlled and uncontrolled', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { rerender } = render(<Slider aria-label="Volume" />)
+    rerender(<Slider aria-label="Volume" value={[40]} />)
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('from uncontrolled to controlled'),
+    )
+    warn.mockRestore()
   })
 })

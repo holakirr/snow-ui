@@ -213,7 +213,7 @@ export const Invalid: Story = {
 
     for (const name of ['Price, minimum', 'Price, maximum']) {
       const thumb = canvas.getByRole('slider', { name })
-      await expect(getComputedStyle(thumb).borderColor).toBe(red)
+      await expect(getComputedStyle(thumb).borderTopColor).toBe(red)
     }
   },
 }

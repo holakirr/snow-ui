@@ -259,3 +259,40 @@ export const Invalid: Story = {
     ).toBe(true)
   },
 }
+
+/**
+ * `title` on `SelectTrigger`: the Figma "2 row" field of a form, the title
+ * inside the field above the value. It names the trigger.
+ */
+export const WithTitle: Story = {
+  render: () => (
+    <div className="flex w-[360px] flex-col gap-4">
+      <Select defaultValue="gpt-4">
+        <SelectTrigger title="Model">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="gpt-4">GPT-4</SelectItem>
+          <SelectItem value="claude">Claude</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select>
+        <SelectTrigger title="Country">
+          <SelectValue placeholder="Select a country" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="us">United States</SelectItem>
+          <SelectItem value="fr">France</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('combobox', { name: 'Model' }),
+    ).toHaveTextContent('GPT-4')
+    await expect(
+      canvas.getByRole('combobox', { name: 'Country' }),
+    ).toHaveTextContent('Select a country')
+  },
+}

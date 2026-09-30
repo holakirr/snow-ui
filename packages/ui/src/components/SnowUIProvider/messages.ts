@@ -134,6 +134,50 @@ export type Messages = {
     clear: string
     /** A picked range, from its two formatted dates (`DateRangePicker`). */
     range: (start: string, end: string) => string
+    /** The date field at the top of the calendar (`DatePicker`). */
+    date: string
+    /** The start date field at the top of the calendar (`DateRangePicker`). */
+    startDate: string
+    /** The end date field at the top of the calendar (`DateRangePicker`). */
+    endDate: string
+    /** The time field at the top of the calendar (`withTime`). */
+    time: string
+    /** The time field of the start date (`DateRangePicker` `withTime`). */
+    startTime: string
+    /** The time field of the end date (`DateRangePicker` `withTime`). */
+    endTime: string
+    /** The year segment of the date field, and the years view. */
+    year: string
+    /** The month segment of the date field, and the months view. */
+    month: string
+    /** The day segment of the date field. */
+    day: string
+    /** The hour segment of the time field, and the hours view. */
+    hour: string
+    /** The minute segment of the time field, and the minutes view. */
+    minute: string
+    /** The second segment of the time field, and the seconds view. */
+    second: string
+    /** The AM / PM segment of the time field (12-hour time). */
+    dayPeriod: string
+    /** What a screen reader hears for an empty segment. */
+    empty: string
+    /** The months view's action that picks the current month. */
+    thisMonth: string
+    /** The years view's action that picks the current year. */
+    thisYear: string
+    /** The time view's action that picks the current time. */
+    systemTime: string
+    /** The link from the months, years and time views back to the days. */
+    back: string
+    /** The shown month (e.g. "Feb"), a button to the months view. */
+    chooseMonth: (month: string) => string
+    /** The shown year, a button to the years view. */
+    chooseYear: (year: string) => string
+    /** The previous-year button of the months view. */
+    previousYear: string
+    /** The next-year button of the months view. */
+    nextYear: string
   }
   dialog: {
     /** The close button of `DialogHeader`. */
@@ -271,6 +315,28 @@ export const defaultMessages: Required<Messages> = {
     rangeDialog: 'Choose a date range',
     clear: 'Clear date',
     range: (start, end) => `${start} – ${end}`,
+    date: 'Date',
+    startDate: 'Start date',
+    endDate: 'End date',
+    time: 'Time',
+    startTime: 'Start time',
+    endTime: 'End time',
+    year: 'Year',
+    month: 'Month',
+    day: 'Day',
+    hour: 'Hour',
+    minute: 'Minute',
+    second: 'Second',
+    dayPeriod: 'AM/PM',
+    empty: 'Empty',
+    thisMonth: 'This month',
+    thisYear: 'This year',
+    systemTime: 'System time',
+    back: 'Back',
+    chooseMonth: (month) => `${month}, choose a month`,
+    chooseYear: (year) => `${year}, choose a year`,
+    previousYear: 'Go to the previous year',
+    nextYear: 'Go to the next year',
   },
   dialog: {
     close: 'Close',

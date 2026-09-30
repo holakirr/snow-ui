@@ -223,7 +223,7 @@ const rdpClassNames = getDefaultClassNames()
 
 // Figma: "Today" / "Last selection" tags, Black/4%, padding 2/4, radius 8.
 // They are 20px high: `hit-area` makes the pointer target 24 (WCAG 2.5.8).
-const actionClassName =
+export const actionClassName =
   'relative inline-flex h-5 items-center rounded-8 bg-black-4 px-1 text-12 text-black transition-colors hover:bg-black-10 focus-ring hit-area'
 
 /** Previous / next buttons; in the year view they page through the years. */
@@ -720,6 +720,10 @@ const CalendarYearGrid = ({
  * 1px Surface/1 stroke inside and radius 16. `header` renders above the
  * months.
  */
+/** The Figma DatePicker surface, which the date pickers' panel reuses. */
+export const calendarSurfaceClassName =
+  'w-fit rounded-16 text-black glass-2 inset-ring inset-ring-surface-1'
+
 const CalendarRoot: CustomComponents['Root'] = ({
   className,
   rootRef,
@@ -731,10 +735,7 @@ const CalendarRoot: CustomComponents['Root'] = ({
   return (
     <div
       ref={rootRef}
-      className={twMerge(
-        'w-fit rounded-16 text-black glass-2 inset-ring inset-ring-surface-1',
-        className,
-      )}
+      className={twMerge(calendarSurfaceClassName, className)}
       {...props}
     >
       {header && (

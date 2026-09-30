@@ -150,6 +150,135 @@ export const OpenDark: Story = {
 }
 
 /**
+ * The Figma "Date and time" type: `withTime` adds the time to the top area
+ * ("04 : 08 PM"; 24-hour in a 24-hour locale, or with `hourCycle={24}`).
+ * Picking a day keeps the calendar open; closing it, or Enter in the top
+ * area, confirms.
+ */
+export const DateAndTime: Story = {
+  args: {
+    defaultValue: new Date(2025, 0, 20, 16, 8),
+    defaultOpen: true,
+    withTime: true,
+  },
+  parameters: openParameters,
+  render: Open.render,
+}
+
+/** `withSeconds`: "04 : 08 : 12 PM". */
+export const WithSeconds: Story = {
+  args: {
+    defaultValue: new Date(2025, 0, 20, 16, 8, 12),
+    defaultOpen: true,
+    withSeconds: true,
+  },
+  parameters: openParameters,
+  render: Open.render,
+}
+
+/**
+ * The month in the top area (or the "Jan" caption) opens the months, the
+ * year the years; "Back" returns to the days.
+ */
+export const MonthsView: Story = {
+  args: { defaultValue: new Date(2025, 0, 20), defaultOpen: true },
+  parameters: openParameters,
+  render: Open.render,
+  play: async ({ canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(
+      await page.findByRole('spinbutton', { name: 'Month' }),
+    )
+    const months = page.getByRole('grid', { name: '2025' })
+    await expect(
+      within(months).getByRole('button', { name: 'January 2025' }),
+    ).toHaveAttribute('data-selected')
+  },
+}
+
+export const YearsView: Story = {
+  args: { defaultValue: new Date(2025, 0, 20), defaultOpen: true },
+  parameters: openParameters,
+  render: Open.render,
+  play: async ({ canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(await page.findByRole('spinbutton', { name: 'Year' }))
+    await expect(page.getByRole('button', { name: '2025' })).toHaveAttribute(
+      'data-selected',
+    )
+  },
+}
+
+/**
+ * The hour in the top area opens the hours; picking one goes on to the
+ * minutes. AM / PM switch on the right (or as you type: 13 is 01 PM).
+ */
+export const TimeView: Story = {
+  args: {
+    defaultValue: new Date(2025, 0, 20, 16, 8),
+    defaultOpen: true,
+    withTime: true,
+  },
+  parameters: openParameters,
+  render: Open.render,
+  play: async ({ canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(await page.findByRole('spinbutton', { name: 'Hour' }))
+    await expect(page.getByRole('grid', { name: 'Hour' })).toBeInTheDocument()
+    await expect(page.getByRole('button', { name: 'PM' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  },
+}
+
+/**
+ * The top area is a date field: the arrow keys step a part, digits fill it
+ * and move on, and the calendar follows; Enter closes it with the date.
+ */
+export const Typing: Story = {
+  args: { defaultValue: new Date(2025, 0, 20), defaultOpen: true },
+  parameters: openParameters,
+  render: Open.render,
+  play: async ({ args, canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const month = await page.findByRole('spinbutton', { name: 'Month' })
+    await userEvent.click(month)
+    await userEvent.keyboard('3')
+    await expect(month).toHaveAttribute('aria-valuenow', '3')
+    await expect(page.getByRole('spinbutton', { name: 'Day' })).toHaveFocus()
+    await userEvent.keyboard('15{ArrowUp}')
+    await expect(
+      page.getByRole('spinbutton', { name: 'Year' }),
+    ).toHaveAttribute('aria-valuenow', '2026')
+    await userEvent.keyboard('{Enter}')
+    await expect(args.onValueChange).toHaveBeenCalledWith(new Date(2026, 2, 15))
+    // The page is hidden from assistive technology until the popover is gone.
+    await waitFor(() =>
+      expect(canvas.getByRole('combobox')).toHaveTextContent('Mar 15, 2026'),
+    )
+  },
+}
+
+/**
+ * `title`: the Figma "2 row" field of a form, the title inside the field
+ * above the value.
+ */
+export const WithTitle: Story = {
+  args: { title: 'Due date', defaultValue: new Date(2026, 1, 1) },
+  render: (args) => (
+    <div className="w-72">
+      <DatePicker {...args} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('combobox', { name: 'Due date' }),
+    ).toHaveTextContent('Feb 1, 2026')
+  },
+}
+
+/**
  * `minDate` and `maxDate` limit the days (and the months the calendar
  * shows); `disabledDates` takes react-day-picker matchers, here weekends.
  */

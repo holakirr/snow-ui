@@ -1,5 +1,0 @@
----
-"@holakirr/snow-ui": minor
----
-
-Portalled content can follow a scoped theme and contrast level. The new `ThemeScope` (`<ThemeScope theme="dark">`, `<ThemeScope contrast="more">`, or `asChild` to put the attributes on your own element) scopes the tokens like `data-theme` and `data-contrast` attributes and also passes them to the overlays opened inside it: `DialogContent`, `AlertDialogContent`, `SheetContent`, `PopoverContent`, `DropdownMenuContent` / `SubContent`, `ContextMenuContent` / `SubContent`, `TooltipContent`, `SelectContent`, `CommandPalette`, the lists of `Combobox` and `MultiSelect` and the calendars of `DatePicker` and `DateRangePicker` get them as their `data-theme` and `data-contrast`, although they render at the end of `<body>`. `SnowUIProvider` takes the same `theme` and `contrast` props (inherited by nested providers, like `dir`), and `useSnowUI()` returns them. Without either, nothing changes: portals take the theme and contrast of `<html>`, and a `data-theme` or `data-contrast` on a `*Content` component still wins.

@@ -99,6 +99,16 @@ describe('Code Connect templates', () => {
     )
   })
 
+  it('Input: "2 row horizontal" puts the title before the value', async () => {
+    const input = await render('Input', {
+      Type: '2 row horizontal',
+      State: 'Default',
+    })
+    expect(input.example).toBe(
+      '<Input title="Title" titleLayout="horizontal" placeholder="Placeholder" />',
+    )
+  })
+
   it('Tag: arrow types become direction-aware shapes without icons', async () => {
     const tag = await render('Tag', {
       Type: 'Left arrow',

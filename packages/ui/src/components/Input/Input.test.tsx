@@ -228,4 +228,22 @@ describe('Input', () => {
       'has-aria-invalid:inset-ring-control-border-invalid',
     )
   })
+
+  it('puts a horizontal title before the value, in one row', () => {
+    render(<Input title="Name" titleLayout="horizontal" defaultValue="Ada" />)
+
+    const input = screen.getByLabelText('Name')
+    const row = input.parentElement
+
+    expect(row).toHaveClass('items-center')
+    expect(row).not.toHaveClass('flex-col')
+    expect(row?.firstElementChild).toHaveTextContent('Name')
+    expect(input).toHaveClass('text-end')
+  })
+
+  it('ignores titleLayout without a title', () => {
+    render(<Input aria-label="Name" titleLayout="horizontal" />)
+
+    expect(screen.getByRole('textbox')).not.toHaveClass('text-end')
+  })
 })

@@ -7,8 +7,8 @@ import type { InputProps } from './Input'
 
 // Figma "Input": Type (1 row / 2 row vertical / 2 row horizontal) × State
 // (Default / Hover / Focus: pointer and focus states; Static: read-only).
-// Both 2-row types are the `title` prop; the library puts the title above
-// the value.
+// Both 2-row types are the `title` prop; "2 row horizontal" puts it before
+// the value (`titleLayout="horizontal"`).
 const instance = figma.selectedInstance
 
 const rows =
@@ -18,10 +18,15 @@ const rows =
     '2 row horizontal': 2,
   }) ?? 1
 
+const titleLayout = instance.getEnum('Type', {
+  '2 row horizontal': 'horizontal' as const,
+})
+
 const readOnly = instance.getEnum('State', { Static: true }) ?? false
 
 const attrs = {
   title: rows === 2 ? 'Title' : undefined,
+  titleLayout,
   placeholder: 'Placeholder',
   readOnly,
 } satisfies AttrsOf<InputProps>

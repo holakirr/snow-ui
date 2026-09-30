@@ -79,10 +79,18 @@ const adornmentClasses =
 
 type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
   /**
-   * The Figma "2 row" title: a 12/16 label above the value, in
-   * `text-secondary` (Figma: Black/40%, 2.85:1).
+   * The Figma "2 row" title: a 12/16 label in `text-secondary` (Figma:
+   * Black/40%, 2.85:1), above the value or before it (`titleLayout`).
    */
   title?: string
+
+  /**
+   * Where the `title` goes: `vertical` above the value (Figma "2 row
+   * vertical", 68px high), `horizontal` at the start of the one 44px row with
+   * the value at the end (Figma "2 row horizontal").
+   * @default "vertical"
+   */
+  titleLayout?: 'vertical' | 'horizontal'
 
   /**
    * Content before the value, e.g. a 16px icon.
@@ -106,9 +114,9 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
 }
 
 /**
- * Input component: the Figma Input (1 row, or 2 rows with a `title`), with
- * optional leading and trailing content. `readOnly` gives the Figma "Static"
- * state.
+ * Input component: the Figma Input (1 row, or 2 rows with a `title`: above
+ * the value, or beside it with `titleLayout="horizontal"`), with optional
+ * leading and trailing content. `readOnly` gives the Figma "Static" state.
  */
 const Input: FC<InputProps> = ({
   className,
@@ -117,6 +125,7 @@ const Input: FC<InputProps> = ({
   inputStyle,
   id,
   title,
+  titleLayout = 'vertical',
   startContent,
   endContent,
   disabled,
@@ -128,6 +137,7 @@ const Input: FC<InputProps> = ({
   const inputId = id ?? (title ? generatedId : undefined)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const setRef = useComposedRefs(inputRef, ref)
+  const horizontal = !!title && titleLayout === 'horizontal'
 
   // Clicks on the padding or the adornments focus the input.
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
@@ -158,11 +168,25 @@ const Input: FC<InputProps> = ({
       onPointerDown={handlePointerDown}
     >
       {startContent && <span className={adornmentClasses}>{startContent}</span>}
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        {title && <Label htmlFor={inputId}>{title}</Label>}
+      <div
+        className={twMerge(
+          'flex min-w-0 flex-1 gap-2',
+          // Figma "2 row horizontal": the title, then the value at the end.
+          horizontal ? 'items-center' : 'flex-col',
+        )}
+      >
+        {title && (
+          <Label
+            htmlFor={inputId}
+            className={twMerge(horizontal && 'shrink-0')}
+          >
+            {title}
+          </Label>
+        )}
         <input
           className={twMerge(
             'w-full min-w-0 bg-transparent text-inherit outline-none placeholder:text-placeholder disabled:cursor-not-allowed',
+            horizontal && 'text-end',
             inputClassName,
           )}
           style={inputStyle}

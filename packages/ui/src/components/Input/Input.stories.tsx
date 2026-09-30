@@ -83,6 +83,31 @@ export const WithTitle: Story = {
   },
 }
 
+/**
+ * Figma "2 row horizontal": the title at the start of the one 44px row, the
+ * value at the end.
+ */
+export const WithHorizontalTitle: Story = {
+  args: {
+    title: 'Title',
+    titleLayout: 'horizontal',
+    defaultValue: 'Text',
+    className: 'w-60',
+  },
+  play: async ({ canvas }) => {
+    const input = canvas.getByLabelText('Title')
+    const title = canvas.getByText('Title')
+    const field = input.closest('[data-slot="input"]') as HTMLElement
+
+    await expect(field.getBoundingClientRect().height).toBe(44)
+    // One row: the title and the value share it, the value at the end.
+    await expect(title.getBoundingClientRect().right).toBeLessThan(
+      input.getBoundingClientRect().left + 1,
+    )
+    await expect(getComputedStyle(input).textAlign).toBe('end')
+  },
+}
+
 export const WithTitleAndValue: Story = {
   args: {
     placeholder: 'Input with title and value',

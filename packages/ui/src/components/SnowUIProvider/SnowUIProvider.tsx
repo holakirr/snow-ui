@@ -23,6 +23,13 @@ export type TextDirection = 'ltr' | 'rtl'
 /** A SnowUI colour theme: the `data-theme` values of `theme.css`. */
 export type SnowUITheme = 'light' | 'dark'
 
+/**
+ * A contrast level: the `data-contrast` values of `theme.css` (`more`, the
+ * high-contrast control borders and placeholders; `standard`, the Figma
+ * look).
+ */
+export type SnowUIContrast = 'standard' | 'more'
+
 export type SnowUIProviderProps = {
   /**
    * Translations of the components' built-in strings, merged over the
@@ -59,6 +66,13 @@ export type SnowUIProviderProps = {
    * @default inherited, else none (portals take the theme of `<html>`)
    */
   theme?: SnowUITheme
+  /**
+   * The contrast level of portalled content, like `theme`: it gets this as
+   * its `data-contrast`. Set the same `data-contrast` on the element you
+   * scope it to, or use `ThemeScope`, which does both.
+   * @default inherited, else none (portals take the contrast of `<html>` and the OS)
+   */
+  contrast?: SnowUIContrast
   children?: ReactNode
 }
 
@@ -73,6 +87,8 @@ export type SnowUIContextValue = {
    * inherit `<html data-theme>`.
    */
   theme?: SnowUITheme
+  /** Like `theme`, for `data-contrast`. */
+  contrast?: SnowUIContrast
 }
 
 const SnowUIContext = createContext<SnowUIContextValue>({
@@ -109,6 +125,7 @@ export const SnowUIProvider = ({
   locale,
   dir,
   theme,
+  contrast,
   children,
 }: SnowUIProviderProps) => {
   const parent = useContext(SnowUIContext)
@@ -126,8 +143,9 @@ export const SnowUIProvider = ({
       locale: locale ?? parent.locale,
       dir: dir ?? parent.dir,
       theme: theme ?? parent.theme,
+      contrast: contrast ?? parent.contrast,
     }),
-    [parent, messages, locale, dir, theme],
+    [parent, messages, locale, dir, theme, contrast],
   )
 
   return (
@@ -150,6 +168,6 @@ export const useMessages = (): Required<Messages> =>
 
 /**
  * Everything the nearest `SnowUIProvider` sets: `messages`, `locale`, `dir`
- * and `theme` (`undefined` when no provider sets them).
+ * `theme` and `contrast` (`undefined` when no provider sets them).
  */
 export const useSnowUI = (): SnowUIContextValue => useContext(SnowUIContext)

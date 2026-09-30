@@ -25,13 +25,14 @@ const PopoverContent: FC<PopoverContentProps> = ({
   sideOffset = 4,
   ...props
 }) => {
-  const { dir, theme } = useSnowUI()
+  const { dir, theme, contrast } = useSnowUI()
 
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
         dir={dir}
         data-theme={theme}
+        data-contrast={contrast}
         align={align}
         sideOffset={sideOffset}
         className={twMerge(

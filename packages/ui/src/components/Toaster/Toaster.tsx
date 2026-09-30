@@ -11,7 +11,10 @@ import {
 } from 'react'
 
 import { useToast } from '../../hooks'
-import { registerToasterLimit } from '../../hooks/toast-store'
+import {
+  normalizeToastLimit,
+  registerToasterLimit,
+} from '../../hooks/toast-store'
 import {
   Toast,
   ToastClose,
@@ -30,6 +33,11 @@ const STACK_GAP = 8
 const STACK_PEEK = 8
 /** How much smaller each toast behind the front one is, collapsed. */
 const STACK_SCALE_STEP = 0.05
+/**
+ * How many toasts a collapsed stack shows: the front one and two behind it.
+ * The others wait, hidden, behind the last one (their timers still run).
+ */
+const STACK_VISIBLE = 3
 /** How long the pointer may be off the stack (crossing a gap) before it collapses. */
 const COLLAPSE_DELAY = 150
 
@@ -113,6 +121,18 @@ const useToastSize = (
   return ref
 }
 
+/**
+ * Whether focus came from the keyboard (`:focus-visible`); true where the
+ * selector isn't supported.
+ */
+const isFocusVisible = (target: EventTarget | null) => {
+  try {
+    return target instanceof Element && target.matches(':focus-visible')
+  } catch {
+    return true
+  }
+}
+
 export type ToasterProps = {
   /**
    * Shows only the toasts created with `toast({ toasterId: id })`. Without
@@ -153,7 +173,9 @@ type StackedToastProps = {
     scale: number
     /** Behind the front toast in a collapsed stack: its size and no content. */
     collapsed: boolean
-    /** A newer toast is open in front of it (it fades out when it closes). */
+    /** Beyond the visible depth of a collapsed stack. */
+    hidden: boolean
+    /** Behind another toast: when it closes it fades out in place. */
     behind: boolean
     zIndex: number
   }
@@ -197,15 +219,24 @@ const StackedToast = ({
       data-index={layout.index}
       data-front={layout.index === 0 || undefined}
       data-collapsed={layout.collapsed || undefined}
+      data-hidden={layout.hidden || undefined}
+      data-behind={layout.behind || undefined}
       className={[
         // Stacked at the bottom centre of the viewport, which is sized to
         // the stack: `mx-auto` centres it without a transform (the swipe
-        // gesture uses one), `w-max` keeps its width its own.
-        'absolute inset-x-0 bottom-4 mx-auto w-max max-w-[calc(100vw-4rem)] origin-bottom [transform:translateY(var(--toast-y))_scale(var(--toast-scale))] md:max-w-[26rem]',
-        // Behind the front toast: its size, content hidden.
-        '[&>*]:transition-opacity [&[data-collapsed]>*]:opacity-0',
-        // Closed while a newer toast is in front of it: fades out in place.
-        layout.behind && 'data-[state=closed]:animate-out',
+        // gesture uses one), `w-max` keeps its width its own. With reduced
+        // motion it moves and resizes at once; only its opacity changes.
+        'absolute inset-x-0 bottom-4 mx-auto w-max max-w-[calc(100vw-4rem)] origin-bottom [transform:translateY(var(--toast-y))_scale(var(--toast-scale))] motion-reduce:transition-opacity md:max-w-[26rem]',
+        // Behind the front toast: its size, content hidden; deeper than the
+        // visible depth, hidden altogether.
+        '[&>*]:transition-opacity [&[data-collapsed]>*]:opacity-0 [&[data-hidden]]:opacity-0',
+        // Closed behind another toast (pushed out over the limit, timed out,
+        // dismissed): fades out in place. The selector outranks the slide
+        // down of `Toast`, whose keyframes would move it from the front
+        // position to below the stack.
+        '[&[data-behind][data-state=closed]]:animate-out',
+        // A hidden one just goes: fading from opacity 1 would flash it.
+        '[&[data-hidden][data-behind][data-state=closed]]:animate-none',
         className,
       ]
         .filter(Boolean)
@@ -254,13 +285,22 @@ export function Toaster({
   expand = false,
 }: ToasterProps = {}) {
   const { toasts } = useToast()
-  const limit = Math.max(1, Math.floor(limitProp))
+  const limit = normalizeToastLimit(limitProp)
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
   const [sizes, setSizes] = useState<Record<string, Size>>({})
   const viewportRef = useRef<HTMLOListElement>(null)
+  /** Focus is in the stack, from the keyboard or a click. */
+  const focusInside = useRef(false)
+  /** Where each toast was last drawn open: a closing toast stays there. */
+  const lastLayouts = useRef(new Map<string, StackedToastProps['layout']>())
 
-  useEffect(() => registerToasterLimit(toasterId, limit), [toasterId, limit])
+  // A layout effect: it runs before the passive effects of the page, which
+  // may show toasts as they mount (the store keeps them until then).
+  useLayoutEffect(
+    () => registerToasterLimit(toasterId, limit),
+    [toasterId, limit],
+  )
 
   // Spreads the stack while the pointer is on it or focus is in it. The
   // toasts are portalled into the viewport, so they are its children in the
@@ -280,9 +320,16 @@ export function Toaster({
       clearTimeout(collapseTimer)
       collapseTimer = setTimeout(() => setHovered(false), COLLAPSE_DELAY)
     }
-    const onFocusIn = () => setFocused(true)
+    // Keyboard focus only: after a click on a toast's close button or
+    // action, Radix moves focus to the viewport, which mustn't keep the
+    // stack spread once the pointer has left.
+    const onFocusIn = (event: FocusEvent) => {
+      focusInside.current = true
+      setFocused(isFocusVisible(event.target))
+    }
     const onFocusOut = (event: FocusEvent) => {
       if (!viewport.contains(event.relatedTarget as Node | null)) {
+        focusInside.current = false
         setFocused(false)
       }
     }
@@ -300,6 +347,7 @@ export function Toaster({
   }, [])
 
   const onSize = useCallback((id: string, size: Size | null) => {
+    if (!size) lastLayouts.current.delete(id)
     setSizes((sizes) => {
       if (!size) {
         if (!(id in sizes)) return sizes
@@ -324,6 +372,24 @@ export function Toaster({
     if (openCount === 0) setHovered(false)
   }, [openCount])
 
+  // A focused toast removed by the store (over the limit, `dismiss(id)`)
+  // takes the focus with it, and some browsers fire no focusout: tell Radix
+  // (which paused the timers on any focus) and ourselves that it has left.
+  // A layout effect, so it runs before Radix drops its listeners when the
+  // last toast goes; the active element of the viewport's own root, so it
+  // works in a shadow root.
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current
+    if (!focusInside.current || !viewport) return
+    const root = viewport.getRootNode() as Document | ShadowRoot
+    const active = root.activeElement
+    if (!active || !viewport.contains(active)) {
+      viewport.dispatchEvent(
+        new FocusEvent('focusout', { bubbles: true, relatedTarget: active }),
+      )
+    }
+  })
+
   const frontId = own.find((toast) => toast.open !== false)?.id
   const front = frontId ? sizes[frontId] : undefined
 
@@ -335,17 +401,27 @@ export function Toaster({
   let stackHeight = 0
   const items = own.map((toast, position) => {
     const isOpen = toast.open !== false
-    // A closed toast keeps the place behind the open toasts newer than it.
-    const layout = {
+    const depth = Math.min(index, STACK_VISIBLE - 1)
+    const current = {
       index,
-      y: expanded ? -offset : -index * STACK_PEEK,
-      scale: expanded ? 1 : 1 - index * STACK_SCALE_STEP,
+      y: expanded ? -offset : -depth * STACK_PEEK,
+      scale: expanded ? 1 : 1 - depth * STACK_SCALE_STEP,
       collapsed: !expanded && index > 0,
+      hidden: !expanded && index >= STACK_VISIBLE,
       behind: index > 0,
       zIndex: own.length - position,
     }
+    // A closing toast stays where it was last drawn (a toast dismissed with
+    // the others doesn't jump to the front); it is behind another if it was,
+    // or if a newer toast is open in front of it.
+    const last = lastLayouts.current.get(toast.id)
+    const layout =
+      isOpen || !last
+        ? current
+        : { ...last, behind: last.behind || index > 0, zIndex: current.zIndex }
+    if (isOpen) lastLayouts.current.set(toast.id, current)
     const size = sizes[toast.id]
-    if (size) {
+    if (size && !layout.hidden) {
       const drawn = layout.collapsed && front ? front : size
       stackWidth = Math.max(stackWidth, drawn.width)
       stackHeight = Math.max(stackHeight, drawn.height - layout.y)

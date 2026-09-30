@@ -229,3 +229,114 @@ describe('portalled content in a ThemeScope', () => {
     expect(screen.getByText('Popover').closest('[data-theme]')).toBeNull()
   })
 })
+
+describe('portalled content in a contrast scope', () => {
+  const contrastOf = (node: Element | null) =>
+    node?.closest('[data-contrast]')?.getAttribute('data-contrast')
+
+  it('takes the contrast of a ThemeScope, without changing the theme', () => {
+    render(
+      <ThemeScope contrast="more" data-testid="scope">
+        <Dialog open>
+          <DialogContent aria-describedby={undefined}>
+            <DialogTitle>Dialog</DialogTitle>
+          </DialogContent>
+        </Dialog>
+        <AlertDialog open>
+          <AlertDialogContent aria-describedby={undefined}>
+            <AlertDialogTitle>Alert dialog</AlertDialogTitle>
+          </AlertDialogContent>
+        </AlertDialog>
+        <Sheet open>
+          <SheetContent aria-describedby={undefined}>
+            <SheetTitle>Sheet</SheetTitle>
+          </SheetContent>
+        </Sheet>
+        <Popover open>
+          <PopoverContent>Popover</PopoverContent>
+        </Popover>
+        <TooltipProvider>
+          <Tooltip open>
+            <TooltipTrigger>Trigger</TooltipTrigger>
+            <TooltipContent>Tip</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <CommandPalette open groups={[]} />
+      </ThemeScope>,
+    )
+    const scope = screen.getByTestId('scope')
+
+    expect(scope).toHaveAttribute('data-contrast', 'more')
+    expect(scope).not.toHaveAttribute('data-theme')
+    for (const text of ['Dialog', 'Alert dialog', 'Sheet', 'Popover', 'Tip']) {
+      const content = screen.getAllByText(text)[0]
+      expect(scope).not.toContainElement(content)
+      expect(contrastOf(content)).toBe('more')
+      expect(content.closest('[data-theme]')).toBeNull()
+    }
+    expect(contrastOf(screen.getByRole('dialog', { name: 'Search' }))).toBe(
+      'more',
+    )
+  })
+
+  it('takes the contrast of a SnowUIProvider: pickers, select and menus', () => {
+    const options = [{ value: 'a', label: 'Apple' }]
+    render(
+      <SnowUIProvider contrast="more">
+        <Combobox aria-label="Fruit" options={options} defaultOpen />
+        <DatePicker
+          aria-label="Due"
+          defaultValue={new Date(2025, 0, 20)}
+          defaultOpen
+        />
+        <Select defaultOpen defaultValue="a">
+          <SelectTrigger aria-label="Fruit">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="a">Apple</SelectItem>
+          </SelectContent>
+        </Select>
+      </SnowUIProvider>,
+    )
+
+    const popups = [
+      ...screen.getAllByRole('listbox', { hidden: true }),
+      ...screen.getAllByRole('dialog', { hidden: true }),
+    ]
+    expect(popups.length).toBeGreaterThanOrEqual(3)
+    for (const popup of popups) expect(contrastOf(popup)).toBe('more')
+  })
+
+  it('takes the contrast of a provider in the menus, and nests', () => {
+    render(
+      <SnowUIProvider contrast="more">
+        <DropdownMenu defaultOpen>
+          <DropdownMenuTrigger>Menu</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <ContextMenu>
+          <ContextMenuTrigger>Area</ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem>Copy</ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
+        <ThemeScope contrast="standard" theme="dark">
+          <Popover open>
+            <PopoverContent>Standard</PopoverContent>
+          </Popover>
+        </ThemeScope>
+      </SnowUIProvider>,
+    )
+    fireEvent.contextMenu(screen.getByText('Area'))
+
+    expect(contrastOf(screen.getByText('Profile'))).toBe('more')
+    expect(contrastOf(screen.getByText('Copy'))).toBe('more')
+    expect(contrastOf(screen.getByText('Standard'))).toBe('standard')
+    expect(
+      screen.getByText('Standard').closest('[data-theme]'),
+    ).toHaveAttribute('data-theme', 'dark')
+  })
+})

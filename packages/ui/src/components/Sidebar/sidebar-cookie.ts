@@ -11,19 +11,38 @@ export const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 
 /**
  * The cookie name before 5.1. `:` isn't allowed in a cookie name (RFC 6265),
- * so some servers and frameworks drop it; it is still read, after the new one.
+ * so some servers and frameworks drop it. It is still read, after the new
+ * one, and written next to it, for servers that read it by name (until 6.0).
  */
-const LEGACY_SIDEBAR_COOKIE_NAME = 'sidebar:state'
+export const LEGACY_SIDEBAR_COOKIE_NAME = 'sidebar:state'
 
 /** A week, in seconds. */
 export const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 
-const cookieValue = (cookies: string, name: string): string | undefined => {
+const decode = (text: string) => {
+  try {
+    return decodeURIComponent(text)
+  } catch {
+    return text
+  }
+}
+
+/**
+ * The state in the cookie `name`: its value, unquoted (RFC 6265 allows a
+ * quoted value), as `true` / `false`; `undefined` without a valid one. The
+ * name may be URL-encoded (`sidebar%3Astate`), as some servers write it.
+ */
+const cookieState = (cookies: string, name: string): boolean | undefined => {
   for (const cookie of cookies.split(';')) {
     const separator = cookie.indexOf('=')
-    if (separator !== -1 && cookie.slice(0, separator).trim() === name) {
-      return cookie.slice(separator + 1).trim()
-    }
+    if (separator === -1) continue
+    if (decode(cookie.slice(0, separator).trim()) !== name) continue
+    const value = cookie
+      .slice(separator + 1)
+      .trim()
+      .replace(/^"(.*)"$/, '$1')
+    if (value === 'true') return true
+    if (value === 'false') return false
   }
   return undefined
 }
@@ -48,10 +67,8 @@ export const readSidebarState = (
 ): boolean | undefined => {
   const source =
     cookies ?? (typeof document === 'undefined' ? '' : document.cookie)
-  const value =
-    cookieValue(source, SIDEBAR_COOKIE_NAME) ??
-    cookieValue(source, LEGACY_SIDEBAR_COOKIE_NAME)
-  if (value === 'true') return true
-  if (value === 'false') return false
-  return undefined
+  return (
+    cookieState(source, SIDEBAR_COOKIE_NAME) ??
+    cookieState(source, LEGACY_SIDEBAR_COOKIE_NAME)
+  )
 }

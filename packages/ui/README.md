@@ -157,7 +157,7 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 The form controls follow the Figma kit by default, and its rings, strokes, Switch track and placeholders are under WCAG AA (see [Known gaps](#accessibility-deviations-from-the-figma-kit)). With more contrast they meet it, in both themes:
 
 - with the OS setting behind `prefers-contrast: more` (macOS and iOS "Increase contrast", and similar OS or browser settings), unless `<html data-contrast="standard">`;
-- inside any element with `data-contrast="more"` (your app's own setting), scoped like `data-theme`: `data-contrast="standard"` inside switches a subtree back, and contrast and theme scopes combine at any depth.
+- inside any element with `data-contrast="more"` (your app's own setting), scoped like `data-theme`: `data-contrast="standard"` inside switches a subtree back, and contrast and theme scopes combine at any depth. Portalled overlays follow a `ThemeScope`'s (or `SnowUIProvider`'s) `contrast`, like its `theme`.
 
 | Token | Standard (Figma) | More contrast | Used by |
 | --- | --- | --- | --- |

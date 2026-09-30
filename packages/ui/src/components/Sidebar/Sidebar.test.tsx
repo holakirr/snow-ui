@@ -67,6 +67,14 @@ describe('readSidebarState', () => {
     )
   })
 
+  it('reads spaced, quoted and URL-encoded cookies, and skips an empty one', () => {
+    expect(readSidebarState(' sidebar_state = false ')).toBe(false)
+    expect(readSidebarState('sidebar_state="false"')).toBe(false)
+    expect(readSidebarState('sidebar%3Astate=false')).toBe(false)
+    expect(readSidebarState('sidebar_state=; sidebar:state=false')).toBe(false)
+    expect(readSidebarState('xsidebar_state=true')).toBeUndefined()
+  })
+
   it('returns undefined without a saved state', () => {
     expect(readSidebarState('')).toBeUndefined()
     expect(readSidebarState(null)).toBeUndefined()
@@ -159,6 +167,73 @@ describe('SidebarProvider', () => {
   })
 })
 
+describe('SidebarProvider state', () => {
+  const state = () => panel().getAttribute('data-state')
+
+  it('reads the saved state once: a cookie changed later does not move it', () => {
+    const app = (n: number) => (
+      <SidebarProvider data-n={n}>
+        <Sidebar />
+      </SidebarProvider>
+    )
+    const { rerender } = render(app(0))
+    expect(state()).toBe('expanded')
+
+    // Another tab (or another provider) saves a collapsed sidebar…
+    setCookie('sidebar_state=false')
+    // …and an unrelated re-render keeps this one as it is.
+    rerender(app(1))
+    expect(state()).toBe('expanded')
+  })
+
+  it('toggles uncontrolled with onOpenChange, and calls it', () => {
+    const onOpenChange = vi.fn()
+    const app = (n: number) => (
+      <SidebarProvider onOpenChange={onOpenChange} data-n={n}>
+        <Sidebar />
+        <SidebarTrigger />
+      </SidebarProvider>
+    )
+    const { rerender } = render(app(0))
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle Sidebar' }))
+
+    expect(state()).toBe('collapsed')
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    rerender(app(1))
+    expect(state()).toBe('collapsed')
+  })
+
+  it('stays controlled: open wins, and onOpenChange asks for the change', () => {
+    setCookie('sidebar_state=false')
+    const onOpenChange = vi.fn()
+    render(
+      <SidebarProvider open onOpenChange={onOpenChange}>
+        <Sidebar />
+        <SidebarTrigger />
+      </SidebarProvider>,
+    )
+    expect(state()).toBe('expanded')
+    expect(onOpenChange).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle Sidebar' }))
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(state()).toBe('expanded')
+  })
+
+  it('also saves the pre-5.1 sidebar:state cookie, for servers that read it', () => {
+    render(
+      <SidebarProvider>
+        <Sidebar />
+        <SidebarTrigger />
+      </SidebarProvider>,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle Sidebar' }))
+
+    expect(document.cookie).toContain('sidebar_state=false')
+    expect(document.cookie).toContain('sidebar:state=false')
+  })
+})
+
 describe('Sidebar', () => {
   it('hides a collapsed off-canvas sidebar once it has slid out', () => {
     render(
@@ -194,6 +269,48 @@ describe('Sidebar', () => {
 
     fireEvent.click(trigger)
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it("points the trigger at the sidebar's own id", () => {
+    const { rerender } = render(
+      <SidebarProvider>
+        <Sidebar id="main-nav" />
+        <SidebarTrigger />
+      </SidebarProvider>,
+    )
+    const trigger = screen.getByRole('button', { name: 'Toggle Sidebar' })
+    expect(trigger).toHaveAttribute('aria-controls', 'main-nav')
+    expect(document.getElementById('main-nav')).toBe(panel().lastElementChild)
+
+    // A sidebar that never collapses keeps the id, but the trigger doesn't
+    // control it.
+    rerender(
+      <SidebarProvider>
+        <Sidebar id="main-nav" collapsible="none" />
+        <SidebarTrigger />
+      </SidebarProvider>,
+    )
+    expect(document.getElementById('main-nav')).not.toBeNull()
+    expect(trigger).not.toHaveAttribute('aria-controls')
+  })
+
+  it('gives each sidebar of a provider its own id, and the trigger both', () => {
+    render(
+      <SidebarProvider>
+        <Sidebar side="left" data-testid="left" />
+        <Sidebar side="right" collapsible="icon" data-testid="right" />
+        <Sidebar collapsible="none" data-testid="static" />
+        <SidebarTrigger />
+      </SidebarProvider>,
+    )
+    const left = screen.getByTestId('left').id
+    const right = screen.getByTestId('right').id
+    const fixed = screen.getByTestId('static').id
+
+    expect(new Set([left, right, fixed]).size).toBe(3)
+    expect(
+      screen.getByRole('button', { name: 'Toggle Sidebar' }),
+    ).toHaveAttribute('aria-controls', `${left} ${right}`)
   })
 
   it('gives the actions a 24px hit area on every screen size', () => {

@@ -709,6 +709,7 @@
         "PaginationPrevious"
       ],
       "types": [
+        "PaginationButtonProps",
         "PaginationEllipsisProps",
         "PaginationLinkProps",
         "PaginationProps"
@@ -955,6 +956,7 @@
       "exports": ["SnowUIProvider", "useMessages", "useSnowUI"],
       "types": [
         "SnowUIContextValue",
+        "SnowUIContrast",
         "SnowUIProviderProps",
         "SnowUITheme",
         "TextDirection"
@@ -1167,6 +1169,7 @@
         "genId",
         "getState",
         "listeners",
+        "normalizeToastLimit",
         "reduce",
         "registerToasterLimit"
       ],

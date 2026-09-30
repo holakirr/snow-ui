@@ -6,6 +6,8 @@ import {
   screen,
   within,
 } from '@testing-library/react'
+import { useEffect } from 'react'
+import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { toast, useToast } from '../../hooks'
@@ -255,6 +257,7 @@ describe('Toaster limit and stacking', () => {
       vi.runAllTimers()
     })
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   const viewport = () => {
@@ -262,6 +265,23 @@ describe('Toaster limit and stacking', () => {
     if (!node) throw new Error('no viewport')
     return node
   }
+
+  /**
+   * jsdom has no focus modality: `:focus-visible` matches (a key press) or
+   * not (a click).
+   */
+  const focusModality = (visible: boolean) => {
+    const matches = Element.prototype.matches
+    vi.spyOn(Element.prototype, 'matches').mockImplementation(function (
+      this: Element,
+      selector: string,
+    ) {
+      return selector === ':focus-visible'
+        ? visible
+        : matches.call(this, selector)
+    })
+  }
+  const keyboardFocus = () => focusModality(true)
 
   const show = (...titles: string[]) =>
     act(() => {
@@ -326,7 +346,9 @@ describe('Toaster limit and stacking', () => {
     expect(getToast('One')).toHaveAttribute('data-collapsed')
   })
 
-  it('spreads the stack while focus is in it, and with `expand`', () => {
+  it('spreads the stack while keyboard focus is in it, and with `expand`', () => {
+    // jsdom has no focus modality: this focus comes from the keyboard.
+    keyboardFocus()
     const { rerender } = render(<Toaster limit={3} />)
     act(() => {
       toast({ title: 'One', closable: true })
@@ -371,5 +393,220 @@ describe('Toaster limit and stacking', () => {
     expect(
       within(getToast('Large')).getByRole('button', { name: 'Close' }),
     ).toHaveClass('p-0.5', 'after:-inset-0.5')
+  })
+
+  it('stays collapsed for pointer focus (a click on a close button)', () => {
+    focusModality(false)
+    render(<Toaster limit={3} />)
+    act(() => {
+      toast({ title: 'One', closable: true })
+      toast({ title: 'Two', closable: true })
+      toast({ title: 'Three', closable: true })
+    })
+    fireEvent.pointerEnter(viewport())
+    // A click focuses the button without :focus-visible; closing the toast
+    // moves focus to the viewport.
+    const close = within(getToast('Two')).getByRole('button', { name: 'Close' })
+    act(() => close.focus())
+    fireEvent.click(close)
+    fireEvent.pointerLeave(viewport())
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+
+    expect(viewport()).not.toHaveAttribute('data-expanded')
+  })
+
+  it('collapses when the focused toast is closed by the store', () => {
+    keyboardFocus()
+    render(<Toaster limit={3} />)
+    act(() => {
+      toast({ title: 'A', closable: true })
+      toast({ title: 'B' })
+      toast({ title: 'C' })
+    })
+    act(() => {
+      within(getToast('A')).getByRole('button', { name: 'Close' }).focus()
+    })
+    expect(viewport()).toHaveAttribute('data-expanded')
+
+    // Over the limit: A closes and takes the focus with it.
+    show('D')
+    expect(screen.queryByText('A')).not.toBeInTheDocument()
+    expect(viewport()).not.toHaveAttribute('data-expanded')
+  })
+
+  it('fades a toast closed behind another in place, instead of sliding it', () => {
+    render(<Toaster limit={3} />)
+    act(() => {
+      toast({ title: 'Old', duration: 1000 })
+      toast({ title: 'New', duration: 100_000 })
+    })
+    const old = getToast('Old')
+    act(() => {
+      vi.advanceTimersByTime(1001)
+    })
+
+    expect(old).toHaveAttribute('data-state', 'closed')
+    expect(old).toHaveAttribute('data-behind')
+    // It keeps its place behind the front toast…
+    expect(old.style.getPropertyValue('--toast-y')).toBe('-8px')
+    // …and fades: this selector outranks Toast's slide down.
+    expect(old).toHaveClass('[&[data-behind][data-state=closed]]:animate-out')
+  })
+
+  it('keeps each toast in place when all are dismissed at once', () => {
+    render(<Toaster limit={3} />)
+    show('One', 'Two')
+    // jsdom has no exit animation: Radix removes a closed toast at once, so
+    // read the elements as they were drawn closing.
+    const one = getToast('One')
+    const two = getToast('Two')
+    const { result } = renderHook(() => useToast())
+    act(() => {
+      result.current.dismiss()
+    })
+
+    // The front one slides down; the one behind fades where it was.
+    expect(two).toHaveAttribute('data-state', 'closed')
+    expect(two).not.toHaveAttribute('data-behind')
+    expect(two.style.getPropertyValue('--toast-y')).toBe('0px')
+    expect(one).toHaveAttribute('data-state', 'closed')
+    expect(one).toHaveAttribute('data-behind')
+    expect(one.style.getPropertyValue('--toast-y')).toBe('-8px')
+  })
+
+  it('shows three toasts of a long collapsed stack, the rest hidden behind', () => {
+    render(<Toaster limit={25} />)
+    act(() => {
+      for (let n = 1; n <= 25; n++) toast({ title: `T${n}` })
+    })
+
+    const items = screen.getAllByRole('status', { hidden: true })
+    const scales = [...document.querySelectorAll('li[data-index]')].map(
+      (node) =>
+        Number((node as HTMLElement).style.getPropertyValue('--toast-scale')),
+    )
+    expect(Math.min(...scales)).toBe(0.9)
+    expect(items.length).toBeGreaterThan(0)
+    expect(getToast('T23')).not.toHaveAttribute('data-hidden')
+    expect(getToast('T22')).toHaveAttribute('data-hidden')
+    expect(getToast('T22').style.getPropertyValue('--toast-y')).toBe('-16px')
+  })
+
+  it('keeps toasts shown by the page as it mounts, before the toaster', () => {
+    const Page = () => {
+      useEffect(() => {
+        toast({ title: 'Saved' })
+        toast({ title: 'Welcome' })
+      }, [])
+      return null
+    }
+    render(
+      <>
+        <Page />
+        <Toaster limit={3} />
+      </>,
+    )
+
+    expect(getToast('Welcome')).toHaveAttribute('data-state', 'open')
+    expect(getToast('Saved')).toHaveAttribute('data-state', 'open')
+  })
+
+  it('shows toasts with limit={NaN}, as with the default limit', () => {
+    render(<Toaster limit={Number.NaN} />)
+    show('Saved')
+
+    expect(getToast('Saved')).toHaveAttribute('data-state', 'open')
+  })
+
+  describe('timers after the focused toast leaves', () => {
+    it.each([
+      ['keyboard', true],
+      ['pointer', false],
+    ])(
+      'resume after a %s-focused toast closes over the limit',
+      (_, visible) => {
+        focusModality(visible)
+        render(<Toaster />)
+        act(() => {
+          toast({ title: 'A', closable: true })
+        })
+        act(() => {
+          within(getToast('A')).getByRole('button', { name: 'Close' }).focus()
+        })
+        show('B')
+        expect(screen.queryByText('A')).not.toBeInTheDocument()
+
+        // B is not paused by the focus A took with it: it closes on time.
+        act(() => {
+          vi.advanceTimersByTime(3500)
+        })
+        expect(screen.queryByText('B')).not.toBeInTheDocument()
+      },
+    )
+
+    it('resume after the last, focused toast is dismissed', () => {
+      keyboardFocus()
+      render(<Toaster />)
+      const { result } = renderHook(() => useToast())
+      let id = ''
+      act(() => {
+        id = toast({ title: 'A', closable: true }).id
+      })
+      act(() => {
+        within(getToast('A')).getByRole('button', { name: 'Close' }).focus()
+      })
+      act(() => {
+        result.current.dismiss(id)
+      })
+
+      show('B')
+      act(() => {
+        vi.advanceTimersByTime(3500)
+      })
+      expect(screen.queryByText('B')).not.toBeInTheDocument()
+    })
+
+    it('stay paused while a toast in a shadow root has the focus', () => {
+      keyboardFocus()
+      const host = document.createElement('div')
+      document.body.append(host)
+      const shadow = host.attachShadow({ mode: 'open' })
+      const mount = document.createElement('div')
+      shadow.append(mount)
+      const root = createRoot(mount)
+      act(() => root.render(<Toaster limit={3} />))
+      act(() => {
+        toast({ title: 'A', closable: true })
+        toast({ title: 'B' })
+      })
+      const a = [...shadow.querySelectorAll('li')].find((li) =>
+        li.textContent?.includes('A'),
+      ) as HTMLElement
+      act(() => {
+        within(a).getByRole('button', { name: 'Close' }).focus()
+      })
+      act(() => {
+        vi.advanceTimersByTime(3500)
+      })
+
+      expect(shadow.querySelector('ol')).toHaveAttribute('data-expanded')
+      expect(shadow.textContent).toContain('B')
+      act(() => root.unmount())
+      host.remove()
+    })
+  })
+
+  it('removes a hidden toast at once when it closes, without a flash', () => {
+    render(<Toaster limit={5} />)
+    show('1', '2', '3', '4')
+
+    // The fourth is hidden behind the third: no fade, which would start at
+    // full opacity.
+    expect(getToast('1')).toHaveAttribute('data-hidden')
+    expect(getToast('1')).toHaveClass(
+      '[&[data-hidden][data-behind][data-state=closed]]:animate-none',
+    )
   })
 })

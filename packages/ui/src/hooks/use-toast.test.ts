@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { resetDeprecationWarnings } from '../utils/deprecation'
-import { registerToasterLimit } from './toast-store'
+import { normalizeToastLimit, registerToasterLimit } from './toast-store'
 import { reducer, toast, useToast } from './use-toast'
 
 const makeToast = (id: string, title = `Toast ${id}`) => ({
@@ -10,6 +10,9 @@ const makeToast = (id: string, title = `Toast ${id}`) => ({
   title,
   open: true,
 })
+
+const openTitles = (toasts: { title?: unknown; open?: boolean }[]) =>
+  toasts.filter((t) => t.open !== false).map((t) => t.title)
 
 describe('toast reducer (deprecated)', () => {
   beforeEach(() => {
@@ -146,10 +149,8 @@ describe('toast store', () => {
     vi.useRealTimers()
   })
 
-  const openTitles = (toasts: { title?: unknown; open?: boolean }[]) =>
-    toasts.filter((t) => t.open !== false).map((t) => t.title)
-
-  it('closes the oldest toast over the default limit of one', () => {
+  it('closes the oldest toast over the limit of one', () => {
+    const unregister = registerToasterLimit(undefined, 1)
     const { result } = renderHook(() => useToast())
     act(() => {
       toast({ title: 'First' })
@@ -165,6 +166,65 @@ describe('toast store', () => {
       vi.runAllTimers()
     })
     expect(result.current.toasts.map((t) => t.title)).toEqual(['Second'])
+    unregister()
+  })
+
+  it('keeps one toast without a toaster, as in 5.0, and reopens the others when one mounts', () => {
+    const { result } = renderHook(() => useToast())
+    act(() => {
+      toast({ title: 'First', toasterId: 'late' })
+      toast({ title: 'Second', toasterId: 'late' })
+      toast({ title: 'Third', toasterId: 'late' })
+    })
+    // No <Toaster> yet: the limit of 1 (a custom renderer sees one toast).
+    expect(openTitles(result.current.toasts)).toEqual(['Third'])
+
+    // A toaster mounting while they are still in the store brings them back,
+    // up to its own limit.
+    let unregister = () => {}
+    act(() => {
+      unregister = registerToasterLimit('late', 2)
+    })
+    expect(openTitles(result.current.toasts)).toEqual(['Third', 'Second'])
+    unregister()
+  })
+
+  it("doesn't reopen a toast dismissed before its toaster mounts", () => {
+    const { result } = renderHook(() => useToast())
+    let first = { dismiss: () => {} }
+    act(() => {
+      first = toast({ title: 'First', toasterId: 'gone' })
+      toast({ title: 'Second', toasterId: 'gone' })
+      first.dismiss()
+    })
+    let unregister = () => {}
+    act(() => {
+      unregister = registerToasterLimit('gone', 3)
+    })
+    expect(openTitles(result.current.toasts)).toEqual(['Second'])
+    unregister()
+  })
+
+  it('keeps the limit of a toaster while another with its id unmounts', () => {
+    const { result } = renderHook(() => useToast())
+    const first = registerToasterLimit('twin', 3)
+    const second = registerToasterLimit('twin', 3)
+    first()
+    act(() => {
+      toast({ title: '1', toasterId: 'twin' })
+      toast({ title: '2', toasterId: 'twin' })
+    })
+    expect(openTitles(result.current.toasts)).toEqual(['2', '1'])
+    second()
+  })
+
+  it('reads a NaN limit as the default of one, and allows Infinity', () => {
+    expect(normalizeToastLimit(Number.NaN)).toBe(1)
+    expect(normalizeToastLimit(0)).toBe(1)
+    expect(normalizeToastLimit(2.7)).toBe(2)
+    expect(normalizeToastLimit(Number.POSITIVE_INFINITY)).toBe(
+      Number.POSITIVE_INFINITY,
+    )
   })
 
   it("keeps up to a toaster's registered limit open, newest first", () => {

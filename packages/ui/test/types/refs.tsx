@@ -296,6 +296,38 @@ export const generic = (
   </>
 )
 
+/**
+ * Pagination items: an `<a>` (as in 5.0) or, with a `page` and no `href`,
+ * a `<button>`; the ref and the event follow the element.
+ */
+export const pagination = (
+  <ui.Pagination onPageChange={() => {}}>
+    <ui.PaginationLink
+      href="?page=2"
+      page={2}
+      ref={(link) => void link?.href}
+      onClick={(event) => event.currentTarget.href}
+    >
+      2
+    </ui.PaginationLink>
+    <ui.PaginationLink ref={createRef<HTMLAnchorElement>()}>
+      3
+    </ui.PaginationLink>
+    <ui.PaginationLink
+      page={4}
+      ref={button}
+      onClick={(event) => event.currentTarget.type}
+    >
+      4
+    </ui.PaginationLink>
+    <ui.PaginationNext page={5} ref={button} />
+    {/* @ts-expect-error: a client-side item is a <button>, not an <a> */}
+    <ui.PaginationLink page={6} ref={createRef<HTMLAnchorElement>()}>
+      6
+    </ui.PaginationLink>
+  </ui.Pagination>
+)
+
 type Values = {
   name: string
   bio: string

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, within } from 'storybook/test'
+import { expect, waitFor, within } from 'storybook/test'
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -11,7 +11,14 @@ import {
 } from '../Breadcrumb'
 import { Button } from '../Button'
 import { Calendar } from '../Calendar'
-import { Slider } from '../Input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Slider,
+} from '../Input'
 import { Link } from '../Link'
 import {
   Pagination,
@@ -243,5 +250,54 @@ export const ScopedTheme: Story = {
     await expect(getComputedStyle(popover).color).not.toBe(
       getComputedStyle(canvasElement).color,
     )
+  },
+}
+
+/**
+ * `ThemeScope`'s `contrast` works like its `theme`: the Select's list opens
+ * at the end of `<body>`, outside the high-contrast card, and still gets its
+ * stronger control borders and menu highlight.
+ */
+export const ScopedContrast: Story = {
+  globals: { theme: 'light', contrast: 'standard' },
+  render: () => (
+    <ThemeScope
+      contrast="more"
+      className="flex w-80 flex-col items-start gap-3 rounded-16 bg-background-1 p-6 text-black"
+    >
+      <Typography size={14} semibold>
+        More contrast
+      </Typography>
+      <Select defaultValue="apple">
+        <SelectTrigger aria-label="Fruit">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="apple">Apple</SelectItem>
+          <SelectItem value="pear">Pear</SelectItem>
+        </SelectContent>
+      </Select>
+    </ThemeScope>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const body = within(canvasElement.ownerDocument.body)
+    const scope = canvas
+      .getByText('More contrast')
+      .closest('[data-contrast]') as HTMLElement
+    const border = (element: Element) =>
+      getComputedStyle(element).getPropertyValue('--color-control-border')
+    await userEvent.click(canvas.getByRole('combobox', { name: 'Fruit' }))
+    const list = await body.findByRole('listbox')
+
+    // Outside the scope in the DOM, but with its high-contrast tokens.
+    await expect(scope).not.toContainElement(list)
+    await expect(list.closest('[data-contrast]')).toHaveAttribute(
+      'data-contrast',
+      'more',
+    )
+    await expect(border(list)).toBe(border(scope))
+    await expect(border(list)).not.toBe(border(canvasElement))
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(body.queryByRole('listbox')).toBeNull())
   },
 }

@@ -233,8 +233,8 @@ const ClientSideExample = () => {
 /**
  * Client-side paging (state, not URLs): `onPageChange` on `Pagination` and a
  * `page` on each item without `href`. The items are buttons, the current one
- * `aria-current="page"`, and previous / next are natively disabled at the
- * ends.
+ * `aria-current="page"`, and previous / next are disabled at the ends with
+ * `aria-disabled`, so "next" keeps the keyboard's focus on the last page.
  */
 export const ClientSide: Story = {
   render: () => <ClientSideExample />,
@@ -249,7 +249,7 @@ export const ClientSide: Story = {
         'aria-current',
         'page',
       )
-      await expect(previous).toBeDisabled()
+      await expect(previous).toHaveAttribute('aria-disabled', 'true')
     })
 
     await step('a page button changes the page', async () => {
@@ -259,7 +259,7 @@ export const ClientSide: Story = {
         'aria-current',
         'page',
       )
-      await expect(previous).toBeEnabled()
+      await expect(previous).not.toHaveAttribute('aria-disabled')
     })
 
     await step(
@@ -269,7 +269,11 @@ export const ClientSide: Story = {
         await userEvent.keyboard('{Enter}')
         await userEvent.keyboard('{Enter}')
         await expect(status).toHaveTextContent('Page 5 of 5')
-        await expect(next).toBeDisabled()
+        await expect(next).toHaveAttribute('aria-disabled', 'true')
+        // Disabled under the focus, it keeps it; Enter does nothing more.
+        await expect(next).toHaveFocus()
+        await userEvent.keyboard('{Enter}')
+        await expect(status).toHaveTextContent('Page 5 of 5')
       },
     )
 

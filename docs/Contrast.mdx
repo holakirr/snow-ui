@@ -23,7 +23,15 @@ Like `data-theme`, it works at any depth, and contrast and theme scopes (`data-t
 </html>
 ```
 
-Portalled overlays take the contrast of `<html>`, like the theme: set it there for the whole app, or pass `data-contrast` to the `*Content` components.
+Portalled overlays (dialogs, popovers, menus, the lists of Select and Combobox, the date pickers' calendars…) render at the end of `<body>`, outside a `data-contrast` element, so they take the contrast of `<html>` and the OS. For a scope that reaches them, use `ThemeScope` with `contrast` (it renders the element with `data-contrast` and passes the level to the overlays opened inside it) or `SnowUIProvider`'s `contrast`; a `data-contrast` on a `*Content` component still wins:
+
+```tsx
+import { ThemeScope } from '@holakirr/snow-ui'
+
+<ThemeScope contrast="more">
+  <Select>…</Select> {/* its list has the stronger borders and highlight too */}
+</ThemeScope>
+```
 
 In this Storybook, the "Contrast" toolbar follows the OS or pins either level on `<html>`; [Foundations › Contrast](?path=/story/foundations--contrast) shows the controls in all four combinations of theme and contrast.
 

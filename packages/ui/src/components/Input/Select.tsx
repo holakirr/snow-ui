@@ -107,7 +107,7 @@ const SelectContent: FC<SelectContentProps> = ({
   position = 'popper',
   ...props
 }) => {
-  const { theme } = useSnowUI()
+  const { theme, contrast } = useSnowUI()
 
   return (
     <SelectPrimitive.Portal>
@@ -115,6 +115,7 @@ const SelectContent: FC<SelectContentProps> = ({
         // The portal is outside your `data-theme` scope: a `ThemeScope`'s
         // theme follows it.
         data-theme={theme}
+        data-contrast={contrast}
         className={twMerge(
           'relative z-50 max-h-96 min-w-[8rem] touch-manipulation overflow-hidden sm:touch-auto',
           popoverSurfaceClasses,

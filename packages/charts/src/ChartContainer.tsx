@@ -35,7 +35,7 @@ import {
   formatCompact,
   formatNumber,
 } from './format'
-import { useChartMessages } from './messages'
+import { useChartMessages, withDefault } from './messages'
 
 /** Where a chart's legend goes: above, below or beside (after) the plot. */
 export type ChartLegendPosition = 'top' | 'bottom' | 'end'
@@ -183,10 +183,12 @@ export const ChartContainer = ({
   ...props
 }: ChartContainerProps) => {
   const messages = useChartMessages()
-  const emptyMessage = emptyMessageProp ?? messages.empty
-  const loadingLabel = loadingLabelProp ?? messages.loading
-  const keyboardHint = keyboardHintProp ?? messages.keyboardHint
-  const navigationLabel = navigationLabelProp ?? messages.navigation
+  // Only a missing prop takes the message: `null` stays empty, as the
+  // default parameters of 0.1 left it.
+  const emptyMessage = withDefault(emptyMessageProp, messages.empty)
+  const loadingLabel = withDefault(loadingLabelProp, messages.loading)
+  const keyboardHint = withDefault(keyboardHintProp, messages.keyboardHint)
+  const navigationLabel = withDefault(navigationLabelProp, messages.navigation)
   const id = useId()
   const titleId = `${id}-title`
   const descriptionId = `${id}-description`

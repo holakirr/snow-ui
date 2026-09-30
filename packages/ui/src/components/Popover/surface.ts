@@ -40,11 +40,13 @@ export const popoverSeparatorClasses = 'my-2 h-[0.5px] bg-black-10'
 
 /**
  * Pushes a menu shortcut to the end of its item. `KBD` is `dir="ltr"`, so its
- * own `ms-auto` is a left margin, which in a right-to-left item would keep it
- * next to the label: there the auto margin goes on its right.
+ * own `ms-auto` is a left margin, which in a right-to-left menu would keep it
+ * next to the label: there the auto margin goes on its right. The menu's
+ * `dir` (Radix sets it on the content) decides, not `:dir()`, which CSS
+ * minifiers rewrite as a list of `:lang()`s for older browsers.
  */
 export const popoverShortcutEndClasses =
-  'ms-auto [:dir(rtl)>&]:ml-0 [:dir(rtl)>&]:mr-auto'
+  'ms-auto in-[[role=menu][dir=rtl]]:ml-0 in-[[role=menu][dir=rtl]]:mr-auto'
 
 /**
  * A shortcut at the end of a menu item: the Figma kit's plain 12/16 text

@@ -377,15 +377,15 @@ export const TableA: Story = {
         <TableToolbar>
           <Button
             aria-label="Add order"
-            startContent={<PlusIcon size={20} />}
+            startContent={<PlusIcon size={16} />}
           />
           <Button
             aria-label="Filter"
-            startContent={<FunnelSimpleIcon size={20} />}
+            startContent={<FunnelSimpleIcon size={16} />}
           />
           <Button
             aria-label="Sort"
-            startContent={<ArrowsDownUpIcon size={20} />}
+            startContent={<ArrowsDownUpIcon size={16} />}
           />
           <Search
             ref={search}

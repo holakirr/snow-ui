@@ -26,10 +26,12 @@ const STATIC_PAGES = new Set([
   'Avatar',
   'AvatarGroup',
   'Badge',
+  'Chip',
   'DonutChart',
   'Group',
   'IconBox',
   'Icons',
+  'Image',
   'KBD',
   'Label',
   'Progress',
@@ -40,6 +42,7 @@ const STATIC_PAGES = new Set([
   'Spinner',
   'Strip',
   'Text',
+  'TextStrip',
 ])
 
 const walk = (dir: string): string[] =>

@@ -191,6 +191,18 @@
       "docs": "components-card"
     },
     {
+      "name": "chip",
+      "type": "registry:ui",
+      "title": "Chip",
+      "files": ["components/Chip/Chip.tsx"],
+      "dependencies": ["@radix-ui/react-slot"],
+      "registryDependencies": ["snow-core"],
+      "import": "components/Chip/Chip",
+      "exports": ["Chip"],
+      "types": ["ChipColor", "ChipProps"],
+      "docs": "components-chip"
+    },
+    {
       "name": "combobox",
       "type": "registry:ui",
       "title": "Combobox",
@@ -518,6 +530,18 @@
       "docs": "components-icontext"
     },
     {
+      "name": "image",
+      "type": "registry:ui",
+      "title": "Image",
+      "files": ["components/Image/Image.tsx"],
+      "dependencies": [],
+      "registryDependencies": ["snow-core"],
+      "import": "components/Image/Image",
+      "exports": ["Image"],
+      "types": ["ImageProps", "ImageSize"],
+      "docs": "components-image"
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -701,6 +725,39 @@
       "docs": "components-link"
     },
     {
+      "name": "list-card",
+      "type": "registry:ui",
+      "title": "ListCard",
+      "files": ["components/ListCard/ListCard.tsx"],
+      "dependencies": [],
+      "registryDependencies": [
+        "icon-box",
+        "list-item",
+        "snow-core",
+        "snow-ui-provider",
+        "text"
+      ],
+      "import": "components/ListCard/ListCard",
+      "exports": [
+        "ActivitiesCard",
+        "ContactsCard",
+        "ListCard",
+        "NotificationsCard"
+      ],
+      "types": [
+        "ActivitiesCardProps",
+        "ActivityItem",
+        "ContactItem",
+        "ContactsCardProps",
+        "ListCardHeadingLevel",
+        "ListCardItem",
+        "ListCardProps",
+        "NotificationItem",
+        "NotificationsCardProps"
+      ],
+      "docs": "components-listcard"
+    },
+    {
       "name": "list-item",
       "type": "registry:ui",
       "title": "ListItem",
@@ -836,7 +893,7 @@
       "registryDependencies": ["snow-core"],
       "import": "components/Separator/Separator",
       "exports": ["Separator"],
-      "types": ["SeparatorProps"],
+      "types": ["SeparatorArrow", "SeparatorCount", "SeparatorProps"],
       "docs": "components-separator"
     },
     {
@@ -1118,6 +1175,18 @@
       "docs": "components-text-text"
     },
     {
+      "name": "text-strip",
+      "type": "registry:ui",
+      "title": "TextStrip",
+      "files": ["components/TextStrip/TextStrip.tsx"],
+      "dependencies": [],
+      "registryDependencies": ["snow-core", "snow-slot-host"],
+      "import": "components/TextStrip/TextStrip",
+      "exports": ["TextStrip"],
+      "types": ["TextStripProps"],
+      "docs": "components-textstrip"
+    },
+    {
       "name": "toast",
       "type": "registry:ui",
       "title": "Toast",
@@ -1299,6 +1368,7 @@
         "utils/env.ts",
         "utils/form-field.tsx",
         "utils/keyboard.ts",
+        "utils/radio-mark.tsx",
         "utils/slot.ts",
         "utils/token-scales.generated.ts",
         "utils/tw-merge.ts"
@@ -1347,6 +1417,7 @@
         "button",
         "calendar",
         "card",
+        "chip",
         "combobox",
         "multi-select",
         "command-palette",
@@ -1359,6 +1430,7 @@
         "group",
         "icon-box",
         "icon-text",
+        "image",
         "checkbox",
         "input",
         "input-small",
@@ -1371,6 +1443,7 @@
         "toggle-group",
         "label",
         "link",
+        "list-card",
         "list-item",
         "pagination",
         "popover",
@@ -1391,6 +1464,7 @@
         "tag",
         "kbd",
         "text",
+        "text-strip",
         "toast",
         "toaster",
         "tooltip",

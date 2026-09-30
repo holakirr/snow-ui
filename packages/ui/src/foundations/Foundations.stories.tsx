@@ -10,6 +10,7 @@ import {
   EffectsPage,
   MotionPage,
   RadiusPage,
+  ScrollbarPage,
   SpacingPage,
   TypographyPage,
 } from './docs'
@@ -41,6 +42,49 @@ export const Radius: Story = { render: () => <RadiusPage /> }
 export const Spacing: Story = { render: () => <SpacingPage /> }
 
 export const Effects: Story = { render: () => <EffectsPage /> }
+
+/**
+ * The `scrollbar-snow` utility: the kit's 4px thumb in an 8px gutter in
+ * Chromium and WebKit, the thin scrollbar in Firefox. Headless browsers hide
+ * scrollbars, so the screenshots don't show them.
+ */
+export const Scrollbar: Story = {
+  render: () => <ScrollbarPage />,
+  play: async ({ canvasElement }) => {
+    const box = (label: string) => {
+      const element = canvasElement.querySelector<HTMLElement>(
+        `[data-scrollbar-sample="${label}"]`,
+      )
+      if (!element) throw new Error(`No ${label} sample`)
+      return element
+    }
+    const snow = box('SnowUI scrollbar')
+    await expect(snow).toHaveClass('scrollbar-snow')
+    // Headless browsers hide scrollbars, so check the generated rules: the
+    // WebKit thumb, or the standard thin scrollbar.
+    const rules: CSSStyleRule[] = []
+    const walk = (list: CSSRuleList) => {
+      for (const rule of Array.from(list)) {
+        if (rule instanceof CSSStyleRule) rules.push(rule)
+        if ('cssRules' in rule) walk((rule as CSSGroupingRule).cssRules)
+      }
+    }
+    for (const sheet of Array.from(document.styleSheets)) walk(sheet.cssRules)
+    const selectors = rules.map((rule) => rule.selectorText)
+    if (CSS.supports('selector(::-webkit-scrollbar)')) {
+      await expect(selectors).toContain(
+        '.scrollbar-snow::-webkit-scrollbar-thumb',
+      )
+    } else {
+      const thin = rules.find(
+        (rule) =>
+          rule.selectorText === '.scrollbar-snow' &&
+          rule.style.getPropertyValue('scrollbar-width') === 'thin',
+      )
+      await expect(thin).toBeDefined()
+    }
+  },
+}
 
 /**
  * The animation tokens and components with the OS motion setting: the

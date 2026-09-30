@@ -1,0 +1,9 @@
+/*
+ * A project that copies the components (the @snow-ui registry) instead of
+ * rendering the package's, for test/dist.test.ts: theme-core.css has no
+ * `@source` of the package, so only the project's own classes are
+ * generated. `@source inline(…)` stands in for its markup (a copied Button).
+ */
+@import "tailwindcss" source(none);
+@import "@holakirr/snow-ui/theme-core.css";
+@source inline("bg-black-4 text-14 rounded-12 focus-ring");

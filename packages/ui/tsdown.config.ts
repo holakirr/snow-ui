@@ -30,9 +30,11 @@ export default defineConfig({
     customExports: (exports) => ({
       ...exports,
       // Built separately by the `build:css` script: index.css by the Tailwind
-      // CLI, theme.css and the font stylesheets by scripts/build-css.ts.
+      // CLI, theme.css, theme-core.css and the font stylesheets by
+      // scripts/build-css.ts.
       './index.css': './dist/index.css',
       './theme.css': './dist/theme.css',
+      './theme-core.css': './dist/theme-core.css',
       './fonts.css': './dist/fonts.css',
       './fonts-italic.css': './dist/fonts-italic.css',
       './fonts/*': './dist/fonts/*',
@@ -48,6 +50,7 @@ export default defineConfig({
     excludeEntrypoints: [
       './index.css',
       './theme.css',
+      './theme-core.css',
       './fonts.css',
       './fonts-italic.css',
       /^\.\/fonts\//,

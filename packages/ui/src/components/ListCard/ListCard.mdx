@@ -48,15 +48,15 @@ import { ActivitiesCard, ListCard, NotificationsCard } from '@holakirr/snow-ui'
 ## Anatomy
 
 1. **Card:** a `<section>` named by its title, 248px wide (the right sidebar's 280 minus its 16px padding), padding 16, radius 24, Background/3 with the Figma "Glass 2" effect (the `glass-2` utility).
-2. **Title** (`title`): 14 Semibold, a heading (`<h2>` by default, `headingLevel`), padding 4/8.
-3. **List:** a `<ul>` of `<li>` rows, 4px apart (8px in `ContactsCard`).
-4. **Row:** a [ListItem](?path=/docs/components-listitem--docs): a 24px icon or avatar, a 14 Regular title and a 12 Regular `text-secondary` description or time, each one truncated line. A row with `href` is a link, with `onSelect` a `<button type="button">`; both get the Figma "Frame" hover. A row with neither is static text.
+2. **Title** (`title`): 18 Semibold 18/28, a heading (`<h2>` by default, `headingLevel`), padding 4/8: 44 high.
+3. **List:** a `<ul>` of `<li>` rows, 4px apart, 4px under the title.
+4. **Row:** a [ListItem](?path=/docs/components-listitem--docs) with padding 8 and a gap of 8: a 24px icon or avatar (28px in `ContactsCard`), a 14 Regular title and a 12 Regular `text-secondary` description or time, each one truncated line. A row with `href` is a link, with `onSelect` a `<button type="button">`; both get the Figma "Frame" hover. A row with neither is static text.
 
 | Component | Row content | Figma |
 | --- | --- | --- |
 | `NotificationsCard` | `icon` (16px, on a 24px Black/4% [IconBox](?path=/docs/components-iconbox--docs) tile), `title`, `time` | Notifications |
 | `ActivitiesCard` | `avatar` (24px: `Avatar size="sm"`, `Image size={24}`), `title`, `time` | Activities |
-| `ContactsCard` | `avatar`, `name` (one line, rows 8px apart) | Contacts |
+| `ContactsCard` | `avatar` (28px: `Avatar size="sm" className="size-7"`, `Image size={28}`), `name` (one line: rows 44 high) | Contacts |
 | `ListCard` | `icon`, `title`, `description` | — |
 
 ## Variants
@@ -125,7 +125,7 @@ The full table is in the package README.
 
 - Keep a card to a few rows, and link to the full list from the page.
 - Make a row a link when it opens a record, a button when it does something in place.
-- Use a 24px avatar or a 16px icon, as the Figma cards do.
+- Use a 24px avatar or a 16px icon, and a 28px avatar in `ContactsCard`, as the Figma cards do.
 
 </Do>
 <Dont>

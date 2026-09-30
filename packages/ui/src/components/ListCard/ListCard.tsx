@@ -33,7 +33,7 @@ export type ListCardProps = Omit<
   ComponentProps<'section'>,
   'title' | 'children'
 > & {
-  /** The card's title (14 Semibold), a heading that names the section. */
+  /** The card's title (18 Semibold), a heading that names the section. */
   title: ReactNode
 
   /** The rows. */
@@ -49,8 +49,8 @@ export type ListCardProps = Omit<
 /**
  * ListCard is a titled list of ListItem rows on the kit's popup surface —
  * the Figma Notifications, Activities and Contacts cards: 248px wide,
- * Background/3 with the "Glass 2" effect, radius 24, padding 16, a 14
- * Semibold title. A row with `href` is a link, with `onSelect` a button;
+ * Background/3 with the "Glass 2" effect, radius 24, padding 16, an 18
+ * Semibold title (44 high) and rows 4px apart. A row with `href` is a link, with `onSelect` a button;
  * both get the Figma "Frame" hover fill. NotificationsCard, ActivitiesCard
  * and ContactsCard are ListCards with the kit's content.
  */
@@ -70,15 +70,16 @@ const ListCard: FC<ListCardProps> = ({
       className={twMerge(
         // Figma: the SearchPopup surface, 248 wide (the RightSidebar's 280
         // minus its 16px padding).
-        'flex w-62 flex-col gap-1 rounded-24 p-4 text-black glass-2 [--list-card-gap:--spacing(1)]',
+        'flex w-62 flex-col gap-1 rounded-24 p-4 text-black glass-2',
         className,
       )}
       {...props}
     >
-      <Typography asChild size={14} semibold className="px-1 py-2">
+      {/* Figma: the kit's `Text`, 18 Semibold 18/28 with padding 4/8: 44 high. */}
+      <Typography asChild size={18} semibold className="px-1 py-2">
         <Heading id={headingId}>{title}</Heading>
       </Typography>
-      <ul className="flex flex-col gap-(--list-card-gap)">
+      <ul className="flex flex-col gap-1">
         {items.map(({ id, icon, title, description, href, onSelect }) => (
           <li key={id} className="flex">
             {href || onSelect ? (
@@ -207,7 +208,10 @@ export type ContactItem = Omit<
   ListCardItem,
   'title' | 'description' | 'icon'
 > & {
-  /** A 24px avatar. */
+  /**
+   * A 28px avatar, as in the Figma card (an `Avatar size="sm"
+   * className="size-7"`, an `Image size={28}`): the row is then 44 high.
+   */
   avatar?: ReactNode
   /** The person's name. */
   name: ReactNode
@@ -225,15 +229,10 @@ export type ContactsCardProps = Omit<ListCardProps, 'items' | 'title'> & {
 }
 
 /**
- * The Figma "Contacts" card: one-line rows of an avatar and a name, 8px
- * apart.
+ * The Figma "Contacts" card: one-line rows of a 28px avatar and a name, 44
+ * high.
  */
-const ContactsCard: FC<ContactsCardProps> = ({
-  items,
-  title,
-  className,
-  ...props
-}) => {
+const ContactsCard: FC<ContactsCardProps> = ({ items, title, ...props }) => {
   const messages = useMessages()
 
   return (
@@ -244,8 +243,6 @@ const ContactsCard: FC<ContactsCardProps> = ({
         icon: avatar,
         title: name,
       }))}
-      // Figma: the one-line contact rows are 8px apart.
-      className={twMerge('[--list-card-gap:--spacing(2)]', className)}
       {...props}
     />
   )

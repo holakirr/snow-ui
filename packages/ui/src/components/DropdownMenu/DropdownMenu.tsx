@@ -11,6 +11,7 @@ import {
   popoverItemClasses,
   popoverLabelClasses,
   popoverSeparatorClasses,
+  popoverShortcutClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
 import { useSnowUI } from '../SnowUIProvider'
@@ -228,12 +229,22 @@ DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
 
 type DropdownMenuShortcutProps = KBDProps
 
+/**
+ * A `<kbd>` at the end of the item, in the kit's plain `text-secondary`
+ * text. Pass a `variant` (`solid`, `border`) for the `KBD` badge.
+ */
 const DropdownMenuShortcut: FC<DropdownMenuShortcutProps> = ({
   className,
+  variant,
   ...props
 }) => (
   <KBD
-    className={twMerge('ms-auto', className)}
+    className={twMerge(
+      'ms-auto',
+      variant == null && popoverShortcutClasses,
+      className,
+    )}
+    variant={variant}
     size={TEXT_SIZES[12]}
     {...props}
   />

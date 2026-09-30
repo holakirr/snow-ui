@@ -27,6 +27,14 @@ export const popoverLabelClasses = 'px-2 py-1.5 text-12 text-secondary'
  */
 export const popoverSeparatorClasses = 'my-2 h-[0.5px] bg-black-10'
 
+/**
+ * A shortcut at the end of a menu item: the Figma kit's plain 12/16 text
+ * ("⌘C", Black/40%) in `text-secondary`, with no `KBD` fill, which the menu
+ * shortcuts drop unless you pass a `variant`. Dimmed with a disabled item.
+ */
+export const popoverShortcutClasses =
+  'min-w-0 rounded-none bg-transparent px-0 text-secondary in-data-[disabled]:text-black-20'
+
 /** The popover open/close animations. */
 export const popoverAnimationClasses =
   'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:animate-zoom-out-95 data-[state=open]:animate-zoom-in-95 data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom'

@@ -47,22 +47,22 @@ export const Default: Story = {
       <ContextMenuContent className="w-64">
         <ContextMenuItem>
           Back
-          <ContextMenuShortcut keys={['⌘', '[']} />
+          <ContextMenuShortcut keys={['⌘', '[']} separator="" />
         </ContextMenuItem>
         <ContextMenuItem disabled>
           Forward
-          <ContextMenuShortcut keys={['⌘', ']']} />
+          <ContextMenuShortcut keys={['⌘', ']']} separator="" />
         </ContextMenuItem>
         <ContextMenuItem>
           Reload
-          <ContextMenuShortcut keys={['⌘', 'R']} />
+          <ContextMenuShortcut keys={['⌘', 'R']} separator="" />
         </ContextMenuItem>
         <ContextMenuSub>
           <ContextMenuSubTrigger>More Tools</ContextMenuSubTrigger>
           <ContextMenuSubContent className="w-48">
             <ContextMenuItem>
               Save Page As...
-              <ContextMenuShortcut keys={['⇧', '⌘', 'S']} />
+              <ContextMenuShortcut keys={['⇧', '⌘', 'S']} separator="" />
             </ContextMenuItem>
             <ContextMenuItem>Create Shortcut...</ContextMenuItem>
             <ContextMenuItem>Name Window...</ContextMenuItem>
@@ -73,7 +73,7 @@ export const Default: Story = {
         <ContextMenuSeparator />
         <ContextMenuCheckboxItem checked>
           Show Bookmarks Bar
-          <ContextMenuShortcut keys={['⇧', '⌘', 'B']} />
+          <ContextMenuShortcut keys={['⇧', '⌘', 'B']} separator="" />
         </ContextMenuCheckboxItem>
         <ContextMenuCheckboxItem>Show Full URLs</ContextMenuCheckboxItem>
         <ContextMenuSeparator />

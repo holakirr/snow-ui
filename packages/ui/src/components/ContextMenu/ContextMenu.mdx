@@ -44,7 +44,7 @@ import {
   <ContextMenuContent>
     <ContextMenuItem onSelect={reload}>
       Reload
-      <ContextMenuShortcut keys={['⌘', 'R']} />
+      <ContextMenuShortcut keys={['⌘', 'R']} separator="" />
     </ContextMenuItem>
     <ContextMenuItem onSelect={remove}>Delete</ContextMenuItem>
   </ContextMenuContent>
@@ -74,7 +74,7 @@ import {
 6. **Label** (`ContextMenuLabel`, optional): a group title, 12/16 `text-secondary`, 28px high; takes `inset`.
 7. **Group** (`ContextMenuGroup`, optional): groups items (no spacing of its own).
 8. **Separator** (`ContextMenuSeparator`): a 0.5px `black-10` line, 8px from its neighbours (the Figma 8 + 0.5 + 8 between groups).
-9. **Shortcut** (`ContextMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`.
+9. **Shortcut** (`ContextMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`, as the kit's plain text in `text-secondary` (Figma: "⌘C" in Black/40%, no key cap). `separator=""` joins symbol keys as in the kit (`⌘C`, not `⌘+C`); a `variant` (`solid`, `border`) brings back the KBD key cap.
 10. **Submenu** (`ContextMenuSub`): a `ContextMenuSubTrigger` (an item with a 16px chevron at the end, as in DropdownMenu) and a `ContextMenuSubContent` on the same surface. `ContextMenuPortal` is exported to portal it.
 
 ## States
@@ -231,7 +231,7 @@ A `separator` line between groups.
 
 ### ContextMenuShortcut
 
-A `KBD` at the end of an item: `keys` are the keys it shows. It takes the KBD props.
+A `KBD` at the end of an item, in plain `text-secondary` text (dimmed with a disabled item): `keys` are the keys it shows. It takes the KBD props; with a `variant` it keeps the KBD key cap.
 
 <ArgTypes of={ContextMenuShortcut} />
 

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
 
+import { colorOf } from '../../test/colors'
 import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
 import {
@@ -132,12 +133,12 @@ export const Default: Story = {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             Profile
-            <DropdownMenuShortcut keys={['⇧', '⌘', 'P']} />
+            <DropdownMenuShortcut keys={['⇧', '⌘', 'P']} separator="" />
           </DropdownMenuItem>
           <DropdownMenuCheckboxItem checked>Dark mode</DropdownMenuCheckboxItem>
           <DropdownMenuItem>
             Keyboard shortcuts
-            <DropdownMenuShortcut keys={['⌘', 'S']} />
+            <DropdownMenuShortcut keys={['⌘', 'S']} separator="" />
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
@@ -156,7 +157,7 @@ export const Default: Story = {
           </DropdownMenuSub>
           <DropdownMenuItem>
             New Team
-            <DropdownMenuShortcut keys={['⌘', 'T']} />
+            <DropdownMenuShortcut keys={['⌘', 'T']} separator="" />
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
@@ -171,7 +172,7 @@ export const Default: Story = {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           Log out
-          <DropdownMenuShortcut keys={['⇧', '⌘', 'Q']} />
+          <DropdownMenuShortcut keys={['⇧', '⌘', 'Q']} separator="" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -196,7 +197,7 @@ export const RTL: Story = {
           <DropdownMenuLabel>حسابي</DropdownMenuLabel>
           <DropdownMenuItem>
             الملف الشخصي
-            <DropdownMenuShortcut keys={['⌘', 'P']} />
+            <DropdownMenuShortcut keys={['⌘', 'P']} separator="" />
           </DropdownMenuItem>
           <DropdownMenuCheckboxItem checked>
             الوضع الداكن
@@ -274,6 +275,16 @@ export const Open: Story = {
       await expect(line.top - above.bottom).toBeCloseTo(8, 1)
       await expect(below.top - line.bottom).toBeCloseTo(8, 1)
     })
+
+    await step('the shortcut is plain text-secondary text', async () => {
+      const shortcut = within(
+        page.getByRole('menuitem', { name: /^Profile/ }),
+      ).getByText('⌘P')
+      const style = getComputedStyle(shortcut)
+      await expect(style.color).toBe(colorOf('text-secondary', menu))
+      await expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
+      await expect(style.fontSize).toBe('12px')
+    })
   },
   render: () => (
     <div className="h-96">
@@ -285,7 +296,7 @@ export const Open: Story = {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuItem>
             Profile
-            <DropdownMenuShortcut keys={['⌘', 'P']} />
+            <DropdownMenuShortcut keys={['⌘', 'P']} separator="" />
           </DropdownMenuItem>
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuCheckboxItem checked>Dark mode</DropdownMenuCheckboxItem>

@@ -9,6 +9,7 @@ import {
   ContextMenuItem,
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
+  ContextMenuShortcut,
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
@@ -114,6 +115,58 @@ describe('ContextMenu', () => {
     expect(screen.getByRole('menuitem', { name: 'Back' })).toHaveClass(
       'rounded-12',
     )
+  })
+})
+
+describe('menu shortcuts', () => {
+  it('are plain text-secondary text, and keep the KBD key cap with a variant', () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Edit</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>
+            Copy
+            <DropdownMenuShortcut keys={['⌘', 'C']} separator="" />
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            Paste
+            <DropdownMenuShortcut keys={['⌘', 'V']} variant="solid" />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+
+    const plain = screen.getByText('⌘C')
+    expect(plain.tagName).toBe('KBD')
+    expect(plain).toHaveAttribute('aria-keyshortcuts', '⌘C')
+    expect(plain).toHaveClass('ms-auto', 'text-secondary', 'bg-transparent')
+    expect(plain).not.toHaveClass('bg-black-4', 'text-black', 'min-w-7')
+    // Dimmed with its item when the item is disabled.
+    expect(plain).toHaveClass('in-data-[disabled]:text-black-20')
+
+    const cap = screen.getByText('⌘+V')
+    expect(cap).toHaveClass('ms-auto', 'bg-black-4', 'text-black', 'min-w-7')
+    expect(cap).not.toHaveClass('text-secondary')
+  })
+
+  it('look the same in ContextMenu', () => {
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Area</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>
+            Reload
+            <ContextMenuShortcut keys={['⌘', 'R']} />
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText('Area'))
+
+    const shortcut = screen.getByText('⌘+R')
+    expect(shortcut.tagName).toBe('KBD')
+    expect(shortcut).toHaveClass('ms-auto', 'text-secondary', 'bg-transparent')
+    expect(shortcut).not.toHaveClass('bg-black-4')
   })
 })
 

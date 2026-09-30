@@ -45,7 +45,7 @@ import {
   <DropdownMenuContent align="start" className="w-60">
     <DropdownMenuItem onSelect={openProfile}>
       Profile
-      <DropdownMenuShortcut keys={['⌘', 'P']} />
+      <DropdownMenuShortcut keys={['⌘', 'P']} separator="" />
     </DropdownMenuItem>
     <DropdownMenuItem onSelect={logOut}>Log out</DropdownMenuItem>
   </DropdownMenuContent>
@@ -78,7 +78,7 @@ import {
 6. **Label** (`DropdownMenuLabel`, optional): a group title, 12/16 `text-secondary`, 28px high; takes `inset`.
 7. **Group** (`DropdownMenuGroup`, optional): groups items, with a 4px margin above and below (it merges into a separator's 8px).
 8. **Separator** (`DropdownMenuSeparator`): a 0.5px `black-10` line, 8px from its neighbours (the Figma 8 + 0.5 + 8 between groups).
-9. **Shortcut** (`DropdownMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`.
+9. **Shortcut** (`DropdownMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`, as the kit's plain text in `text-secondary` (Figma: "⌘C" in Black/40%, no key cap). `separator=""` joins symbol keys as in the kit (`⌘C`, not `⌘+C`); a `variant` (`solid`, `border`) brings back the KBD key cap.
 10. **Submenu** (`DropdownMenuSub`): a `DropdownMenuSubTrigger` (an item with an arrow at the end) and a `DropdownMenuSubContent` on the same surface. Wrap the sub content in `DropdownMenuPortal`, as the stories do.
 
 The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdownmenu--open).
@@ -237,7 +237,7 @@ A `separator` line between groups.
 
 ### DropdownMenuShortcut
 
-A `KBD` at the end of an item: `keys` are the keys it shows. It takes the KBD props.
+A `KBD` at the end of an item, in plain `text-secondary` text (dimmed with a disabled item): `keys` are the keys it shows. It takes the KBD props; with a `variant` it keeps the KBD key cap.
 
 <ArgTypes of={DropdownMenuShortcut} />
 

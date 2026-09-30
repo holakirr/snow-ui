@@ -9,6 +9,7 @@ import {
   popoverItemClasses,
   popoverLabelClasses,
   popoverSeparatorClasses,
+  popoverShortcutClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
 import { useSnowUI } from '../SnowUIProvider'
@@ -204,10 +205,25 @@ ContextMenuSeparator.displayName = CtxMenuPrimitive.Separator.displayName
 
 type ContextMenuShortcutProps = KBDProps
 
+/**
+ * A `<kbd>` at the end of the item, in the kit's plain `text-secondary`
+ * text. Pass a `variant` (`solid`, `border`) for the `KBD` badge.
+ */
 const ContextMenuShortcut: FC<ContextMenuShortcutProps> = ({
   className,
+  variant,
   ...props
-}) => <KBD className={twMerge('ms-auto', className)} {...props} />
+}) => (
+  <KBD
+    className={twMerge(
+      'ms-auto',
+      variant == null && popoverShortcutClasses,
+      className,
+    )}
+    variant={variant}
+    {...props}
+  />
+)
 ContextMenuShortcut.displayName = 'ContextMenuShortcut'
 
 export {

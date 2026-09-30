@@ -161,9 +161,11 @@ type TableCellProps = ComponentProps<'td'> & {
 }
 
 // `reveal`: one rule with every condition in it, so no other utility has to
-// win over it. Only where the pointer can hover (touch screens can't).
+// win over it. A checked box is a custom one (`aria-checked`) or a native
+// `<input type="checkbox">`. Only where the pointer can hover (touch screens
+// can't).
 const REVEAL =
-  '*:transition-opacity [@media(hover:hover)]:[tr:not(:hover,[data-state=selected])>&:not(:focus-within,:has([aria-checked=true],[aria-checked=mixed],[aria-expanded=true]))>*]:opacity-0'
+  '*:transition-opacity [@media(hover:hover)]:[tr:not(:hover,[data-state=selected])>&:not(:focus-within,:has([aria-checked=true],[aria-checked=mixed],[type=checkbox]:checked,[type=checkbox]:indeterminate,[aria-expanded=true]))>*]:opacity-0'
 
 const TableCell: FC<TableCellProps> = ({ className, reveal, ...props }) => (
   <td

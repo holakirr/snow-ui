@@ -111,7 +111,7 @@ With TanStack Table:
 
 - **Row hover:** the row's cells get a Black/4% fill, rounded 12px at the first and last cell. Header rows don't react.
 - **Selected row:** `data-state="selected"` on a `TableRow` gives the same highlight. Selection itself is yours (the stories use checkboxes and TanStack's row selection).
-- **Revealed controls:** the elements of a `TableCell` with `reveal` are transparent until their row is hovered or selected, or while they hold the keyboard focus, a checked (or mixed) checkbox or an open menu (`aria-expanded="true"`). On devices without hover (touch screens) they always show.
+- **Revealed controls:** the elements of a `TableCell` with `reveal` are transparent until their row is hovered or selected, or while they hold the keyboard focus, a checked (or mixed) checkbox, the Checkbox component or a native `<input type="checkbox">`, or an open menu (`aria-expanded="true"`). On devices without hover (touch screens) they always show.
 - **Sort button:** hover turns the label black; keyboard focus shows the `focus-ring`.
 - **Empty:** Table has no empty state of its own; render a row with one cell spanning every column, as the Filtered story does.
 

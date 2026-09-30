@@ -174,6 +174,9 @@ describe('TableToolbar and TableCell reveal', () => {
       ':focus-within',
       '[aria-checked=true]',
       '[aria-checked=mixed]',
+      // A native checkbox, checked or indeterminate.
+      '[type=checkbox]:checked',
+      '[type=checkbox]:indeterminate',
       '[aria-expanded=true]',
     ]) {
       expect(hide).toContain(condition)

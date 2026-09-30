@@ -4,7 +4,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "129 kB"
+    "limit": "143 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Button }",

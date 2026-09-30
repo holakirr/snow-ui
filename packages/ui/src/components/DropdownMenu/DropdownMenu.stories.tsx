@@ -226,10 +226,12 @@ export const RTL: Story = {
 
     const item = page.getByRole('menuitem', { name: /^الملف الشخصي/ })
     const shortcut = item.querySelector('kbd') as HTMLElement
-    // The shortcut is at the end of the item: on the left.
-    await expect(shortcut.getBoundingClientRect().left).toBeLessThan(
-      item.getBoundingClientRect().left + item.offsetWidth / 2,
-    )
+    // The shortcut is at the end of the item: on the left, at its 8px
+    // padding (the `<kbd>` is left-to-right, its auto margin is not).
+    await settleLayout(menu)
+    await expect(
+      shortcut.getBoundingClientRect().left - item.getBoundingClientRect().left,
+    ).toBeCloseTo(8, 0)
 
     const sub = page.getByRole('menuitem', { name: 'دعوة المستخدمين' })
     sub.focus()

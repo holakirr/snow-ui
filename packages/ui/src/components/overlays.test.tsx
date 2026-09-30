@@ -152,6 +152,8 @@ describe('menu shortcuts', () => {
     expect(plain.tagName).toBe('KBD')
     expect(plain).toHaveAttribute('aria-keyshortcuts', '⌘C')
     expect(plain).toHaveClass('ms-auto', 'text-secondary', 'bg-transparent')
+    // At the end of a right-to-left item too: the `<kbd>` is `dir="ltr"`.
+    expect(plain).toHaveClass('[:dir(rtl)>&]:mr-auto', '[:dir(rtl)>&]:ml-0')
     expect(plain).not.toHaveClass('bg-black-4', 'text-black', 'min-w-7')
     // Dimmed with its item when the item is disabled.
     expect(plain).toHaveClass('in-data-[disabled]:text-black-20')

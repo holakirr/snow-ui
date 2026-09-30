@@ -15,6 +15,7 @@ import {
   popoverScrollClasses,
   popoverSeparatorClasses,
   popoverShortcutClasses,
+  popoverShortcutEndClasses,
   popoverSurfaceClasses,
 } from '../Popover/surface'
 import { useSnowUI } from '../SnowUIProvider'
@@ -264,7 +265,7 @@ const DropdownMenuShortcut: FC<DropdownMenuShortcutProps> = ({
 }) => (
   <KBD
     className={twMerge(
-      'ms-auto',
+      popoverShortcutEndClasses,
       variant == null && popoverShortcutClasses,
       className,
     )}

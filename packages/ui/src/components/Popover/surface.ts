@@ -39,6 +39,14 @@ export const popoverLabelClasses = 'px-2 py-1.5 text-12 text-secondary'
 export const popoverSeparatorClasses = 'my-2 h-[0.5px] bg-black-10'
 
 /**
+ * Pushes a menu shortcut to the end of its item. `KBD` is `dir="ltr"`, so its
+ * own `ms-auto` is a left margin, which in a right-to-left item would keep it
+ * next to the label: there the auto margin goes on its right.
+ */
+export const popoverShortcutEndClasses =
+  'ms-auto [:dir(rtl)>&]:ml-0 [:dir(rtl)>&]:mr-auto'
+
+/**
  * A shortcut at the end of a menu item: the Figma kit's plain 12/16 text
  * ("⌘C", Black/40%) in `text-secondary`, with no `KBD` fill, which the menu
  * shortcuts drop unless you pass a `variant`. Dimmed with a disabled item.

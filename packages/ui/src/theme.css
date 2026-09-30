@@ -3,8 +3,8 @@
  *
  * Everything the components need except Tailwind itself: the design tokens
  * (theme variables, theme and contrast scopes), the `dark` and
- * `contrast-more` variants, the `glass*`, `focus-ring` and `hit-area`
- * utilities, the base rules (border colour, cursors, keyframes and their
+ * `contrast-more` variants, the `glass*`, `focus-ring`, `hit-area` and
+ * `scrollbar-snow` utilities, the base rules (border colour, cursors, keyframes and their
  * reduced-motion values) and react-day-picker's stylesheet (the Calendar). It has no
  * `@import "tailwindcss"` and no preflight, so a project that runs Tailwind v4
  * imports it after its own Tailwind:
@@ -239,6 +239,43 @@
     min-width: 24px;
     min-height: 24px;
     translate: -50% -50%;
+  }
+}
+
+/*
+ * The Figma "Scrollbar" (33509:100029) on a scroll container: a 4px
+ * rounded thumb that widens to 8px under the pointer, in the
+ * `control-border` colour (the Figma Black/20%; 3:1 or more with more
+ * contrast), on no track. Where the browser has the WebKit scrollbar
+ * pseudo-elements (Chrome, Edge, Safari) the thumb is a 4px bar in an 8px
+ * gutter; elsewhere (Firefox) the standard thin scrollbar in that colour.
+ * Nothing animates. In forced-colors mode the system scrollbar stays.
+ */
+@utility scrollbar-snow {
+  @media not (forced-colors: active) {
+    @supports selector(::-webkit-scrollbar) {
+      &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        border: 2px solid transparent;
+        border-radius: 9999px;
+        background: var(--color-control-border) padding-box;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        border-width: 0;
+      }
+      &::-webkit-scrollbar-track,
+      &::-webkit-scrollbar-corner {
+        background: transparent;
+      }
+    }
+    @supports not selector(::-webkit-scrollbar) {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-control-border) transparent;
+    }
   }
 }
 

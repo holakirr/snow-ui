@@ -108,6 +108,17 @@ describe('index.css (precompiled)', () => {
   it("has react-day-picker's stylesheet in the components layer", () => {
     expect(read('index.css')).toMatch(/@layer components\{\.rdp-root\{/)
   })
+
+  it('has the theme utilities no component uses, for your own markup', () => {
+    // `scrollbar-snow`: the WebKit thumb and the standard thin scrollbar,
+    // outside forced-colors mode.
+    expect(read('index.css')).toMatch(
+      /@media not all and \(forced-colors:\s*active\)\{@supports selector\(::-webkit-scrollbar\)\{\.scrollbar-snow::-webkit-scrollbar\{/,
+    )
+    expect(read('index.css')).toMatch(
+      /\.scrollbar-snow\{scrollbar-width:thin;scrollbar-color:var\(--color-control-border\) transparent\}/,
+    )
+  })
 })
 
 describe('theme.css (for projects on Tailwind v4)', () => {
@@ -127,6 +138,7 @@ describe('theme.css (for projects on Tailwind v4)', () => {
     expect(theme()).toMatch(/@custom-variant dark \{/)
     expect(theme()).toMatch(/@utility focus-ring \{/)
     expect(theme()).toMatch(/@utility glass \{/)
+    expect(theme()).toMatch(/@utility scrollbar-snow \{/)
     expect(theme()).toMatch(/@layer base \{/)
   })
 

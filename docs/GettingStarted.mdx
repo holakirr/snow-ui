@@ -35,6 +35,8 @@ import '@holakirr/snow-ui/index.css'
 
 Your Tailwind then generates one set of utilities for your code and the components, and the kit's tokens work in your own markup (`bg-black-4`, `text-14`, `rounded-12`). With a Tailwind [prefix](https://tailwindcss.com/docs/styling-with-utility-classes#using-the-prefix-option), use `index.css`: the components' classes are unprefixed. See [Theming](?path=/docs/guides-theming--docs) for what `theme.css` changes in your Tailwind setup.
 
+Only using the tokens, or copying the components from the [registry](?path=/docs/guides-registry--docs) instead of importing them? Import `@holakirr/snow-ui/theme-core.css`: the same theme without the package's components, so Tailwind doesn't generate their classes.
+
 ## Add the font (optional)
 
 The kit uses Inter with the `ss01` and `cv01` OpenType features, which the Google Fonts build doesn't have. `fonts.css` self-hosts Inter 4.1 (the rsms build, SIL Open Font License), split by `unicode-range` so a page only downloads the scripts it shows.

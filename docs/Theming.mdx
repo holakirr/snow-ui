@@ -87,7 +87,7 @@ With the OS setting `prefers-reduced-motion: reduce` (WCAG 2.3.3), the overlays 
 @import "@holakirr/snow-ui/theme.css";
 ```
 
-It adds the package's built components to Tailwind's sources itself (`@source`, relative to its own file); with 5.0 or older, add `@source "../node_modules/@holakirr/snow-ui/dist";` yourself.
+It adds the package's built components to Tailwind's sources itself (`@source`, relative to its own file); with 5.0 or older, add `@source "../node_modules/@holakirr/snow-ui/dist";` yourself. `theme-core.css` is the same theme without that `@source`, for projects that don't render the package's components (they copy them from the [registry](?path=/docs/guides-registry--docs), or only use the tokens): Tailwind then generates the classes of your code only.
 
 What it changes in your Tailwind setup:
 

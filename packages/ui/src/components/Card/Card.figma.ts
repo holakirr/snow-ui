@@ -24,9 +24,9 @@ const state =
 
 const count = instance.getEnum('Count', { '1': 1, '2': 2, '3': 3, '4': 4 }) ?? 1
 
-// The Card stacks its rows 4px apart itself, like the Figma auto-layout.
 const attrs = {
   ...state,
+  className: 'flex flex-col gap-1',
 } satisfies AttrsOf<CardProps>
 
 const rows = Array.from(

@@ -38,41 +38,12 @@ const cardStyles = cva('text-black transition-shadow', {
   },
 })
 
-/** The display utilities: a `className` with one sets the card's layout. */
-const DISPLAY = new Set([
-  'block',
-  'inline',
-  'inline-block',
-  'flex',
-  'inline-flex',
-  'grid',
-  'inline-grid',
-  'flow-root',
-  'contents',
-  'table',
-  'list-item',
-  'hidden',
-])
-
-/**
- * Whether `className` sets the display (`flex`, `grid`, `block`…, with any
- * variant such as `md:grid`, or `!` for important).
- */
-const setsDisplay = (className?: string) =>
-  className
-    ?.split(/\s+/)
-    .some((token) =>
-      DISPLAY.has(
-        token.slice(token.lastIndexOf(':') + 1).replace(/^!|!$/g, ''),
-      ),
-    ) ?? false
-
 type CardProps = ComponentProps<'div'> &
   VariantProps<typeof cardStyles> & {
     /**
      * `default` is the Figma Card component (radius 16, padding 12/16,
-     * Surface/1, a vertical stack 4px apart); `block` is the dashboard block
-     * (radius 20, padding 24, Background/2), with no layout of its own.
+     * Surface/1); `block` is the dashboard block (radius 20, padding 24,
+     * Background/2).
      * @default 'default'
      */
     variant?: 'default' | 'block'
@@ -95,12 +66,6 @@ type CardProps = ComponentProps<'div'> &
     bordered?: boolean
   }
 
-/**
- * A card. The default variant stacks its children like the Figma Card (a
- * vertical auto-layout, 4px apart: `flex flex-col gap-1`), unless your
- * `className` sets a display (`flex`, `grid`, `block`…): then your layout
- * is used as it is, and the stack's gap doesn't apply.
- */
 const Card: FC<CardProps> = ({
   variant,
   interactive,
@@ -113,10 +78,6 @@ const Card: FC<CardProps> = ({
     data-state={selected ? 'selected' : undefined}
     className={twMerge(
       cardStyles({ variant, interactive, bordered, selected }),
-      // The Figma Card's auto-layout, when you don't lay the card out.
-      (variant ?? 'default') === 'default' &&
-        !setsDisplay(className) &&
-        'flex flex-col gap-1',
       className,
     )}
     {...props}

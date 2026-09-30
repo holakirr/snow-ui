@@ -70,6 +70,10 @@ The badge's offset from the corner follows the Figma kit for each size, with and
 
 <Canvas of={IconBoxStories.TintedBackground} />
 
+`glass` (Figma `Glass=True`) puts the icon on a glass tile instead: White/20% with the "Glass 1" effect, approximated by the `glass-1` utility (a background blur and a soft shadow; CSS has no refraction). It implies `background` and is meant for icons over a picture or a colour, where the Black/4% tile would disappear. Keep the icon readable on what is behind it (the story uses `text-static-black` over a pastel gradient).
+
+<Canvas of={IconBoxStories.Glass} />
+
 Avatars are sized the same way:
 
 <Canvas of={IconBoxStories.Avatar24} />

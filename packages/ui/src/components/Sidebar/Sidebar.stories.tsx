@@ -139,7 +139,8 @@ const Content = () => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild isActive={item.isActive}>
                 <a href={item.url}>
-                  <item.icon />
+                  {/* Figma: Duotone icons, Fill on the active item. */}
+                  <item.icon weight={item.isActive ? 'fill' : 'duotone'} />
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>
@@ -228,7 +229,9 @@ export const RTL: Story = {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild isActive={item.isActive}>
                         <a href="#rtl">
-                          <item.icon />
+                          <item.icon
+                            weight={item.isActive ? 'fill' : 'duotone'}
+                          />
                           <span>{item.title}</span>
                         </a>
                       </SidebarMenuButton>

@@ -64,7 +64,7 @@ const SoonItem = ({
 
 /**
  * The Figma dashboard Sidebar (212px): the user, Favorites / Recently, the
- * Dashboards and Pages groups. A Server Component: only the links (active
+ * Dashboards and Pages groups, with Duotone icons (Fill on the current page). A Server Component: only the links (active
  * state) and the shortcut tabs are client components. It collapses off
  * canvas with the header's toggle (⌘B) and is a sheet on small screens.
  */
@@ -83,17 +83,22 @@ export const AppSidebar = ({ dict }: { dict: Dictionary }) => (
         <SectionTitle id="nav-dashboards">{dict.nav.dashboards}</SectionTitle>
         <ul className="flex flex-col gap-1">
           <li>
-            <NavLink href="/dashboard" arrow icon={<ChartPieSliceIcon />}>
+            <NavLink
+              href="/dashboard"
+              arrow
+              icon={<ChartPieSliceIcon weight="duotone" />}
+              activeIcon={<ChartPieSliceIcon weight="fill" />}
+            >
               {dict.nav.default}
             </NavLink>
           </li>
           <SoonItem
-            icon={<ShoppingBagOpenIcon />}
+            icon={<ShoppingBagOpenIcon weight="duotone" />}
             label={dict.nav.eCommerce}
             soon={dict.nav.soon}
           />
           <SoonItem
-            icon={<FolderOpenIcon />}
+            icon={<FolderOpenIcon weight="duotone" />}
             label={dict.nav.projects}
             soon={dict.nav.soon}
           />
@@ -103,17 +108,27 @@ export const AppSidebar = ({ dict }: { dict: Dictionary }) => (
         <SectionTitle id="nav-pages">{dict.nav.pages}</SectionTitle>
         <ul className="flex flex-col gap-1">
           <li>
-            <NavLink href="/settings" arrow icon={<GearSixIcon />}>
+            <NavLink
+              href="/settings"
+              arrow
+              icon={<GearSixIcon weight="duotone" />}
+              activeIcon={<GearSixIcon weight="fill" />}
+            >
               {dict.nav.settings}
             </NavLink>
           </li>
           <li>
-            <NavLink href="/sign-in" arrow icon={<SignInIcon />}>
+            <NavLink
+              href="/sign-in"
+              arrow
+              icon={<SignInIcon weight="duotone" />}
+              activeIcon={<SignInIcon weight="fill" />}
+            >
               {dict.nav.signIn}
             </NavLink>
           </li>
           <SoonItem
-            icon={<IdentificationBadgeIcon />}
+            icon={<IdentificationBadgeIcon weight="duotone" />}
             label={dict.nav.userProfile}
             soon={dict.nav.soon}
           />

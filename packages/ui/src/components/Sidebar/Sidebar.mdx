@@ -248,6 +248,7 @@ The small-screen sheet's state isn't a prop: use `useSidebar()`, which returns `
 
 - Keep a visible `SidebarTrigger`: the rail is for pointers and the shortcut for keyboards.
 - Mark the current page with `isActive` and `aria-current="page"` on its link.
+- Draw the item icons in Phosphor's `duotone` weight and the active item's in `fill`, as the Figma sidebar does.
 - Give menu buttons a `tooltip` when the sidebar collapses to icons.
 - Wrap the navigation in a `<nav>` with an `aria-label`, and the page in `SidebarInset`.
 - Put the label of a menu button in a `<span>` last, so it truncates.

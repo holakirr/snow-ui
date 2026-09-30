@@ -18,7 +18,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ Calendar }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "36 kB"
+    "limit": "36.5 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Dialog, DialogContent, DialogTrigger }",

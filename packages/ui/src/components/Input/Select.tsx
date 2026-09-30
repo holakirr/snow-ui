@@ -91,7 +91,7 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
         <ArrowLineUpDownIcon
           size={16}
           className={twMerge(
-            'shrink-0 fill-control-border-strong group-disabled:fill-black-20',
+            'shrink-0 fill-text-secondary group-disabled:fill-black-20',
             // In the middle of the 20px value line.
             title && 'mb-0.5',
           )}

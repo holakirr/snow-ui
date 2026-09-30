@@ -27,6 +27,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from './DropdownMenu'
+import { Select, SelectTrigger, SelectValue } from './Input'
 import {
   Tooltip,
   TooltipContent,
@@ -252,8 +253,8 @@ describe('menu check marks', () => {
     expect(chevron?.innerHTML).toBe(
       render(<ArrowLineRightIcon />).container.querySelector('svg')?.innerHTML,
     )
-    // The kit's Black/20% chevron is 1.6:1: `control-border-strong`.
-    expect(chevron).toHaveClass('ms-auto', 'text-control-border-strong')
+    // The kit's Black/20% chevron is 1.6:1: `text-secondary`, 3:1 or more.
+    expect(chevron).toHaveClass('ms-auto', 'text-secondary')
   })
 })
 
@@ -306,5 +307,25 @@ describe('submenu value hint', () => {
     fireEvent.contextMenu(screen.getByText('Area'))
 
     expectHint('Layout', 'Grid')
+  })
+})
+
+describe('Select chevron', () => {
+  it('is text-secondary (3:1 or more), dimmed when disabled', () => {
+    render(
+      <Select>
+        <SelectTrigger aria-label="Fruit">
+          <SelectValue placeholder="Pick" />
+        </SelectTrigger>
+      </Select>,
+    )
+    const chevron = screen
+      .getByRole('combobox', { name: 'Fruit' })
+      .querySelector('svg')
+    expect(chevron).toHaveClass(
+      'fill-text-secondary',
+      'group-disabled:fill-black-20',
+    )
+    expect(chevron?.getAttribute('class')).not.toMatch(/control-border/)
   })
 })

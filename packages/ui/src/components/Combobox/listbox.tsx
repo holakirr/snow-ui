@@ -606,7 +606,7 @@ export const ComboboxAdornments = ({
     <ArrowLineUpDownIcon
       size={16}
       aria-hidden
-      className="shrink-0 fill-control-border-strong group-data-[disabled]/combobox:fill-black-20"
+      className="shrink-0 fill-text-secondary group-data-[disabled]/combobox:fill-black-20"
     />
   </>
 )

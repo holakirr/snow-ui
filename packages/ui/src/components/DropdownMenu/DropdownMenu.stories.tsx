@@ -373,12 +373,12 @@ export const Open: Story = {
       )
     })
 
-    await step('the submenu chevron is control-border-strong', async () => {
+    await step('the submenu chevron is text-secondary', async () => {
       const chevron = page
         .getByRole('menuitem', { name: 'Invite users' })
         .querySelector('svg') as SVGElement
       await expect(getComputedStyle(chevron).color).toBe(
-        colorOf('text-control-border-strong', menu),
+        colorOf('text-secondary', menu),
       )
     })
 

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
-import { hasInsetRing } from '../../test/colors'
+import { colorOf, hasInsetRing } from '../../test/colors'
 
 import {
   Select,
@@ -39,6 +39,13 @@ export const Default: Story = {
     const page = within(canvasElement.ownerDocument.body)
     const trigger = canvas.getByRole('combobox', { name: 'Fruit' })
     await expect(trigger).toHaveTextContent('Select a fruit')
+
+    await step('the chevron is text-secondary (3:1 or more)', async () => {
+      const chevron = trigger.querySelector('svg') as SVGElement
+      await expect(getComputedStyle(chevron).fill).toBe(
+        colorOf('text-secondary', trigger),
+      )
+    })
 
     await step('selects an option with the pointer', async () => {
       await userEvent.click(trigger)

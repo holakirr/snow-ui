@@ -1,3 +1,4 @@
+import { ArrowLineUpDownIcon } from '@holakirr/snow-ui-icons'
 import {
   act,
   fireEvent,
@@ -80,6 +81,16 @@ describe('Combobox', () => {
     expect(field()).toHaveAttribute('aria-controls', listbox.id)
     expect(activeOption()).toHaveTextContent('Apple')
     expect(activeOption()).toHaveAttribute('data-highlighted', 'true')
+  })
+
+  it('has the Select chevron, in text-secondary (3:1 or more)', () => {
+    const { container } = renderCombobox()
+    const icon = render(<ArrowLineUpDownIcon />).container.querySelector('svg')
+    const chevron = [...container.querySelectorAll('svg')].find(
+      (svg) => svg.innerHTML === icon?.innerHTML,
+    )
+    expect(chevron).toHaveClass('fill-text-secondary')
+    expect(chevron?.getAttribute('class')).not.toMatch(/control-border/)
   })
 
   it('scrolls the list with the kit scrollbar', () => {

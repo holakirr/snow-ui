@@ -353,7 +353,7 @@ export const colorTokens: ColorToken[] = [
       light: 'rgb(0 0 0 / 0.8)',
       dark: 'rgb(255 255 255 / 0.8)',
     },
-    note: 'Accessibility addition (not in the Figma kit): the hover and focus boundary of form controls (text field strokes, Checkbox and Radio rings, the Switch\'s off track), the Select chevron and the hovered Search icon; with more contrast, the border of the Slider range\'s thumbs. Contrast "standard" (the default): the Figma Black/40% (2.85:1). Contrast "more": Black/80% (12.6:1), stronger than control-border.',
+    note: 'Accessibility addition (not in the Figma kit): the hover and focus boundary of form controls (text field strokes, Checkbox and Radio rings, the Switch\'s off track) and the hovered Search icon; with more contrast, the border of the Slider range\'s thumbs. Contrast "standard" (the default): the Figma Black/40% (2.85:1). Contrast "more": Black/80% (12.6:1), stronger than control-border.',
   },
   {
     name: 'placeholder',

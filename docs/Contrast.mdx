@@ -42,7 +42,7 @@ Four colour tokens, library additions to the kit, carry the difference:
 | Token | Standard (Figma) | More contrast | Used by |
 | --- | --- | --- | --- |
 | `control-border` | Black/20% | Black/50%; White/50% in dark mode | Unchecked Checkbox and Radio rings, text field and Select strokes, the Switch's off track; with more contrast only, the Slider bar's stroke and the range's track |
-| `control-border-strong` | Black/40% | Black/80%; White/80% in dark mode | Their hover and focus states, the Select chevron, the hovered Search icon; with more contrast only, the border of the Slider range's thumbs |
+| `control-border-strong` | Black/40% | Black/80%; White/80% in dark mode | Their hover and focus states, the hovered Search icon; with more contrast only, the border of the Slider range's thumbs |
 | `placeholder` | Black/20% | Black/60%; White/75% in dark mode | Placeholders of `Input`, `InputSmall`, `Textarea` and `Search`, the Search icon |
 | `control-border-invalid` | Secondary/Red | `red-text` (#D42020; #FF8080 in dark mode) | The stroke of an invalid control (`aria-invalid`): text fields, the Select trigger, Checkbox and Radio rings, Switch, Slider |
 
@@ -97,6 +97,12 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 | Invalid stroke vs the field fill | dark | 2.78–3.32 | 3.86–4.6 |
 | Invalid stroke on the gray field | light | 2.92–3.07 | 4.53–4.77 |
 | Invalid stroke on the gray field | dark | 2.32–2.74 | 3.22–3.8 |
+| Select / Combobox chevron on the field fill | light | 5.72–5.74 | 5.72–5.74 |
+| Select / Combobox chevron on the field fill | dark | 5.58–6.42 | 5.58–6.42 |
+| Submenu chevron on the menu | light | 5.65–5.74 | 5.65–5.74 |
+| Submenu chevron on the menu | dark | 6.14–7.07 | 6.14–7.07 |
+| Submenu chevron on the highlighted item | light | 5.5–5.59 | 5.5–5.59 |
+| Submenu chevron on the highlighted item | dark | 4.82–5.51 | 4.82–5.51 |
 | Placeholder on the field fill | light | 1.6 | 5.72–5.74 |
 | Placeholder on the field fill | dark | 1.76–1.84 | 6.13–7.1 |
 | Placeholder on the gray field | light | 1.59 | 5.5–5.59 |
@@ -106,7 +112,7 @@ Computed from the tokens by `packages/ui/src/foundations/contrast.test.ts` (the 
 
 **Why these values.** The smallest alphas that pass on every surface are Black/44% (3.09:1) and White/46% (3.04:1) for boundaries, Black/56% (4.58:1) and White/74% (4.56:1) for placeholders. The tokens round up to Black/White 50% (3.79:1 and 3.3:1 at worst) and Black/60%, White/75% (5.25:1 and 4.63:1), for a margin and values a designer can name; Black/60% is also the light `text-secondary`, which the Select placeholder already uses. The hover and focus stroke has to stay stronger than the rest stroke, so it moves from Black/40% to the kit's next step, Black/80%. The invalid stroke uses `red-text`, the library's accessible red for error text, which already meets 4.5:1 as text. In dark mode Figma's white thumb keeps 3:1 on the off track only up to about White/45%, too close to the floor the other boundaries need, so the thumb flips to the per-mode `white` instead of holding the track to a narrow band.
 
-**Not changed.** Disabled controls are exempt (WCAG 1.4.11, 1.4.3). The icons inside fields other than the Search icon and the Select chevron are decoration.
+**Not changed.** Disabled controls are exempt (WCAG 1.4.11, 1.4.3). The icons inside fields other than the Search icon and the Select, Combobox and submenu chevrons are decoration. The chevrons are `text-secondary` (the kit's Black/40% and Black/20% are 2.85:1 and 1.6:1), which meets 3:1 in both themes at both levels: the table lists them.
 
 **A demo fix.** The Search button of the CommandPalette and Dashboard stories set its shortcut hint in `text-secondary` on a KBD that kept its own Black/4% fill: in dark mode that was 4.37:1 on the gray field (3.9:1 hovered). The hint has no fill now, like `Search`'s own (5.51:1, 4.84:1 hovered).
 

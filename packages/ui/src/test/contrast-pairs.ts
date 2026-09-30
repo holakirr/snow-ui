@@ -180,6 +180,25 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['black-4'],
   },
   {
+    // Figma Black/40% (Select) and Black/20% (submenu): `text-secondary`.
+    control: 'Select / Combobox chevron on the field fill',
+    kind: 'nonText',
+    foreground: () => ['surface-1', 'text-secondary'],
+    background: () => ['surface-1'],
+  },
+  {
+    control: 'Submenu chevron on the menu',
+    kind: 'nonText',
+    foreground: () => ['text-secondary'],
+    background: () => [],
+  },
+  {
+    control: 'Submenu chevron on the highlighted item',
+    kind: 'nonText',
+    foreground: () => ['black-4', 'text-secondary'],
+    background: () => ['black-4'],
+  },
+  {
     control: 'Placeholder on the field fill (Input, Textarea, outline fields)',
     kind: 'text',
     foreground: () => ['surface-1', 'placeholder'],

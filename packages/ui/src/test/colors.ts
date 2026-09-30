@@ -3,8 +3,6 @@
  * (Chromium, with the compiled Tailwind CSS). Not part of the package.
  */
 
-import { animationsEnded } from './animations'
-
 /** The computed `color` of an element with `className`, inside `container`. */
 export const colorOf = (className: string, container: HTMLElement): string => {
   const probe = container.ownerDocument.createElement('span')
@@ -16,18 +14,33 @@ export const colorOf = (className: string, container: HTMLElement): string => {
 }
 
 /**
- * The computed `color` of `element` once the CSS transitions on it and inside
- * it have ended (see `animationsEnded`).
+ * Finishes the CSS transitions and animations running on `element` and
+ * inside it, so their computed style is the end state. Playing them out made
+ * the checks as slow as the runner renders frames: at 20× slower, the Input
+ * "Focus With More Contrast" story's nine focus transitions took 28 s, past
+ * the test's 15 s timeout. Infinite animations (spinners) keep running.
+ */
+const finishTransitions = (element: Element) => {
+  for (const animation of element.getAnimations({ subtree: true })) {
+    if (animation.effect?.getComputedTiming().endTime !== Infinity) {
+      animation.finish()
+    }
+  }
+}
+
+/**
+ * The computed `color` of `element` at the end of the CSS transitions on it
+ * and inside it.
  */
 export const settledColor = async (element: HTMLElement): Promise<string> => {
-  await animationsEnded(element)
+  finishTransitions(element)
   return getComputedStyle(element).color
 }
 
 /**
  * Whether `element` has an inset ring (Tailwind `inset-ring-*`, a stroke) of
  * `width` in the colour of `colorClass` (e.g. `text-control-border-invalid`),
- * once the CSS transitions on it and inside it have ended. The colour is
+ * at the end of the CSS transitions on it and inside it. The colour is
  * resolved next to the element, in its theme and contrast scopes.
  */
 export const hasInsetRing = async (
@@ -35,7 +48,7 @@ export const hasInsetRing = async (
   colorClass: string,
   width: string,
 ): Promise<boolean> => {
-  await animationsEnded(element)
+  finishTransitions(element)
   const color = colorOf(
     colorClass,
     element.parentElement ?? element.ownerDocument.body,

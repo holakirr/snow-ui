@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { expect, userEvent, waitFor } from 'storybook/test'
+import { animationsEnded } from '../../test/animations'
 import { hasInsetRing } from '../../test/colors'
 import { Typography } from '../Text'
 import { Search } from './Search'
@@ -58,6 +59,9 @@ export const ClearButtonFocus: Story = {
     await userEvent.tab()
     const clear = canvas.getByRole('button', { name: 'Clear search' })
     await expect(clear).toHaveFocus()
+    // Focus fades it to full opacity: a busy runner may take longer than
+    // `waitFor`'s timeout to render the transition.
+    await animationsEnded(clear)
     await waitFor(() => expect(getComputedStyle(clear).opacity).toBe('1'))
     const style = getComputedStyle(clear)
     await expect(style.outlineStyle).toBe('solid')

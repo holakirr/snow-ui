@@ -1,6 +1,17 @@
 import { expect, waitFor, within } from 'storybook/test'
 
-/** Charts draw once their font has loaded (see fonts.ts): give them time. */
+/**
+ * Charts draw once their font has loaded (see fonts.ts): give them time.
+ *
+ * Recharts then animates the marks in with JavaScript (requestAnimationFrame),
+ * not CSS, so `animationsEnded` doesn't see those animations; the play
+ * functions don't need them to end. The bars are drawn from the animation's
+ * first frames, the pie sectors once its 400 ms `animationBegin` has passed.
+ * CDP `Animation.setPlaybackRate` doesn't slow these animations down, it
+ * stalls them: it slows the frames' timestamps but not `performance.now()`,
+ * which Recharts times them from, so they never start. To slow a chart story
+ * down, throttle the CPU (`Emulation.setCPUThrottlingRate`) instead.
+ */
 export const DRAWN = { timeout: 5000 }
 
 /** The chart's focusable surface (Recharts' accessibility layer). */

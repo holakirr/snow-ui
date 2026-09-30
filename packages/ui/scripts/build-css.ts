@@ -56,16 +56,13 @@ export const THEME_SOURCE = `/* The components' classes: the built modules next 
 @source "./**/*.js";
 `
 
-/** What `dist/theme-core.css` is (its body is theme.css's, comments included). */
-export const THEME_CORE_NOTE = `/*
- * theme-core.css: theme.css without the @source of the package's components,
- * for projects that copy them (the @snow-ui registry) or only use the tokens.
+/**
+ * The licence banner of a published theme stylesheet, with what the file is
+ * (theme-core.css shares theme.css's body and header comment). One line:
+ * both stylesheets have size budgets.
  */
-`
-
-/** The licence banner of a published theme stylesheet. */
-const banner = (file: string) =>
-  `/*! @holakirr/snow-ui ${file} | MIT License | react-day-picker/style.css: MIT License */\n`
+const banner = (file: string, what = '') =>
+  `/*! @holakirr/snow-ui ${file}${what} | MIT License | react-day-picker/style.css: MIT License */\n`
 
 export function buildCss(packageDir: string) {
   const src = join(packageDir, 'src')
@@ -79,7 +76,7 @@ export function buildCss(packageDir: string) {
   )
   writeFileSync(
     join(dist, 'theme-core.css'),
-    `${banner('theme-core.css')}${THEME_CORE_NOTE}\n${theme}`,
+    `${banner('theme-core.css', ": theme.css without the components' @source")}${theme}`,
   )
   for (const file of ['fonts.css', 'fonts-italic.css']) {
     cpSync(join(src, file), join(dist, file))

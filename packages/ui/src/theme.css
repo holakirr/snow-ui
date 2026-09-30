@@ -15,9 +15,6 @@
  * The published theme.css adds the package's built components to Tailwind's
  * sources itself (an `@source` relative to the file, so it doesn't depend on
  * where node_modules is), so the component classes are generated.
- * `theme-core.css` is the same theme without that `@source`, for projects
- * that don't render the package's components (they copy them from the
- * @snow-ui registry, or only use the tokens).
  *
  * `index.css` is this file compiled with Tailwind, for projects without it.
  *

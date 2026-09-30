@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
   type TableSortDirection,
+  TableToolbar,
   Typography,
   toast,
 } from '@holakirr/snow-ui'
@@ -166,7 +167,7 @@ export const OrdersTable = ({ captionId }: { captionId: string }) => {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-8 bg-background-2 p-2">
+      <TableToolbar className="justify-between gap-3">
         <Typography
           size={12}
           className="px-2 text-secondary"
@@ -195,7 +196,7 @@ export const OrdersTable = ({ captionId }: { captionId: string }) => {
             className="w-40"
           />
         </div>
-      </div>
+      </TableToolbar>
       <div className="overflow-x-auto">
         <Table aria-labelledby={captionId} className="text-12">
           <TableHeader>
@@ -231,10 +232,10 @@ export const OrdersTable = ({ captionId }: { captionId: string }) => {
               return (
                 <TableRow
                   key={order.id}
-                  className="group/row"
                   data-state={isSelected ? 'selected' : undefined}
                 >
-                  <TableCell className="w-8 px-2">
+                  {/* Figma: the row checkbox and "…" show on hover. */}
+                  <TableCell reveal className="w-8 px-2">
                     <Checkbox
                       className={checkboxClassName}
                       checked={isSelected}
@@ -249,10 +250,9 @@ export const OrdersTable = ({ captionId }: { captionId: string }) => {
                       {cell(order, key)}
                     </TableCell>
                   ))}
-                  <TableCell className="w-10">
+                  <TableCell reveal className="w-10">
                     <Button
                       aria-label={`${t.moreActions} ${order.id}`}
-                      className="opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100"
                       startContent={
                         <DotsThreeOutlineHorizontalIcon size={16} />
                       }

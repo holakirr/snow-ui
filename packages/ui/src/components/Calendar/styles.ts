@@ -11,3 +11,20 @@ export const actionClassName =
 /** The Figma DatePicker surface, which the date pickers' panel reuses. */
 export const calendarSurfaceClassName =
   'w-fit rounded-16 text-black glass-2 inset-ring inset-ring-surface-1'
+
+/**
+ * Today (and the current month, year or hour in the pickers' views): a 4px
+ * dot in the text colour under the label. The Secondary/Indigo fill marks
+ * today in the kit, but in dark mode a selected day is indigo too; the dot
+ * tells them apart there, stays on while today is selected, and keeps the
+ * forced text colour with forced colours (where the fills are dropped).
+ */
+export const todayMarkClassName =
+  'relative after:pointer-events-none after:absolute after:inset-x-0 after:bottom-[5px] after:mx-auto after:size-1 after:rounded-full after:bg-current forced-colors:after:forced-color-adjust-none'
+
+/**
+ * A selected day, month, year or time with forced colours: the system
+ * Highlight, as a native selection, since the Primary fill is dropped.
+ */
+export const selectedForcedClassName =
+  'forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-colors:hover:bg-[Highlight]'

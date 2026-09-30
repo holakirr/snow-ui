@@ -83,9 +83,9 @@ The week starts on Monday, as in the Figma DatePicker, whatever the locale. `wee
 
 - **Hover:** a Black/4% fill on a day.
 - **Keyboard focus:** the `focus-ring` utility; the focused day is raised above its neighbours.
-- **Selected:** a Primary fill with the per-mode `white` text (white on black, black on the dark-mode indigo), Primary hover on hover.
+- **Selected:** a Primary fill with the per-mode `white` text (white on black, black on the dark-mode indigo), Primary hover on hover. With forced colours, the system Highlight.
 - **Range:** the start, middle and end days form one Primary band; the start and end keep their rounded outer corners.
-- **Today:** a Secondary/Indigo fill with static black text (Indigo at 80% on hover), unless the day is selected.
+- **Today:** a Secondary/Indigo fill with static black text (Indigo at 80% on hover), unless the day is selected, and a 4px dot in the text colour under the number, also while selected. The dot is the library's: in dark mode a selected day is indigo too, and the dot tells today apart; with forced colours it keeps the system text colour.
 - **Outside days:** the previous and next month's days in `text-secondary`. They are real dates and can be selected.
 - **Disabled** (`disabled`, react-day-picker matchers): Black/20% text, no hover fill.
 
@@ -134,6 +134,7 @@ The full table is in the package README.
 | "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Weekdays and outside days in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary` (5.74:1 light, 7.08:1 dark). Outside days are selectable dates, not decoration, so they get the full 4.5:1 | 1.4.3 |
 | Today: white text on Secondary/Indigo, 2.07:1 | static black on Secondary/Indigo, 10.15:1 | 1.4.3 |
+| Today and selected: both indigo in dark mode (the kit has no dark DatePicker), both lost with forced colours | a dot under today's number (static black on indigo, 10.15:1); selected days in Highlight with forced colours | 1.4.1, 1.4.11 |
 
 ## Localization and RTL
 

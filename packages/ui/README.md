@@ -365,7 +365,7 @@ Text fields (`Input`, `InputSmall`, `Textarea`, `Search`, and the `Combobox` and
 
 Data, overlay and navigation components:
 
-- **Calendar:** today's date is static black on Secondary/Indigo (10.15:1). Figma uses white, which is 2.07:1 (1.4.3). The same goes for the current month, year and time in the date pickers' views. Outside days (the previous and next month's dates in the grid) are real, selectable dates, not decoration, so they get the full 4.5:1: `text-secondary` instead of Black/40%.
+- **Calendar:** today's date is static black on Secondary/Indigo (10.15:1). Figma uses white, which is 2.07:1 (1.4.3). It also has a dot under the number: in dark mode a selected day is indigo too, so today isn't told apart by colour alone (1.4.1). The same goes for the current month, year and time in the date pickers' views. Outside days (the previous and next month's dates in the grid) are real, selectable dates, not decoration, so they get the full 4.5:1: `text-secondary` instead of Black/40%.
 - **Scheduler:** today's day label is static black on Secondary/Indigo (was white, 2.06:1) and semibold, with `aria-current="date"`, so today isn't told by colour alone (1.4.1); event times are 60% static black on Color 2 (5.5:1) instead of 40% (1.4.3). The week is a WAI-ARIA grid with one tab stop and arrow keys (see its page).
 - **Sidebar:** group labels (`SidebarGroupLabel`) are `black-80` (12.6:1 light, 8.7:1 dark). Figma's Black/40% is 2.85:1 at 14px (1.4.3).
 - **Chip:** the Figma text is the Secondary colour itself (1.5–2.4:1 on white). The text mixes it with 45% of `black` (white in dark mode): at least 4.63:1 on the tints and 5.13:1 on white, 5.66:1 in dark mode; grey text is `text-secondary` (1.4.3). The dots and the tints keep the Figma colours.

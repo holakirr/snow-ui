@@ -1,3 +1,5 @@
+import { expect } from 'storybook/test'
+
 /**
  * Waits for the CSS animations running on `element` and inside it to end,
  * such as an overlay's exit animation: Radix keeps a closed overlay in the
@@ -22,4 +24,17 @@ export const animationsEnded = async (element: Element) => {
       )
       .map((animation) => animation.finished),
   )
+}
+
+/**
+ * Checks that each of `overlays` (the content of a Radix Tooltip, Popover,
+ * Dialog, Select, Menu or Toast) closed at once (`data-state="closed"`), and
+ * waits for their exit animations to end (see `animationsEnded`). Follow it
+ * with the story's `waitFor` of the removal.
+ */
+export const expectClosed = async (...overlays: Element[]) => {
+  for (const overlay of overlays) {
+    await expect(overlay).toHaveAttribute('data-state', 'closed')
+  }
+  await Promise.all(overlays.map(animationsEnded))
 }

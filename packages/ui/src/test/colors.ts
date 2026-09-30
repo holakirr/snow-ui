@@ -3,6 +3,8 @@
  * (Chromium, with the compiled Tailwind CSS). Not part of the package.
  */
 
+import { animationsEnded } from './animations'
+
 /** The computed `color` of an element with `className`, inside `container`. */
 export const colorOf = (className: string, container: HTMLElement): string => {
   const probe = container.ownerDocument.createElement('span')
@@ -15,7 +17,7 @@ export const colorOf = (className: string, container: HTMLElement): string => {
 
 /** The computed `color` of `element` once its CSS transitions have ended. */
 export const settledColor = async (element: HTMLElement): Promise<string> => {
-  await Promise.all(element.getAnimations().map(({ finished }) => finished))
+  await animationsEnded(element)
   return getComputedStyle(element).color
 }
 
@@ -30,7 +32,7 @@ export const hasInsetRing = async (
   colorClass: string,
   width: string,
 ): Promise<boolean> => {
-  await Promise.all(element.getAnimations().map(({ finished }) => finished))
+  await animationsEnded(element)
   const color = colorOf(
     colorClass,
     element.parentElement ?? element.ownerDocument.body,

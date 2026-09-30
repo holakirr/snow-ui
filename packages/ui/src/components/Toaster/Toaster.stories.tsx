@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { expect, waitFor } from 'storybook/test'
 
 import { toast } from '../../hooks'
+import { animationsEnded, expectClosed } from '../../test/animations'
 import type { SimpleSize, StatusNotify } from '../../types'
 import { Button } from '../Button'
 import {
@@ -228,7 +229,11 @@ export const Closable: Story = {
     )
 
     await step('its close button dismisses it', async () => {
+      const item = canvas
+        .getByText('Stays until closed')
+        .closest('li') as HTMLElement
       await userEvent.click(canvas.getByRole('button', { name: 'Close' }))
+      await expectClosed(item)
       await waitFor(() =>
         expect(
           canvas.queryByText('Stays until closed'),
@@ -314,6 +319,7 @@ export const Stacked: Story = {
       )
       // The toasts no longer overlap: each sits above the newer one (once
       // the 300ms move has ended).
+      await animationsEnded(viewport() as HTMLElement)
       await waitFor(() =>
         expect(
           toastOf('Invite sent').getBoundingClientRect().bottom,
@@ -350,6 +356,7 @@ export const Stacked: Story = {
         await waitFor(() =>
           expect(viewport()).not.toHaveAttribute('data-expanded'),
         )
+        await animationsEnded(oldest)
         await waitFor(() =>
           expect(canvas.queryByText('Report exported')).not.toBeInTheDocument(),
         )

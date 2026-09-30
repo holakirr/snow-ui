@@ -9,7 +9,7 @@ import * as DatePickerStories from './DatePicker.stories'
 <FigmaLinks label="DatePicker component set" page="29706:37201" note="The field is the Figma Input; the calendar is the Figma DatePicker." />
 <InstallTabs item="date-picker" />
 
-DatePicker is a form field for a date: it shows the picked date and opens a [Calendar](?path=/docs/components-calendar--docs) in a popover to pick another. The field looks like the Select trigger (the Figma Input field, with a calendar icon at the end); the calendar is the Figma DatePicker. For a range, use [DateRangePicker](?path=/docs/components-daterangepicker--docs).
+DatePicker is a form field for a date (and a time, with `withTime`): it shows the picked date and opens the Figma DatePicker in a popover to pick another. The field looks like the Select trigger (the Figma Input field, with a calendar icon at the end). The popover has the Figma top area, where the date is typed part by part ("10 / 22 / 2026"), the "Today" and "Last selection" actions, and a [Calendar](?path=/docs/components-calendar--docs); the parts of the date open the months and the years, the parts of the time the hours, minutes and seconds. For a range, use [DateRangePicker](?path=/docs/components-daterangepicker--docs).
 
 ```tsx
 import { DatePicker, Label } from '@holakirr/snow-ui'
@@ -29,17 +29,20 @@ const [due, setDue] = useState<Date | null>(null)
 
 ## When not to use
 
-- A date far in the past that users know by heart, such as a birth date: an [Input](?path=/docs/components-input-input--docs) is faster to type (the field doesn't take typed dates).
+- A date far in the past that users know by heart, such as a birth date: it can be typed in the top area, but an [Input](?path=/docs/components-input-input--docs) takes it without opening a popover.
 - A range: [DateRangePicker](?path=/docs/components-daterangepicker--docs).
 - A calendar that is always visible: [Calendar](?path=/docs/components-calendar--docs).
 
 ## Anatomy
 
 1. **Field**: the Figma Input field as in the Select trigger (12 / 16px padding, a 16px radius, Surface/1 with a 0.5px Black/20% inside stroke, 14/20 text), full width. `className` and `style` style it.
-2. **Trigger**: a `<button role="combobox">` that fills the field, with the picked date (in the `dateFormat`, "Jan 20, 2025" by default) or the placeholder ("Pick a date") in `text-secondary`. `id`, `aria-*`, `onBlur`, `ref` and other button props go to it.
+2. **Trigger**: a `<button role="combobox">` that fills the field, with the picked date (in the `dateFormat`, "Jan 20, 2025" by default, "Jan 20, 2025, 4:08 PM" with `withTime`) or the placeholder ("Pick a date") in `text-secondary`. With `title`, the Figma "2 row" field: the title (12/16, `text-secondary`) above the date. `id`, `aria-*`, `onBlur`, `ref` and other button props go to it.
 3. **Clear button** (`clearable`, on by default, while there is a date): the Search clear button, a 16px filled XCircle at 60% opacity.
 4. **Calendar icon**: a 16px calendar in Black/40%.
-5. **Popover**: the [Calendar](?path=/docs/components-calendar--docs) (the Figma DatePicker surface) 4px below the field, aligned to its start. `contentClassName` styles the popover; `calendarProps` passes more Calendar props.
+5. **Popover**: the Figma DatePicker, 360px wide, 4px below the field and aligned to its start. `contentClassName` styles the popover.
+   1. **Top area**: the date, typed by parts in the locale's order ("10 / 22 / 2026", the separators in `text-secondary`), today in `text-secondary` while there is none; with `withTime`, the time at the end ("04 : 08 AM"). A 0.5px Black/10% line below.
+   2. **Toolbar**: "Today" and "Last selection" (the value when the popover opened) on the left, "‹ Feb ›" (the short month, a button to the months) on the right.
+   3. **Days**: the [Calendar](?path=/docs/components-calendar--docs) grid; `calendarProps` passes more Calendar props. Or the **months**, **years**, **hours**, **minutes** or **seconds**, in the same cells, with "This month", "This year" or "System time" in the toolbar and "‹ Back" at the bottom.
 
 ## States
 
@@ -55,20 +58,54 @@ const [due, setDue] = useState<Date | null>(null)
 
 <Canvas of={DatePickerStories.States} />
 
+`title` makes it the Figma "2 row" field of a form, as `Input`'s `title`; the title names the field:
+
+<Canvas of={DatePickerStories.WithTitle} />
+
 <Canvas of={DatePickerStories.MinMaxAndDisabledDates} />
 
 Dark theme, open: [OpenDark story](?path=/story/components-datepicker--open-dark).
 
+## The top area
+
+The date at the top of the popover is a date field, as React Aria's DateField: each part (month, day, year; hour, minute, second, AM / PM) is a spinbutton. Digits fill a part and move on to the next ("1" waits for a second digit, "3" moves on; the year takes four), the arrow keys step it, Backspace empties it. A complete date that can be picked moves the calendar to it; one that can't (`minDate`, `maxDate`, `disabledDates`) turns red and isn't taken. Leaving the top area keeps the last valid date. With no date, it shows today in `text-secondary`, and editing a part starts from today.
+
+Closing the popover confirms the date: Enter in the top area, a click outside, or a day of the calendar (without time). Escape closes it without a change. There is no confirm button, as in the Figma kit.
+
+<Canvas of={DatePickerStories.Typing} />
+
+## Months and years
+
+A click on the month in the top area, or on the "Feb" caption, shows the twelve months of the shown year ("‹ 2026 ›" switches the year, and is a button to the years); a click on the year shows twelve years ("‹ ›" pages them). The month or year of the date is selected (Primary), the current one is Secondary/Indigo. Picking one changes the date's month or year (the day stays, within the month) and returns to the days; "This month" and "This year" pick the current one, "‹ Back" returns without a change.
+
+<Canvas of={DatePickerStories.MonthsView} />
+
+<Canvas of={DatePickerStories.YearsView} />
+
+## Date and time
+
+`withTime` is the Figma "Date and time" type: the time follows the date in the top area ("04 : 08 AM"), in the locale's hour cycle (12-hour with AM / PM in English, 24-hour in Russian) or `hourCycle`. `withSeconds` adds the seconds. A day of the calendar keeps the time and the popover open (the same day again, or Enter in the top area, closes it with the date and time). With no date, the time starts at the current time.
+
+A click on the hour shows the hours (then the minutes after one is picked, then the seconds), a click on the minute the minutes. "System time" picks the current time; AM and PM switch on the right of the toolbar, or as you type: 13 in a 12-hour hour is 01 PM.
+
+<Canvas of={DatePickerStories.DateAndTime} />
+
+<Canvas of={DatePickerStories.WithSeconds} />
+
+<Canvas of={DatePickerStories.TimeView} />
+
 ## Calendar options
 
-`calendarProps` takes any other [Calendar](?path=/docs/components-calendar--docs) prop: `captionLayout="dropdown"` for month and year dropdowns, `showTodayButton`, `showYearSwitcher`, `today`, `footer`, `modifiers`… The picker owns the selection (`mode`, `selected`, `onSelect`) and the disabled days (use `minDate`, `maxDate` and `disabledDates`). The calendar opens on the picked date's month (or today's); `calendarProps.defaultMonth` changes that.
+`calendarProps` takes any other [Calendar](?path=/docs/components-calendar--docs) prop: `captionLayout="dropdown"` for month and year dropdowns, `showTodayButton={false}` to hide "Today", `today`, `footer`, `modifiers`, `formatters` (`formatCaption` replaces the short month)… The picker owns the selection (`mode`, `selected`, `onSelect`) and the disabled days (use `minDate`, `maxDate` and `disabledDates`); the months and years views replace the Calendar's year switcher. The calendar opens on the picked date's month (or today's); `calendarProps.defaultMonth` changes that.
 
 <Canvas of={DatePickerStories.CalendarOptions} />
 
 ## Accessibility
 
 - The trigger is a `<button role="combobox">` with `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls`: the label names it, its text is its value (like the Select trigger). The popover is a `dialog` named "Choose a date".
-- The popover is modal: focus moves into it, stays there (Tab cycles through the calendar's buttons), and the rest of the page is hidden from assistive technology until it closes; then focus returns to the trigger.
+- The popover is modal: focus moves into it (to the picked day), stays there (Tab cycles through the top area and the calendar's buttons), and the rest of the page is hidden from assistive technology until it closes; then focus returns to the trigger.
+- The top area is a `group` named "Date" (and "Time") of spinbuttons, as React Aria's DateField: each part has its name ("Month", "Day"…), `aria-valuenow`, `aria-valuemin` / `aria-valuemax` and `aria-valuetext` ("01 – January"; "Empty" for an empty part). A date that can't be picked sets `aria-invalid` on the group. The parts are 24px targets; they read left to right in right-to-left text too.
+- The months, years and time views are APG grids with one tab stop, as the days: the arrow keys move, Enter or Space picks; the selected cell has `aria-selected`, the current one `aria-current`. Opening one from the caption or leaving it with "Back" moves the focus into the new grid; a click on a part of the top area keeps the focus there.
 - Clicking the picked day again keeps it (react-day-picker would unselect it), calls nothing and closes the calendar.
 - A month with no day to pick (every day disabled) puts the focus on the month navigation, so it is still in the dialog.
 - Name the field with a [Label](?path=/docs/components-label--docs) (or `FormLabel`) linked to its `id`, or `aria-label`: a combobox isn't named by its text. `required` sets `aria-required`.
@@ -82,8 +119,18 @@ On the field, then in the calendar (the Default story's test and the unit tests)
 | --- | --- |
 | Enter, Space, ArrowDown | on the field: open the calendar, with focus on the picked day (or today, or the first day of the month) |
 | Backspace, Delete | on the field: clear the date (`clearable`) |
+| 0–9 | in the top area: fill the part, then move to the next |
+| ArrowUp / ArrowDown | in the top area: step the part (it wraps, except the year) |
+| Home / End | in the top area: the part's smallest / largest value |
+| Backspace, Delete | in the top area: empty the part |
+| ArrowLeft / ArrowRight | in the top area: the previous / next part |
+| A, P | in the top area, on AM / PM: AM or PM |
+| Enter | in the top area: close the calendar with the date |
 | Arrow keys, Page Up / Page Down, Home / End | in the calendar: move between days, weeks and months (react-day-picker; see [Calendar](?path=/docs/components-calendar--docs#keyboard)) |
-| Enter, Space | in the calendar: pick the focused day and close the calendar; focus returns to the field |
+| Enter, Space | in the calendar: pick the focused day and close the calendar (with `withTime`, pick it; the picked day again closes); focus returns to the field |
+| Arrow keys, Home / End, Ctrl + Home / End | in the months, years and time grids: move between cells, to the row's ends, to the grid's ends |
+| Page Up / Page Down | in the months and years grids: the previous / next year or page of years |
+| Enter, Space | in the months, years and time grids: pick the focused cell |
 | Tab / Shift + Tab | in the calendar: move between its buttons (focus stays in the popover) |
 | Escape | close the calendar without a change |
 
@@ -96,14 +143,18 @@ The full table is in the package README; the calendar has the deviations listed 
 | "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px | 2.4.7, 1.4.11 |
 | Placeholder in Black/20%: 1.6:1 | `text-secondary`: it is the trigger's visible text, as in Select | 1.4.3 |
 | The clear icon at 40% opacity (2.85:1) | 60% (the 3:1 of a control's icon) | 1.4.11 |
+| Top area: the separators and the dimmed date in Black/20% (1.6:1) | `text-secondary` (5.74:1) | 1.4.3 |
+| Today (and the current month, year and time): white on Secondary/Indigo (2.07:1) | static black on Secondary/Indigo (10:1) | 1.4.3 |
+| Top area parts about 16px wide ("If the click area is too small, make the component 1.5 or 2 times larger") | 24px high and at least 24px wide | 2.5.8 |
 
 Known gap with the default contrast, which keeps the Figma value, as in [Select](?path=/docs/components-input-select--docs#accessibility): the 0.5px Black/20% stroke (1.6:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border`, the invalid stroke `control-border-invalid` and the calendar icon `control-border-strong`. The clear button is a 16px icon with a 24×24px hit area (2.5.8).
 
 ## Localization and RTL
 
 - `SnowUIProvider`'s `locale` formats the date ("20 янв. 2025 г." in Russian with the default `"PP"`) and localizes the calendar; the `locale` prop wins. `dateFormat` takes any date-fns `format` pattern.
+- The top area follows the locale's order and separators ("10 / 22 / 2026" in English, "22 . 10 . 2026" in Russian), its hour cycle (12-hour with the locale's AM / PM, or 24-hour; `hourCycle` wins) and its month names in `aria-valuetext`.
 - The week starts on Monday, as in Calendar and the Figma DatePicker. Pass `weekStartsOn={0}` for Sunday, or set `SnowUIProvider`'s `weekStartsOn="locale"` to follow the locale (Sunday in English, Monday in Russian; the default in 6.0). The prop wins over the provider.
-- `messages.datePicker` holds the built-in strings: `placeholder` ("Pick a date"), `dialog` ("Choose a date", the popover's name) and `clear` ("Clear date"). The `placeholder` and `clearLabel` props override them. The calendar's own strings come from `messages.calendar`.
+- `messages.datePicker` holds the built-in strings: `placeholder` ("Pick a date"), `dialog` ("Choose a date", the popover's name), `clear` ("Clear date"); the top area's `date` and `time` (the groups), `year`, `month`, `day`, `hour`, `minute`, `second`, `dayPeriod` (the parts and the views) and `empty`; the views' `thisMonth`, `thisYear`, `systemTime`, `back`, `chooseMonth(month)`, `chooseYear(year)`, `previousYear` and `nextYear`. The `placeholder` and `clearLabel` props override them. "Today", "Last selection" and the month navigation come from `messages.calendar`.
 - In right-to-left text the icon and the clear button are on the left and the calendar mirrors; the popover takes `dir` from `SnowUIProvider`.
 
 <Canvas of={DatePickerStories.Localized} />
@@ -140,7 +191,7 @@ Bind `value` and `onValueChange` (a `Date`, or `null` once cleared). With react-
 
 | | What happens |
 | --- | --- |
-| Submits | `name=yyyy-MM-dd` (e.g. `2025-01-20`, whatever the `dateFormat` and the locale), or `name=` (empty) with no date, from a hidden input |
+| Submits | `name=yyyy-MM-dd` (e.g. `2025-01-20`, whatever the `dateFormat` and the locale); with `withTime` `yyyy-MM-ddTHH:mm` (`2025-01-20T16:08`, and `:ss` with `withSeconds`), as `<input type="datetime-local">`; or `name=` (empty) with no date, from a hidden input |
 | `required` | the form doesn't submit while there is no date: an invisible required stand-in shows the browser's message, and the focus goes to the field; assistive technology hears `aria-required` |
 | `form="id"` | associates the field and its hidden input with a form elsewhere in the page |
 | Reset | a form reset (`form.reset()`, a reset button, React 19's reset after a `<form action>`) closes the calendar and brings back the date the field had on mount (a controlled field gets `onValueChange` with it) |
@@ -152,7 +203,7 @@ An `Invalid Date` value (say `new Date('')` from a bad string) counts as no date
 
 ## Controlled and uncontrolled
 
-Pass `defaultValue` to leave the date to the picker, or `value` with `onValueChange(date)` to control it; `null` is no date. The popover: `defaultOpen`, or `open` with `onOpenChange`.
+Pass `defaultValue` to leave the date to the picker, or `value` with `onValueChange(date)` to control it; `null` is no date. `onValueChange` is called when the popover closes with a new date (a picked day, Enter, a click outside), not while the date is typed. The popover: `defaultOpen`, or `open` with `onOpenChange`.
 
 ## Composition
 

@@ -1,5 +1,6 @@
 import {
   ArrowFallIcon,
+  ArrowLineDownIcon,
   ArrowLineRightIcon,
   ArrowRiseIcon,
   SearchIcon,
@@ -49,6 +50,10 @@ import {
   SidebarProvider,
   Strip,
   searchStyles,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Typography,
 } from '../components'
 
@@ -88,52 +93,90 @@ const SectionTitle = ({ children }: { children: ReactNode }) => (
   </Typography>
 )
 
-const navItems = [
+type NavItem = {
+  label: string
+  icon: typeof ChartPieSliceIcon
+  active?: boolean
+  /** A directory (it has sub-pages): only these get the chevron. */
+  directory?: boolean
+}
+
+// Figma: a single page (Overview) has no chevron, only the directories do;
+// its icon stays in the icon column.
+const navItems: NavItem[] = [
   { label: 'Overview', icon: ChartPieSliceIcon, active: true },
-  { label: 'eCommerce', icon: ShoppingBagOpenIcon },
-  { label: 'Projects', icon: FolderOpenIcon },
+  { label: 'eCommerce', icon: ShoppingBagOpenIcon, directory: true },
+  { label: 'Projects', icon: FolderOpenIcon, directory: true },
 ]
 
-const pageItems = [
-  { label: 'User Profile', icon: IdentificationBadgeIcon },
-  { label: 'Account', icon: IdentificationCardIcon },
-  { label: 'Corporate', icon: UsersThreeIcon },
-  { label: 'Blog', icon: NotebookIcon },
-  { label: 'Social', icon: ChatsTeardropIcon },
+const pageItems: NavItem[] = [
+  { label: 'User Profile', icon: IdentificationBadgeIcon, directory: true },
+  { label: 'Account', icon: IdentificationCardIcon, directory: true },
+  { label: 'Corporate', icon: UsersThreeIcon, directory: true },
+  { label: 'Blog', icon: NotebookIcon, directory: true },
+  { label: 'Social', icon: ChatsTeardropIcon, directory: true },
 ]
 
-const NavList = ({ items }: { items: typeof pageItems }) => (
+const NavList = ({ items }: { items: NavItem[] }) => (
   <ul className="flex flex-col gap-1">
-    {items.map(({ label, icon: Icon, ...item }) => {
-      const active = 'active' in item && Boolean(item.active)
-      return (
-        <li key={label}>
-          <IconText
-            asChild
-            interactive
-            active={active}
-            className="flex gap-1"
-            icon={
-              <span className="flex items-center gap-1">
+    {items.map(({ label, icon: Icon, active = false, directory }) => (
+      <li key={label}>
+        <IconText
+          asChild
+          interactive
+          active={active}
+          className="flex gap-1"
+          icon={
+            <span className="flex items-center gap-1">
+              {directory ? (
                 <IconBox size={16} className="text-black-20">
                   <ArrowLineRightIcon className="rtl:-scale-x-100" />
                 </IconBox>
-                <IconBox size={20}>
-                  <Icon weight={active ? 'fill' : 'duotone'} />
-                </IconBox>
-              </span>
-            }
+              ) : (
+                <span aria-hidden className="size-4 shrink-0" />
+              )}
+              <IconBox size={20}>
+                <Icon weight={active ? 'fill' : 'duotone'} />
+              </IconBox>
+            </span>
+          }
+        >
+          <a
+            href={`#${label.toLowerCase()}`}
+            aria-current={active ? 'page' : undefined}
           >
-            <a
-              href={`#${label.toLowerCase()}`}
-              aria-current={active ? 'page' : undefined}
-            >
-              {label}
-            </a>
-          </IconText>
-        </li>
-      )
-    })}
+            {label}
+          </a>
+        </IconText>
+      </li>
+    ))}
+  </ul>
+)
+
+const ShortcutList = ({
+  prefix,
+  items,
+}: {
+  prefix: string
+  items: string[]
+}) => (
+  <ul className="flex flex-col gap-1">
+    {items.map((label) => (
+      <li key={label}>
+        <IconText
+          asChild
+          interactive
+          className="flex"
+          icon={
+            <IconBox size={16} className="text-black-20">
+              <span className="size-1.5! rounded-full bg-current" />
+            </IconBox>
+          }
+        >
+          <a href={`#${prefix}-${label.toLowerCase()}`}>{label}</a>
+        </IconText>
+      </li>
+    ))}
   </ul>
 )
 
@@ -147,32 +190,22 @@ const DashboardSidebar = () => (
       <IconText interactive icon={avatar('BW')}>
         ByeWind
       </IconText>
-      <div className="flex flex-col gap-1">
-        <Group gap={8} aria-label="Shortcuts" className="px-2">
-          {/* Figma: Black/40% and Black/20% (2.85:1, 1.6:1). */}
-          <Typography size={14} className="text-black-80">
-            Favorites
-          </Typography>
-          <Typography size={14} className="text-secondary">
-            Recently
-          </Typography>
-        </Group>
-        {['Overview', 'Projects'].map((label) => (
-          <IconText
-            key={label}
-            asChild
-            interactive
-            className="flex"
-            icon={
-              <IconBox size={16} className="text-black-20">
-                <span className="size-1.5! rounded-full bg-current" />
-              </IconBox>
-            }
-          >
-            <a href={`#fav-${label.toLowerCase()}`}>{label}</a>
-          </IconText>
-        ))}
-      </div>
+      {/* Figma: two text tabs, Favorites in Black/40% and Recently in
+          Black/20% (2.85:1 and 1.6:1, under AA). Here they are the library's
+          Tabs, which are readable and switch the list: the selected tab in
+          Primary with its line, the other in text-secondary. */}
+      <Tabs defaultValue="favorites" className="flex flex-col gap-1">
+        <TabsList aria-label="Shortcuts" className="justify-start gap-2 px-2">
+          <TabsTrigger value="favorites">Favorites</TabsTrigger>
+          <TabsTrigger value="recently">Recently</TabsTrigger>
+        </TabsList>
+        <TabsContent value="favorites" className="mt-0">
+          <ShortcutList prefix="fav" items={['Overview', 'Projects']} />
+        </TabsContent>
+        <TabsContent value="recently" className="mt-0">
+          <ShortcutList prefix="recent" items={['eCommerce', 'Blog']} />
+        </TabsContent>
+      </Tabs>
     </SidebarHeader>
     <SidebarContent className="gap-4">
       <nav aria-label="Dashboards" className="flex flex-col gap-1">
@@ -249,9 +282,13 @@ const DashboardHeader = ({
   searchOpen?: boolean
   onToggleRightSidebar: () => void
 }) => (
-  <header className="flex items-center justify-between gap-4 border-b-[0.5px] border-black-10 px-7 py-5">
+  // Figma: "Header is always fixed at the top". In an app, give the page a
+  // matching `scroll-padding-top` so focused content below never scrolls
+  // under it (WCAG 2.4.11).
+  <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b-[0.5px] border-black-10 bg-background-1 px-7 py-5">
     <div className="flex items-center gap-2">
-      <Group aria-label="Layout">
+      {/* Figma: the 28px icon buttons are ≈32px apart, so 4px gaps. */}
+      <Group gap={4} aria-label="Layout">
         {iconButton('Toggle sidebar', <SidebarIcon />)}
         {iconButton('Add to favorites', <StarIcon />)}
       </Group>
@@ -274,7 +311,7 @@ const DashboardHeader = ({
         defaultOpen={searchOpen}
         trigger={<SearchButton />}
       />
-      <Group aria-label="Tools">
+      <Group gap={4} aria-label="Tools">
         {iconButton('Switch theme', <SunIcon />)}
         {iconButton('History', <ClockCounterClockwiseIcon />)}
         {iconButton('Notifications', <BellIcon />)}
@@ -295,13 +332,16 @@ const stats = [
   { label: 'Active Users', value: '2,318', delta: '+6.08%', up: true },
 ]
 
+// Shares of the traffic, in %. The Figma bars are three equal segments
+// (Black, Black/40%, Black/10%) 2px apart, as long as the share: 79px for
+// Pinterest's 28% (measured on the kit frame).
 const traffic = [
-  { site: 'Google', share: 4 },
-  { site: 'YouTube', share: 5 },
-  { site: 'Instagram', share: 3 },
-  { site: 'Pinterest', share: 6 },
-  { site: 'Facebook', share: 2 },
-  { site: 'Twitter', share: 4 },
+  { site: 'Google', share: 11 },
+  { site: 'YouTube', share: 21 },
+  { site: 'Instagram', share: 14 },
+  { site: 'Pinterest', share: 28 },
+  { site: 'Facebook', share: 10 },
+  { site: 'Twitter', share: 16 },
 ]
 
 const DashboardContent = () => (
@@ -310,21 +350,29 @@ const DashboardContent = () => (
       <Typography asChild size={14} semibold>
         <h1>Overview</h1>
       </Typography>
-      <Typography size={12} className="text-secondary">
+      <Button
+        variant="bare"
+        className="text-black"
+        endContent={
+          <IconBox size={16}>
+            <ArrowLineDownIcon />
+          </IconBox>
+        }
+      >
         Today
-      </Typography>
+      </Button>
     </div>
     <div className="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-7">
       {stats.map(({ label, value, delta, up }, index) => (
+        // Figma: 108px high, padding 24, radius 20 — the block, tinted.
         <Card
           key={label}
-          className={`flex flex-col gap-2 rounded-16 text-static-black ${
+          variant="block"
+          className={`flex flex-col gap-2 text-static-black ${
             index % 2 ? 'bg-color-2' : 'bg-color-1'
           }`}
         >
-          <Typography size={14} semibold>
-            {label}
-          </Typography>
+          <Typography size={14}>{label}</Typography>
           <div className="flex items-center justify-between gap-2">
             <Typography size={24} semibold>
               {value}
@@ -344,7 +392,7 @@ const DashboardContent = () => (
         </Card>
       ))}
     </div>
-    <Card className="flex flex-col gap-4 rounded-16 bg-background-2">
+    <Card variant="block" className="flex flex-col gap-4">
       <Typography asChild size={14} semibold>
         <h2>Traffic by Website</h2>
       </Typography>
@@ -355,13 +403,13 @@ const DashboardContent = () => (
               <dt>{site}</dt>
             </Typography>
             <dd>
+              <span className="sr-only">{share}%</span>
               <Strip
-                count={6}
-                value={share}
+                count={3}
                 thickness={2}
                 rounded
-                aria-label={`${site} traffic`}
-                className="w-32"
+                style={{ width: `${(share * 79) / 28}px` }}
+                className="gap-0.5 [&>:nth-child(2)]:bg-black-40 [&>:nth-child(3)]:bg-black-10"
               />
             </dd>
           </div>
@@ -531,7 +579,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The SnowUI dashboard layout built from the library: `Sidebar` (212px, IconText nav items), a header (`Group` of icon `Button`s, `Breadcrumb`, a Search-styled trigger for the `CommandPalette` — press "/"), the content (`Card`, `Strip`) and a 280px right sidebar (`ListItem` rows for Notifications, Activities and Contacts). A recipe, not an exported component: copy it and adapt it.',
+          'The SnowUI dashboard layout built from the library: `Sidebar` (212px, `Tabs` for Favorites / Recently, IconText nav items), a sticky header (`Group` of icon `Button`s, `Breadcrumb`, a Search-styled trigger for the `CommandPalette` — press "/"), the content (`Card variant="block"` tiles and blocks, `Strip`) and a 280px right sidebar (`ListItem` rows for Notifications, Activities and Contacts). A recipe, not an exported component: copy it and adapt it.',
       },
       story: { inline: false, height: '900px' },
     },

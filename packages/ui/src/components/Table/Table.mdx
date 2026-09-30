@@ -77,13 +77,17 @@ Header and body cells are 40px high, padded 8px top and bottom and 12px at the s
 
 The stories show the two Figma tables. "Table A" (Order List), at the top of this page: the function bar with a Search that filters the users ("/" focuses it while the focus is in the table, so the one-key shortcut stays scoped to it), sortable headers, selectable rows with a select-all checkbox, the row checkbox and "…" action shown on hover, dates with a calendar icon and the pagination below.
 
-"Table B": a compact table with a caption and a footer, inside a dashboard block ([Card](?path=/docs/components-card--docs) `variant="block"`).
+"Table B": a compact table with a caption, inside a dashboard block ([Card](?path=/docs/components-card--docs) `variant="block"`). As in Figma, it has no lines between the rows and no total row, and its first column starts on the caption's edge (`[&_td]:border-b-0`, `ps-0` on the first cells).
 
 <Canvas of={TableStories.TableB} />
 
 A filterable list, as in the Figma "Search results" guidance, with an empty state:
 
 <Canvas of={TableStories.Filtered} />
+
+When nothing matches: one 40px row, "No results." at the start in `text-secondary`:
+
+<Canvas of={TableStories.NoResults} />
 
 ## Sorting
 
@@ -113,7 +117,7 @@ With TanStack Table:
 - **Selected row:** `data-state="selected"` on a `TableRow` gives the same highlight. Selection itself is yours (the stories use checkboxes and TanStack's row selection).
 - **Revealed controls:** the elements of a `TableCell` with `reveal` are transparent until their row is hovered or selected, or while they hold the keyboard focus, a checked (or mixed) checkbox, the Checkbox component or a native `<input type="checkbox">`, or an open menu (`aria-expanded="true"`). On devices without hover (touch screens) they always show.
 - **Sort button:** hover turns the label black; keyboard focus shows the `focus-ring`.
-- **Empty:** Table has no empty state of its own; render a row with one cell spanning every column, as the Filtered story does.
+- **Empty:** Table has no empty state of its own; render a row with one cell spanning every column, as the NoResults story does.
 
 ## Accessibility
 

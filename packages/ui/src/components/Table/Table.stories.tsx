@@ -496,12 +496,14 @@ export const TableADark: Story = {
   globals: { theme: 'dark' },
 }
 
+const filteredColumns = columns.filter((column) => column.id !== 'select')
+
 /** A filterable list, as in the Figma "Search results" guidance. */
 const FilteredTable = ({ filter }: { filter?: string }) => {
   const table = useTable({
     features,
     data: orders,
-    columns: columns.filter((column) => column.id !== 'select'),
+    columns: filteredColumns,
     initialState: {
       columnFilters: filter ? [{ id: 'project', value: filter }] : [],
     },
@@ -546,8 +548,11 @@ const FilteredTable = ({ filter }: { filter?: string }) => {
           ) : (
             <TableRow>
               {/* Figma: one 40px row, at the start, Black/40% (here
-                    text-secondary, its AA stand-in). */}
-              <TableCell colSpan={columns.length} className="text-secondary">
+                  text-secondary, its AA stand-in). */}
+              <TableCell
+                colSpan={filteredColumns.length}
+                className="text-secondary"
+              >
                 No results.
               </TableCell>
             </TableRow>

@@ -161,8 +161,17 @@ export const AddData: Story = {
             </span>
             <div className="flex flex-col gap-4 [&_.relative]:w-full [&_input]:w-full">
               <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="First Name" className={nameField} />
-                <Input placeholder="Last Name" className={nameField} />
+                {/* No title in Figma: the placeholder is not a label. */}
+                <Input
+                  aria-label="First name"
+                  placeholder="First Name"
+                  className={nameField}
+                />
+                <Input
+                  aria-label="Last name"
+                  placeholder="Last Name"
+                  className={nameField}
+                />
               </div>
               <Input
                 title="Email"

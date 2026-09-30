@@ -146,17 +146,23 @@ const navItems = [
   { label: 'Bookmark', icon: <BookmarkSimpleIcon /> },
 ]
 
+// Navigation goes to pages, so the items are links styled as buttons.
 const navButtons = (vertical?: boolean) =>
   navItems.map(({ label, icon }, index) => (
     <Button
       key={label}
+      asChild
       size="md"
       variant={index === 0 ? 'filled' : 'borderless'}
-      aria-current={index === 0 ? 'page' : undefined}
       startContent={<IconBox size={16}>{icon}</IconBox>}
       className={vertical ? 'justify-start' : undefined}
     >
-      {label}
+      <a
+        href={`#${label.toLowerCase()}`}
+        aria-current={index === 0 ? 'page' : undefined}
+      >
+        {label}
+      </a>
     </Button>
   ))
 

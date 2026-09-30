@@ -89,9 +89,12 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
     }
 
 /**
- * Figma "Button" (Size × Variant × State). The design has Default and Hover
- * states only; the focus ring (`ring-focus`) and the disabled look are the
- * library's own, built from the same tokens.
+ * Figma "Button" (Size × Variant × State): Default and Hover, and Disabled
+ * in the kit's docs ("State: Default, Hover, Disabled"), drawn as the whole
+ * button at 20% opacity with the default arrow cursor. 5.x keeps its own
+ * disabled look instead (a Black/20% label, the Gray and Filled fill Black/4%,
+ * the not-allowed cursor); the kit's look is planned for 6.0. The focus ring
+ * (`ring-focus`) is the library's own, built from the same tokens.
  */
 const buttonVariants = cva(
   [

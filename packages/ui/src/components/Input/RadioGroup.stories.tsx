@@ -91,7 +91,7 @@ export const WithDisabled: Story = {
 
 /**
  * Invalid: `aria-invalid` on the group (the `role="radiogroup"`), which
- * `FormControl` sets while the field has an error (no Figma state). Every
+ * `FormControl` sets while the field has an error (the kit draws its Error state on text fields; this extends their red stroke). Every
  * circle gets a Secondary/Red ring. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {

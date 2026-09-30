@@ -84,7 +84,7 @@ export const Default: Story = {
     const page = within(canvasElement.ownerDocument.body)
     const field = canvas.getByRole('combobox', { name: 'Stay' })
     const day = (name: RegExp) => page.getByRole('button', { name })
-    await expect(field).toHaveTextContent('Jan 13, 2025 – Jan 16, 2025')
+    await expect(field).toHaveTextContent('Jan 13 – 16, 2025')
 
     await step('two clicks pick a new range and close it', async () => {
       await userEvent.click(field)
@@ -108,7 +108,7 @@ export const Default: Story = {
         from: new Date(2025, 0, 20),
         to: new Date(2025, 0, 22),
       })
-      await expect(field).toHaveTextContent('Jan 20, 2025 – Jan 22, 2025')
+      await expect(field).toHaveTextContent('Jan 20 – 22, 2025')
       await expect(field).toHaveFocus()
     })
 
@@ -120,7 +120,7 @@ export const Default: Story = {
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )
-      await expect(field).toHaveTextContent('Jan 20, 2025 – Jan 27, 2025')
+      await expect(field).toHaveTextContent('Jan 20 – 27, 2025')
     })
 
     await step('closing after one day keeps the old range', async () => {
@@ -130,7 +130,7 @@ export const Default: Story = {
       await waitFor(() =>
         expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
       )
-      await expect(field).toHaveTextContent('Jan 20, 2025 – Jan 27, 2025')
+      await expect(field).toHaveTextContent('Jan 20 – 27, 2025')
     })
 
     await step('the clear button clears it', async () => {
@@ -219,7 +219,7 @@ export const WithTitle: Story = {
   play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('combobox', { name: 'Stay' }),
-    ).toHaveTextContent('Feb 1, 2026 – Feb 8, 2026')
+    ).toHaveTextContent('Feb 1 – 8, 2026')
   },
 }
 

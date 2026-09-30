@@ -25,12 +25,14 @@ const Checkbox: FC<CheckboxProps> = ({ className, ...props }) => (
       'enabled:hover:bg-black/8 enabled:hover:inset-ring-control-border-strong',
       'data-[state=checked]:bg-primary data-[state=checked]:inset-ring-0 data-[state=checked]:inset-shadow-inner data-[state=checked]:enabled:hover:bg-primary-hover-strong',
       'data-[state=indeterminate]:bg-primary data-[state=indeterminate]:inset-ring-0 data-[state=indeterminate]:inset-shadow-inner data-[state=indeterminate]:enabled:hover:bg-primary-hover-strong',
-      // Invalid (`aria-invalid`, no Figma state): a Secondary/Red ring on the
-      // unchecked box, hovered or not.
+      // Invalid (`aria-invalid`): a Secondary/Red ring on the unchecked box,
+      // hovered or not, as the kit's Error stroke on text fields.
       'aria-invalid:inset-ring-control-border-invalid enabled:hover:aria-invalid:inset-ring-control-border-invalid',
       'focus-ring',
-      // Disabled (no Figma state): a Black/4% box with a Black/10% ring; when
-      // checked, a Black/10% fill with a Black/40% mark. Visible in both modes.
+      // Disabled: a Black/4% box with a Black/10% ring; when checked, a
+      // Black/10% fill with a Black/40% mark. Visible in both modes. The kit
+      // dims the whole box to 20% (a checked one ≈#CCC, white mark) with the
+      // arrow cursor: planned for 6.0.
       'disabled:cursor-not-allowed disabled:bg-black-4 disabled:inset-ring-black-10 disabled:text-black-40',
       'data-[state=checked]:disabled:bg-black-10 data-[state=checked]:disabled:inset-shadow-none data-[state=indeterminate]:disabled:bg-black-10 data-[state=indeterminate]:disabled:inset-shadow-none',
       className,

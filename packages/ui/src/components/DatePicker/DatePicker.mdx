@@ -39,7 +39,7 @@ const [due, setDue] = useState<Date | null>(null)
 2. **Trigger**: a `<button role="combobox">` that fills the field, with the picked date (in the `dateFormat`, "Jan 20, 2025" by default, "Jan 20, 2025, 4:08 PM" with `withTime`) or the placeholder ("Pick a date") in `text-secondary`. With `title`, the Figma "2 row" field: the title (12/16, `text-secondary`) above the date. `id`, `aria-*`, `onBlur`, `ref` and other button props go to it.
 3. **Clear button** (`clearable`, on by default, while there is a date): the Search clear button, a 16px filled XCircle at 60% opacity.
 4. **Calendar icon**: a 16px calendar in Black/40%.
-5. **Popover**: the Figma DatePicker, 360px wide, 4px below the field and aligned to its start. `contentClassName` styles the popover.
+5. **Popover**: the Figma DatePicker, 360×360 with a five-week month (a 56px top area over the 304px month), 4px below the field and aligned to its start. `contentClassName` styles the popover.
    1. **Top area**: the date, typed by parts in the locale's order ("10 / 22 / 2026", the separators in `text-secondary`), today in `text-secondary` while there is none; with `withTime`, the time at the end ("04 : 08 AM"). A 0.5px Black/10% line below.
    2. **Toolbar**: "Today" and "Last selection" (the value when the popover opened) on the left, "‹ Feb ›" (the short month, a button to the months) on the right.
    3. **Days**: the [Calendar](?path=/docs/components-calendar--docs) grid; `calendarProps` passes more Calendar props. Or the **months**, **years**, **hours**, **minutes** or **seconds**, in the same cells, with "This month", "This year" or "System time" in the toolbar and "‹ Back" at the bottom.
@@ -76,7 +76,7 @@ Closing the popover confirms the date: Enter in the top area, a click outside, o
 
 ## Months and years
 
-A click on the month in the top area, or on the "Feb" caption, shows the twelve months of the shown year ("‹ 2026 ›" switches the year, and is a button to the years); a click on the year shows twelve years ("‹ ›" pages them). The month or year of the date is selected (Primary), the current one is Secondary/Indigo. Picking one changes the date's month or year (the day stays, within the month) and returns to the days; "This month" and "This year" pick the current one, "‹ Back" returns without a change.
+A click on the month in the top area, or on the "Feb" caption, shows the twelve months of the shown year ("‹ 2026 ›" switches the year, and is a button to the years); a click on the year shows twelve years ("‹ ›" pages them). The month or year of the date is selected (Primary), the current one is Secondary/Indigo, marked as the Calendar's today (with its dot in dark mode). Picking one changes the date's month or year (the day stays, within the month) and returns to the days; "This month" and "This year" pick the current one, "‹ Back" returns without a change.
 
 <Canvas of={DatePickerStories.MonthsView} />
 

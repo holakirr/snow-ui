@@ -52,7 +52,7 @@ export const DisabledOff: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (no Figma state). A 1px Secondary/Red stroke inside the track. Pair it with the error text: see Form.
+ * error (the kit draws its Error state on text fields; this extends their red stroke). A 1px Secondary/Red stroke inside the track. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {

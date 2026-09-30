@@ -48,12 +48,12 @@ describe('Pagination', () => {
     expect(inactive).not.toHaveClass('bg-black-4')
   })
 
-  it('uses the Figma Button Small outline for every item', () => {
+  it('uses the 28px Figma items for every link', () => {
     renderPagination()
 
     for (const name of ['1', '2']) {
       expect(screen.getByRole('link', { name })).toHaveClass(
-        'h-6',
+        'h-7',
         'rounded-12',
         'text-12',
         'border-[0.5px]',
@@ -66,7 +66,7 @@ describe('Pagination', () => {
     renderPagination()
 
     const previous = screen.getByRole('link', { name: 'Go to previous page' })
-    expect(previous).toHaveClass('px-1', 'min-w-6')
+    expect(previous).toHaveClass('px-1', 'min-w-7')
     expect(previous.querySelector('span')).toBeNull()
 
     const next = screen.getByRole('link', { name: 'Go to next page' })
@@ -186,7 +186,7 @@ describe('Pagination', () => {
       const current = screen.getByRole('button', { name: '1' })
       expect(current).toHaveAttribute('type', 'button')
       expect(current).toHaveAttribute('aria-current', 'page')
-      expect(current).toHaveClass('bg-black-4', 'h-6', 'rounded-12')
+      expect(current).toHaveClass('bg-black-4', 'h-7', 'rounded-12')
 
       fireEvent.click(screen.getByRole('button', { name: '2' }))
       fireEvent.click(screen.getByRole('button', { name: 'Go to next page' }))

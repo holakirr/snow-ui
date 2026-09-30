@@ -75,16 +75,17 @@ const PaginationItem: FC<ComponentProps<'li'>> = ({ className, ...props }) => (
 PaginationItem.displayName = 'PaginationItem'
 
 /*
- * Figma Pagination (Table page): Button Small "Outline" items, a 0.5px
- * Black/10% stroke, radius 12, 12 Regular text; the current page has a
- * Black/4% fill. `sm` is the Figma size.
+ * Figma Pagination (Table page, `32728:395827`): a 28px row, items 8px
+ * apart, with a 0.5px Black/10% stroke; the current page has a Black/4%
+ * fill. `sm` is the Figma size: 28px high. The items' radius and text size
+ * aren't in the kit data (the group itself is radius 8): 12 and 12/16.
  */
 const paginationLinkVariants = cva(
   'inline-flex shrink-0 items-center justify-center gap-1 border-[0.5px] border-black-10 font-normal text-black transition-colors hover:bg-black-4 focus-ring aria-disabled:pointer-events-none aria-disabled:text-black-20',
   {
     variants: {
       size: {
-        sm: 'h-6 min-w-6 rounded-12 px-3 text-12',
+        sm: 'h-7 min-w-7 rounded-12 px-3 text-12',
         md: 'h-8 min-w-8 rounded-12 px-3 text-14',
         lg: 'h-10 min-w-10 rounded-12 px-4 text-16',
       },
@@ -104,7 +105,7 @@ type PaginationItemProps = {
   /** The current page: a Black/4% fill and `aria-current="page"`. */
   isActive?: boolean
   /**
-   * `sm` is the Figma size (24px).
+   * `sm` is the Figma size (28px).
    * @default 'sm'
    */
   size?: Size
@@ -285,7 +286,7 @@ const PAGINATION_ICON_SIZES = {
   lg: 20,
 }
 
-/** Icon-only links are square: the Figma prev/next buttons (padding 4). */
+/** Icon-only links are square (`min-w-*`): a 16px arrow, 20px from `lg`. */
 const ICON_ONLY_PADDINGS = {
   sm: 'px-1',
   md: 'px-2',
@@ -387,7 +388,7 @@ type PaginationEllipsisProps = {
 } & Omit<ComponentProps<'span'>, 'size'>
 
 const ELLIPSIS_SIZES = {
-  sm: 'h-6 min-w-6 text-12',
+  sm: 'h-7 min-w-7 text-12',
   md: 'h-8 min-w-8 text-14',
   lg: 'h-10 min-w-10 text-16',
 }

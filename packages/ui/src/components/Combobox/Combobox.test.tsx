@@ -379,6 +379,22 @@ describe('Combobox', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Loading')
   })
 
+  it('shows a loading ring that stops for reduced motion', () => {
+    const { container } = render(
+      <Combobox aria-label="Person" options={[]} loading />,
+    )
+    const ring = container.querySelector(
+      '[data-slot="combobox"] svg:has(circle)',
+    ) as SVGSVGElement
+    // Turned by CSS, which reduced motion stops, not by an SVG <animate>.
+    expect(ring).toHaveClass(
+      'animate-spinner-turn',
+      'motion-reduce:animate-none',
+    )
+    expect(ring.querySelector('animate, animateTransform')).toBeNull()
+    expect(ring).toHaveAttribute('aria-hidden', 'true')
+  })
+
   it('creates an option from the query', () => {
     const onCreate = vi.fn()
     const onValueChange = vi.fn()

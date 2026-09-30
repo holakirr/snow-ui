@@ -59,6 +59,9 @@ describe('form controls with the standard (Figma) contrast', () => {
     expect(ratio('Placeholder on the field fill', 'light')).toBe(1.6)
     // Figma's white thumb on the dark-mode indigo track: 2.07:1 (2.069).
     expect(ratio('Switch thumb vs the on track', 'dark')).toBe(2.06)
+    // The Figma focus stroke of the text fields: 0.5px Black/40% on white
+    // (2.85:1, 2.849); with more contrast a 2px Black/80% one.
+    expect(ratio('Hover / focus stroke vs the field fill', 'light')).toBe(2.84)
   })
 
   it('is under AA where more contrast is needed, and AA with it', () => {

@@ -247,7 +247,7 @@ describe('CommandPalette', () => {
     expect(screen.getByRole('listbox')).toHaveAttribute('aria-busy', 'true')
   })
 
-  it('centres the loading spinner in its box', () => {
+  it('centres the loading ring in its box and stops it for reduced motion', () => {
     renderOpen({ loading: true })
     const spinner = screen
       .getByRole('dialog')
@@ -260,7 +260,13 @@ describe('CommandPalette', () => {
     // The ring turns around its centre, which must be the box's centre.
     expect(Number(circle.getAttribute('cx'))).toBe(x + width / 2)
     expect(Number(circle.getAttribute('cy'))).toBe(y + height / 2)
-    expect(spinner.getAttribute('class')).not.toContain('animate-spin')
+    // Turned by CSS, which reduced motion stops, not by an SVG <animate>.
+    expect(spinner).toHaveClass(
+      'animate-spinner-turn',
+      'motion-reduce:animate-none',
+    )
+    expect(spinner.querySelector('animate, animateTransform')).toBeNull()
+    expect(spinner).toHaveAttribute('aria-hidden', 'true')
   })
 
   it('supports a controlled query', () => {

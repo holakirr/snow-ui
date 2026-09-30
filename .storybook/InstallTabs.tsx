@@ -12,6 +12,7 @@ import {
 import chartsPackage from '../packages/charts/package.json'
 import manifest from '../packages/registry/manifest.json'
 import uiPackage from '../packages/ui/package.json'
+import { addedIn } from './added-in'
 
 /*
  * `<InstallTabs item="button" />`: how to install a component, from the
@@ -243,6 +244,8 @@ export const InstallTabs = ({ item: itemName, name }: InstallTabsProps) => {
   const theme = charts
     ? `@import "tailwindcss";\n@import "${uiPackage.name}/theme.css";\n@import "${chartsPackage.name}/styles.css";`
     : `@import "tailwindcss";\n@import "${uiPackage.name}/theme.css";\n@import "${uiPackage.name}/fonts.css";`
+  // Copied components: the theme without the npm components' classes.
+  const copiedTheme = `@import "tailwindcss";\n@import "${uiPackage.name}/theme-core.css";\n@import "${uiPackage.name}/fonts.css";`
   const deps = item.registryDependencies ?? []
   // By hand, the items it needs are copied too, recursively: their npm
   // packages must be direct dependencies (pnpm doesn't hoist the others).
@@ -344,10 +347,13 @@ export const InstallTabs = ({ item: itemName, name }: InstallTabsProps) => {
           code={`${pm.add} ${[uiPackage.name, ...npmPackages].map(withRange).join(' ')}`}
         />
         <p style={note}>
-          2. Import the theme in your stylesheet (the package provides the
-          tokens and fonts; the components are copied):
+          2. Import the theme in your stylesheet. The package provides the
+          tokens and fonts; <code>theme-core.css</code> is the theme without the
+          classes of the npm components, since yours are copied (import{' '}
+          <code>theme.css</code> instead if you also render components from the
+          package):
         </p>
-        <Source language="css" code={theme} />
+        <Source language="css" code={copiedTheme} />
         {deps.length ? (
           <p style={note}>
             3. Copy the items it uses, the same way (with the ones they use):{' '}
@@ -399,8 +405,15 @@ export const InstallTabs = ({ item: itemName, name }: InstallTabsProps) => {
     ),
   }
 
+  const since = addedIn[item.name]
+
   return (
     <section style={box} aria-label={`Install ${item.title}`}>
+      {since && (
+        <p style={{ ...note, marginTop: 0 }}>
+          Added in {uiPackage.name} {since}.
+        </p>
+      )}
       <div style={bar}>
         <div role="tablist" aria-label="Installation method">
           {TABS.map(([key, label], index) => (

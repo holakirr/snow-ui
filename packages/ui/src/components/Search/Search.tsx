@@ -26,10 +26,11 @@ export type SearchSize = 'sm' | 'lg'
 // focus both become Surface/1 + 0.5px Black/40% + the Focus ring. Invalid
 // (the <input> has `aria-invalid="true"`; no Figma state): a 1px
 // Secondary/Red stroke in every state, like Input. The stroke colours are
-// the `control-border*` tokens; with more contrast the stroke is 1px and the
-// gray field gets one too (its fill alone is 1.1:1, WCAG 1.4.11).
+// the `control-border*` tokens; with more contrast the stroke is 1px, 2px
+// while focused (the focus indicator, WCAG 2.4.7), and the gray field gets
+// one too (its fill alone is 1.1:1, WCAG 1.4.11).
 const searchStyles = cva(
-  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-control-border-strong focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-disabled:pointer-events-none has-disabled:opacity-40 contrast-more:inset-ring-1 contrast-more:focus-within:inset-ring-1',
+  'group/search relative flex items-center gap-2 text-black backdrop-blur-[10px] transition-[background-color,box-shadow] focus-within:bg-surface-1 focus-within:inset-ring-[0.5px] focus-within:inset-ring-control-border-strong focus-within:ring-4 focus-within:ring-focus has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid has-disabled:pointer-events-none has-disabled:opacity-40 contrast-more:inset-ring-1 contrast-more:focus-within:inset-ring-2',
   {
     variants: {
       variant: {
@@ -225,7 +226,9 @@ const Search: FC<SearchProps> = ({
           onClick={clear}
           // Figma: 40% opacity (2.85:1); 60% meets the 3:1 of a control's icon
           // (WCAG 1.4.11). A 16px icon: `hit-area` makes it 24px (2.5.8).
-          className="relative flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 outline-none transition-opacity hit-area hover:opacity-80 focus-visible:opacity-80 focus-visible:ring-2 focus-visible:ring-black-20"
+          // Keyboard focus: `focus-ring`, at full opacity so the outline
+          // keeps its contrast (2.4.7, 1.4.11).
+          className="relative flex shrink-0 cursor-pointer items-center justify-center rounded-full text-black opacity-60 transition-opacity hit-area hover:opacity-80 focus-ring focus-visible:opacity-100"
         >
           <XCircleIcon weight="fill" size={clearIconSizes[size]} />
         </button>

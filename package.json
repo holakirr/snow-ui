@@ -48,6 +48,8 @@
     "@biomejs/biome": "^2.5.14",
     "@changesets/changelog-github": "^1.0.1",
     "@changesets/cli": "^3.0.3",
+    "@changesets/pre": "^3.0.0",
+    "@changesets/read": "^1.0.1",
     "@figma/code-connect": "^2.0.1",
     "@playwright/test": "1.63.0",
     "@size-limit/esbuild": "^14.1.0",

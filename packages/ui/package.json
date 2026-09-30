@@ -34,6 +34,7 @@
     "./package.json": "./package.json",
     "./index.css": "./dist/index.css",
     "./theme.css": "./dist/theme.css",
+    "./theme-core.css": "./dist/theme-core.css",
     "./fonts.css": "./dist/fonts.css",
     "./fonts-italic.css": "./dist/fonts-italic.css",
     "./fonts/*": "./dist/fonts/*"

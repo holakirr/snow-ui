@@ -26,6 +26,7 @@ permissions: read-all
 jobs:
   analysis:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       security-events: write # upload the SARIF to code scanning
       id-token: write # publish the results to the Scorecard API

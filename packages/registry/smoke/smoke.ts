@@ -5,6 +5,7 @@
  *
  *   bun run build     # the packages, installed into the apps as tarballs
  *   bun packages/registry/smoke/smoke.ts [--app next] [--app vite] [--app next-shadcn] [--work dir]
+ *   bun packages/registry/smoke/smoke.ts --published [--app …]   # against npm
  *
  * Apps (all by default):
  * - `next`: create-next-app (App Router, RSC) + `shadcn init <registry>/snow-ui.json`
@@ -18,8 +19,17 @@
  *   @snow-ui registry, every item and the SnowUI theme: nothing of shadcn's
  *   may change.
  *
+ * In the Next.js and Vite apps, the CSS of one copied Button is measured
+ * with the base item's theme-core.css and with theme.css (which adds the
+ * classes of every npm component); theme-core.css must at least halve it.
+ *
  * The workspace packages are installed from tarballs of the local build
  * (item dependencies and package overrides), so unreleased versions work.
+ * With `--published` they come from npm, at the ranges the registry
+ * declares (`^<version at this commit>`): the release workflow runs that
+ * after publishing, before the release branch (the site) moves, so an item
+ * that needs a newer theme than the published one fails here (the theme
+ * check below), not in users' apps.
  * The two files `shadcn init` reads from shadcn's own registry are served
  * locally too (fixtures.ts), so the run needs npm but not ui.shadcn.com.
  * The registry server is stopped when the run ends.
@@ -31,13 +41,16 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
+  rmSync,
   statSync,
   writeFileSync,
 } from 'node:fs'
 import { createServer, type Server } from 'node:http'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, extname, join, relative, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
+import { gzipSync } from 'node:zlib'
 import { buildRegistry, shadcnBin } from '../src/build'
 import { loadConfig } from '../src/cli'
 import { createPlan, type Manifest } from '../src/plan'
@@ -58,6 +71,8 @@ const repoRoot = resolve(import.meta.dirname, '../../..')
 const HEADER_MARK = 'SnowUI for React ('
 
 interface Context {
+  /** Measurements for the summary. */
+  notes: string[]
   work: string
   registryUrl: string
   manifest: Manifest
@@ -155,8 +170,19 @@ async function pack(ctx: Context) {
   }
 }
 
+/** `@holakirr/snow-ui`: the local tarball, or the range the registry declares. */
+function uiSpec(ctx: Context) {
+  const local = ctx.tarballs['@holakirr/snow-ui']
+  if (local) return `@holakirr/snow-ui@file:${local}`
+  const { version } = JSON.parse(
+    readFileSync(join(repoRoot, 'packages/ui/package.json'), 'utf8'),
+  )
+  return `@holakirr/snow-ui@^${version}`
+}
+
 /** package.json `overrides`: the local tarballs, also for transitive deps. */
 function useLocalPackages(ctx: Context, app: string) {
+  if (!Object.keys(ctx.tarballs).length) return
   const file = join(app, 'package.json')
   const json = JSON.parse(readFileSync(file, 'utf8'))
   json.overrides = Object.fromEntries(
@@ -343,6 +369,66 @@ function cssOf(dir: string) {
   return css
 }
 
+/** Every .ts/.tsx the registry installed, as one string. */
+function installedSources(app: string) {
+  const { root, files } = installedFiles(app)
+  return files
+    .filter((file) => /\.tsx?$/.test(file))
+    .map((file) => readFileSync(join(root, file), 'utf8'))
+    .join('\n')
+}
+
+const escapeRegExp = (text: string) =>
+  text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+/**
+ * The theme names the installed items use must be in the built CSS: each
+ * colour token of this commit (`--color-*` in tokens.generated.css) that an
+ * item's class names (`bg-control-border`), and each custom utility of
+ * theme.css (`@utility hit-area`) an item uses. Tailwind skips an unknown
+ * class without a word, so an app whose theme.css (from npm) is older than
+ * the items' sources builds fine and renders unstyled controls: this is
+ * what catches it.
+ */
+function checkThemeNames(css: string, app: string, where: string) {
+  const sources = installedSources(app)
+  const read = (file: string) =>
+    readFileSync(join(repoRoot, 'packages/ui/src', file), 'utf8')
+  const tokens = new Set(
+    [
+      ...read('styles/tokens.generated.css').matchAll(/--color-([a-z0-9-]+):/g),
+    ].map((match) => match[1]),
+  )
+  const utilities = new Set(
+    [...read('theme.css').matchAll(/^@utility ([a-z0-9-]+)/gm)].map(
+      (match) => match[1],
+    ),
+  )
+  const missing: string[] = []
+  for (const token of tokens) {
+    const used = new RegExp(
+      `(?<![a-z0-9-])(?:bg|text|border(?:-[trblxyse])?|ring|ring-offset|outline|fill|stroke|from|via|to|decoration|divide|placeholder|caret|accent|shadow)-${escapeRegExp(token)}(?![a-z0-9-])`,
+    ).test(sources)
+    if (used && !css.includes(`--color-${token}:`)) {
+      missing.push(`the --color-${token} token`)
+    }
+  }
+  for (const utility of utilities) {
+    const pattern = `(?<![a-z0-9-])${escapeRegExp(utility)}(?![a-z0-9-])`
+    const used = new RegExp(pattern).test(sources)
+    if (used && !new RegExp(`[.:]${pattern}`).test(css)) {
+      missing.push(`the ${utility} utility`)
+    }
+  }
+  assert(
+    !missing.length,
+    `${where} lacks ${missing.join(', ')}, which the installed items use: the theme.css installed is older than the items`,
+  )
+  console.log(
+    `  ${where}: every theme token and utility the items use is there`,
+  )
+}
+
 function checkCss(css: string, where: string) {
   for (const [what, pattern] of [
     ['the SnowUI tokens', /--color-black-4:/],
@@ -357,6 +443,61 @@ function checkCss(css: string, where: string) {
   console.log(`  ${where}: tokens, fonts, dark scopes and utilities OK`)
 }
 
+const kB = (bytes: number) => `${(bytes / 1000).toFixed(1)} kB`
+
+/**
+ * The CSS the app's stylesheet compiles to with the Tailwind CLI, as it is
+ * (the base item's theme-core.css) and with theme.css instead, which adds
+ * the classes of every npm component: what a project that copies few
+ * components saves.
+ */
+async function measureTheme(ctx: Context, app: string, stylesheet: string) {
+  const source = readFileSync(join(app, stylesheet), 'utf8')
+  assert(
+    source.includes('@import "@holakirr/snow-ui/theme-core.css"'),
+    `${stylesheet} doesn't import theme-core.css`,
+  )
+  const variants = {
+    'theme-core.css': source,
+    'theme.css': source.replace('/theme-core.css"', '/theme.css"'),
+  }
+  // The repository's Tailwind CLI (packages/ui's devDependency).
+  const cli = join(
+    dirname(
+      createRequire(join(repoRoot, 'packages/ui/package.json')).resolve(
+        '@tailwindcss/cli/package.json',
+      ),
+    ),
+    'dist/index.mjs',
+  )
+  const sizes: Record<string, { raw: number; gzip: number }> = {}
+  for (const [name, css] of Object.entries(variants)) {
+    const input = join(app, `measure-${name}`)
+    const output = join(ctx.work, `measure-${name}`)
+    writeFileSync(
+      input,
+      css.replaceAll('@import "./', `@import "./${dirname(stylesheet)}/`),
+    )
+    try {
+      await run('node', [cli, '-i', input, '-o', output, '--minify'], {
+        cwd: app,
+        env: ctx.env,
+        quiet: true,
+      })
+    } finally {
+      rmSync(input, { force: true })
+    }
+    const built = readFileSync(output)
+    sizes[name] = { raw: built.length, gzip: gzipSync(built).length }
+  }
+  const core = sizes['theme-core.css']
+  const full = sizes['theme.css']
+  const note = `${relative(ctx.work, app)}, one copied Button: theme-core.css → ${kB(core.raw)} (${kB(core.gzip)} gzip), theme.css → ${kB(full.raw)} (${kB(full.gzip)} gzip)`
+  console.log(`  ${note}`)
+  ctx.notes.push(note)
+  assert(core.raw < full.raw / 2, 'theme-core.css saves less than expected')
+}
+
 const addEverything = (ctx: Context, app: string) =>
   shadcn(ctx, app, 'add', '@snow-ui/all', '@snow-ui/snow-ui-charts', '--yes')
 
@@ -369,6 +510,8 @@ async function smokeNext(ctx: Context) {
   )
   assert(components.style === 'radix-nova', `style is ${components.style}`)
   assert(components.registries?.['@snow-ui'], 'no @snow-ui registry')
+  await shadcn(ctx, app, 'add', '@snow-ui/button', '--yes')
+  await measureTheme(ctx, app, 'src/app/globals.css')
   await addEverything(ctx, app)
   checkSources(ctx, app, true)
   writeFileSync(join(app, 'src/smoke.tsx'), smokePage(ctx.manifest, true))
@@ -394,13 +537,17 @@ export default function Home() {
   const html = readFileSync(join(app, '.next/server/app/index.html'), 'utf8')
   assert(html.includes('SnowUI registry smoke test'), 'the page did not render')
   assert(html.includes('button: '), 'the module list did not render')
-  checkCss(cssOf(join(app, '.next/static')), 'next build CSS')
+  const css = cssOf(join(app, '.next/static'))
+  checkThemeNames(css, app, 'next build CSS')
+  checkCss(css, 'next build CSS')
 }
 
 async function smokeVite(ctx: Context) {
   log('vite: create-vite + Tailwind, shadcn init (SnowUI base), add every item')
   const app = await createVite(ctx)
   await shadcn(ctx, app, 'init', `${ctx.registryUrl}/snow-ui.json`, '--yes')
+  await shadcn(ctx, app, 'add', '@snow-ui/button', '--yes')
+  await measureTheme(ctx, app, 'src/index.css')
   await addEverything(ctx, app)
   checkSources(ctx, app, false)
   writeFileSync(join(app, 'src/smoke.tsx'), smokePage(ctx.manifest, false))
@@ -410,7 +557,9 @@ async function smokeVite(ctx: Context) {
   )
   log('vite: tsc -b && vite build')
   await run('bun', ['run', 'build'], { cwd: app, env: ctx.env })
-  checkCss(cssOf(join(app, 'dist')), 'vite build CSS')
+  const css = cssOf(join(app, 'dist'))
+  checkThemeNames(css, app, 'vite build CSS')
+  checkCss(css, 'vite build CSS')
   assert(
     readdirSync(join(app, 'dist/assets')).some((f) => f.endsWith('.woff2')),
     'no Inter font files in dist',
@@ -451,17 +600,17 @@ async function smokeExistingShadcn(ctx: Context) {
   })
   checkSources(ctx, app, true)
   // What the items' docs ask of an existing project: the SnowUI theme.
-  await run(
-    'bun',
-    ['add', `@holakirr/snow-ui@file:${ctx.tarballs['@holakirr/snow-ui']}`],
-    { cwd: app, env: ctx.env, quiet: true },
-  )
+  await run('bun', ['add', uiSpec(ctx)], {
+    cwd: app,
+    env: ctx.env,
+    quiet: true,
+  })
   const globals = join(app, 'src/app/globals.css')
   writeFileSync(
     globals,
     readFileSync(globals, 'utf8').replace(
       '@import "tailwindcss";',
-      '@import "tailwindcss";\n@import "@holakirr/snow-ui/theme.css";\n@import "@holakirr/snow-ui/fonts.css";',
+      '@import "tailwindcss";\n@import "@holakirr/snow-ui/theme-core.css";\n@import "@holakirr/snow-ui/fonts.css";',
     ),
   )
   writeFileSync(join(app, 'src/smoke.tsx'), smokePage(ctx.manifest, true))
@@ -483,7 +632,9 @@ export default function Home() {
   log('next-shadcn: typecheck, build')
   await run('bunx', ['tsc', '--noEmit'], { cwd: app, env: ctx.env })
   await run('bun', ['run', 'build'], { cwd: app, env: ctx.env })
-  checkCss(cssOf(join(app, '.next/static')), 'next-shadcn build CSS')
+  const css = cssOf(join(app, '.next/static'))
+  checkThemeNames(css, app, 'next-shadcn build CSS')
+  checkCss(css, 'next-shadcn build CSS')
 }
 
 async function main() {
@@ -492,6 +643,7 @@ async function main() {
       app: { type: 'string', multiple: true },
       work: { type: 'string' },
       port: { type: 'string', default: '4173' },
+      published: { type: 'boolean', default: false },
     },
   })
   const apps = (values.app ?? [...APPS]) as App[]
@@ -513,6 +665,7 @@ async function main() {
     registryUrl,
     manifest: createPlan(config, configDir).manifest,
     tarballs: {},
+    notes: [],
     env: {
       ...process.env,
       CI: '1',
@@ -522,10 +675,15 @@ async function main() {
       REGISTRY_URL: `http://127.0.0.1:${values.port}/shadcn/r`,
     },
   }
-  console.log(`Registry smoke test in ${work} (${apps.join(', ')})`)
+  const source = values.published
+    ? 'packages from npm'
+    : 'packages from local tarballs'
+  console.log(`Registry smoke test in ${work} (${apps.join(', ')}; ${source})`)
 
-  log('packing the local packages')
-  await pack(ctx)
+  if (!values.published) {
+    log('packing the local packages')
+    await pack(ctx)
+  }
   log(`building the registry for ${registryUrl}`)
   await buildRegistry(config, configDir, {
     outDir: join(work, 'public/r'),
@@ -570,9 +728,10 @@ async function main() {
   const summary = [
     '### Registry smoke test',
     '',
-    `${ctx.manifest.items.length} items, shadcn ${shadcnVersion}`,
+    `${ctx.manifest.items.length} items, shadcn ${shadcnVersion}, ${source}`,
     '',
     ...results.map(([app, result]) => `- **${app}**: ${result}`),
+    ...(ctx.notes.length ? ['', ...ctx.notes.map((note) => `- ${note}`)] : []),
   ].join('\n')
   console.log(`\n${summary}`)
   if (process.env.GITHUB_STEP_SUMMARY) {

@@ -70,6 +70,47 @@ describe('normalizeSbom', () => {
     ])
   })
 
+  it('lists only what the package pulls in, not its peers', () => {
+    // `npm sbom --workspace packages/charts`: the whole workspace tree, with
+    // the peer @holakirr/snow-ui and its dependencies, which the charts
+    // don't depend on.
+    const charts = normalizeSbom(
+      {
+        ...npmSbom(),
+        components: [
+          ...npmSbom().components,
+          {
+            'bom-ref': '@holakirr/snow-ui-charts@0.2.0',
+            name: 'charts',
+            version: '0.2.0',
+          },
+          { 'bom-ref': 'recharts@3.10.1', name: 'recharts', version: '3.10.1' },
+          { 'bom-ref': 'd3-shape@3.2.0', name: 'd3-shape', version: '3.2.0' },
+        ],
+        dependencies: [
+          ...(npmSbom().dependencies ?? []),
+          {
+            ref: '@holakirr/snow-ui-charts@0.2.0',
+            dependsOn: ['recharts@3.10.1'],
+          },
+          { ref: 'recharts@3.10.1', dependsOn: ['d3-shape@3.2.0'] },
+          { ref: 'd3-shape@3.2.0', dependsOn: [] },
+        ],
+      },
+      '@holakirr/snow-ui-charts',
+      '0.2.0',
+    )
+    expect(charts.components.map((c) => c.name)).toEqual([
+      'recharts',
+      'd3-shape',
+    ])
+    expect(charts.dependencies?.map((d) => d.ref)).toEqual([
+      '@holakirr/snow-ui-charts@0.2.0',
+      'recharts@3.10.1',
+      'd3-shape@3.2.0',
+    ])
+  })
+
   it('throws when the package is not in the SBOM', () => {
     expect(() =>
       normalizeSbom(npmSbom(), '@holakirr/snow-ui', '6.0.0'),

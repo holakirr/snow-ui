@@ -92,44 +92,82 @@ if [[ " $* " != *" --workers"* && " $* " != *" -j"* ]]; then
 fi
 args+=("$@")
 
-# One visual run per machine. The lock is a directory holding the owner's pid;
-# a lock whose owner is gone is taken over.
+# One visual run at a time per user: every terminal and agent on a
+# development machine runs as the same user, and they share one Docker. The
+# lock is a symlink whose target is the owner's pid, created atomically with
+# `ln -s` (no window in which a lock exists without an owner, and no flock,
+# which macOS lacks). It lives in a directory only this user can write
+# ($XDG_RUNTIME_DIR, else ~/.cache), not in /tmp, where another user could
+# create it first and block every run.
 label=org.snow-ui.visual
-lock="${TMPDIR:-/tmp}/snow-ui-visual.lock"
+lock_dir="${XDG_RUNTIME_DIR:-$HOME/.cache}/snow-ui"
+mkdir -p "$lock_dir"
+chmod 700 "$lock_dir"
+lock="$lock_dir/visual.lock"
 container=
 waiting=
-until mkdir "$lock" 2>/dev/null; do
-  owner=$(cat "$lock/pid" 2>/dev/null || true)
-  if [[ -n "$owner" ]] && ! kill -0 "$owner" 2>/dev/null; then
-    rm -rf "$lock"
+
+alive() { [[ -n "$1" ]] && ps -p "$1" >/dev/null 2>&1; }
+
+# A lock whose owner is gone (killed with -9, crashed) is removed under a
+# second, short-lived lock, and only if it still names that owner: two runs
+# that find it stale at once can't remove each other's new lock.
+break_stale_lock() {
+  local dead=$1 breaker
+  if ln -s "$$" "$lock.break" 2>/dev/null; then
+    if [[ "$(readlink "$lock" 2>/dev/null || true)" == "$dead" ]]; then
+      rm -f "$lock"
+    fi
+    rm -f "$lock.break"
+  else
+    breaker=$(readlink "$lock.break" 2>/dev/null || true)
+    if [[ -n "$breaker" ]] && ! alive "$breaker"; then
+      rm -f "$lock.break"
+    fi
+  fi
+}
+
+until ln -s "$$" "$lock" 2>/dev/null; do
+  owner=$(readlink "$lock" 2>/dev/null || true)
+  if [[ -n "$owner" ]] && ! alive "$owner"; then
+    break_stale_lock "$owner"
     continue
   fi
   if [[ -z "$waiting" ]]; then
     echo "Another visual run is in progress (pid ${owner:-?}); waiting for it to finish..."
     waiting=1
   fi
-  sleep 5
+  sleep 2
 done
-echo $$ >"$lock/pid"
 
 cleanup() {
   if [[ -n "$container" ]]; then
     docker stop --time 5 "$container" >/dev/null 2>&1 || true
   fi
-  rm -rf "$lock"
+  # Only our own lock (a stale-lock breaker may already have replaced it).
+  if [[ "$(readlink "$lock" 2>/dev/null || true)" == "$$" ]]; then
+    rm -f "$lock"
+  fi
 }
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-# Holding the lock, any container still labelled as a visual run is left over
-# from a run that was killed (its CLI died, the container kept going).
-stale=$(docker ps -q --filter "label=$label")
-if [[ -n "$stale" ]]; then
-  echo "Stopping visual test containers left over from a killed run..."
-  # shellcheck disable=SC2086
-  docker stop --time 5 $stale >/dev/null
-fi
+# Containers left over from a killed run (its CLI died, the container kept
+# going) are stopped. Each container carries the pid of the script that
+# started it: only those whose script is gone are stopped, never the one of a
+# live run (of another user, or one that didn't see this lock). `ps -p`, not
+# `kill -0`, which fails for another user's live process. A container without
+# that label was started by an older copy of this script (another branch):
+# its owner is unknown, so it is left alone.
+while read -r id owner; do
+  [[ -n "$id" && -n "$owner" ]] || continue
+  if alive "$owner"; then
+    continue
+  fi
+  echo "Stopping visual test container ${id}, left over from a killed run (pid ${owner})..."
+  docker stop --time 5 "$id" >/dev/null || true
+done < <(docker ps --filter "label=$label" --format "{{.ID}} {{.Label \"$label.pid\"}}")
 
 container="snow-ui-visual-$$"
 echo "Running visual tests in ${image} (${platform}, ${cpus} CPUs, ${memory})"
@@ -140,6 +178,7 @@ echo "Running visual tests in ${image} (${platform}, ${cpus} CPUs, ${memory})"
 docker run --rm --init --ipc=host \
   --name "$container" \
   --label "$label" \
+  --label "$label.pid=$$" \
   --platform "$platform" \
   --cpus "$cpus" \
   --memory "$memory" \

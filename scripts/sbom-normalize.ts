@@ -27,7 +27,11 @@ const nameFromRef = (component: CycloneDxComponent) => {
  * - its subject (`metadata.component`) is the package, not the private
  *   monorepo root, which is dropped from the dependency graph;
  * - workspace packages are named after their package name (npm names them
- *   after their folder: `ui`, `icons`), like every other component.
+ *   after their folder: `ui`, `icons`), like every other component;
+ * - only what the package pulls in is listed: the components reachable from
+ *   it through the dependency graph. `npm sbom --workspace` lists the whole
+ *   installed workspace tree, so the charts' BOM had their peer
+ *   `@holakirr/snow-ui` and its dependencies, which the charts don't install.
  *
  * Throws when the package isn't in the BOM.
  */
@@ -46,12 +50,38 @@ export const normalizeSbom = (
     throw new Error(`${ref} is not in the SBOM that npm sbom wrote`)
   }
   const rootRef = bom.metadata.component['bom-ref']
+  const graph = bom.dependencies?.filter(
+    (dependency) => dependency.ref !== rootRef,
+  )
+  const reachable = graph ? reachableFrom(ref, graph) : undefined
   return {
     ...bom,
     metadata: { ...bom.metadata, component: subject },
-    components: components.filter((component) => component !== subject),
-    dependencies: bom.dependencies?.filter(
-      (dependency) => dependency.ref !== rootRef,
+    components: components.filter(
+      (component) =>
+        component !== subject &&
+        (!reachable || reachable.has(component['bom-ref'])),
+    ),
+    dependencies: graph?.filter(
+      (dependency) => !reachable || reachable.has(dependency.ref),
     ),
   }
+}
+
+/** The refs `ref` depends on, directly or not, and `ref` itself. */
+const reachableFrom = (
+  ref: string,
+  graph: NonNullable<CycloneDxBom['dependencies']>,
+) => {
+  const edges = new Map(graph.map((node) => [node.ref, node.dependsOn ?? []]))
+  const reachable = new Set([ref])
+  const queue = [ref]
+  for (let next = queue.shift(); next; next = queue.shift()) {
+    for (const dependency of edges.get(next) ?? []) {
+      if (reachable.has(dependency)) continue
+      reachable.add(dependency)
+      queue.push(dependency)
+    }
+  }
+  return reachable
 }

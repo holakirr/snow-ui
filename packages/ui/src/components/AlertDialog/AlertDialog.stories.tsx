@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn, waitFor, within } from 'storybook/test'
+import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
 import { Typography } from '../Text'
 import {
@@ -207,10 +208,10 @@ export const Narrow: Story = {
     const page = within(canvasElement.ownerDocument.body)
     const action = await page.findByRole('button', { name: 'Delete' })
     const cancel = page.getByRole('button', { name: 'Cancel' })
-    await waitFor(() =>
-      expect(action.getBoundingClientRect().bottom).toBeLessThanOrEqual(
-        cancel.getBoundingClientRect().top,
-      ),
+    // The final layout, not a frame of the open transition.
+    await settleLayout(page.getByRole('alertdialog'))
+    await expect(action.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+      cancel.getBoundingClientRect().top,
     )
     await expect(action.getBoundingClientRect().width).toBeCloseTo(
       cancel.getBoundingClientRect().width,
@@ -241,12 +242,12 @@ export const RTL: Story = {
     await expect(dialog).toHaveAttribute('dir', 'rtl')
     const cancel = within(dialog).getByRole('button', { name: 'إلغاء' })
     const action = within(dialog).getByRole('button', { name: 'حذف' })
-    // Cancel first, on the start side: on the right. After the open
-    // animation (it scales the dialog up from its centre).
-    await waitFor(() =>
-      expect(cancel.getBoundingClientRect().left).toBeGreaterThan(
-        action.getBoundingClientRect().right,
-      ),
+    // Cancel first, on the start side: on the right. Measured in the final
+    // layout, not a frame of the open transition (it scales the dialog up
+    // from its centre).
+    await settleLayout(dialog)
+    await expect(cancel.getBoundingClientRect().left).toBeGreaterThan(
+      action.getBoundingClientRect().right,
     )
   },
 }

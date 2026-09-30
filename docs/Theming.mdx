@@ -26,7 +26,7 @@ In dark mode `black-10` and `black-4` use the kit's stronger alphas (15% and 10%
 Three utilities and a base rule come with the theme:
 
 - `focus-ring`: the keyboard focus indicator of every control. On `:focus-visible` it draws the Figma "Focus" ring (`ring-4 ring-focus`) plus a 2px `black-80` outline offset by 2px. Use it on your own focusable elements: `<button className="focus-ring">`.
-- `hit-area`: an invisible pointer hit area of at least 24×24px centred on a smaller control (WCAG 2.5.8 Target Size), drawn by its `::after`. The element needs a position: `<button className="relative hit-area">`. Bare icon buttons, `Switch`, the `Slider` thumb, sortable `Table` headers, line tabs and the `Search` clear button have one.
+- `hit-area`: an invisible pointer hit area of at least 24×24px centred on a smaller control (WCAG 2.5.8 Target Size), drawn by its `::after`; its transparent `::before` lifts the control's own box to `z-index: 1`, over the other hit areas of its stacking context, so a neighbour's doesn't take a click on it (unless the control is a stacking context of its own: `opacity` under 1, a `transform`). The element needs a position and no pseudo-elements of its own: `<button className="relative hit-area">`. Two controls closer than 24px share the empty space between them (the later one gets it): keep bare controls 24px apart, centre to centre. An overlay of yours that can cover such a control in the same stacking context, like a sticky header, needs a `z-index` of 2 or more, or its clicks there reach the control. Bare icon buttons, `Switch`, the `Slider` thumb, sortable `Table` headers, line tabs and the `Search` clear button have one.
 - Cursors: buttons and ARIA controls (`option`, `menuitem`, `tab`, `radio`, `checkbox`, `switch`, `label[for]`…) get the pointer cursor, which Tailwind v4's preflight no longer sets, and disabled elements the not-allowed cursor. `cursor-*` utilities override it.
 
 Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `background`, `foreground`, `muted`, `accent`, `destructive`, `input`, `ring`…) still work as deprecated aliases.
@@ -36,7 +36,7 @@ Old token names (`brand`, `bg1`…`bg5`, `brand-hover` and the shadcn-style `bac
 The theme is light by default. It is dark:
 
 - with `data-theme="dark"` or the `dark` class on `<html>` (the class next-themes and shadcn/ui set: `<ThemeProvider attribute="class">`), or
-- with the OS dark preference, when `<html>` sets no mode: `data-theme="light"` or the `light` class pins the light theme.
+- with the OS dark preference, when `<html>` sets no light or dark mode: `data-theme="light"` or the `light` class pins the light theme, and any other `data-theme` value (`"system"`, a theme name) follows the OS.
 
 `color-scheme` follows, so native controls and scrollbars match. Components need no props for it: their colours are tokens.
 
@@ -87,7 +87,7 @@ With the OS setting `prefers-reduced-motion: reduce` (WCAG 2.3.3), the overlays 
 @import "@holakirr/snow-ui/theme.css";
 ```
 
-It adds the package's built components to Tailwind's sources itself (`@source`, relative to its own file); with 5.0 or older, add `@source "../node_modules/@holakirr/snow-ui/dist";` yourself.
+It adds the package's built components to Tailwind's sources itself (`@source`, relative to its own file); with 5.0 or older, add `@source "../node_modules/@holakirr/snow-ui/dist";` yourself. `theme-core.css` is the same theme without that `@source`, for projects that don't render the package's components (they copy them from the [registry](?path=/docs/guides-registry--docs), or only use the tokens): Tailwind then generates the classes of your code only.
 
 What it changes in your Tailwind setup:
 
@@ -115,13 +115,24 @@ Redeclare its variable in your own (unlayered) CSS, for each scope it should app
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme], .light, .dark) {
+  :root:not([data-theme="light"], .light, [data-theme="dark"], .dark) {
     --color-primary: #78a9ff;
   }
 }
 ```
 
 Check the contrast of text and controls on the new colour: the accessibility deviations of the components (see each component's page) were measured with the kit's values.
+
+The four contrast tokens (`control-border`, `control-border-strong`, `placeholder`, `control-border-invalid`) are computed in every theme and contrast scope from two levels: override `--color-<name>--standard` (the default contrast) and `--color-<name>--more` (more contrast) in the same scopes, not `--color-<name>` itself, which would lose one level (see [Contrast](?path=/docs/guides-contrast--docs)):
+
+```css
+:root,
+[data-theme="light"],
+.light {
+  --color-control-border--standard: #b8b8c4;
+  --color-control-border--more: #6b6b7a;
+}
+```
 
 Styling a single component: pass `className`. It is merged with the component's classes by a token-aware `twMerge`, so `className="rounded-8"` replaces the component's radius instead of fighting it in the stylesheet.
 

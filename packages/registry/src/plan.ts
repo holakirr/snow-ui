@@ -588,6 +588,15 @@ export function createPlan(config: RegistryConfig, configDir: string): Plan {
           `${draft.import}/index.tsx`,
         ].find((f) => draft.files.has(f))
       : undefined
+    // A group's `import` is written by hand: a module it names must be one
+    // of the item's files, or llms.txt and the usage pages' install tabs
+    // would show an import path that doesn't exist (a `files` glob doesn't
+    // notice a renamed module).
+    if (draft.import && !entry) {
+      problems.push(
+        `Item "${draft.name}" imports from "${draft.import}", which is none of its files (${draft.import}.ts, .tsx or /index.ts[x])`,
+      )
+    }
     const { values, types } = entry
       ? exportsOf(mod(entry).source)
       : { values: [], types: [] }

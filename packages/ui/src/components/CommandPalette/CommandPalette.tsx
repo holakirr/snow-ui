@@ -1,6 +1,5 @@
 'use client'
 
-import { LoadingAIcon } from '@holakirr/snow-ui-icons'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import {
   type ChangeEvent,
@@ -19,6 +18,7 @@ import { isComposingKey } from '../../utils/keyboard'
 import { twMerge } from '../../utils/tw-merge'
 import { Search } from '../Search'
 import { useSnowUI } from '../SnowUIProvider'
+import { LoadingRing } from '../Spinner/ring'
 import { Typography } from '../Text'
 
 /**
@@ -355,17 +355,11 @@ const CommandPaletteList: FC<ListProps> = ({
         onKeyDown={handleKeyDown}
         endContent={
           loading ? (
-            <LoadingAIcon
-              size={20}
-              // LoadingAIcon draws and turns its ring around (12, 12), for a
-              // 24×24 box, but gets a 32×32 viewBox, so the ring sat
-              // off-centre and `animate-spin` swung it around the box's
-              // centre. Show it in the box it is drawn for; it animates
-              // itself (a turn plus a growing arc), so no CSS spin.
-              viewBox="0 0 24 24"
-              aria-hidden
-              className="shrink-0 text-black-40"
-            />
+            // The ring of the kit's "Loading A" icon, turned by CSS so it
+            // stops for reduced motion (LoadingAIcon's SVG `<animate>`
+            // doesn't). The listbox's `aria-busy` and the hidden "Loading"
+            // text announce it.
+            <LoadingRing className="size-5 shrink-0 text-black-40" />
           ) : undefined
         }
         // The SearchPopup header: no fill, a Black/10% hairline under it.

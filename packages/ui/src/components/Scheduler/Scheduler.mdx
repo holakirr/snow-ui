@@ -41,7 +41,7 @@ const events: CalendarEvent[] = [
 
 ## Anatomy
 
-1. **Grid**: a `<div>` CSS grid with a 59px hour column and seven 100px day columns, 16px apart, and 48px rows. Each row is a subgrid of these columns. Other `div` props, `className` and `style` go to it.
+1. **Grid**: a `<div>` CSS grid with a 59px hour column and seven 100px day columns, 16px apart, and 48px rows. Each row is a subgrid of these columns where `subgrid` is supported (Chrome and Edge 117+), and repeats them elsewhere. Other `div` props, `className` and `style` go to it.
 2. **Day labels**: the header row, the short weekday and the day number in 12px `text-secondary`, with radius 4 and padding 2 / 4px. Today's label has a Secondary/Indigo fill with static black text, and is semibold.
 3. **Day separators**: Black/4% vertical lines between the days.
 4. **Hour labels**: 12px `text-secondary` hours in the locale's clock ("9 AM" in `en-US`). The rows run from 7 to 20 (8 pm) and grow to fit the events of the shown week (events of other weeks don't change them). An event that ends on the hour doesn't add that hour's row, and the rows make room for an event's minimum 48px block. The labels don't depend on today's date, so a daylight saving change doesn't repeat or skip one.
@@ -98,7 +98,7 @@ The grid is one tab stop (a roving `tabIndex` shared by the hour cells and the e
 | Escape | in an event's menu: close it and return focus to the event |
 
 - The keys don't wrap at the edges of the grid (and don't scroll the page there). Alt and Shift combinations, and Ctrl / ⌘ with the arrows and the page keys, are left to the browser and assistive technology. ArrowDown on an event moves down the day instead of opening its menu.
-- Moving the focus scrolls the item into view. When the focused event disappears (deleted, or moved to another hour), its hour cell takes its place.
+- Moving the focus scrolls the item into view. When the focused event disappears (deleted, also from its own menu, or moved to another hour), its hour cell takes the focus. The events of an hour come in the order they start (ties keep the order of `events`), on screen, with the arrows and with Tab.
 
 ### Deviations from the Figma kit
 
@@ -114,7 +114,7 @@ The full table is in the package README.
 
 ## Localization and RTL
 
-- Scheduler uses no `Messages` keys. The grid's name, the day labels, hour labels and cell names use the language of `SnowUIProvider`'s `locale` (`locale.code`), and `en-US` without one, so the server and the browser render the same text.
+- Scheduler uses no `Messages` keys. The grid's name, the day labels, hour labels and cell names use the language of `SnowUIProvider`'s `locale` (`locale.code`), and `en-US` without one, so the server and the browser render the same text. Today, the current hour and the current-time line come from the browser's clock once the page is hydrated (the server's time zone can differ), and move on every minute.
 - Event times (`09:30`) and the current time (`9:30`) use a 24-hour clock in every locale; the hour labels follow the locale's clock.
 - In right-to-left text the grid runs from the right: the hour column is on the right, and the day separators are placed from the end edge so they stay between the days. ArrowLeft moves to the next day and ArrowRight to the previous one; Home and End still go to the first and last day of the week. The direction is the `dir` prop's, else `SnowUIProvider`'s.
 

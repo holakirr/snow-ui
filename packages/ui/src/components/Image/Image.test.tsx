@@ -35,8 +35,10 @@ describe('Image', () => {
     [12, 'size-3 rounded-4'],
     [24, 'size-6 rounded-8'],
     [48, 'size-12 rounded-12'],
-    [64, 'size-16 rounded-16'],
-    [80, 'size-20 rounded-24'],
+    [56, 'size-14 rounded-16'],
+    [64, 'size-16 rounded-20'],
+    [72, 'size-18 rounded-20'],
+    [80, 'size-20 rounded-20'],
   ])('is %ipx with its radius', (size, classes) => {
     render(
       <Image size={size}>
@@ -55,7 +57,7 @@ describe('Image', () => {
     )
     const frame = document.querySelector('[data-size]') as HTMLElement
     expect(frame).toHaveAttribute('data-size', 'free')
-    expect(frame).toHaveClass('h-24', 'w-40', 'rounded-16')
+    expect(frame).toHaveClass('h-24', 'w-40', 'rounded-20')
     expect(frame.className).not.toMatch(/\bsize-/)
   })
 

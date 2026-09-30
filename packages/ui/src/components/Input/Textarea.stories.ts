@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
-import { hasInsetRing } from '../../test/colors'
+import { hasInsetRing, hasMoreContrast } from '../../test/colors'
 
 import { Textarea } from './Textarea'
 
@@ -69,8 +69,8 @@ export const InvalidReadOnly: Story = {
   },
   play: async ({ canvas, userEvent, step }) => {
     const textarea = canvas.getByRole('textbox', { name: 'Message' })
-    const isRed = () =>
-      hasInsetRing(textarea, 'text-control-border-invalid', '1px')
+    const isRed = (width = '1px') =>
+      hasInsetRing(textarea, 'text-control-border-invalid', width)
 
     await expect(await isRed()).toBe(true)
     await step('hovered', async () => {
@@ -80,7 +80,10 @@ export const InvalidReadOnly: Story = {
     await step('focused', async () => {
       await userEvent.click(textarea)
       await expect(textarea).toHaveFocus()
-      await expect(await isRed()).toBe(true)
+      // 2px on focus with more contrast: the focus indicator.
+      await expect(await isRed(hasMoreContrast(textarea) ? '2px' : '1px')).toBe(
+        true,
+      )
     })
   },
 }

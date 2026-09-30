@@ -4,6 +4,7 @@ import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { beforeAll, describe, expect, it } from 'vitest'
+import { THEME_SOURCE } from '../scripts/build-css'
 
 // Checks the published stylesheets in dist/ (run `bun run build` first; CI
 // runs this after the build with `bun run test:dist`).
@@ -41,6 +42,7 @@ describe('package exports', () => {
   it.each([
     ['@holakirr/snow-ui/index.css', 'index.css'],
     ['@holakirr/snow-ui/theme.css', 'theme.css'],
+    ['@holakirr/snow-ui/theme-core.css', 'theme-core.css'],
     ['@holakirr/snow-ui/fonts.css', 'fonts.css'],
     ['@holakirr/snow-ui/fonts-italic.css', 'fonts-italic.css'],
     [
@@ -225,6 +227,44 @@ describe('theme.css', () => {
   it('adds the built components to the sources, relative to itself', () => {
     expect(read('theme.css')).toMatch(/^@source "\.\/\*\*\/\*\.js";$/m)
   })
+})
+
+describe('theme-core.css (the theme without the components)', () => {
+  /** A theme stylesheet without its banner or `@source`. */
+  const body = (file: string) =>
+    read(file)
+      .replace(/^\/\*![^\n]*\n/, '')
+      .replace(`${THEME_SOURCE}\n`, '')
+
+  it('is theme.css without its @source', () => {
+    expect(read('theme.css')).toContain(THEME_SOURCE)
+    expect(read('theme-core.css')).not.toMatch(/^@source /m)
+    expect(body('theme-core.css')).toBe(body('theme.css'))
+  })
+
+  it("generates the project's classes only, with the whole theme", () => {
+    const output = compileFixture('app-core.css')
+    const full = compileFixture('app-no-source.css')
+    const own = ['bg-black-4', 'focus-ring', 'rounded-12', 'text-14']
+    // The theme scopes' selectors, not utilities.
+    const scopes = ['dark', 'light']
+    const generated = utilities(output)
+    for (const name of own) expect(generated).toContain(name)
+    expect(
+      componentUtilities().filter(
+        (name) =>
+          /^-?[a-z]/.test(name) &&
+          ![...own, ...scopes].includes(name) &&
+          generated.has(name),
+      ),
+    ).toEqual([])
+    expect(output).toMatch(/--color-primary: #000;/)
+    expect(output).toMatch(
+      /\[data-theme="dark"\],\s*\.dark \{\s+color-scheme: dark;/,
+    )
+    // A project that copies one component doesn't pay for all of them.
+    expect(output.length).toBeLessThan(full.length / 2)
+  }, 60_000)
 })
 
 describe('fonts.css and fonts-italic.css', () => {

@@ -103,6 +103,12 @@
     "limit": "9.8 kB"
   },
   {
+    "name": "@holakirr/snow-ui/theme-core.css (theme.css without the components' @source)",
+    "path": "packages/ui/dist/theme-core.css",
+    "disablePlugins": ["@size-limit/esbuild"],
+    "limit": "9.8 kB"
+  },
+  {
     "name": "@holakirr/snow-ui/fonts.css",
     "path": "packages/ui/dist/fonts.css",
     "disablePlugins": ["@size-limit/esbuild"],

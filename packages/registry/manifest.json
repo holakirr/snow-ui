@@ -1308,7 +1308,7 @@
       "name": "snow-ui",
       "type": "registry:base",
       "title": "SnowUI",
-      "description": "The SnowUI design system for a new project: tokens and dark mode (@holakirr/snow-ui/theme.css), the self-hosted Inter with the kit’s ss01/cv01 features, the core utilities and SnowUIProvider. Pins Radix UI and registers the @snow-ui namespace.",
+      "description": "The SnowUI design system for a new project: tokens and dark mode (@holakirr/snow-ui/theme-core.css), the self-hosted Inter with the kit’s ss01/cv01 features, the core utilities and SnowUIProvider. Pins Radix UI and registers the @snow-ui namespace.",
       "dependencies": ["@holakirr/snow-ui"],
       "registryDependencies": ["snow-core", "snow-ui-provider"],
       "extra": {
@@ -1320,10 +1320,10 @@
           }
         },
         "css": {
-          "@import \"@holakirr/snow-ui/theme.css\"": {},
+          "@import \"@holakirr/snow-ui/theme-core.css\"": {},
           "@import \"@holakirr/snow-ui/fonts.css\"": {}
         },
-        "docs": "SnowUI: the theme and fonts come from the @holakirr/snow-ui package (its CSS only); add components with npx shadcn@latest add @snow-ui/<name>.\nWrap the app in <SnowUIProvider> (components/snow-ui/components/SnowUIProvider/SnowUIProvider) for locale, direction and messages. Dark mode: data-theme=\"dark\" or the .dark class on <html>, else the OS preference.\nRemove the starter styles your template put in the global stylesheet (body font-family, --background/--foreground and their @theme inline colors): they override the SnowUI tokens."
+        "docs": "SnowUI: the theme and fonts come from the @holakirr/snow-ui package (its CSS only: theme-core.css, which leaves out the classes of the npm components; import theme.css instead if you also render components from the npm package); add components with npx shadcn@latest add @snow-ui/<name>.\nWrap the app in <SnowUIProvider> (components/snow-ui/components/SnowUIProvider/SnowUIProvider) for locale, direction and messages. Dark mode: data-theme=\"dark\" or the .dark class on <html>, else the OS preference.\nRemove the starter styles your template put in the global stylesheet (body font-family, --background/--foreground and their @theme inline colors): they override the SnowUI tokens."
       }
     },
     {

@@ -8,7 +8,7 @@ Every package follows [Semantic Versioning 2.0.0](https://semver.org). The publi
 
 - everything exported from the package entry points (`@holakirr/snow-ui`, `@holakirr/snow-ui/react-hook-form`, `@holakirr/snow-ui-icons`, `@holakirr/snow-ui-charts`, `@holakirr/snow-ui-charts/recharts`), with its TypeScript types;
 - component props, their values and defaults, and the documented `data-*` attributes;
-- the stylesheets and what they define: `index.css`, `theme.css`, `fonts.css`, `fonts-italic.css`, `fonts/*` and the charts' `styles.css`, the design tokens (CSS custom properties) and the utility classes that `theme.css` gives your Tailwind project;
+- the stylesheets and what they define: `index.css`, `theme.css`, `theme-core.css`, `fonts.css`, `fonts-italic.css`, `fonts/*` and the charts' `styles.css`, the design tokens (CSS custom properties) and the utility classes that `theme.css` gives your Tailwind project;
 - the peer dependency ranges and the supported environments below.
 
 The DOM structure, the internal class names and anything not exported from an entry point are not public API. Changes to the look of a component that bring it closer to the Figma kit or to WCAG are minor or patch releases, described in the changelog.
@@ -64,7 +64,7 @@ Only the latest minor of the current major is fixed: a fix for 5.2 ships as 5.2.
 | --- | --- | --- |
 | **React** | 19.x (`react` and `react-dom` peer range `^19.0.0`). React 18 is not supported. | React 19, on every story |
 | **Browsers** | The baseline of Tailwind CSS v4, which the styles need (`@layer`, `color-mix()`, `@property`): Chrome and Edge 111+, Safari 16.4+ (macOS and iOS), Firefox 128+. | Chromium (every story in both themes, axe, visual regression), Firefox and WebKit (every story, play functions) |
-| **Tailwind CSS** | v4 for `theme.css`, or no Tailwind at all with the precompiled `index.css`. | Both, in `test:dist` |
+| **Tailwind CSS** | v4 for `theme.css` (or `theme-core.css`), or no Tailwind at all with the precompiled `index.css`. | Both, in `test:dist` |
 | **Server rendering** | React 19 server rendering and hydration (Next.js App Router, React Router, any `react-dom/server` setup). | Every ui story rendered in Node.js and hydrated in Chromium (`test:ssr`) |
 | **Node.js** (server rendering, builds, tests) | The Node.js versions in Active or Maintenance LTS: today 20.19+, 22 and 24. The packages' `engines` field still says `>=18`; 6.0 raises it to `>=20.19`. | The GitHub runner's default Node.js for the tests and 24 for the release builds; there is no matrix of Node.js versions yet. |
 

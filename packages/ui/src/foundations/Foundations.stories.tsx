@@ -44,9 +44,11 @@ export const Spacing: Story = { render: () => <SpacingPage /> }
 export const Effects: Story = { render: () => <EffectsPage /> }
 
 /**
- * The `scrollbar-snow` utility: the kit's 4px thumb in an 8px gutter in
- * Chromium and WebKit, the thin scrollbar in Firefox. Headless browsers hide
- * scrollbars, so the screenshots don't show them.
+ * The `scrollbar-snow` utility: the kit's 4px Black/10% thumb in an 8px
+ * gutter in Chromium and WebKit, 8px in `control-border` under the pointer;
+ * the thin scrollbar in Firefox, `control-border` while the pointer is over
+ * the container. Headless browsers hide scrollbars, so the screenshots don't
+ * show them.
  */
 export const Scrollbar: Story = {
   render: () => <ScrollbarPage />,
@@ -71,17 +73,42 @@ export const Scrollbar: Story = {
     }
     for (const sheet of Array.from(document.styleSheets)) walk(sheet.cssRules)
     const selectors = rules.map((rule) => rule.selectorText)
+    // The resting thumb is Black/10%, or `control-border` with more contrast
+    // (the `storybook-prefs` project).
+    const more = window.matchMedia('(prefers-contrast: more)').matches
+    const style = getComputedStyle(snow)
+    const token = (name: string) => style.getPropertyValue(name).trim()
+    await expect(token('--scrollbar-snow-thumb')).toBe(
+      token(more ? '--color-control-border' : '--color-black-10'),
+    )
+    const rule = (selector: string) =>
+      rules.find((candidate) =>
+        candidate.selectorText.split(/,\s*/).includes(selector),
+      )?.style
     if (CSS.supports('selector(::-webkit-scrollbar)')) {
+      // The thumb under the pointer, or dragged, is 8px in `control-border`.
       await expect(selectors).toContain(
         '.scrollbar-snow::-webkit-scrollbar-thumb',
       )
+      for (const state of ['hover', 'active']) {
+        const thumb = rule(`.scrollbar-snow::-webkit-scrollbar-thumb:${state}`)
+        await expect(thumb?.getPropertyValue('background-color')).toBe(
+          'var(--color-control-border)',
+        )
+        await expect(thumb?.getPropertyValue('border-width')).toMatch(/^0/)
+      }
     } else {
+      // Firefox can't style a hovered thumb: a hover on the container turns
+      // the thin scrollbar `control-border`.
       const thin = rules.find(
-        (rule) =>
-          rule.selectorText === '.scrollbar-snow' &&
-          rule.style.getPropertyValue('scrollbar-width') === 'thin',
+        (candidate) =>
+          candidate.selectorText === '.scrollbar-snow' &&
+          candidate.style.getPropertyValue('scrollbar-width') === 'thin',
       )
       await expect(thin).toBeDefined()
+      await expect(
+        rule('.scrollbar-snow:hover')?.getPropertyValue('scrollbar-color'),
+      ).toBe('var(--color-control-border) transparent')
     }
   },
 }

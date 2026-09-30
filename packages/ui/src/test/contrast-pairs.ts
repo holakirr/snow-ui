@@ -7,7 +7,7 @@
  */
 
 import { colorTokens } from '../foundations/tokens'
-import { composite, contrast } from './contrast'
+import { composite, contrast, parseColor } from './contrast'
 
 export type Mode = 'light' | 'dark'
 export type Level = 'standard' | 'more'
@@ -15,12 +15,21 @@ export type Level = 'standard' | 'more'
 /** WCAG 2.2 AA: 1.4.11 for boundaries and states, 1.4.3 for text. */
 export const AA = { nonText: 3, text: 4.5 } as const
 
-/** A token's resolved colour in a theme, at a contrast level. */
+/**
+ * A token's resolved colour in a theme, at a contrast level. `name/60` is
+ * the token at 60% of its opacity, like Tailwind's `text-white/60`.
+ */
 export const tokenColor = (name: string, mode: Mode, level: Level): string => {
-  const token = colorTokens.find((candidate) => candidate.name === name)
-  if (!token) throw new Error(`Unknown colour token: ${name}`)
-  if (level === 'more' && token.contrastMore) return token.contrastMore[mode]
-  return token.resolved?.[mode] ?? token[mode]
+  const [base, opacity] = name.split('/')
+  const token = colorTokens.find((candidate) => candidate.name === base)
+  if (!token) throw new Error(`Unknown colour token: ${base}`)
+  const value =
+    level === 'more' && token.contrastMore
+      ? token.contrastMore[mode]
+      : (token.resolved?.[mode] ?? token[mode])
+  if (opacity === undefined) return value
+  const { r, g, b, a } = parseColor(value)
+  return `rgb(${r} ${g} ${b} / ${(a * Number(opacity)) / 100})`
 }
 
 /**
@@ -107,10 +116,50 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['primary'],
   },
   {
-    control: 'Slider thumb border vs the track',
+    control: 'Slider bar (Black/4%) vs the surface',
     kind: 'nonText',
-    foreground: () => ['white', 'control-border-strong'],
+    // With more contrast, a `control-border` stroke inside the bar.
+    foreground: (level) =>
+      level === 'more' ? ['black-4', 'control-border'] : ['black-4'],
+    background: () => [],
+  },
+  {
+    control: 'Slider range track vs the surface',
+    kind: 'nonText',
+    foreground: (level) => [level === 'more' ? 'control-border' : 'black-4'],
+    background: () => [],
+  },
+  {
+    control: 'Slider range thumb vs the surface',
+    kind: 'nonText',
+    // With more contrast, a `control-border-strong` border.
+    foreground: (level) =>
+      level === 'more'
+        ? ['static-white', 'control-border-strong']
+        : ['static-white'],
+    background: () => [],
+  },
+  {
+    control: 'Slider value on the track',
+    kind: 'text',
+    foreground: () => ['black-4', 'text-secondary'],
     background: () => ['black-4'],
+  },
+  {
+    control: 'Slider label and handle on the fill',
+    kind: 'text',
+    // The per-mode `white` on the Primary fill: white on black, black on
+    // the dark-mode indigo (the Figma Static White is 2.07:1 there).
+    foreground: () => ['primary', 'white'],
+    background: () => ['primary'],
+  },
+  {
+    control: 'Slider value on the fill',
+    kind: 'text',
+    // The per-mode `white` at 70% on the Primary fill: white on black,
+    // black on the dark-mode indigo.
+    foreground: () => ['primary', 'white/70'],
+    background: () => ['primary'],
   },
   {
     control: 'Invalid stroke vs the surface',

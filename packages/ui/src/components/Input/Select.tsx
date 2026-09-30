@@ -7,7 +7,7 @@ import {
 } from '@holakirr/snow-ui-icons'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import * as SelectPrimitive from '@radix-ui/react-select'
-import type { ComponentProps, FC } from 'react'
+import { type ComponentProps, type FC, useId } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import {
   popoverAnimationClasses,
@@ -25,37 +25,80 @@ const SelectGroup = SelectPrimitive.Group
 
 const SelectValue = SelectPrimitive.Value
 
-type SelectTriggerProps = ComponentProps<typeof SelectPrimitive.Trigger>
+type SelectTriggerProps = Omit<
+  ComponentProps<typeof SelectPrimitive.Trigger>,
+  'title'
+> & {
+  /**
+   * The Figma "2 row" title: a 12/16 label above the value, inside the
+   * field, as `Input`'s `title`. It names the trigger unless `aria-label` or
+   * `aria-labelledby` does.
+   */
+  title?: string
+}
 
 const SelectTrigger: FC<SelectTriggerProps> = ({
   className,
   children,
+  title,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
   ...props
-}) => (
-  <SelectPrimitive.Trigger
-    className={twMerge(
-      // The Figma Input field with a trailing 16px ArrowLineUpDown; the
-      // stroke is the `control-border*` tokens (1px with more contrast).
-      'group flex w-full cursor-pointer items-center justify-between gap-2 whitespace-nowrap rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all data-[placeholder]:text-secondary [&>span]:line-clamp-1 contrast-more:inset-ring-1',
-      'hover:inset-ring-control-border-strong data-[state=open]:inset-ring-control-border-strong',
-      'focus-ring data-[state=open]:ring-4 data-[state=open]:ring-focus',
-      'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0',
-      // Invalid: the red Input stroke, also while the list is open.
-      invalidInputClasses,
-      'aria-invalid:data-[state=open]:inset-ring-control-border-invalid',
-      className,
-    )}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild>
-      <ArrowLineUpDownIcon
-        size={16}
-        className="shrink-0 fill-control-border-strong group-disabled:fill-black-20"
-      />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
-)
+}) => {
+  const titleId = useId()
+  return (
+    <SelectPrimitive.Trigger
+      aria-label={ariaLabel}
+      aria-labelledby={
+        ariaLabelledBy ?? (title && !ariaLabel ? titleId : undefined)
+      }
+      className={twMerge(
+        // The Figma Input field with a trailing 16px ArrowLineUpDown; the
+        // stroke is the `control-border*` tokens (1px with more contrast).
+        'group flex w-full cursor-pointer items-center justify-between gap-2 whitespace-nowrap rounded-16 bg-surface-1 px-4 py-3 text-14 text-black inset-ring-[0.5px] inset-ring-control-border transition-all data-[placeholder]:text-secondary [&>span:not([data-slot=select-title])]:line-clamp-1 contrast-more:inset-ring-1',
+        // The Figma "2 row" field: the icon in the value row.
+        title && 'items-end',
+        'hover:inset-ring-control-border-strong data-[state=open]:inset-ring-control-border-strong',
+        'focus-ring data-[state=open]:ring-4 data-[state=open]:ring-focus',
+        'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0',
+        // Invalid: the red Input stroke, also while the list is open.
+        invalidInputClasses,
+        'aria-invalid:data-[state=open]:inset-ring-control-border-invalid',
+        className,
+      )}
+      {...props}
+    >
+      {title ? (
+        <span
+          data-slot="select-title"
+          className="flex min-w-0 flex-col items-start gap-2 [&>span]:max-w-full [&>span]:truncate"
+        >
+          {/* The accessible name (`aria-labelledby`), not the value. */}
+          <span
+            id={titleId}
+            aria-hidden
+            className="text-12 text-secondary group-disabled:text-black-20"
+          >
+            {title}
+          </span>
+          {children}
+        </span>
+      ) : (
+        children
+      )}
+      <SelectPrimitive.Icon asChild>
+        <ArrowLineUpDownIcon
+          size={16}
+          className={twMerge(
+            'shrink-0 fill-control-border-strong group-disabled:fill-black-20',
+            // In the middle of the 20px value line.
+            title && 'mb-0.5',
+          )}
+        />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  )
+}
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
 
 type SelectScrollUpButtonProps = ComponentProps<

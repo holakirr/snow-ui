@@ -4,13 +4,14 @@ import { XCircleIcon } from '@holakirr/snow-ui-icons'
 import { CalendarBlank } from '@phosphor-icons/react/dist/csr/CalendarBlank'
 import { useComposedRefs } from '@radix-ui/react-compose-refs'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
-import { isValid, type Locale } from 'date-fns'
+import { format, isValid, type Locale } from 'date-fns'
 import {
   type ComponentProps,
   type CSSProperties,
   type KeyboardEvent,
   type ReactNode,
   useEffect,
+  useId,
   useRef,
   useState,
 } from 'react'
@@ -38,8 +39,34 @@ export type DatePickerCalendarProps = Omit<
  */
 export type DatePickerSharedProps = Omit<
   ComponentProps<'button'>,
-  'value' | 'defaultValue' | 'onChange' | 'children' | 'type'
+  'value' | 'defaultValue' | 'onChange' | 'children' | 'type' | 'title'
 > & {
+  /**
+   * The Figma "2 row" title: a 12/16 label above the value, inside the
+   * field, as `Input`'s `title`. It names the field unless `aria-label` or
+   * `aria-labelledby` does.
+   */
+  title?: string
+
+  /**
+   * Picks a time too: the Figma "Date and time" types. The top of the
+   * calendar gets the time ("04 : 08 AM"), whose parts open the hours and
+   * minutes; picking a day keeps the calendar open, and closing it (or
+   * Enter in the top area) confirms.
+   * @default false
+   */
+  withTime?: boolean
+  /**
+   * Seconds in the time ("04 : 08 : 12 AM"); implies `withTime`.
+   * @default false
+   */
+  withSeconds?: boolean
+  /**
+   * 12-hour time with AM / PM, or 24-hour time.
+   * @default the locale's: 12 for en-US, 24 for ru
+   */
+  hourCycle?: 12 | 24
+
   /**
    * The form doesn't submit while the field has no value (native constraint
    * validation), and assistive technology hears `aria-required`.
@@ -73,7 +100,9 @@ export type DatePickerSharedProps = Omit<
   /**
    * How the field shows a date: a date-fns `format` pattern, localized with
    * the `locale`.
-   * @default "PP" (e.g. "Jan 20, 2025"; "20 янв. 2025 г." in Russian)
+   * @default "PP" (e.g. "Jan 20, 2025"; "20 янв. 2025 г." in Russian), with
+   * `withTime` "PP, h:mm a" or "PP, HH:mm" (the hour cycle), with seconds
+   * "PP, h:mm:ss a" or "PP, HH:mm:ss"
    */
   dateFormat?: string
 
@@ -152,6 +181,55 @@ export const validDate = (date: Date | null | undefined): Date | null =>
 export const sameDate = (a: Date | null, b: Date | null) =>
   a?.getTime() === b?.getTime()
 
+/** The field's default format with time: the date, then the hour cycle's time. */
+export const dateTimeFormat = (hourCycle: 12 | 24, withSeconds: boolean) =>
+  `PP, ${hourCycle === 12 ? 'h' : 'HH'}:mm${withSeconds ? ':ss' : ''}${
+    hourCycle === 12 ? ' a' : ''
+  }`
+
+/**
+ * What a form submits: "2025-01-20", with time "2025-01-20T16:08" (and
+ * ":12" with seconds), as `<input type="date">` and `"datetime-local"`.
+ */
+export const formDateTime = (
+  date: Date,
+  withTime: boolean,
+  withSeconds: boolean,
+) =>
+  format(
+    date,
+    withTime ? `yyyy-MM-dd'T'HH:mm${withSeconds ? ':ss' : ''}` : 'yyyy-MM-dd',
+  )
+
+/** What an empty top area shows: today, at the current time. */
+export const placeholderAt = (today: Date, withSeconds: boolean) => {
+  const now = new Date()
+  const date = new Date(today)
+  date.setHours(
+    now.getHours(),
+    now.getMinutes(),
+    withSeconds ? now.getSeconds() : 0,
+    0,
+  )
+  return date
+}
+
+/** `day` at the time of `time`. */
+export const withTimeOf = (day: Date, time: Date) => {
+  const date = new Date(day)
+  date.setHours(
+    time.getHours(),
+    time.getMinutes(),
+    time.getSeconds(),
+    time.getMilliseconds(),
+  )
+  return date
+}
+
+/** The Figma caption: the short month, "Feb". */
+export const shortCaption = (locale: Locale | undefined) => (month: Date) =>
+  format(month, 'LLL', { locale })
+
 /** `minDate`, `maxDate` and `disabledDates` as react-day-picker matchers. */
 export const disabledMatchers = (
   minDate: Date | undefined,
@@ -169,6 +247,10 @@ export const disabledMatchers = (
 
 type TriggerProps = Omit<
   DatePickerSharedProps,
+  | 'title'
+  | 'withTime'
+  | 'withSeconds'
+  | 'hourCycle'
   | 'open'
   | 'defaultOpen'
   | 'onOpenChange'
@@ -190,6 +272,12 @@ type TriggerProps = Omit<
 type DatePickerFieldProps = {
   open: boolean
   setOpen: (open: boolean) => void
+  /**
+   * The popover closes by itself: Escape (`cancel`: nothing changes), or a
+   * click outside (`confirm`: the picked date is the value).
+   */
+  onClose: (reason: 'cancel' | 'confirm') => void
+  title?: string
   /** The field's text: the formatted value, or the placeholder. */
   text: string
   hasValue: boolean
@@ -213,6 +301,10 @@ type DatePickerFieldProps = {
   triggerProps: TriggerProps
 }
 
+// With a title, the icons sit in the value row: its middle is 22px (12px
+// padding, half the 20px line) above the bottom.
+const valueRowClassName = 'top-auto bottom-[22px] translate-y-1/2'
+
 /**
  * The field and the popover of `DatePicker` and `DateRangePicker`. The field
  * looks like the Select trigger (the Figma Input field, with a 16px calendar
@@ -223,6 +315,8 @@ type DatePickerFieldProps = {
 export const DatePickerField = ({
   open,
   setOpen,
+  onClose,
+  title,
   text,
   hasValue,
   canClear,
@@ -244,10 +338,15 @@ export const DatePickerField = ({
     onInvalid,
     ref,
     'aria-invalid': ariaInvalid,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
     ...triggerProps
   },
 }: DatePickerFieldProps) => {
   const { dir, theme, contrast } = useSnowUI()
+  const titleId = useId()
+  // Escape closes without a change; any other way of closing confirms.
+  const escaped = useRef(false)
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const setTriggerRef = useComposedRefs(triggerRef, ref)
   const contentRef = useRef<HTMLDivElement | null>(null)
@@ -285,7 +384,18 @@ export const DatePickerField = ({
   }
 
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={setOpen} modal>
+    <PopoverPrimitive.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (next) {
+          setOpen(true)
+          return
+        }
+        onClose(escaped.current ? 'cancel' : 'confirm')
+        escaped.current = false
+      }}
+      modal
+    >
       <PopoverPrimitive.Anchor asChild>
         <div
           className={twMerge(
@@ -315,6 +425,11 @@ export const DatePickerField = ({
               // A select-only combobox: the label names it, the text is its
               // value. Radix adds aria-haspopup="dialog" and aria-controls.
               role="combobox"
+              aria-label={ariaLabel}
+              // The title names the field, unless something else does.
+              aria-labelledby={
+                ariaLabelledBy ?? (title && !ariaLabel ? titleId : undefined)
+              }
               aria-expanded={open}
               aria-invalid={ariaInvalid}
               aria-required={required || undefined}
@@ -325,10 +440,22 @@ export const DatePickerField = ({
               onKeyDown={handleKeyDown}
               className={twMerge(
                 'flex min-h-11 w-full min-w-0 cursor-pointer items-center rounded-16 py-3 ps-4 text-start focus-ring disabled:cursor-not-allowed data-[placeholder]:text-secondary group-data-disabled/date-picker:text-black-20',
+                // The Figma "2 row" field: the title above the value.
+                title && 'flex-col items-start gap-2',
                 canClear ? 'pe-16' : 'pe-10',
               )}
             >
-              <span className="truncate">{text}</span>
+              {title && (
+                // The accessible name (`aria-labelledby`), not the value.
+                <span
+                  id={titleId}
+                  aria-hidden
+                  className="text-12 text-secondary group-data-disabled/date-picker:text-black-20"
+                >
+                  {title}
+                </span>
+              )}
+              <span className="max-w-full truncate">{text}</span>
             </button>
           </PopoverPrimitive.Trigger>
           {canClear && (
@@ -340,7 +467,10 @@ export const DatePickerField = ({
               // 60% opacity meets the 3:1 of a control's icon, `hit-area`
               // makes the 16px icon a 24px target, and keyboard focus gets
               // the `focus-ring` outline at full opacity.
-              className="absolute end-10 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-black opacity-60 transition-opacity hit-area hover:opacity-80 focus-ring focus-visible:opacity-100"
+              className={twMerge(
+                'absolute end-10 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-black opacity-60 transition-opacity hit-area hover:opacity-80 focus-ring focus-visible:opacity-100',
+                title && valueRowClassName,
+              )}
             >
               <XCircleIcon weight="fill" size={16} />
             </button>
@@ -348,7 +478,10 @@ export const DatePickerField = ({
           <CalendarBlank
             aria-hidden
             size={16}
-            className="pointer-events-none absolute end-4 top-1/2 shrink-0 -translate-y-1/2 text-control-border-strong group-data-disabled/date-picker:text-black-20"
+            className={twMerge(
+              'pointer-events-none absolute end-4 top-1/2 shrink-0 -translate-y-1/2 text-control-border-strong group-data-disabled/date-picker:text-black-20',
+              title && valueRowClassName,
+            )}
           />
           {name !== undefined && (
             // Disabled with the field, so a form doesn't submit it.
@@ -384,6 +517,9 @@ export const DatePickerField = ({
           sideOffset={4}
           collisionPadding={8}
           aria-label={dialogLabel}
+          onEscapeKeyDown={() => {
+            escaped.current = true
+          }}
           // Focus goes to the selected day (or today, or the first day of the
           // month): react-day-picker's roving tab stop, not the first button.
           // A month with no day to pick has none: then the first button (the

@@ -4,7 +4,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "*",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "129 kB"
+    "limit": "143 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Button }",
@@ -18,7 +18,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ Calendar }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "36.5 kB"
+    "limit": "39.6 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Dialog, DialogContent, DialogTrigger }",
@@ -74,14 +74,14 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ DatePicker }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "65 kB"
+    "limit": "68 kB"
   },
   {
     "name": "@holakirr/snow-ui: { DateRangePicker }",
     "path": "packages/ui/dist/index.js",
     "import": "{ DateRangePicker }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "65 kB"
+    "limit": "68.5 kB"
   },
   {
     "name": "@holakirr/snow-ui/react-hook-form: full import (ESM)",
@@ -94,19 +94,19 @@
     "name": "@holakirr/snow-ui/index.css",
     "path": "packages/ui/dist/index.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "18.7 kB"
+    "limit": "21 kB"
   },
   {
     "name": "@holakirr/snow-ui/theme.css (compiled by the consumer's Tailwind)",
     "path": "packages/ui/dist/theme.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "10.6 kB"
+    "limit": "10.8 kB"
   },
   {
     "name": "@holakirr/snow-ui/theme-core.css (theme.css without the components' @source)",
     "path": "packages/ui/dist/theme-core.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "10.6 kB"
+    "limit": "10.8 kB"
   },
   {
     "name": "@holakirr/snow-ui/fonts.css",

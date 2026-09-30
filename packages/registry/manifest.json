@@ -158,7 +158,10 @@
       "name": "calendar",
       "type": "registry:ui",
       "title": "Calendar",
-      "files": ["components/Calendar/Calendar.tsx"],
+      "files": [
+        "components/Calendar/Calendar.tsx",
+        "components/Calendar/styles.ts"
+      ],
       "dependencies": [
         "@holakirr/snow-ui-icons",
         "date-fns",
@@ -327,7 +330,11 @@
       "title": "DatePicker",
       "files": [
         "components/DatePicker/DatePicker.tsx",
-        "components/DatePicker/field.tsx"
+        "components/DatePicker/date-field.tsx",
+        "components/DatePicker/field.tsx",
+        "components/DatePicker/grid.tsx",
+        "components/DatePicker/panel.tsx",
+        "components/DatePicker/segments.ts"
       ],
       "dependencies": [
         "@holakirr/snow-ui-icons",
@@ -338,6 +345,7 @@
         "react-day-picker"
       ],
       "registryDependencies": [
+        "button",
         "calendar",
         "popover",
         "snow-core",
@@ -354,7 +362,11 @@
       "title": "DateRangePicker",
       "files": [
         "components/DatePicker/DateRangePicker.tsx",
-        "components/DatePicker/field.tsx"
+        "components/DatePicker/date-field.tsx",
+        "components/DatePicker/field.tsx",
+        "components/DatePicker/grid.tsx",
+        "components/DatePicker/panel.tsx",
+        "components/DatePicker/segments.ts"
       ],
       "dependencies": [
         "@holakirr/snow-ui-icons",
@@ -365,6 +377,7 @@
         "react-day-picker"
       ],
       "registryDependencies": [
+        "button",
         "calendar",
         "popover",
         "snow-core",
@@ -632,7 +645,7 @@
       "type": "registry:ui",
       "title": "Slider",
       "files": ["components/Input/Slider.tsx"],
-      "dependencies": ["@radix-ui/react-slider"],
+      "dependencies": ["@radix-ui/react-direction", "@radix-ui/react-slider"],
       "registryDependencies": ["snow-core", "snow-ui-provider"],
       "import": "components/Input/Slider",
       "exports": ["Slider"],

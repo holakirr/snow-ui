@@ -9,12 +9,13 @@ import * as SliderStories from './Slider.stories'
 <FigmaLinks label="Slider2 component set" />
 <InstallTabs item="slider" />
 
-Slider picks a number, or a range with two thumbs, by dragging along a track. It is the Radix Slider on the Figma "Slider2" track, with accessible names for every thumb.
+Slider picks a number, or a range with two thumbs, by dragging along a track. One value is the Figma "Slider2" bar, a bar that fills up to the value with a label and the value inside; two or more are the Figma "SliderBar" range. Both are the Radix Slider, with accessible names for every thumb.
 
 ```tsx
 import { Slider } from '@holakirr/snow-ui'
 
-<Slider aria-label="Volume" value={volume} onValueChange={setVolume} max={100} step={1} />
+<Slider label="Volume" showValue value={volume} onValueChange={setVolume} />
+<Slider aria-label="Price" showValue valueFormatter={(value) => `$${value}`} defaultValue={[20, 80]} max={500} />
 ```
 
 <Primary />
@@ -28,27 +29,47 @@ import { Slider } from '@holakirr/snow-ui'
 
 - An exact number the user types: use an [Input](?path=/docs/components-input-input--docs) with `type="number"`.
 - One of a few named steps: [RadioGroup](?path=/docs/components-input-radiogroup--docs) or [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
-- Showing progress, not setting it: [Strip](?path=/docs/components-strip--docs) with a `value`.
+- Showing progress, not setting it: [Progress](?path=/docs/components-progress--docs) or [Strip](?path=/docs/components-strip--docs).
 
 ## Anatomy
 
-1. **Root** (`className`): a `<span>`, full width. It has no role; `aria-label` and `aria-labelledby` are passed on to the thumbs.
-2. **Track**: 34px high, an 8px radius, Black/4%.
-3. **Range**: the filled part of the track, in `black` (up to the thumb, or between two thumbs).
-4. **Thumbs**: one per value, a 16px circle with a 1px Black/40% border (`control-border-strong`: Black/80% with more contrast), a `white` fill and the "Drop shadow 2" effect, with an invisible 24×24px hit area (`hit-area`, WCAG 2.5.8). Each thumb is a `role="slider"`.
+A single value, the Figma "Slider2" bar:
+
+1. **Root** (`className`): a `<span>`, full width (the Figma component is 160px wide), 32px high with an 8px radius. It has no role; `aria-label` and `aria-labelledby` are passed on to the thumb. The whole bar takes the pointer: pressing anywhere moves the value there.
+2. **Track**: Black/4%.
+3. **Fill**: Primary (black; indigo in the dark theme), from the start up to the value, with an 8px radius at both ends; none at the minimum.
+4. **Label** (`label`, optional): 12/16 Regular, 8px from the start; white where the fill is under it, black on the track (a letter the fill's end crosses is split between the two).
+5. **Value** (`showValue`, optional): 12/16 Regular with tabular figures, 8px from the end, `text-secondary` on the track and the per-mode `white` at 70% on the fill.
+6. **Handle**: a 2×8px line, vertically centred, 4px inside the fill's end (4px from the start at the minimum), white on the fill and black on the track. It shows in the Active state only.
+7. **Thumb**: the `role="slider"` element, invisible: a 1px-wide, full-height target at the value with a 24×32px hit area (`hit-area`, WCAG 2.5.8).
+
+Two or more values, the Figma "SliderBar" range:
+
+1. **Root** (`className`): the same `<span>`, 32px high (the Figma thumbs' frame). With `showValue`, a `<div>` wraps it and the values with 16px / 12px padding (56px high, the Figma SliderBar), and takes `className`: `className="p-0"` drops the padding, to line the track up with the fields around it.
+2. **Track**: 3px high, rounded, Black/4%.
+3. **Range**: Primary (black; indigo in the dark theme), between the first and the last thumb.
+4. **Thumbs**: 28px static white circles with the Figma drop shadow (0 2px 8px, black at 20%, not a style), one per value, each a `role="slider"`.
+5. **Values** (`showValue`, optional): 14/20 Regular, black, 16px from the track, the first value by the minimum and the last by the maximum. Each is as wide as the widest of the `min` and `max` texts, so the track doesn't move while they change.
 
 ## Variants
 
-<Canvas of={SliderStories.WithTwoValues} />
+<Canvas of={SliderStories.Progress} />
 
-The number of values in `value` or `defaultValue` sets the number of thumbs: `[50]` is a single slider, `[25, 75]` a range. `minStepsBetweenThumbs` keeps the thumbs of a range apart.
+The number of values in `value` or `defaultValue` picks the look: `[28]` is the bar, `[25, 75]` the range. `minStepsBetweenThumbs` keeps the thumbs of a range apart.
+
+<Canvas of={SliderStories.RangeWithValues} />
+
+`label` puts a text inside the bar and names the thumb, so `aria-label` isn't needed with it. A range has no room for it: there it only names the thumbs ("Price, minimum"). `showValue` shows the value inside the bar or at the ends of the range, and `valueFormatter` formats it.
 
 ## States
 
-- **Hover:** a pointer cursor on the track and a grab cursor on the thumb (grabbing while you drag).
-- **Keyboard focus:** the `focus-ring` utility on the focused thumb (see Accessibility).
-- **Disabled** (`disabled`): the range turns Black/80%, the thumbs 40% opacity, and the cursor not-allowed. The thumbs leave the tab order.
-- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): a 1px Secondary/Red stroke around the track and red thumb borders (no Figma state).
+- **Active** (the Figma "Active" property): while the pointer is over the bar or drags it, and while its thumb has keyboard focus, the handle line shows and the value turns `black-80` (White/80% on the fill). The line fades in over 150ms, at once with reduced motion.
+- **Keyboard focus:** the bar gets the `focus-ring` look (the Figma "Focus" ring plus a 2px `black-80` outline) while its thumb has keyboard focus; a range's thumbs get `focus-ring` themselves.
+- **Hover:** a pointer cursor on the bar and a grab cursor on the thumbs (grabbing while you drag).
+- **Disabled** (`disabled`): 40% opacity and a not-allowed cursor, without the Active state. The thumbs leave the tab order.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): a 1px `control-border-invalid` stroke inside the bar, over the fill, or red borders on the range's thumbs (no Figma state).
+
+<Canvas of={SliderStories.Active} />
 
 <Canvas of={SliderStories.Disabled} />
 
@@ -57,9 +78,11 @@ The number of values in `value` or `defaultValue` sets the number of thumbs: `[5
 ## Accessibility
 
 - Each thumb is a `role="slider"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`, and is in the tab order.
-- Name the slider with `aria-label` (or `aria-labelledby`): the thumbs get it, because the root has no role. The thumbs of a range get `messages.slider` names built from `aria-label`: "Price, minimum" and "Price, maximum" for two, "Price, 2 of 3" for three or more. `thumbLabels` names each thumb yourself. `aria-labelledby` wins over both, so every thumb of a range gets the same name: name a range with `aria-label` or `thumbLabels`.
-- `aria-describedby` and `aria-invalid` go to the thumbs too, so a `FormControl` around the slider describes each thumb and marks it invalid.
-- Show the value next to the slider when the exact number matters.
+- Name the slider with `label`, `aria-label` or `aria-labelledby`: the thumbs get it, because the root has no role. The thumbs of a range get `messages.slider` names built from `aria-label` (or `label`): "Price, minimum" and "Price, maximum" for two, "Price, 2 of 3" for three or more. `thumbLabels` names each thumb yourself. `aria-labelledby` wins over them all, so every thumb of a range gets the same name: name a range with `aria-label` or `thumbLabels`.
+- With `showValue` or `valueFormatter`, the thumbs read out the value text (`aria-valuetext`: "28%", "$120"), so screen readers say what the slider shows. The texts inside the bar and beside the range are hidden from them (`aria-hidden`): the thumbs carry the name and the value.
+- `aria-describedby` and `aria-invalid` go to the thumbs too, so a `FormControl` around the slider describes each thumb and marks it invalid. A disabled slider's thumbs get `aria-disabled`.
+- In forced-colours mode (Windows High Contrast), which drops backgrounds and shadows, the bar gets a border, its fill is `Highlight` with `HighlightText` on it, and a range's track is `GrayText` with a `Highlight` range and bordered thumbs.
+- The Active state doesn't depend on colour alone: the handle line shows.
 
 ### Keyboard
 
@@ -81,24 +104,35 @@ The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
-| "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark), on the bar while its thumb has keyboard focus | 2.4.7, 1.4.11 |
+| The value: Black/20% on the track (1.6:1; Black/40% active), White/40% on the fill (3.66:1) | `text-secondary` on the track (`black-80` active), the per-mode `white` at 70% on the fill (`white-80` active): at least 4.82:1 and 5.84:1 (5.5:1 and 9.95:1 in light mode) | 1.4.3 |
+| The label and handle on the fill: Static White, 2.07:1 on the dark-mode fill (Primary is indigo there) | the per-mode `white`: black on the indigo dark-mode fill (10.15:1) | 1.4.3, 1.4.11 |
+| A 2×8px handle | the same look, with a 24×32px hit area on the thumb, and the whole bar takes the pointer | 2.5.8 |
+
+Known gaps with the default contrast, which keeps the Figma values: the Black/4% bar and range track (1.09:1 on white) and the range's static white thumbs on white (1:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`) the bar gets a `control-border` stroke, the range track turns `control-border` and its thumbs get a `control-border-strong` border (see [Contrast](?path=/docs/guides-contrast--docs)).
+
+<Canvas of={SliderStories.MoreContrast} />
 
 ## Localization and RTL
 
-- Built-in strings: `messages.slider.minimum`, `maximum` and `thumb` name the thumbs of a range (see above). `thumbLabels` overrides them; see [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs).
-- Keyboard and pointer input follow the `dir` of `SnowUIProvider`: in right-to-left text the minimum is on the right and ArrowLeft increases the value.
+- Built-in strings: `messages.slider.minimum`, `maximum` and `thumb` name the thumbs of a range (see above), and `messages.slider.value(value, min, max)` is the value text of `showValue` without a `valueFormatter` (English: "28%"; a translation can put a space before the sign). `thumbLabels` and `valueFormatter` override them; see [Localization and RTL](?path=/docs/guides-localization-and-rtl--docs).
+- Keyboard and pointer input follow the `dir` of `SnowUIProvider`: in right-to-left text the minimum is on the right, the bar fills from the right with the label on the right and the value on the left, and ArrowLeft increases the value. `inverted` flips the fill (and the range's values) without moving the label.
+
+<Canvas of={SliderStories.RTL} />
 
 ## Controlled and uncontrolled
 
-Values are arrays, one number per thumb. Pass `defaultValue` to leave them to the slider, or `value` with `onValueChange(values)` to control them. `onValueCommit(values)` fires once when a drag or a key press ends, e.g. to save the value. `min` (default 0), `max` (default 100) and `step` (default 1) set the scale; `name` submits the values with a `<form>`.
+Values are arrays, one number per thumb. Pass `defaultValue` to leave them to the slider, or `value` with `onValueChange(values)` to control them; the label, the value text and the handle follow either. `onValueCommit(values)` fires once when a drag or a key press ends, e.g. to save the value. `min` (default 0), `max` (default 100) and `step` (default 1) set the scale; `name` submits the values with a `<form>`, and resetting the form restores `defaultValue`.
+
+<Canvas of={SliderStories.Controlled} />
 
 ## Do and don't
 
 <DoDont>
 <Do>
 
-- Name every slider with `aria-label`, `aria-labelledby` or `thumbLabels`.
-- Show the current value, and the unit, next to the slider.
+- Name every slider with `label`, `aria-label`, `aria-labelledby` or `thumbLabels`.
+- Show the value (`showValue`), with its unit through `valueFormatter` when it isn't a percentage.
 - Use `onValueCommit` for expensive work, and `onValueChange` for live feedback.
 
 </Do>
@@ -106,6 +140,7 @@ Values are arrays, one number per thumb. Pass `defaultValue` to leave them to th
 
 - Don't use a slider for a value the user needs to set exactly.
 - Don't put `aria-label` on a wrapper: pass it to Slider, which gives it to the thumbs.
+- Don't put a long label in a narrow bar: it is cut off with an ellipsis before the value.
 - Don't make the steps so small that the arrow keys barely move the thumb.
 
 </Dont>
@@ -113,12 +148,13 @@ Values are arrays, one number per thumb. Pass `defaultValue` to leave them to th
 
 ## Related
 
+- [Progress](?path=/docs/components-progress--docs): a progress bar that people don't set.
 - [Strip](?path=/docs/components-strip--docs): a segmented progress bar or meter.
 - [Input](?path=/docs/components-input-input--docs): a number the user types.
-- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the thumb messages and the direction.
+- [SnowUIProvider](?path=/docs/components-snowuiprovider--docs): the thumb and value messages and the direction.
 
 ## Props
 
-Slider is the [Radix Slider](https://www.radix-ui.com/primitives/docs/components/slider#api-reference) root with the Figma track and thumbs. It takes the Radix props below, `thumbLabels`, `className` (merged with the root's classes) and the attributes of the root `<span>`, except `aria-label` and `aria-labelledby`, which go to the thumbs. The Radix defaults: `min` 0, `max` 100, `step` 1, `minStepsBetweenThumbs` 0, `orientation` `horizontal`. The styles are for the horizontal Figma track only: `orientation="vertical"` isn't styled.
+Slider is the [Radix Slider](https://www.radix-ui.com/primitives/docs/components/slider#api-reference) root with the Figma bar or range. It takes the Radix props below, `thumbLabels`, `label`, `showValue`, `valueFormatter`, `className` (merged with the root's classes, or the wrapper's for a range with `showValue`) and the attributes of the root `<span>`, except `aria-label`, `aria-labelledby`, `aria-describedby` and `aria-invalid`, which go to the thumbs. The Radix defaults: `min` 0, `max` 100, `step` 1, `minStepsBetweenThumbs` 0, `orientation` `horizontal`. The styles are for the horizontal Figma components only: `orientation="vertical"` isn't styled.
 
 <Controls />

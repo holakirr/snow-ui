@@ -135,6 +135,50 @@ export type Messages = {
     clear: string
     /** A picked range, from its two formatted dates (`DateRangePicker`). */
     range: (start: string, end: string) => string
+    /** The date field at the top of the calendar (`DatePicker`). */
+    date: string
+    /** The start date field at the top of the calendar (`DateRangePicker`). */
+    startDate: string
+    /** The end date field at the top of the calendar (`DateRangePicker`). */
+    endDate: string
+    /** The time field at the top of the calendar (`withTime`). */
+    time: string
+    /** The time field of the start date (`DateRangePicker` `withTime`). */
+    startTime: string
+    /** The time field of the end date (`DateRangePicker` `withTime`). */
+    endTime: string
+    /** The year segment of the date field, and the years view. */
+    year: string
+    /** The month segment of the date field, and the months view. */
+    month: string
+    /** The day segment of the date field. */
+    day: string
+    /** The hour segment of the time field, and the hours view. */
+    hour: string
+    /** The minute segment of the time field, and the minutes view. */
+    minute: string
+    /** The second segment of the time field, and the seconds view. */
+    second: string
+    /** The AM / PM segment of the time field (12-hour time). */
+    dayPeriod: string
+    /** What a screen reader hears for an empty segment. */
+    empty: string
+    /** The months view's action that picks the current month. */
+    thisMonth: string
+    /** The years view's action that picks the current year. */
+    thisYear: string
+    /** The time view's action that picks the current time. */
+    systemTime: string
+    /** The link from the months, years and time views back to the days. */
+    back: string
+    /** The shown month (e.g. "Feb"), a button to the months view. */
+    chooseMonth: (month: string) => string
+    /** The shown year, a button to the years view. */
+    chooseYear: (year: string) => string
+    /** The previous-year button of the months view. */
+    previousYear: string
+    /** The next-year button of the months view. */
+    nextYear: string
   }
   dialog: {
     /** The close button of `DialogHeader`. */
@@ -193,6 +237,13 @@ export type Messages = {
     maximum: (label: string) => string
     /** A thumb of a slider with three or more thumbs (`position` from 1). */
     thumb: (label: string, position: number, count: number) => string
+    /**
+     * The value a slider shows with `showValue` and its thumbs read out
+     * (`aria-valuetext`), unless it has a `valueFormatter`: the value's
+     * position between `min` and `max`, in percent. Optional until 6.0, like
+     * the namespaces added in 5.1.
+     */
+    value?: (value: number, min: number, max: number) => string
   }
   spinner?: {
     /** The screen-reader text of a `Spinner`. */
@@ -224,6 +275,17 @@ export type Messages = {
 export type MessagesOverrides = {
   [Namespace in keyof Messages]?: Partial<NonNullable<Messages[Namespace]>>
 }
+
+/**
+ * The English `messages.slider.value`: the value's position between `min`
+ * and `max`, in percent ("28%"). Slider also falls back on it.
+ */
+export const sliderValueText = (
+  value: number,
+  min: number,
+  max: number,
+): string =>
+  `${Math.round(max > min ? ((Math.min(max, Math.max(min, value)) - min) / (max - min)) * 100 : 0)}%`
 
 /** The English messages, used where no `SnowUIProvider` sets others. */
 export const defaultMessages: Required<Messages> = {
@@ -288,6 +350,28 @@ export const defaultMessages: Required<Messages> = {
     rangeDialog: 'Choose a date range',
     clear: 'Clear date',
     range: (start, end) => `${start} – ${end}`,
+    date: 'Date',
+    startDate: 'Start date',
+    endDate: 'End date',
+    time: 'Time',
+    startTime: 'Start time',
+    endTime: 'End time',
+    year: 'Year',
+    month: 'Month',
+    day: 'Day',
+    hour: 'Hour',
+    minute: 'Minute',
+    second: 'Second',
+    dayPeriod: 'AM/PM',
+    empty: 'Empty',
+    thisMonth: 'This month',
+    thisYear: 'This year',
+    systemTime: 'System time',
+    back: 'Back',
+    chooseMonth: (month) => `${month}, choose a month`,
+    chooseYear: (year) => `${year}, choose a year`,
+    previousYear: 'Go to the previous year',
+    nextYear: 'Go to the next year',
   },
   dialog: {
     close: 'Close',
@@ -326,6 +410,7 @@ export const defaultMessages: Required<Messages> = {
     minimum: (label) => `${label}, minimum`,
     maximum: (label) => `${label}, maximum`,
     thumb: (label, position, count) => `${label}, ${position} of ${count}`,
+    value: sliderValueText,
   },
   spinner: {
     label: 'Loading',

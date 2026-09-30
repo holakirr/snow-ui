@@ -1,6 +1,6 @@
 'use client'
 
-import { format, isSameDay, startOfDay } from 'date-fns'
+import { format, isSameDay, isSameMonth, startOfDay } from 'date-fns'
 import { type FC, useRef, useState } from 'react'
 import {
   type DateRange,
@@ -8,7 +8,7 @@ import {
   rangeContainsModifiers,
 } from 'react-day-picker'
 import { Calendar } from '../Calendar'
-import { useSnowUI } from '../SnowUIProvider'
+import { defaultMessages, useSnowUI } from '../SnowUIProvider'
 import {
   DatePickerField,
   type DatePickerSharedProps,
@@ -78,6 +78,40 @@ type Session = {
   /** Today, now: what an empty date in the top area shows. */
   placeholder: Date
 }
+
+/**
+ * The default field text's dates: the locale's medium date, as date-fns "PP"
+ * ("Feb 2, 2026"), in the Gregorian calendar with Latin digits, as the
+ * calendar grid. Intl, for `formatRange`: it knows each locale's order and
+ * dash for a range within one month ("Feb 2 – 10, 2026", "2–10 февр.
+ * 2026 г." in Russian). `undefined` for a language tag Intl rejects.
+ */
+const mediumDates = new Map<string, Intl.DateTimeFormat | undefined>()
+const mediumDate = (lang: string) => {
+  if (!mediumDates.has(lang)) {
+    let formatter: Intl.DateTimeFormat | undefined
+    try {
+      formatter = new Intl.DateTimeFormat(lang, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        calendar: 'gregory',
+        numberingSystem: 'latn',
+      })
+    } catch {
+      formatter = undefined
+    }
+    mediumDates.set(lang, formatter)
+  }
+  return mediumDates.get(lang)
+}
+
+/**
+ * Plain spaces: ICU versions differ on the thin spaces around the dash
+ * (Node's and the browser's would give a hydration mismatch), as in
+ * Scheduler.
+ */
+const plainSpaces = (text: string) => text.replace(/\s+/g, ' ')
 
 /**
  * DateRangePicker is a field that opens the Figma DatePicker to pick a range
@@ -167,11 +201,25 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
     onValueChange?.(next)
   }
 
-  const formatDate = (date: Date) => format(date, dateFormat, { locale })
+  // The default text, as the kit's formats: a range within one month
+  // writes the month and the year once ("Feb 2 – 10, 2026"), any other
+  // range two full dates ("Feb 2, 2026 – Mar 3, 2026"). A `dateFormat`, the
+  // time or a `messages.datePicker.range` of your own gives two dates in the
+  // `dateFormat` joined by that message, as before.
+  const intl =
+    !dateFormatProp &&
+    !withTime &&
+    messages.datePicker.range === defaultMessages.datePicker.range
+      ? mediumDate(lang)
+      : undefined
+  const formatDate = (date: Date) =>
+    intl ? plainSpaces(intl.format(date)) : format(date, dateFormat, { locale })
   // A range without an end (a controlled `{ from }`) shows as open-ended,
   // "Jan 20, 2025 – …", and isn't a value a form submits.
   const text = from
-    ? messages.datePicker.range(formatDate(from), to ? formatDate(to) : '…')
+    ? intl && to && isSameMonth(from, to)
+      ? plainSpaces(intl.formatRange(from, to))
+      : messages.datePicker.range(formatDate(from), to ? formatDate(to) : '…')
     : (placeholder ?? messages.datePicker.rangePlaceholder)
   const formValue = (date: Date) => formDateTime(date, withTime, withSeconds)
 

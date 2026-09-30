@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
+import { ru } from 'react-day-picker/locale'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { SnowUIProvider } from '../SnowUIProvider'
 import {
@@ -36,12 +37,86 @@ describe('DateRangePicker', () => {
     unmount()
 
     renderPicker({ defaultValue: january(13, 16) })
-    expect(field()).toHaveTextContent('Jan 13, 2025 – Jan 16, 2025')
+    expect(field()).toHaveTextContent('Jan 13 – 16, 2025')
   })
 
   it('shows a range without an end', () => {
     renderPicker({ value: { from: new Date(2025, 0, 13), to: undefined } })
     expect(field()).toHaveTextContent('Jan 13, 2025 –')
+  })
+
+  // The field's text is the combobox's value, so its accessible value too.
+  const textOf = (props: Partial<DateRangePickerProps>) => {
+    const { unmount } = renderPicker(props)
+    const text = field().textContent
+    unmount()
+    return text
+  }
+  const range = (from: [number, number, number], to: typeof from) => ({
+    from: new Date(...from),
+    to: new Date(...to),
+  })
+
+  it('writes the month and year once within a month, as the kit does', () => {
+    // The kit's formats: "Feb 2 - 10, 2026", "Feb 2, 2026 - Mar 3, 2026".
+    expect(textOf({ value: range([2026, 1, 2], [2026, 1, 10]) })).toBe(
+      'Feb 2 – 10, 2026',
+    )
+    // One year, two months: both dates in full.
+    expect(textOf({ value: range([2026, 1, 2], [2026, 2, 3]) })).toBe(
+      'Feb 2, 2026 – Mar 3, 2026',
+    )
+    // Two years: both dates in full.
+    expect(textOf({ value: range([2025, 11, 29], [2026, 0, 4]) })).toBe(
+      'Dec 29, 2025 – Jan 4, 2026',
+    )
+    // A one-day range is that day.
+    expect(textOf({ value: range([2026, 1, 2], [2026, 1, 2]) })).toBe(
+      'Feb 2, 2026',
+    )
+  })
+
+  it('writes the month and year once in the locale’s order', () => {
+    const inRussian = (value: DateRange) => {
+      const { unmount } = render(
+        <SnowUIProvider locale={ru}>
+          <DateRangePicker aria-label="Период" defaultValue={value} />
+        </SnowUIProvider>,
+      )
+      const text = field().textContent
+      unmount()
+      return text
+    }
+    // ICU versions write the dash as "–" or "—".
+    expect(inRussian(range([2026, 1, 2], [2026, 1, 10]))).toMatch(
+      /^2[–—]10 февр\. 2026 г\.$/,
+    )
+    expect(inRussian(range([2026, 1, 2], [2026, 2, 3]))).toBe(
+      '2 февр. 2026 г. – 3 мар. 2026 г.',
+    )
+    expect(inRussian(range([2025, 11, 29], [2026, 0, 4]))).toBe(
+      '29 дек. 2025 г. – 4 янв. 2026 г.',
+    )
+  })
+
+  it('keeps two full dates with a dateFormat, the time or a range message', () => {
+    const february = range([2026, 1, 2], [2026, 1, 10])
+    expect(textOf({ value: february, dateFormat: 'PP' })).toBe(
+      'Feb 2, 2026 – Feb 10, 2026',
+    )
+    expect(textOf({ value: february, withTime: true })).toBe(
+      'Feb 2, 2026, 12:00 AM – Feb 10, 2026, 12:00 AM',
+    )
+    render(
+      <SnowUIProvider
+        messages={{
+          datePicker: { range: (start, end) => `${start} to ${end}` },
+        }}
+      >
+        <DateRangePicker aria-label="Stay" value={february} />
+      </SnowUIProvider>,
+    )
+    expect(field()).toHaveTextContent('Feb 2, 2026 to Feb 10, 2026')
   })
 
   it('picks a new range with two clicks, then closes', () => {
@@ -64,7 +139,7 @@ describe('DateRangePicker', () => {
     fireEvent.click(day(/January 23rd, 2025/))
     expect(onValueChange).toHaveBeenCalledWith(january(20, 23))
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
-    expect(trigger).toHaveTextContent('Jan 20, 2025 – Jan 23, 2025')
+    expect(trigger).toHaveTextContent('Jan 20 – 23, 2025')
   })
 
   it('orders the ends when the end is picked first', () => {
@@ -109,7 +184,7 @@ describe('DateRangePicker', () => {
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
 
     expect(onValueChange).not.toHaveBeenCalled()
-    expect(field()).toHaveTextContent('Jan 13, 2025 – Jan 16, 2025')
+    expect(field()).toHaveTextContent('Jan 13 – 16, 2025')
 
     // Opening again starts over.
     fireEvent.click(field())

@@ -33,7 +33,7 @@ const [stay, setStay] = useState<DateRange | null>(null)
 
 ## Anatomy
 
-As in [DatePicker](?path=/docs/components-datepicker--docs#anatomy). The field shows "Jan 13, 2025 – Jan 16, 2025" (`messages.datePicker.range(start, end)` with the dates in the `dateFormat`), or the placeholder "Pick a date range". The top area has the start date, "–" and the end date (the one not being picked in `text-secondary`), then the time of the one being picked with `withTime`. `numberOfMonths` shows several months side by side (one by default, so the popover fits a phone).
+As in [DatePicker](?path=/docs/components-datepicker--docs#anatomy). The field writes a range within one month with the month and the year once, as the kit's formats do: "Jan 13 – 16, 2025" ("13–16 янв. 2025 г." in Russian: `Intl.DateTimeFormat#formatRange` in the `locale`, so each language keeps its own order and dash). Any other range shows two full dates, "Jan 13, 2025 – Feb 2, 2025", as does a range without an end ("Jan 13, 2025 – …"): `messages.datePicker.range(start, end)`. The dates are the locale's medium date from Intl, the same as the `dateFormat` default "PP" in English. A `dateFormat`, `withTime` or a `messages.datePicker.range` of your own always shows two dates, in the `dateFormat` and joined by that message. With no range the field shows the placeholder "Pick a date range". The top area has the start date, "–" and the end date (the one not being picked in `text-secondary`), then the time of the one being picked with `withTime`. `numberOfMonths` shows several months side by side (one by default, so the popover fits a phone).
 
 ## Picking a range
 
@@ -98,7 +98,7 @@ As in [DatePicker](?path=/docs/components-datepicker--docs#deviations-from-the-f
 ## Localization and RTL
 
 - As in DatePicker: `SnowUIProvider`'s `locale` formats the dates and localizes the calendar, `dateFormat` sets the format, the week starts on Monday unless you pass `weekStartsOn` or set `SnowUIProvider`'s `weekStartsOn`.
-- `messages.datePicker` holds `rangePlaceholder` ("Pick a date range"), `rangeDialog` ("Choose a date range"), `range(start, end)` ("start – end") and `clear` ("Clear date"); the top area's `startDate`, `endDate`, `startTime` and `endTime`, and the rest as in DatePicker.
+- `messages.datePicker` holds `rangePlaceholder` ("Pick a date range"), `rangeDialog` ("Choose a date range"), `range(start, end)` ("start – end", for two full dates; your own also joins a range within one month: see [Anatomy](#anatomy)) and `clear` ("Clear date"); the top area's `startDate`, `endDate`, `startTime` and `endTime`, and the rest as in DatePicker.
 - In right-to-left text the range reads from the right.
 
 <Canvas of={DateRangePickerStories.RTL} />

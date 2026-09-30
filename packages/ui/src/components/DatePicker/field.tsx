@@ -102,7 +102,11 @@ export type DatePickerSharedProps = Omit<
    * the `locale`.
    * @default "PP" (e.g. "Jan 20, 2025"; "20 янв. 2025 г." in Russian), with
    * `withTime` "PP, h:mm a" or "PP, HH:mm" (the hour cycle), with seconds
-   * "PP, h:mm:ss a" or "PP, HH:mm:ss"
+   * "PP, h:mm:ss a" or "PP, HH:mm:ss". Without it (and without time)
+   * DateRangePicker writes a range within one month with the month and the
+   * year once, in the locale's order: "Feb 2 – 10, 2026". Its dates are
+   * then Intl's medium date, which is "PP" in English ("2 февр. 2026 г."
+   * in Russian, where "PP" abbreviates February "фев.").
    */
   dateFormat?: string
 

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { expect, fn, waitFor } from 'storybook/test'
+import { animationsEnded } from '../../test/animations'
 import { colorOf, hasInsetRing } from '../../test/colors'
 
 import { Slider } from './Slider'
@@ -95,6 +96,9 @@ export const Active: Story = {
 
     await userEvent.tab()
     await expect(thumb).toHaveFocus()
+    // The line fades in: a busy runner may take longer than `waitFor`'s
+    // timeout to render the transition.
+    await animationsEnded(line)
     await waitFor(() => expect(getComputedStyle(line).opacity).toBe('1'))
     await expect(getComputedStyle(bar).outlineStyle).toBe('solid')
     await expect(getComputedStyle(bar).outlineColor).toBe(

@@ -13,16 +13,31 @@ export const colorOf = (className: string, container: HTMLElement): string => {
   return color
 }
 
-/** The computed `color` of `element` once its CSS transitions have ended. */
+/**
+ * Finishes the CSS transitions and animations running on `element`, so its
+ * computed style is their end state. Playing them out made the checks as
+ * slow as the runner renders frames: at 20× slower, the Input "Focus With
+ * More Contrast" story's nine focus transitions took 28 s, past the test's
+ * 15 s timeout. Infinite animations (spinners) keep running.
+ */
+const finishTransitions = (element: Element) => {
+  for (const animation of element.getAnimations()) {
+    if (animation.effect?.getComputedTiming().endTime !== Infinity) {
+      animation.finish()
+    }
+  }
+}
+
+/** The computed `color` of `element` at the end of its CSS transitions. */
 export const settledColor = async (element: HTMLElement): Promise<string> => {
-  await Promise.all(element.getAnimations().map(({ finished }) => finished))
+  finishTransitions(element)
   return getComputedStyle(element).color
 }
 
 /**
  * Whether `element` has an inset ring (Tailwind `inset-ring-*`, a stroke) of
  * `width` in the colour of `colorClass` (e.g. `text-control-border-invalid`),
- * once its CSS transitions have ended. The colour is resolved next to the
+ * at the end of its CSS transitions. The colour is resolved next to the
  * element, in its theme and contrast scopes.
  */
 export const hasInsetRing = async (
@@ -30,7 +45,7 @@ export const hasInsetRing = async (
   colorClass: string,
   width: string,
 ): Promise<boolean> => {
-  await Promise.all(element.getAnimations().map(({ finished }) => finished))
+  finishTransitions(element)
   const color = colorOf(
     colorClass,
     element.parentElement ?? element.ownerDocument.body,

@@ -23,6 +23,7 @@ import {
 } from '@tanstack/react-table'
 import { type KeyboardEvent, useRef } from 'react'
 import { expect, waitFor, within } from 'storybook/test'
+import { animationsEnded } from '../../test/animations'
 import { Avatar, AvatarFallback, AvatarGroup } from '../Avatar'
 import { Button } from '../Button'
 import { Card } from '../Card'
@@ -273,9 +274,13 @@ export const TableA: Story = {
       await expect(
         opacity(canvas.getByRole('checkbox', { name: 'Select #CM9804' })),
       ).toBe(1)
+      // It fades in and out: a busy runner may take longer than `waitFor`'s
+      // timeout to render the transition.
       more.focus()
+      await animationsEnded(more)
       await waitFor(() => expect(opacity(more)).toBe(1))
       more.blur()
+      await animationsEnded(more)
       await waitFor(() => expect(opacity(more)).toBe(0))
     })
 

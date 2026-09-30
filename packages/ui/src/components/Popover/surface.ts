@@ -58,8 +58,9 @@ export const popoverShortcutClasses =
 
 /**
  * The chevron at the end of a submenu item: the kit's 16px `ArrowLineRight`
- * in Black/20%, which is 1.6:1, so `control-border-strong` (3:1 or more, as
- * Select's chevron). Dimmed with a disabled item; points left in RTL.
+ * in Black/20%, which is 1.6:1, so `control-border-strong` as Select's
+ * chevron (Black/40%, Black/80% with more contrast). Dimmed with a disabled
+ * item; points left in RTL.
  */
 export const popoverChevronClasses =
   'ms-auto text-control-border-strong rtl:-scale-x-100 in-data-[disabled]:text-black-20'

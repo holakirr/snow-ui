@@ -26,9 +26,9 @@ type SeparatorProps = ComponentProps<typeof SeparatorPrimitive.Root> & {
    * The Figma Line `Count`: 2 to 8 parallel lines (stacked for a horizontal
    * separator, side by side for a vertical one), spread evenly over the
    * kit's span between the outer lines: 8px for 2, 16 for 3, 32 for 4 and 5,
-   * 40 for 6 to 8. Like the single
-   * line, they are drawn in the text colour: Black/10% unless a `text-*`
-   * class sets another (the Figma Line is Black/100%, `text-black`).
+   * 40 for 6 to 8. Like the single line, they are drawn in the text colour:
+   * Black/10% unless a `text-*` class sets another (the Figma Line is
+   * Black/100%, `text-black`).
    * @default 1
    */
   count?: SeparatorCount

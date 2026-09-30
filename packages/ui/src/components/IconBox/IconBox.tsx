@@ -37,9 +37,9 @@ type SizeSpec = {
 // Figma "Icon" (set 33138:1011). With Background the box is
 // 12→20, 16→24, 20→28, 24→32, 28→36, 32→40 (padding 4), 40→56, 48→64
 // (padding 8) and 80→104 (padding 12); the Glass set (32973:289) has 80→88
-// (padding 4, radius 24) and 24→32 like the main set. The Badge (a 16/20/24 Dot) sits on the
-// top end corner (top right; top left in right-to-left text); its offset
-// depends on the size and the background.
+// (padding 4, radius 24) and 24→32 like the main set. The Badge (a 16/20/24
+// Dot) sits on the top end corner (top right; top left in right-to-left
+// text); its offset depends on the size and the background.
 const sizeSpecs: { [K in IconBoxSize]: SizeSpec } = {
   12: {
     icon: 'size-3',
@@ -119,7 +119,9 @@ export type IconBoxProps = ComponentProps<'span'> & {
   /**
    * The Figma `Glass` tile: the icon on White/20% with the "Glass 1" effect
    * (the `glass-1` utility: a background blur and a soft shadow) instead of
-   * Black/4%, for icons over a picture or a colour. Implies `background`.
+   * Black/4%, for icons over a picture or a colour. Implies `background`,
+   * with its padding and radius except at 80: the Figma Glass tile is 88px
+   * there (padding 4, radius 24) where the Black/4% one is 104px.
    * @default false
    */
   glass?: boolean

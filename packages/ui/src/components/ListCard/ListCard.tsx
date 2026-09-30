@@ -50,9 +50,10 @@ export type ListCardProps = Omit<
  * ListCard is a titled list of ListItem rows on the kit's popup surface —
  * the Figma Notifications, Activities and Contacts cards: 248px wide,
  * Background/3 with the "Glass 2" effect, radius 24, padding 16, an 18
- * Semibold title (44 high) and rows 4px apart. A row with `href` is a link, with `onSelect` a button;
- * both get the Figma "Frame" hover fill. NotificationsCard, ActivitiesCard
- * and ContactsCard are ListCards with the kit's content.
+ * Semibold title (44 high) and rows 4px apart. A row with `href` is a link,
+ * with `onSelect` a button; both get the Figma "Frame" hover fill.
+ * NotificationsCard, ActivitiesCard and ContactsCard are ListCards with the
+ * kit's content.
  */
 const ListCard: FC<ListCardProps> = ({
   title,

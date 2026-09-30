@@ -27,11 +27,17 @@ type SizeSpec = {
   badge: string
   /** Badge position without / with `background` (Figma offsets, px). */
   badgeOffset: [plain: string, withBackground: string]
+  /**
+   * `glass`, where the Figma Glass set differs from the main one: the tile's
+   * padding and radius, and the badge position on it.
+   */
+  glass?: { background: string; badgeOffset: string }
 }
 
 // Figma "Icon" (set 33138:1011). With Background the box is
 // 12→20, 16→24, 20→28, 24→32, 28→36, 32→40 (padding 4), 40→56, 48→64
-// (padding 8) and 80→104 (padding 12). The Badge (a 16/20/24 Dot) sits on the
+// (padding 8) and 80→104 (padding 12); the Glass set (32973:289) has 80→88
+// (padding 4, radius 24) and 24→32 like the main set. The Badge (a 16/20/24 Dot) sits on the
 // top end corner (top right; top left in right-to-left text); its offset
 // depends on the size and the background.
 const sizeSpecs: { [K in IconBoxSize]: SizeSpec } = {
@@ -88,6 +94,7 @@ const sizeSpecs: { [K in IconBoxSize]: SizeSpec } = {
     background: 'p-3 rounded-28',
     badge: 'size-6',
     badgeOffset: ['top-[2px] end-[2px]', 'top-[14px] end-[14px]'],
+    glass: { background: 'p-1 rounded-24', badgeOffset: 'top-[6px] end-[6px]' },
   },
 }
 
@@ -148,6 +155,10 @@ const IconBox: FC<IconBoxProps> = ({
   const spec = sizeSpecs[size]
   const hasBadge = badge !== undefined && badge !== false && badge !== null
   const tile = background || glass
+  const tileSpec = (glass && spec.glass) || {
+    background: spec.background,
+    badgeOffset: spec.badgeOffset[1],
+  }
 
   return (
     <span
@@ -155,7 +166,7 @@ const IconBox: FC<IconBoxProps> = ({
       data-glass={glass || undefined}
       className={twMerge(
         'relative inline-flex size-fit shrink-0 items-center justify-center',
-        tile && [glass ? 'glass-1' : 'bg-black-4', spec.background],
+        tile && [glass ? 'glass-1' : 'bg-black-4', tileSpec.background],
         className,
       )}
       {...props}
@@ -175,7 +186,7 @@ const IconBox: FC<IconBoxProps> = ({
           className={twMerge(
             'absolute flex items-center justify-center',
             spec.badge,
-            spec.badgeOffset[tile ? 1 : 0],
+            tile ? tileSpec.badgeOffset : spec.badgeOffset[0],
           )}
         >
           {badge === true ? (

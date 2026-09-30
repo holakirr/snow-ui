@@ -95,6 +95,31 @@ describe('IconBox', () => {
     )
   })
 
+  it('is the Glass set 88px tile at 80: padding 4, radius 24', () => {
+    const { container } = render(
+      <IconBox size={80} glass badge>
+        {icon}
+      </IconBox>,
+    )
+    const root = container.firstElementChild as HTMLElement
+
+    expect(root).toHaveClass('glass-1', 'p-1', 'rounded-24')
+    expect(root).not.toHaveClass('p-3', 'rounded-28')
+    expect(container.querySelector('[data-slot="badge"]')).toHaveClass(
+      'top-[6px]',
+      'end-[6px]',
+    )
+  })
+
+  it('keeps the main set 104px tile at 80 with `background`', () => {
+    const { container } = render(
+      <IconBox size={80} background>
+        {icon}
+      </IconBox>,
+    )
+    expect(container.firstElementChild).toHaveClass('p-3', 'rounded-28')
+  })
+
   it('renders no badge for badge={false}', () => {
     const { container } = render(<IconBox badge={false}>{icon}</IconBox>)
 

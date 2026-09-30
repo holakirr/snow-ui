@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Runs the visual regression suite (visual/stories.spec.ts) inside the
-# official Playwright Docker image pinned in visual/Dockerfile, so
-# screenshots match the committed Linux baselines and CI byte for byte,
-# whatever the host OS.
+# official Playwright Docker image pinned in visual/Dockerfile, in its
+# linux/arm64 variant like CI, so screenshots match the committed baselines
+# and CI byte for byte, whatever the host OS.
 #
 #   bun run visual                      # compare with visual/__screenshots__
 #   bun run visual:update               # write/refresh baselines
@@ -12,8 +12,11 @@
 #   VISUAL_SKIP_BUILD=1       reuse the existing storybook-static/ build
 #   VISUAL_SNAPSHOT_DIR=path  baselines directory (default visual/__screenshots__),
 #                             relative to the repository root
-#   VISUAL_DOCKER_PLATFORM    image platform (default linux/amd64, what CI runs;
-#                             Apple Silicon runs it through Rosetta/QEMU)
+#   VISUAL_DOCKER_PLATFORM    image platform (default linux/arm64, what CI runs
+#                             and the baselines are taken on; native on Apple
+#                             Silicon and arm64 Linux, emulated on x86-64 hosts,
+#                             where linux/amd64 is faster but may differ from
+#                             the baselines by a few pixels)
 #   VISUAL_DOCKER_CPUS        CPUs the container may use (default: half the
 #                             host's, at most 6); Playwright gets as many workers
 #                             unless you pass --workers yourself
@@ -54,7 +57,7 @@ if [[ "$image" != "mcr.microsoft.com/playwright:v${version}-noble@sha256:"* ]]; 
   echo "pin mcr.microsoft.com/playwright:v${version}-noble by digest there (see the file)." >&2
   exit 1
 fi
-platform="${VISUAL_DOCKER_PLATFORM:-linux/amd64}"
+platform="${VISUAL_DOCKER_PLATFORM:-linux/arm64}"
 snapshot_dir="${VISUAL_SNAPSHOT_DIR:-visual/__screenshots__}"
 if [[ "$snapshot_dir" == /* ]]; then
   echo "VISUAL_SNAPSHOT_DIR must be relative to the repository root (only the repository is mounted into the container)." >&2

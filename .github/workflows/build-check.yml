@@ -399,13 +399,22 @@ jobs:
         run: bun run test:docs
 
   # Screenshot comparison of every story (light + dark) against the committed
-  # Linux baselines in visual/__screenshots__, in the same Playwright image
-  # `bun run visual` uses locally (visual/docker.sh): the one visual/Dockerfile
-  # pins by digest, of the installed @playwright/test version. Any difference fails the job; the diffs are
-  # uploaded as the `visual-diffs` artifact.
+  # linux/arm64 baselines in visual/__screenshots__, in the same Playwright
+  # image `bun run visual` uses locally (visual/docker.sh): the one
+  # visual/Dockerfile pins by digest, of the installed @playwright/test
+  # version. Any difference fails the job; the diffs are uploaded as the
+  # `visual-diffs` artifact.
+  #
+  # The baselines are taken on linux/arm64 (natively on Apple Silicon, where
+  # an amd64 image would run emulated, about 4x slower), so the job runs on
+  # an arm64 runner: the pinned digest is a multi-platform index and the
+  # container resolves to its linux/arm64 variant, the same image as
+  # `bun run visual`. setup-bun picks the aarch64 Bun and `bun install` the
+  # arm64 native packages; the Storybook build from the `build` job (x64) is
+  # static files, the same on any architecture.
   visual:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     container:
       image: ${{ needs.build.outputs.playwright-image }}
       options: --ipc=host

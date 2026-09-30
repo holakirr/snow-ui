@@ -6,10 +6,11 @@ import { defineConfig, devices } from '@playwright/test'
 // (storybook-static/) is screenshotted in the light and the dark theme and
 // compared with the committed baselines in visual/__screenshots__.
 //
-// Baselines are Linux screenshots taken in the official Playwright Docker
-// image, so fonts and anti-aliasing are identical locally and in CI. Run the
-// suite through Docker: `bun run visual` (compare) / `bun run visual:update`
-// (write baselines). See CONTRIBUTING.md#visual-regression-tests.
+// Baselines are linux/arm64 screenshots taken in the official Playwright
+// Docker image (natively on Apple Silicon, on an arm64 runner in CI), so fonts
+// and anti-aliasing are identical locally and in CI. Run the suite through
+// Docker: `bun run visual` (compare) / `bun run visual:update` (write
+// baselines). See CONTRIBUTING.md#visual-regression-tests.
 
 if (process.platform !== 'linux' && !process.env.VISUAL_ALLOW_HOST) {
   throw new Error(

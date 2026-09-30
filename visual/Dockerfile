@@ -4,7 +4,9 @@
 # (nothing builds this file). It is the official Playwright image of the
 # @playwright/test version in bun.lock, pinned by the digest of its
 # multi-platform index, so a re-pushed tag can't change the browser the
-# baselines were taken with.
+# baselines were taken with. Both run the index's linux/arm64 variant (CI on
+# an arm64 runner, docker.sh natively on Apple Silicon): the baselines are
+# arm64 screenshots.
 #
 # When @playwright/test is bumped, update the tag and the digest together
 # (the build job fails while they disagree) and regenerate the baselines:

@@ -136,17 +136,34 @@ const LineMatrix = () => (
 
 /**
  * The Figma "Line" set: `count` 1 to 8 (stacked, or side by side when
- * vertical, 8px apart) and the Left / Right arrow layouts (`arrow`), in the
- * Figma Black/100% (`text-black`).
+ * vertical, the outer lines 8, 16, 32 or 40px apart) and the Left / Right
+ * arrow layouts (`arrow`), in the Figma Black/100% (`text-black`).
  */
 export const Lines: Story = {
   render: () => <LineMatrix />,
   play: async ({ canvasElement }) => {
-    const three = canvasElement.querySelector('[data-count="3"]') as HTMLElement
-    const lines = three.querySelectorAll('[data-slot="separator-line"]')
-    await expect(lines).toHaveLength(3)
-    // 8px apart: 1px lines at 0, 9 and 18.
-    await expect(three.getBoundingClientRect().height).toBe(19)
+    // Figma: the frame is SPACE_BETWEEN, the outer lines' centres 8, 16, 32,
+    // 32, 40, 40 and 40px apart for 2 to 8 lines.
+    const spans = { 2: 8, 3: 16, 4: 32, 5: 32, 6: 40, 7: 40, 8: 40 }
+    for (const [count, span] of Object.entries(spans)) {
+      const [horizontal, vertical] = canvasElement.querySelectorAll(
+        `[data-count="${count}"]`,
+      )
+      for (const [separator, axis] of [
+        [horizontal, 'y'],
+        [vertical, 'x'],
+      ] as const) {
+        const lines = [
+          ...separator.querySelectorAll('[data-slot="separator-line"]'),
+        ].map((line) => line.getBoundingClientRect())
+        await expect(lines).toHaveLength(Number(count))
+        const centre = (rect: DOMRect) =>
+          axis === 'y' ? rect.top + rect.height / 2 : rect.left + rect.width / 2
+        await expect(centre(lines[lines.length - 1]) - centre(lines[0])).toBe(
+          span,
+        )
+      }
+    }
     const arrow = canvasElement.querySelector(
       '[data-slot="separator-arrow"]',
     ) as SVGElement

@@ -40,13 +40,20 @@ describe('Separator', () => {
     expect(screen.getByRole('separator')).toHaveAttribute('data-count', '3')
   })
 
-  it('stacks `count` lines 8px apart', () => {
+  it('spreads `count` lines over the Figma span', () => {
     render(<Separator data-testid="separator" count={4} hairline />)
     const separator = screen.getByTestId('separator')
     const lines = linesOf(separator)
 
     expect(separator).toHaveAttribute('data-count', '4')
-    expect(separator).toHaveClass('flex-col', 'gap-2', 'text-black-10')
+    // Figma: 4 lines, the outer ones 32px apart (SPACE_BETWEEN).
+    expect(separator).toHaveClass(
+      'flex-col',
+      'justify-between',
+      'h-[calc(--spacing(8)+1px)]',
+      'text-black-10',
+    )
+    expect(separator).not.toHaveClass('gap-2')
     expect(lines).toHaveLength(4)
     for (const line of lines) {
       expect(line).toHaveClass('h-px', 'w-full', 'bg-current', 'scale-y-50')
@@ -63,7 +70,12 @@ describe('Separator', () => {
     )
     const separator = screen.getByTestId('separator')
 
-    expect(separator).toHaveClass('flex-row', 'h-full')
+    expect(separator).toHaveClass(
+      'flex-row',
+      'h-full',
+      'justify-between',
+      'w-[calc(--spacing(10)+1px)]',
+    )
     expect(linesOf(separator)).toHaveLength(8)
     expect(linesOf(separator)[0]).toHaveClass('w-px', 'h-full')
   })

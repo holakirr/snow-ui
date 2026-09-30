@@ -23,8 +23,10 @@ type SeparatorProps = ComponentProps<typeof SeparatorPrimitive.Root> & {
   hairline?: boolean
 
   /**
-   * The Figma Line `Count`: 2 to 8 parallel lines, 8px apart (stacked for a
-   * horizontal separator, side by side for a vertical one). Like the single
+   * The Figma Line `Count`: 2 to 8 parallel lines (stacked for a horizontal
+   * separator, side by side for a vertical one), spread evenly over the
+   * kit's span between the outer lines: 8px for 2, 16 for 3, 32 for 4 and 5,
+   * 40 for 6 to 8. Like the single
    * line, they are drawn in the text colour: Black/10% unless a `text-*`
    * class sets another (the Figma Line is Black/100%, `text-black`).
    * @default 1
@@ -37,6 +39,21 @@ type SeparatorProps = ComponentProps<typeof SeparatorPrimitive.Root> & {
    * text colour, like `count`'s lines.
    */
   arrow?: SeparatorArrow
+}
+
+/**
+ * The Figma Line frames of `count` lines: SPACE_BETWEEN, with the outer lines'
+ * centres 8 (2 lines), 16 (3), 32 (4, 5) or 40px (6–8) apart. The box is 1px
+ * more, for the lines' own thickness. [horizontal height, vertical width]
+ */
+const countSpans: { [K in Exclude<SeparatorCount, 1>]: [string, string] } = {
+  2: ['h-[calc(--spacing(2)+1px)]', 'w-[calc(--spacing(2)+1px)]'],
+  3: ['h-[calc(--spacing(4)+1px)]', 'w-[calc(--spacing(4)+1px)]'],
+  4: ['h-[calc(--spacing(8)+1px)]', 'w-[calc(--spacing(8)+1px)]'],
+  5: ['h-[calc(--spacing(8)+1px)]', 'w-[calc(--spacing(8)+1px)]'],
+  6: ['h-[calc(--spacing(10)+1px)]', 'w-[calc(--spacing(10)+1px)]'],
+  7: ['h-[calc(--spacing(10)+1px)]', 'w-[calc(--spacing(10)+1px)]'],
+  8: ['h-[calc(--spacing(10)+1px)]', 'w-[calc(--spacing(10)+1px)]'],
 }
 
 /**
@@ -62,7 +79,7 @@ const Separator: FC<SeparatorProps> = ({
   ...props
 }) => {
   const horizontal = orientation === 'horizontal'
-  const lines = Math.min(8, Math.max(1, Math.floor(count)))
+  const lines = Math.min(8, Math.max(1, Math.floor(count))) as SeparatorCount
   const withArrow = Boolean(arrow) && horizontal
 
   if (lines === 1 && !withArrow) {
@@ -100,9 +117,14 @@ const Separator: FC<SeparatorProps> = ({
         'flex shrink-0 text-black-10',
         withArrow
           ? 'w-full items-center'
-          : horizontal
-            ? 'w-full flex-col gap-2'
-            : 'h-full flex-row gap-2',
+          : [
+              'justify-between',
+              horizontal ? 'w-full flex-col' : 'h-full flex-row',
+              // More than one line here: a single one returned above.
+              countSpans[lines as Exclude<SeparatorCount, 1>][
+                horizontal ? 0 : 1
+              ],
+            ],
         className,
       )}
       {...props}

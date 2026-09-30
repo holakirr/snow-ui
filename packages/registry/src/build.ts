@@ -43,7 +43,14 @@ export interface RenderedRegistry {
 
 const isLocal = (ref: string) => !ref.startsWith('@') && !ref.includes('://')
 
-/** npm version ranges: the source package's own, then workspace versions. */
+/**
+ * npm version ranges of the items' dependencies: the source package's own
+ * ranges, except for the workspace packages, whose floor is their version
+ * at this commit (`^5.1.0`). The site serves the registry built from the
+ * commit the release workflow published (the `release` branch), so every
+ * floor is a version npm has, and the items' sources never need more than
+ * that version's theme and icons.
+ */
 function versionRanges(plan: Plan, config: RegistryConfig) {
   const ranges = new Map<string, string>()
   const { packageJson } = plan
@@ -63,7 +70,7 @@ function versionRanges(plan: Plan, config: RegistryConfig) {
         'utf8',
       ),
     ) as PackageJson
-    if (!ranges.has(json.name)) ranges.set(json.name, `^${json.version}`)
+    ranges.set(json.name, `^${json.version}`)
   }
   return ranges
 }

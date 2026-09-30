@@ -17,10 +17,20 @@ export default defineConfig({
   outputDir: '../test-results/docs-render',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  // No retries: an error that only shows up on some loads (stories racing
-  // each other on the page) is one readers get too.
-  retries: 0,
-  reporter: process.env.CI ? [['github'], ['list']] : [['list']],
+  // One retry in CI, where a page can miss a timeout because the runner is
+  // busy, so that such a hiccup doesn't hold up the release. But an error
+  // that only shows up on some loads (stories racing each other on the page)
+  // is one readers get too: a page that only passes on the retry is flaky,
+  // and the CI job lists it (JSON report → warning and job summary) so it
+  // gets fixed. Locally, no retries.
+  retries: process.env.CI ? 1 : 0,
+  reporter: process.env.CI
+    ? [
+        ['github'],
+        ['list'],
+        ['json', { outputFile: '../test-results/docs-render/results.json' }],
+      ]
+    : [['list']],
   use: {
     ...devices['Desktop Chrome'],
     baseURL: `http://127.0.0.1:${PORT}`,

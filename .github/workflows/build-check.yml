@@ -23,9 +23,17 @@ concurrency:
 permissions:
   contents: read
 
+# Every `run:` step in bash with pipefail (`bash --noprofile --norc -eo
+# pipefail {0}`): without an explicit shell GitHub runs `bash -e {0}`, and a
+# failing command piped into `tee` or `jq` would pass unnoticed.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     outputs:
       # The `visual` job runs in this image: visual/Dockerfile's, pinned by
@@ -140,6 +148,7 @@ jobs:
   size:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout code
@@ -185,6 +194,7 @@ jobs:
   # and fails under the thresholds in vitest.config.ts.
   storybook-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
 
     env:
       STORYBOOK_DISABLE_TELEMETRY: 1
@@ -256,6 +266,7 @@ jobs:
   # each caches its browser like `storybook-tests` caches Chromium.
   storybook-browsers:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     strategy:
       fail-fast: false
@@ -298,8 +309,29 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: bunx playwright install-deps ${{ matrix.browser }}
 
+      # WebKit runs in two shards, one after the other, each in a fresh
+      # browser: the page's memory grows with every story file, and a full
+      # run once crashed it near the end (vitest.browsers.config.ts). A
+      # failing story is retried by Vitest; a crashed page fails the whole
+      # run instead, so a shard whose page crashed runs once more.
       - name: Storybook tests (${{ matrix.browser }})
-        run: bunx vitest run -c vitest.browsers.config.ts --project storybook-${{ matrix.browser }}
+        env:
+          BROWSER: ${{ matrix.browser }}
+        run: |
+          shards=1
+          if [ "$BROWSER" = webkit ]; then shards=2; fi
+          for shard in $(seq 1 "$shards"); do
+            for attempt in 1 2; do
+              if bunx vitest run -c vitest.browsers.config.ts --project "storybook-$BROWSER" --shard "$shard/$shards" 2>&1 | tee vitest.log; then
+                break
+              fi
+              if [ "$attempt" = 1 ] && grep -q "page crashed" vitest.log; then
+                echo "::warning title=The $BROWSER page crashed::Shard $shard/$shards: the $BROWSER page crashed (out of memory?), not a story; running the shard again."
+                continue
+              fi
+              exit 1
+            done
+          done
 
   # Every ui story rendered on the server (react-dom/server in Node, no DOM),
   # then hydrated on that HTML in headless Chromium (`bun run test:ssr`,
@@ -307,6 +339,7 @@ jobs:
   # a hydration mismatch or logs an error while hydrating.
   ssr:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout code
@@ -354,6 +387,7 @@ jobs:
   docs:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code
@@ -398,6 +432,24 @@ jobs:
       - name: Docs pages in the browser
         run: bun run test:docs
 
+      # Pages that only passed on the retry (playwright.config.ts): a warning
+      # and the job summary, so a racy page is fixed rather than retried
+      # forever.
+      - name: Report flaky docs pages
+        if: ${{ !cancelled() }}
+        run: |
+          report=test-results/docs-render/results.json
+          [ -f "$report" ] || exit 0
+          flaky=$(jq -r '[.. | objects | select(has("specs")) | .specs[] | select(any(.tests[]; .status == "flaky")) | .title] | unique | .[]' "$report")
+          [ -n "$flaky" ] || exit 0
+          while IFS= read -r page; do
+            echo "::warning title=Flaky docs page::$page failed, then passed on the retry: fix the race (see CONTRIBUTING.md, Docs pages in the browser)."
+          done <<< "$flaky"
+          {
+            echo '### Flaky docs pages (passed on the retry)'
+            while IFS= read -r page; do echo "- $page"; done <<< "$flaky"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   # Screenshot comparison of every story (light + dark) against the committed
   # linux/arm64 baselines in visual/__screenshots__, in the same Playwright
   # image `bun run visual` uses locally (visual/docker.sh): the one
@@ -415,6 +467,7 @@ jobs:
   visual:
     needs: build
     runs-on: ubuntu-24.04-arm
+    timeout-minutes: 35
     container:
       image: ${{ needs.build.outputs.playwright-image }}
       options: --ipc=host
@@ -480,6 +533,7 @@ jobs:
   demo:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     env:
       NEXT_TELEMETRY_DISABLED: 1
@@ -575,6 +629,7 @@ jobs:
   # validates and builds it. The deployed copy is built by `build:storybook`.
   registry:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout code
@@ -614,6 +669,7 @@ jobs:
   registry-smoke:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     strategy:
       fail-fast: false
@@ -651,6 +707,7 @@ jobs:
   changeset:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Checkout code

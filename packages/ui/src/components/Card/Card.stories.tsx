@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
+import { expect } from 'storybook/test'
+import { twMerge } from '../../utils/tw-merge'
 
 import { Button } from '../Button'
 import { Input } from '../Input'
 import { Typography } from '../Text'
-import { Card } from './Card'
+import { Card, type CardProps } from './Card'
 
 const meta: Meta<typeof Card> = {
   title: 'Components/Card',
@@ -45,18 +47,6 @@ const Rows = ({ count }: { count: number }) =>
     <Typography key={i}>Text</Typography>
   ))
 
-/** Radio-like marker that the Figma Hover and Selected states show. */
-const Marker = ({ checked }: { checked?: boolean }) => (
-  <span
-    aria-hidden
-    className={
-      checked
-        ? 'absolute top-3 right-4 size-5 rounded-full border-[6px] border-primary bg-background-3'
-        : 'absolute top-3 right-4 size-5 rounded-full border border-black-20 bg-background-3'
-    }
-  />
-)
-
 export const Default: Story = {
   args: { className: 'w-[180px] flex flex-col gap-1' },
   render: (args) => (
@@ -79,30 +69,57 @@ export const Count: Story = {
   ),
 }
 
-const states = [
+const states: { label: string; props: CardProps }[] = [
   { label: 'Static', props: {} },
-  { label: 'Default (interactive)', props: { interactive: true } },
-  { label: 'Hover', props: { bordered: true }, marker: 'empty' },
-  { label: 'Selected', props: { selected: true }, marker: 'checked' },
-] as const
+  {
+    label: 'Default (interactive)',
+    props: { interactive: true, marker: true },
+  },
+  // The hover state, shown without the pointer: the stroke and the mark.
+  {
+    label: 'Hover',
+    props: {
+      bordered: true,
+      marker: true,
+      className: '[&_[data-slot=radio-mark]]:opacity-100',
+    },
+  },
+  { label: 'Selected', props: { selected: true, marker: true } },
+]
 
-/** Figma `State`: Static, Default (hover it), Hover and Selected. */
+/**
+ * Figma `State`: Static, Default (hover it), Hover and Selected, with the
+ * selection mark (`marker`).
+ */
 export const States: Story = {
   render: () => (
     <div className="grid grid-cols-4 gap-4">
-      {states.map(({ label, props, ...rest }) => (
+      {states.map(({ label, props }) => (
         <div key={label} className="flex flex-col gap-2">
           <Typography size={12} className="text-secondary">
             {label}
           </Typography>
-          <Card {...props} className="relative w-[180px] flex flex-col gap-1">
+          <Card
+            {...props}
+            className={twMerge(
+              'w-[180px] flex flex-col gap-1',
+              props.className,
+            )}
+          >
             <Rows count={2} />
-            {'marker' in rest && <Marker checked={rest.marker === 'checked'} />}
           </Card>
         </div>
       ))}
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const marks = canvasElement.querySelectorAll('[data-slot="radio-mark"]')
+    // Default: the mark waits for the pointer; Hover and Selected show it.
+    const [atRest, hover, selected] = [...marks]
+    await expect(getComputedStyle(atRest).opacity).toBe('0')
+    await expect(getComputedStyle(hover).opacity).toBe('1')
+    await expect(selected).toHaveAttribute('data-state', 'checked')
+  },
 }
 
 export const StatesDark: Story = {
@@ -110,8 +127,28 @@ export const StatesDark: Story = {
   globals: { theme: 'dark' },
 }
 
-/** Interactive cards used as a single-choice list. */
+/**
+ * Interactive cards used as a single-choice list, with the selection mark
+ * (`marker`).
+ */
 export const Selectable: Story = {
+  play: async ({ canvas, userEvent }) => {
+    const pro = canvas.getByRole('radio', { name: /Pro/ })
+    pro.focus()
+    await userEvent.keyboard(' ')
+    await expect(pro).toHaveAttribute('aria-checked', 'true')
+    await expect(pro.querySelector('[data-slot="radio-mark"]')).toHaveAttribute(
+      'data-state',
+      'checked',
+    )
+    // The focused card's empty mark would show; the others' stay hidden.
+    const team = canvas.getByRole('radio', { name: /Team/ })
+    await expect(
+      getComputedStyle(
+        team.querySelector('[data-slot="radio-mark"]') as HTMLElement,
+      ).opacity,
+    ).toBe('0')
+  },
   render: () => {
     const [value, setValue] = useState('Starter')
 
@@ -132,18 +169,46 @@ export const Selectable: Story = {
                 setValue(plan)
               }
             }}
-            className="relative w-[160px] flex flex-col gap-1"
+            marker
+            className="w-[160px] flex flex-col gap-1"
           >
             <Typography semibold>{plan}</Typography>
             <Typography size={12} className="text-secondary">
               Plan
             </Typography>
-            {value === plan && <Marker checked />}
           </Card>
         ))}
       </div>
     )
   },
+}
+
+/**
+ * A card with `marker` inside another `group` (the Sidebar's root is one):
+ * the mark answers to the card's own hover and focus only.
+ */
+export const MarkerInsideAGroup: Story = {
+  // A behaviour check: the same look as Selectable.
+  tags: ['!autodocs', 'skip-visual'],
+  play: async ({ canvas, canvasElement }) => {
+    const elsewhere = canvas.getByRole('button', { name: 'Elsewhere' })
+    elsewhere.focus()
+    await expect(elsewhere.matches(':focus-visible')).toBe(true)
+    // Past the opacity transition.
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    const mark = canvasElement.querySelector(
+      '[data-slot="radio-mark"]',
+    ) as HTMLElement
+    await expect(getComputedStyle(mark).opacity).toBe('0')
+  },
+  render: () => (
+    <div className="group flex flex-col items-start gap-4">
+      <Button>Elsewhere</Button>
+      <Card marker className="w-[160px]">
+        <Typography semibold>Pro</Typography>
+      </Card>
+    </div>
+  ),
 }
 
 /** The dashboard block: radius 20, padding 24, Background/2. */

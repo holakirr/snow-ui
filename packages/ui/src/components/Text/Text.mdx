@@ -1,4 +1,4 @@
-import { Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
 import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
 import * as TextStories from './Text.stories'
 
@@ -76,6 +76,12 @@ The sizes are the `text-12` … `text-64` tokens of the theme.
 | `right` | `text-right` | right (doesn't follow the direction) |
 
 Prefer `start` and `end`: they follow the text direction.
+
+## States
+
+The Figma Text component has three states: Default and Static are the plain text, and Hover adds 4px of padding on each side (the text grows by 8px), as the Button label does on hover. `interactive` applies the Hover state while the pointer is over the text; the padding animates, except for reduced motion. The Figma `Count` (several texts in a row) is [Group](?path=/docs/components-group--docs).
+
+<Canvas of={TextStories.Interactive} />
 
 ## Accessibility
 

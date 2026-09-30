@@ -9,7 +9,7 @@ import * as SeparatorStories from './Separator.stories'
 <FigmaLinks label="Line component set" page="25559:13253" />
 <InstallTabs item="separator" />
 
-Separator draws a line between blocks of content: the Black/10% divider of the Figma dashboards, 1px thick, or 0.5px with `hairline`. It is built on the Radix Separator primitive and is decorative by default.
+Separator draws a line between blocks of content: the Black/10% divider of the Figma dashboards, 1px thick, or 0.5px with `hairline`. It also draws the rest of the Figma "Line" set: 2 to 8 parallel lines (`count`) and a line with an arrowhead (`arrow`). It is built on the Radix Separator primitive and is decorative by default.
 
 ```tsx
 import { Separator } from '@holakirr/snow-ui'
@@ -33,7 +33,7 @@ import { Separator } from '@holakirr/snow-ui'
 
 ## Anatomy
 
-A single `<div>` with `data-orientation`: a Black/10% fill with fully rounded ends.
+A single `<div>` with `data-orientation`: a fill in the text colour (Black/10% by default) with fully rounded ends. With `count` or `arrow` the `<div>` is a flex row or column (`data-count`) of 1px lines in the text colour (`data-slot="separator-line"`) and, with `arrow`, an 8px-high chevron (`data-slot="separator-arrow"`, `aria-hidden`) that the line runs into.
 
 - **Horizontal** (default): 1px high, the full width of its container.
 - **Vertical:** 1px wide, the full height of its container, so the container needs a height (the story uses a 100px flex row).
@@ -48,11 +48,17 @@ A single `<div>` with `data-orientation`: a Black/10% fill with fully rounded en
 | --- | --- |
 | (default) | a 1px Black/10% line |
 | `hairline` | the same line scaled to half its thickness: one device pixel on a 2x screen; on a 1x screen it stays 1px and looks lighter |
-| `className` | any other colour or size, e.g. `bg-primary` |
+| `count` (2–8) | Figma Line `Count`: that many lines, 8px apart, stacked (vertical: side by side) |
+| `arrow` | Figma Line `Layout` Left / Right arrow: a chevron at one end of a horizontal line; `start` and `end` follow the text direction, `left` and `right` don't |
+| `className` | any other colour or size: a `text-*` class (`text-black` is the Figma Line's Black/100%), or `bg-primary` for the single line |
 
 <Canvas of={SeparatorStories.Hairline} />
 
 <Canvas of={SeparatorStories.CustomStyles} />
+
+The Figma "Line" set, in its Black/100% (`text-black`): 1 to 8 lines, horizontal and vertical, and the two arrow layouts. The Figma frames of 4 to 8 lines are 32 and 40px high, so their spacing varies; here the lines are always 8px apart.
+
+<Canvas of={SeparatorStories.Lines} />
 
 ## Accessibility
 
@@ -64,7 +70,7 @@ None of the package's deviations from the Figma kit apply to Separator.
 
 ## Localization and RTL
 
-Nothing to translate or mirror: Separator renders no text, and a vertical line has no direction.
+Separator renders no text. `arrow="end"` and `"start"` follow the text direction (in right-to-left text the end is on the left and the head points left); `"left"` and `"right"` keep their side and direction.
 
 ## Composition (asChild)
 

@@ -22,3 +22,9 @@
 @source not "./**/*.mdx";
 @source not "./**/*.figma.ts";
 @source not "./code-connect";
+
+/*
+ * Theme utilities for your own markup, which no component uses: generated
+ * anyway, since index.css projects have no Tailwind to generate them.
+ */
+@source inline("scrollbar-snow");

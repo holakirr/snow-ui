@@ -76,6 +76,25 @@ describe('IconBox', () => {
     expect(badge).toHaveClass('top-[-2px]', 'end-[-2px]')
   })
 
+  it('puts the icon on the Glass 1 tile with `glass`', () => {
+    const { container } = render(
+      <IconBox size={24} glass badge>
+        {icon}
+      </IconBox>,
+    )
+    const root = container.firstElementChild as HTMLElement
+
+    expect(root).toHaveAttribute('data-glass', 'true')
+    // The tile's padding and radius, with the glass fill.
+    expect(root).toHaveClass('glass-1', 'p-1', 'rounded-12')
+    expect(root).not.toHaveClass('bg-black-4')
+    // `glass` implies the tile: the badge is placed for it.
+    expect(container.querySelector('[data-slot="badge"]')).toHaveClass(
+      'top-[-2px]',
+      'end-[-2px]',
+    )
+  })
+
   it('renders no badge for badge={false}', () => {
     const { container } = render(<IconBox badge={false}>{icon}</IconBox>)
 

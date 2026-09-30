@@ -1,0 +1,119 @@
+import { Canvas, Controls, Meta, Primary, Title } from '@storybook/addon-docs/blocks'
+import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
+import * as ChipStories from './Chip.stories'
+
+<Meta of={ChipStories} />
+
+<Title />
+
+<FigmaLinks />
+<InstallTabs item="chip" />
+
+Chip is a short coloured label: the status of an order, the type of a record, a category. It is the Figma "Chip": seven colours, tinted (`background`) or a coloured dot and text, in two sizes.
+
+```tsx
+import { Chip } from '@holakirr/snow-ui'
+
+<Chip color="green">Complete</Chip>
+<Chip color="orange" background={false}>Approved</Chip>
+```
+
+<Primary />
+
+## When to use
+
+- A status or a category next to other data: a table cell, a list row, a card header.
+- A few values that users scan by colour, always with their name.
+
+## When not to use
+
+- A removable filter or a selectable option: use [Tag](?path=/docs/components-tag--docs) (`onRemove`, `state="active"`).
+- A count on an icon or an avatar: use [Badge](?path=/docs/components-badge--docs).
+- A message about the page: use an [Alert](?path=/docs/components-alert--docs).
+
+## Anatomy
+
+1. **Container**: a `<span>` (or the `asChild` element), `inline-flex`, as wide as its text.
+2. **Dot** (without `background`): the Figma Dot icon in the Secondary colour, `aria-hidden`: a 4.5px dot in a 12px box, or, `big`, a 7px ring in a 16px box.
+3. **Label** (the children): 12/16 Regular, or 14/20 when `big`.
+
+## Variants
+
+<Canvas of={ChipStories.AllVariants} />
+
+| Prop | Figma | Look |
+| --- | --- | --- |
+| `background` (default) | Background=True | a tint of the colour: H 20, padding 4/2, radius 4 (`big`: H 24, padding 10/2) |
+| `background={false}` | Background=False | a dot and coloured text: H 16, no padding (`big`: H 20) |
+| `big` | Big=True | 14/20 text, a 16px ring for the dot |
+
+| `color` | Dot (Figma) | Text | Tint |
+| --- | --- | --- | --- |
+| `purple` (default) | Secondary/Purple | Purple mixed with 45% `black` | Purple at 10% |
+| `indigo` | Secondary/Indigo | Indigo mixed with 45% `black` | Indigo at 10% |
+| `blue` | Secondary/Blue | Blue mixed with 45% `black` | Blue at 10% |
+| `green` | Secondary/Green | Green mixed with 45% `black` | Green at 10% |
+| `orange` | Secondary/Orange | Orange mixed with 45% `black` | Orange at 10% |
+| `red` | Secondary/Red | Red mixed with 45% `black` | Red at 10% |
+| `grey` | Black/40% | `text-secondary` | Black/4% |
+
+The `black` token is white in dark mode, so the text gets lighter there. The dot, the text and the tint are the `--chip-dot`, `--chip-color` and `--chip-fill` custom properties: `className="[--chip-color:var(--color-black)]"` changes the text only.
+
+<Canvas of={ChipStories.TableStatus} />
+
+## States
+
+Chip has no states of its own: it is a label, not a control. Put interactive behaviour on the element you render with `asChild` (a link to the filtered list) and give it its own hover style.
+
+## Accessibility
+
+- Chip has no role: its text is the information, read in the flow of the table cell or row it sits in. The dot is `aria-hidden`.
+- The colour is never the only cue: always show the status name (WCAG 1.4.1).
+- **Contrast:** the Figma text is the Secondary colour itself, 1.5–2.4:1 on white. The text here mixes it with 45% `black` (white in dark mode): at least 4.63:1 on the tints over `background-2` and 5.13:1 on white in light mode, 5.66:1 in dark mode (1.4.3). Grey text is `text-secondary` (5.27:1 on its Black/4% tint). The same colours apply with more contrast; the tints and the dots stay the Figma ones, since the text carries the meaning.
+- A chip rendered as a link or a button with `asChild` is 20px high (16 without `background`): give it `relative hit-area` for a 24px pointer target (2.5.8), as the AsChild story does.
+
+Deviations from the Figma kit (the full table is in the package README): the text colours above.
+
+## Localization and RTL
+
+- Chip renders no built-in strings: translate the label.
+- The dot is on the start side: on the right in right-to-left text.
+
+<Canvas of={ChipStories.RTL} />
+
+## Composition (asChild)
+
+`asChild` puts the chip's classes, `data-color` and props on its only child, with the dot before the child's own children. The child's classes win conflicts.
+
+<Canvas of={ChipStories.AsChild} />
+
+## Do and don't
+
+<DoDont>
+<Do>
+
+- Keep the label short: one or two words.
+- Use the same colour for the same meaning everywhere in the app.
+- Use the dot style in dense tables and the tinted style where a chip needs more weight.
+
+</Do>
+<Dont>
+
+- Don't rely on the colour alone: the label must say the status.
+- Don't make a chip interactive without a hover style and a 24px target.
+- Don't use chips for long text: they don't wrap.
+
+</Dont>
+</DoDont>
+
+## Related
+
+- [Tag](?path=/docs/components-tag--docs): a removable, selectable tag.
+- [Badge](?path=/docs/components-badge--docs): a count or a dot on another element.
+- [Table](?path=/docs/components-table--docs): the Figma Order List shows a status column of dot chips.
+
+## Props
+
+A `<span>` (or the `asChild` element) that takes the props below, `className` and the attributes of a `<span>`.
+
+<Controls />

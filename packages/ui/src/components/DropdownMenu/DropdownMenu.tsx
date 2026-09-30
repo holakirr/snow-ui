@@ -28,12 +28,16 @@ const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
 
 type DropdownMenuGroupProps = ComponentProps<typeof DropdownMenuPrimitive.Group>
 
+/**
+ * 4px margins above and below: next to a separator they merge into its 8px,
+ * so a line between two groups keeps the Figma 8 + 0.5 + 8.
+ */
 const DropdownMenuGroup: FC<DropdownMenuGroupProps> = ({
   className,
   ...props
 }) => (
   <DropdownMenuPrimitive.Group
-    className={twMerge('py-1', className)}
+    className={twMerge('my-1', className)}
     {...props}
   />
 )

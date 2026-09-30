@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
 
+import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
 import {
   DropdownMenu,
@@ -51,6 +52,29 @@ export const Default: Story = {
         expect(page.getByRole('menuitem', { name: /^Profile/ })).toHaveFocus(),
       )
     })
+
+    await step(
+      'a separator between two groups is 8px from their items',
+      async () => {
+        // Figma: 8 + 0.5 + 8. The groups' 4px margins merge into the
+        // separator's 8px.
+        await settleLayout(page.getByRole('menu'))
+        const above = page
+          .getByRole('menuitem', { name: /^Keyboard shortcuts/ })
+          .getBoundingClientRect()
+        const below = page
+          .getByRole('menuitem', { name: 'Team' })
+          .getBoundingClientRect()
+        const line = (above.bottom + below.top) / 2
+        const separator = page
+          .getAllByRole('separator')
+          .map((element) => element.getBoundingClientRect())
+          .find((rect) => rect.top > above.bottom && rect.bottom < below.top)
+        await expect(separator).toBeDefined()
+        await expect(below.top - above.bottom).toBeCloseTo(16.5, 0)
+        await expect((separator?.top ?? 0) + 0.25).toBeCloseTo(line, 0)
+      },
+    )
 
     await step('arrow keys move through the items', async () => {
       await userEvent.keyboard('{ArrowDown}')
@@ -234,6 +258,23 @@ export const RTL: Story = {
 /** The Figma Popover as a menu, open: 36px items, a 12px radius, shortcuts. */
 export const Open: Story = {
   parameters: { layout: 'padded' },
+  play: async ({ canvasElement, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const menu = await page.findByRole('menu')
+    await settleLayout(menu)
+
+    await step('a separator is 8px from the items on each side', async () => {
+      const above = page
+        .getByRole('menuitem', { name: 'Invite users' })
+        .getBoundingClientRect()
+      const line = within(menu).getByRole('separator').getBoundingClientRect()
+      const below = page
+        .getByRole('menuitem', { name: 'API' })
+        .getBoundingClientRect()
+      await expect(line.top - above.bottom).toBeCloseTo(8, 1)
+      await expect(below.top - line.bottom).toBeCloseTo(8, 1)
+    })
+  },
   render: () => (
     <div className="h-96">
       <DropdownMenu defaultOpen modal={false}>

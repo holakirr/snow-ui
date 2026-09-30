@@ -20,8 +20,12 @@ export const popoverItemClasses =
 /** A group title in a popover: 12/16 `text-secondary` (Figma: Black/40%), 28px high. */
 export const popoverLabelClasses = 'px-2 py-1.5 text-12 text-secondary'
 
-/** A divider in a popover: 0.5px Black/10%. */
-export const popoverSeparatorClasses = 'my-1 h-[0.5px] bg-black-10'
+/**
+ * A divider in a popover: 0.5px Black/10%, 8px from the items on each side
+ * (Figma: 8 + 0.5 + 8 between groups). A `DropdownMenuGroup`'s 4px margins
+ * merge into these.
+ */
+export const popoverSeparatorClasses = 'my-2 h-[0.5px] bg-black-10'
 
 /** The popover open/close animations. */
 export const popoverAnimationClasses =

@@ -73,7 +73,7 @@ import {
 5. **Checkbox item** (`ContextMenuCheckboxItem`) and **radio item** (`ContextMenuRadioItem`, in a `ContextMenuRadioGroup`): a 16px check mark in a slot 8px from the end, like Select's (the Figma selected item). Both kinds show the check; the role (`menuitemcheckbox`, `menuitemradio`) tells them apart.
 6. **Label** (`ContextMenuLabel`, optional): a group title, 12/16 `text-secondary`, 28px high; takes `inset`.
 7. **Group** (`ContextMenuGroup`, optional): groups items (no spacing of its own).
-8. **Separator** (`ContextMenuSeparator`): a 0.5px `black-10` line, 4px from its neighbours.
+8. **Separator** (`ContextMenuSeparator`): a 0.5px `black-10` line, 8px from its neighbours (the Figma 8 + 0.5 + 8 between groups).
 9. **Shortcut** (`ContextMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`.
 10. **Submenu** (`ContextMenuSub`): a `ContextMenuSubTrigger` (an item with a 16px chevron at the end, as in DropdownMenu) and a `ContextMenuSubContent` on the same surface. `ContextMenuPortal` is exported to portal it.
 

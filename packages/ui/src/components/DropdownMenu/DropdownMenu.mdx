@@ -76,8 +76,8 @@ import {
 4. **Item** (`DropdownMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `inset` adds 32px of start padding, e.g. to line up items without an icon with items that have one.
 5. **Checkbox item** (`DropdownMenuCheckboxItem`) and **radio item** (`DropdownMenuRadioItem`, in a `DropdownMenuRadioGroup`): a 16px check mark in a slot 8px from the end, like Select's (the Figma selected item). Both kinds show the check; the role (`menuitemcheckbox`, `menuitemradio`) tells them apart.
 6. **Label** (`DropdownMenuLabel`, optional): a group title, 12/16 `text-secondary`, 28px high; takes `inset`.
-7. **Group** (`DropdownMenuGroup`, optional): groups items, with 4px above and below.
-8. **Separator** (`DropdownMenuSeparator`): a 0.5px `black-10` line, 4px from its neighbours.
+7. **Group** (`DropdownMenuGroup`, optional): groups items, with a 4px margin above and below (it merges into a separator's 8px).
+8. **Separator** (`DropdownMenuSeparator`): a 0.5px `black-10` line, 8px from its neighbours (the Figma 8 + 0.5 + 8 between groups).
 9. **Shortcut** (`DropdownMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`.
 10. **Submenu** (`DropdownMenuSub`): a `DropdownMenuSubTrigger` (an item with an arrow at the end) and a `DropdownMenuSubContent` on the same surface. Wrap the sub content in `DropdownMenuPortal`, as the stories do.
 
@@ -243,7 +243,7 @@ A `KBD` at the end of an item: `keys` are the keys it shows. It takes the KBD pr
 
 ### DropdownMenuGroup
 
-A `group` around related items, with 4px above and below.
+A `group` around related items, with a 4px margin above and below. Next to a `DropdownMenuSeparator` the margins merge, so the line stays 8px from the items.
 
 <ArgTypes of={DropdownMenuGroup} />
 

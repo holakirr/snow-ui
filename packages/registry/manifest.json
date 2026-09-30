@@ -188,6 +188,18 @@
       "docs": "components-card"
     },
     {
+      "name": "chip",
+      "type": "registry:ui",
+      "title": "Chip",
+      "files": ["components/Chip/Chip.tsx"],
+      "dependencies": ["@radix-ui/react-slot"],
+      "registryDependencies": ["snow-core"],
+      "import": "components/Chip/Chip",
+      "exports": ["Chip"],
+      "types": ["ChipColor", "ChipProps"],
+      "docs": "components-chip"
+    },
+    {
       "name": "combobox",
       "type": "registry:ui",
       "title": "Combobox",
@@ -1334,6 +1346,7 @@
         "button",
         "calendar",
         "card",
+        "chip",
         "combobox",
         "multi-select",
         "command-palette",

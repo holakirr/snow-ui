@@ -26,6 +26,7 @@ const STATIC_PAGES = new Set([
   'Avatar',
   'AvatarGroup',
   'Badge',
+  'Chip',
   'DonutChart',
   'Group',
   'IconBox',

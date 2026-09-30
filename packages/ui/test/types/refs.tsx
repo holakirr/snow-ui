@@ -61,6 +61,7 @@ type RefTargets = {
   Calendar: null
   Card: HTMLDivElement
   Checkbox: HTMLButtonElement
+  Chip: HTMLSpanElement
   // A dialog with its own trigger: there is no single element to point at.
   // The <input role="combobox">, as react-hook-form needs to focus it.
   Combobox: HTMLInputElement

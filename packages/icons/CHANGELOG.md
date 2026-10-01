@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.2
+
+### Patch Changes
+
+- [#208](https://github.com/holakirr/snow-ui/pull/208) [`ed6e124`](https://github.com/holakirr/snow-ui/commit/ed6e1241ddc3fbde367a3df689799a562c97430b) Thanks [@holakirr](https://github.com/holakirr)! - `AddIcon`'s plus spans 75% of the icon, as the kit's Add does (12px in a 16px icon, 36px in the 48px one of the "Add data" dialog), instead of 62.5% (10px in 16, 30px in 48). The stroke is unchanged; the plus is just longer.
+
 ## 2.2.1
 
 ### Patch Changes

@@ -307,7 +307,7 @@ describe('fonts.css and fonts-italic.css', () => {
     expect(existsSync(join(dist, 'fonts/LICENSE.txt'))).toBe(true)
   })
 
-  it('serves the arrows components render (↗ ↩) from the small ui-symbols subset', () => {
+  it('serves the arrows and keyboard symbols (↗ ↩ ⌘) from the small ui-symbols subset', () => {
     const covering = (codepoint: number) =>
       faces('fonts.css')
         .filter(([, , ranges]) =>

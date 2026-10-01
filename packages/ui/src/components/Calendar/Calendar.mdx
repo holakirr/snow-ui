@@ -40,7 +40,7 @@ const [date, setDate] = useState<Date | undefined>()
 3. **Toolbar** (the month caption, 28px high, 12px text), one per month:
    - the actions (`showTodayButton`, `lastSelection`, first month only): 20px-high Black/4% chips, radius 8, 4px side padding, with a 24px pointer target (`hit-area`, WCAG 2.5.8);
    - the previous and next buttons: Button Small "Borderless" icon buttons with 16px arrows, in a `nav` landmark;
-   - the caption label: the month name. With `showYearSwitcher` (the default) it is a button that opens the year view; `captionLayout="dropdown"` (react-day-picker) shows month and year dropdowns instead.
+   - the caption label: the month and the year ("January 2025"). The kit only has the date pickers' short "Feb", whose top area shows the year; a Calendar on its own has no other place for it, so it keeps the year. With `showYearSwitcher` (the default) it is a button that opens the year view; `captionLayout="dropdown"` (react-day-picker) shows month and year dropdowns instead.
 4. **Weekdays**: a 38px row of 12px weekday names in `text-secondary`.
 5. **Days** (the month grid, 16px below the toolbar, 328px wide): seven columns of 38px-high day buttons, radius 12, 12px text.
 6. **Footer** (`footer`, react-day-picker, optional): 12px `black-80` text below the months.

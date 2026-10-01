@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowSquareOut } from '@phosphor-icons/react/dist/csr/ArrowSquareOut'
+import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
@@ -29,7 +30,7 @@ const linkVariants = cva(
         // state doesn't rely on colour alone. Inline, so it wraps in prose.
         default:
           'text-indigo-text underline-offset-2 hover:text-[color-mix(in_srgb,var(--color-indigo-text),var(--color-black)_80%)] hover:underline',
-        // Black with a 40% "↗"; indigo on hover.
+        // Black with a 40% up-right arrow; indigo on hover.
         arrow:
           'inline-flex items-center gap-0.5 text-black hover:text-indigo-text',
         // Black with a 40% external-link icon; indigo on hover. Opens in a new tab.
@@ -106,13 +107,13 @@ const Link: FC<LinkProps> = ({
     <>
       {content}
       {variant === 'arrow' && (
-        <span
+        // The 12px Phosphor icon, as the external one: a "↗" text glyph
+        // would change with the font. Figma: 40% (2.85:1 on white); full
+        // opacity with more contrast.
+        <ArrowUpRight
           aria-hidden
-          // Figma: 40% (2.85:1 on white); full opacity with more contrast.
-          className="inline-block opacity-40 transition-opacity group-hover:opacity-100 contrast-more:opacity-100 rtl:-scale-x-100"
-        >
-          ↗
-        </span>
+          className="size-3 shrink-0 opacity-40 transition-opacity group-hover:opacity-100 contrast-more:opacity-100 rtl:-scale-x-100"
+        />
       )}
       {isExternal && (
         <>

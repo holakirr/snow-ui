@@ -591,6 +591,9 @@ describe('Calendar', () => {
       'not-aria-selected:[&>button]:bg-indigo',
       // Static black on indigo (10:1); Figma's white is 2.07:1.
       'not-aria-selected:[&>button]:text-static-black',
+      // In dark mode a selected day is indigo too: today has no fill there.
+      'dark:not-aria-selected:[&>button]:bg-transparent',
+      'dark:not-aria-selected:[&>button]:text-indigo',
     )
     expect(today).not.toHaveClass('[&>button]:bg-primary')
   })

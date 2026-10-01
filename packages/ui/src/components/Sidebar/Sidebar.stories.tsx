@@ -388,7 +388,7 @@ export const Inset: Story = {
 const Chevron = ({ open }: { open?: boolean }) => (
   <ArrowLineRightIcon
     aria-hidden
-    className={`!size-4 text-black-20 transition-transform ${open ? 'rotate-90' : ''}`}
+    className={`!size-4 text-secondary transition-transform ${open ? 'rotate-90' : ''}`}
   />
 )
 

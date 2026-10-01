@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
-import { BreadcrumbLink } from './Breadcrumb'
+import { BreadcrumbLink, BreadcrumbPage } from './Breadcrumb'
 
 describe('BreadcrumbLink', () => {
   it('is a plain link to its href', () => {
@@ -88,5 +88,16 @@ describe('BreadcrumbLink', () => {
 
     expect(onClickCapture).toHaveBeenCalledTimes(1)
     expect(onClick).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('BreadcrumbPage', () => {
+  it('keeps the arrow cursor, though it is aria-disabled', () => {
+    render(<BreadcrumbPage>Default</BreadcrumbPage>)
+
+    const page = screen.getByText('Default')
+
+    expect(page).toHaveAttribute('aria-disabled', 'true')
+    expect(page).toHaveClass('cursor-default')
   })
 })

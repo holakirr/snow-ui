@@ -63,4 +63,18 @@ describe('Accordion', () => {
     expect(accordionTriggers[2]).toHaveAttribute('data-state', 'closed')
     expect(accordionTriggers[2]).toHaveAttribute('aria-expanded', 'false')
   })
+
+  it('draws the arrow in text-secondary, black on hover and keyboard focus', async () => {
+    await Single.run()
+
+    // The kit's small chevrons: Black/20% at rest (1.6:1), black on hover;
+    // `text-secondary` at rest as the library's other chevrons.
+    const [trigger] = screen.getAllByRole('button')
+    expect(trigger).toHaveClass(
+      '[&>svg]:text-secondary',
+      'hover:[&>svg]:text-black',
+      'focus-visible:[&>svg]:text-black',
+    )
+    expect(trigger.querySelector(':scope > svg')).not.toBeNull()
+  })
 })

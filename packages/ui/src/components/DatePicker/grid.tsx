@@ -3,6 +3,7 @@
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import {
+  currentUnselectedClassName,
   selectedForcedClassName,
   todayMarkClassName,
   todayMarkShownClassName,
@@ -189,7 +190,7 @@ export const OptionGrid = ({
                       ),
                     option.current &&
                       !option.selected &&
-                      'bg-indigo text-static-black hover:bg-indigo/80',
+                      currentUnselectedClassName,
                     option.current && todayMarkClassName,
                     option.current &&
                       option.selected &&

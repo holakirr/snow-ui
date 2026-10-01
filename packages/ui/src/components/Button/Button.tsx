@@ -12,7 +12,9 @@ import { warnIfUnnamedIconOnly } from '../../utils/accessible-name'
 import { warnAsDeprecated, warnDeprecated } from '../../utils/deprecation'
 import { slotted } from '../../utils/slot'
 import { twMerge } from '../../utils/tw-merge'
+import type { RingSize } from '../Spinner/ring'
 import { Typography } from '../Text'
+import { ButtonSpinner } from './ButtonSpinner'
 
 const defaultTag = 'button'
 
@@ -83,6 +85,18 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
        * @default "borderless"
        */
       variant?: ButtonVariant
+
+      /**
+       * The kit's loading state (added in 5.2): a spinner in the middle of
+       * the button, over its content, which stays in place but invisible,
+       * so the button keeps its size and its accessible name. A Filled
+       * button turns Gray, as in the kit. The button gets `aria-busy` and
+       * `aria-disabled`, stays focusable, and a click, Enter or Space does
+       * nothing: no `onClick`, no form submission, no navigation with
+       * `asChild` and a link.
+       * @default false
+       */
+      loading?: boolean
 
       /** The rendered element: the `<button>`, or the child with `asChild`. */
       ref?: Ref<HTMLElement>
@@ -171,6 +185,27 @@ const iconButtonClasses: { [K in Size]: string } = {
 }
 
 /**
+ * A loading button has no hover fill (and no press scale, see `classes`). A
+ * Filled one turns Gray, as the kit's "Save Changes" button does: the same
+ * width, Black/4% and a spinner.
+ */
+const loadingClasses: { [K in ButtonVariant]: string } = {
+  borderless: 'hover:bg-transparent',
+  gray: 'hover:bg-black-4',
+  outline: 'hover:bg-transparent',
+  filled: 'bg-black-4 text-black hover:bg-black-4',
+  bare: '',
+}
+
+/** The spinner: the size of the button's icon (12, 16, 20; 16, 20, 24 alone). */
+const spinnerSizes: { [K in Size]: RingSize } = { sm: 12, md: 16, lg: 20 }
+const iconOnlySpinnerSizes: { [K in Size]: RingSize } = {
+  sm: 16,
+  md: 20,
+  lg: 24,
+}
+
+/**
  * Button component displays a button element. With `asChild` it styles its
  * child element instead, e.g. a link or a router link.
  */
@@ -186,6 +221,7 @@ const Button = <C extends ElementType = typeof defaultTag>({
   size,
   textSize,
   variant,
+  loading = false,
   children,
   ...props
 }: ButtonProps<C>): JSX.Element => {
@@ -220,6 +256,14 @@ const Button = <C extends ElementType = typeof defaultTag>({
     isIconOnly
       ? [iconButtonClasses[buttonSize], variant === 'bare' && 'p-0']
       : buttonIconSizes[buttonSize],
+    loading && [
+      'relative cursor-progress active:scale-100',
+      // The content keeps its box and its name but isn't painted: element
+      // children at 0 opacity, text (at any depth) with a transparent fill.
+      // `color` stays, so the spinner turns in the button's text colour.
+      '[-webkit-text-fill-color:transparent] [&>:not([data-button-spinner])]:opacity-0',
+      loadingClasses[variant ?? 'borderless'],
+    ],
     className,
   )
 
@@ -236,13 +280,24 @@ const Button = <C extends ElementType = typeof defaultTag>({
       )}
       {content}
       {end}
+      {loading && (
+        <ButtonSpinner
+          size={(isIconOnly ? iconOnlySpinnerSizes : spinnerSizes)[buttonSize]}
+        />
+      )}
     </>
   )
+
+  // `aria-disabled` rather than `disabled`: the button keeps the focus while
+  // it loads; ButtonSpinner cancels its clicks.
+  const loadingProps = loading
+    ? { 'aria-busy': true, 'aria-disabled': true, 'data-loading': '' }
+    : undefined
 
   if (asChild) {
     const slot = slotted(children, classes, renderContent)
     return (
-      <Slot {...props} className={slot.className}>
+      <Slot {...props} {...loadingProps} className={slot.className}>
         {slot.child}
       </Slot>
     )
@@ -254,6 +309,7 @@ const Button = <C extends ElementType = typeof defaultTag>({
       aria-label={label && children == null ? label : undefined}
       className={classes}
       {...props}
+      {...loadingProps}
     >
       {renderContent(children)}
     </Component>

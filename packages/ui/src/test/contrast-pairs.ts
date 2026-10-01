@@ -53,6 +53,11 @@ export interface ContrastPair {
    */
   foreground: (level: Level) => string[]
   background: (level: Level) => string[]
+  /**
+   * AA with the standard (Figma) contrast too, not only with more: a pair
+   * that doesn't depend on the contrast tokens.
+   */
+  standard?: true
 }
 
 /** The Switch thumb: Figma's static white, the per-mode `white` with more contrast. */
@@ -208,6 +213,15 @@ export const contrastPairs: ContrastPair[] = [
     control: 'Placeholder on the gray field (InputSmall, Search)',
     kind: 'text',
     foreground: () => ['black-4', 'placeholder'],
+    background: () => ['black-4'],
+  },
+  {
+    // Button `loading` (5.2): a Filled button turns Gray, the spinner in
+    // the label's `black`.
+    control: 'Loading Button spinner on the Gray fill',
+    kind: 'nonText',
+    standard: true,
+    foreground: () => ['black-4', 'black'],
     background: () => ['black-4'],
   },
   {

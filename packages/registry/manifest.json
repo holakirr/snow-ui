@@ -146,9 +146,12 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "files": ["components/Button/Button.tsx"],
+      "files": [
+        "components/Button/Button.tsx",
+        "components/Button/ButtonSpinner.tsx"
+      ],
       "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
-      "registryDependencies": ["snow-core", "text"],
+      "registryDependencies": ["snow-core", "spinner", "text"],
       "import": "components/Button/Button",
       "exports": ["Button", "buttonVariants"],
       "types": ["ButtonProps"],

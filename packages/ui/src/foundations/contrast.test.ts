@@ -57,6 +57,22 @@ describe('the Select and submenu chevrons', () => {
   )
 })
 
+describe('pairs that are AA at both contrast levels', () => {
+  // Not built on the contrast tokens (Button loading, the Filled tabs, the
+  // coloured Badge): AA with the standard contrast as well.
+  const both = cases.filter(({ pair }) => pair.standard)
+  it('are there', () => {
+    expect(both.length).toBeGreaterThan(0)
+  })
+  it.each(both)(
+    '$pair.control, $mode, on $surface: AA at both levels',
+    ({ pair, ratio }) => {
+      expect(ratio('standard')).toBeGreaterThanOrEqual(AA[pair.kind])
+      expect(ratio('more')).toBeGreaterThanOrEqual(AA[pair.kind])
+    },
+  )
+})
+
 describe('form controls with the standard (Figma) contrast', () => {
   const ratio = (control: string, mode: Mode) => {
     const found = cases.find(

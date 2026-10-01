@@ -7,14 +7,17 @@ import {
   TagIcon,
   TextAlignLeftIcon,
   TextTIcon,
+  TrashIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 import { expect, waitFor, within } from 'storybook/test'
 
 import { expectClosed } from '../../test/animations'
 import { colorOf } from '../../test/colors'
 import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
+import { popoverItemDestructiveClasses } from '../Popover/surface'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -703,5 +706,133 @@ export const SearchRTL: Story = {
       .querySelector('svg')
       ?.getBoundingClientRect()
     await expect((icon?.right ?? 0) > box.right - 16).toBe(true)
+  },
+}
+
+/**
+ * `variant="destructive"` (added in 5.2): the kit's red "Delete Property"
+ * row, its text and icon in `red-text` (lighter in dark mode, so it keeps
+ * 4.5:1 on the highlight). Here it is highlighted, as under the pointer.
+ */
+export const Destructive: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="h-72">
+      <DropdownMenu defaultOpen modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="Property" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-60">
+          <DropdownMenuItem>
+            <TextTIcon />
+            Edit property
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <EyeSlashIcon />
+            Hide in view
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="destructive">
+            <TrashIcon />
+            Delete property
+          </DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" disabled>
+            <TrashIcon />
+            Delete all properties
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+  play: async ({ canvasElement, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const menu = await page.findByRole('menu')
+    const item = page.getByRole('menuitem', { name: 'Delete property' })
+    item.focus()
+    await settleLayout(menu)
+
+    await step('the text and the icon are red-text', async () => {
+      const red = colorOf(popoverItemDestructiveClasses, menu)
+      await expect(item).toHaveAttribute('data-variant', 'destructive')
+      await expect(item).toHaveAttribute('data-highlighted')
+      await expect(getComputedStyle(item).color).toBe(red)
+      await expect(
+        getComputedStyle(item.querySelector('svg') as SVGElement).color,
+      ).toBe(red)
+    })
+
+    await step('a disabled one is dimmed like the others', async () => {
+      const disabled = page.getByRole('menuitem', {
+        name: 'Delete all properties',
+      })
+      await expect(getComputedStyle(disabled).color).toBe(
+        colorOf('text-black-20', menu),
+      )
+    })
+  },
+}
+
+/**
+ * The kit's confirmation in place: the first selection keeps the menu open
+ * and asks "Confirm deletion?", the second one deletes. A screen reader may
+ * not announce the new name of the focused item: for an action that can't
+ * be undone, confirm in an AlertDialog with a `destructive` action.
+ */
+export const DestructiveConfirm: Story = {
+  render: function Render() {
+    const [confirming, setConfirming] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    return (
+      <div className="flex flex-col items-center gap-4">
+        <DropdownMenu onOpenChange={() => setConfirming(false)}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" label="Property" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-60">
+            <DropdownMenuItem>
+              <TextTIcon />
+              Edit property
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={(event) => {
+                if (confirming) {
+                  setDeleted(true)
+                  return
+                }
+                event.preventDefault()
+                setConfirming(true)
+              }}
+            >
+              <TrashIcon />
+              {confirming ? 'Confirm deletion?' : 'Delete property'}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <p className="text-14" role="status">
+          {deleted ? 'Property deleted' : ''}
+        </p>
+      </div>
+    )
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(canvas.getByRole('button', { name: 'Property' }))
+    const menu = await page.findByRole('menu')
+    await userEvent.click(
+      page.getByRole('menuitem', { name: 'Delete property' }),
+    )
+    // Still open, asking.
+    const confirm = page.getByRole('menuitem', { name: 'Confirm deletion?' })
+    await expect(confirm).toBeVisible()
+    await userEvent.click(confirm)
+    await expectClosed(menu)
+    await waitFor(() =>
+      expect(page.queryByRole('menu')).not.toBeInTheDocument(),
+    )
+    await expect(canvas.getByRole('status')).toHaveTextContent(
+      'Property deleted',
+    )
   },
 }

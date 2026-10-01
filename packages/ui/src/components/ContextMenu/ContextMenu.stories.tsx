@@ -1,4 +1,9 @@
+import { CopyIcon, PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, within } from 'storybook/test'
+import { colorOf } from '../../test/colors'
+import { settleLayout } from '../../test/layout'
+import { popoverItemDestructiveClasses } from '../Popover/surface'
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -88,4 +93,51 @@ export const Default: Story = {
       </ContextMenuContent>
     </ContextMenu>
   ),
+}
+
+/**
+ * `variant="destructive"` (added in 5.2) on a `ContextMenuItem`: the kit's
+ * red row, text and icon in `red-text`, as in DropdownMenu.
+ */
+export const Destructive: Story = {
+  render: () => (
+    <ContextMenu>
+      <ContextMenuTrigger className="flex h-[150px] w-[300px] items-center justify-center rounded-16 border border-dashed text-14">
+        Right click here
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-60">
+        <ContextMenuItem>
+          <PencilSimpleIcon />
+          Rename
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <CopyIcon />
+          Duplicate
+          <ContextMenuShortcut keys={['⌘', 'D']} separator="" />
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem variant="destructive">
+          <TrashIcon />
+          Delete
+          <ContextMenuShortcut keys={['⌫']} separator="" />
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.pointer({
+      keys: '[MouseRight]',
+      target: canvas.getByText('Right click here'),
+    })
+    const menu = await page.findByRole('menu')
+    const item = page.getByRole('menuitem', { name: /^Delete/ })
+    item.focus()
+    await settleLayout(menu)
+    const red = colorOf(popoverItemDestructiveClasses, menu)
+    await expect(getComputedStyle(item).color).toBe(red)
+    await expect(
+      getComputedStyle(item.querySelector('svg') as SVGElement).color,
+    ).toBe(red)
+  },
 }

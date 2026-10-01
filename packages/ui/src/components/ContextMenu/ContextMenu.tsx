@@ -9,6 +9,7 @@ import {
   popoverChevronClasses,
   popoverHintClasses,
   popoverItemClasses,
+  popoverItemDestructiveClasses,
   popoverLabelClasses,
   popoverScrollClasses,
   popoverSeparatorClasses,
@@ -131,15 +132,29 @@ const itemClasses = popoverItemClasses
 
 type ContextMenuItemProps = ComponentProps<typeof CtxMenuPrimitive.Item> & {
   inset?: boolean
+  /**
+   * `destructive`: an action that deletes or can't be undone (the kit's red
+   * "Delete" row): text and icons in `red-text`, at least 4.5:1 on the menu
+   * and its highlight in both modes. Added in 5.2.
+   * @default 'default'
+   */
+  variant?: 'default' | 'destructive'
 }
 
 const ContextMenuItem: FC<ContextMenuItemProps> = ({
   className,
   inset,
+  variant = 'default',
   ...props
 }) => (
   <CtxMenuPrimitive.Item
-    className={twMerge(itemClasses, inset && 'ps-8', className)}
+    data-variant={variant === 'destructive' ? variant : undefined}
+    className={twMerge(
+      itemClasses,
+      variant === 'destructive' && popoverItemDestructiveClasses,
+      inset && 'ps-8',
+      className,
+    )}
     {...props}
   />
 )

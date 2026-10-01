@@ -69,7 +69,7 @@ import {
 1. **Root** (`ContextMenu`): holds the open state. It renders nothing itself.
 2. **Trigger** (`ContextMenuTrigger`): a `<span>` around the area that opens the menu; style it (e.g. `block`) to size the area.
 3. **Content** (`ContextMenuContent`): the `role="menu"` panel, in a portal, at the pointer (Radix places it 2px to the right of the point, aligned to its top). At least 240px wide (`min-w-60`). The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2. It doesn't scroll by default, since a scroll area would clip a submenu that isn't portalled. For a long menu, add `max-h-(--radix-context-menu-content-available-height) overflow-y-auto` and wrap submenus in `ContextMenuPortal`: it scrolls with the kit's scrollbar (`scrollbar-snow`).
-4. **Item** (`ContextMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `inset` adds 32px of start padding.
+4. **Item** (`ContextMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `variant="destructive"` (added in 5.2) makes it the kit's red row: text and icons in `red-text` (see [Destructive item](#destructive-item)). `inset` adds 32px of start padding.
 5. **Checkbox item** (`ContextMenuCheckboxItem`) and **radio item** (`ContextMenuRadioItem`, in a `ContextMenuRadioGroup`): a 16px check mark in a slot 8px from the end, like Select's (the Figma selected item). Both kinds show the check; the role (`menuitemcheckbox`, `menuitemradio`) tells them apart.
 6. **Label** (`ContextMenuLabel`, optional): a group title, 14/20 `text-secondary`, 28px high (the kit's SearchPopup group title); takes `inset`.
 7. **Group** (`ContextMenuGroup`, optional): groups items (no spacing of its own).
@@ -81,9 +81,25 @@ import {
 
 - **Highlighted** (hover or keyboard focus): Black/4% fill. A sub trigger keeps it while its submenu is open.
 - **Checked:** a check mark at the end (`checked` on a checkbox item, or the radio group's `value`).
+- **Destructive** (`variant="destructive"`, added in 5.2): `red-text` text and icons, on the same Black/4% highlight; dimmed like any item when disabled.
 - **Disabled** (`disabled` on an item): Black/20% text and a not-allowed cursor; the arrow keys and typeahead skip it.
 - **Disabled trigger** (`disabled` on `ContextMenuTrigger`): the area opens no menu, and the browser's own menu shows instead.
 - **Open and closed:** `open` / `onOpenChange` on `ContextMenu`. The trigger has `data-state="open"` while its menu is open.
+
+## Destructive item
+
+Added in 5.2. `variant="destructive"` on `ContextMenuItem` marks an action that deletes or can't be undone, as the kit's red "Delete Property" row: the text and the icons (which take `currentColor`) are `red-text`, as AlertDialog's red action. `red-text` is #D42020 in light mode; in dark mode it is mixed with 40% white, so it keeps 4.5:1 on the item's highlight too. The role stays `menuitem`: say what the item does in its label ("Delete property"), not with the colour alone.
+
+```tsx
+<ContextMenuItem variant="destructive" onSelect={remove}>
+  <TrashIcon />
+  Delete property
+</ContextMenuItem>
+```
+
+<Canvas of={ContextMenuStories.Destructive} />
+
+Confirm an action that can't be undone in an [AlertDialog](?path=/docs/components-alertdialog--docs) with its `destructive` action.
 
 ## Portal and theme
 
@@ -122,6 +138,7 @@ The full table is in the package README.
 | --- | --- | --- |
 | Group labels, shortcuts and submenu value hints in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
 | Submenu chevron in Black/20%: 1.6:1 | `text-secondary`, as the Select chevron: Black/60% in light mode (at least 5.5:1, on the highlighted item too), White/70% in dark mode (at least 4.82:1) | 1.4.11 |
+| Destructive item (the red "Delete" row; 5.2): red text and icon | `variant="destructive"`: `red-text` (#D42020: 5.21:1 on the popover, 4.77:1 highlighted); in dark mode `red-text` mixed with 40% white (#FFB3B3: 6.21:1, 4.59:1 highlighted), as #FF8080 is 4.36:1 and 3.22:1 there | 1.4.3 |
 
 The Black/4% item highlight (1.1:1) keeps the Figma value with the default contrast: the README lists it as a known gap. With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the highlighted item also gets a 2px `black-80` ring.
 
@@ -196,7 +213,7 @@ The `role="menu"` panel, in a portal, at the pointer. `loop` (off by default) ma
 
 ### ContextMenuItem
 
-A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text when the item's content isn't plain text; `inset` adds 32px of start padding.
+A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text when the item's content isn't plain text; `inset` adds 32px of start padding; `variant="destructive"` (added in 5.2) colours it `red-text` (see [Destructive item](#destructive-item)).
 
 <ArgTypes of={ContextMenuItem} />
 

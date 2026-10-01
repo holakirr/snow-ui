@@ -1,5 +1,5 @@
 import { act, render, screen, waitFor, within } from '@testing-library/react'
-import { useState } from 'react'
+import { type ComponentProps, useState } from 'react'
 import { userEvent } from 'storybook/test'
 import { beforeAll, describe, expect, expectTypeOf, it, vi } from 'vitest'
 
@@ -425,5 +425,73 @@ describe('defaultDropdownMenuSearchFilter', () => {
     expect(defaultDropdownMenuSearchFilter('Sort ascending', 'sort desc')).toBe(
       false,
     )
+  })
+})
+
+describe('DropdownMenu destructive item', () => {
+  it('is red-text, text and icons, only with variant="destructive"', async () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Menu</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" className="ps-8">
+            <svg aria-hidden />
+            Delete
+          </DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" disabled>
+            Delete all
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    const remove = await screen.findByRole('menuitem', { name: 'Delete' })
+
+    expect(remove).toHaveAttribute('data-variant', 'destructive')
+    expect(remove).toHaveClass(
+      'text-red-text',
+      'dark:text-[color:color-mix(in_srgb,var(--color-red-text),var(--color-black)_40%)]',
+      'ps-8',
+    )
+    expect(remove).not.toHaveClass('text-black')
+    // Icons take the item's colour (`currentColor`); it keeps the highlight.
+    expect(remove).toHaveClass('data-[highlighted]:bg-black-4')
+    // Disabled: dimmed like any item (`data-[disabled]` wins).
+    expect(screen.getByRole('menuitem', { name: 'Delete all' })).toHaveClass(
+      'data-[disabled]:text-black-20',
+    )
+
+    const edit = screen.getByRole('menuitem', { name: 'Edit' })
+    expect(edit).not.toHaveAttribute('data-variant')
+    expect(edit).toHaveClass('text-black')
+    expect(edit).not.toHaveClass('text-red-text')
+  })
+
+  it('keeps the menuitem role and selects as usual', async () => {
+    const onSelect = vi.fn()
+    const user = userEvent.setup()
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Menu</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem variant="destructive" onSelect={onSelect}>
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    screen.getByRole('button', { name: 'Menu' }).focus()
+    await user.keyboard('{Enter}')
+    await waitFor(() =>
+      expect(screen.getByRole('menuitem', { name: 'Delete' })).toHaveFocus(),
+    )
+    await user.keyboard('{Enter}')
+    expect(onSelect).toHaveBeenCalledTimes(1)
+  })
+
+  it('types the variant', () => {
+    expectTypeOf<
+      ComponentProps<typeof DropdownMenuItem>['variant']
+    >().toEqualTypeOf<'default' | 'destructive' | undefined>()
   })
 })

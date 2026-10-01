@@ -29,6 +29,17 @@ export const popoverItemClasses =
   'relative flex cursor-pointer select-none items-center gap-2 rounded-12 p-2 text-14 text-black outline-none transition-colors focus:bg-black-4 data-[highlighted]:bg-black-4 data-[state=open]:bg-black-4 data-[disabled]:cursor-not-allowed data-[disabled]:text-black-20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 contrast-more:focus:inset-ring-2 contrast-more:focus:inset-ring-black-80 contrast-more:data-[highlighted]:inset-ring-2 contrast-more:data-[highlighted]:inset-ring-black-80'
 
 /**
+ * A destructive menu item (`variant="destructive"`, added in 5.2): the kit's
+ * red "Delete Property" row, its text and icons in `red-text` (#D42020:
+ * 5.21:1 on the popover, 4.77:1 highlighted). In dark mode `red-text`
+ * (#FF8080) is 4.36:1 on the popover and 3.22:1 on its White/10% highlight,
+ * so there it is mixed with 40% white (#FFB3B3): 6.21:1 and 4.59:1 (WCAG
+ * 1.4.3). A disabled one is dimmed like the others.
+ */
+export const popoverItemDestructiveClasses =
+  'text-red-text dark:text-[color:color-mix(in_srgb,var(--color-red-text),var(--color-black)_40%)]'
+
+/**
  * A group title in a popover: the kit's SearchPopup group title (a Text,
  * 4/8 padding, 28px high) in 14/20 `text-secondary` (Figma: Black/40%).
  */

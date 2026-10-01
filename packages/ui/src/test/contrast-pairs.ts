@@ -49,11 +49,20 @@ export interface ContrastPair {
   kind: keyof typeof AA
   /**
    * The two colours next to each other, as layers painted over the surface
-   * (token names).
+   * (token names). The mode is for a colour that differs in dark mode only
+   * (a `dark:` utility).
    */
-  foreground: (level: Level) => string[]
-  background: (level: Level) => string[]
+  foreground: (level: Level, mode: Mode) => string[]
+  background: (level: Level, mode: Mode) => string[]
 }
+
+/**
+ * A destructive menu item's text and icon: `red-text`, mixed with 40% of
+ * the per-mode `black` (white) in dark mode, where `red-text` is 4.36:1 on
+ * the popover and 3.22:1 on its White/10% highlight.
+ */
+const destructiveMenuText = (mode: Mode) =>
+  mode === 'dark' ? ['red-text', 'black/40'] : ['red-text']
 
 /** The Switch thumb: Figma's static white, the per-mode `white` with more contrast. */
 const thumb = (level: Level) => [level === 'more' ? 'white' : 'static-white']
@@ -199,6 +208,18 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['black-4'],
   },
   {
+    control: 'Destructive menu item on the menu',
+    kind: 'text',
+    foreground: (_, mode) => destructiveMenuText(mode),
+    background: () => [],
+  },
+  {
+    control: 'Destructive menu item on the highlighted item',
+    kind: 'text',
+    foreground: (_, mode) => ['black-4', ...destructiveMenuText(mode)],
+    background: () => ['black-4'],
+  },
+  {
     control: 'Placeholder on the field fill (Input, Textarea, outline fields)',
     kind: 'text',
     foreground: () => ['surface-1', 'placeholder'],
@@ -229,5 +250,8 @@ export const pairRatio = (
     composite(
       ...[...surface, ...layers].map((name) => tokenColor(name, mode, level)),
     )
-  return contrast(paint(pair.foreground(level)), paint(pair.background(level)))
+  return contrast(
+    paint(pair.foreground(level, mode)),
+    paint(pair.background(level, mode)),
+  )
 }

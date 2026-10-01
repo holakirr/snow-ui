@@ -28,6 +28,7 @@ import {
   popoverChevronClasses,
   popoverHintClasses,
   popoverItemClasses,
+  popoverItemDestructiveClasses,
   popoverLabelClasses,
   popoverScrollClasses,
   popoverSeparatorClasses,
@@ -535,11 +536,19 @@ type DropdownMenuItemProps = ComponentProps<
   typeof DropdownMenuPrimitive.Item
 > & {
   inset?: boolean
+  /**
+   * `destructive`: an action that deletes or can't be undone (the kit's red
+   * "Delete" row): text and icons in `red-text`, at least 4.5:1 on the menu
+   * and its highlight in both modes. Added in 5.2.
+   * @default 'default'
+   */
+  variant?: 'default' | 'destructive'
 }
 
 const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
   className,
   inset,
+  variant = 'default',
   ...props
 }) => {
   const shown = useMenuSearchMatch(props.textValue, props.children)
@@ -547,7 +556,13 @@ const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
 
   return (
     <DropdownMenuPrimitive.Item
-      className={twMerge(popoverItemClasses, inset && 'ps-8', className)}
+      data-variant={variant === 'destructive' ? variant : undefined}
+      className={twMerge(
+        popoverItemClasses,
+        variant === 'destructive' && popoverItemDestructiveClasses,
+        inset && 'ps-8',
+        className,
+      )}
       {...props}
     />
   )

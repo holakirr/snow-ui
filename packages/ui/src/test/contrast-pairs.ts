@@ -225,6 +225,15 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['black-4'],
   },
   {
+    // The window buttons recipe (Group docs, 5.2): Close hovers
+    // Secondary/Red with the kit's white glyph, a graphical object.
+    control: 'Window Close glyph on its red hover',
+    kind: 'nonText',
+    standard: true,
+    foreground: () => ['red', 'static-white'],
+    background: () => ['red'],
+  },
+  {
     control: 'Placeholder on the hovered gray field',
     kind: 'text',
     foreground: () => ['black-10', 'placeholder'],

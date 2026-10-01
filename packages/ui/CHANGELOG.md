@@ -1,5 +1,60 @@
 # Changelog
 
+## 5.2.0
+
+### Minor Changes
+
+- [#214](https://github.com/holakirr/snow-ui/pull/214) [`d225acd`](https://github.com/holakirr/snow-ui/commit/d225acd0872b34a586735ed2adba775e1fb44e50) Thanks [@holakirr](https://github.com/holakirr)! - `Badge` and `BadgeComponent` get `color`: `"indigo"` (the default, unchanged) or `"red"`, the kit's red badge. The red dot is Secondary/Red; the red number is the per-mode `white` on `red-text` (5.21:1, 8.65:1 in dark mode) instead of the kit's white on Secondary/Red (3.36:1). New type: `BadgeColor`.
+
+- [#214](https://github.com/holakirr/snow-ui/pull/214) [`cf55314`](https://github.com/holakirr/snow-ui/commit/cf55314ffddbe032e7a31654103975455775425a) Thanks [@holakirr](https://github.com/holakirr)! - `Button` gets `loading`, the kit's loading state (Guidance → Form): the content stays in place but invisible, so the button keeps its size and its accessible name, and Spinner's ring turns in the middle, the size of the button's icon (12/16/20px, 16/20/24px icon-only) in its text colour. A Filled button turns Gray (Black/4%) as in the kit; the others keep their fill, without hover or the press scale. The button gets `aria-busy` and `aria-disabled`, stays focusable, and ignores clicks, Enter and Space (no `onClick`, no form submission, no navigation with `asChild` and a link). Opt-in: nothing changes without it.
+
+- [#215](https://github.com/holakirr/snow-ui/pull/215) [`b265ef6`](https://github.com/holakirr/snow-ui/commit/b265ef6f9c75111cfed279fcb4c190b35566d94b) Thanks [@holakirr](https://github.com/holakirr)! - `CommandPalette`: the kit's search results, opt-in.
+
+  - `showCount` shows the number of results above the list while there is a query ("105 results", 12/16 `text-secondary`), in a polite live region; `resultCount` sets the number when the list holds only some results. New optional message `commandPalette.results(count)` ("1 result", "105 results"), required in 6.0.
+  - `highlightMatches` marks the words of the query in each label and snippet with `<mark>`, in `indigo-text` (the kit's Secondary/Indigo, 5.37:1; 4.91:1 on the highlighted option). In dark mode it is mixed with 30% white (6.47:1, 4.78:1), as #ADADFB is 3.78:1 on the highlight. In forced-colors mode the matches take the system `Mark`. The options' names are unchanged.
+  - An item's new `snippet` is a second line under the label (12/16 `text-secondary`), such as the text on the page that matched; it is the option's description, and `defaultCommandPaletteFilter` matches it too.
+
+  Without these props the palette is unchanged.
+
+- [#215](https://github.com/holakirr/snow-ui/pull/215) [`6426f82`](https://github.com/holakirr/snow-ui/commit/6426f8268b334f5df2c0c0bcb80c0bf345b49b80) Thanks [@holakirr](https://github.com/holakirr)! - `DropdownMenu`: a search field at the top of the menu (the kit's Popover search), opt-in with the new `search` prop on `DropdownMenuContent` (`true`, or `DropdownMenuSearchOptions`: `query`, `defaultQuery`, `onQueryChange`, `filter`, `label`, `placeholder`, `emptyMessage`). Without `search` the menu is unchanged.
+
+  - The kit's gray Search (28px high, 4/8 padding, a 16px radius) in a 44px row with 8px of padding; the items scroll under it.
+  - Typing filters the items, checkbox and radio items and sub triggers by their text (`textValue`, or their children's text): every word of the query, in any case (`defaultDropdownMenuSearchFilter`). While filtering, labels and separators are hidden; a submenu isn't filtered.
+  - The field takes the focus when the menu opens. Typing in it doesn't trigger the menu's typeahead; ArrowDown / ArrowUp move to the first / last item, ArrowUp on the first item goes back to the field, a letter typed on an item goes to the field, and Escape clears the field before it closes the menu (an Escape that cancels an IME composition does neither).
+  - The field and the empty state ("No results", in a polite live region) are next to the `role="menu"` list, which keeps the menu's name and orientation: a menu may only contain items.
+  - New optional messages namespace `dropdownMenu` (`search`, `empty`), required in 6.0 like the 5.1 namespaces.
+
+- [#211](https://github.com/holakirr/snow-ui/pull/211) [`bed28d5`](https://github.com/holakirr/snow-ui/commit/bed28d5f53f97f23d8a71fea085a571f86b81b84) Thanks [@holakirr](https://github.com/holakirr)! - Invalid text fields get the kit's Error icon. An `Input` or `Textarea` with `aria-invalid="true"` (as `FormControl` sets it) shows a 16px `Warning` icon at the end, next to the red stroke it already had. The icon is decorative: `aria-invalid` and the `FormMessage` tell the error.
+
+  - `Input`: an element after the end content, in the stroke's colour (`control-border-invalid`: Secondary/Red, `red-text` with more contrast). If you already put an error icon in `endContent`, hide the new one with `className="[&_[data-slot=input-invalid-icon]]:hidden"`.
+  - `Textarea`: a background image at the end of the first row, so the `<textarea>` gets no wrapper. While invalid the text stops 40px from the end instead of 16px, so lines may rewrap, and your own background image is covered. Turn it off with `className="aria-invalid:bg-none aria-invalid:pe-4"`. It stays Secondary/Red with more contrast.
+  - `FormLabel` now stays `text-secondary` on an invalid field, as the kit's title does; it turned `red-text` before.
+
+  Select, Combobox, InputSmall and Search keep the stroke without an icon, as the kit draws them.
+
+- [#217](https://github.com/holakirr/snow-ui/pull/217) [`ef0afcd`](https://github.com/holakirr/snow-ui/commit/ef0afcd1c6667b74fe7a43d1ba9de59df99eabf5) Thanks [@holakirr](https://github.com/holakirr)! - The kit's In progress and Done field states, opt-in: `status` on `Input` (`"progress" | "success"`, type `InputStatus`) and on `Search` (`"progress"`).
+
+  - `Input`: `progress` shows the turning ring of `Spinner` in Black/100% after the end content (an invalid field's Warning hides while it turns) and sets `aria-busy="true"` on the input; `success` shows a 16px `Check` in Secondary/Green (green mixed with 40% black with more contrast: 4.4:1), hidden while the field is invalid. A visually hidden `role="status"` region announces a change of status: "Checking" and "Valid" (the new optional `messages.input.progress` and `messages.input.success`), or `statusLabel`.
+  - `Search`: `progress` shows the ring in place of the clear button or the shortcut hint and sets `aria-busy="true"`; your results region announces the results. An `aria-busy` of your own is kept without a status.
+
+  The ring stops turning for reduced motion, as Spinner's does. Without `status` nothing changes.
+
+  The end of an `Input` reads: end content, status icon, clear button, Warning. The kit draws them one at a time, each 16px from the end; in this order each keeps that place in its own state, and a field never shows two status marks.
+
+- [#217](https://github.com/holakirr/snow-ui/pull/217) [`4c6ec8a`](https://github.com/holakirr/snow-ui/commit/4c6ec8a6a046d0d14ddef937f0ed51453caf1604) Thanks [@holakirr](https://github.com/holakirr)! - `Input` gets the kit's clear button, opt-in: `clearable`. A focused field with a value shows a 16px `XCircle` (fill, Black/100%) at the end, as the kit's Focus state draws it (before the Warning of an invalid field); it hides while the field is empty, unfocused, disabled or read-only. A `type="search"` input's own clear button is hidden. Clearing sets the value the way typing does (an `input` event), so `onChange` fires with an empty value for controlled and uncontrolled fields and react-hook-form records it; `onClear` runs after, and the focus returns to the input. The button is a tab stop while it shows (Enter or Space clears), named by `clearLabel` or the new optional `messages.input.clear` ("Clear"; the `input` namespace is optional until 6.0, like those added in 5.1).
+
+- [#215](https://github.com/holakirr/snow-ui/pull/215) [`7451a37`](https://github.com/holakirr/snow-ui/commit/7451a3783757fb89d95c82978e5f30033e12e397) Thanks [@holakirr](https://github.com/holakirr)! - `DropdownMenuItem` and `ContextMenuItem`: new `variant="destructive"` for an action that deletes or can't be undone (the kit's red "Delete Property" row). The text and the icons are `red-text` (#D42020: 5.21:1 on the popover, 4.77:1 on the highlighted item); in dark mode `red-text` is mixed with 40% white (#FFB3B3: 6.21:1, 4.59:1), since #FF8080 is 3.22:1 on the White/10% highlight. A disabled one is dimmed like the others; the item gets `data-variant="destructive"`. Without `variant` (`'default'`) items are unchanged.
+
+- [#215](https://github.com/holakirr/snow-ui/pull/215) [`9860013`](https://github.com/holakirr/snow-ui/commit/9860013919277078872a444a1ee8a175e55a6cac) Thanks [@holakirr](https://github.com/holakirr)! - New `DropdownMenuSwitchItem` and `ContextMenuSwitchItem`: a checkbox item that ends in the kit's Switch instead of a check (the kit's "Wrap Column" row). The Switch look is drawn from the item's state: a 28×16 track (`control-border` off, `primary` on, Black/10% / Black/20% when disabled) and a 12px thumb that moves to the end (to the left in right-to-left text); in forced-colors mode the track and the thumb are outlined. The item stays a `menuitemcheckbox` with `aria-checked`; the switch is `aria-hidden`, not a control inside the menu item. It takes a checkbox item's props with a boolean `checked` / `onCheckedChange`; `event.preventDefault()` in `onSelect` toggles it without closing the menu. A `DropdownMenuContent` `search` filters it like the other items.
+
+- [#214](https://github.com/holakirr/snow-ui/pull/214) [`0d06e18`](https://github.com/holakirr/snow-ui/commit/0d06e186110490b7ac5a09392895390196bd37d9) Thanks [@holakirr](https://github.com/holakirr)! - `TabsList` gets `variant="filled"`: the kit's segmented control with a Filled active item ("Daily / Weekly / Monthly" in the Button and Group docs). The Pill track and items, with the active item a Filled button: Primary with the per-mode `white` label (white on black, black on the dark-mode indigo, 10.15:1); the others Borderless in `text-secondary`. Keyboard behaviour is unchanged.
+
+- [#214](https://github.com/holakirr/snow-ui/pull/214) [`c7552af`](https://github.com/holakirr/snow-ui/commit/c7552af23006003af66803d3aad3df91a8df525d) Thanks [@holakirr](https://github.com/holakirr)! - `TabsList` gets `underline`: `"full"` (the default, unchanged) or `"short"`, the kit's short underline from the Line docs — a rounded Primary dash, 6×3px, centred under the active `line` tab's label, 6px below it. The tabs get 3px taller with it. The segmented variants ignore it. New type: `TabsUnderline`.
+
+- [#214](https://github.com/holakirr/snow-ui/pull/214) [`16832b4`](https://github.com/holakirr/snow-ui/commit/16832b40feb4db9af8208eccfcd3d1269745e4bf) Thanks [@holakirr](https://github.com/holakirr)! - `Toggle` and `ToggleGroup` get `variant="filled"`, the toggle counterpart of `TabsList variant="filled"`: a `ToggleGroup` puts its items on the Pill track (the same padding, gap and radius), and an item that is on is a Filled button, Primary with the per-mode `white` label (white on black, black on the dark-mode indigo, 10.15:1), which hover and focus keep. Off, the items are Borderless in `text-secondary`, as before. `ToggleVariant` and `TOGGLE_VARIANTS` include `filled`; keyboard behaviour is unchanged.
+
+- [#215](https://github.com/holakirr/snow-ui/pull/215) [`52e0dad`](https://github.com/holakirr/snow-ui/commit/52e0dadbe02144f988211954b6d1dcda47623557) Thanks [@holakirr](https://github.com/holakirr)! - `Tooltip`: the kit's rich, multi-line tooltip, with the new `TooltipTitle` (a 12/16 semibold `<p>`) and `TooltipDescription` (a 12/16 `<p>`). With either inside `TooltipContent`, the content stacks them, start-aligned and 4px apart, with an 8px radius, and wraps at 280px; tooltips without them are unchanged. The trigger's description reads the title and the text with a space between them. Text only, like any tooltip: for links or buttons, use a Popover.
+
 ## 5.1.1
 
 ### Patch Changes

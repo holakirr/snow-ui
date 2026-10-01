@@ -227,9 +227,9 @@ jobs:
 
   # Changesets pending: open or update the "chore(release): version
   # packages" PR (`bun run version-packages`: versions, CHANGELOG.md,
-  # bun.lock), then run Build Check on its branch: a PR opened with
-  # GITHUB_TOKEN triggers no workflows, and the ruleset requires Build
-  # Check's jobs on the PR's head commit. No npm access in this job.
+  # bun.lock), then approve the PR's Build Check run, which waits for
+  # approval (github-actions[bot] is an external contributor), since the
+  # ruleset requires its jobs on the PR. No npm access in this job.
   version:
     needs: plan
     if: needs.plan.outputs.mode == 'version'
@@ -295,9 +295,12 @@ jobs:
       # contributors (Settings › Actions: all external contributors), and
       # github-actions[bot] is one: the run waits as `action_required`, and the
       # PR stays blocked (a dispatched run on the branch doesn't count for
-      # the PR's checks). Approve that run: only a Build Check run on the PR's
-      # head commit, by github-actions[bot], whose content this job just
-      # wrote. If none shows up, dispatch Build Check on the branch instead.
+      # the PR's checks). Approve that run, and only that one: Build Check,
+      # event pull_request, by github-actions[bot], from this repository's
+      # version branch, on the commit this job just pushed there (the
+      # branch's head, read from the branch: the PR's head sha is updated
+      # asynchronously and may still be the previous commit). If none shows
+      # up, dispatch Build Check on the branch instead.
       - name: Run Build Check on the version PR
         if: steps.head.outputs.current == 'true' && steps.changesets.outputs.pr-number != ''
         env:
@@ -305,10 +308,11 @@ jobs:
           BRANCH: changeset-release/${{ github.ref_name }}
           PR: ${{ steps.changesets.outputs.pr-number }}
         run: |
-          sha=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq .headRefOid)
+          sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$BRANCH" --jq .object.sha)
           for _ in $(seq 18); do
+            # A failed lookup (e.g. a 5xx) is retried like a missing run.
             run=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/build-check.yml/runs?head_sha=$sha&event=pull_request&per_page=10" \
-              --jq '[.workflow_runs[] | select(.actor.login == "github-actions[bot]")][0] | select(.) | "\(.id) \(.conclusion // .status)"')
+              --jq '[.workflow_runs[] | select(.actor.login == "github-actions[bot]" and .head_branch == env.BRANCH and .head_repository.full_name == env.GITHUB_REPOSITORY)][0] | select(.) | "\(.id) \(.conclusion // .status)"') || run=
             case "$run" in
               *" action_required")
                 id=${run% *}
@@ -320,7 +324,7 @@ jobs:
                 exit 0
                 ;;
               ?*)
-                echo "Build Check is already running on PR #$PR ($sha): run ${run% *}." >> "$GITHUB_STEP_SUMMARY"
+                echo "Build Check run ${run% *} on PR #$PR ($sha) needs no approval: ${run##* }." >> "$GITHUB_STEP_SUMMARY"
                 exit 0
                 ;;
             esac

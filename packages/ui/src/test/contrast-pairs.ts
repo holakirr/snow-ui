@@ -64,6 +64,14 @@ export interface ContrastPair {
 const destructiveMenuText = (mode: Mode) =>
   mode === 'dark' ? ['red-text', 'black/40'] : ['red-text']
 
+/**
+ * A CommandPalette match (`highlightMatches`): `indigo-text`, mixed with 30%
+ * of the per-mode `black` (white) in dark mode, where #ADADFB is 3.78:1 on
+ * the White/10% highlighted option.
+ */
+const commandPaletteMatch = (mode: Mode) =>
+  mode === 'dark' ? ['indigo-text', 'black/30'] : ['indigo-text']
+
 /** The Switch thumb: Figma's static white, the per-mode `white` with more contrast. */
 const thumb = (level: Level) => [level === 'more' ? 'white' : 'static-white']
 
@@ -229,6 +237,25 @@ export const contrastPairs: ContrastPair[] = [
     control: 'Destructive menu item on the highlighted item',
     kind: 'text',
     foreground: (_, mode) => ['black-4', ...destructiveMenuText(mode)],
+    background: () => ['black-4'],
+  },
+  {
+    control: 'CommandPalette match (indigo-text) on the palette',
+    kind: 'text',
+    foreground: (_, mode) => commandPaletteMatch(mode),
+    background: () => [],
+  },
+  {
+    control: 'CommandPalette match (indigo-text) on the highlighted option',
+    kind: 'text',
+    foreground: (_, mode) => ['black-4', ...commandPaletteMatch(mode)],
+    background: () => ['black-4'],
+  },
+  {
+    control:
+      'CommandPalette snippet (text-secondary) on the highlighted option',
+    kind: 'text',
+    foreground: () => ['black-4', 'text-secondary'],
     background: () => ['black-4'],
   },
   {

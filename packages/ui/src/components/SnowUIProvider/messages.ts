@@ -13,7 +13,8 @@
  * are optional, so a translation typed as `Messages` before they existed
  * still compiles; the English defaults fill them in, and `useMessages()`
  * always returns every namespace (`Required<Messages>`). They become
- * required in 6.0, as does the `dropdownMenu` namespace added in 5.2.
+ * required in 6.0, as do the `dropdownMenu` namespace and
+ * `commandPalette.results` added in 5.2.
  */
 export type Messages = {
   alert?: {
@@ -120,6 +121,12 @@ export type Messages = {
     empty: string
     /** Announced while `loading`. */
     loading: string
+    /**
+     * The number of results that `showCount` shows and announces: "105
+     * results". Optional until 6.0, like the namespaces added in 5.1 (5.2
+     * and later).
+     */
+    results?: (count: number) => string
   }
   /** `DatePicker` and `DateRangePicker` (5.1 and later). */
   datePicker?: {
@@ -354,6 +361,7 @@ export const defaultMessages: Required<Messages> = {
     placeholder: 'Search',
     empty: 'No results',
     loading: 'Loading',
+    results: (count) => (count === 1 ? '1 result' : `${count} results`),
   },
   datePicker: {
     placeholder: 'Pick a date',

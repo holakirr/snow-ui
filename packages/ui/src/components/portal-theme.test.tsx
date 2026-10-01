@@ -60,46 +60,75 @@ const portalled = (text: string, selector = '[data-theme]') => {
 }
 
 describe('portalled content in a ThemeScope', () => {
-  it('takes the scope theme: dialog, alert dialog, sheet, popover, tooltip, command palette', () => {
+  // One overlay a test: the six rendered together took over 2 s on a busy CI
+  // runner.
+  it.each([
+    [
+      'dialog',
+      <Dialog open key="dialog">
+        <DialogContent aria-describedby={undefined}>
+          <DialogTitle>Dialog</DialogTitle>
+        </DialogContent>
+      </Dialog>,
+      'Dialog',
+    ],
+    [
+      'alert dialog',
+      <AlertDialog open key="alert">
+        <AlertDialogContent aria-describedby={undefined}>
+          <AlertDialogTitle>Alert dialog</AlertDialogTitle>
+        </AlertDialogContent>
+      </AlertDialog>,
+      'Alert dialog',
+    ],
+    [
+      'sheet',
+      <Sheet open key="sheet">
+        <SheetContent aria-describedby={undefined}>
+          <SheetTitle>Sheet</SheetTitle>
+        </SheetContent>
+      </Sheet>,
+      'Sheet',
+    ],
+    [
+      'popover',
+      <Popover open key="popover">
+        <PopoverContent>Popover</PopoverContent>
+      </Popover>,
+      'Popover',
+    ],
+    [
+      'tooltip',
+      <TooltipProvider key="tooltip">
+        <Tooltip open>
+          <TooltipTrigger>Trigger</TooltipTrigger>
+          <TooltipContent>Tip</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>,
+      'Tip',
+    ],
+  ])('takes the scope theme: %s', (_name, overlay, text) => {
     render(
       <ThemeScope theme="dark" data-testid="scope">
-        <Dialog open>
-          <DialogContent aria-describedby={undefined}>
-            <DialogTitle>Dialog</DialogTitle>
-          </DialogContent>
-        </Dialog>
-        <AlertDialog open>
-          <AlertDialogContent aria-describedby={undefined}>
-            <AlertDialogTitle>Alert dialog</AlertDialogTitle>
-          </AlertDialogContent>
-        </AlertDialog>
-        <Sheet open>
-          <SheetContent aria-describedby={undefined}>
-            <SheetTitle>Sheet</SheetTitle>
-          </SheetContent>
-        </Sheet>
-        <Popover open>
-          <PopoverContent>Popover</PopoverContent>
-        </Popover>
-        <TooltipProvider>
-          <Tooltip open>
-            <TooltipTrigger>Trigger</TooltipTrigger>
-            <TooltipContent>Tip</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <CommandPalette open groups={[]} />
+        {overlay}
       </ThemeScope>,
     )
     const scope = screen.getByTestId('scope')
 
     expect(scope).toHaveAttribute('data-theme', 'dark')
-    for (const text of ['Dialog', 'Alert dialog', 'Sheet', 'Popover', 'Tip']) {
-      const content = portalled(text)
-      // Rendered in <body>, outside the scope…
-      expect(scope).not.toContainElement(content as HTMLElement)
-      // …with the scope's theme.
-      expect(content).toHaveAttribute('data-theme', 'dark')
-    }
+    const content = portalled(text)
+    // Rendered in <body>, outside the scope…
+    expect(scope).not.toContainElement(content as HTMLElement)
+    // …with the scope's theme.
+    expect(content).toHaveAttribute('data-theme', 'dark')
+  })
+
+  it('takes the scope theme: command palette', () => {
+    render(
+      <ThemeScope theme="dark">
+        <CommandPalette open groups={[]} />
+      </ThemeScope>,
+    )
     expect(
       screen.getByRole('dialog', { name: 'Search' }).closest('[data-theme]'),
     ).toHaveAttribute('data-theme', 'dark')

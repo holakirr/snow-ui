@@ -29,24 +29,27 @@ const byRole = (
 }
 
 /**
- * `screen.getByRole(role, { name })` for an element named by a label of its
- * own (`aria-label`, `aria-labelledby`, a `<label>`), such as a calendar's
- * day buttons: the only element with that label (or it throws), checked by
- * the same role query within its parent.
+ * `within(container).getByRole(role, { name })` for an element named by a
+ * label of its own (`aria-label`, `aria-labelledby`, a `<label>`), such as a
+ * calendar's day buttons: the only element in `container` with that label
+ * (or it throws), checked by the same role query within its parent.
  */
-export const getByRoleAndLabel = (role: ByRoleMatcher, name: string | RegExp) =>
-  byRole(screen.getByLabelText(name), role, name)
+export const getByRoleAndLabel = (
+  role: ByRoleMatcher,
+  name: string | RegExp,
+  container: HTMLElement = document.body,
+) => byRole(within(container).getByLabelText(name), role, name)
 
 /**
- * `within(container).getByRole(role, { name })` for an element named by its
- * text, such as the 60 buttons of a time picker's minutes: the only element
- * in `container` with that text (or it throws), checked by the same role
- * query within its parent.
+ * `within(container).getByRole(role, { name })` for an element named by text
+ * directly inside it (not in a child element), such as the 60 buttons of a
+ * time picker's minutes: the only element in `container` with that text (or
+ * it throws), checked by the same role query within its parent.
  */
 export const getByRoleAndText = (
-  container: HTMLElement,
   role: ByRoleMatcher,
   name: string,
+  container: HTMLElement = document.body,
 ) => byRole(within(container).getByText(name), role, name)
 
 /**

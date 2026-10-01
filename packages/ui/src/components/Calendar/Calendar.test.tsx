@@ -6,7 +6,7 @@ import { enUS, ru } from 'react-day-picker/locale'
 import { userEvent } from 'storybook/test'
 import { describe, expect, it, vi } from 'vitest'
 
-import { getNavButton } from '../../test/queries'
+import { getByRoleAndText, getNavButton } from '../../test/queries'
 import { SnowUIProvider } from '../SnowUIProvider'
 import { Calendar, type CalendarProps } from './Calendar'
 
@@ -252,7 +252,7 @@ describe('Calendar', () => {
 
     it('keeps the focus on the switcher of a later month', async () => {
       // The year view shows one month: the second month's switcher is gone.
-      render(
+      const { container } = render(
         <Calendar
           mode="single"
           numberOfMonths={2}
@@ -260,7 +260,12 @@ describe('Calendar', () => {
         />,
       )
       const user = userEvent.setup()
-      screen.getByRole('button', { name: 'February 2025' }).focus()
+      // In its own caption: over the page, a role query would also name the
+      // two months' day buttons (see src/test/queries.ts).
+      const [, february] = container.querySelectorAll<HTMLElement>(
+        '[data-slot="calendar-caption"]',
+      )
+      within(february).getByRole('button', { name: 'February 2025' }).focus()
       await user.keyboard('{Enter}')
       const switcher = screen.getByRole('button', { name: `${from} - ${to}` })
       expect(switcher).toHaveFocus()
@@ -272,8 +277,9 @@ describe('Calendar', () => {
     const current = new Date().getFullYear()
     const from = current - 5
     const to = from + 11
+    // In the view's only grid, by its text (see src/test/queries.ts).
     const year = (value: number) =>
-      screen.getByRole('button', { name: String(value) })
+      getByRoleAndText('button', String(value), screen.getByRole('grid'))
     const cell = (value: number) => year(value).closest('[role="gridcell"]')
 
     const open = async (

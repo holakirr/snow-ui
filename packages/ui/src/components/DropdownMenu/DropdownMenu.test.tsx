@@ -96,6 +96,14 @@ const SearchMenu = ({
   </DropdownMenu>
 )
 
+// userEvent without a pause between keys (`delay: null`): with one, each key
+// of a word waited for a timer, about 30% of the time spent typing under
+// coverage on an idle machine. The events and their order are the same; 0 ms
+// timers (such as Radix's typeahead focus) run after the whole input instead
+// of between keys, and these tests don't depend on them: the search field
+// stops the typeahead keys.
+const setupUser = () => userEvent.setup({ delay: null })
+
 const open = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.click(screen.getByRole('button', { name: 'Properties' }))
   return screen.findByRole('searchbox', { name: 'Search' })
@@ -111,7 +119,7 @@ const itemNames = () =>
 
 describe('DropdownMenu search', () => {
   it('puts the field outside the menu, which names itself after the trigger', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(<SearchMenu />)
     const field = await open(user)
 
@@ -142,7 +150,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('focuses the field when the menu opens, from the keyboard too', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(<SearchMenu />)
     screen.getByRole('button', { name: 'Properties' }).focus()
     await user.keyboard('{Enter}')
@@ -153,7 +161,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('filters the items by their text as you type, without the typeahead', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(<SearchMenu />)
     const field = await open(user)
 
@@ -188,7 +196,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('shows and announces the empty state, and hides the empty menu', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(<SearchMenu />)
     const field = await open(user)
 
@@ -207,7 +215,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('moves into the items with the arrow keys, and back up to the field', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(<SearchMenu />)
     const field = await open(user)
 
@@ -230,7 +238,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('sends a letter typed on an item to the field', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(<SearchMenu />)
     const field = await open(user)
 
@@ -247,7 +255,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('selects an item with Enter, and Space still selects (no typeahead)', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     const onSelect = vi.fn()
     render(<SearchMenu onSelect={onSelect} />)
     await open(user)
@@ -260,7 +268,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('clears the field with Escape, and closes the menu with the next one', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     const onQueryChange = vi.fn()
     render(<SearchMenu search={{ onQueryChange }} />)
     const field = await open(user)
@@ -280,7 +288,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('leaves the Escape that cancels an IME composition to the IME', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(<SearchMenu />)
     const field = await open(user)
 
@@ -293,7 +301,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('resets the query when the menu opens again', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(<SearchMenu search={{ defaultQuery: 'sort' }} />)
     let field = await open(user)
     expect(field).toHaveValue('sort')
@@ -309,7 +317,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('takes a controlled query and a custom filter', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     const Controlled = () => {
       const [query, setQuery] = useState('')
       return (
@@ -345,7 +353,7 @@ describe('DropdownMenu search', () => {
   })
 
   it("doesn't filter a submenu", async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(<SearchMenu />)
     const field = await open(user)
     await user.type(field, 'tags')
@@ -360,7 +368,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('takes its strings from the provider', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(
       <SnowUIProvider
         messages={{
@@ -379,7 +387,7 @@ describe('DropdownMenu search', () => {
   })
 
   it('puts the direction on the menu in right-to-left text', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(
       <SnowUIProvider dir="rtl">
         <SearchMenu />
@@ -491,7 +499,7 @@ describe('DropdownMenu destructive item', () => {
 
   it('keeps the menuitem role and selects as usual', async () => {
     const onSelect = vi.fn()
-    const user = userEvent.setup()
+    const user = setupUser()
     render(
       <DropdownMenu>
         <DropdownMenuTrigger>Menu</DropdownMenuTrigger>
@@ -570,7 +578,7 @@ describe('DropdownMenuSwitchItem', () => {
   })
 
   it('toggles with Space and calls onCheckedChange with a boolean', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     const onCheckedChange = vi.fn()
     render(
       <Menu
@@ -600,7 +608,7 @@ describe('DropdownMenuSwitchItem', () => {
   })
 
   it('is filtered by a search like the other items', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     render(
       <DropdownMenu>
         <DropdownMenuTrigger>Menu</DropdownMenuTrigger>

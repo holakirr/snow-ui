@@ -60,6 +60,17 @@ const PlainField = ({ error }: { error?: string }) => (
 )
 
 describe('Form (library-agnostic)', () => {
+  it("keeps the label grey on an invalid field, as the kit's title", () => {
+    render(<PlainField error="Enter a valid email." />)
+
+    const label = screen.getByText('Email')
+    expect(screen.getByLabelText('Email')).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    )
+    expect(label.className).not.toMatch(/red/)
+  })
+
   it('is valid without an error', () => {
     render(<PlainField />)
 

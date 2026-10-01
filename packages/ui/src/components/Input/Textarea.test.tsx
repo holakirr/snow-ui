@@ -207,4 +207,26 @@ describe('Textarea', () => {
       '5 / 30 Zeichen',
     )
   })
+
+  it('shows the Warning icon while invalid, and lets className turn it off', () => {
+    const { rerender } = render(<Textarea aria-label="Note" aria-invalid />)
+    const textarea = screen.getByRole('textbox', { name: 'Note' })
+    expect(textarea).toHaveClass(
+      'aria-invalid:bg-(image:--field-warning-icon)',
+      'aria-invalid:pe-10',
+    )
+
+    rerender(
+      <Textarea
+        aria-label="Note"
+        aria-invalid
+        className="aria-invalid:bg-none aria-invalid:pe-4"
+      />,
+    )
+    expect(textarea).toHaveClass('aria-invalid:bg-none', 'aria-invalid:pe-4')
+    expect(textarea).not.toHaveClass(
+      'aria-invalid:bg-(image:--field-warning-icon)',
+      'aria-invalid:pe-10',
+    )
+  })
 })

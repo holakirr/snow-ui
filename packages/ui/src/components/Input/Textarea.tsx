@@ -5,6 +5,7 @@ import {
   disabledInputClasses,
   focusInputClasses,
   invalidInputClasses,
+  invalidTextareaIconClasses,
   staticInputClasses,
 } from './inputClasses'
 import { TextareaWithCount } from './TextareaCount'
@@ -31,7 +32,9 @@ type TextareaProps = ComponentProps<'textarea'> & {
 /**
  * Figma "Textarea": the Input field (12/16 padding, 16px radius, 0.5px
  * stroke, 14/20 text), at least one row (44px) high, with the Figma counter
- * when `showCount` is set. `readOnly` gives the Figma "Static" state.
+ * when `showCount` is set. `readOnly` gives the Figma "Static" state; with
+ * `aria-invalid`, the kit's Error: a red stroke and a `Warning` icon at the
+ * end of the first row.
  */
 const Textarea: FC<TextareaProps> = ({
   className,
@@ -46,6 +49,7 @@ const Textarea: FC<TextareaProps> = ({
     disabledInputClasses,
     focusInputClasses,
     invalidInputClasses,
+    invalidTextareaIconClasses,
     className,
   )
 

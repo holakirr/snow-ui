@@ -618,4 +618,38 @@ describe('Button loading', () => {
       .querySelector('[data-button-spinner]')
     expect(spinner).toHaveClass('absolute', 'inset-0', 'm-auto')
   })
+
+  it('puts text right in the button in an element, for forced colors', () => {
+    // Firefox's forced-colors mode repaints a transparent
+    // -webkit-text-fill-color, so text right in the button (or in an asChild
+    // link) would show under the spinner; an element's opacity stays.
+    const bareText = (element: Element) =>
+      [...element.childNodes].filter(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+      )
+    const { rerender, screen } = view(
+      <Button loading>
+        <svg /> Save {2}
+      </Button>,
+    )
+    const button = screen.getByRole('button', { name: 'Save 2' })
+    expect(bareText(button)).toEqual([])
+    expect(button.firstElementChild?.tagName).toBe('svg')
+    // One span for the run of text, the box the flex layout gave it.
+    expect(
+      [...button.children].map((child) => child.textContent?.trim()),
+    ).toEqual(['', 'Save 2', ''])
+
+    rerender(
+      <Button asChild loading>
+        <a href="#docs">Docs</a>
+      </Button>,
+    )
+    const link = screen.getByRole('link', { name: 'Docs' })
+    expect(bareText(link)).toEqual([])
+
+    // Not loading, the content is as before: no wrapper.
+    rerender(<Button>Save</Button>)
+    expect(screen.getByRole('button').firstChild?.nodeType).toBe(Node.TEXT_NODE)
+  })
 })

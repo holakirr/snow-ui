@@ -1,7 +1,7 @@
 import { ArrowLineRightIcon, StarIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment, useState } from 'react'
-import { expect, fn } from 'storybook/test'
+import { expect, fn, waitFor } from 'storybook/test'
 import { BUTTON_VARIANTS, ROLES, SIZES } from '../../constants'
 import { colorOf, settledColor } from '../../test/colors'
 import { Typography } from '../Text/Text'
@@ -313,6 +313,73 @@ export const LoadingRTL: Story = {
       box.top + box.height / 2,
       0,
     )
+  },
+}
+
+/**
+ * Text right in a loading button (its children, an asChild link's text) is
+ * put in an element, as opacity hides it in every mode: Firefox's
+ * forced-colors mode repaints a transparent text fill. No layout shift.
+ */
+export const LoadingChildren: Story = {
+  tags: ['skip-visual'],
+  render: () => {
+    const Demo = () => {
+      const [loading, setLoading] = useState(false)
+      return (
+        <div className="flex items-center gap-2">
+          <Button
+            variant="gray"
+            label="Toggle loading"
+            onClick={() => setLoading(!loading)}
+          />
+          <Button variant="outline" size="md" loading={loading}>
+            <StarIcon /> Save {2} items
+          </Button>
+          <Button asChild variant="outline" size="md" loading={loading}>
+            <a href="#docs">Docs</a>
+          </Button>
+        </div>
+      )
+    }
+    return <Demo />
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    await canvasElement.ownerDocument.fonts.ready
+    const toggle = canvas.getByRole('button', { name: 'Toggle loading' })
+    const save = canvas.getByRole('button', { name: 'Save 2 items' })
+    const docs = canvas.getByRole('link', { name: 'Docs' })
+    const widths = [save, docs].map((el) => el.getBoundingClientRect().width)
+    const bareText = (el: Element) =>
+      [...el.childNodes].filter(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+      )
+
+    await userEvent.click(toggle)
+    for (const [index, el] of [save, docs].entries()) {
+      await expect(el).toHaveAttribute('aria-busy', 'true')
+      await expect(el.getBoundingClientRect().width).toBeCloseTo(
+        widths[index] ?? 0,
+        0,
+      )
+      await expect(bareText(el)).toEqual([])
+      // Icons fade out (their own transition).
+      await waitFor(() =>
+        expect(
+          [...el.querySelectorAll(':scope > :not([data-button-spinner])')].map(
+            (child) => getComputedStyle(child).opacity,
+          ),
+        ).toEqual(['0', '0'].slice(0, el.children.length - 1)),
+      )
+    }
+    await expect(
+      canvas.getByRole('button', { name: 'Save 2 items' }),
+    ).toBeInTheDocument()
+
+    await userEvent.click(toggle)
+    await expect(save).not.toHaveAttribute('aria-busy')
+    // Not loading, the text is right in the button again.
+    await expect(bareText(save)).not.toEqual([])
   },
 }
 

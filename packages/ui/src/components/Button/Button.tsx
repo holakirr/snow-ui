@@ -205,6 +205,47 @@ const iconOnlySpinnerSizes: { [K in Size]: RingSize } = {
   lg: 24,
 }
 
+const isText = (node: ReactNode): node is string | number =>
+  typeof node === 'string' || typeof node === 'number'
+
+/**
+ * The content of a loading button, with its text in a `<span>`: opacity
+ * hides elements in every mode, while Firefox's forced-colors mode repaints
+ * a transparent `-webkit-text-fill-color`. A run of text (and of what
+ * renders nothing) gets one span, the box the flex layout gave it, so the
+ * button keeps its size; a run of whitespace stays, as the layout skips it.
+ * The other children keep their index, so they aren't remounted.
+ */
+const wrapText = (content: ReactNode): ReactNode => {
+  if (!Array.isArray(content)) {
+    return isText(content) && `${content}`.trim() ? (
+      <span>{content}</span>
+    ) : (
+      content
+    )
+  }
+  const nodes: ReactNode[] = [...content]
+  let start = 0
+  while (start < nodes.length) {
+    let end = start
+    while (
+      end < nodes.length &&
+      (isText(nodes[end]) ||
+        nodes[end] == null ||
+        typeof nodes[end] === 'boolean')
+    ) {
+      end++
+    }
+    const text = nodes.slice(start, end).filter(isText).join('')
+    if (text.trim()) {
+      nodes.fill(null, start, end)
+      nodes[start] = <span key={`text-${start}`}>{text}</span>
+    }
+    start = end + 1
+  }
+  return nodes
+}
+
 /**
  * Button component displays a button element. With `asChild` it styles its
  * child element instead, e.g. a link or a router link.
@@ -259,7 +300,8 @@ const Button = <C extends ElementType = typeof defaultTag>({
     loading && [
       'relative cursor-progress active:scale-100',
       // The content keeps its box and its name but isn't painted: element
-      // children at 0 opacity, text (at any depth) with a transparent fill.
+      // children at 0 opacity (`wrapText` puts text right in the button in
+      // one), and a transparent text fill as a fallback for the rest.
       // `color` stays, so the spinner turns in the button's text colour.
       '[-webkit-text-fill-color:transparent] [&>:not([data-button-spinner])]:opacity-0',
       loadingClasses[variant ?? 'borderless'],
@@ -278,7 +320,7 @@ const Button = <C extends ElementType = typeof defaultTag>({
           {label}
         </Typography>
       )}
-      {content}
+      {loading ? wrapText(content) : content}
       {end}
       {loading && (
         <ButtonSpinner

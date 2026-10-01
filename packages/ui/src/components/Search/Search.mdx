@@ -35,9 +35,10 @@ import { Search } from '@holakirr/snow-ui'
 1. **Field** (`className`): the `<div>` with the fill, the stroke and the focus ring (`data-variant`, `data-size`).
 2. **Search icon**: 16px (`sm`) or 24px (`lg`), Black/20%; Black/40% on hover and `primary` while the field has focus.
 3. **Input** (`inputClassName`, and every prop not listed here): an `<input type="search">`. `ref` points at it. The browser's own clear and decoration icons are hidden.
-4. **End content** (`endContent`, optional): extra content before the clear button, e.g. a spinner or a filter button.
+4. **End content** (`endContent`, optional): extra content before the clear button, e.g. a filter button.
 5. **Shortcut hint** (`shortcut`, optional): a [KBD](?path=/docs/components-text-kbd--docs) with the keys, shown while there is no clear button. It is only a hint: bind the shortcut in your app.
 6. **Clear button**: shown while the field has a value and is neither disabled nor read-only. An XCircle icon, 16px (`sm`) or 20px (`lg`).
+7. **In progress ring** (`status="progress"`, optional, added in 5.2): the turning ring of [Spinner](?path=/docs/components-spinner--docs) in place of the clear button or the hint, 16px (`sm`) or 20px (`lg`).
 
 ## Variants
 
@@ -69,6 +70,10 @@ Both have a 16px radius, an 8px gap and a 10px background blur. Set the width wi
 - **Read-only** (`readOnly`): no clear button, and Escape doesn't clear.
 
 <Canvas of={SearchStories.Typing} />
+
+**In progress** (`status="progress"`, added in 5.2): while results load, the kit's In progress state: a turning ring in Black/100% (white in dark mode) takes the place of the clear button (or the shortcut hint), and the input gets `aria-busy="true"`; Escape still clears. The ring is `aria-hidden` and Search announces nothing itself: say "Loading" or the result count in your results region (a `role="status"` element), as [CommandPalette](?path=/docs/components-commandpalette--docs) does. It replaces a spinner of your own in `endContent`.
+
+<Canvas of={SearchStories.InProgress} />
 
 <Canvas of={SearchStories.Invalid} />
 
@@ -122,7 +127,7 @@ Pass `defaultValue` to leave the value to the field, or `value` with `onChange(e
 - Name the field with `aria-label` ("Search projects") or a visible label.
 - Bind the key of the `shortcut` hint in your app, e.g. through CommandPalette's `hotkey`.
 - Use `onValueChange` when you only need the text.
-- Use `endContent` for a spinner or a filter button next to the clear button.
+- Use `status="progress"` while results load, and `endContent` for a filter button next to the clear button.
 
 </Do>
 <Dont>
@@ -143,6 +148,6 @@ Pass `defaultValue` to leave the value to the field, or `value` with `onChange(e
 
 ## Props
 
-Search takes the props below and the attributes of the `<input type="search">` it renders, which gets every other prop (`value`, `defaultValue`, `onChange`, `placeholder`, `disabled`, `readOnly`, `ref`). `className` styles the field `<div>` and `inputClassName` the input. `searchStyles({ variant, size })` returns the field's classes.
+Search takes the props below (`status` is new in 5.2) and the attributes of the `<input type="search">` it renders, which gets every other prop (`value`, `defaultValue`, `onChange`, `placeholder`, `disabled`, `readOnly`, `ref`). `className` styles the field `<div>` and `inputClassName` the input. `searchStyles({ variant, size })` returns the field's classes.
 
 <Controls />

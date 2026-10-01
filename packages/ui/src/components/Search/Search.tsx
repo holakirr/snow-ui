@@ -12,8 +12,10 @@ import {
   useRef,
   useState,
 } from 'react'
+import { setNativeValue } from '../../utils/native-value'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
+import { LoadingRing } from '../Spinner/ring'
 import { KBD } from '../Text'
 
 export type SearchVariant = 'gray' | 'outline'
@@ -102,9 +104,17 @@ export type SearchProps = Omit<ComponentProps<'input'>, 'size' | 'type'> & {
 
   /**
    * Extra content at the end of the field, before the clear button (e.g. a
-   * spinner or a filter button).
+   * filter button).
    */
   endContent?: ReactNode
+
+  /**
+   * The kit's In progress state, while results load: a turning ring at the
+   * end of the field instead of the clear button (or the shortcut hint),
+   * and `aria-busy` on the input. Announce the results (or "Loading") in
+   * your results region. Added in 5.2.
+   */
+  status?: 'progress'
 
   /**
    * Class name for the `<input>` element.
@@ -114,19 +124,6 @@ export type SearchProps = Omit<ComponentProps<'input'>, 'size' | 'type'> & {
 
 const iconSizes: Record<SearchSize, number> = { sm: 16, lg: 24 }
 const clearIconSizes: Record<SearchSize, number> = { sm: 16, lg: 20 }
-
-/**
- * Sets an input's value the way the browser does, so React's `onChange`
- * fires for both controlled and uncontrolled inputs.
- */
-const setNativeValue = (input: HTMLInputElement, value: string) => {
-  const setter = Object.getOwnPropertyDescriptor(
-    HTMLInputElement.prototype,
-    'value',
-  )?.set
-  setter?.call(input, value)
-  input.dispatchEvent(new Event('input', { bubbles: true }))
-}
 
 /**
  * Search is a search field with a leading search icon, an optional keyboard
@@ -140,6 +137,7 @@ const Search: FC<SearchProps> = ({
   onClear,
   clearLabel,
   endContent,
+  status,
   className,
   inputClassName,
   value,
@@ -213,6 +211,8 @@ const Search: FC<SearchProps> = ({
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder ?? messages.search.placeholder}
+        // Your own `aria-busy` stays without a status.
+        aria-busy={status === 'progress' ? true : props['aria-busy']}
         disabled={disabled}
         readOnly={readOnly}
         className={twMerge(
@@ -221,7 +221,17 @@ const Search: FC<SearchProps> = ({
         )}
       />
       {endContent}
-      {canClear ? (
+      {status === 'progress' ? (
+        // The kit's In progress: the Spinner ring in Black/100%, where the
+        // clear button was. Hidden from assistive technology: the input is
+        // `aria-busy`.
+        <LoadingRing
+          className={twMerge(
+            'shrink-0 text-black',
+            size === 'lg' ? 'size-5' : 'size-4',
+          )}
+        />
+      ) : canClear ? (
         <button
           type="button"
           aria-label={clearName}

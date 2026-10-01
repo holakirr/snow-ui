@@ -547,7 +547,7 @@ describe('SnowUIProvider', () => {
     expect(screen.getByTestId('sidebar')).toHaveClass('border-l-[0.5px]')
   })
 
-  it('accepts a full translation without the namespaces added in 5.1', () => {
+  it('accepts a full translation without the namespaces added in 5.1 and 5.2', () => {
     // A `Messages` object written for 5.0 still type-checks: the new
     // namespaces are optional and the defaults fill them in.
     const {
@@ -557,6 +557,7 @@ describe('SnowUIProvider', () => {
       charts: _charts,
       combobox: _combobox,
       datePicker: _datePicker,
+      input: _input,
       listCards: _listCards,
       progress: _progress,
       spinner: _spinner,
@@ -586,6 +587,7 @@ describe('SnowUIProvider', () => {
     expect(seen?.spinner.label).toBe('Loading')
     expect(seen?.textarea.count(3, 10)).toBe('3 of 10 characters')
     expect(seen?.listCards.contacts).toBe('Contacts')
+    expect(seen?.input.clear).toBe('Clear')
   })
 
   it('accepts a translation without the messages added in 5.2', () => {

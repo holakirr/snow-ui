@@ -1,6 +1,11 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { createRef, useState } from 'react'
+import { hydrateRoot } from 'react-dom/client'
+import { renderToString } from 'react-dom/server'
+import { useForm } from 'react-hook-form'
 import { describe, expect, it, vi } from 'vitest'
+import { Form, FormControl, FormField, FormItem } from '../../react-hook-form'
+import { SnowUIProvider } from '../SnowUIProvider'
 
 import { Input } from './Input'
 
@@ -258,5 +263,414 @@ describe('Input', () => {
     render(<Input aria-label="Name" titleLayout="horizontal" />)
 
     expect(screen.getByRole('textbox')).not.toHaveClass('text-end')
+  })
+})
+
+describe('Input clearable', () => {
+  const clearButton = () => screen.queryByRole('button', { name: 'Clear' })
+
+  it('has no clear button by default', () => {
+    render(<Input aria-label="Name" defaultValue="Ada" />)
+
+    expect(screen.queryByRole('button')).toBeNull()
+  })
+
+  it('shows the button with a value, on focus (CSS), and clears an uncontrolled field', () => {
+    const onChange = vi.fn()
+    const onClear = vi.fn()
+    render(
+      <Input
+        aria-label="Name"
+        defaultValue="Ada"
+        clearable
+        onChange={onChange}
+        onClear={onClear}
+      />,
+    )
+    const input = screen.getByRole<HTMLInputElement>('textbox')
+    const button = clearButton() as HTMLElement
+
+    expect(button).toHaveAttribute('type', 'button')
+    expect(button).toHaveAttribute('data-slot', 'input-clear')
+    // Hidden until the field has focus (the input or the button).
+    expect(button).toHaveClass('hidden', 'group-focus-within/input:flex')
+    // A press keeps the focus in the input (the field stays focused).
+    expect(fireEvent.pointerDown(button)).toBe(false)
+
+    fireEvent.click(button)
+
+    expect(input.value).toBe('')
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange.mock.calls[0][0].target.value).toBe('')
+    expect(onClear).toHaveBeenCalledTimes(1)
+    expect(input).toHaveFocus()
+    expect(clearButton()).toBeNull()
+  })
+
+  it('appears as the user types into an empty field', () => {
+    render(<Input aria-label="Name" clearable />)
+    const input = screen.getByRole('textbox')
+
+    expect(clearButton()).toBeNull()
+    fireEvent.change(input, { target: { value: 'A' } })
+    expect(clearButton()).not.toBeNull()
+    fireEvent.change(input, { target: { value: '' } })
+    expect(clearButton()).toBeNull()
+  })
+
+  it('clears a controlled field through onChange', () => {
+    const Controlled = () => {
+      const [value, setValue] = useState('Ada')
+      return (
+        <Input
+          aria-label="Name"
+          clearable
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+        />
+      )
+    }
+    render(<Controlled />)
+    const input = screen.getByRole<HTMLInputElement>('textbox')
+
+    fireEvent.click(clearButton() as HTMLElement)
+
+    expect(input.value).toBe('')
+    expect(clearButton()).toBeNull()
+  })
+
+  it('keeps a controlled value whose owner ignores the change', () => {
+    render(
+      <Input aria-label="Name" clearable value="Ada" onChange={() => {}} />,
+    )
+    const input = screen.getByRole<HTMLInputElement>('textbox')
+
+    fireEvent.click(clearButton() as HTMLElement)
+
+    expect(input.value).toBe('Ada')
+    expect(clearButton()).not.toBeNull()
+  })
+
+  it("hides the browser's own clear button of a search input, not without clearable", () => {
+    const { rerender } = render(
+      <Input aria-label="Find" type="search" defaultValue="Ada" clearable />,
+    )
+    const native = '[&::-webkit-search-cancel-button]:hidden'
+    expect(screen.getByRole('searchbox')).toHaveClass(native)
+
+    rerender(<Input aria-label="Find" type="search" defaultValue="Ada" />)
+    expect(screen.getByRole('searchbox')).not.toHaveClass(native)
+  })
+
+  it('has no clear button when empty, disabled or read-only', () => {
+    const { rerender } = render(<Input aria-label="Name" clearable />)
+    expect(clearButton()).toBeNull()
+
+    rerender(<Input aria-label="Name" clearable defaultValue="Ada" disabled />)
+    expect(clearButton()).toBeNull()
+
+    rerender(<Input aria-label="Name" clearable value="Ada" readOnly />)
+    expect(clearButton()).toBeNull()
+  })
+
+  it('reads a value set without onChange again on focus', () => {
+    const ref = createRef<HTMLInputElement>()
+    render(<Input ref={ref} aria-label="Name" clearable />)
+
+    // e.g. react-hook-form's reset() or a value set through the ref.
+    if (ref.current) ref.current.value = 'Ada'
+    expect(clearButton()).toBeNull()
+    act(() => ref.current?.focus())
+    expect(clearButton()).not.toBeNull()
+  })
+
+  it('follows a reset of its form, and a submit sends the cleared value', async () => {
+    const onSubmit = vi.fn((event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      return new FormData(event.currentTarget).get('name')
+    })
+    render(
+      <form onSubmit={onSubmit}>
+        <Input aria-label="Name" name="name" clearable defaultValue="Ada" />
+        <button type="submit">Send</button>
+        <button type="reset">Reset</button>
+      </form>,
+    )
+    const input = screen.getByRole<HTMLInputElement>('textbox')
+
+    fireEvent.click(clearButton() as HTMLElement)
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }))
+    expect(onSubmit.mock.results[0].value).toBe('')
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }))
+    })
+    expect(input.value).toBe('Ada')
+    expect(clearButton()).not.toBeNull()
+  })
+
+  it('gives react-hook-form the empty value (register and FormField)', async () => {
+    let read: (() => { first: string; last: string }) | undefined
+    const Names = () => {
+      const form = useForm({
+        defaultValues: { first: 'Ada', last: 'Lovelace' },
+      })
+      read = form.getValues
+      return (
+        <Form {...form}>
+          <Input aria-label="First" clearable {...form.register('first')} />
+          <FormField
+            control={form.control}
+            name="last"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input aria-label="Last" clearable {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </Form>
+      )
+    }
+    render(<Names />)
+
+    for (const name of ['First', 'Last']) {
+      const input = screen.getByRole('textbox', { name })
+      // register() sets the value through the ref: read again on focus.
+      act(() => input.focus())
+      const button = input
+        .closest('[data-slot="input"]')
+        ?.querySelector('button') as HTMLElement
+      await act(async () => {
+        fireEvent.click(button)
+      })
+      expect(input).toHaveValue('')
+    }
+    expect(read?.()).toEqual({ first: '', last: '' })
+  })
+
+  it('takes its name from clearLabel, or from SnowUIProvider', () => {
+    const { rerender } = render(
+      <Input
+        aria-label="Name"
+        clearable
+        defaultValue="Ada"
+        clearLabel="Erase"
+      />,
+    )
+    expect(screen.getByRole('button', { name: 'Erase' })).toHaveAttribute(
+      'title',
+      'Erase',
+    )
+
+    rerender(
+      <SnowUIProvider messages={{ input: { clear: 'Очистить' } }}>
+        <Input aria-label="Name" clearable defaultValue="Ada" />
+      </SnowUIProvider>,
+    )
+    expect(screen.getByRole('button', { name: 'Очистить' })).not.toBeNull()
+  })
+
+  it('renders on the server and hydrates without a mismatch', async () => {
+    const element = <Input aria-label="Name" clearable defaultValue="Ada" />
+    const html = renderToString(element)
+    expect(html).toContain('data-slot="input-clear"')
+
+    const container = document.createElement('div')
+    container.innerHTML = html
+    document.body.append(container)
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    await act(async () => {
+      hydrateRoot(container, element)
+    })
+    expect(errors).not.toHaveBeenCalled()
+    errors.mockRestore()
+    container.remove()
+  })
+})
+
+describe('Input status', () => {
+  const statusIcon = (input: HTMLElement) =>
+    input
+      .closest('[data-slot="input"]')
+      ?.querySelector('[data-slot="input-status-icon"]')
+
+  it('has no status icon, region or aria-busy by default', () => {
+    render(<Input aria-label="Name" />)
+
+    const input = screen.getByRole('textbox')
+    expect(statusIcon(input)).toBeNull()
+    expect(screen.queryByRole('status')).toBeNull()
+    expect(input).not.toHaveAttribute('aria-busy')
+  })
+
+  it('shows the In progress ring and marks the input busy', () => {
+    render(<Input aria-label="Name" status="progress" />)
+
+    const input = screen.getByRole('textbox')
+    const icon = statusIcon(input)
+    expect(input).toHaveAttribute('aria-busy', 'true')
+    expect(icon).toHaveAttribute('data-status', 'progress')
+    expect(icon).toHaveAttribute('aria-hidden', 'true')
+    expect(icon).toHaveClass('text-black')
+    // The turning ring, stopped for reduced motion.
+    expect(icon?.querySelector('svg')).toHaveClass(
+      'animate-spinner-turn',
+      'motion-reduce:animate-none',
+    )
+  })
+
+  it('shows the Done check, hidden while the field is invalid', () => {
+    render(<Input aria-label="Name" status="success" />)
+
+    const input = screen.getByRole('textbox')
+    const icon = statusIcon(input)
+    expect(input).not.toHaveAttribute('aria-busy')
+    expect(icon).toHaveAttribute('data-status', 'success')
+    expect(icon).toHaveClass(
+      'text-green',
+      'group-has-aria-invalid/input:hidden',
+    )
+  })
+
+  it('announces a change of status, not the status it starts with', async () => {
+    const { rerender } = render(<Input aria-label="Name" status="success" />)
+    // There from the start: nothing to announce, the text is already there.
+    expect(screen.getByRole('status')).toHaveTextContent('Valid')
+
+    rerender(<Input aria-label="Name" />)
+    expect(screen.queryByRole('status')).toBeNull()
+
+    // The region comes first, empty; its text follows (an effect).
+    rerender(<Input aria-label="Name" status="progress" />)
+    expect(await screen.findByRole('status')).toHaveTextContent('Checking')
+
+    rerender(<Input aria-label="Name" status="success" />)
+    expect(screen.getByRole('status')).toHaveTextContent('Valid')
+
+    rerender(<Input aria-label="Name" status={undefined} />)
+    expect(screen.queryByRole('status')).toBeNull()
+  })
+
+  it('takes the announcement from statusLabel, or from SnowUIProvider', () => {
+    const { rerender } = render(
+      <Input aria-label="Name" status="success" statusLabel="Name available" />,
+    )
+    expect(screen.getByRole('status')).toHaveTextContent('Name available')
+
+    rerender(
+      <SnowUIProvider messages={{ input: { success: 'Верно' } }}>
+        <Input aria-label="Name" status="success" />
+      </SnowUIProvider>,
+    )
+    expect(screen.getByRole('status')).toHaveTextContent('Верно')
+  })
+
+  it('orders the end: end content, status, clear button, Error icon', () => {
+    const { container } = render(
+      <Input
+        aria-label="Name"
+        defaultValue="Ada"
+        clearable
+        aria-invalid
+        status="success"
+        endContent={<span data-testid="end" />}
+      />,
+    )
+    const field = container.querySelector('[data-slot="input"]') as HTMLElement
+    const order = Array.from(field.children)
+      .slice(1)
+      .map(
+        (part) =>
+          part.getAttribute('data-slot') ??
+          (part.contains(screen.getByTestId('end')) ? 'end-content' : '?'),
+      )
+
+    expect(order).toEqual([
+      'end-content',
+      'input-status',
+      'input-status-icon',
+      'input-clear',
+      'input-invalid-icon',
+    ])
+    // The Error icon stays the field's last child (the status region is
+    // visually hidden).
+    expect(field.lastElementChild).toHaveAttribute(
+      'data-slot',
+      'input-invalid-icon',
+    )
+  })
+
+  it('shows one status mark: the ring hides the Error icon, an invalid field the check', () => {
+    const { rerender } = render(
+      <Input aria-label="Name" defaultValue="Ada" clearable aria-invalid />,
+    )
+    const input = screen.getByRole('textbox')
+    const part = (slot: string) =>
+      input
+        .closest('[data-slot="input"]')
+        ?.querySelector(`[data-slot="${slot}"]`)
+    expect(part('input-invalid-icon')).toHaveClass(
+      'group-has-aria-invalid/input:flex',
+    )
+
+    rerender(
+      <Input
+        aria-label="Name"
+        defaultValue="Ada"
+        clearable
+        aria-invalid
+        status="progress"
+      />,
+    )
+    expect(part('input-invalid-icon')).toHaveClass(
+      'hidden',
+      'group-has-aria-invalid/input:hidden',
+    )
+    expect(part('input-invalid-icon')).not.toHaveClass(
+      'group-has-aria-invalid/input:flex',
+    )
+    // A focused field keeps its clear button while the value is checked.
+    expect(screen.getByRole('button', { name: 'Clear' })).not.toBeNull()
+
+    rerender(
+      <Input
+        aria-label="Name"
+        defaultValue="Ada"
+        aria-invalid
+        status="success"
+      />,
+    )
+    expect(part('input-status-icon')).toHaveClass(
+      'group-has-aria-invalid/input:hidden',
+    )
+    expect(part('input-invalid-icon')).toHaveClass(
+      'group-has-aria-invalid/input:flex',
+    )
+  })
+
+  it('keeps your own aria-busy', () => {
+    render(<Input aria-label="Name" status="progress" aria-busy={false} />)
+
+    expect(screen.getByRole('textbox')).toHaveAttribute('aria-busy', 'false')
+  })
+
+  it('renders the status on the server and hydrates without a mismatch', async () => {
+    const element = <Input aria-label="Name" status="success" />
+    const html = renderToString(element)
+    expect(html).toContain('data-status="success"')
+    expect(html).toMatch(/role="status"[^>]*>Valid</)
+
+    const container = document.createElement('div')
+    container.innerHTML = html
+    document.body.append(container)
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    await act(async () => {
+      hydrateRoot(container, element)
+    })
+    expect(errors).not.toHaveBeenCalled()
+    errors.mockRestore()
+    container.remove()
   })
 })

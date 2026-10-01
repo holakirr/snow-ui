@@ -10,8 +10,8 @@
  *
  * The namespaces added in 5.1 (`alert`, `alertDialog`, `avatarGroup`,
  * `charts`, `combobox`, `datePicker`, `listCards`, `progress`, `spinner`)
- * are optional, so a translation typed as `Messages` before they existed
- * still compiles; the English defaults fill them in, and `useMessages()`
+ * and 5.2 (`input`) are optional, so a translation typed as `Messages`
+ * before they existed still compiles; the English defaults fill them in, and `useMessages()`
  * always returns every namespace (`Required<Messages>`). They become
  * required in 6.0, as do the `dropdownMenu` namespace and
  * `commandPalette.results` added in 5.2.
@@ -202,6 +202,20 @@ export type Messages = {
     search: string
     /** Shown when no item matches the search. */
     empty: string
+  }
+  input?: {
+    /** The clear button of an `Input` with `clearable`. Added in 5.2. */
+    clear: string
+    /**
+     * Announced when an `Input`'s `status` turns `progress` (the kit's In
+     * progress: the value is being checked). Added in 5.2.
+     */
+    progress: string
+    /**
+     * Announced when an `Input`'s `status` turns `success` (the kit's Done:
+     * the check passed). Added in 5.2.
+     */
+    success: string
   }
   link: {
     /** Screen-reader text appended to `external` links. */
@@ -399,6 +413,11 @@ export const defaultMessages: Required<Messages> = {
   dropdownMenu: {
     search: 'Search',
     empty: 'No results',
+  },
+  input: {
+    clear: 'Clear',
+    progress: 'Checking',
+    success: 'Valid',
   },
   link: {
     external: '(opens in a new tab)',

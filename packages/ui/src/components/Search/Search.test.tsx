@@ -133,4 +133,34 @@ describe('Search', () => {
 
     expect(within(container).getByRole('status')).toHaveTextContent('INPUT')
   })
+
+  it('shows the In progress ring instead of the clear button or the hint', () => {
+    const { container, rerender } = render(
+      <Search aria-label="Find" defaultValue="snow" status="progress" />,
+    )
+    const view = within(container)
+    const input = view.getByRole('searchbox')
+
+    expect(input).toHaveAttribute('aria-busy', 'true')
+    expect(view.queryByRole('button')).toBeNull()
+    const ring = container.querySelector('svg.animate-spinner-turn')
+    expect(ring).toHaveAttribute('aria-hidden', 'true')
+    expect(ring).toHaveClass('size-4', 'text-black')
+
+    rerender(<Search aria-label="Find" shortcut={['/']} status="progress" />)
+    expect(view.queryByText('/')).toBeNull()
+
+    rerender(<Search aria-label="Find" defaultValue="snow" />)
+    expect(input).not.toHaveAttribute('aria-busy')
+    expect(view.getByRole('button', { name: 'Clear search' })).not.toBeNull()
+  })
+
+  it('keeps your own aria-busy without a status', () => {
+    const { container } = render(<Search aria-label="Find" aria-busy />)
+
+    expect(within(container).getByRole('searchbox')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+  })
 })

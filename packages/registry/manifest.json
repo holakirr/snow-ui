@@ -570,10 +570,19 @@
       "title": "Input",
       "files": [
         "components/Input/Input.tsx",
+        "components/Input/fieldIcons.tsx",
         "components/Input/inputClasses.ts"
       ],
-      "dependencies": ["@radix-ui/react-compose-refs"],
-      "registryDependencies": ["label", "snow-core"],
+      "dependencies": [
+        "@holakirr/snow-ui-icons",
+        "@radix-ui/react-compose-refs"
+      ],
+      "registryDependencies": [
+        "label",
+        "snow-core",
+        "snow-ui-provider",
+        "spinner"
+      ],
       "import": "components/Input/Input",
       "exports": [
         "Input",
@@ -583,7 +592,7 @@
         "invalidInputClasses",
         "staticInputClasses"
       ],
-      "types": ["InputProps"],
+      "types": ["InputProps", "InputStatus"],
       "docs": "components-input-input"
     },
     {
@@ -897,7 +906,12 @@
       "title": "Search",
       "files": ["components/Search/Search.tsx"],
       "dependencies": ["@holakirr/snow-ui-icons", "class-variance-authority"],
-      "registryDependencies": ["kbd", "snow-core", "snow-ui-provider"],
+      "registryDependencies": [
+        "kbd",
+        "snow-core",
+        "snow-ui-provider",
+        "spinner"
+      ],
       "import": "components/Search/Search",
       "exports": ["Search", "searchStyles"],
       "types": ["SearchProps", "SearchSize", "SearchVariant"],
@@ -1397,6 +1411,7 @@
         "utils/env.ts",
         "utils/form-field.tsx",
         "utils/keyboard.ts",
+        "utils/native-value.ts",
         "utils/radio-mark.tsx",
         "utils/slot.ts",
         "utils/token-scales.generated.ts",

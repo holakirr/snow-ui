@@ -115,6 +115,11 @@ export const ruMessages: Messages = {
     search: 'Поиск',
     empty: 'Ничего не найдено',
   },
+  input: {
+    clear: 'Очистить',
+    progress: 'Проверка',
+    success: 'Верно',
+  },
   link: {
     external: '(откроется в новой вкладке)',
   },

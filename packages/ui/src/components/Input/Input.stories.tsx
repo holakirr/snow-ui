@@ -4,7 +4,7 @@ import {
   XCircleIcon,
 } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { expect, waitFor } from 'storybook/test'
 import { colorOf, hasInsetRing, hasMoreContrast } from '../../test/colors'
 import { settleLayout } from '../../test/layout'
@@ -538,12 +538,17 @@ const UsernameCheck = () => {
   const [value, setValue] = useState('')
   const [status, setStatus] = useState<'progress' | 'success'>()
   const [error, setError] = useState('')
+  // The pending check: cancelled when the value changes or on unmount, so a
+  // stale result never overwrites the status of a newer value.
+  const timer = useRef<number>(undefined)
+  useEffect(() => () => window.clearTimeout(timer.current), [])
 
   const check = () => {
     if (!value) return
     setError('')
     setStatus('progress')
-    window.setTimeout(() => {
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => {
       const taken = takenNames.includes(value.toLowerCase())
       setStatus(taken ? undefined : 'success')
       setError(taken ? 'This username is taken.' : '')
@@ -556,6 +561,7 @@ const UsernameCheck = () => {
         title="Username"
         value={value}
         onChange={(event) => {
+          window.clearTimeout(timer.current)
           setValue(event.target.value)
           setStatus(undefined)
         }}

@@ -432,10 +432,12 @@ jobs:
       # GitHub marks the last one created "Latest" (the icons or the charts as
       # often as not). The repository's Latest is the library's: the release
       # of @holakirr/snow-ui's version at this commit, also when only another
-      # package was published. Pre-releases (`next`) keep it as it is. The
-      # packages are on npm by now, so a failure here only warns.
+      # package was published. Only on main: on `next` the library can still
+      # be at an older stable version than main has released. The packages
+      # are on npm by now, so this step never fails the job.
       - name: Mark the @holakirr/snow-ui release as Latest
-        if: steps.changesets.outputs.published == 'true'
+        if: steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/main'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

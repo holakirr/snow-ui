@@ -106,7 +106,7 @@
       "registryDependencies": ["snow-core", "snow-ui-provider", "text"],
       "import": "components/Badge/Badge",
       "exports": ["Badge", "BadgeComponent"],
-      "types": ["BadgeComponentProps", "BadgeProps"],
+      "types": ["BadgeColor", "BadgeComponentProps", "BadgeProps"],
       "docs": "components-badge"
     },
     {

@@ -257,6 +257,23 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['black-4'],
   },
   {
+    // Badge `color="red"` (5.2): the kit's white on Secondary/Red is 3.36:1,
+    // so the number's pill is `red-text` with the per-mode `white`.
+    control: 'Red Badge number',
+    kind: 'text',
+    standard: true,
+    foreground: () => ['red-text', 'white'],
+    background: () => ['red-text'],
+  },
+  {
+    // The red dot keeps the kit's Secondary/Red, next to the surface.
+    control: 'Red Badge dot vs the surface',
+    kind: 'nonText',
+    standard: true,
+    foreground: () => ['red'],
+    background: () => [],
+  },
+  {
     control: 'Placeholder on the hovered gray field',
     kind: 'text',
     foreground: () => ['black-10', 'placeholder'],

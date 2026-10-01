@@ -25,7 +25,8 @@ export type SearchSize = 'sm' | 'lg'
 // Outline: Surface/1 with a 0.5px Black/20% stroke → Black/40% on hover. On
 // focus both become Surface/1 + 0.5px Black/40% + the Focus ring. Invalid
 // (the <input> has `aria-invalid="true"`): the kit's 1px Secondary/Red Error
-// stroke in every state, like Input (without the kit's Warning icon).
+// stroke in every state, like Input's (the kit draws no Error for Search,
+// so there is no Warning icon).
 // Disabled: 40% opacity (the kit: 20% with the arrow cursor, planned for
 // 6.0). The stroke colours are the `control-border*` tokens; with more
 // contrast the stroke is 1px, 2px while focused (the focus indicator, WCAG

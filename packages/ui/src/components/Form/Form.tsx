@@ -267,16 +267,15 @@ const FormItem: FC<FormItemProps> = ({
 
 FormItem.displayName = 'FormItem'
 
+/**
+ * The field's label. It stays `text-secondary` when the field is invalid, as
+ * the kit's title does: the red stroke, the `Warning` icon of a text field
+ * and the `FormMessage` mark the error.
+ */
 const FormLabel: FC<LabelProps> = ({ className, ...props }) => {
-  const { invalid, formItemId } = useFormField()
+  const { formItemId } = useFormField()
 
-  return (
-    <Label
-      className={twMerge(invalid && 'text-red-text', className)}
-      htmlFor={formItemId}
-      {...props}
-    />
-  )
+  return <Label className={className} htmlFor={formItemId} {...props} />
 }
 
 FormLabel.displayName = 'FormLabel'

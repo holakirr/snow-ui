@@ -38,6 +38,19 @@ const fieldStaticClasses =
 const fieldInvalidClasses =
   'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid'
 
+// The kit's Error icon, after the end content, while the <input> is
+// invalid: the 16px Phosphor `Warning` in the stroke's colour,
+// `control-border-invalid`: Secondary/Red, `red-text` with more contrast.
+// Decorative: `aria-invalid` and the `FormMessage` tell the error.
+const invalidIconClasses =
+  'hidden shrink-0 items-center text-control-border-invalid group-has-aria-invalid/input:flex [&>svg]:size-4'
+
+// The "regular" weight of Phosphor's Warning (MIT), the kit's icon set, the
+// same glyph as the Textarea's background image. Inlined, as in Alert:
+// importing the icon would ship all six weights.
+const warningPath =
+  'M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z'
+
 const fieldDisabledClasses =
   'cursor-not-allowed bg-black-4 text-black-20 inset-ring-0 hover:inset-ring-0'
 
@@ -83,7 +96,9 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
 /**
  * Input component: the Figma Input (1 row, or 2 rows with a `title`: above
  * the value, or beside it with `titleLayout="horizontal"`), with optional
- * leading and trailing content. `readOnly` gives the Figma "Static" state.
+ * leading and trailing content. `readOnly` gives the Figma "Static" state;
+ * an `aria-invalid` input the kit's Error: a red stroke and a `Warning` icon
+ * at the end.
  */
 const Input: FC<InputProps> = ({
   className,
@@ -168,6 +183,15 @@ const Input: FC<InputProps> = ({
         />
       </div>
       {endContent && <span className={adornmentClasses}>{endContent}</span>}
+      <span
+        aria-hidden
+        className={invalidIconClasses}
+        data-slot="input-invalid-icon"
+      >
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden>
+          <path d={warningPath} />
+        </svg>
+      </span>
     </div>
   )
 }

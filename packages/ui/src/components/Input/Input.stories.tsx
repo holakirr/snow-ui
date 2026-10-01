@@ -204,7 +204,7 @@ export const States: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (the kit's Error state, without its Warning icon yet). A 1px Secondary/Red stroke, also on hover and focus (2px on focus with more contrast). Pair it with the error text: see Form.
+ * error (the kit's Error state). A 1px Secondary/Red stroke, also on hover and focus (2px on focus with more contrast), and the kit's 16px `Warning` icon at the end, in Secondary/Red. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {
@@ -220,6 +220,33 @@ export const Invalid: Story = {
     await expect(
       await hasInsetRing(field, 'text-control-border-invalid', '1px'),
     ).toBe(true)
+
+    await step(
+      'the Warning icon shows at the end, in the stroke colour',
+      async () => {
+        const icon = field.querySelector(
+          '[data-slot="input-invalid-icon"]',
+        ) as HTMLElement
+        await expect(icon).toBeVisible()
+        await expect(icon).toHaveAttribute('aria-hidden', 'true')
+        await expect(field.lastElementChild).toBe(icon)
+        const svg = icon.querySelector('svg') as SVGElement
+        await expect(svg.getBoundingClientRect().width).toBe(16)
+        const probe = document.createElement('span')
+        probe.style.color = 'var(--color-control-border-invalid)'
+        field.append(probe)
+        await expect(getComputedStyle(icon).color).toBe(
+          getComputedStyle(probe).color,
+        )
+        probe.remove()
+
+        // A valid input hides it.
+        input.setAttribute('aria-invalid', 'false')
+        await expect(icon).not.toBeVisible()
+        input.setAttribute('aria-invalid', 'true')
+        await expect(icon).toBeVisible()
+      },
+    )
 
     await step('the stroke stays red on focus', async () => {
       await userEvent.click(input)

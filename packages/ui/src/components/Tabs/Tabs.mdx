@@ -10,7 +10,7 @@ import * as TabsStories from './Tabs.stories'
 <FigmaLinks page="28002:98904" />
 <InstallTabs item="tabs" />
 
-Tabs switch between panels of content, one shown at a time. They are built on the Radix Tabs primitive and styled as the Figma Tab set: `TabsList variant` picks Underline (`line`, the default), Pill, Icon-toggle or Solid, and `size` picks one of three sizes. The segmented variants share their items with [Toggle](?path=/docs/components-input-toggle--docs) and [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+Tabs switch between panels of content, one shown at a time. They are built on the Radix Tabs primitive and styled as the Figma Tab set: `TabsList variant` picks Underline (`line`, the default), Pill, Icon-toggle or Solid (or `filled`, added in 5.2), and `size` picks one of three sizes. The segmented variants share their items with [Toggle](?path=/docs/components-input-toggle--docs) and [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
 
 ```tsx
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@holakirr/snow-ui'
@@ -53,12 +53,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@holakirr/snow-ui'
 | `pill` | Pill | Button items on a Black/4% track with a 10px background blur; the active item White/80% with the `shadow-2` shadow (`white-80`, Black/80% in dark mode: the kit's active item is a raw, unthemed white at 80%, which would put the dark theme's white label on a near-white pill) | compact switchers |
 | `icon-toggle` | Icon-toggle | the pill track; inactive items show only their icon, the active one its icon and label | switchers in a tight space (give every trigger an `icon`) |
 | `solid` | Solid | no track; the active item has a Black/4% fill | switchers on a busy surface |
+| `filled` (added in 5.2) | — (the kit's navigation and segmented-control examples) | the pill track; the active item is a Filled button: Primary with the per-mode `white` label (black with a white label; indigo with a black label in dark mode, 10.15:1). The others are Borderless | a switcher that has to stand out: periods ("Daily / Weekly / Monthly"), views |
 
 <Canvas of={TabsStories.Pill} />
 
 <Canvas of={TabsStories.IconToggle} />
 
 <Canvas of={TabsStories.Solid} />
+
+`filled` is added in 5.2. The kit's Tab set has no Filled variant: its Button and Group docs build segmented controls and navigation from Button instances with a Filled active item, on a Black/4% track (segments) or in an outlined group (navigation, see Group → Examples). The track, its padding and radius and the items are the Pill ones; only the active item differs. The active fill is 19.2:1 against the track in light mode and at least 3.78:1 in dark mode; its label is 21:1 (10.15:1 dark); the inactive labels stay `text-secondary` (at least 4.83:1 on the track).
+
+<Canvas of={TabsStories.Filled} />
+
+<Canvas of={TabsStories.FilledSizes} />
 
 Icon-only tabs (an `icon` and an `aria-label`, no children) are square:
 
@@ -84,7 +91,7 @@ The whole Figma set, every variant in every size:
 
 - **Inactive:** `text-secondary` label and icon.
 - **Hover and keyboard focus:** the label turns black; keyboard focus adds the `focus-ring` utility.
-- **Active** (`data-state="active"`): `line` tabs get a `primary` label and the Primary underline; segmented items a black label and the variant's fill.
+- **Active** (`data-state="active"`): `line` tabs get a `primary` label and the Primary underline; segmented items a black label and the variant's fill (`filled`: a Primary fill and the per-mode `white` label, which hover and focus keep).
 - **Disabled:** `disabled` on a trigger gives it a Black/20% label and a not-allowed cursor (segmented items also a Black/4% tile). The keyboard skips it.
 
 The colour is a custom property (`--tab-fg` for `line`, `--segment-fg` for the segmented variants) that the states change. A `text-*` class sets the colour in every state; `[--tab-fg:…]` or `[--segment-fg:…]` changes only the rest colour.
@@ -115,6 +122,7 @@ The full table is in the package README.
 | "Focus" effect: a 4px Black/4% ring (1.1:1); no focus state on Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Inactive tabs (every variant) at 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus (`primary` for the active Underline tab); disabled tabs keep Black/20% | 1.4.3, 1.4.11 |
 | Icon-only tabs: — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
+| Filled active item (`filled`): a white label on Primary in both modes, 2.07:1 on the dark-mode indigo | the per-mode `white` token, as on the Filled Button: white on black (21:1), black on indigo (10.15:1) | 1.4.3 |
 
 ## Localization and RTL
 
@@ -122,6 +130,8 @@ The full table is in the package README.
 - The list follows the text direction: in right-to-left text the first tab is on the right. The arrow keys follow the `dir` of `SnowUIProvider`: ArrowLeft moves to the next tab.
 
 <Canvas of={TabsStories.RTL} />
+
+<Canvas of={TabsStories.FilledRTL} />
 
 ## Composition (asChild)
 

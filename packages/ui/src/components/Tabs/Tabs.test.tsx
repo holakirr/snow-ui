@@ -1,7 +1,15 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { createRef, useState } from 'react'
+import { renderToString } from 'react-dom/server'
+import { describe, expect, expectTypeOf, it, vi } from 'vitest'
 
-import { Tabs, TabsList, type TabsListProps, TabsTrigger } from './Tabs'
+import {
+  Tabs,
+  TabsList,
+  type TabsListProps,
+  TabsTrigger,
+  type TabsVariant,
+} from './Tabs'
 
 const renderTabs = (listProps: TabsListProps = {}, withIcons = false) =>
   render(
@@ -201,4 +209,132 @@ describe('Tabs', () => {
       )
     },
   )
+
+  describe('filled (5.2)', () => {
+    it('is a TabsVariant', () => {
+      expectTypeOf<'filled'>().toExtend<TabsVariant>()
+    })
+
+    it('puts a Filled active item on the pill track', () => {
+      renderTabs({ variant: 'filled', size: 'md' })
+
+      const list = screen.getByRole('tablist')
+      const active = screen.getByRole('tab', { name: 'One' })
+      const idle = screen.getByRole('tab', { name: 'Two' })
+
+      expect(list).toHaveAttribute('data-variant', 'filled')
+      // The kit's Pill track: Black/4%, p4, gap 4, r20 at md.
+      expect(list).toHaveClass('bg-black-4', 'rounded-20', 'p-1', 'gap-1')
+      // The Filled Button: Primary, the per-mode white label, unless disabled.
+      expect(active).toHaveClass(
+        'data-[state=active]:not-disabled:bg-primary',
+        'data-[state=active]:not-disabled:text-white',
+        'rounded-16',
+        'text-14',
+      )
+      expect(active).not.toHaveClass('data-[state=active]:bg-white-80')
+      // The others are Borderless, text-secondary.
+      expect(idle).toHaveAttribute('data-state', 'inactive')
+      expect(idle).toHaveClass('[--segment-fg:var(--color-text-secondary)]')
+      expect(active.querySelector('[aria-hidden]')).toBeNull()
+    })
+
+    it('keeps the arrow keys, Home and End, and skips disabled tabs', async () => {
+      render(
+        <Tabs defaultValue="daily">
+          <TabsList variant="filled" aria-label="Period">
+            <TabsTrigger value="daily">Daily</TabsTrigger>
+            <TabsTrigger value="weekly">Weekly</TabsTrigger>
+            <TabsTrigger value="monthly" disabled>
+              Monthly
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>,
+      )
+      const daily = screen.getByRole('tab', { name: 'Daily' })
+      const weekly = screen.getByRole('tab', { name: 'Weekly' })
+      const monthly = screen.getByRole('tab', { name: 'Monthly' })
+
+      daily.focus()
+      fireEvent.keyDown(daily, { key: 'ArrowRight' })
+      await waitFor(() => expect(weekly).toHaveFocus())
+      expect(weekly).toHaveAttribute('aria-selected', 'true')
+      fireEvent.keyDown(weekly, { key: 'ArrowRight' })
+      await waitFor(() => expect(daily).toHaveFocus())
+      fireEvent.keyDown(daily, { key: 'End' })
+      await waitFor(() => expect(weekly).toHaveFocus())
+      expect(monthly).toBeDisabled()
+      // A disabled item keeps the disabled look, never the fill.
+      expect(monthly).toHaveClass(
+        'disabled:bg-black-4',
+        'disabled:text-black-20',
+      )
+    })
+
+    it('follows a controlled value', () => {
+      const Controlled = () => {
+        const [value, setValue] = useState('two')
+        return (
+          <Tabs value={value} onValueChange={setValue}>
+            <TabsList variant="filled" aria-label="tabs">
+              <TabsTrigger value="one">One</TabsTrigger>
+              <TabsTrigger value="two">Two</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )
+      }
+      render(<Controlled />)
+
+      expect(screen.getByRole('tab', { name: 'Two' })).toHaveAttribute(
+        'data-state',
+        'active',
+      )
+      select(screen.getByRole('tab', { name: 'One' }))
+      expect(screen.getByRole('tab', { name: 'One' })).toHaveAttribute(
+        'data-state',
+        'active',
+      )
+    })
+
+    it('follows the reading direction in right-to-left text', async () => {
+      render(
+        <Tabs defaultValue="one" dir="rtl">
+          <TabsList variant="filled" aria-label="tabs">
+            <TabsTrigger value="one">One</TabsTrigger>
+            <TabsTrigger value="two">Two</TabsTrigger>
+          </TabsList>
+        </Tabs>,
+      )
+      const one = screen.getByRole('tab', { name: 'One' })
+      one.focus()
+      fireEvent.keyDown(one, { key: 'ArrowLeft' })
+      await waitFor(() =>
+        expect(screen.getByRole('tab', { name: 'Two' })).toHaveFocus(),
+      )
+    })
+
+    it('renders on the server and forwards refs', () => {
+      const html = renderToString(
+        <Tabs defaultValue="one">
+          <TabsList variant="filled" aria-label="tabs">
+            <TabsTrigger value="one">One</TabsTrigger>
+          </TabsList>
+        </Tabs>,
+      )
+      expect(html).toContain('data-variant="filled"')
+      expect(html).toContain('data-[state=active]:not-disabled:bg-primary')
+
+      const ref = createRef<HTMLButtonElement>()
+      render(
+        <Tabs defaultValue="one">
+          <TabsList variant="filled" aria-label="tabs">
+            <TabsTrigger ref={ref} value="one">
+              One
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>,
+      )
+      expect(ref.current).toBe(screen.getByRole('tab', { name: 'One' }))
+    })
+  })
 })

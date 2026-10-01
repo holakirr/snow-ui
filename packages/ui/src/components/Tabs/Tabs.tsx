@@ -27,8 +27,11 @@ import { segmentedItemVariants, segmentedListVariants } from './segmented'
  * - `icon-toggle` ("Icon-toggle"): the pill control where only the active item
  *   shows its label (give every trigger an `icon`).
  * - `solid` ("Solid"): no track; the active item has a Black/4% fill.
+ * - `filled` (added in 5.2): the pill control whose active item is a Filled
+ *   button, black with a white label, as in the kit's navigation and
+ *   segmented-control examples ("Daily / Weekly / Monthly").
  */
-export type TabsVariant = 'line' | 'pill' | 'icon-toggle' | 'solid'
+export type TabsVariant = 'line' | 'pill' | 'icon-toggle' | 'solid' | 'filled'
 
 type TabsListContextValue = {
   variant: TabsVariant
@@ -107,6 +110,14 @@ const lineTriggerVariants = cva(
     },
   },
 )
+
+/** The segmented item of each segmented TabsList variant. */
+const itemVariant = {
+  pill: 'pill',
+  'icon-toggle': 'pill',
+  solid: 'solid',
+  filled: 'filled',
+} as const satisfies { [K in Exclude<TabsVariant, 'line'>]: string }
 
 /** Icon-toggle: inactive items collapse to a square icon button. */
 const iconToggleInactiveClasses: { [K in Size]: string } = {
@@ -224,7 +235,7 @@ const TabsTrigger: FC<TabsTriggerProps> = ({
     <TabsPrimitive.Trigger
       className={twMerge(
         segmentedItemVariants({
-          variant: variant === 'solid' ? 'solid' : 'pill',
+          variant: itemVariant[variant],
           size,
           iconOnly,
         }),

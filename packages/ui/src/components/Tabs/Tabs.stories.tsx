@@ -27,7 +27,7 @@ const meta: Meta<typeof Tabs> = {
     docs: {
       description: {
         component:
-          'A set of layered sections of content—known as tab panels—that are displayed one at a time. `TabsList variant` picks the Figma Tab variant: `line` (Underline), `pill`, `icon-toggle` or `solid`.',
+          'A set of layered sections of content—known as tab panels—that are displayed one at a time. `TabsList variant` picks the Figma Tab variant: `line` (Underline), `pill`, `icon-toggle` or `solid`, or `filled` (5.2).',
       },
     },
   },
@@ -198,6 +198,113 @@ export const Solid: Story = {
       <Panels values={['day', 'week', 'month']} />
     </Tabs>
   ),
+}
+
+/**
+ * `filled` (added in 5.2): the kit's segmented control with a Filled active
+ * item ("Daily / Weekly / Monthly"): black with a white label (indigo with a
+ * black one in dark mode) on the Pill track; the others are Borderless. The
+ * keyboard is the same as every TabsList: the arrow keys, Home and End.
+ */
+export const Filled: Story = {
+  render: () => (
+    <Tabs defaultValue="daily">
+      <TabsList variant="filled" aria-label="Period">
+        <TabsTrigger value="daily">Daily</TabsTrigger>
+        <TabsTrigger value="weekly">Weekly</TabsTrigger>
+        <TabsTrigger value="monthly">Monthly</TabsTrigger>
+      </TabsList>
+      <Panels values={['daily', 'weekly', 'monthly']} />
+    </Tabs>
+  ),
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const daily = canvas.getByRole('tab', { name: 'Daily' })
+    const weekly = canvas.getByRole('tab', { name: 'Weekly' })
+    const white = colorOf('text-white', canvasElement)
+    // After the transitions (settledColor finishes them).
+    const fill = async (element: HTMLElement) => {
+      await settledColor(element)
+      return getComputedStyle(element).backgroundColor
+    }
+
+    await step('the active item is Filled, the label white', async () => {
+      const probe = canvasElement.ownerDocument.createElement('span')
+      probe.className = 'bg-primary'
+      canvasElement.appendChild(probe)
+      const primaryFill = getComputedStyle(probe).backgroundColor
+      probe.remove()
+      await expect(await settledColor(daily)).toBe(white)
+      await expect(await fill(daily)).toBe(primaryFill)
+      await expect(await settledColor(weekly)).toBe(
+        colorOf('text-secondary', canvasElement),
+      )
+    })
+
+    await step('the arrow keys move the selection and the fill', async () => {
+      await userEvent.tab()
+      await expect(daily).toHaveFocus()
+      await userEvent.keyboard('{ArrowRight}')
+      await expect(weekly).toHaveFocus()
+      await expect(weekly).toHaveAttribute('aria-selected', 'true')
+      // Focused and selected, the label stays white.
+      await expect(await settledColor(weekly)).toBe(white)
+      await expect(await fill(daily)).toBe('rgba(0, 0, 0, 0)')
+      await userEvent.keyboard('{End}')
+      await expect(canvas.getByRole('tab', { name: 'Monthly' })).toHaveFocus()
+      await userEvent.keyboard('{Home}')
+      await expect(daily).toHaveFocus()
+    })
+  },
+}
+
+/** Filled tabs in every size, with icons, and a disabled one. */
+export const FilledSizes: Story = {
+  render: () => (
+    <div className="flex flex-col items-start gap-4">
+      {Object.values(SIZES).map((size) => (
+        <Tabs key={size} defaultValue="card">
+          <TabsList variant="filled" size={size} aria-label={`View (${size})`}>
+            <TabsTrigger value="card" icon={<TextAIcon />}>
+              Card
+            </TabsTrigger>
+            <TabsTrigger value="list" icon={<CopyIcon />}>
+              List
+            </TabsTrigger>
+            <TabsTrigger value="star" icon={<StarIcon />} disabled>
+              Starred
+            </TabsTrigger>
+          </TabsList>
+          <Panels values={['card', 'list', 'star']} />
+        </Tabs>
+      ))}
+    </div>
+  ),
+}
+
+/** Right-to-left text: the first tab on the right, ArrowLeft goes next. */
+export const FilledRTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => (
+    <Tabs defaultValue="daily">
+      <TabsList variant="filled" aria-label="الفترة">
+        <TabsTrigger value="daily">يومي</TabsTrigger>
+        <TabsTrigger value="weekly">أسبوعي</TabsTrigger>
+        <TabsTrigger value="monthly">شهري</TabsTrigger>
+      </TabsList>
+      <Panels values={['daily', 'weekly', 'monthly']} />
+    </Tabs>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const daily = canvas.getByRole('tab', { name: 'يومي' })
+    const weekly = canvas.getByRole('tab', { name: 'أسبوعي' })
+    await expect(daily.getBoundingClientRect().left).toBeGreaterThan(
+      weekly.getBoundingClientRect().left,
+    )
+    await userEvent.tab()
+    await userEvent.keyboard('{ArrowLeft}')
+    await expect(weekly).toHaveFocus()
+    await expect(weekly).toHaveAttribute('aria-selected', 'true')
+  },
 }
 
 export const IconOnly: Story = {

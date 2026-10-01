@@ -1,7 +1,9 @@
 import { AddIcon } from '@holakirr/snow-ui-icons'
 import { CalendarBlankIcon, UserIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { type ChangeEvent, useState } from 'react'
 import { expect, waitFor, within } from 'storybook/test'
+import { expectClosed } from '../../test/animations'
 import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
 import { IconBox } from '../IconBox'
@@ -122,9 +124,8 @@ export const Default: Story = {
 }
 
 /**
- * The Figma "Add data" title row's start icon: a 48px Add icon, Black/100%.
- * The kit's plus is 36px; our AddIcon at size 48 draws a 30px one (our icon
- * set's inset).
+ * The Figma "Add data" title row's start icon: a 48px Add icon, Black/100%,
+ * whose plus is 36px (75% of the icon, as AddIcon draws it).
  */
 const addDataIcon = (
   <span className="flex size-12 items-center justify-center text-black">
@@ -140,15 +141,38 @@ const addDataIcon = (
 const nameField = 'h-14 px-5'
 const titledField = 'h-22 px-5'
 
-/** The Figma "Add data" screen, open. */
-export const AddData: Story = {
-  args: {},
-  tags: ['!autodocs'],
-  parameters: { layout: 'fullscreen', storyWrapper: false },
-  render: () => (
+const emptyAddData = { firstName: '', lastName: '', email: '', date: '' }
+
+/**
+ * The Figma "Add data" screen, open. It closes the kit's way: not with a
+ * click on the mask (`onInteractOutside`), so a stray click doesn't close
+ * it; the close button and Escape keep what was typed, since the
+ * values live outside `DialogContent` (which unmounts on close); Cancel
+ * clears them. Escape stays, as WAI-ARIA expects of a modal dialog.
+ */
+const AddDataScreen = () => {
+  const [values, setValues] = useState(emptyAddData)
+  const field = (name: keyof typeof emptyAddData) => ({
+    value: values[name],
+    onChange: (event: ChangeEvent<HTMLInputElement>) =>
+      setValues((current) => ({ ...current, [name]: event.target.value })),
+  })
+
+  return (
     <div className="h-svh w-full bg-background-1">
       <Dialog defaultOpen>
-        <DialogContent aria-describedby={undefined}>
+        <div className="flex items-center gap-4 p-6">
+          <DialogTrigger asChild>
+            <Button variant="filled">Add data</Button>
+          </DialogTrigger>
+          <Typography className="text-secondary">
+            Page content under the mask
+          </Typography>
+        </div>
+        <DialogContent
+          aria-describedby={undefined}
+          onInteractOutside={(event) => event.preventDefault()}
+        >
           <DialogHeader startContent={addDataIcon}>
             <DialogTitle>New</DialogTitle>
           </DialogHeader>
@@ -166,11 +190,13 @@ export const AddData: Story = {
                   aria-label="First name"
                   placeholder="First Name"
                   className={nameField}
+                  {...field('firstName')}
                 />
                 <Input
                   aria-label="Last name"
                   placeholder="Last Name"
                   className={nameField}
+                  {...field('lastName')}
                 />
               </div>
               <Input
@@ -178,6 +204,7 @@ export const AddData: Story = {
                 placeholder="Please enter your email address."
                 type="email"
                 className={titledField}
+                {...field('email')}
               />
               <Input
                 title="Date"
@@ -191,11 +218,17 @@ export const AddData: Story = {
                 }
                 className={`${titledField} *:first:absolute *:first:start-5 *:first:bottom-[22px]`}
                 inputClassName="ps-7"
+                {...field('date')}
               />
             </div>
             <div className="flex gap-4">
               <DialogClose asChild>
-                <Button variant="gray" size="lg" className="flex-1">
+                <Button
+                  variant="gray"
+                  size="lg"
+                  className="flex-1"
+                  onClick={() => setValues(emptyAddData)}
+                >
                   Cancel
                 </Button>
               </DialogClose>
@@ -206,11 +239,77 @@ export const AddData: Story = {
           </DialogBody>
         </DialogContent>
       </Dialog>
-      <Typography className="p-6 text-secondary">
-        Page content under the mask
-      </Typography>
     </div>
-  ),
+  )
+}
+
+export const AddData: Story = {
+  args: {},
+  tags: ['!autodocs'],
+  parameters: { layout: 'fullscreen', storyWrapper: false },
+  render: () => <AddDataScreen />,
+  play: async ({ canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const open = () => page.findByRole('dialog', { name: 'New' })
+    const firstName = async () =>
+      within(await open()).getByRole('textbox', { name: 'First name' })
+    const closed = async (dialog: HTMLElement) => {
+      await expectClosed(dialog)
+      await waitFor(() =>
+        expect(page.queryByRole('dialog')).not.toBeInTheDocument(),
+      )
+    }
+    const reopen = async () => {
+      await userEvent.click(page.getByRole('button', { name: 'Add data' }))
+      return open()
+    }
+
+    await step('a click on the mask keeps it open', async () => {
+      const dialog = await open()
+      await settleLayout(dialog)
+      await userEvent.type(await firstName(), 'Ada')
+      // The mask: the content's sibling in the portal (the trigger has a
+      // `data-state` too).
+      const mask = dialog.parentElement?.querySelector(
+        ':scope > [data-state="open"]:not([role="dialog"])',
+      ) as HTMLElement
+      await expect(mask).toBeInstanceOf(HTMLElement)
+      await userEvent.pointer({
+        keys: '[MouseLeft]',
+        target: mask,
+        coords: { clientX: 4, clientY: 4 },
+      })
+      await expect(dialog).toHaveAttribute('data-state', 'open')
+    })
+
+    await step('Escape closes it and keeps what was typed', async () => {
+      const dialog = await open()
+      await userEvent.keyboard('{Escape}')
+      await closed(dialog)
+      await reopen()
+      await expect(await firstName()).toHaveValue('Ada')
+    })
+
+    await step('the close button keeps it too', async () => {
+      const dialog = await open()
+      await userEvent.click(
+        within(dialog).getByRole('button', { name: 'Close' }),
+      )
+      await closed(dialog)
+      await reopen()
+      await expect(await firstName()).toHaveValue('Ada')
+    })
+
+    await step('Cancel clears the form', async () => {
+      const dialog = await open()
+      await userEvent.click(
+        within(dialog).getByRole('button', { name: 'Cancel' }),
+      )
+      await closed(dialog)
+      await reopen()
+      await expect(await firstName()).toHaveValue('')
+    })
+  },
 }
 
 /**

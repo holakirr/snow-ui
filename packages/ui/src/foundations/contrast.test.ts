@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { floor2 } from '../test/contrast'
+import { composite, contrast, floor2 } from '../test/contrast'
 import {
   AA,
   contrastPairs,
@@ -7,6 +7,7 @@ import {
   type Mode,
   pairRatio,
   surfaces,
+  tokenColor,
 } from '../test/contrast-pairs'
 
 // WCAG contrast of the form controls, from the generated tokens, in both
@@ -91,4 +92,29 @@ describe('form controls with the standard (Figma) contrast', () => {
       expect(ratio('more')).toBeGreaterThanOrEqual(AA[pair.kind])
     }
   })
+})
+
+describe('today in dark mode (Calendar, date picker views)', () => {
+  // No fill, so it differs from an indigo selected day: indigo text on the
+  // panel, and the `black` (white) text over a `black-4` hover.
+  const paint = (layers: string[], level: Level) =>
+    composite(
+      ...['background-1', 'background-3', ...layers].map((name) =>
+        tokenColor(name, 'dark', level),
+      ),
+    )
+
+  it.each<Level>(['standard', 'more'])(
+    'is AA text at the %s level',
+    (level) => {
+      const panel = paint([], level)
+      expect(
+        floor2(contrast(paint(['indigo'], level), panel)),
+      ).toBeGreaterThanOrEqual(AA.text)
+      const hovered = paint(['black-4'], level)
+      expect(
+        floor2(contrast(paint(['black-4', 'black'], level), hovered)),
+      ).toBeGreaterThanOrEqual(AA.text)
+    },
+  )
 })

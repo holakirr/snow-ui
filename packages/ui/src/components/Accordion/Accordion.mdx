@@ -60,7 +60,7 @@ import {
 
 ## States
 
-- **Hover and keyboard focus:** the trigger gets a Black/4% fill; keyboard focus adds the `focus-ring`.
+- **Hover and keyboard focus:** the trigger gets a Black/4% fill and its arrow turns from `text-secondary` to black, as the kit's small chevrons (Black/20% at rest in the kit, 1.6:1, so `text-secondary` here); keyboard focus adds the `focus-ring`.
 - **Open:** the trigger has `data-state="open"` and `aria-expanded="true"`, and the arrow turns down.
 - **Disabled:** `disabled` on `Accordion` or on an `AccordionItem` disables the triggers; there is no disabled style.
 - In a `single` accordion without `collapsible`, the open item's trigger has `aria-disabled` because it can't close it.

@@ -102,7 +102,8 @@ type NavItem = {
 }
 
 // Figma: a single page (Overview) has no chevron, only the directories do;
-// its icon stays in the icon column.
+// its icon stays in the icon column. The chevron is `text-secondary`, as the
+// library's other chevrons, not the kit's Black/20% (1.6:1).
 const navItems: NavItem[] = [
   { label: 'Overview', icon: ChartPieSliceIcon, active: true },
   { label: 'eCommerce', icon: ShoppingBagOpenIcon, directory: true },
@@ -129,7 +130,7 @@ const NavList = ({ items }: { items: NavItem[] }) => (
           icon={
             <span className="flex items-center gap-1">
               {directory ? (
-                <IconBox size={16} className="text-black-20">
+                <IconBox size={16} className="text-secondary">
                   <ArrowLineRightIcon className="rtl:-scale-x-100" />
                 </IconBox>
               ) : (

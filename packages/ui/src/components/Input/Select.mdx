@@ -61,9 +61,9 @@ The menu, open: [Open story](?path=/story/components-input-select--open).
 <Canvas of={SelectStories.WithTitle} />
 3. **Value** (`SelectValue`): the selected item's text, or `placeholder` in `text-secondary`.
 4. **Content** (`SelectContent`): the list, portalled to the end of `<body>`. The Popover surface: Background/3 with a 1px Surface/1 stroke, a 16px radius, the "Glass 2" blur and shadow, and 12px padding around the items. At least the trigger's width and 128px, at most 384px high, 4px from the trigger.
-5. **Group** and **Label** (`SelectGroup`, `SelectLabel`, optional): a titled group of items; the label is 12/16 `text-secondary`.
+5. **Group** and **Label** (`SelectGroup`, `SelectLabel`, optional): a titled group of items; the label is 14/20 `text-secondary`, 28px high.
 6. **Item** (`SelectItem`): an option, 36px high (8px padding, 14/20 text) with a 12px radius and a Black/4% highlight. The selected item has a 16px check at the end.
-7. **Separator** (`SelectSeparator`, optional): a 0.5px Black/10% line between groups, 8px from the items on each side.
+7. **Separator** (`SelectSeparator`, optional): a 1px Black/4% line between groups, 7px under the item above and 8px over the item below (16px between the groups' items, as in the kit).
 8. **Scroll buttons** (`SelectScrollUpButton`, `SelectScrollDownButton`): arrows at the top and bottom of a list that overflows. `SelectContent` renders them. The list also shows the kit's scrollbar (`scrollbar-snow`, in an 8px gutter at the end), which Radix hides by default.
 
 ## States

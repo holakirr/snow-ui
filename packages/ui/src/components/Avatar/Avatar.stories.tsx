@@ -111,9 +111,10 @@ const resolvedBackground = (background: string, container: Element) => {
 
 /**
  * Hover, by kind, on an avatar in a link or a button (Figma Component
- * state): a photo gets a `color-1` underlay, seen through a cut-out picture;
- * the icon fallback a Black/20% fill; the initials turn semibold. At rest
- * nothing changes, and an avatar on its own (the last one) has no hover.
+ * state): a photo zooms in (x1.125 inside the circle); the icon fallback
+ * gets a Black/20% fill; the initials grow to 14 Semibold on a lighter fill,
+ * White/40% layered over `color-2`. At rest nothing changes, and an avatar on its
+ * own (the last one) has no hover.
  */
 export const Interactive: Story = {
   args: { size: SIZES.md },
@@ -151,17 +152,17 @@ export const Interactive: Story = {
     </div>
   ),
   play: async ({ canvas, step }) => {
-    await step('a photo gets a color-1 underlay', async () => {
+    await step('a photo zooms in, its fill unchanged', async () => {
       const link = canvas.getByRole('link')
       const avatar = link.firstElementChild as HTMLElement
       // The picture replaces the fallback once it has loaded.
       await waitFor(() => expect(link).toHaveAccessibleName('Profile'))
-      await expect(getComputedStyle(avatar).backgroundColor).toBe(
-        'rgba(0, 0, 0, 0)',
-      )
-      await expect(hoverValues(avatar, 'background-color')).toEqual([
-        'var(--color-color-1)',
-      ])
+      const picture = avatar.querySelector('img') as HTMLImageElement
+      await expect(getComputedStyle(picture).scale).toBe('none')
+      // The kit: the picture 27px in the 24px circle, which clips it.
+      await expect(hoverValues(picture, 'scale')).toEqual(['1.125'])
+      await expect(getComputedStyle(avatar).overflow).toBe('hidden')
+      await expect(hoverValues(avatar, 'background-color')).toEqual([])
     })
 
     await step('the icon fallback gets a Black/20% fill', async () => {
@@ -179,13 +180,42 @@ export const Interactive: Story = {
       )
     })
 
-    await step('the initials turn semibold', async () => {
-      const initials = canvas.getByText('F')
-      await expect(getComputedStyle(initials).fontWeight).toBe('400')
-      await expect(hoverValues(initials, 'font-weight')).toEqual([
-        'var(--font-weight-semibold)',
-      ])
-    })
+    await step(
+      'the initials grow to 14 Semibold on a lighter fill',
+      async () => {
+        const initials = canvas.getByText('F')
+        await expect(getComputedStyle(initials).fontWeight).toBe('400')
+        // Container units resolve once the avatar is laid out (Firefox
+        // reports the viewport's before).
+        await waitFor(() =>
+          expect(getComputedStyle(initials).fontSize).toBe('12px'),
+        )
+        await expect(hoverValues(initials, 'font-weight')).toEqual([
+          'var(--font-weight-semibold)',
+        ])
+        // 14px in the 24 and 32px avatars, 14/12 of the resting size above.
+        await expect(hoverValues(initials, 'font-size')).toEqual([
+          'max(0.875rem, 43.75cqi)',
+        ])
+        // White/40% layered over the fill (which stays, so a fill set in
+        // `className` shows through), not a new fill.
+        const fallback = initials.parentElement as Element
+        await expect(hoverValues(fallback, 'background-color')).toEqual([])
+        const tints = hoverValues(fallback, 'background-image')
+        await expect(tints).toHaveLength(1)
+        await expect(tints[0]).toMatch(
+          /^linear-gradient\(var\(--avatar-hover-tint\),\s*var\(--avatar-hover-tint\)\)$/,
+        )
+        await expect(
+          resolvedBackground('var(--avatar-hover-tint)', fallback),
+        ).toBe(
+          resolvedBackground(
+            'color-mix(in srgb, #fff 40%, transparent)',
+            fallback,
+          ),
+        )
+      },
+    )
 
     await step('only where the pointer can hover, as `hover:`', async () => {
       // A tap on a touch screen doesn't leave the hover on.
@@ -203,6 +233,11 @@ export const Interactive: Story = {
           'background-color',
         ),
         ...hoverRules(initials, 'font-weight'),
+        ...hoverRules(initials.parentElement as Element, 'background-image'),
+        ...hoverRules(
+          canvas.getByRole('link').querySelector('img') as Element,
+          'scale',
+        ),
       ]
       await expect(rules.length).toBeGreaterThan(0)
       for (const { media } of rules) {
@@ -216,7 +251,13 @@ export const Interactive: Story = {
       const avatar = canvas.getByTestId('static')
       const initials = canvas.getByText('S')
       for (const element of [avatar, initials, initials.parentElement]) {
-        for (const property of ['background-color', 'font-weight', 'filter']) {
+        for (const property of [
+          'background-color',
+          'font-weight',
+          'font-size',
+          'background-image',
+          'filter',
+        ]) {
           await expect(hoverValues(element as Element, property)).toEqual([])
         }
       }

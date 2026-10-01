@@ -78,6 +78,12 @@ export const Dashboard: Story = {
       </BreadcrumbList>
     ),
   },
+  play: async ({ canvas }) => {
+    // The current page isn't disabled: the arrow cursor, not not-allowed.
+    const page = canvas.getByText('Default')
+    await expect(page).toHaveAttribute('aria-current', 'page')
+    await expect(getComputedStyle(page).cursor).toBe('default')
+  },
 }
 
 export const DashboardDark: Story = {

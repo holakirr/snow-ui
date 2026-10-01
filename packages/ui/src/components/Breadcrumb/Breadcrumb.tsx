@@ -126,7 +126,10 @@ const BreadcrumbPage: FC<BreadcrumbPageProps> = ({ className, ...props }) => (
     role="link"
     aria-disabled="true"
     aria-current="page"
-    className={twMerge('px-3 py-1 text-black', className)}
+    // The arrow cursor: `aria-disabled` would get the not-allowed cursor of
+    // disabled controls (theme.css), but the current page isn't disabled, and
+    // the kit's own disabled cursor is the arrow too.
+    className={twMerge('cursor-default px-3 py-1 text-black', className)}
     {...props}
   />
 )

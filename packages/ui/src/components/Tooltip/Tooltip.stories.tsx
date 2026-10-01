@@ -163,14 +163,14 @@ export const Variants: Story = {
  * Rich tooltips (added in 5.2), as the kit's examples: a `TooltipTitle` in
  * semibold over a `TooltipDescription`, or a description alone for a
  * multi-line tip. They stack, start-aligned, with an 8px radius, and wrap at
- * 240px. Text only: for links or buttons use a Popover.
+ * 280px. Text only: for links or buttons use a Popover.
  */
 export const Rich: Story = {
   args: {},
   parameters: { layout: 'padded' },
   render: () => (
     <TooltipProvider>
-      <div className="flex items-start gap-72 px-4 pt-32 pb-2">
+      <div className="flex items-start gap-80 ps-40 pe-4 pt-32 pb-2">
         <Tooltip open>
           <TooltipTrigger asChild>
             <Button variant="outline" label="Dark" />
@@ -228,11 +228,11 @@ export const Rich: Story = {
       ).toBeCloseTo(0, 0)
     })
 
-    await step('an 8px radius, wrapping at 240px', async () => {
+    await step('an 8px radius, wrapping at 280px', async () => {
       const style = getComputedStyle(tooltip)
       await expect(style.borderTopLeftRadius).toBe('8px')
       await expect(tooltip.getBoundingClientRect().width).toBeLessThanOrEqual(
-        240,
+        280,
       )
       await expect(tooltip.getBoundingClientRect().height).toBeGreaterThan(48)
     })

@@ -60,7 +60,7 @@ describe('rich Tooltip', () => {
       `${RICH}:flex-col`,
       `${RICH}:items-start`,
       `${RICH}:rounded-8`,
-      `${RICH}:max-w-60`,
+      `${RICH}:max-w-70`,
       // The plain tooltip's classes stay for tooltips without the parts.
       'rounded-12',
       'gap-1',

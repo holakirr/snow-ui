@@ -69,7 +69,7 @@ import {
 3. **Trigger** (`TooltipTrigger`): the element the tooltip describes, usually a Button (`asChild`).
 4. **Content** (`TooltipContent`): the label, in a portal, 4px from the trigger (`sideOffset={4}`), above it by default (`side`). 24px high at least, 4 / 8px padding, a 12px radius, 12/16 text, a 10px background blur; items inside are 4px apart.
 5. **Shortcut** (`TooltipShortcut`, optional): secondary text, e.g. a shortcut, at 70% opacity.
-6. **Title** (`TooltipTitle`) and **description** (`TooltipDescription`), optional, added in 5.2: the kit's rich tooltip, a 12/16 semibold title over 12/16 text. With either inside, the content stacks them, start-aligned and 4px apart, with an 8px radius, and wraps the text at 240px. See [Rich tooltip](#rich-tooltip).
+6. **Title** (`TooltipTitle`) and **description** (`TooltipDescription`), optional, added in 5.2: the kit's rich tooltip, a 12/16 semibold title over 12/16 text. With either inside, the content stacks them, start-aligned and 4px apart, with an 8px radius, and wraps the text at 280px. See [Rich tooltip](#rich-tooltip).
 
 ## Variants
 
@@ -90,7 +90,7 @@ The content has `data-variant` (`dark` or `light`) and `data-side` for your own 
 
 ## Rich tooltip
 
-Added in 5.2. The kit's multi-line tooltip ("This is a tooltip" over a few lines of text): put a `TooltipTitle` and a `TooltipDescription` in `TooltipContent`, or a `TooltipDescription` alone for a tip of two lines ("Compared with yesterday, it is up 11.01%"). The content sees them (`:has()`) and stacks them, start-aligned (on the right in right-to-left text) and 4px apart (the tooltip's gap); the radius becomes 8 (the kit's ≈8) and the width at most 240px, so the text wraps. Both variants work; the colours stay the tooltip's.
+Added in 5.2. The kit's multi-line tooltip ("This is a tooltip" over a few lines of text): put a `TooltipTitle` and a `TooltipDescription` in `TooltipContent`, or a `TooltipDescription` alone for a tip of two lines ("Compared with yesterday, it is up 11.01%"). The content sees them (`:has()`) and stacks them, start-aligned (on the right in right-to-left text) and 4px apart (the tooltip's gap); the radius becomes 8 and the width at most 280px, so the text wraps (both read from the kit's guidance frame, ≈8 and ≈280: the kit has no measured values for the rich tooltip; the padding, 12/16 text and colours stay the tooltip's). Both variants work; the colours stay the tooltip's.
 
 ```tsx
 <TooltipContent>
@@ -232,6 +232,6 @@ Added in 5.2. A `<p>` in 12/16 semibold, the first line of a rich tooltip. See [
 
 ### TooltipDescription
 
-Added in 5.2. A `<p>` for the text of a rich tooltip, under its title or alone; it wraps at 240px. See [Rich tooltip](#rich-tooltip).
+Added in 5.2. A `<p>` for the text of a rich tooltip, under its title or alone; it wraps at 280px. See [Rich tooltip](#rich-tooltip).
 
 <ArgTypes of={TooltipDescription} />

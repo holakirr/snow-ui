@@ -25,7 +25,8 @@
 #      doesn't have yet; then `publish` (npm OIDC, tags, releases; no build):
 #      scripts/publish.ts checks the packed plan and tarballs against the
 #      plan it computes from this commit and npm, and publishes them; the
-#      action pushes the `<name>@<version>` tags and creates the releases.
+#      action pushes the `<name>@<version>` tags and creates the releases,
+#      and the job marks @holakirr/snow-ui's release Latest.
 #   7. On main, for a release commit (its release tags point at it):
 #      `released` waits until npm serves the versions, `verify` installs this
 #      commit's registry into fresh apps against npm, and `promote`
@@ -426,6 +427,33 @@ jobs:
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           publish-script: bun scripts/publish.ts --from-pack-dir packs
+
+      # The action creates one GitHub release per published package, and
+      # GitHub marks the last one created "Latest" (the icons or the charts as
+      # often as not). The repository's Latest is the library's: the release
+      # of @holakirr/snow-ui's version at this commit, also when only another
+      # package was published. Only on main: on `next` the library can still
+      # be at an older stable version than main has released. The packages
+      # are on npm by now, so this step never fails the job.
+      - name: Mark the @holakirr/snow-ui release as Latest
+        if: steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/main'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(jq -r .version packages/ui/package.json)
+          tag="@holakirr/snow-ui@$version"
+          case "$version" in
+            *-*)
+              echo "::notice title=Latest unchanged::$tag is a pre-release."
+              exit 0
+              ;;
+          esac
+          if ! gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "::warning title=Latest unchanged::$tag has no GitHub release."
+          elif ! gh release edit "$tag" --latest --repo "$GITHUB_REPOSITORY" > /dev/null; then
+            echo "::warning title=Latest unchanged::Could not mark $tag as Latest; run \`gh release edit '$tag' --latest\`."
+          fi
 
   # Whether this commit is a release commit: one whose `<name>@<version>`
   # tags (pushed by the publish job) point at it. Decided from the

@@ -324,6 +324,8 @@ const Input: FC<InputProps> = ({
           className={twMerge(
             'w-full min-w-0 bg-transparent text-inherit outline-none placeholder:text-placeholder disabled:cursor-not-allowed',
             horizontal && 'text-end',
+            // One clear button: a `type="search"` input's own goes.
+            clearable && '[&::-webkit-search-cancel-button]:hidden',
             inputClassName,
           )}
           style={inputStyle}

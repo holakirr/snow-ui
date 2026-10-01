@@ -351,6 +351,17 @@ describe('Input clearable', () => {
     expect(clearButton()).not.toBeNull()
   })
 
+  it("hides the browser's own clear button of a search input, not without clearable", () => {
+    const { rerender } = render(
+      <Input aria-label="Find" type="search" defaultValue="Ada" clearable />,
+    )
+    const native = '[&::-webkit-search-cancel-button]:hidden'
+    expect(screen.getByRole('searchbox')).toHaveClass(native)
+
+    rerender(<Input aria-label="Find" type="search" defaultValue="Ada" />)
+    expect(screen.getByRole('searchbox')).not.toHaveClass(native)
+  })
+
   it('has no clear button when empty, disabled or read-only', () => {
     const { rerender } = render(<Input aria-label="Name" clearable />)
     expect(clearButton()).toBeNull()

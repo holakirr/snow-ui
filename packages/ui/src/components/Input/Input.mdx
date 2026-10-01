@@ -94,6 +94,7 @@ Added in 5.2. With `clearable`, a focused field with a value shows the kit's cle
 - **Clearing** sets the input's value the way typing does (an `input` event), so `onChange` fires with an empty value: a controlled field gets it from you, an uncontrolled one clears itself, and react-hook-form (`register` or `FormField`) records it. `onClear` runs after that, and the focus goes back to the input.
 - **Keyboard:** the button is a tab stop while it shows (Tab from the input), Enter or Space clears. A press with the mouse or a finger keeps the focus in the input.
 - **Name:** `clearLabel`, or `messages.input.clear` of [SnowUIProvider](?path=/docs/components-snowuiprovider--docs) ("Clear").
+- **`type="search"`:** the browser's own clear button of a search input is hidden, so the field has one.
 
 [Search](?path=/docs/components-search--docs) has a clear button of its own, shown whenever it has a value.
 

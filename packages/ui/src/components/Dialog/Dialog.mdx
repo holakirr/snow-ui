@@ -108,7 +108,7 @@ The dialog has no disabled or loading state of its own.
   - Opening moves focus into the dialog, to its first focusable element (the close button of `DialogHeader`).
   - The rest of the page is hidden from assistive technology (`aria-hidden`) and ignores the pointer; the mask locks the page scroll.
 - Escape, the close button, a `DialogClose` or a click on the mask outside the content closes it. Focus then returns to the trigger.
-- The kit's "Add data" dialog closes only with its close button, which keeps what was typed, while Cancel clears it. The library keeps Escape (WAI-ARIA expects it of a modal dialog) and the click on the mask by default. To close a form the kit's way, as the AddData story does: pass `onInteractOutside={(event) => event.preventDefault()}` to `DialogContent`, so a stray click doesn't lose the form; keep the form's values outside `DialogContent`, which unmounts on close, so the close button and Escape keep them; and clear them in Cancel's `onClick`.
+- The kit's "Add data" dialog closes only with its close button, which keeps what was typed, while Cancel clears it. The library keeps Escape (WAI-ARIA expects it of a modal dialog) and the click on the mask by default. To close a form the kit's way, as the AddData story does: pass `onInteractOutside={(event) => event.preventDefault()}` to `DialogContent`, so a stray click doesn't close it; keep the form's values outside `DialogContent`, which unmounts on close, so the close button and Escape keep them; and clear them in Cancel's `onClick`.
 - The close button's accessible name is "Close" (`messages.dialog.close`), as visually hidden text; `closeLabel` replaces it. It is the only built-in string.
 
 ### Keyboard

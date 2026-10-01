@@ -145,8 +145,8 @@ const emptyAddData = { firstName: '', lastName: '', email: '', date: '' }
 
 /**
  * The Figma "Add data" screen, open. It closes the kit's way: not with a
- * click on the mask (`onInteractOutside`), so a stray click doesn't lose
- * the form; the close button and Escape keep what was typed, since the
+ * click on the mask (`onInteractOutside`), so a stray click doesn't close
+ * it; the close button and Escape keep what was typed, since the
  * values live outside `DialogContent` (which unmounts on close); Cancel
  * clears them. Escape stays, as WAI-ARIA expects of a modal dialog.
  */
@@ -260,13 +260,7 @@ export const AddData: Story = {
       )
     }
     const reopen = async () => {
-      const trigger = page.getByRole('button', { name: 'Add data' })
-      // A modal Radix dialog blocks the page's pointer events until its
-      // layer is gone, a moment after the content.
-      await waitFor(() =>
-        expect(getComputedStyle(trigger).pointerEvents).not.toBe('none'),
-      )
-      await userEvent.click(trigger)
+      await userEvent.click(page.getByRole('button', { name: 'Add data' }))
       return open()
     }
 

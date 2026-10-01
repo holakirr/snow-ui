@@ -85,18 +85,32 @@ describe('Playwright image', () => {
 // .github/bun (`npm ci`): setup-bun, which the other jobs use, needs unzip.
 // It must be the Bun package.json's packageManager names, setup-bun's.
 describe('Bun in the Playwright image', () => {
+  const json = (path: string) =>
+    JSON.parse(readFileSync(join(root, path), 'utf8'))
+  const lock = json('.github/bun/package-lock.json')
+  const regenerate =
+    'set the version in .github/bun/package.json, then run `npm install --package-lock-only` there'
+
   it(".github/bun locks packageManager's Bun", () => {
-    const json = (path: string) =>
-      JSON.parse(readFileSync(join(root, path), 'utf8'))
     const { packageManager } = json('package.json')
     const locked = [
       json('.github/bun/package.json').dependencies.bun,
-      json('.github/bun/package-lock.json').packages['node_modules/bun']
-        .version,
+      lock.packages['node_modules/bun'].version,
     ].map((version) => `bun@${version}`)
-    expect(
-      locked,
-      'set the version in .github/bun/package.json, then run `npm install --package-lock-only` there',
-    ).toEqual([packageManager, packageManager])
+    expect(locked, regenerate).toEqual([packageManager, packageManager])
   })
+
+  // bun's postinstall downloads a binary package missing from node_modules
+  // from the registry, unverified: the runners' ones must be in the lock.
+  it.each(['linux-x64', 'linux-x64-baseline', 'linux-aarch64'])(
+    '.github/bun locks @oven/bun-%s with its hash',
+    (platform) => {
+      const { version, integrity } =
+        lock.packages[`node_modules/@oven/bun-${platform}`] ?? {}
+      expect({ version, integrity }, regenerate).toEqual({
+        version: lock.packages['node_modules/bun'].version,
+        integrity: expect.stringMatching(/^sha512-/),
+      })
+    },
+  )
 })

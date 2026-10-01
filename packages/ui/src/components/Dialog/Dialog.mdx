@@ -73,7 +73,7 @@ import {
 2. **Trigger** (`DialogTrigger`, optional): the element that opens the dialog, usually a Button (`asChild`).
 3. **Mask** (`DialogOverlay`, rendered by `DialogContent`): covers the page with the Figma "Mask", a gradient from #CBDDFF at 50% to #D7D0FF at 20%, and "Background blur 40" (20px).
 4. **Content** (`DialogContent`): the `role="dialog"` element, in a portal, centred in the viewport. It is 576px wide at most (`max-w-xl`) and 16px from each side on narrow screens. It has no fill: it stacks the title row and the popup 28px apart.
-5. **Title row** (`DialogHeader`): a start slot at least 40px wide (`startContent`; the kit's "Add data" dialog has a 48px Add icon there: its plus is 36px, ours at size 48 draws a 30px one, our icon set's inset), the title, and a close button (the Figma "Close": a Gray `md` icon button, 40×40px with radius 12, and the kit's Close icon, an 11px X in a 24px box). 8px padding on each side.
+5. **Title row** (`DialogHeader`): a start slot at least 40px wide (`startContent`; the kit's "Add data" dialog has a 48px Add icon there, whose plus is 36px: 75% of the icon, as `AddIcon` draws it), the title, and a close button (the Figma "Close": a Gray `md` icon button, 40×40px with radius 12, and the kit's Close icon, an 11px X in a 24px box). 8px padding on each side.
 6. **Title** (`DialogTitle`): 48/56 semibold, centred. It names the dialog.
 7. **Popup** (`DialogBody`): the card: `background-3` (Figma Background/3), a 32px radius, a 20px background blur and 32px padding (80px from the `md` breakpoint).
 8. **Description** (`DialogDescription`, optional): 14/20 `text-secondary`, centred. It describes the dialog.
@@ -108,6 +108,7 @@ The dialog has no disabled or loading state of its own.
   - Opening moves focus into the dialog, to its first focusable element (the close button of `DialogHeader`).
   - The rest of the page is hidden from assistive technology (`aria-hidden`) and ignores the pointer; the mask locks the page scroll.
 - Escape, the close button, a `DialogClose` or a click on the mask outside the content closes it. Focus then returns to the trigger.
+- The kit's "Add data" dialog closes only with its close button, which keeps what was typed, while Cancel clears it. The library keeps Escape (WAI-ARIA expects it of a modal dialog) and the click on the mask by default. To close a form the kit's way, as the AddData story does: pass `onInteractOutside={(event) => event.preventDefault()}` to `DialogContent`, so a stray click doesn't lose the form; keep the form's values outside `DialogContent`, which unmounts on close, so the close button and Escape keep them; and clear them in Cancel's `onClick`.
 - The close button's accessible name is "Close" (`messages.dialog.close`), as visually hidden text; `closeLabel` replaces it. It is the only built-in string.
 
 ### Keyboard

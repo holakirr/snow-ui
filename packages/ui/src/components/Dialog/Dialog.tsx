@@ -76,8 +76,7 @@ type DialogHeaderProps = ComponentProps<'div'> & {
   /**
    * Content before the title (on the left in left-to-right text), in a slot
    * at least 40px wide that balances the close button. The Figma "Add data"
-   * dialog puts a 48px Add icon there (the kit's plus is 36px; our AddIcon at
-   * size 48 draws a 30px one, our icon set's inset).
+   * dialog puts a 48px Add icon there, whose plus is 36px.
    */
   startContent?: ReactNode
   /**

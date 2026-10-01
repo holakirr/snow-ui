@@ -6,6 +6,7 @@ import { enUS, ru } from 'react-day-picker/locale'
 import { userEvent } from 'storybook/test'
 import { describe, expect, it, vi } from 'vitest'
 
+import { getNavButton } from '../../test/queries'
 import { SnowUIProvider } from '../SnowUIProvider'
 import { Calendar, type CalendarProps } from './Calendar'
 
@@ -29,8 +30,8 @@ describe('Calendar', () => {
   it('renders focusable navigation buttons', () => {
     render(<Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />)
 
-    const previous = screen.getByRole('button', { name: /previous month/i })
-    const next = screen.getByRole('button', { name: /next month/i })
+    const previous = getNavButton(/previous month/i)
+    const next = getNavButton(/next month/i)
 
     for (const button of [previous, next]) {
       expect(button.tagName).toBe('BUTTON')
@@ -43,16 +44,14 @@ describe('Calendar', () => {
   it('navigates months with the nav buttons', () => {
     render(<Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />)
 
-    const caption = screen.getByRole('button', { name: /january 2025/i })
+    const caption = getNavButton(/january 2025/i)
     expect(caption).toBeInTheDocument()
 
     act(() => {
-      fireEvent.click(screen.getByRole('button', { name: /next month/i }))
+      fireEvent.click(getNavButton(/next month/i))
     })
 
-    expect(
-      screen.getByRole('button', { name: /february 2025/i }),
-    ).toBeInTheDocument()
+    expect(getNavButton(/february 2025/i)).toBeInTheDocument()
   })
 
   it.each([
@@ -86,18 +85,18 @@ describe('Calendar', () => {
                 }) as HTMLSelectElement
               ).value
             }`
-          : screen.getByRole('button', { name: /^[a-z]+ \d{4}$/i }).textContent
+          : getNavButton(/^[a-z]+ \d{4}$/i).textContent
 
       const before = shownMonth()
-      fireEvent.click(screen.getByRole('button', { name: /next month/i }))
+      fireEvent.click(getNavButton(/next month/i))
       const after = shownMonth()
       expect(after).not.toBe(before)
       expect(after).toBe(
         captionLayout === 'dropdown' ? '1/2025' : 'February 2025',
       )
 
-      fireEvent.click(screen.getByRole('button', { name: /previous month/i }))
-      fireEvent.click(screen.getByRole('button', { name: /previous month/i }))
+      fireEvent.click(getNavButton(/previous month/i))
+      fireEvent.click(getNavButton(/previous month/i))
       expect(shownMonth()).toBe(
         captionLayout === 'dropdown' ? '11/2024' : 'December 2024',
       )
@@ -133,7 +132,7 @@ describe('Calendar', () => {
   it('switches to the year view and back in range mode without throwing', () => {
     render(<RangeCalendar />)
 
-    const caption = screen.getByRole('button', { name: /january 2025/i })
+    const caption = getNavButton(/january 2025/i)
 
     expect(() => {
       act(() => {
@@ -142,9 +141,7 @@ describe('Calendar', () => {
     }).not.toThrow()
 
     const year = screen.getByRole('button', { name: '2026' })
-    expect(
-      screen.getByRole('button', { name: /next \d+ years/i }),
-    ).toBeInTheDocument()
+    expect(getNavButton(/next \d+ years/i)).toBeInTheDocument()
 
     expect(() => {
       act(() => {
@@ -153,9 +150,7 @@ describe('Calendar', () => {
     }).not.toThrow()
 
     // Keeps the month of the selected range start.
-    expect(
-      screen.getByRole('button', { name: /january 2026/i }),
-    ).toBeInTheDocument()
+    expect(getNavButton(/january 2026/i)).toBeInTheDocument()
   })
 
   describe('year switcher', () => {
@@ -167,7 +162,7 @@ describe('Calendar', () => {
 
     it('is a disclosure of the year view', () => {
       render(<RangeCalendar />)
-      const switcher = screen.getByRole('button', { name: 'January 2025' })
+      const switcher = getNavButton('January 2025')
       expect(switcher).toHaveAttribute('aria-expanded', 'false')
       expect(switcher).not.toHaveAttribute('aria-controls')
 
@@ -187,7 +182,7 @@ describe('Calendar', () => {
 
     it("is a grid of its own, not the day grid's", () => {
       render(<RangeCalendar />)
-      fireEvent.click(screen.getByRole('button', { name: 'January 2025' }))
+      fireEvent.click(getNavButton('January 2025'))
 
       // Named by its years, not multiselectable, not named by the month.
       expect(screen.getAllByRole('grid')).toHaveLength(1)
@@ -212,7 +207,7 @@ describe('Calendar', () => {
       )
       const user = userEvent.setup()
 
-      screen.getByRole('button', { name: 'January 2025' }).focus()
+      getNavButton('January 2025').focus()
       await user.keyboard('{Enter}')
       // The next years, then the year view's tab stop: the year shown.
       await user.tab()
@@ -222,7 +217,7 @@ describe('Calendar', () => {
       expect(screen.getByRole('button', { name: String(from) })).toHaveFocus()
 
       await user.keyboard('{Enter}')
-      const switcher = screen.getByRole('button', { name: `January ${from}` })
+      const switcher = getNavButton(`January ${from}`)
       expect(switcher).toHaveFocus()
       expect(switcher).toHaveAttribute('aria-expanded', 'false')
     })
@@ -237,7 +232,7 @@ describe('Calendar', () => {
         />,
       )
 
-      fireEvent.click(screen.getByRole('button', { name: 'January 2025' }))
+      fireEvent.click(getNavButton('January 2025'))
       const year = screen.getByRole('button', { name: String(to) })
       year.focus()
       await act(async () => {
@@ -295,7 +290,7 @@ describe('Calendar', () => {
         />,
       )
       const user = userEvent.setup()
-      fireEvent.click(screen.getByRole('button', { name: /^\w+ \d{4}$/ }))
+      fireEvent.click(getNavButton(/^\w+ \d{4}$/))
       return user
     }
 
@@ -385,7 +380,7 @@ describe('Calendar', () => {
         />,
       )
       const user = userEvent.setup()
-      fireEvent.click(screen.getByRole('button', { name: /^\w+ \d{4}$/ }))
+      fireEvent.click(getNavButton(/^\w+ \d{4}$/))
       const grid = screen.getByRole('grid')
       const [pageFrom, pageTo] = (grid.getAttribute('aria-label') ?? '')
         .split(' - ')
@@ -406,12 +401,10 @@ describe('Calendar', () => {
           endMonth={new Date(2008, 11, 1)}
         />,
       )
-      fireEvent.click(screen.getByRole('button', { name: 'June 2000' }))
+      fireEvent.click(getNavButton('June 2000'))
       expect(year(2000)).toBeEnabled()
       expect(year(2000)).toHaveAttribute('tabindex', '0')
-      expect(
-        screen.getByRole('button', { name: /next \d+ years/i }),
-      ).toBeDisabled()
+      expect(getNavButton(/next \d+ years/i)).toBeDisabled()
     })
 
     it('reaches a year partly inside startMonth / endMonth', async () => {
@@ -421,9 +414,7 @@ describe('Calendar', () => {
       await user.keyboard('{ArrowLeft}')
       expect(year(from - 1)).toHaveFocus()
       expect(year(from - 1)).toBeEnabled()
-      expect(
-        screen.getByRole('button', { name: /previous \d+ years/i }),
-      ).toBeDisabled()
+      expect(getNavButton(/previous \d+ years/i)).toBeDisabled()
     })
 
     it('disables the years after endMonth, whatever its day', async () => {
@@ -637,9 +628,7 @@ describe('Calendar', () => {
     })
 
     expect(onTodayClick).toHaveBeenCalledWith(new Date(2026, 1, 10))
-    expect(
-      screen.getByRole('button', { name: /february 2026/i }),
-    ).toBeInTheDocument()
+    expect(getNavButton(/february 2026/i)).toBeInTheDocument()
   })
 
   it('goes back to the last selection with the Last selection action', () => {
@@ -660,9 +649,7 @@ describe('Calendar', () => {
     })
 
     expect(onLastSelectionClick).toHaveBeenCalledWith(lastSelection)
-    expect(
-      screen.getByRole('button', { name: /may 2024/i }),
-    ).toBeInTheDocument()
+    expect(getNavButton(/may 2024/i)).toBeInTheDocument()
   })
 
   it('puts Previous in the first caption and Next in the last one', () => {
@@ -773,9 +760,7 @@ describe('Calendar', () => {
     expect(
       screen.getAllByRole('columnheader', { hidden: true })[0],
     ).toHaveClass('text-12', 'text-secondary')
-    expect(
-      screen.getByRole('button', { name: /next month/i }),
-    ).toBeInTheDocument()
+    expect(getNavButton(/next month/i)).toBeInTheDocument()
   })
 
   it('renders the header slot above the months', () => {

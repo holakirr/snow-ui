@@ -10,6 +10,7 @@ import {
   FormItem,
   FormLabel,
 } from '../../react-hook-form'
+import { getByRoleAndLabel } from '../../test/queries'
 import { SnowUIProvider } from '../SnowUIProvider'
 import { DatePicker, type DatePickerProps } from './DatePicker'
 
@@ -31,7 +32,7 @@ const renderDatePicker = (props: Partial<DatePickerProps> = {}) =>
   )
 
 const field = () => screen.getByRole('combobox')
-const day = (name: RegExp) => screen.getByRole('button', { name })
+const day = (name: RegExp) => getByRoleAndLabel('button', name)
 
 describe('DatePicker', () => {
   it('is a labelled combobox that opens a dialog', () => {

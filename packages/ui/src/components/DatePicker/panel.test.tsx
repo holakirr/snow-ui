@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { ru } from 'react-day-picker/locale'
 import { userEvent } from 'storybook/test'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { getByRoleAndLabel, getByRoleAndText } from '../../test/queries'
 import {
   Select,
   SelectContent,
@@ -61,7 +62,7 @@ const segment = (name: string, group?: string) =>
   within(
     group ? screen.getByRole('group', { name: group }) : document.body,
   ).getByRole('spinbutton', { name })
-const day = (name: RegExp) => screen.getByRole('button', { name })
+const day = (name: RegExp) => getByRoleAndLabel('button', name)
 const press = (element: HTMLElement, ...keys: string[]) => {
   act(() => element.focus())
   for (const key of keys)
@@ -69,6 +70,11 @@ const press = (element: HTMLElement, ...keys: string[]) => {
 }
 
 describe('DatePicker popup', () => {
+  // The file's first open DatePicker pays the one-time cost of running its
+  // code for the first time (more so under coverage): about two thirds of
+  // this test's time, whichever test comes first. It took ~3 s in CI's
+  // coverage run, and up to 4.7 s locally with four workers sharing one CPU,
+  // close to Vitest's 5 s default.
   it('shows the date in the top area, in the order of the locale', () => {
     const { unmount } = renderPicker({ defaultValue: new Date(2025, 0, 20) })
     const date = screen.getByRole('group', { name: 'Date' })
@@ -95,7 +101,7 @@ describe('DatePicker popup', () => {
     expect(
       screen.getAllByRole('spinbutton').map((part) => part.textContent),
     ).toEqual(['20', '01', '2025'])
-  })
+  }, 10_000)
 
   it('shows today, dimmed, without a value; editing starts from it', () => {
     const onValueChange = vi.fn()
@@ -371,9 +377,9 @@ describe('DatePicker withTime', () => {
     )
     fireEvent.pointerDown(segment('Hour'))
     const hours = screen.getByRole('grid', { name: 'Hour' })
-    fireEvent.click(within(hours).getByRole('button', { name: '09' }))
+    fireEvent.click(getByRoleAndText(hours, 'button', '09'))
     const minutes = screen.getByRole('grid', { name: 'Minute' })
-    fireEvent.click(within(minutes).getByRole('button', { name: '30' }))
+    fireEvent.click(getByRoleAndText(minutes, 'button', '30'))
     press(segment('Minute'), 'Enter')
     const form = container.querySelector('form') as HTMLFormElement
     expect(new FormData(form).get('due')).toBe('2025-01-20T21:30')

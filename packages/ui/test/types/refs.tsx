@@ -82,6 +82,7 @@ type RefTargets = {
   ContextMenuSub: null
   ContextMenuSubContent: HTMLDivElement
   ContextMenuSubTrigger: HTMLDivElement
+  ContextMenuSwitchItem: HTMLDivElement
   ContextMenuTrigger: HTMLSpanElement
   // The trigger, a <button role="combobox">.
   DatePicker: HTMLButtonElement
@@ -110,6 +111,7 @@ type RefTargets = {
   DropdownMenuSub: null
   DropdownMenuSubContent: HTMLDivElement
   DropdownMenuSubTrigger: HTMLDivElement
+  DropdownMenuSwitchItem: HTMLDivElement
   DropdownMenuTrigger: HTMLButtonElement
   Form: HTMLFormElement
   // A Slot: its only child.
@@ -231,8 +233,10 @@ type RefTargets = {
   ToggleGroupItem: HTMLButtonElement
   Tooltip: null
   TooltipContent: HTMLDivElement
+  TooltipDescription: HTMLParagraphElement
   TooltipProvider: null
   TooltipShortcut: HTMLSpanElement
+  TooltipTitle: HTMLParagraphElement
   TooltipTrigger: HTMLButtonElement
   Typography: HTMLElement
 }

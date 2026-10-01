@@ -33,14 +33,22 @@ import { segmentedItemVariants, segmentedListVariants } from './segmented'
  */
 export type TabsVariant = 'line' | 'pill' | 'icon-toggle' | 'solid' | 'filled'
 
+/**
+ * The line under the active `line` tab: the full width of the tab (the
+ * Figma Tab set), or a short rounded dash (the kit's Line docs).
+ */
+export type TabsUnderline = 'full' | 'short'
+
 type TabsListContextValue = {
   variant: TabsVariant
   size: Size
+  underline: TabsUnderline
 }
 
 const TabsListContext = createContext<TabsListContextValue>({
   variant: 'line',
   size: 'md',
+  underline: 'full',
 })
 
 const Tabs = TabsPrimitive.Root
@@ -58,17 +66,27 @@ type TabsListProps = ComponentProps<typeof TabsPrimitive.List> & {
    * @default "md"
    */
   size?: Size
+
+  /**
+   * The line under the active `line` tab (added in 5.2): `full`, the width
+   * of the tab, 2px; or `short`, the kit's short rounded dash, 6×3px and
+   * centred, 6px under the label. The other variants have no line.
+   * @default "full"
+   */
+  underline?: TabsUnderline
 }
 
 const TabsList: FC<TabsListProps> = ({
   className,
   variant = 'line',
   size = 'md',
+  underline = 'full',
   ...props
 }) => (
-  <TabsListContext.Provider value={{ variant, size }}>
+  <TabsListContext.Provider value={{ variant, size, underline }}>
     <TabsPrimitive.List
       data-variant={variant}
+      data-underline={variant === 'line' ? underline : undefined}
       className={twMerge(
         variant === 'line'
           ? 'inline-flex items-center justify-center gap-4'
@@ -168,7 +186,11 @@ const TabsTrigger: FC<TabsTriggerProps> = ({
   asChild,
   ...props
 }) => {
-  const { variant, size } = useContext(TabsListContext)
+  const {
+    variant,
+    size,
+    underline: underlineStyle,
+  } = useContext(TabsListContext)
   const childProps =
     asChild && isValidElement<ChildProps>(children) ? children.props : undefined
   const label = childProps ? childProps.children : children
@@ -195,10 +217,15 @@ const TabsTrigger: FC<TabsTriggerProps> = ({
         {content}
       </span>
     )
+    // The short dash (the kit's Line docs, "adjust the style of the
+    // underline"): 6×3px, rounded, centred, 2px lower than the full line.
     const underline = (
       <span
         aria-hidden
-        className="h-0.5 w-full rounded-full bg-transparent transition-colors group-data-[state=active]:bg-primary"
+        className={twMerge(
+          'h-0.5 w-full rounded-full bg-transparent transition-colors group-data-[state=active]:bg-primary',
+          underlineStyle === 'short' && 'mt-0.5 h-0.75 w-1.5',
+        )}
       />
     )
 

@@ -153,6 +153,71 @@ export const RTL: Story = {
   },
 }
 
+/**
+ * `underline="short"` (added in 5.2): the kit's Line docs draw the underline
+ * of the active tab as a short rounded dash — 6×3px, Primary, centred under
+ * the label and 2px lower than the full line — instead of the full width.
+ */
+export const ShortUnderline: Story = {
+  render: () => (
+    <div className="flex flex-col items-start gap-6">
+      {Object.values(SIZES).map((size) => (
+        <Tabs key={size} defaultValue="overview">
+          <TabsList
+            size={size}
+            underline="short"
+            aria-label={`Sections (${size})`}
+          >
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="projects">Projects</TabsTrigger>
+            <TabsTrigger value="team">Team</TabsTrigger>
+          </TabsList>
+          <Panels values={['overview', 'projects', 'team']} />
+        </Tabs>
+      ))}
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    await canvasElement.ownerDocument.fonts.ready
+    const [overview] = canvas.getAllByRole('tab', { name: 'Overview' })
+    const [projects] = canvas.getAllByRole('tab', { name: 'Projects' })
+    const geometry = (tab: HTMLElement) => {
+      tab.getBoundingClientRect()
+      const label = (
+        tab.firstElementChild as HTMLElement
+      ).getBoundingClientRect()
+      const dash = (tab.lastElementChild as HTMLElement).getBoundingClientRect()
+      return { label, dash }
+    }
+
+    await step('a 6×3px dash, centred, 6px under the label', async () => {
+      const { label, dash } = geometry(overview)
+      await expect(dash.width).toBeCloseTo(6, 0)
+      await expect(dash.height).toBeCloseTo(3, 0)
+      await expect(dash.left + dash.width / 2).toBeCloseTo(
+        label.left + label.width / 2,
+        0,
+      )
+      await expect(dash.top - label.bottom).toBeCloseTo(6, 0)
+      // Primary, like the label (after the colour transitions).
+      await settledColor(overview)
+      await expect(
+        getComputedStyle(overview.lastElementChild as Element).backgroundColor,
+      ).toBe(colorOf('text-primary', canvasElement))
+    })
+
+    await step('it moves with the selection', async () => {
+      await userEvent.click(projects)
+      await expect(projects).toHaveAttribute('aria-selected', 'true')
+      const { label, dash } = geometry(projects)
+      await expect(dash.left + dash.width / 2).toBeCloseTo(
+        label.left + label.width / 2,
+        0,
+      )
+    })
+  },
+}
+
 export const Pill: Story = {
   render: () => (
     <Tabs defaultValue="day">

@@ -8,6 +8,7 @@ import {
   TabsList,
   type TabsListProps,
   TabsTrigger,
+  type TabsUnderline,
   type TabsVariant,
 } from './Tabs'
 
@@ -335,6 +336,95 @@ describe('Tabs', () => {
         </Tabs>,
       )
       expect(ref.current).toBe(screen.getByRole('tab', { name: 'One' }))
+    })
+  })
+
+  describe('short underline (5.2)', () => {
+    it('is a TabsUnderline, `full` by default', () => {
+      expectTypeOf<'short'>().toExtend<TabsUnderline>()
+      renderTabs()
+      const line = screen
+        .getByRole('tab', { name: 'One' })
+        .querySelector('[aria-hidden]')
+      expect(screen.getByRole('tablist')).toHaveAttribute(
+        'data-underline',
+        'full',
+      )
+      expect(line).toHaveClass('h-0.5', 'w-full')
+    })
+
+    it('draws a 6×3px centred dash, 2px lower', () => {
+      renderTabs({ underline: 'short', size: 'sm' })
+
+      const tab = screen.getByRole('tab', { name: 'One' })
+      const line = tab.querySelector('[aria-hidden]')
+      expect(screen.getByRole('tablist')).toHaveAttribute(
+        'data-underline',
+        'short',
+      )
+      // Centred by the trigger's `items-center` column, in either direction.
+      expect(tab).toHaveClass('flex-col', 'items-center')
+      expect(line).toHaveClass(
+        'w-1.5',
+        'h-0.75',
+        'mt-0.5',
+        'rounded-full',
+        'group-data-[state=active]:bg-primary',
+      )
+      expect(line).not.toHaveClass('w-full')
+      expect(line).not.toHaveClass('h-0.5')
+    })
+
+    it('moves with the selection, uncontrolled and controlled', () => {
+      const Controlled = () => {
+        const [value, setValue] = useState('one')
+        return (
+          <Tabs value={value} onValueChange={setValue}>
+            <TabsList underline="short" aria-label="tabs">
+              <TabsTrigger value="one">One</TabsTrigger>
+              <TabsTrigger value="two">Two</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )
+      }
+      render(<Controlled />)
+      const two = screen.getByRole('tab', { name: 'Two' })
+      select(two)
+      expect(two).toHaveAttribute('data-state', 'active')
+      expect(two.querySelector('[aria-hidden]')).toHaveClass('w-1.5')
+    })
+
+    it('leaves the segmented variants without a line', () => {
+      renderTabs({ variant: 'pill', underline: 'short' })
+      expect(screen.getByRole('tablist')).not.toHaveAttribute('data-underline')
+      expect(
+        screen.getByRole('tab', { name: 'One' }).querySelector('[aria-hidden]'),
+      ).toBeNull()
+    })
+
+    it('keeps the dash in asChild links and on the server', () => {
+      render(
+        <Tabs defaultValue="one">
+          <TabsList underline="short" aria-label="tabs">
+            <TabsTrigger value="one" asChild>
+              <a href="#one">One</a>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>,
+      )
+      expect(
+        screen.getByRole('tab', { name: 'One' }).lastElementChild,
+      ).toHaveClass('w-1.5')
+
+      const html = renderToString(
+        <Tabs defaultValue="one" dir="rtl">
+          <TabsList underline="short" aria-label="tabs">
+            <TabsTrigger value="one">One</TabsTrigger>
+          </TabsList>
+        </Tabs>,
+      )
+      expect(html).toContain('data-underline="short"')
+      expect(html).toContain('w-1.5')
     })
   })
 })

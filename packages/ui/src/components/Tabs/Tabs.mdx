@@ -55,6 +55,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@holakirr/snow-ui'
 | `solid` | Solid | no track; the active item has a Black/4% fill | switchers on a busy surface |
 | `filled` (added in 5.2) | — (the kit's navigation and segmented-control examples) | the pill track; the active item is a Filled button: Primary with the per-mode `white` label (black with a white label; indigo with a black label in dark mode, 10.15:1). The others are Borderless | a switcher that has to stand out: periods ("Daily / Weekly / Monthly"), views |
 
+### Short underline
+
+Added in 5.2. `underline="short"` on a `line` TabsList draws the kit's short underline (the Line docs: "adjust the style of the underline in the instance"): a rounded Primary dash, 6×3px, centred under the label and 6px below it (the full line is 2px high, 4px below), instead of a line the width of the tab. The tabs are 3px taller (25px at `sm`). The kit shows it at the Small size only, so the dash is the same at every size. It is ignored by the segmented variants, which have no line. The dash is the same colour as the full line and the active label (Primary: 21:1 on white, 6.11:1 on the dark background); the active tab is also told by its label colour, not by the dash alone.
+
+<Canvas of={TabsStories.ShortUnderline} />
+
 <Canvas of={TabsStories.Pill} />
 
 <Canvas of={TabsStories.IconToggle} />

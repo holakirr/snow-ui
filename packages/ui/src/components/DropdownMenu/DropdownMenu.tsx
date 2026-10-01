@@ -506,11 +506,17 @@ const DropdownMenuContent: FC<DropdownMenuContentProps> = ({
           if (
             event.defaultPrevented ||
             !field?.input ||
-            event.target !== field.input ||
-            field.query === ''
+            event.target !== field.input
           ) {
             return
           }
+          // The Escape that cancels an IME composition is the IME's (WebKit
+          // gives the key keyCode 229): keep the text and the menu.
+          if (event.isComposing || event.keyCode === 229) {
+            event.preventDefault()
+            return
+          }
+          if (field.query === '') return
           // Escape in a field with text clears it; the next one closes.
           event.preventDefault()
           field.clear()

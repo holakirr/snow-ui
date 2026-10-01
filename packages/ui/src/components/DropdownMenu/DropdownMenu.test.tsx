@@ -1,4 +1,11 @@
-import { act, render, screen, waitFor, within } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { type ComponentProps, useState } from 'react'
 import { userEvent } from 'storybook/test'
 import { beforeAll, describe, expect, expectTypeOf, it, vi } from 'vitest'
@@ -270,6 +277,19 @@ describe('DropdownMenu search', () => {
       expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
     )
     expect(screen.getByRole('button', { name: 'Properties' })).toHaveFocus()
+  })
+
+  it('leaves the Escape that cancels an IME composition to the IME', async () => {
+    const user = userEvent.setup()
+    render(<SearchMenu />)
+    const field = await open(user)
+
+    await user.type(field, 'ask')
+    // `isComposing`, or the keyCode 229 WebKit gives a key that ends one.
+    fireEvent.keyDown(field, { key: 'Escape', isComposing: true })
+    fireEvent.keyDown(field, { key: 'Escape', keyCode: 229 })
+    expect(field).toHaveValue('ask')
+    expect(screen.getByRole('menu')).toBeInTheDocument()
   })
 
   it('resets the query when the menu opens again', async () => {

@@ -59,6 +59,19 @@ The dot sits just inside the top end corner of the children. The number is centr
 
 The wrapper is a block `<div>` with no width of its own: in normal flow it fills its parent, and the badge lands on the parent's end edge. Put `Badge` in a flex row (as the stories do) or around an element that sets the width.
 
+### Colour
+
+Added in 5.2. `color` (on `Badge` and `BadgeComponent`) is `indigo` (the default, as before) or `red`, the two badges of the kit's Badge docs ("Can change the color and style of the Badge"):
+
+| `color` | Dot | Number |
+| --- | --- | --- |
+| `indigo` (default) | Secondary/Indigo | static black on Secondary/Indigo (10.15:1) |
+| `red` | Secondary/Red (3.36:1 on white, 3.76:1 on #333) | the per-mode `white` on `red-text`: white on #D42020 (5.21:1), black on #FF8080 in dark mode (8.65:1) |
+
+The kit draws the red number white on Secondary/Red, 3.36:1, under the 4.5:1 that text needs, so the number's pill is the darker `red-text` (the error-text red); the dot, which has no text, keeps the kit's red. `badgeClassName` still overrides the colour.
+
+<Canvas of={BadgeStories.Colors} />
+
 ## States
 
 A badge has no interactive states: it isn't focusable and has no hover. It changes only when you change `content`.
@@ -78,12 +91,15 @@ The full table is in the package README.
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | Badge number `#FFF` on indigo: 2.07:1 | black on indigo (`text-static-black`): 10.15:1 | 1.4.3 |
+| Red Badge number (`color="red"`, 5.2): `#FFF` on Secondary/Red, 3.36:1 | the per-mode `white` on `red-text`: 5.21:1 (white on #D42020), 8.65:1 in dark mode (black on #FF8080) | 1.4.3 |
 
 ## Localization and RTL
 
 - A dot's name is `messages.badge.label` ("Notification badge"). `aria-label` on `BadgeComponent` overrides the provider.
 - `content` is yours to translate and format (digits, "10+").
 - In right-to-left text `Badge` puts the badge on the top left corner.
+
+<Canvas of={BadgeStories.ColorsRTL} />
 
 ## Do and don't
 

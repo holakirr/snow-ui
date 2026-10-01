@@ -11,7 +11,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ Button }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "11.8 kB"
+    "limit": "13 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Calendar }",
@@ -25,28 +25,28 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ Dialog, DialogContent, DialogTrigger }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "27.3 kB"
+    "limit": "27.5 kB"
   },
   {
     "name": "@holakirr/snow-ui: { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent }",
     "path": "packages/ui/dist/index.js",
     "import": "{ AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "26 kB"
+    "limit": "27.6 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Alert }",
     "path": "packages/ui/dist/index.js",
     "import": "{ Alert }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "15.5 kB"
+    "limit": "16.1 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Progress, ProgressCircle }",
     "path": "packages/ui/dist/index.js",
     "import": "{ Progress, ProgressCircle }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "13.2 kB"
+    "limit": "13.8 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Spinner }",
@@ -74,7 +74,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ DatePicker }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "74.6 kB"
+    "limit": "74.7 kB"
   },
   {
     "name": "@holakirr/snow-ui: { DateRangePicker }",

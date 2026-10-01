@@ -31,8 +31,9 @@ export const segmentedListVariants = cva('inline-flex items-center', {
 /**
  * The items of a segmented control: Figma Button instances. The selected item
  * (`data-state="active"` for tabs, `data-state="on"` for toggles) is a Gray
- * button (`solid`) or a white, shadowed one (`pill`); the others are
- * Borderless buttons. Figma dims them to 40% opacity (2.85:1); here their
+ * button (`solid`), a white, shadowed one (`pill`) or a Filled one (`filled`,
+ * 5.2: Primary with the per-mode `white` label); the others are Borderless
+ * buttons. Figma dims them to 40% opacity (2.85:1); here their
  * label and icon use `text-secondary` (5.74:1 light, 7.08:1 dark) and turn
  * black on hover, keyboard focus and when selected.
  *
@@ -41,7 +42,8 @@ export const segmentedListVariants = cva('inline-flex items-center', {
  * every state (tailwind-merge drops `text-(--segment-fg)`); set
  * `[--segment-fg:…]` instead to change the rest colour and keep the states.
  * Disabled sets `color` itself and wins by specificity, whatever the element
- * (a <button>, or a link with `asChild`).
+ * (a <button>, or a link with `asChild`). The selected `filled` item sets
+ * `color` too, unless disabled, so hover and focus keep its label white.
  *
  * Icons are sized unless they have a `size-*` class. Shared by
  * `TabsTrigger` and `Toggle`.
@@ -64,6 +66,13 @@ export const segmentedItemVariants = cva(
         pill: 'data-[state=active]:bg-white-80 data-[state=active]:shadow-2 data-[state=on]:bg-white-80 data-[state=on]:shadow-2',
         outline:
           'inset-ring-[0.5px] inset-ring-black-10 data-[state=active]:bg-black-4 data-[state=on]:bg-black-4',
+        // The kit's navigation and segmented examples: the selected item is
+        // a Filled button (black, a white label; indigo with a black label in
+        // dark mode, 10.15:1, as the Filled Button).
+        filled: [
+          'data-[state=active]:not-disabled:bg-primary data-[state=active]:not-disabled:text-white',
+          'data-[state=on]:not-disabled:bg-primary data-[state=on]:not-disabled:text-white',
+        ],
       },
       // Figma Button sizes; icons next to a label are 12, 16 or 20px.
       size: {

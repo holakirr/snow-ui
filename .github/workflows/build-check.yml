@@ -277,18 +277,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # Temporary: what the image provides (removed before merge).
-      - name: Container diagnostics
-        run: |
-          id
-          echo "HOME=$HOME"
-          date
-          ls -l /etc/localtime /etc/timezone 2>&1 || true
-          node -p 'process.version + " " + Intl.DateTimeFormat().resolvedOptions().timeZone + " " + Intl.DateTimeFormat().resolvedOptions().locale'
-          for tool in jq unzip zstd git; do printf '%s: %s\n' "$tool" "$(command -v "$tool" || echo missing)"; done
-          df -h /dev/shm
-          bun --version
-
       # WebKit runs in two shards, one after the other, each in a fresh
       # browser: the page's memory grows with every story file, and a full
       # run once crashed it near the end (vitest.browsers.config.ts). A

@@ -1,4 +1,9 @@
-import { CopyIcon, PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react'
+import {
+  CopyIcon,
+  PencilSimpleIcon,
+  PushPinIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, within } from 'storybook/test'
 import { colorOf } from '../../test/colors'
@@ -17,6 +22,7 @@ import {
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
+  ContextMenuSwitchItem,
   ContextMenuTrigger,
 } from './ContextMenu'
 
@@ -96,8 +102,10 @@ export const Default: Story = {
 }
 
 /**
- * `variant="destructive"` (added in 5.2) on a `ContextMenuItem`: the kit's
- * red row, text and icon in `red-text`, as in DropdownMenu.
+ * The 5.2 items in a context menu: `variant="destructive"` on a
+ * `ContextMenuItem` (the kit's red row, text and icon in `red-text`) and a
+ * `ContextMenuSwitchItem` (a checkbox item that ends in the kit's Switch),
+ * as in DropdownMenu.
  */
 export const Destructive: Story = {
   render: () => (
@@ -115,6 +123,10 @@ export const Destructive: Story = {
           Duplicate
           <ContextMenuShortcut keys={['⌘', 'D']} separator="" />
         </ContextMenuItem>
+        <ContextMenuSwitchItem checked>
+          <PushPinIcon />
+          Pin to top
+        </ContextMenuSwitchItem>
         <ContextMenuSeparator />
         <ContextMenuItem variant="destructive">
           <TrashIcon />
@@ -139,5 +151,11 @@ export const Destructive: Story = {
     await expect(
       getComputedStyle(item.querySelector('svg') as SVGElement).color,
     ).toBe(red)
+    const pin = page.getByRole('menuitemcheckbox', { name: 'Pin to top' })
+    await expect(pin).toHaveAttribute('aria-checked', 'true')
+    await expect(pin.querySelector(':scope > [aria-hidden]')).toHaveClass(
+      'w-7',
+      'h-4',
+    )
   },
 }

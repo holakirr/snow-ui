@@ -21,6 +21,8 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuSwitchItem,
+  type DropdownMenuSwitchItemProps,
   DropdownMenuTrigger,
   defaultDropdownMenuSearchFilter,
 } from './DropdownMenu'
@@ -493,5 +495,111 @@ describe('DropdownMenu destructive item', () => {
     expectTypeOf<
       ComponentProps<typeof DropdownMenuItem>['variant']
     >().toEqualTypeOf<'default' | 'destructive' | undefined>()
+  })
+})
+
+describe('DropdownMenuSwitchItem', () => {
+  const Menu = (props: Partial<DropdownMenuSwitchItemProps>) => (
+    <DropdownMenu defaultOpen>
+      <DropdownMenuTrigger>Menu</DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>Hide</DropdownMenuItem>
+        <DropdownMenuSwitchItem {...props}>Wrap column</DropdownMenuSwitchItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+
+  it('is a menuitemcheckbox with aria-checked, and a switch that only shows it', async () => {
+    render(<Menu checked />)
+    const item = await screen.findByRole('menuitemcheckbox', {
+      name: 'Wrap column',
+    })
+    expect(item).toHaveAttribute('aria-checked', 'true')
+    expect(item).toHaveAttribute('data-state', 'checked')
+    expect(item).toHaveClass('group/switch-item', 'p-2', 'rounded-12')
+
+    // No control inside the menu item: a hidden picture of the state.
+    const track = item.querySelector(':scope > span') as HTMLElement
+    expect(track).toHaveAttribute('aria-hidden', 'true')
+    expect(within(item).queryByRole('switch')).not.toBeInTheDocument()
+    expect(item.querySelector('button, input')).toBeNull()
+    expect(track).toHaveClass(
+      'h-4',
+      'w-7',
+      'rounded-80',
+      'bg-control-border',
+      'group-data-[state=checked]/switch-item:bg-primary',
+      'ms-auto',
+    )
+    expect(track.firstElementChild).toHaveClass(
+      'size-3',
+      'bg-static-white',
+      'group-data-[state=checked]/switch-item:translate-x-3',
+      'rtl:group-data-[state=checked]/switch-item:-translate-x-3',
+    )
+    // The item has no check mark.
+    expect(item.querySelector('svg')).toBeNull()
+  })
+
+  it('toggles with Space and calls onCheckedChange with a boolean', async () => {
+    const user = userEvent.setup()
+    const onCheckedChange = vi.fn()
+    render(
+      <Menu
+        checked={false}
+        onCheckedChange={onCheckedChange}
+        onSelect={(event) => event.preventDefault()}
+      />,
+    )
+    const item = await screen.findByRole('menuitemcheckbox')
+    expect(item).toHaveAttribute('aria-checked', 'false')
+    item.focus()
+    await user.keyboard(' ')
+    expect(onCheckedChange).toHaveBeenCalledWith(true)
+    // `onSelect` kept it open.
+    expect(screen.getByRole('menu')).toBeInTheDocument()
+  })
+
+  it('is uncontrolled without `checked` (off), and dims when disabled', async () => {
+    render(<Menu disabled />)
+    const item = await screen.findByRole('menuitemcheckbox')
+    expect(item).toHaveAttribute('aria-checked', 'false')
+    expect(item).toHaveAttribute('aria-disabled', 'true')
+    expect(item.querySelector(':scope > span')).toHaveClass(
+      'group-data-[disabled]/switch-item:bg-black-10',
+      'group-data-[disabled]/switch-item:group-data-[state=checked]/switch-item:bg-black-20',
+    )
+  })
+
+  it('is filtered by a search like the other items', async () => {
+    const user = userEvent.setup()
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Menu</DropdownMenuTrigger>
+        <DropdownMenuContent search>
+          <DropdownMenuItem>Hide</DropdownMenuItem>
+          <DropdownMenuSwitchItem>Wrap column</DropdownMenuSwitchItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Menu' }))
+    await user.type(await screen.findByRole('searchbox'), 'wrap')
+    expect(itemNames()).toEqual(['Wrap column'])
+  })
+
+  it('forwards its ref and types `checked` as a boolean', async () => {
+    let node: HTMLDivElement | null = null
+    render(
+      <Menu
+        ref={(current) => {
+          node = current
+        }}
+      />,
+    )
+    await screen.findByRole('menuitemcheckbox')
+    expect(node).toBeInstanceOf(HTMLDivElement)
+    expectTypeOf<DropdownMenuSwitchItemProps['checked']>().toEqualTypeOf<
+      boolean | undefined
+    >()
   })
 })

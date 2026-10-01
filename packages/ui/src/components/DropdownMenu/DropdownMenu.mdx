@@ -15,6 +15,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuSwitchItem,
   DropdownMenuTrigger,
 } from './DropdownMenu'
 import * as DropdownMenuStories from './DropdownMenu.stories'
@@ -75,6 +76,7 @@ import {
 3. **Content** (`DropdownMenuContent`): the `role="menu"` panel, in a portal, 4px from the trigger (`sideOffset={4}`), at least 128px wide. The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2. Taller than the room on its side of the trigger, it stops at the edge of the window and scrolls, with the kit's scrollbar (`scrollbar-snow`, in an 8px gutter at the end while it scrolls); submenus too. Portal submenus (`DropdownMenuPortal`): the content clips what overflows it.
 4. **Item** (`DropdownMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `variant="destructive"` (added in 5.2) makes it the kit's red row: text and icons in `red-text` (see [Destructive item](#destructive-item)). `inset` adds 32px of start padding, e.g. to line up items without an icon with items that have one.
 5. **Checkbox item** (`DropdownMenuCheckboxItem`) and **radio item** (`DropdownMenuRadioItem`, in a `DropdownMenuRadioGroup`): a 16px check mark in a slot 8px from the end, like Select's (the Figma selected item). Both kinds show the check; the role (`menuitemcheckbox`, `menuitemradio`) tells them apart.
+   **Switch item** (`DropdownMenuSwitchItem`, added in 5.2): a checkbox item that ends in the kit's Switch (28×16) instead of the check, as the kit's "Wrap Column" row. See [Switch item](#switch-item).
 6. **Label** (`DropdownMenuLabel`, optional): a group title, 14/20 `text-secondary`, 28px high (the kit's SearchPopup group title); takes `inset`.
 7. **Group** (`DropdownMenuGroup`, optional): groups items, with a 4px margin above and below (it merges into a separator's 7 and 8px).
 8. **Separator** (`DropdownMenuSeparator`): a 1px `black-4` line, 7px under the item above and 8px over the item below: 16px between the groups' items, as the kit's item group (8px padding above and below, a 1px Black/4% stroke inside its bottom edge).
@@ -87,7 +89,7 @@ The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdown
 ## States
 
 - **Highlighted** (hover or keyboard focus): Black/4% fill. A sub trigger keeps it while its submenu is open.
-- **Checked:** a check mark at the end (`checked` on a checkbox item, or the radio group's `value`).
+- **Checked:** a check mark at the end (`checked` on a checkbox item, or the radio group's `value`); a switch item's switch is on (`primary` track, the thumb at the end).
 - **Destructive** (`variant="destructive"`, added in 5.2): `red-text` text and icons, on the same Black/4% highlight; dimmed like any item when disabled.
 - **Disabled** (`disabled`): Black/20% text and a not-allowed cursor; the arrow keys and typeahead skip it.
 - **Open and closed:** `open` / `defaultOpen` / `onOpenChange` on `DropdownMenu`.
@@ -118,6 +120,27 @@ Added in 5.2. `search` on `DropdownMenuContent` puts a search field at the top o
 
 <Canvas of={DropdownMenuStories.WithSearch} />
 <Canvas of={DropdownMenuStories.SearchNoResults} />
+
+## Switch item
+
+Added in 5.2. `DropdownMenuSwitchItem` is the kit's "Wrap Column" row: a setting that turns on and off, with the kit's Switch at the end of the item (a 28×16 track, `control-border` off and `primary` on, a 12px thumb that moves to the end; a Black/10% or Black/20% track when disabled). It takes the props of a checkbox item, with a boolean `checked` and `onCheckedChange(checked)`.
+
+- **Semantics:** the item is the `menuitemcheckbox`, with `aria-checked`. The switch is a picture of that state (`aria-hidden`, no `role="switch"`): a menu item can't contain a control of its own, so don't put a [Switch](?path=/docs/components-input-switch--docs) in a `DropdownMenuItem`.
+- **Selecting** it (a click, Enter, Space) toggles it and closes the menu, as a checkbox item. To toggle in place, call `event.preventDefault()` in `onSelect`, as the story does.
+- In right-to-left text the thumb moves to the left when on.
+
+```tsx
+<DropdownMenuSwitchItem
+  checked={wrap}
+  onCheckedChange={setWrap}
+  onSelect={(event) => event.preventDefault()}
+>
+  <TextAlignLeftIcon />
+  Wrap column
+</DropdownMenuSwitchItem>
+```
+
+<Canvas of={DropdownMenuStories.SwitchItem} />
 
 ## Destructive item
 
@@ -278,6 +301,12 @@ A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the t
 A `menuitemcheckbox` with a check mark at the end: `checked` and `onCheckedChange`.
 
 <ArgTypes of={DropdownMenuCheckboxItem} />
+
+### DropdownMenuSwitchItem
+
+Added in 5.2. A `menuitemcheckbox` that ends in the kit's Switch: a boolean `checked` and `onCheckedChange`; the other props of `DropdownMenuCheckboxItem`. See [Switch item](#switch-item).
+
+<ArgTypes of={DropdownMenuSwitchItem} />
 
 ### DropdownMenuRadioGroup
 

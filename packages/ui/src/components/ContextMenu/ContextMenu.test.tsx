@@ -1,11 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { SnowUIProvider } from '../SnowUIProvider'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSwitchItem,
   ContextMenuTrigger,
 } from './ContextMenu'
 
@@ -41,5 +42,32 @@ describe('ContextMenu destructive item', () => {
     expect(screen.getByRole('menuitem', { name: 'Rename' })).not.toHaveClass(
       'text-red-text',
     )
+  })
+})
+
+describe('ContextMenuSwitchItem', () => {
+  it('is a menuitemcheckbox with a hidden switch, toggled by a click', async () => {
+    const onCheckedChange = vi.fn()
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Area</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuSwitchItem checked onCheckedChange={onCheckedChange}>
+            Pin to top
+          </ContextMenuSwitchItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText('Area'))
+    const item = await screen.findByRole('menuitemcheckbox', {
+      name: 'Pin to top',
+    })
+    expect(item).toHaveAttribute('aria-checked', 'true')
+    expect(item.querySelector(':scope > span')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    )
+    fireEvent.click(item)
+    expect(onCheckedChange).toHaveBeenCalledWith(false)
   })
 })

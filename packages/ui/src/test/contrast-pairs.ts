@@ -125,6 +125,18 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['primary'],
   },
   {
+    control: 'Menu switch item: off track on the highlighted item',
+    kind: 'nonText',
+    foreground: () => ['black-4', 'control-border'],
+    background: () => ['black-4'],
+  },
+  {
+    control: 'Menu switch item: on track on the highlighted item',
+    kind: 'nonText',
+    foreground: () => ['black-4', 'primary'],
+    background: () => ['black-4'],
+  },
+  {
     control: 'Slider bar (Black/4%) vs the surface',
     kind: 'nonText',
     // With more contrast, a `control-border` stroke inside the bar.

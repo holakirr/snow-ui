@@ -15,6 +15,7 @@ import {
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
+  ContextMenuSwitchItem,
   ContextMenuTrigger,
 } from './ContextMenu'
 import * as ContextMenuStories from './ContextMenu.stories'
@@ -71,6 +72,7 @@ import {
 3. **Content** (`ContextMenuContent`): the `role="menu"` panel, in a portal, at the pointer (Radix places it 2px to the right of the point, aligned to its top). At least 240px wide (`min-w-60`). The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2. It doesn't scroll by default, since a scroll area would clip a submenu that isn't portalled. For a long menu, add `max-h-(--radix-context-menu-content-available-height) overflow-y-auto` and wrap submenus in `ContextMenuPortal`: it scrolls with the kit's scrollbar (`scrollbar-snow`).
 4. **Item** (`ContextMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `variant="destructive"` (added in 5.2) makes it the kit's red row: text and icons in `red-text` (see [Destructive item](#destructive-item)). `inset` adds 32px of start padding.
 5. **Checkbox item** (`ContextMenuCheckboxItem`) and **radio item** (`ContextMenuRadioItem`, in a `ContextMenuRadioGroup`): a 16px check mark in a slot 8px from the end, like Select's (the Figma selected item). Both kinds show the check; the role (`menuitemcheckbox`, `menuitemradio`) tells them apart.
+   **Switch item** (`ContextMenuSwitchItem`, added in 5.2): a checkbox item that ends in the kit's Switch (28×16) instead of the check, as the kit's "Wrap Column" row. See [Switch item](#switch-item).
 6. **Label** (`ContextMenuLabel`, optional): a group title, 14/20 `text-secondary`, 28px high (the kit's SearchPopup group title); takes `inset`.
 7. **Group** (`ContextMenuGroup`, optional): groups items (no spacing of its own).
 8. **Separator** (`ContextMenuSeparator`): a 1px `black-4` line, 7px under the item above and 8px over the item below: 16px between the groups' items, as the kit's item group (8px padding above and below, a 1px Black/4% stroke inside its bottom edge).
@@ -80,11 +82,32 @@ import {
 ## States
 
 - **Highlighted** (hover or keyboard focus): Black/4% fill. A sub trigger keeps it while its submenu is open.
-- **Checked:** a check mark at the end (`checked` on a checkbox item, or the radio group's `value`).
+- **Checked:** a check mark at the end (`checked` on a checkbox item, or the radio group's `value`); a switch item's switch is on (`primary` track, the thumb at the end).
 - **Destructive** (`variant="destructive"`, added in 5.2): `red-text` text and icons, on the same Black/4% highlight; dimmed like any item when disabled.
 - **Disabled** (`disabled` on an item): Black/20% text and a not-allowed cursor; the arrow keys and typeahead skip it.
 - **Disabled trigger** (`disabled` on `ContextMenuTrigger`): the area opens no menu, and the browser's own menu shows instead.
 - **Open and closed:** `open` / `onOpenChange` on `ContextMenu`. The trigger has `data-state="open"` while its menu is open.
+
+## Switch item
+
+Added in 5.2. `ContextMenuSwitchItem` is the kit's "Wrap Column" row: a setting that turns on and off, with the kit's Switch at the end of the item (a 28×16 track, `control-border` off and `primary` on, a 12px thumb that moves to the end; a Black/10% or Black/20% track when disabled). It takes the props of a checkbox item, with a boolean `checked` and `onCheckedChange(checked)`.
+
+- **Semantics:** the item is the `menuitemcheckbox`, with `aria-checked`. The switch is a picture of that state (`aria-hidden`, no `role="switch"`): a menu item can't contain a control of its own, so don't put a [Switch](?path=/docs/components-input-switch--docs) in a `ContextMenuItem`.
+- **Selecting** it (a click, Enter, Space) toggles it and closes the menu, as a checkbox item. To toggle in place, call `event.preventDefault()` in `onSelect`, as the story does.
+- In right-to-left text the thumb moves to the left when on.
+
+```tsx
+<ContextMenuSwitchItem
+  checked={wrap}
+  onCheckedChange={setWrap}
+  onSelect={(event) => event.preventDefault()}
+>
+  <TextAlignLeftIcon />
+  Wrap column
+</ContextMenuSwitchItem>
+```
+
+<Canvas of={ContextMenuStories.Destructive} />
 
 ## Destructive item
 
@@ -222,6 +245,12 @@ A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the t
 A `menuitemcheckbox` with a check mark at the end: `checked` and `onCheckedChange`.
 
 <ArgTypes of={ContextMenuCheckboxItem} />
+
+### ContextMenuSwitchItem
+
+Added in 5.2. A `menuitemcheckbox` that ends in the kit's Switch: a boolean `checked` and `onCheckedChange`; the other props of `ContextMenuCheckboxItem`. See [Switch item](#switch-item).
+
+<ArgTypes of={ContextMenuSwitchItem} />
 
 ### ContextMenuRadioGroup
 

@@ -33,6 +33,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuSwitchItem,
   DropdownMenuTrigger,
 } from './DropdownMenu'
 
@@ -659,7 +660,11 @@ export const SearchNoResults: Story = {
   },
 }
 
-/** Right-to-left text: the field and the items follow the menu's `dir`. */
+/**
+ * Right-to-left text: the search field, the items, the switch item (its
+ * thumb at the left when on) and the destructive item follow the menu's
+ * `dir`.
+ */
 export const SearchRTL: Story = {
   globals: { dir: 'rtl' },
   parameters: { layout: 'padded' },
@@ -687,6 +692,15 @@ export const SearchRTL: Story = {
             <FunnelIcon />
             تصفية
           </DropdownMenuItem>
+          <DropdownMenuSwitchItem checked>
+            <TextAlignLeftIcon />
+            التفاف العمود
+          </DropdownMenuSwitchItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="destructive">
+            <TrashIcon />
+            حذف الخاصية
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -706,6 +720,18 @@ export const SearchRTL: Story = {
       .querySelector('svg')
       ?.getBoundingClientRect()
     await expect((icon?.right ?? 0) > box.right - 16).toBe(true)
+    // The switch is at the end of its item (the left), its thumb at the
+    // switch's end (the left) when on.
+    const item = page.getByRole('menuitemcheckbox', { name: 'التفاف العمود' })
+    const track = item.querySelector('[aria-hidden] > span')
+      ?.parentElement as HTMLElement
+    const thumb = track.firstElementChild as HTMLElement
+    await expect(
+      track.getBoundingClientRect().left - item.getBoundingClientRect().left,
+    ).toBeCloseTo(8, 0)
+    await expect(
+      thumb.getBoundingClientRect().left - track.getBoundingClientRect().left,
+    ).toBeCloseTo(2, 0)
   },
 }
 
@@ -834,5 +860,102 @@ export const DestructiveConfirm: Story = {
     await expect(canvas.getByRole('status')).toHaveTextContent(
       'Property deleted',
     )
+  },
+}
+
+/**
+ * `DropdownMenuSwitchItem` (added in 5.2): the kit's "Wrap Column" row, a
+ * checkbox item that ends in a Switch. It stays a `menuitemcheckbox`; here
+ * `onSelect` keeps the menu open, so Space or Enter toggles in place.
+ */
+export const SwitchItem: Story = {
+  parameters: { layout: 'padded' },
+  render: function Render() {
+    const [wrap, setWrap] = useState(true)
+    const [frozen, setFrozen] = useState(false)
+    return (
+      <div className="h-64">
+        <DropdownMenu defaultOpen modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" label="Column" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-60">
+            <DropdownMenuItem>
+              <EyeSlashIcon />
+              Hide in view
+            </DropdownMenuItem>
+            <DropdownMenuSwitchItem
+              checked={wrap}
+              onCheckedChange={setWrap}
+              onSelect={(event) => event.preventDefault()}
+            >
+              <TextAlignLeftIcon />
+              Wrap column
+            </DropdownMenuSwitchItem>
+            <DropdownMenuSwitchItem
+              checked={frozen}
+              onCheckedChange={setFrozen}
+              onSelect={(event) => event.preventDefault()}
+            >
+              <ArrowUpIcon />
+              Freeze column
+            </DropdownMenuSwitchItem>
+            <DropdownMenuSwitchItem checked disabled>
+              <TextTIcon />
+              Show title
+            </DropdownMenuSwitchItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    )
+  },
+  play: async ({ canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const menu = await page.findByRole('menu')
+    const wrap = page.getByRole('menuitemcheckbox', { name: 'Wrap column' })
+    const track = (item: HTMLElement) =>
+      item.querySelector(':scope > [aria-hidden]') as HTMLElement
+    await settleLayout(menu)
+
+    await step('the kit Switch at the end, 28×16, on', async () => {
+      const box = track(wrap).getBoundingClientRect()
+      await expect(wrap).toHaveAttribute('aria-checked', 'true')
+      await expect(box.width).toBeCloseTo(28, 0)
+      await expect(box.height).toBeCloseTo(16, 0)
+      await expect(wrap.getBoundingClientRect().right - box.right).toBeCloseTo(
+        8,
+        0,
+      )
+      await expect(getComputedStyle(track(wrap)).backgroundColor).toBe(
+        colorOf('text-primary', menu),
+      )
+      const thumb = (
+        track(wrap).firstElementChild as HTMLElement
+      ).getBoundingClientRect()
+      await expect(box.right - thumb.right).toBeCloseTo(2, 0)
+    })
+
+    await step('Space toggles it in place, the menu stays open', async () => {
+      wrap.focus()
+      await userEvent.keyboard(' ')
+      await waitFor(() => expect(wrap).toHaveAttribute('aria-checked', 'false'))
+      await expect(menu).toBeVisible()
+      await settleLayout(menu)
+      await expect(getComputedStyle(track(wrap)).backgroundColor).toBe(
+        colorOf('text-control-border', menu),
+      )
+      await userEvent.keyboard(' ')
+      await waitFor(() => expect(wrap).toHaveAttribute('aria-checked', 'true'))
+    })
+
+    await step('disabled: a Black/20% track when on', async () => {
+      const disabled = page.getByRole('menuitemcheckbox', {
+        name: 'Show title',
+      })
+      await expect(disabled).toHaveAttribute('aria-disabled', 'true')
+      await expect(getComputedStyle(track(disabled)).backgroundColor).toBe(
+        colorOf('text-black-20', menu),
+      )
+    })
   },
 }

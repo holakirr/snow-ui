@@ -35,6 +35,9 @@ import {
   popoverShortcutClasses,
   popoverShortcutEndClasses,
   popoverSurfaceClasses,
+  popoverSwitchItemClasses,
+  popoverSwitchThumbClasses,
+  popoverSwitchTrackClasses,
 } from '../Popover/surface'
 import { Search } from '../Search'
 import { useMessages, useSnowUI } from '../SnowUIProvider'
@@ -601,6 +604,49 @@ const DropdownMenuCheckboxItem: FC<DropdownMenuCheckboxItemProps> = ({
 DropdownMenuCheckboxItem.displayName =
   DropdownMenuPrimitive.CheckboxItem.displayName
 
+type DropdownMenuSwitchItemProps = Omit<
+  ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem>,
+  'checked' | 'onCheckedChange'
+> & {
+  /** Controlled on / off state. */
+  checked?: boolean
+  /** Called with the new state when the item is selected. */
+  onCheckedChange?: (checked: boolean) => void
+}
+
+/**
+ * A checkbox item that ends in the kit's Switch instead of a check (Figma:
+ * the "Wrap Column" row). It is a `menuitemcheckbox` with `aria-checked`;
+ * the switch only shows its state (`aria-hidden`), it isn't a control of its
+ * own. Selecting it closes the menu, as a checkbox item: call
+ * `event.preventDefault()` in `onSelect` to keep the menu open. Added in 5.2.
+ */
+const DropdownMenuSwitchItem: FC<DropdownMenuSwitchItemProps> = ({
+  className,
+  children,
+  ...props
+}) => {
+  const shown = useMenuSearchMatch(props.textValue, children)
+  if (!shown) return null
+
+  return (
+    <DropdownMenuPrimitive.CheckboxItem
+      className={twMerge(
+        popoverItemClasses,
+        popoverSwitchItemClasses,
+        className,
+      )}
+      {...props}
+    >
+      {children}
+      <span aria-hidden className={popoverSwitchTrackClasses}>
+        <span className={popoverSwitchThumbClasses} />
+      </span>
+    </DropdownMenuPrimitive.CheckboxItem>
+  )
+}
+DropdownMenuSwitchItem.displayName = 'DropdownMenuSwitchItem'
+
 type DropdownMenuRadioItemProps = ComponentProps<
   typeof DropdownMenuPrimitive.RadioItem
 >
@@ -724,6 +770,8 @@ export {
   type DropdownMenuSubContentProps,
   DropdownMenuSubTrigger,
   type DropdownMenuSubTriggerProps,
+  DropdownMenuSwitchItem,
+  type DropdownMenuSwitchItemProps,
   DropdownMenuTrigger,
   defaultDropdownMenuSearchFilter,
   dropdownMenuContentStyles,

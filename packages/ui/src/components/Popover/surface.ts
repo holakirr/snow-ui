@@ -40,6 +40,34 @@ export const popoverItemDestructiveClasses =
   'text-red-text dark:text-[color:color-mix(in_srgb,var(--color-red-text),var(--color-black)_40%)]'
 
 /**
+ * A menu switch item (`DropdownMenuSwitchItem`, `ContextMenuSwitchItem`,
+ * added in 5.2): a checkbox item that ends in the kit's Switch instead of a
+ * check (the "Wrap Column" row). The item names the group its switch reads
+ * the state from.
+ */
+export const popoverSwitchItemClasses = 'group/switch-item'
+
+/**
+ * The switch at the end of a menu switch item: the Figma Switch (a 28×16
+ * pill with the inner shadow, `control-border` off, `primary` on; a 12px
+ * thumb inset 2px that travels 12px), drawn from the item's `data-state`.
+ * It is a picture of the item's state (`aria-hidden`), not a control: the
+ * item is the `menuitemcheckbox`. The row's highlight shows hover and focus,
+ * so the track keeps its colour. Disabled: a Black/10% track (Black/20% on)
+ * without the shadow, as Switch.
+ */
+export const popoverSwitchTrackClasses =
+  'pointer-events-none ms-auto inline-flex h-4 w-7 shrink-0 items-center rounded-80 bg-control-border p-0.5 inset-shadow-inner transition-colors group-data-[state=checked]/switch-item:bg-primary group-data-[disabled]/switch-item:bg-black-10 group-data-[disabled]/switch-item:inset-shadow-none group-data-[disabled]/switch-item:group-data-[state=checked]/switch-item:bg-black-20'
+
+/**
+ * The thumb of a menu switch item's switch: Switch's thumb (static white,
+ * "Drop shadow 2"; the per-mode `white` with more contrast), at the end when
+ * checked (the start in right-to-left text).
+ */
+export const popoverSwitchThumbClasses =
+  'block size-3 rounded-full bg-static-white shadow-2 transition-transform group-data-[state=checked]/switch-item:translate-x-3 rtl:group-data-[state=checked]/switch-item:-translate-x-3 motion-reduce:transition-none contrast-more:bg-white'
+
+/**
  * A group title in a popover: the kit's SearchPopup group title (a Text,
  * 4/8 padding, 28px high) in 14/20 `text-secondary` (Figma: Black/40%).
  */

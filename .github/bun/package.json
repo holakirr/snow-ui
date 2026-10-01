@@ -1,0 +1,11 @@
+{
+  "name": "snow-ui-ci-bun",
+  "private": true,
+  "description": "The Bun of the root package.json's packageManager, for the Build Check jobs that run in the Playwright image: setup-bun needs unzip, which the image lacks. Installed with `npm ci`, so pinned with its hashes; scripts/workflows.test.ts keeps the version in sync.",
+  "dependencies": {
+    "bun": "1.3.11"
+  },
+  "allowScripts": {
+    "bun": true
+  }
+}

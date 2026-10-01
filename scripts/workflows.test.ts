@@ -54,13 +54,22 @@ describe('Playwright image', () => {
     ).toEqual([tag])
   })
 
+  // Every `container:` and `image:` in build-check.yml is one of the two
+  // anchors (storybook-tests' container and its image, the pinned one), an
+  // alias of them, or a container mapping (visual's) with such an image.
   it('is the image of every container in build-check.yml', () => {
-    const images = Array.from(
-      buildCheck?.matchAll(/^ +image: (.+)$/gm) ?? [],
-      ([, image]) => image,
+    const values = Array.from(
+      buildCheck?.matchAll(/^ +(container|image):(.*?)(?: +#.*)?$/gm) ?? [],
+      ([, key, value]) => `${key}:${value}`,
     )
-    expect(images.filter((image) => image !== '*playwright-image')).toEqual([
-      `&playwright-image ${pinned}`,
+    const aliases = [
+      'container:',
+      'container: *playwright-container',
+      'image: *playwright-image',
+    ]
+    expect(values.filter((value) => !aliases.includes(value))).toEqual([
+      'container: &playwright-container',
+      `image: &playwright-image ${pinned}`,
     ])
   })
 
@@ -70,4 +79,24 @@ describe('Playwright image', () => {
       expect(source).not.toMatch(/playwright install/)
     },
   )
+})
+
+// In the Playwright image Bun comes from npm, locked with its hashes in
+// .github/bun (`npm ci`): setup-bun, which the other jobs use, needs unzip.
+// It must be the Bun package.json's packageManager names, setup-bun's.
+describe('Bun in the Playwright image', () => {
+  it(".github/bun locks packageManager's Bun", () => {
+    const json = (path: string) =>
+      JSON.parse(readFileSync(join(root, path), 'utf8'))
+    const { packageManager } = json('package.json')
+    const locked = [
+      json('.github/bun/package.json').dependencies.bun,
+      json('.github/bun/package-lock.json').packages['node_modules/bun']
+        .version,
+    ].map((version) => `bun@${version}`)
+    expect(
+      locked,
+      'set the version in .github/bun/package.json, then run `npm install --package-lock-only` there',
+    ).toEqual([packageManager, packageManager])
+  })
 })

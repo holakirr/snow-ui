@@ -203,12 +203,15 @@ jobs:
           persist-credentials: false
 
       # setup-bun unpacks a zip, and the image has no unzip (installing it
-      # would mean apt again): the same Bun release from npm instead, the
-      # version of package.json's packageManager, as setup-bun reads it.
+      # would mean apt again): the same Bun release from npm instead, locked
+      # with its hashes in .github/bun (`npm ci`), whose version
+      # scripts/workflows.test.ts keeps at package.json's packageManager.
+      # allowScripts there lets npm run bun's postinstall, which links the
+      # binary (npm 12 skips dependencies' install scripts otherwise).
       - name: Setup Bun
         run: |
-          npm install --global --prefix "$RUNNER_TEMP/bun" --no-audit --no-fund "$(node -p 'require("./package.json").packageManager')"
-          echo "$RUNNER_TEMP/bun/bin" >> "$GITHUB_PATH"
+          npm ci --prefix .github/bun --no-audit --no-fund
+          echo "$PWD/.github/bun/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -271,8 +274,8 @@ jobs:
       # From npm, as in `storybook-tests` (the image has no unzip).
       - name: Setup Bun
         run: |
-          npm install --global --prefix "$RUNNER_TEMP/bun" --no-audit --no-fund "$(node -p 'require("./package.json").packageManager')"
-          echo "$RUNNER_TEMP/bun/bin" >> "$GITHUB_PATH"
+          npm ci --prefix .github/bun --no-audit --no-fund
+          echo "$PWD/.github/bun/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -319,8 +322,8 @@ jobs:
       # From npm, as in `storybook-tests` (the image has no unzip).
       - name: Setup Bun
         run: |
-          npm install --global --prefix "$RUNNER_TEMP/bun" --no-audit --no-fund "$(node -p 'require("./package.json").packageManager')"
-          echo "$RUNNER_TEMP/bun/bin" >> "$GITHUB_PATH"
+          npm ci --prefix .github/bun --no-audit --no-fund
+          echo "$PWD/.github/bun/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -349,8 +352,8 @@ jobs:
       # From npm, as in `storybook-tests` (the image has no unzip).
       - name: Setup Bun
         run: |
-          npm install --global --prefix "$RUNNER_TEMP/bun" --no-audit --no-fund "$(node -p 'require("./package.json").packageManager')"
-          echo "$RUNNER_TEMP/bun/bin" >> "$GITHUB_PATH"
+          npm ci --prefix .github/bun --no-audit --no-fund
+          echo "$PWD/.github/bun/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -408,7 +411,9 @@ jobs:
   # container resolves to its linux/arm64 variant, the same image as
   # `bun run visual`. npm picks the aarch64 Bun and `bun install` the arm64
   # native packages; the Storybook build from the `build` job (x64) is
-  # static files, the same on any architecture.
+  # static files, the same on any architecture. It runs as root, the image's
+  # default, as it always has: Chromium only, and nothing it writes is
+  # needed after the job.
   visual:
     needs: build
     runs-on: ubuntu-24.04-arm
@@ -437,8 +442,8 @@ jobs:
       - name: Setup Bun
         if: steps.baselines.outputs.present == 'true'
         run: |
-          npm install --global --prefix "$RUNNER_TEMP/bun" --no-audit --no-fund "$(node -p 'require("./package.json").packageManager')"
-          echo "$RUNNER_TEMP/bun/bin" >> "$GITHUB_PATH"
+          npm ci --prefix .github/bun --no-audit --no-fund
+          echo "$PWD/.github/bun/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         if: steps.baselines.outputs.present == 'true'
@@ -489,8 +494,8 @@ jobs:
       # From npm, as in `storybook-tests` (the image has no unzip).
       - name: Setup Bun
         run: |
-          npm install --global --prefix "$RUNNER_TEMP/bun" --no-audit --no-fund "$(node -p 'require("./package.json").packageManager')"
-          echo "$RUNNER_TEMP/bun/bin" >> "$GITHUB_PATH"
+          npm ci --prefix .github/bun --no-audit --no-fund
+          echo "$PWD/.github/bun/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile

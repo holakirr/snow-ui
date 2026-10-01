@@ -19,8 +19,9 @@ updates:
         dependency-type: "production"
         update-types: ["minor", "patch"]
       # Build, test and docs tooling (Storybook, Vitest, Playwright,
-      # tsdown…). A @playwright/test bump needs visual/Dockerfile and the
-      # visual baselines updated in the same PR.
+      # tsdown…). A Playwright bump needs the image pinned in visual/Dockerfile
+      # and .github/workflows/build-check.yml and the visual baselines updated
+      # in the same PR (scripts/workflows.test.ts fails until then).
       tooling:
         dependency-type: "development"
         update-types: ["minor", "patch"]

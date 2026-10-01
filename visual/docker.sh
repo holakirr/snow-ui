@@ -54,7 +54,8 @@ version=$(sed -n 's/^  "version": "\(.*\)",$/\1/p' "$pkg_json")
 image=$(sed -n 's/^FROM //p' visual/Dockerfile)
 if [[ "$image" != "mcr.microsoft.com/playwright:v${version}-noble@sha256:"* ]]; then
   echo "visual/Dockerfile pins '${image}', but @playwright/test is ${version}:" >&2
-  echo "pin mcr.microsoft.com/playwright:v${version}-noble by digest there (see the file)." >&2
+  echo "pin mcr.microsoft.com/playwright:v${version}-noble by digest there and in" >&2
+  echo ".github/workflows/build-check.yml (see visual/Dockerfile)." >&2
   exit 1
 fi
 platform="${VISUAL_DOCKER_PLATFORM:-linux/arm64}"

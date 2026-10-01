@@ -192,6 +192,16 @@ export type Messages = {
   input?: {
     /** The clear button of an `Input` with `clearable`. Added in 5.2. */
     clear: string
+    /**
+     * Announced when an `Input`'s `status` turns `progress` (the kit's In
+     * progress: the value is being checked). Added in 5.2.
+     */
+    progress: string
+    /**
+     * Announced when an `Input`'s `status` turns `success` (the kit's Done:
+     * the check passed). Added in 5.2.
+     */
+    success: string
   }
   link: {
     /** Screen-reader text appended to `external` links. */
@@ -387,6 +397,8 @@ export const defaultMessages: Required<Messages> = {
   },
   input: {
     clear: 'Clear',
+    progress: 'Checking',
+    success: 'Valid',
   },
   link: {
     external: '(opens in a new tab)',

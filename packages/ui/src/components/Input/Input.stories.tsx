@@ -4,7 +4,8 @@ import {
   XCircleIcon,
 } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect } from 'storybook/test'
+import { useState } from 'react'
+import { expect, waitFor } from 'storybook/test'
 import { colorOf, hasInsetRing, hasMoreContrast } from '../../test/colors'
 import { settleLayout } from '../../test/layout'
 import { Combobox, MultiSelect } from '../Combobox'
@@ -368,8 +369,8 @@ export const Clearable: Story = {
 }
 
 /**
- * Right-to-left text: the clear button and the kit's Error icon are at the
- * end of the field, on the left, 16px from the edge.
+ * Right-to-left text: the clear button and the kit's Error and Done icons
+ * are at the end of the field, on the left, 16px from the edge.
  */
 export const EndIconsRTL: Story = {
   globals: { dir: 'rtl' },
@@ -377,6 +378,7 @@ export const EndIconsRTL: Story = {
     <div className="flex flex-col gap-4">
       <Input aria-label="الاسم" defaultValue="آدا" clearable />
       <Input title="البريد" defaultValue="ada@" aria-invalid showErrorIcon />
+      <Input aria-label="المدينة" defaultValue="مدريد" status="success" />
     </div>
   ),
   play: async ({ canvas, canvasElement, userEvent }) => {
@@ -400,6 +402,152 @@ export const EndIconsRTL: Story = {
     await expect(
       leftGap(canvas.getByLabelText('البريد'), 'input-error-icon'),
     ).toEqual({ gap: 16, beforeInput: true })
+    await expect(
+      leftGap(canvas.getByLabelText('المدينة'), 'input-status-icon'),
+    ).toEqual({ gap: 16, beforeInput: true })
+  },
+}
+
+// The Done check's colour: Secondary/Green, mixed with 40% of `black` with
+// more contrast (as in Input).
+const doneColorClasses =
+  'text-green contrast-more:text-[color:color-mix(in_srgb,var(--color-green),var(--color-black)_40%)]'
+
+/**
+ * The kit's In progress and Done states (`status`, added in 5.2), in the
+ * 1 row and 2 row fields: a turning ring in Black/100% (the input is
+ * `aria-busy`), or a check in Secondary/Green, 16px at the end of the field.
+ */
+export const Status: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Input aria-label="Username" defaultValue="ada" status="progress" />
+      <Input aria-label="Nickname" defaultValue="ada" status="success" />
+      <Input title="Email" defaultValue="ada@example.com" status="progress" />
+      <Input title="Website" defaultValue="ada.dev" status="success" />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, step }) => {
+    await settleLayout(canvasElement)
+    for (const [name, status] of [
+      ['Username', 'progress'],
+      ['Nickname', 'success'],
+      ['Email', 'progress'],
+      ['Website', 'success'],
+    ] as const) {
+      await step(`${name}: ${status}`, async () => {
+        const input = canvas.getByLabelText(name)
+        const field = input.closest('[data-slot="input"]') as HTMLElement
+        const icon = field.querySelector(
+          '[data-slot="input-status-icon"]',
+        ) as HTMLElement
+        const box = field.getBoundingClientRect()
+        const glyph = icon.getBoundingClientRect()
+        await expect(icon).toHaveAttribute('data-status', status)
+        await expect(glyph.width).toBe(16)
+        await expect(glyph.height).toBe(16)
+        await expect(box.right - glyph.right).toBe(16)
+        await expect(glyph.top - box.top).toBe(box.bottom - glyph.bottom)
+        await expect(getComputedStyle(icon).color).toBe(
+          colorOf(
+            status === 'progress' ? 'text-black' : doneColorClasses,
+            field,
+          ),
+        )
+        if (status === 'progress') {
+          await expect(input).toHaveAttribute('aria-busy', 'true')
+        } else {
+          await expect(input).not.toHaveAttribute('aria-busy')
+        }
+      })
+    }
+  },
+}
+
+const takenNames = ['admin', 'ada']
+
+/** A username field that checks the value when it loses focus. */
+const UsernameCheck = () => {
+  const [value, setValue] = useState('')
+  const [status, setStatus] = useState<'progress' | 'success'>()
+  const [error, setError] = useState('')
+
+  const check = () => {
+    if (!value) return
+    setError('')
+    setStatus('progress')
+    window.setTimeout(() => {
+      const taken = takenNames.includes(value.toLowerCase())
+      setStatus(taken ? undefined : 'success')
+      setError(taken ? 'This username is taken.' : '')
+    }, 400)
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Input
+        title="Username"
+        value={value}
+        onChange={(event) => {
+          setValue(event.target.value)
+          setStatus(undefined)
+        }}
+        onBlur={check}
+        status={status}
+        statusLabel={
+          status === 'success' ? 'Username available' : 'Checking the username'
+        }
+        showErrorIcon
+        aria-invalid={!!error}
+        aria-describedby={error ? 'username-error' : undefined}
+      />
+      {error && (
+        <p id="username-error" role="alert" className="text-12 text-red-text">
+          {error}
+        </p>
+      )}
+    </div>
+  )
+}
+
+/**
+ * The kit's rule: "some forms need to check what you enter; the check will
+ * occur when the form loses focus". Leaving the field shows In progress,
+ * then Done, or the Error icon with a message for a taken name ("ada"). The
+ * status region announces "Checking the username", then "Username
+ * available" (`statusLabel`).
+ */
+export const CheckOnBlur: Story = {
+  tags: ['skip-visual'],
+  render: () => <UsernameCheck />,
+  play: async ({ canvas, userEvent, step }) => {
+    const input = canvas.getByLabelText('Username')
+    const region = () =>
+      input
+        .closest('[data-slot="input"]')
+        ?.querySelector('[role="status"]') as HTMLElement | null
+
+    await step('an available name: In progress, then Done', async () => {
+      await userEvent.type(input, 'lovelace')
+      await userEvent.tab()
+      await waitFor(() =>
+        expect(region()).toHaveTextContent('Checking the username'),
+      )
+      await expect(input).toHaveAttribute('aria-busy', 'true')
+      await waitFor(() =>
+        expect(region()).toHaveTextContent('Username available'),
+      )
+      await expect(input).not.toHaveAttribute('aria-busy')
+    })
+
+    await step('a taken name: the Error icon and the message', async () => {
+      await userEvent.clear(input)
+      await userEvent.type(input, 'ada')
+      await userEvent.tab()
+      await waitFor(() => expect(input).toBeInvalid())
+      await expect(input).toHaveAccessibleDescription('This username is taken.')
+      await expect(region()).toBeNull()
+    })
   },
 }
 

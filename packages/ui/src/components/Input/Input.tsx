@@ -10,6 +10,7 @@ import {
   type FocusEvent,
   type PointerEvent,
   type ReactNode,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -19,7 +20,8 @@ import { setNativeValue } from '../../utils/native-value'
 import { twMerge } from '../../utils/tw-merge'
 import { Label } from '../Label'
 import { useMessages } from '../SnowUIProvider'
-import { WarningGlyph } from './fieldIcons'
+import { LoadingRing } from '../Spinner/ring'
+import { CheckGlyph, WarningGlyph } from './fieldIcons'
 
 // The class strings the text fields share live in a module without
 // 'use client', so a server component (Textarea) can read them; re-exported
@@ -70,6 +72,22 @@ const errorIconClasses =
 // 2.5.8); keyboard focus gets the `focus-ring` outline.
 const clearButtonClasses =
   'relative hidden shrink-0 cursor-pointer items-center justify-center rounded-full text-black hit-area focus-ring group-focus-within/input:flex [&>svg]:size-4'
+
+// The kit's In progress icon: the turning ring of Spinner (Loading A), in
+// Black/100%, as the kit draws it. It stops turning for reduced motion.
+const progressIconClasses = 'text-black'
+
+// The kit's Done icon: a Check in Secondary/Green (1.69:1 on white), hidden
+// while the field is invalid. With more contrast it is green mixed with 40%
+// of `black` (white in dark mode), Alert's success icon: 4.4:1 on white.
+const successIconClasses =
+  'text-green group-has-aria-invalid/input:hidden contrast-more:text-[color:color-mix(in_srgb,var(--color-green),var(--color-black)_40%)]'
+
+/**
+ * The kit's field states "In progress" (a check of the value is running)
+ * and "Done" (it passed). Added in 5.2.
+ */
+type InputStatus = 'progress' | 'success'
 
 /** Whether a field value is not empty. */
 const hasText = (value: ComponentProps<'input'>['value']) =>
@@ -133,6 +151,24 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
   onClear?: () => void
 
   /**
+   * The kit's In progress and Done states, for a value the app checks (the
+   * kit checks when the field loses focus): `progress` shows a turning ring
+   * at the end of the field (instead of the Error icon) and sets
+   * `aria-busy` on the input; `success` shows a green check (hidden while
+   * the field is invalid). A status region announces the change: `progress`
+   * as "Checking", `success` as "Valid" (`statusLabel`, or
+   * `messages.input`). Added in 5.2.
+   */
+  status?: InputStatus
+
+  /**
+   * What the status region announces for the current `status`, e.g.
+   * "Checking the username" or "Username available".
+   * @default messages.input.progress: "Checking", messages.input.success: "Valid"
+   */
+  statusLabel?: string
+
+  /**
    * Class names for the `<input>` element. `className` styles the field.
    */
   inputClassName?: string
@@ -164,6 +200,8 @@ const Input: FC<InputProps> = ({
   clearable = false,
   clearLabel,
   onClear,
+  status,
+  statusLabel,
   value,
   defaultValue,
   onChange,
@@ -205,6 +243,21 @@ const Input: FC<InputProps> = ({
     syncFilled()
     onFocus?.(event)
   }
+
+  // The status region is in the DOM while the field has a status, and its
+  // text changes after the region is there (an effect): a region added with
+  // its text isn't announced by every screen reader. A status the field
+  // starts with isn't announced.
+  const statusText =
+    status === 'progress'
+      ? (statusLabel ?? messages.input.progress)
+      : status === 'success'
+        ? (statusLabel ?? messages.input.success)
+        : ''
+  const [announced, setAnnounced] = useState(statusText)
+  useEffect(() => {
+    setAnnounced(statusText)
+  }, [statusText])
 
   const clear = () => {
     const input = inputRef.current
@@ -274,6 +327,7 @@ const Input: FC<InputProps> = ({
           defaultValue={defaultValue}
           onChange={handleChange}
           onFocus={handleFocus}
+          aria-busy={status === 'progress' || undefined}
           disabled={disabled}
           readOnly={readOnly}
           {...props}
@@ -298,11 +352,34 @@ const Input: FC<InputProps> = ({
       {showErrorIcon && (
         <span
           aria-hidden
-          className={twMerge(statusIconClasses, errorIconClasses)}
+          className={twMerge(
+            statusIconClasses,
+            errorIconClasses,
+            // The In progress ring takes its place.
+            status === 'progress' && 'group-has-aria-invalid/input:hidden',
+          )}
           data-slot="input-error-icon"
           data-error-icon=""
         >
           <WarningGlyph />
+        </span>
+      )}
+      {(status === 'progress' || status === 'success') && (
+        <span
+          aria-hidden
+          className={twMerge(
+            statusIconClasses,
+            status === 'progress' ? progressIconClasses : successIconClasses,
+          )}
+          data-slot="input-status-icon"
+          data-status={status}
+        >
+          {status === 'progress' ? <LoadingRing /> : <CheckGlyph />}
+        </span>
+      )}
+      {status !== undefined && (
+        <span role="status" className="sr-only" data-slot="input-status">
+          {announced}
         </span>
       )}
     </div>
@@ -311,4 +388,4 @@ const Input: FC<InputProps> = ({
 
 Input.displayName = 'Input'
 
-export { Input, type InputProps }
+export { Input, type InputProps, type InputStatus }

@@ -41,6 +41,7 @@ import { Input } from '@holakirr/snow-ui'
 5. **End content** (`endContent`, optional): after the value, e.g. an icon, a button or a [KBD](?path=/docs/components-text-kbd--docs).
 6. **Clear button** (`clearable`, optional, added in 5.2): the kit's 16px `XCircle`, after the end content, while the field has focus and a value.
 7. **Error icon** (`showErrorIcon`, optional, added in 5.2): the kit's 16px `Warning`, after the end content, while the input is invalid.
+8. **Status icon** (`status`, optional, added in 5.2): the kit's In progress ring or Done check at the end of the field, and a visually hidden status region that announces the change.
 
 ## Variants
 
@@ -98,6 +99,21 @@ Search has had its own clear button since 5.0, shown whenever it has a value.
 
 Added in 5.2. With `showErrorIcon`, an invalid input also shows the kit's Error icon: a 16px `Warning` after the end content, 16px from the end and centred in the field's height (1 row and 2 row), in the red of the stroke (`control-border-invalid`: Secondary/Red, `red-text` with more contrast). The `title` stays grey, and so does an invalid `FormLabel` of a [Form](?path=/docs/components-form--docs) item that holds the field, as the kit's title. A valid field shows nothing. The icon is decorative (`aria-hidden`): `aria-invalid` and the error text (`FormMessage`, linked by `aria-describedby`) tell the error. It is opt-in in 5.x because it changes how invalid fields look.
 
+### In progress and Done
+
+<Canvas of={InputStories.Status} />
+
+Added in 5.2. `status` gives the kit's states for a value your app checks (the kit checks it when the field loses focus):
+
+| `status` | Kit state | Icon (16px, at the end, centred) | Input |
+| --- | --- | --- | --- |
+| `progress` | In progress | the turning ring of [Spinner](?path=/docs/components-spinner--docs) in Black/100% (white in dark mode); it stops turning for reduced motion | `aria-busy="true"` |
+| `success` | Done | a `Check` in Secondary/Green; hidden while the field is invalid | — |
+
+The ring takes the Error icon's place while the check runs; a focused field keeps its clear button. A visually hidden status region (`role="status"`) is in the field while it has a `status`, and announces the change: "Checking" and "Valid" (`messages.input.progress` and `success`), or your `statusLabel`, e.g. "Username available". A status the field is rendered with is not announced. Set `status` back to `undefined` when the value changes, and show a failed check as an error (`aria-invalid` and a message, the Error icon with `showErrorIcon`):
+
+<Canvas of={InputStories.CheckOnBlur} />
+
 ## Accessibility
 
 - It renders a native `<input>` inside a `<div>`, with the role of its `type`: a textbox, `spinbutton` for `number`, `searchbox` for `search`, none for `password`.
@@ -105,6 +121,7 @@ Added in 5.2. With `showErrorIcon`, an invalid input also shows the kit's Error 
 - `title` is the visible label, not the native tooltip attribute: the prop replaces it.
 - Give a button in the start or end content its own accessible name. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
 - `disabled` removes the field from the tab order. A `readOnly` field stays focusable and its value can be selected and copied.
+- The kit's icons are `aria-hidden`: the clear button is a named button, the error is `aria-invalid` with the error text (`aria-describedby`), In progress is `aria-busy` and both statuses are announced by the field's status region.
 
 ### Keyboard
 
@@ -123,13 +140,14 @@ The full table is in the package README.
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | Title (`Label`) in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
+| Done check (`status="success"`) in Secondary/Green: 1.69:1 on white | the same with the default contrast; with more contrast, Secondary/Green mixed with 40% of `black` (Alert's success icon): 4.4:1 on white | 1.4.11 |
 
 Known gaps with the default contrast, which keeps the Figma values: the 0.5px Black/20% stroke (1.6:1) and the Black/20% placeholder (it is never the field's only label). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border` (Black/50%, at least 3.79:1; White/50% in dark mode, at least 3.3:1) and the placeholder Black/60% (at least 5.25:1; White/75% in dark mode, at least 4.63:1).
 
 ## Localization and RTL
 
-- `startContent` and `endContent` follow the text direction: in right-to-left text the start content is on the right and the text starts on the right. The clear button and the Error icon follow it too: they are on the left in right-to-left text.
-- Input's one built-in string is the clear button's name (`messages.input.clear`, or `clearLabel`); the title, placeholder and adornments are yours to translate.
+- `startContent` and `endContent` follow the text direction: in right-to-left text the start content is on the right and the text starts on the right. The clear button and the Error and status icons follow it too: they are on the left in right-to-left text.
+- Input's built-in strings are the clear button's name and the status announcements (`messages.input`, or `clearLabel` and `statusLabel`); the title, placeholder and adornments are yours to translate.
 
 <Canvas of={InputStories.RTL} />
 
@@ -167,6 +185,6 @@ Input is a native field: pass `value` with `onChange` to control it, or `default
 
 ## Props
 
-Input takes the props below (`clearable`, `clearLabel`, `onClear` and `showErrorIcon` are new in 5.2) and the attributes of the native `<input>`, which gets every other prop, `ref` included. `className` and `style` go to the field `<div>`; `inputClassName` and `inputStyle` to the `<input>`. The Figma field's class strings that Textarea uses (`basicInputClasses`, `focusInputClasses`, `staticInputClasses`, `disabledInputClasses`) are exported too, for fields of your own.
+Input takes the props below (`clearable`, `clearLabel`, `onClear`, `showErrorIcon`, `status` and `statusLabel` are new in 5.2) and the attributes of the native `<input>`, which gets every other prop, `ref` included. `className` and `style` go to the field `<div>`; `inputClassName` and `inputStyle` to the `<input>`. The Figma field's class strings that Textarea uses (`basicInputClasses`, `focusInputClasses`, `staticInputClasses`, `disabledInputClasses`) are exported too, for fields of your own.
 
 <Controls />

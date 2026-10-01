@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { expect, userEvent, waitFor } from 'storybook/test'
 import { animationsEnded } from '../../test/animations'
-import { hasInsetRing } from '../../test/colors'
+import { colorOf, hasInsetRing } from '../../test/colors'
 import { Typography } from '../Text'
 import { Search } from './Search'
 
@@ -47,6 +47,28 @@ export const Outline: Story = {
 
 export const Typing: Story = {
   args: { defaultValue: 'Typing' },
+}
+
+/**
+ * The kit's In progress (`status="progress"`, added in 5.2): while results
+ * load, a turning ring in Black/100% takes the clear button's place, and
+ * the input is `aria-busy`.
+ */
+export const InProgress: Story = {
+  args: { defaultValue: 'Typing', status: 'progress' },
+  play: async ({ canvas, canvasElement }) => {
+    const input = canvas.getByRole('searchbox')
+    const ring = canvasElement.querySelector(
+      'svg.animate-spinner-turn',
+    ) as SVGElement
+    await expect(input).toHaveAttribute('aria-busy', 'true')
+    await expect(canvas.queryByRole('button')).toBeNull()
+    const { width, height } = ring.getBoundingClientRect()
+    await expect([width, height]).toEqual([16, 16])
+    await expect(getComputedStyle(ring).color).toBe(
+      colorOf('text-black', canvasElement),
+    )
+  },
 }
 
 /** The clear button's keyboard focus: `focus-ring`, at full opacity. */

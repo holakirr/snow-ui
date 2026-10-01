@@ -106,6 +106,8 @@ export const ruMessages: Messages = {
   },
   input: {
     clear: 'Очистить',
+    progress: 'Проверка',
+    success: 'Верно',
   },
   link: {
     external: '(откроется в новой вкладке)',

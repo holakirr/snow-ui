@@ -535,3 +535,140 @@ describe('Input clearable', () => {
     container.remove()
   })
 })
+
+describe('Input status', () => {
+  const statusIcon = (input: HTMLElement) =>
+    input
+      .closest('[data-slot="input"]')
+      ?.querySelector('[data-slot="input-status-icon"]')
+
+  it('has no status icon, region or aria-busy by default', () => {
+    render(<Input aria-label="Name" />)
+
+    const input = screen.getByRole('textbox')
+    expect(statusIcon(input)).toBeNull()
+    expect(screen.queryByRole('status')).toBeNull()
+    expect(input).not.toHaveAttribute('aria-busy')
+  })
+
+  it('shows the In progress ring and marks the input busy', () => {
+    render(<Input aria-label="Name" status="progress" />)
+
+    const input = screen.getByRole('textbox')
+    const icon = statusIcon(input)
+    expect(input).toHaveAttribute('aria-busy', 'true')
+    expect(icon).toHaveAttribute('data-status', 'progress')
+    expect(icon).toHaveAttribute('aria-hidden', 'true')
+    expect(icon).toHaveClass('text-black')
+    // The turning ring, stopped for reduced motion.
+    expect(icon?.querySelector('svg')).toHaveClass(
+      'animate-spinner-turn',
+      'motion-reduce:animate-none',
+    )
+  })
+
+  it('shows the Done check, hidden while the field is invalid', () => {
+    render(<Input aria-label="Name" status="success" />)
+
+    const input = screen.getByRole('textbox')
+    const icon = statusIcon(input)
+    expect(input).not.toHaveAttribute('aria-busy')
+    expect(icon).toHaveAttribute('data-status', 'success')
+    expect(icon).toHaveClass(
+      'text-green',
+      'group-has-aria-invalid/input:hidden',
+    )
+  })
+
+  it('announces a change of status, not the status it starts with', async () => {
+    const { rerender } = render(<Input aria-label="Name" status="success" />)
+    // There from the start: nothing to announce, the text is already there.
+    expect(screen.getByRole('status')).toHaveTextContent('Valid')
+
+    rerender(<Input aria-label="Name" />)
+    expect(screen.queryByRole('status')).toBeNull()
+
+    // The region comes first, empty; its text follows (an effect).
+    rerender(<Input aria-label="Name" status="progress" />)
+    expect(await screen.findByRole('status')).toHaveTextContent('Checking')
+
+    rerender(<Input aria-label="Name" status="success" />)
+    expect(screen.getByRole('status')).toHaveTextContent('Valid')
+
+    rerender(<Input aria-label="Name" status={undefined} />)
+    expect(screen.queryByRole('status')).toBeNull()
+  })
+
+  it('takes the announcement from statusLabel, or from SnowUIProvider', () => {
+    const { rerender } = render(
+      <Input aria-label="Name" status="success" statusLabel="Name available" />,
+    )
+    expect(screen.getByRole('status')).toHaveTextContent('Name available')
+
+    rerender(
+      <SnowUIProvider messages={{ input: { success: 'Верно' } }}>
+        <Input aria-label="Name" status="success" />
+      </SnowUIProvider>,
+    )
+    expect(screen.getByRole('status')).toHaveTextContent('Верно')
+  })
+
+  it('puts the ring in place of the Error icon, next to the clear button', () => {
+    const { rerender } = render(
+      <Input
+        aria-label="Name"
+        defaultValue="Ada"
+        clearable
+        showErrorIcon
+        aria-invalid
+      />,
+    )
+    const input = screen.getByRole('textbox')
+    const errorIcon = () =>
+      input
+        .closest('[data-slot="input"]')
+        ?.querySelector('[data-slot="input-error-icon"]')
+    expect(screen.getByRole('button', { name: 'Clear' })).not.toBeNull()
+    expect(errorIcon()).toHaveClass('group-has-aria-invalid/input:flex')
+
+    rerender(
+      <Input
+        aria-label="Name"
+        defaultValue="Ada"
+        clearable
+        showErrorIcon
+        aria-invalid
+        status="progress"
+      />,
+    )
+    // A focused field keeps its clear button (the kit checks after focus
+    // leaves, so it draws them apart).
+    expect(screen.getByRole('button', { name: 'Clear' })).not.toBeNull()
+    expect(errorIcon()).toHaveClass('group-has-aria-invalid/input:hidden')
+    expect(errorIcon()).not.toHaveClass('group-has-aria-invalid/input:flex')
+  })
+
+  it('keeps your own aria-busy', () => {
+    render(<Input aria-label="Name" status="progress" aria-busy={false} />)
+
+    expect(screen.getByRole('textbox')).toHaveAttribute('aria-busy', 'false')
+  })
+
+  it('renders the status on the server and hydrates without a mismatch', async () => {
+    const element = <Input aria-label="Name" status="success" />
+    const html = renderToString(element)
+    expect(html).toContain('data-status="success"')
+    expect(html).toMatch(/role="status"[^>]*>Valid</)
+
+    const container = document.createElement('div')
+    container.innerHTML = html
+    document.body.append(container)
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    await act(async () => {
+      hydrateRoot(container, element)
+    })
+    expect(errors).not.toHaveBeenCalled()
+    errors.mockRestore()
+    container.remove()
+  })
+})

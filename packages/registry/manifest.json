@@ -566,7 +566,12 @@
         "@holakirr/snow-ui-icons",
         "@radix-ui/react-compose-refs"
       ],
-      "registryDependencies": ["label", "snow-core", "snow-ui-provider"],
+      "registryDependencies": [
+        "label",
+        "snow-core",
+        "snow-ui-provider",
+        "spinner"
+      ],
       "import": "components/Input/Input",
       "exports": [
         "Input",
@@ -576,7 +581,7 @@
         "invalidInputClasses",
         "staticInputClasses"
       ],
-      "types": ["InputProps"],
+      "types": ["InputProps", "InputStatus"],
       "docs": "components-input-input"
     },
     {
@@ -891,7 +896,12 @@
       "title": "Search",
       "files": ["components/Search/Search.tsx"],
       "dependencies": ["@holakirr/snow-ui-icons", "class-variance-authority"],
-      "registryDependencies": ["kbd", "snow-core", "snow-ui-provider"],
+      "registryDependencies": [
+        "kbd",
+        "snow-core",
+        "snow-ui-provider",
+        "spinner"
+      ],
       "import": "components/Search/Search",
       "exports": ["Search", "searchStyles"],
       "types": ["SearchProps", "SearchSize", "SearchVariant"],

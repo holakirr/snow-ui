@@ -1,5 +1,5 @@
 export * from './Checkbox'
-export { Input, type InputProps } from './Input'
+export { Input, type InputProps, type InputStatus } from './Input'
 export * from './InputSmall'
 // Explicit, so the invalid stroke classes the fields share
 // (`invalidInputClasses`) stay inside the package; from a module without

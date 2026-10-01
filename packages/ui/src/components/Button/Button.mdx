@@ -89,18 +89,29 @@ An icon in `startContent` with no `label` and no `endContent` makes a square ico
 
 <Canvas of={ButtonStories.Disabled} />
 
+### Loading
+
+Added in 5.2. `loading` is the kit's loading state (Guidance → Form): "Save Changes" turns into a Gray button of the same width with a spinner, then a "Saved" toast. The content stays where it is, invisible, so the button keeps its size (no layout shift) and its accessible name; the [Spinner](?path=/docs/components-spinner--docs) turns in the middle, the size of the button's icon (12, 16 or 20px; 16, 20 or 24px in an icon-only button) and in its text colour. A Filled button turns Gray (Black/4%, a black spinner); the other variants keep their fill. A loading button has no hover fill, doesn't shrink when pressed and shows the `progress` cursor.
+
+The button stays focusable and gets `aria-busy="true"` and `aria-disabled="true"`; a click, Enter or Space does nothing — no `onClick`, no form submission (implicit submission with Enter in a field included), no navigation with `asChild` and a link. `disabled` isn't set, because a disabled button loses the keyboard focus. With reduced motion the spinner pulses instead of turning; in forced-colors mode the content stays hidden under it (text right in the button is put in a `<span>` while it loads). It cancels clicks: a trigger that opens on pointer down or on a key instead, such as `DropdownMenuTrigger` (Enter, Space, the arrow keys), still opens, so keep `loading` off such a trigger.
+
+<Canvas of={ButtonStories.Loading} />
+
+<Canvas of={ButtonStories.LoadingStates} />
+
 ## Accessibility
 
 - It renders a native `<button type="button">`. Pass `type="submit"` to submit a form.
 - The accessible name is the label (plus any `children`). An icon-only button has no text, so give it an `aria-label` (the stories use `title`); a button whose only content is icons (`startContent`, `endContent` or children) and has no name logs a development warning. An icon is an `<svg>`, an `<img>` or a component named like one (`StarIcon`); any other element may render text (`<FormattedMessage id="save" />`), so it doesn't warn. The label of an `aria-hidden` icon names nothing. Icons from `@holakirr/snow-ui-icons` are `aria-hidden` unless they get an `alt`.
 - Screen readers announce a `disabled` button as unavailable.
+- A `loading` button is announced as busy and unavailable (`aria-busy`, `aria-disabled`) with its usual name, and keeps the focus. Tell the user how it ended in text that stays on the page or in a toast ("Saved").
 
 ### Keyboard
 
 | Key | Action |
 | --- | --- |
-| Tab | move focus to the button; a `disabled` button is skipped |
-| Enter, Space | activate the button (with `type="submit"`, submit its form). With `asChild` and a link, Enter follows the link and Space does nothing |
+| Tab | move focus to the button; a `disabled` button is skipped, a `loading` one isn't |
+| Enter, Space | activate the button (with `type="submit"`, submit its form). With `asChild` and a link, Enter follows the link and Space does nothing. A `loading` button does nothing |
 
 ### Deviations from the Figma kit
 
@@ -125,6 +136,10 @@ With reduced motion (`prefers-reduced-motion: reduce`, WCAG 2.3.3) a pressed but
 - The label is yours to translate; Button renders no built-in strings.
 
 <Canvas of={ButtonStories.RTL} />
+
+The spinner of a `loading` button stays in the middle in right-to-left text.
+
+<Canvas of={ButtonStories.LoadingRTL} />
 
 ## Composition (asChild)
 

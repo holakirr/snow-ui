@@ -73,6 +73,24 @@ Button groups from the Figma Button and Group pages: Sign up + Sign in (Small, `
 
 <Canvas of={GroupStories.ButtonGroups} />
 
+### Window buttons
+
+Added in 5.2. The kit's window group (Component state → IconButton, Button): Minimize, Maximize and Close as Small icon-only Borderless buttons — 24×24px with a 16px glyph — in a `gap={0}` group. The inner corners are square and the outer ones 12px (`rounded-none rounded-s-12`, `rounded-none rounded-e-12`), so the Black/4% hover fills of neighbours meet; Close hovers Secondary/Red with a static white glyph (`hover:bg-red hover:text-static-white`, 3.36:1, above the 3:1 an icon needs). Disabled, the glyphs are Black/20% (the kit draws the whole group at 20%). It is a composition, not a component: the kit has no window-group component, only these Button instances, and the one style of its own is the red hover of Close.
+
+```tsx
+<Group gap={0} aria-label="Window">
+  <Button aria-label="Minimize" startContent={<MinimizeIcon size={16} />} className="rounded-none rounded-s-12" />
+  <Button aria-label="Maximize" startContent={<MaximizeIcon size={16} />} className="rounded-none" />
+  <Button aria-label="Close" startContent={<CloseIcon size={16} />} className="rounded-none rounded-e-12 hover:bg-red hover:text-static-white" />
+</Group>
+```
+
+<Canvas of={GroupStories.WindowButtons} />
+
+In right-to-left text the group mirrors, Close on the left, and the rounded corners follow:
+
+<Canvas of={GroupStories.WindowButtonsRTL} />
+
 ## Accessibility
 
 - It renders `role="group"`. Give the group a name with `aria-label` (or `aria-labelledby`) when the items need context, e.g. "Toolbar" or "Text formatting".

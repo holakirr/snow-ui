@@ -1,7 +1,7 @@
 import { ArrowLineRightIcon, StarIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Fragment } from 'react'
-import { expect, fn } from 'storybook/test'
+import { Fragment, useState } from 'react'
+import { expect, fn, waitFor } from 'storybook/test'
 import { BUTTON_VARIANTS, ROLES, SIZES } from '../../constants'
 import { colorOf, settledColor } from '../../test/colors'
 import { Typography } from '../Text/Text'
@@ -69,6 +69,9 @@ const meta = {
       control: { type: 'radio' },
     },
     disabled: {
+      control: { type: 'boolean' },
+    },
+    loading: {
       control: { type: 'boolean' },
     },
   },
@@ -161,6 +164,223 @@ export const Disabled: Story = {
       ))}
     </div>
   ),
+}
+
+/**
+ * The kit's form button (Guidance → Form): "Save Changes" becomes a Gray
+ * button of the same width with a spinner while it saves. `loading` (added
+ * in 5.2) keeps the content in place, invisible, so nothing moves, and the
+ * button keeps its name and the focus; it is `aria-busy`, and a click,
+ * Enter or Space does nothing until it is done.
+ */
+export const Loading: Story = {
+  args: { onClick: fn() },
+  render: ({ onClick }) => {
+    const SaveChanges = () => {
+      const [saving, setSaving] = useState(false)
+      return (
+        <div className="flex items-center gap-2 rounded-16 p-4 inset-ring-[0.5px] inset-ring-black-10">
+          <Button
+            variant="gray"
+            label="Cancel"
+            onClick={() => setSaving(false)}
+          />
+          <Button
+            variant="filled"
+            label="Save Changes"
+            loading={saving}
+            onClick={(event) => {
+              onClick?.(event)
+              setSaving(true)
+            }}
+          />
+        </div>
+      )
+    }
+    return <SaveChanges />
+  },
+  play: async ({ args, canvas, canvasElement, userEvent, step }) => {
+    await canvasElement.ownerDocument.fonts.ready
+    const save = canvas.getByRole('button', { name: 'Save Changes' })
+    save.getBoundingClientRect()
+    const before = save.getBoundingClientRect()
+
+    await step('a click starts loading, with no layout shift', async () => {
+      await userEvent.click(save)
+      await expect(args.onClick).toHaveBeenCalledOnce()
+      await expect(save).toHaveAttribute('aria-busy', 'true')
+      await expect(save).toHaveAttribute('aria-disabled', 'true')
+      const after = save.getBoundingClientRect()
+      await expect(after.width).toBeCloseTo(before.width, 0)
+      await expect(after.height).toBeCloseTo(before.height, 0)
+      await expect(after.left).toBeCloseTo(before.left, 0)
+      // The name stays; the spinner is in the middle.
+      await expect(canvas.getByRole('button', { name: 'Save Changes' })).toBe(
+        save,
+      )
+      const ring = save
+        .querySelector('[data-button-spinner]')
+        ?.getBoundingClientRect()
+      await expect(ring?.width).toBeCloseTo(12, 0)
+      await expect((ring?.left ?? 0) + (ring?.width ?? 0) / 2).toBeCloseTo(
+        after.left + after.width / 2,
+        0,
+      )
+    })
+
+    await step(
+      'it keeps the focus and ignores Enter, Space and clicks',
+      async () => {
+        await expect(save).toHaveFocus()
+        await userEvent.keyboard('{Enter}')
+        await userEvent.keyboard(' ')
+        await userEvent.click(save)
+        await expect(args.onClick).toHaveBeenCalledOnce()
+      },
+    )
+
+    await step('Cancel ends it', async () => {
+      await userEvent.click(canvas.getByRole('button', { name: 'Cancel' }))
+      await expect(save).not.toHaveAttribute('aria-busy')
+      await expect(save.getBoundingClientRect().width).toBeCloseTo(
+        before.width,
+        0,
+      )
+    })
+  },
+}
+
+/**
+ * Every variant and size while loading: the spinner is the size of the
+ * button's icon (12, 16, 20; 16, 20, 24 in an icon-only button) in its text
+ * colour. Filled turns Gray; the others keep their fill, without the hover.
+ */
+export const LoadingStates: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="grid grid-cols-[repeat(4,auto)] items-center justify-start gap-4">
+      {Object.values(BUTTON_VARIANTS).map((variant) => (
+        <Fragment key={variant}>
+          {Object.values(SIZES).map((size) => (
+            <Button
+              key={size}
+              variant={variant}
+              size={size}
+              label={`${variant} ${size}`}
+              loading
+            />
+          ))}
+          <Button
+            variant={variant}
+            size="md"
+            aria-label={`${variant} star`}
+            startContent={<StarIcon size={20} />}
+            loading
+          />
+        </Fragment>
+      ))}
+    </div>
+  ),
+}
+
+/**
+ * Right-to-left text: the spinner stays in the middle, over the content,
+ * which keeps its right-to-left order.
+ */
+export const LoadingRTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => (
+    <Button
+      variant="filled"
+      size="md"
+      label="حفظ التغييرات"
+      startContent={<StarIcon size={16} />}
+      loading
+    />
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    await canvasElement.ownerDocument.fonts.ready
+    const button = canvas.getByRole('button', { name: 'حفظ التغييرات' })
+    const box = button.getBoundingClientRect()
+    const ring = button
+      .querySelector('[data-button-spinner]')
+      ?.getBoundingClientRect()
+    await expect((ring?.left ?? 0) + (ring?.width ?? 0) / 2).toBeCloseTo(
+      box.left + box.width / 2,
+      0,
+    )
+    await expect((ring?.top ?? 0) + (ring?.height ?? 0) / 2).toBeCloseTo(
+      box.top + box.height / 2,
+      0,
+    )
+  },
+}
+
+/**
+ * Text right in a loading button (its children, an asChild link's text) is
+ * put in an element, as opacity hides it in every mode: Firefox's
+ * forced-colors mode repaints a transparent text fill. No layout shift.
+ */
+export const LoadingChildren: Story = {
+  tags: ['skip-visual'],
+  render: () => {
+    const Demo = () => {
+      const [loading, setLoading] = useState(false)
+      return (
+        <div className="flex items-center gap-2">
+          <Button
+            variant="gray"
+            label="Toggle loading"
+            onClick={() => setLoading(!loading)}
+          />
+          <Button variant="outline" size="md" loading={loading}>
+            <StarIcon /> Save {2} items
+          </Button>
+          <Button asChild variant="outline" size="md" loading={loading}>
+            <a href="#docs">Docs</a>
+          </Button>
+        </div>
+      )
+    }
+    return <Demo />
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    await canvasElement.ownerDocument.fonts.ready
+    const toggle = canvas.getByRole('button', { name: 'Toggle loading' })
+    const save = canvas.getByRole('button', { name: 'Save 2 items' })
+    const docs = canvas.getByRole('link', { name: 'Docs' })
+    const widths = [save, docs].map((el) => el.getBoundingClientRect().width)
+    const bareText = (el: Element) =>
+      [...el.childNodes].filter(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+      )
+
+    await userEvent.click(toggle)
+    for (const [index, el] of [save, docs].entries()) {
+      await expect(el).toHaveAttribute('aria-busy', 'true')
+      await expect(el.getBoundingClientRect().width).toBeCloseTo(
+        widths[index] ?? 0,
+        0,
+      )
+      await expect(bareText(el)).toEqual([])
+      // Icons fade out (their own transition).
+      await waitFor(() =>
+        expect(
+          [...el.querySelectorAll(':scope > :not([data-button-spinner])')].map(
+            (child) => getComputedStyle(child).opacity,
+          ),
+        ).toEqual(['0', '0'].slice(0, el.children.length - 1)),
+      )
+    }
+    await expect(
+      canvas.getByRole('button', { name: 'Save 2 items' }),
+    ).toBeInTheDocument()
+
+    await userEvent.click(toggle)
+    await expect(save).not.toHaveAttribute('aria-busy')
+    // Not loading, the text is right in the button again.
+    await expect(bareText(save)).not.toEqual([])
+  },
 }
 
 export const AllVariants: Story = {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.1
+
+### Patch Changes
+
+- [#176](https://github.com/holakirr/snow-ui/pull/176) [`e90ac4b`](https://github.com/holakirr/snow-ui/commit/e90ac4bf4272b1021fe5276d595e8822c485701f) Thanks [@holakirr](https://github.com/holakirr)! - `SnowUIIcon` (the SnowUI logo) follows `color` (`currentColor` by default) instead of hard-coded black bars and a white snowflake, so it no longer disappears in dark mode or on dark surfaces. The snowflake is now cut out of the bars with a mask (an id per icon, from `useId`), so it shows the background behind the icon; the translucent white highlights are kept. On a white page with black text it looks as before; pass `color="black"` to keep the black logo on coloured text.
+
 ## 2.2.0
 
 ### Minor Changes

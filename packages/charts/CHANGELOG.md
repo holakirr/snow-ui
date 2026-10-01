@@ -1,5 +1,15 @@
 # @holakirr/snow-ui-charts
 
+## 0.2.0
+
+### Minor Changes
+
+- [#176](https://github.com/holakirr/snow-ui/pull/176) [`c800cf8`](https://github.com/holakirr/snow-ui/commit/c800cf897a670f404d2ba3cfece4416def8555c0) Thanks [@holakirr](https://github.com/holakirr)! - The charts' built-in strings come from `SnowUIProvider`: `messages.charts` (`empty`, `loading`, `keyboardHint`, `navigation`, `value`, `point`, added in `@holakirr/snow-ui` 5.1) translate the empty and loading states, the keyboard hint, the name of the focusable plot and the table headers of `DonutChart` and `Sparkline`. The props (`emptyMessage`, `loadingLabel`, `keyboardHint`, `navigationLabel`, `valueLabel`, `categoryLabel`) still win, a `null` one included (`emptyMessage={null}` keeps the empty state blank, as in 0.1), and with `@holakirr/snow-ui` 5.0 the English strings are used as before. `LineChart`, `AreaChart` and `BarChart` now take `navigationLabel` (it was only on `ChartContainer`).
+
+### Patch Changes
+
+- [#193](https://github.com/holakirr/snow-ui/pull/193) [`50d43d9`](https://github.com/holakirr/snow-ui/commit/50d43d964f804ad4d43c095a66bdd9676c372c4d) Thanks [@holakirr](https://github.com/holakirr)! - DonutChart follows the Figma dashboards more closely: a slice coloured `primary` shades from black at the top to grey at the bottom, as in "Traffic by Location" (flat in the dark theme).
+
 ## 0.1.0
 
 ### Minor Changes

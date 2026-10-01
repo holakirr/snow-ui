@@ -63,6 +63,8 @@ const segment = (name: string, group?: string) =>
     group ? screen.getByRole('group', { name: group }) : document.body,
   ).getByRole('spinbutton', { name })
 const day = (name: RegExp) => getByRoleAndLabel('button', name)
+// The popup, for the buttons named by their text (see src/test/queries.ts).
+const popup = () => screen.getByRole('dialog')
 const press = (element: HTMLElement, ...keys: string[]) => {
   act(() => element.focus())
   for (const key of keys)
@@ -72,9 +74,9 @@ const press = (element: HTMLElement, ...keys: string[]) => {
 describe('DatePicker popup', () => {
   // The file's first open DatePicker pays the one-time cost of running its
   // code for the first time (more so under coverage): about two thirds of
-  // this test's time, whichever test comes first. It took ~3 s in CI's
-  // coverage run, and up to 4.7 s locally with four workers sharing one CPU,
-  // close to Vitest's 5 s default.
+  // this test's time, whichever test comes first. It took 2.9–3.5 s in CI's
+  // coverage runs, and up to 4.7 s locally with four workers sharing one
+  // CPU, close to Vitest's 5 s default.
   it('shows the date in the top area, in the order of the locale', () => {
     const { unmount } = renderPicker({ defaultValue: new Date(2025, 0, 20) })
     const date = screen.getByRole('group', { name: 'Date' })
@@ -132,20 +134,19 @@ describe('DatePicker popup', () => {
     expect(field()).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('keeps the value when Escape closes it; a click outside confirms', async () => {
+  it('keeps the value when Escape closes it', async () => {
     const onValueChange = vi.fn()
-    const { unmount } = renderPicker({
-      defaultValue: new Date(2025, 0, 20),
-      onValueChange,
-    })
+    renderPicker({ defaultValue: new Date(2025, 0, 20), onValueChange })
     press(segment('Day'), '2', '2')
     fireEvent.keyDown(document.activeElement as HTMLElement, { key: 'Escape' })
     await waitFor(() =>
       expect(field()).toHaveAttribute('aria-expanded', 'false'),
     )
     expect(onValueChange).not.toHaveBeenCalled()
-    unmount()
+  })
 
+  it('confirms the value on a click outside', async () => {
+    const onValueChange = vi.fn()
     renderPicker({ defaultValue: new Date(2025, 0, 20), onValueChange })
     press(segment('Day'), '2', '2')
     // The modal popover takes the pointer off <body>: click the page.
@@ -179,25 +180,34 @@ describe('DatePicker popup', () => {
     expect(segment('Day')).toHaveAttribute('aria-valuenow', '20')
   })
 
-  it('opens the months and years from the top area; Back returns', () => {
+  it('opens the months from the top area; a month picks the date', () => {
     const onValueChange = vi.fn()
     renderPicker({ defaultValue: new Date(2025, 0, 20), onValueChange })
     fireEvent.pointerDown(segment('Month'))
     const months = screen.getByRole('grid', { name: '2025' })
-    expect(
-      within(months).getByRole('button', { name: 'January 2025' }),
-    ).toHaveAttribute('data-selected')
-    fireEvent.click(within(months).getByRole('button', { name: 'March 2025' }))
+    expect(getByRoleAndLabel('button', 'January 2025', months)).toHaveAttribute(
+      'data-selected',
+    )
+    fireEvent.click(getByRoleAndLabel('button', 'March 2025', months))
     // Back to the days, in March; the date is March 20.
     expect(screen.getByRole('grid', { name: 'March 2025' })).toBeInTheDocument()
     expect(segment('Month')).toHaveAttribute('aria-valuenow', '3')
 
+    press(segment('Year'), 'Enter')
+    expect(onValueChange).toHaveBeenCalledWith(new Date(2025, 2, 20))
+  })
+
+  it('opens the years from the top area; Back returns, keeping the date', () => {
+    const onValueChange = vi.fn()
+    renderPicker({ defaultValue: new Date(2025, 0, 20), onValueChange })
+    // March 20, not confirmed yet.
+    press(segment('Month'), '3')
     fireEvent.pointerDown(segment('Year'))
     const years = screen.getByRole('grid', { name: '2020 – 2031' })
-    expect(within(years).getByRole('button', { name: '2025' })).toHaveAttribute(
+    expect(getByRoleAndText('button', '2025', years)).toHaveAttribute(
       'data-selected',
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+    fireEvent.click(getByRoleAndLabel('button', 'Back'))
     expect(screen.getByRole('grid', { name: 'March 2025' })).toBeInTheDocument()
 
     press(segment('Year'), 'Enter')
@@ -206,17 +216,15 @@ describe('DatePicker popup', () => {
 
   it('opens the months from the caption, with the focus on the month', async () => {
     renderPicker({ defaultValue: new Date(2025, 0, 20) })
-    fireEvent.click(screen.getByRole('button', { name: 'Jan, choose a month' }))
+    fireEvent.click(getByRoleAndLabel('button', 'Jan, choose a month'))
     await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'January 2025' }),
-      ).toHaveFocus(),
+      expect(getByRoleAndLabel('button', 'January 2025')).toHaveFocus(),
     )
     fireEvent.keyDown(document.activeElement as HTMLElement, {
       key: 'ArrowRight',
     })
-    expect(screen.getByRole('button', { name: 'February 2025' })).toHaveFocus()
-    fireEvent.click(screen.getByRole('button', { name: '2025, choose a year' }))
+    expect(getByRoleAndLabel('button', 'February 2025')).toHaveFocus()
+    fireEvent.click(getByRoleAndLabel('button', '2025, choose a year'))
     expect(
       screen.getByRole('grid', { name: '2020 – 2031' }),
     ).toBeInTheDocument()
@@ -225,30 +233,30 @@ describe('DatePicker popup', () => {
   it('picks with "Today" and "Last selection" without closing', () => {
     const onValueChange = vi.fn()
     renderPicker({ defaultValue: new Date(2025, 0, 20), onValueChange })
-    fireEvent.click(screen.getByRole('button', { name: 'Today' }))
+    fireEvent.click(getByRoleAndText('button', 'Today', popup()))
     expect(segment('Day')).toHaveAttribute('aria-valuenow', '15')
     expect(field()).toHaveAttribute('aria-expanded', 'true')
-    fireEvent.click(screen.getByRole('button', { name: 'Last selection' }))
+    fireEvent.click(getByRoleAndText('button', 'Last selection', popup()))
     expect(segment('Day')).toHaveAttribute('aria-valuenow', '20')
     expect(onValueChange).not.toHaveBeenCalled()
   })
 
   it("doesn't page the months or the years past maxDate", async () => {
     renderPicker({ maxDate: new Date(2025, 11, 31) })
-    fireEvent.click(screen.getByRole('button', { name: 'Jan, choose a month' }))
-    const january = screen.getByRole('button', { name: 'January 2025' })
+    fireEvent.click(getByRoleAndLabel('button', 'Jan, choose a month'))
+    const january = getByRoleAndLabel('button', 'January 2025')
     await waitFor(() => expect(january).toHaveFocus())
     // There is no 2026: PageDown, and ↓ from the last row, stay in 2025.
-    const september = screen.getByRole('button', { name: 'September 2025' })
+    const september = getByRoleAndLabel('button', 'September 2025')
     act(() => september.focus())
     fireEvent.keyDown(september, { key: 'PageDown' })
     fireEvent.keyDown(september, { key: 'ArrowDown' })
     expect(screen.getByRole('grid', { name: '2025' })).toBeInTheDocument()
     expect(september).toHaveFocus()
 
-    fireEvent.click(screen.getByRole('button', { name: '2025, choose a year' }))
+    fireEvent.click(getByRoleAndLabel('button', '2025, choose a year'))
     const years = screen.getByRole('grid', { name: '2020 – 2031' })
-    const year = within(years).getByRole('button', { name: '2025' })
+    const year = getByRoleAndText('button', '2025', years)
     await waitFor(() => expect(year).toHaveFocus())
     fireEvent.keyDown(year, { key: 'PageDown' })
     expect(screen.getByRole('grid', { name: '2020 – 2031' })).toBe(years)
@@ -307,7 +315,7 @@ describe('DatePicker popup', () => {
   it('shows the short month in the caption', () => {
     renderPicker({ defaultValue: new Date(2025, 1, 20) })
     expect(
-      screen.getByRole('button', { name: 'Feb, choose a month' }),
+      getByRoleAndLabel('button', 'Feb, choose a month'),
     ).toHaveTextContent('Feb')
   })
 })
@@ -377,9 +385,9 @@ describe('DatePicker withTime', () => {
     )
     fireEvent.pointerDown(segment('Hour'))
     const hours = screen.getByRole('grid', { name: 'Hour' })
-    fireEvent.click(getByRoleAndText(hours, 'button', '09'))
+    fireEvent.click(getByRoleAndText('button', '09', hours))
     const minutes = screen.getByRole('grid', { name: 'Minute' })
-    fireEvent.click(getByRoleAndText(minutes, 'button', '30'))
+    fireEvent.click(getByRoleAndText('button', '30', minutes))
     press(segment('Minute'), 'Enter')
     const form = container.querySelector('form') as HTMLFormElement
     expect(new FormData(form).get('due')).toBe('2025-01-20T21:30')
@@ -423,7 +431,7 @@ describe('DatePicker withTime', () => {
         withTime: true,
       })
       fireEvent.pointerDown(segment('Minute'))
-      fireEvent.click(screen.getByRole('button', { name: 'System time' }))
+      fireEvent.click(getByRoleAndText('button', 'System time', popup()))
       expect(segment('Hour')).toHaveAttribute('aria-valuenow', '11')
       expect(segment('Minute')).toHaveAttribute('aria-valuenow', '45')
       expect(segment('Day')).toHaveAttribute('aria-valuenow', '20')

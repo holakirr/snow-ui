@@ -3,7 +3,7 @@ import { act, render, screen, within } from '@testing-library/react'
 import { ru } from 'date-fns/locale'
 import { ru as dayPickerRu } from 'react-day-picker/locale'
 import { beforeAll, describe, expect, it } from 'vitest'
-import { getNavButton } from '../../test/queries'
+import { getByRoleAndText, getNavButton } from '../../test/queries'
 import { Badge } from '../Badge'
 import {
   Breadcrumb,
@@ -386,7 +386,7 @@ describe('SnowUIProvider', () => {
   })
 
   it('passes the locale, messages and dir to Calendar; its props win', () => {
-    const { rerender } = render(
+    const { container, rerender } = render(
       <SnowUIProvider
         locale={ru}
         dir="rtl"
@@ -403,7 +403,9 @@ describe('SnowUIProvider', () => {
     )
 
     expect(screen.getByRole('grid')).toHaveAccessibleName(/январь 2025/i)
-    expect(screen.getByRole('button', { name: 'Heute' })).toBeInTheDocument()
+    // The Today button, by its text: a role query would also name the day
+    // buttons (see src/test/queries.ts).
+    expect(getByRoleAndText('button', 'Heute', container)).toBeInTheDocument()
     expect(
       screen.getByRole('navigation', { name: 'Monate' }),
     ).toBeInTheDocument()
@@ -425,7 +427,7 @@ describe('SnowUIProvider', () => {
         />
       </SnowUIProvider>,
     )
-    expect(screen.getByRole('button', { name: 'Now' })).toBeInTheDocument()
+    expect(getByRoleAndText('button', 'Now', container)).toBeInTheDocument()
     expect(
       screen.getByRole('navigation', { name: 'Months' }),
     ).toBeInTheDocument()

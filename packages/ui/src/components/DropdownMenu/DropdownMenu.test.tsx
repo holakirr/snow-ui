@@ -543,6 +543,14 @@ describe('DropdownMenuSwitchItem', () => {
     expect(track).toHaveAttribute('aria-hidden', 'true')
     expect(within(item).queryByRole('switch')).not.toBeInTheDocument()
     expect(item.querySelector('button, input')).toBeNull()
+    // Forced colours drop the fills: the track and the thumb are outlined.
+    for (const part of [track, track.firstElementChild]) {
+      expect(part).toHaveClass(
+        'forced-colors:outline',
+        'forced-colors:outline-[CanvasText]',
+        'forced-colors:group-data-[disabled]/switch-item:outline-[GrayText]',
+      )
+    }
     expect(track).toHaveClass(
       'h-4',
       'w-7',

@@ -54,18 +54,22 @@ export const popoverSwitchItemClasses = 'group/switch-item'
  * It is a picture of the item's state (`aria-hidden`), not a control: the
  * item is the `menuitemcheckbox`. The row's highlight shows hover and focus,
  * so the track keeps its colour. Disabled: a Black/10% track (Black/20% on)
- * without the shadow, as Switch.
+ * without the shadow, as Switch. In forced-colors mode, where the fills are
+ * dropped (track and thumb would both be the canvas), the track and the
+ * thumb are outlined in `CanvasText` (`GrayText` disabled): the thumb's
+ * place shows the state.
  */
 export const popoverSwitchTrackClasses =
-  'pointer-events-none ms-auto inline-flex h-4 w-7 shrink-0 items-center rounded-80 bg-control-border p-0.5 inset-shadow-inner transition-colors group-data-[state=checked]/switch-item:bg-primary group-data-[disabled]/switch-item:bg-black-10 group-data-[disabled]/switch-item:inset-shadow-none group-data-[disabled]/switch-item:group-data-[state=checked]/switch-item:bg-black-20'
+  'pointer-events-none ms-auto inline-flex h-4 w-7 shrink-0 items-center rounded-80 bg-control-border p-0.5 inset-shadow-inner transition-colors group-data-[state=checked]/switch-item:bg-primary group-data-[disabled]/switch-item:bg-black-10 group-data-[disabled]/switch-item:inset-shadow-none group-data-[disabled]/switch-item:group-data-[state=checked]/switch-item:bg-black-20 forced-colors:outline forced-colors:-outline-offset-1 forced-colors:outline-[CanvasText] forced-colors:group-data-[disabled]/switch-item:outline-[GrayText]'
 
 /**
  * The thumb of a menu switch item's switch: Switch's thumb (static white,
  * "Drop shadow 2"; the per-mode `white` with more contrast), at the end when
- * checked (the start in right-to-left text).
+ * checked (the start in right-to-left text). Outlined in forced-colors mode,
+ * as the track.
  */
 export const popoverSwitchThumbClasses =
-  'block size-3 rounded-full bg-static-white shadow-2 transition-transform group-data-[state=checked]/switch-item:translate-x-3 rtl:group-data-[state=checked]/switch-item:-translate-x-3 motion-reduce:transition-none contrast-more:bg-white'
+  'block size-3 rounded-full bg-static-white shadow-2 transition-transform group-data-[state=checked]/switch-item:translate-x-3 rtl:group-data-[state=checked]/switch-item:-translate-x-3 motion-reduce:transition-none contrast-more:bg-white forced-colors:outline forced-colors:-outline-offset-1 forced-colors:outline-[CanvasText] forced-colors:group-data-[disabled]/switch-item:outline-[GrayText]'
 
 /**
  * A group title in a popover: the kit's SearchPopup group title (a Text,

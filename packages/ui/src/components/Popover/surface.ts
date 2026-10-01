@@ -28,15 +28,22 @@ export const popoverScrollClasses =
 export const popoverItemClasses =
   'relative flex cursor-pointer select-none items-center gap-2 rounded-12 p-2 text-14 text-black outline-none transition-colors focus:bg-black-4 data-[highlighted]:bg-black-4 data-[state=open]:bg-black-4 data-[disabled]:cursor-not-allowed data-[disabled]:text-black-20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 contrast-more:focus:inset-ring-2 contrast-more:focus:inset-ring-black-80 contrast-more:data-[highlighted]:inset-ring-2 contrast-more:data-[highlighted]:inset-ring-black-80'
 
-/** A group title in a popover: 12/16 `text-secondary` (Figma: Black/40%), 28px high. */
-export const popoverLabelClasses = 'px-2 py-1.5 text-12 text-secondary'
+/**
+ * A group title in a popover: the kit's SearchPopup group title (a Text,
+ * 4/8 padding, 28px high) in 14/20 `text-secondary` (Figma: Black/40%).
+ */
+export const popoverLabelClasses = 'px-2 py-1 text-14 text-secondary'
 
 /**
- * A divider in a popover: 0.5px Black/10%, 8px from the items on each side
- * (Figma: 8 + 0.5 + 8 between groups). A `DropdownMenuGroup`'s 4px margins
- * merge into these.
+ * A divider in a popover: the kit's item group has 8px of padding above and
+ * below and a 1px Black/4% stroke inside its bottom edge, so 16px between
+ * the items of two groups, the line 7px under the upper one. A
+ * `DropdownMenuGroup`'s 4px margins merge into these. Black/4% is faint
+ * (1.09:1): `black-20` with more contrast, and the system GrayText with
+ * forced colours, where a fill would be dropped.
  */
-export const popoverSeparatorClasses = 'my-2 h-[0.5px] bg-black-10'
+export const popoverSeparatorClasses =
+  'mt-[7px] mb-2 h-px bg-black-4 contrast-more:bg-black-20 forced-colors:forced-color-adjust-none forced-colors:bg-[GrayText]'
 
 /**
  * Pushes a menu shortcut to the end of its item. `KBD` is `dir="ltr"`, so its

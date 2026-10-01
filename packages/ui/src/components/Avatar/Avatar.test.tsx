@@ -46,14 +46,36 @@ describe('Avatar hover', () => {
     )
     const avatar = screen.getByTestId('avatar')
     expect(avatar.className).not.toMatch(/brightness/)
-    // A photo: a `color-1` underlay.
-    expect(avatar).toHaveClass(`${inInteractive}:has-[>img]:bg-color-1`)
-    // Initials: semibold.
-    expect(screen.getByText('HK')).toHaveClass(`${inInteractive}:font-semibold`)
+    // A photo zooms in (AvatarImage); the avatar's own fill doesn't change.
+    expect(avatar.className).not.toContain('bg-color-1')
+    // Initials: 14 Semibold on White/40% over `color-2`.
+    expect(screen.getByText('HK')).toHaveClass(
+      `${inInteractive}:font-semibold`,
+      `${inInteractive}:text-[length:max(0.875rem,43.75cqi)]`,
+    )
+    expect(screen.getByText('HK').parentElement?.className).toContain(
+      `${inInteractive}:not-has-[svg]:[background-image:linear-gradient(var(--avatar-hover-tint),var(--avatar-hover-tint))]`,
+    )
     // An icon: a static Black/20% fill.
     expect(screen.getByText('HK').parentElement?.className).toContain(
       `${inInteractive}:has-[svg]:bg-[color-mix(`,
     )
+  })
+})
+
+describe('Avatar hover, with a fill of your own', () => {
+  it('layers the hover tint over a fill set in className', () => {
+    render(
+      <Avatar>
+        <AvatarFallback className="bg-orange-200">HK</AvatarFallback>
+      </Avatar>,
+    )
+    const fallback = screen.getByText('HK').parentElement as HTMLElement
+    // The tint is a background-image: twMerge keeps both, and the custom
+    // fill shows under the White/40% layer instead of being replaced.
+    expect(fallback).toHaveClass('bg-orange-200')
+    expect(fallback).not.toHaveClass('bg-color-2')
+    expect(fallback.className).toContain('[background-image:linear-gradient(')
   })
 })
 

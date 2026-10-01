@@ -33,7 +33,10 @@ const AccordionTrigger: FC<AccordionTriggerProps> = ({
     <AccordionPrimitive.Trigger
       className={twMerge(
         // Like the Figma Sidebar collapsible item: radius 12, Black/4% on hover.
-        'flex w-full rounded-12 px-4 py-2 items-center justify-between transition-all hover:bg-black-4 focus-visible:bg-black-4 focus-ring [&[data-state=open]>svg]:rotate-90 rtl:[&[data-state=open]>svg]:-rotate-90 gap-2',
+        // The chevron: the kit's small chevrons are Black/20% at rest and
+        // black on hover; at rest it's `text-secondary` instead, as the
+        // library's other chevrons (Black/20% is 1.6:1, WCAG 1.4.11).
+        'flex w-full rounded-12 px-4 py-2 items-center justify-between transition-all hover:bg-black-4 focus-visible:bg-black-4 focus-ring [&>svg]:text-secondary hover:[&>svg]:text-black focus-visible:[&>svg]:text-black [&[data-state=open]>svg]:rotate-90 rtl:[&[data-state=open]>svg]:-rotate-90 gap-2',
         className,
       )}
       tabIndex={0}

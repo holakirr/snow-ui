@@ -85,7 +85,7 @@ The week starts on Monday, as in the Figma DatePicker, whatever the locale. `wee
 - **Keyboard focus:** the `focus-ring` utility; the focused day is raised above its neighbours.
 - **Selected:** a Primary fill with the per-mode `white` text (white on black, black on the dark-mode indigo), Primary hover on hover. With forced colours, the system Highlight.
 - **Range:** the start, middle and end days form one Primary band; the start and end keep their rounded outer corners.
-- **Today:** a Secondary/Indigo fill with static black text (Indigo at 80% on hover), unless the day is selected. In the light theme that is all, as in the kit. A 4px dot in the text colour under the number marks it where the fill doesn't: in dark mode, where a selected day is indigo too, on a selected today (both themes), and with forced colours, in the system text colour.
+- **Today:** a Secondary/Indigo fill with static black text (Indigo at 80% on hover), unless the day is selected. In the light theme that is all, as in the kit. In dark mode, where a selected day is indigo too, today has no fill: indigo text and a 4px dot under the number, so it stays apart from a selected day, and a selected today (indigo, with the dot) from an unselected one. The dot also marks a selected today in the light theme and today with forced colours, in the system text colour.
 - **Outside days:** the previous and next month's days in `text-secondary`. They are real dates and can be selected.
 - **Disabled** (`disabled`, react-day-picker matchers): Black/20% text, no hover fill.
 
@@ -134,7 +134,7 @@ The full table is in the package README.
 | "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Weekdays and outside days in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary` (5.74:1 light, 7.08:1 dark). Outside days are selectable dates, not decoration, so they get the full 4.5:1 | 1.4.3 |
 | Today: white text on Secondary/Indigo, 2.07:1 | static black on Secondary/Indigo, 10.15:1 | 1.4.3 |
-| Today and selected: both indigo in dark mode (the kit has no dark DatePicker), both lost with forced colours | in dark mode and with forced colours, a dot under today's number (static black on indigo, 10.15:1); selected days in Highlight with forced colours | 1.4.1, 1.4.11 |
+| Today and selected: both indigo in dark mode (the kit has no dark DatePicker), both lost with forced colours | in dark mode, today without a fill: indigo text and a dot under the number (about 5:1 on the panel), a selected today indigo with a static black dot (10.15:1); with forced colours the dot in the system text colour and selected days in Highlight | 1.4.1, 1.4.11 |
 
 ## Localization and RTL
 

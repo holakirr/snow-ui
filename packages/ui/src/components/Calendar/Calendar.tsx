@@ -981,12 +981,16 @@ function Calendar({
               rangeEndClassName,
             ),
             // Figma "Today": Secondary/Indigo, unless selected. The text is
-            // static black (10:1) instead of Figma's white (2.07:1). Plus the
-            // dot of `todayMarkClassName` where the fill doesn't tell today
-            // apart: in dark mode (a selected day is indigo too), while
-            // selected, and with forced colours.
+            // static black (10:1) instead of Figma's white (2.07:1). In dark
+            // mode a selected day is indigo too, so there today has no fill:
+            // indigo text (5:1 on the panel; white on the hover fill, where
+            // indigo is under 4.5:1) and the dot, which keeps an unselected
+            // today apart from a selected one. The dot (the
+            // `::after`) also marks a selected today and today with forced
+            // colours.
             today: twMerge(
               'not-aria-selected:[&>button]:bg-indigo not-aria-selected:[&>button]:text-static-black not-aria-selected:[&>button]:hover:bg-indigo/80',
+              'dark:not-aria-selected:[&>button]:bg-transparent dark:not-aria-selected:[&>button]:text-indigo dark:not-aria-selected:[&>button]:hover:bg-black-4 dark:not-aria-selected:[&>button]:hover:text-black',
               '[&>button]:relative [&>button]:after:pointer-events-none [&>button]:after:absolute [&>button]:after:inset-x-0 [&>button]:after:bottom-[5px] [&>button]:after:mx-auto [&>button]:after:hidden [&>button]:after:size-1 [&>button]:after:rounded-full [&>button]:after:bg-current aria-selected:[&>button]:after:block dark:[&>button]:after:block forced-colors:[&>button]:after:block forced-colors:[&>button]:after:forced-color-adjust-none',
               todayClassName,
             ),

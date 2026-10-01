@@ -202,12 +202,38 @@ export const States: Story = {
     await expect(todayDotShown(canvasElement)).toBe(
       isDark(canvasElement) || matchMedia('(forced-colors: active)').matches,
     )
+    if (
+      isDark(canvasElement) &&
+      !matchMedia('(forced-colors: active)').matches
+    ) {
+      // ...and no fill, only indigo text: the selected 17th keeps the fill.
+      const today = canvasElement.querySelector(
+        '[data-today] > button',
+      ) as HTMLElement
+      const selected = canvasElement.querySelector(
+        '[aria-selected="true"] > button',
+      ) as HTMLElement
+      // The `indigo` token as this theme resolves it.
+      const probe = document.createElement('span')
+      probe.style.color = 'var(--color-indigo)'
+      today.append(probe)
+      const indigo = getComputedStyle(probe).color
+      probe.remove()
+      await expect(getComputedStyle(today).backgroundColor).toBe(
+        'rgba(0, 0, 0, 0)',
+      )
+      await expect(getComputedStyle(today).color).toBe(indigo)
+      await expect(getComputedStyle(selected).backgroundColor).not.toBe(
+        'rgba(0, 0, 0, 0)',
+      )
+    }
   },
 }
 
 /**
  * Today selected: the Primary fill hides the indigo, so the dot under the
- * number marks today in both themes.
+ * number marks today in both themes. In dark mode an unselected today has
+ * no fill (see States), so the two don't look alike.
  */
 export const TodaySelected: Story = {
   render: () => {
@@ -225,6 +251,14 @@ export const TodaySelected: Story = {
   },
   play: async ({ canvasElement }) => {
     await expect(todayDotShown(canvasElement)).toBe(true)
+    // Selected, today keeps the selected fill, in dark mode too, where an
+    // unselected today has none.
+    const today = canvasElement.querySelector(
+      '[data-today] > button',
+    ) as HTMLElement
+    await expect(getComputedStyle(today).backgroundColor).not.toBe(
+      'rgba(0, 0, 0, 0)',
+    )
   },
 }
 

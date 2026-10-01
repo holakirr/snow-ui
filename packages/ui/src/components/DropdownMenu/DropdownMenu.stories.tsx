@@ -56,10 +56,11 @@ export const Default: Story = {
     })
 
     await step(
-      'a separator between two groups is 8px from their items',
+      'two groups are 16px apart, the line 7px under the upper one',
       async () => {
-        // Figma: 8 + 0.5 + 8. The groups' 4px margins merge into the
-        // separator's 8px.
+        // Figma: the item group's 8px padding above and below, a 1px stroke
+        // inside its bottom edge. The groups' 4px margins merge into the
+        // separator's 7 and 8px.
         await settleLayout(page.getByRole('menu'))
         const above = page
           .getByRole('menuitem', { name: /^Keyboard shortcuts/ })
@@ -67,14 +68,14 @@ export const Default: Story = {
         const below = page
           .getByRole('menuitem', { name: 'Team' })
           .getBoundingClientRect()
-        const line = (above.bottom + below.top) / 2
         const separator = page
           .getAllByRole('separator')
           .map((element) => element.getBoundingClientRect())
           .find((rect) => rect.top > above.bottom && rect.bottom < below.top)
         await expect(separator).toBeDefined()
-        await expect(below.top - above.bottom).toBeCloseTo(16.5, 0)
-        await expect((separator?.top ?? 0) + 0.25).toBeCloseTo(line, 0)
+        await expect(below.top - above.bottom).toBeCloseTo(16, 1)
+        await expect((separator?.top ?? 0) - above.bottom).toBeCloseTo(7, 1)
+        await expect(separator?.height).toBeCloseTo(1, 1)
       },
     )
 
@@ -355,17 +356,20 @@ export const Open: Story = {
     const menu = await page.findByRole('menu')
     await settleLayout(menu)
 
-    await step('a separator is 8px from the items on each side', async () => {
-      const above = page
-        .getByRole('menuitem', { name: /^Density/ })
-        .getBoundingClientRect()
-      const line = within(menu).getByRole('separator').getBoundingClientRect()
-      const below = page
-        .getByRole('menuitem', { name: 'API' })
-        .getBoundingClientRect()
-      await expect(line.top - above.bottom).toBeCloseTo(8, 1)
-      await expect(below.top - line.bottom).toBeCloseTo(8, 1)
-    })
+    await step(
+      'a separator is 7px under the item above, 8px over the one below',
+      async () => {
+        const above = page
+          .getByRole('menuitem', { name: /^Density/ })
+          .getBoundingClientRect()
+        const line = within(menu).getByRole('separator').getBoundingClientRect()
+        const below = page
+          .getByRole('menuitem', { name: 'API' })
+          .getBoundingClientRect()
+        await expect(line.top - above.bottom).toBeCloseTo(7, 1)
+        await expect(below.top - line.bottom).toBeCloseTo(8, 1)
+      },
+    )
 
     await step('the shortcut is plain text-secondary text', async () => {
       const shortcut = within(

@@ -35,7 +35,7 @@ export type ButtonVariant =
   | 'filled'
   | 'bare'
 
-export type ToggleVariant = 'borderless' | 'outline' | 'pill'
+export type ToggleVariant = 'borderless' | 'outline' | 'pill' | 'filled'
 
 export type Direction = 'horizontal' | 'vertical'
 

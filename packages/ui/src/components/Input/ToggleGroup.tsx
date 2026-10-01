@@ -16,7 +16,9 @@ type ToggleGroupProps = ComponentProps<typeof ToggleGroupPrimitive.Root> &
 /**
  * A group of toggles, styled like the Figma Tab segmented controls:
  * `variant="pill"` puts the items on a blurred Black/4% track (Figma "Pill"),
- * the other variants have no track (Figma "Solid"). The gap is 2px for `sm`
+ * and so does `filled` (5.2), whose pressed item is a Filled button, as in a
+ * `TabsList variant="filled"`; the other variants have no track (Figma
+ * "Solid"). The gap is 2px for `sm`
  * and 4px for `md` / `lg`.
  */
 const ToggleGroup: FC<ToggleGroupProps> = ({
@@ -31,7 +33,7 @@ const ToggleGroup: FC<ToggleGroupProps> = ({
     data-variant={variant ?? 'borderless'}
     className={twMerge(
       segmentedListVariants({
-        variant: variant === 'pill' ? 'pill' : 'solid',
+        variant: variant === 'pill' || variant === 'filled' ? 'pill' : 'solid',
         size: size ?? 'md',
       }),
       className,

@@ -36,7 +36,7 @@ import { Link } from '@holakirr/snow-ui'
 
 1. **Link**: the `<a>` (or the `asChild` element), 14/20 text.
 2. **Text** (`children`).
-3. **Arrow** (`arrow` only): a "↗" at 40% opacity, 2px after the text.
+3. **Arrow** (`arrow` only): a 12px `ArrowUpRight` icon at 40% opacity, 2px after the text, the same size and source as the external icon.
 4. **External icon and text** (`external` only): a 12px external-link icon at 40% opacity, 2px after the text, and a visually hidden "(opens in a new tab)".
 
 ## Variants
@@ -46,7 +46,7 @@ import { Link } from '@holakirr/snow-ui'
 | `variant` | Figma | Look | Use for |
 | --- | --- | --- | --- |
 | `default` (default) | Default | `indigo-text`, inline so it wraps in prose; darker with an underline on hover | links in text |
-| `arrow` | Arrow | black text and a 40% "↗"; `indigo-text` and a full-opacity arrow on hover | "see more" links |
+| `arrow` | Arrow | black text and a 40% up-right arrow; `indigo-text` and a full-opacity arrow on hover | "see more" links |
 | `external` | External | black text and a 40% external-link icon; `indigo-text` and a full-opacity icon on hover | links to other sites |
 
 `arrow` and `external` are `inline-flex`, so their text doesn't wrap around the icon. Keep them short, or out of running text.

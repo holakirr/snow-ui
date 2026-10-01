@@ -579,7 +579,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The SnowUI dashboard layout built from the library: `Sidebar` (212px, `Tabs` for Favorites / Recently, IconText nav items), a sticky header (`Group` of icon `Button`s, `Breadcrumb`, a Search-styled trigger for the `CommandPalette` — press "/"), the content (`Card variant="block"` tiles and blocks, `Strip`) and a 280px right sidebar (`ListItem` rows for Notifications, Activities and Contacts). A recipe, not an exported component: copy it and adapt it.',
+          'The SnowUI dashboard layout built from the library: `Sidebar` (212px, `Tabs` for Favorites / Recently, IconText nav items), a sticky header (`Group` of icon `Button`s, `Breadcrumb`, a Search-styled trigger for the `CommandPalette` — press "/"), the content (`Card variant="block"` tiles and blocks, `Strip`) and a 280px right sidebar (`ListItem` rows for Notifications, Activities and Contacts). The kit\'s blocks are also resizable, snapped to the grid with one height per column; that is app behaviour (a grid layout and saving it), so the recipe leaves it to you. A recipe, not an exported component: copy it and adapt it.',
       },
       story: { inline: false, height: '900px' },
     },

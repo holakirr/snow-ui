@@ -86,7 +86,7 @@ Collapsed middle items:
 - **Hover:** a link gets a Black/4% fill.
 - **Pressed:** the link scales to 95%, as a Button does.
 - **Keyboard focus:** the `focus-ring` utility.
-- **Current page:** `BreadcrumbPage`, black text that isn't a link; or a `BreadcrumbLink` with `aria-current="page"`, as in the first example.
+- **Current page:** `BreadcrumbPage`, black text that isn't a link, with no hover and the arrow cursor; or a `BreadcrumbLink` with `aria-current="page"`, as in the first example, which gets a link's hover. The kit's Component state also draws the hover pill on the last item; `BreadcrumbPage` leaves it out, since a pill would promise a link that isn't there.
 - **Disabled** (`disabled` on `BreadcrumbLink`): Black/10% text, no pointer events and out of the tab order.
 
 <Canvas of={BreadcrumbStories.WithDisabledLink} />

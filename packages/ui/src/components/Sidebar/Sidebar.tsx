@@ -576,9 +576,10 @@ const SidebarGroupLabel: FC<SidebarGroupLabelProps> = ({
       asChild={asChild}
       data-sidebar="group-label"
       className={twMerge(
-        // Figma section heading: 14 Regular, padding 4/12, radius 12. Black/80%
-        // instead of Figma's Black/40% (2.85:1) for a 4.5:1 text contrast.
-        'duration-200 flex h-7 shrink-0 items-center rounded-12 px-3 text-14 font-normal text-black-80 transition-[margin,opacity] ease-linear motion-reduce:transition-none focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
+        // Figma section heading: 14 Regular, padding 4/12, radius 12.
+        // `text-secondary`, the library's colour for secondary text, instead
+        // of Figma's Black/40% (2.85:1) for a 4.5:1 text contrast.
+        'duration-200 flex h-7 shrink-0 items-center rounded-12 px-3 text-14 font-normal text-secondary transition-[margin,opacity] ease-linear motion-reduce:transition-none focus-ring [&>svg]:size-4 [&>svg]:shrink-0',
         'group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:-mt-7 group-data-[collapsible=icon]:opacity-0',
         className,
       )}

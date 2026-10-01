@@ -588,6 +588,24 @@ describe('SnowUIProvider', () => {
     expect(seen?.listCards.contacts).toBe('Contacts')
   })
 
+  it('accepts a translation without the messages added in 5.2', () => {
+    const { dropdownMenu: _dropdownMenu, ...v51 } = defaultMessages
+    const translation: Messages = v51
+    let seen: Required<Messages> | undefined
+    const Probe = () => {
+      seen = useMessages()
+      return null
+    }
+    render(
+      <SnowUIProvider messages={translation}>
+        <Probe />
+      </SnowUIProvider>,
+    )
+
+    expect(seen?.dropdownMenu.search).toBe('Search')
+    expect(seen?.dropdownMenu.empty).toBe('No results')
+  })
+
   it('keeps the base message for an override set to undefined', () => {
     const merged = mergeMessages(defaultMessages, {
       dialog: { close: undefined },

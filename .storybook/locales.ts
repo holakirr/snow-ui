@@ -104,6 +104,10 @@ export const ruMessages: Messages = {
   dialog: {
     close: 'Закрыть',
   },
+  dropdownMenu: {
+    search: 'Поиск',
+    empty: 'Ничего не найдено',
+  },
   link: {
     external: '(откроется в новой вкладке)',
   },

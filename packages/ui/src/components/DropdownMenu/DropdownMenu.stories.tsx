@@ -1,3 +1,13 @@
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  EyeSlashIcon,
+  FunnelIcon,
+  SparkleIcon,
+  TagIcon,
+  TextAlignLeftIcon,
+  TextTIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
 
@@ -439,4 +449,259 @@ export const Open: Story = {
       </DropdownMenu>
     </div>
   ),
+}
+
+/**
+ * The kit's property menu ("Popover interactive guidance"): more than ten
+ * items, so it gets the search field.
+ */
+const PropertyMenuItems = () => (
+  <>
+    <DropdownMenuGroup>
+      <DropdownMenuItem>
+        <SparkleIcon />
+        Ask AI
+      </DropdownMenuItem>
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger hint="Multi-Select">
+          <TagIcon />
+          Tags
+        </DropdownMenuSubTrigger>
+        <DropdownMenuPortal>
+          <DropdownMenuSubContent sideOffset={8}>
+            <DropdownMenuItem>Text</DropdownMenuItem>
+            <DropdownMenuItem>Single select</DropdownMenuItem>
+            <DropdownMenuItem>Multi-Select</DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuPortal>
+      </DropdownMenuSub>
+      <DropdownMenuItem>
+        <TextTIcon />
+        Edit property
+      </DropdownMenuItem>
+    </DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuGroup>
+      <DropdownMenuItem>
+        <ArrowUpIcon />
+        Sort ascending
+        <DropdownMenuShortcut keys={['⌘', 'U']} separator="" />
+      </DropdownMenuItem>
+      <DropdownMenuItem>
+        <ArrowDownIcon />
+        Sort descending
+        <DropdownMenuShortcut keys={['⌘', 'D']} separator="" />
+      </DropdownMenuItem>
+      <DropdownMenuItem>
+        <FunnelIcon />
+        Filter
+      </DropdownMenuItem>
+    </DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuGroup>
+      <DropdownMenuItem>
+        <EyeSlashIcon />
+        Hide in view
+      </DropdownMenuItem>
+      <DropdownMenuCheckboxItem checked>
+        <TextAlignLeftIcon />
+        Wrap column
+      </DropdownMenuCheckboxItem>
+    </DropdownMenuGroup>
+  </>
+)
+
+/**
+ * `search` (added in 5.2) puts the kit's search field at the top of the
+ * menu: it takes the focus when the menu opens, typing filters the items,
+ * ArrowDown moves into them, Escape clears the field and then closes the
+ * menu.
+ */
+export const WithSearch: Story = {
+  render: () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" label="Property" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent search align="start" className="w-60">
+        <PropertyMenuItems />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const trigger = canvas.getByRole('button', { name: 'Property' })
+    trigger.focus()
+    await userEvent.keyboard('{Enter}')
+    const field = await page.findByRole('searchbox', { name: 'Search' })
+    const content = field.closest('[data-radix-menu-content]') as HTMLElement
+
+    await step('the field takes the focus, outside the menu', async () => {
+      await waitFor(() => expect(field).toHaveFocus())
+      await expect(page.getByRole('menu')).not.toContainElement(field)
+      await expect(page.getByRole('menu')).toHaveAccessibleName('Property')
+    })
+
+    await step('typing filters the items', async () => {
+      await userEvent.keyboard('sort')
+      await expect(field).toHaveFocus()
+      await expect(
+        page.getAllByRole('menuitem').map((item) => item.textContent),
+      ).toEqual(['Sort ascending⌘U', 'Sort descending⌘D'])
+      await expect(page.queryByRole('separator')).not.toBeInTheDocument()
+    })
+
+    await step('ArrowDown moves into the items, ArrowUp back', async () => {
+      await userEvent.keyboard('{ArrowDown}')
+      await expect(
+        page.getByRole('menuitem', { name: /^Sort ascending/ }),
+      ).toHaveFocus()
+      await userEvent.keyboard('{ArrowUp}')
+      await expect(field).toHaveFocus()
+    })
+
+    await step('nothing matches: "No results", announced', async () => {
+      await userEvent.keyboard('zzz')
+      await expect(page.getByRole('status')).toHaveTextContent('No results')
+      await expect(page.queryByRole('menu')).not.toBeInTheDocument()
+    })
+
+    await step('Escape clears the field, the next one closes', async () => {
+      await userEvent.keyboard('{Escape}')
+      await expect(field).toHaveValue('')
+      await expect(page.getAllByRole('menuitem')).toHaveLength(7)
+      await userEvent.keyboard('{Escape}')
+      await expectClosed(content)
+      await waitFor(() =>
+        expect(page.queryByRole('menu')).not.toBeInTheDocument(),
+      )
+      await expect(trigger).toHaveFocus()
+    })
+  },
+}
+
+/**
+ * The menu with its search open (Figma: the focused Search Gray, 200×28,
+ * in a 44px row at the top of the 240px Popover).
+ */
+export const SearchOpen: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="h-120">
+      <DropdownMenu defaultOpen modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="Property" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent search align="start" className="w-60">
+          <PropertyMenuItems />
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+  play: async ({ canvasElement, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const field = await page.findByRole('searchbox', { name: 'Search' })
+    const content = field.closest('[data-radix-menu-content]') as HTMLElement
+    await settleLayout(content)
+
+    await step('the kit sizes: a 200×28 field in a 44px row', async () => {
+      const search = field.closest('[data-variant]') as HTMLElement
+      const box = search.getBoundingClientRect()
+      const row = (search.parentElement as HTMLElement).getBoundingClientRect()
+      await expect(content.getBoundingClientRect().width).toBeCloseTo(240, 0)
+      // Figma: 200 = 240 - 2 × 12 - 2 × 8. The popover's 1px stroke is
+      // inside its 240px here, as for the items (214 for the kit's 216).
+      await expect(box.width).toBeCloseTo(198, 0)
+      await expect(box.height).toBeCloseTo(28, 0)
+      await expect(row.height).toBeCloseTo(44, 0)
+      // 12px inside the popover's 1px stroke; the first item under the row
+      // (after its group's 4px margin).
+      await expect(row.top - content.getBoundingClientRect().top).toBeCloseTo(
+        13,
+        0,
+      )
+      const first = page
+        .getByRole('menuitem', { name: 'Ask AI' })
+        .getBoundingClientRect()
+      await expect(first.top - row.bottom).toBeCloseTo(4, 0)
+    })
+  },
+}
+
+/** A query that matches nothing: the kit's "No results" under the field. */
+export const SearchNoResults: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="h-48">
+      <DropdownMenu defaultOpen modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="Property" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          search={{ defaultQuery: 'Status' }}
+          align="start"
+          className="w-60"
+        >
+          <PropertyMenuItems />
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await expect(await page.findByRole('status')).toHaveTextContent(
+      'No results',
+    )
+    await expect(page.queryByRole('menuitem')).not.toBeInTheDocument()
+  },
+}
+
+/** Right-to-left text: the field and the items follow the menu's `dir`. */
+export const SearchRTL: Story = {
+  globals: { dir: 'rtl' },
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="flex h-72 items-start justify-center">
+      <DropdownMenu defaultOpen modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="الخاصية" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          search={{ label: 'بحث', placeholder: 'بحث' }}
+          align="start"
+          className="w-60"
+        >
+          <DropdownMenuItem>
+            <SparkleIcon />
+            اسأل الذكاء الاصطناعي
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <ArrowUpIcon />
+            ترتيب تصاعدي
+            <DropdownMenuShortcut keys={['⌘', 'U']} separator="" />
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <FunnelIcon />
+            تصفية
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const field = await page.findByRole('searchbox', { name: 'بحث' })
+    const menu = page.getByRole('menu')
+    await expect(menu).toHaveAttribute('dir', 'rtl')
+    const content = field.closest('[data-radix-menu-content]') as HTMLElement
+    await settleLayout(content)
+    // The field's icon is at its start: on the right.
+    const box = (
+      field.closest('[data-variant]') as HTMLElement
+    ).getBoundingClientRect()
+    const icon = (field.closest('[data-variant]') as HTMLElement)
+      .querySelector('svg')
+      ?.getBoundingClientRect()
+    await expect((icon?.right ?? 0) > box.right - 16).toBe(true)
+  },
 }

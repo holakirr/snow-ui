@@ -13,7 +13,7 @@
  * are optional, so a translation typed as `Messages` before they existed
  * still compiles; the English defaults fill them in, and `useMessages()`
  * always returns every namespace (`Required<Messages>`). They become
- * required in 6.0.
+ * required in 6.0, as does the `dropdownMenu` namespace added in 5.2.
  */
 export type Messages = {
   alert?: {
@@ -188,6 +188,13 @@ export type Messages = {
   dialog: {
     /** The close button of `DialogHeader`. */
     close: string
+  }
+  /** `DropdownMenuContent` with `search` (5.2 and later). */
+  dropdownMenu?: {
+    /** Accessible name of the search field. */
+    search: string
+    /** Shown when no item matches the search. */
+    empty: string
   }
   link: {
     /** Screen-reader text appended to `external` links. */
@@ -380,6 +387,10 @@ export const defaultMessages: Required<Messages> = {
   },
   dialog: {
     close: 'Close',
+  },
+  dropdownMenu: {
+    search: 'Search',
+    empty: 'No results',
   },
   link: {
     external: '(opens in a new tab)',

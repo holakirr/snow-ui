@@ -79,7 +79,8 @@ import {
 7. **Group** (`DropdownMenuGroup`, optional): groups items, with a 4px margin above and below (it merges into a separator's 7 and 8px).
 8. **Separator** (`DropdownMenuSeparator`): a 1px `black-4` line, 7px under the item above and 8px over the item below: 16px between the groups' items, as the kit's item group (8px padding above and below, a 1px Black/4% stroke inside its bottom edge).
 9. **Shortcut** (`DropdownMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`, as the kit's plain text in `text-secondary` (Figma: "⌘C" in Black/40%, no key cap). `separator=""` joins symbol keys as in the kit (`⌘C`, not `⌘+C`); a `variant` (`solid`, `border`) brings back the KBD key cap.
-10. **Submenu** (`DropdownMenuSub`): a `DropdownMenuSubTrigger` (an item with a 16px `text-secondary` chevron at the end, and an optional `hint` with the current value before it) and a `DropdownMenuSubContent` on the same surface. Wrap the sub content in `DropdownMenuPortal`, as the stories do.
+10. **Search** (`search` on `DropdownMenuContent`, optional, added in 5.2): the kit's Search field (Gray, 28px high, 4/8 padding, a 16px radius) in a 44px row with 8px of padding at the top of the menu; the items scroll under it. See [Search](#search).
+11. **Submenu** (`DropdownMenuSub`): a `DropdownMenuSubTrigger` (an item with a 16px `text-secondary` chevron at the end, and an optional `hint` with the current value before it) and a `DropdownMenuSubContent` on the same surface. Wrap the sub content in `DropdownMenuPortal`, as the stories do.
 
 The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdownmenu--open).
 
@@ -89,6 +90,33 @@ The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdown
 - **Checked:** a check mark at the end (`checked` on a checkbox item, or the radio group's `value`).
 - **Disabled** (`disabled`): Black/20% text and a not-allowed cursor; the arrow keys and typeahead skip it.
 - **Open and closed:** `open` / `defaultOpen` / `onOpenChange` on `DropdownMenu`.
+
+## Search
+
+Added in 5.2. `search` on `DropdownMenuContent` puts a search field at the top of the menu that filters its items as you type. The kit's rule: give a menu the search when it has **more than 10 items, or more than 5 and a submenu**. The library doesn't count your items: you decide with `search`.
+
+```tsx
+<DropdownMenuContent search className="w-60">
+  <DropdownMenuItem>Ask AI</DropdownMenuItem>
+  {/* … more than 10 items … */}
+</DropdownMenuContent>
+
+// Or with options:
+<DropdownMenuContent
+  search={{ placeholder: 'Find a property', emptyMessage: 'No property', onQueryChange }}
+>
+```
+
+<Canvas of={DropdownMenuStories.SearchOpen} />
+
+- **Matching:** an item, checkbox item, radio item or sub trigger shows while its text contains every word of the query, in any case (`defaultDropdownMenuSearchFilter`, the CommandPalette default). The text is `textValue`, or the text of the item's children (icons and a `DropdownMenuShortcut` from `keys` add none). `filter(text, query)` replaces the matching.
+- **While filtering**, the matches are one list, as in the kit's "Have results": labels and separators are hidden and groups lose their margins. A submenu isn't filtered: its trigger is.
+- **Empty:** "No results" (`emptyMessage`, or `messages.dropdownMenu.empty`) under the field, in a polite live region. The empty menu is hidden.
+- **Query:** uncontrolled, it starts from `defaultQuery` every time the menu opens; or controlled with `query` and `onQueryChange`.
+- **Focus:** the field takes the focus when the menu opens (from the keyboard too, instead of the first item), so you type straight away. See [Keyboard](#keyboard).
+
+<Canvas of={DropdownMenuStories.WithSearch} />
+<Canvas of={DropdownMenuStories.SearchNoResults} />
 
 ## Portal and theme
 
@@ -100,7 +128,8 @@ The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdown
 - To keep the menu open after a selection, call `event.preventDefault()` in the item's `onSelect`.
 - The menu is modal by default (Radix `modal`): while it is open, focus stays in it, the rest of the page is hidden from assistive technology and ignores the pointer, and the page doesn't scroll. `modal={false}` turns this off.
 - When the menu closes, focus goes back to the trigger (not after a click outside a `modal={false}` menu).
-- There are no built-in strings. A `DropdownMenuShortcut` is a `<kbd>` with `aria-keyshortcuts`; it only shows the shortcut, so register the shortcut yourself.
+- The only built-in strings are the search field's name and empty state (`messages.dropdownMenu`). A `DropdownMenuShortcut` is a `<kbd>` with `aria-keyshortcuts`; it only shows the shortcut, so register the shortcut yourself.
+- With `search`, the field (a `searchbox` named "Search", with `aria-controls` on the menu) and the empty state sit next to the `role="menu"` list, in the popover: a menu may only contain items, groups and separators (axe `aria-required-children`). The list keeps the menu's name (the trigger) and `aria-orientation`; the popover itself has no role.
 
 ### Keyboard
 
@@ -118,6 +147,16 @@ From the stories' interaction tests and Radix Dropdown Menu; disabled items are 
 | Escape | close the menu, submenus included, and return focus to the trigger |
 | Tab, Shift + Tab | do nothing while the menu is open |
 
+With `search` (added in 5.2), in the field:
+
+| Key | Action |
+| --- | --- |
+| a character | type in the field and filter the items (no typeahead) |
+| ArrowDown / ArrowUp | move to the first / last item shown |
+| Escape | clear the field; in an empty field, close the menu |
+
+On an item, a letter goes to the field (the typeahead is off with a search); ArrowUp on the first item goes back to the field (without `loop`). Enter and Space select the item, as without a search.
+
 ### Deviations from the Figma kit
 
 The full table is in the package README.
@@ -127,15 +166,21 @@ The full table is in the package README.
 | Group labels, shortcuts and submenu value hints in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
 | Submenu chevron in Black/20%: 1.6:1 | `text-secondary`, as the Select chevron: Black/60% in light mode (at least 5.5:1, on the highlighted item too), White/70% in dark mode (at least 4.82:1) | 1.4.11 |
 
+The kit selects the first result of a search by default ("Have results"). Here the focus stays in the field until ArrowDown moves it to the first result, so a screen reader announces the item before Enter picks it, and Enter in the field doesn't select one you haven't heard.
+
 The Black/4% item highlight (1.1:1) keeps the Figma value with the default contrast: the README lists it as a known gap. With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the highlighted item also gets a 2px `black-80` ring.
 
 ## Localization and RTL
 
-- The menu renders no text of its own: labels and shortcuts are yours to translate.
+- The menu renders no text of its own (labels and shortcuts are yours to translate), except with `search`: the field's name `messages.dropdownMenu.search` ("Search"), its placeholder `messages.search.placeholder`, and the empty state `messages.dropdownMenu.empty` ("No results"). `label`, `placeholder` and `emptyMessage` in `search` win over the provider.
 - The content takes `dir` from `SnowUIProvider`; without a provider (or a Radix `DirectionProvider`) it is `ltr`, whatever `<html dir>` says.
 - In right-to-left text the check marks (at the left end), `inset` padding and shortcuts swap sides, the submenu arrow points left, and ArrowLeft opens a submenu (to the left).
 
 <Canvas of={DropdownMenuStories.RTL} />
+
+With a search, the menu list gets the `dir` too:
+
+<Canvas of={DropdownMenuStories.SearchRTL} />
 
 ## Composition (asChild)
 
@@ -158,6 +203,7 @@ With `asChild`, calling `event.preventDefault()` in the child's handler skips th
 - Group related items with `DropdownMenuGroup`, a `DropdownMenuLabel` and separators.
 - Wrap `DropdownMenuSubContent` in `DropdownMenuPortal`.
 - Show a shortcut only for a shortcut that works.
+- Add `search` to a menu with more than 10 items (or more than 5 and a submenu), as the kit does.
 
 </Do>
 <Dont>
@@ -198,11 +244,13 @@ A `<button>` with `aria-haspopup="menu"` and `aria-expanded` that toggles the me
 
 The `role="menu"` panel, in a portal. It is placed below the trigger (`side="bottom"`), centred on it (`align="center"`), 4px away (`sideOffset`, 4 here instead of the Radix 0), and flips when there isn't room. `loop` (off by default) makes the arrow keys wrap around; the `on…` handlers can prevent the menu from closing.
 
+`search` (added in 5.2) adds the search field: `true`, or `{ query, defaultQuery, onQueryChange, filter, label, placeholder, emptyMessage }` (`DropdownMenuSearchOptions`). See [Search](#search).
+
 <ArgTypes of={DropdownMenuContent} />
 
 ### DropdownMenuItem
 
-A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text when the item's content isn't plain text; `inset` adds 32px of start padding.
+A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text (and the text a `search` matches) when the item's content isn't plain text; `inset` adds 32px of start padding.
 
 <ArgTypes of={DropdownMenuItem} />
 

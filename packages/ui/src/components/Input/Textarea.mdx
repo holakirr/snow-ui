@@ -42,7 +42,7 @@ There is no `title` prop: label it with a [Label](?path=/docs/components-label--
 - **Focus:** the Figma "Focus" state on any focus, by mouse or keyboard: a Black/40% stroke and the 4px Focus ring. Text fields don't get the `focus-ring` outline. With more contrast the focus stroke is 2px (Black/80%, the stroke colour when read-only): the Figma 0.5px Black/40% stroke is 2.85:1 on the fill.
 - **Static** (`readOnly`): the stroke stays Black/20% on hover and focus; the 4px Focus ring still shows while it has focus.
 - **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. It is Input's, from the kit's Forms guidance; the kit's Component state draws Disabled as the whole control at 20% opacity with the default arrow cursor; that look is planned for 6.0.
-- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): the Input's 1px Secondary/Red stroke, also on hover and focus (the kit's Error state, as on Input, without its `Warning` icon yet).
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): the Input's 1px Secondary/Red stroke, also on hover and focus, and the kit's 16px `Warning` icon at the end of the first row, in Secondary/Red (the kit's Error state, as on Input). The icon is a background image, so the `<textarea>` needs no wrapper; while it shows, the text stops 40px from the end instead of 16px, clear of it, so lines may rewrap when the error comes or goes. An image keeps one colour: with more contrast, where the stroke turns `red-text`, the icon stays Secondary/Red. To leave it out, override it: `className="aria-invalid:bg-none aria-invalid:pe-4"`.
 
 <Canvas of={TextareaStories.Disabled} />
 

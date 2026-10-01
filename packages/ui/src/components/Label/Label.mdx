@@ -27,7 +27,7 @@ import { Checkbox, Label } from '@holakirr/snow-ui'
 ## When not to use
 
 - A text field: use [Input](?path=/docs/components-input-input--docs)'s `title`, which renders a Label tied to the field.
-- A field in a react-hook-form form: use `FormLabel` from [Form](?path=/docs/components-form--docs), which ties itself to the `FormControl` and turns red when the field is invalid.
+- A field in a react-hook-form form: use `FormLabel` from [Form](?path=/docs/components-form--docs), which ties itself to the `FormControl`; it stays grey when the field is invalid, as the kit's title does.
 - A heading or a caption that names no control: use [Typography](?path=/docs/components-text-text--docs).
 
 ## Anatomy
@@ -37,7 +37,7 @@ import { Checkbox, Label } from '@holakirr/snow-ui'
 ## States
 
 - **Disabled control:** with the `peer-disabled:cursor-not-allowed` class, the label shows a not-allowed cursor when it comes after a disabled control marked with the `peer` class. It has no other disabled style.
-- **Invalid:** Label has no error style; `FormLabel` adds `red-text` when its field is invalid.
+- **Invalid:** no error style, on Label or `FormLabel`: as in the kit, the field's red stroke (and the `Warning` icon of Input and Textarea) and the `FormMessage` mark the error.
 
 ## Accessibility
 

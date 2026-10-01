@@ -1,5 +1,23 @@
 # Changelog
 
+## 5.1.1
+
+### Patch Changes
+
+- [#205](https://github.com/holakirr/snow-ui/pull/205) [`46b0dc0`](https://github.com/holakirr/snow-ui/commit/46b0dc0ad1e8387d4923713626c592542964f8fd) Thanks [@holakirr](https://github.com/holakirr)! - The `AccordionTrigger` arrow is `text-secondary` at rest and black when the trigger is hovered or focused from the keyboard, as the kit's small chevrons (Black/20% at rest in the kit, which is 1.6:1, so `text-secondary` as the library's other chevrons). It was black in every state.
+
+- [#205](https://github.com/holakirr/snow-ui/pull/205) [`46b0dc0`](https://github.com/holakirr/snow-ui/commit/46b0dc0ad1e8387d4923713626c592542964f8fd) Thanks [@holakirr](https://github.com/holakirr)! - `Avatar` hover, in a link or a button, now follows the kit's Component state as read in Figma: a photo zooms in (×1.125 inside the round clip) instead of getting a `color-1` underlay, and initials grow from 12 Regular to 14 Semibold (by 14/12 in the bigger avatars) on a lighter fill: White/40% layered over `color-2`, or over a fill you set with `className`. The icon fallback's Black/20% fill is unchanged; the zoom has no transition with reduced motion.
+
+- [#205](https://github.com/holakirr/snow-ui/pull/205) [`46b0dc0`](https://github.com/holakirr/snow-ui/commit/46b0dc0ad1e8387d4923713626c592542964f8fd) Thanks [@holakirr](https://github.com/holakirr)! - `BreadcrumbPage` shows the arrow cursor. Its `aria-disabled` gave it the not-allowed cursor of disabled controls, but the current page isn't disabled, and the kit's disabled cursor is the arrow too.
+
+- [#205](https://github.com/holakirr/snow-ui/pull/205) [`46b0dc0`](https://github.com/holakirr/snow-ui/commit/46b0dc0ad1e8387d4923713626c592542964f8fd) Thanks [@holakirr](https://github.com/holakirr)! - `Calendar` and the date pickers' month, year and time views in dark mode: today (the current month, year or hour), unless selected, has no fill, only indigo text (white on hover) and its dot. A selected day is indigo in dark mode, so a selected today and an unselected one looked the same (indigo with the dot); now only the selected one is filled. The light theme and forced colours are unchanged. If you restyle today with `todayClassName`, also override its `dark:` classes (`dark:not-aria-selected:[&>button]:bg-transparent` and `dark:not-aria-selected:[&>button]:text-indigo`), which otherwise keep a dark today unfilled.
+
+- [#206](https://github.com/holakirr/snow-ui/pull/206) [`aa6505c`](https://github.com/holakirr/snow-ui/commit/aa6505c0eb3a5a7b5a7bd6c742fe05500c38002c) Thanks [@holakirr](https://github.com/holakirr)! - The `arrow` variant of `Link` draws its arrow as a 12px Phosphor `ArrowUpRight` icon, like the `external` variant's icon, instead of the "↗" text character, whose shape and width changed with the font. It stays decorative (`aria-hidden`), at 40% opacity, full on hover and with more contrast, and mirrored in right-to-left text. The link's text content no longer ends with "↗".
+
+- [#205](https://github.com/holakirr/snow-ui/pull/205) [`46b0dc0`](https://github.com/holakirr/snow-ui/commit/46b0dc0ad1e8387d4923713626c592542964f8fd) Thanks [@holakirr](https://github.com/holakirr)! - Menu group titles and dividers match the kit. `DropdownMenuLabel`, `ContextMenuLabel`, `SelectLabel` and the `Combobox` and `MultiSelect` group titles are 14/20 (the kit's SearchPopup group title) instead of 12/16, still `text-secondary` and 28px high. `DropdownMenuSeparator`, `ContextMenuSeparator` and `SelectSeparator` are a 1px Black/4% line, 7px under the item above and 8px over the item below (the kit's item group: 8px padding and a 1px stroke inside its bottom edge), instead of 0.5px Black/10% with 8px on each side: 16px between two groups instead of 16.5. With more contrast the line is `black-20`, and with forced colours the system GrayText, so it no longer disappears.
+
+- [#206](https://github.com/holakirr/snow-ui/pull/206) [`aa6505c`](https://github.com/holakirr/snow-ui/commit/aa6505c0eb3a5a7b5a7bd6c742fe05500c38002c) Thanks [@holakirr](https://github.com/holakirr)! - `SidebarGroupLabel` is `text-secondary` instead of `black-80`, the colour of the Dashboard recipe's section headings and of the library's other secondary text: one colour for the kit's Black/40% headings, which are 2.85:1. It is 5.74:1 in light mode and 7.08:1 in dark mode on the page (Background/1), at least 5.65:1 and 6.42:1 on the inset variant's Background/2.
+
 ## 5.1.0
 
 ### Minor Changes

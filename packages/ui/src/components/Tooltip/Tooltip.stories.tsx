@@ -2,12 +2,15 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor, within } from 'storybook/test'
 
 import { expectClosed } from '../../test/animations'
+import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
 import {
   Tooltip,
   TooltipContent,
+  TooltipDescription,
   TooltipProvider,
   TooltipShortcut,
+  TooltipTitle,
   TooltipTrigger,
 } from './Tooltip'
 
@@ -154,4 +157,102 @@ export const Variants: Story = {
       </div>
     </TooltipProvider>
   ),
+}
+
+/**
+ * Rich tooltips (added in 5.2), as the kit's examples: a `TooltipTitle` in
+ * semibold over a `TooltipDescription`, or a description alone for a
+ * multi-line tip. They stack, start-aligned, with an 8px radius, and wrap at
+ * 240px. Text only: for links or buttons use a Popover.
+ */
+export const Rich: Story = {
+  args: {},
+  parameters: { layout: 'padded' },
+  render: () => (
+    <TooltipProvider>
+      <div className="flex items-start gap-72 px-4 pt-32 pb-2">
+        <Tooltip open>
+          <TooltipTrigger asChild>
+            <Button variant="outline" label="Dark" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <TooltipTitle>This is a tooltip</TooltipTitle>
+            <TooltipDescription>
+              Tooltips are used to describe or identify an element. In most
+              scenarios, tooltips help the user understand meaning, function or
+              alt-text.
+            </TooltipDescription>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip open>
+          <TooltipTrigger asChild>
+            <Button variant="outline" label="Light" />
+          </TooltipTrigger>
+          <TooltipContent variant="light">
+            <TooltipTitle>This is a tooltip</TooltipTitle>
+            <TooltipDescription>
+              Tooltips are used to describe or identify an element.
+            </TooltipDescription>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip open>
+          <TooltipTrigger asChild>
+            <Button variant="outline" label="Views" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <TooltipDescription>
+              Compared with yesterday, it is up 11.01%
+            </TooltipDescription>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
+  ),
+  play: async ({ canvas, canvasElement, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const title = (await page.findAllByText('This is a tooltip')).find(
+      (element) => element.closest('[data-side]') !== null,
+    ) as HTMLElement
+    const tooltip = title.closest('[data-side]') as HTMLElement
+    await settleLayout(tooltip)
+
+    await step('the title is semibold, over the text', async () => {
+      await expect(getComputedStyle(title).fontWeight).toBe('600')
+      const text = title.nextElementSibling as HTMLElement
+      await expect(text).toHaveAttribute('data-slot', 'tooltip-description')
+      await expect(
+        text.getBoundingClientRect().top - title.getBoundingClientRect().bottom,
+      ).toBeCloseTo(4, 0)
+      await expect(
+        text.getBoundingClientRect().left - title.getBoundingClientRect().left,
+      ).toBeCloseTo(0, 0)
+    })
+
+    await step('an 8px radius, wrapping at 240px', async () => {
+      const style = getComputedStyle(tooltip)
+      await expect(style.borderTopLeftRadius).toBe('8px')
+      await expect(tooltip.getBoundingClientRect().width).toBeLessThanOrEqual(
+        240,
+      )
+      await expect(tooltip.getBoundingClientRect().height).toBeGreaterThan(48)
+    })
+
+    await step(
+      'the trigger is described by the title and the text',
+      async () => {
+        await expect(
+          canvas.getByRole('button', { name: 'Dark' }),
+        ).toHaveAccessibleDescription(/^This is a tooltip Tooltips are used/)
+      },
+    )
+
+    await step('a description alone: the multi-line tooltip', async () => {
+      const views = (
+        await page.findAllByText('Compared with yesterday, it is up 11.01%')
+      )
+        .find((element) => element.closest('[data-side]') !== null)
+        ?.closest('[data-side]') as HTMLElement
+      await expect(getComputedStyle(views).borderTopLeftRadius).toBe('8px')
+    })
+  },
 }

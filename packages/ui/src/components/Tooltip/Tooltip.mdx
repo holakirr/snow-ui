@@ -3,8 +3,10 @@ import { Do, DoDont, Dont, FigmaLinks } from '../../../../../.storybook/blocks'
 import {
   Tooltip,
   TooltipContent,
+  TooltipDescription,
   TooltipProvider,
   TooltipShortcut,
+  TooltipTitle,
   TooltipTrigger,
 } from './Tooltip'
 import * as TooltipStories from './Tooltip.stories'
@@ -51,6 +53,7 @@ import {
 - The name or a short description of an icon-only button.
 - A keyboard shortcut for a control.
 - A few words that complete a truncated or abbreviated label.
+- A short title and a sentence or two that explain a control or a value (a rich tooltip, added in 5.2).
 
 ## When not to use
 
@@ -66,6 +69,7 @@ import {
 3. **Trigger** (`TooltipTrigger`): the element the tooltip describes, usually a Button (`asChild`).
 4. **Content** (`TooltipContent`): the label, in a portal, 4px from the trigger (`sideOffset={4}`), above it by default (`side`). 24px high at least, 4 / 8px padding, a 12px radius, 12/16 text, a 10px background blur; items inside are 4px apart.
 5. **Shortcut** (`TooltipShortcut`, optional): secondary text, e.g. a shortcut, at 70% opacity.
+6. **Title** (`TooltipTitle`) and **description** (`TooltipDescription`), optional, added in 5.2: the kit's rich tooltip, a 12/16 semibold title over 12/16 text. With either inside, the content stacks them, start-aligned and 4px apart, with an 8px radius, and wraps the text at 240px. See [Rich tooltip](#rich-tooltip).
 
 ## Variants
 
@@ -83,6 +87,25 @@ The Figma set, open (it opens on load, so it isn't embedded here): [Variants sto
 <Canvas of={TooltipStories.FromBottom} />
 
 The content has `data-variant` (`dark` or `light`) and `data-side` for your own styles.
+
+## Rich tooltip
+
+Added in 5.2. The kit's multi-line tooltip ("This is a tooltip" over a few lines of text): put a `TooltipTitle` and a `TooltipDescription` in `TooltipContent`, or a `TooltipDescription` alone for a tip of two lines ("Compared with yesterday, it is up 11.01%"). The content sees them (`:has()`) and stacks them, start-aligned (on the right in right-to-left text) and 4px apart (the tooltip's gap); the radius becomes 8 (the kit's ≈8) and the width at most 240px, so the text wraps. Both variants work; the colours stay the tooltip's.
+
+```tsx
+<TooltipContent>
+  <TooltipTitle>This is a tooltip</TooltipTitle>
+  <TooltipDescription>
+    Tooltips are used to describe or identify an element.
+  </TooltipDescription>
+</TooltipContent>
+```
+
+<Canvas of={TooltipStories.Rich} />
+
+- **Text only.** The kit's rich tooltip has no actions, and a tooltip can't hold any: it takes no focus and closes when the pointer or the focus leaves its trigger (WAI-ARIA Tooltip pattern). For a link or a button, use a [Popover](?path=/docs/components-popover--docs).
+- **Read as one description:** the trigger's description is the title and the text ("This is a tooltip Tooltips are used…"); the parts are paragraphs, so a screen reader hears a space between them. Keep the title short.
+- **Not for essential information**, as any tooltip: a touch screen has no hover.
 
 ## States
 
@@ -145,7 +168,7 @@ The full table is in the package README.
 <Do>
 
 - Render one `TooltipProvider` near the root of the app.
-- Keep the text to a few words, without links or buttons.
+- Keep the text to a few words (a title and a sentence or two in a rich tooltip), without links or buttons.
 - Give an icon-only trigger its own `aria-label`; the tooltip only describes it.
 - Put shortcuts in `TooltipShortcut`.
 
@@ -200,3 +223,15 @@ The `role="tooltip"` label, in a portal: `variant` (`dark` by default) picks the
 A `<span>` for secondary text, e.g. a shortcut, at 70% opacity.
 
 <ArgTypes of={TooltipShortcut} />
+
+### TooltipTitle
+
+Added in 5.2. A `<p>` in 12/16 semibold, the first line of a rich tooltip. See [Rich tooltip](#rich-tooltip).
+
+<ArgTypes of={TooltipTitle} />
+
+### TooltipDescription
+
+Added in 5.2. A `<p>` for the text of a rich tooltip, under its title or alone; it wraps at 240px. See [Rich tooltip](#rich-tooltip).
+
+<ArgTypes of={TooltipDescription} />

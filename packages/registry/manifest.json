@@ -1258,12 +1258,19 @@
       "exports": [
         "Tooltip",
         "TooltipContent",
+        "TooltipDescription",
         "TooltipProvider",
         "TooltipShortcut",
+        "TooltipTitle",
         "TooltipTrigger",
         "tooltipVariants"
       ],
-      "types": ["TooltipContentProps", "TooltipShortcutProps"],
+      "types": [
+        "TooltipContentProps",
+        "TooltipDescriptionProps",
+        "TooltipShortcutProps",
+        "TooltipTitleProps"
+      ],
       "docs": "components-tooltip"
     },
     {

@@ -13,7 +13,7 @@ Display") at every size and the base layer sets `font-optical-sizing: none`,
 so browsers never leave opsz 14 and the glyphs are the same, while the files
 lose the axis' variation data. The ranges are Google Fonts' (latin, latin-ext, cyrillic…),
 "ui-symbols" (the arrows and keyboard symbols that components and shortcut
-hints render: ↗ ↩ ⌘ ⌥ ⇧…, a few kB) and "symbols": everything else Inter
+hints render: ↩ ⌘ ⌥ ⇧…, a few kB) and "symbols": everything else Inter
 covers (maths, box drawing, shapes, private-use icons…), which is large, so
 no page downloads it for a single arrow.
 
@@ -71,7 +71,7 @@ RANGES = {
 # The optical size every subset is pinned at (see the docstring).
 OPSZ = 14
 
-# Arrows (Link's external ↗, CommandPalette's ↩), the keyboard symbols of
+# Arrows (CommandPalette's ↩ and the rest of the block), the keyboard symbols of
 # shortcut hints (⌃ ⌘ ⌥ ⌦ ⌫ ⎋ ⏎ ␣) and check marks. Minus what the ranges
 # above already cover (↑ ↓ are in latin).
 UI_SYMBOLS = "U+2190-21FF,U+2303-2327,U+232B,U+238B,U+23CE-23CF,U+2423,U+2713,U+2717"

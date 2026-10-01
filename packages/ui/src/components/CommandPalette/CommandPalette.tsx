@@ -461,7 +461,9 @@ const CommandPaletteList: FC<ListProps> = ({
         <Typography
           asChild
           size={12}
-          className="px-2 pt-2 text-secondary empty:hidden"
+          // The live region stays in the accessibility tree while empty,
+          // so its first count is announced; only the padding goes.
+          className={showsCount ? 'px-2 pt-2 text-secondary' : 'text-secondary'}
         >
           <p role="status" aria-live="polite">
             {showsCount ? messages.commandPalette.results?.(count) : null}
@@ -563,7 +565,8 @@ const CommandPaletteList: FC<ListProps> = ({
           )
         })}
       </div>
-      <div role="status" aria-live="polite" className="empty:hidden">
+      {/* Always rendered (not display: none while empty), so "No results" is announced. */}
+      <div role="status" aria-live="polite">
         {isEmpty && (
           <Typography
             asChild

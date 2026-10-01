@@ -223,8 +223,12 @@ export const Rich: Story = {
       await expect(
         text.getBoundingClientRect().top - title.getBoundingClientRect().bottom,
       ).toBeCloseTo(4, 0)
+      // Aligned at the start edge: the left one, or the right one in RTL.
+      const edge =
+        getComputedStyle(tooltip).direction === 'rtl' ? 'right' : 'left'
       await expect(
-        text.getBoundingClientRect().left - title.getBoundingClientRect().left,
+        text.getBoundingClientRect()[edge] -
+          title.getBoundingClientRect()[edge],
       ).toBeCloseTo(0, 0)
     })
 

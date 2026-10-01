@@ -375,7 +375,9 @@ describe('CommandPalette results (5.2)', () => {
 
     // Nothing to count without a query.
     expect(status()).toBeEmptyDOMElement()
-    expect(status()).toHaveClass('text-12', 'text-secondary', 'empty:hidden')
+    // Empty but in the accessibility tree (no display: none), and no padding.
+    expect(status()).toHaveClass('text-12', 'text-secondary')
+    expect(status()).not.toHaveClass('empty:hidden', 'pt-2')
     expect(status()).toHaveAttribute('aria-live', 'polite')
 
     type('wind')

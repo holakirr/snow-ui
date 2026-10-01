@@ -206,7 +206,7 @@ export const States: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error: the kit's Error stroke, a 1px Secondary/Red stroke, also on hover and focus (2px on focus with more contrast). The kit's Warning icon is opt-in: see Error Icon. Pair it with the error text: see Form.
+ * error (the kit's Error state). A 1px Secondary/Red stroke, also on hover and focus (2px on focus with more contrast), and the kit's 16px `Warning` icon at the end, in Secondary/Red. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {
@@ -223,6 +223,33 @@ export const Invalid: Story = {
       await hasInsetRing(field, 'text-control-border-invalid', '1px'),
     ).toBe(true)
 
+    await step(
+      'the Warning icon shows at the end, in the stroke colour',
+      async () => {
+        const icon = field.querySelector(
+          '[data-slot="input-invalid-icon"]',
+        ) as HTMLElement
+        await expect(icon).toBeVisible()
+        await expect(icon).toHaveAttribute('aria-hidden', 'true')
+        await expect(field.lastElementChild).toBe(icon)
+        const svg = icon.querySelector('svg') as SVGElement
+        await expect(svg.getBoundingClientRect().width).toBe(16)
+        const probe = document.createElement('span')
+        probe.style.color = 'var(--color-control-border-invalid)'
+        field.append(probe)
+        await expect(getComputedStyle(icon).color).toBe(
+          getComputedStyle(probe).color,
+        )
+        probe.remove()
+
+        // A valid input hides it.
+        input.setAttribute('aria-invalid', 'false')
+        await expect(icon).not.toBeVisible()
+        input.setAttribute('aria-invalid', 'true')
+        await expect(icon).toBeVisible()
+      },
+    )
+
     await step('the stroke stays red on focus', async () => {
       await userEvent.click(input)
       // 2px with more contrast: the focus indicator.
@@ -231,68 +258,6 @@ export const Invalid: Story = {
         await hasInsetRing(field, 'text-control-border-invalid', width),
       ).toBe(true)
       await userEvent.tab()
-    })
-  },
-}
-
-/**
- * The kit's Error icon (`showErrorIcon`, added in 5.2): while the input is
- * invalid, a 16px `Warning` at the end of the field, in the red of the
- * stroke, centred in the 1 row and 2 row fields; the title stays grey. A
- * valid field with `showErrorIcon` shows nothing.
- */
-export const ErrorIcon: Story = {
-  render: () => (
-    <div className="flex flex-col gap-4">
-      <Input
-        aria-label="Email"
-        defaultValue="name@"
-        aria-invalid
-        showErrorIcon
-      />
-      <Input title="Name" defaultValue="A" aria-invalid showErrorIcon />
-      <Input title="City" defaultValue="Madrid" showErrorIcon />
-    </div>
-  ),
-  play: async ({ canvas, canvasElement, step }) => {
-    const parts = (input: HTMLElement) => {
-      const field = input.closest('[data-slot="input"]') as HTMLElement
-      const icon = field.querySelector(
-        '[data-slot="input-error-icon"]',
-      ) as HTMLElement
-      return { field, icon }
-    }
-    await settleLayout(canvasElement)
-
-    for (const name of ['Email', 'Name']) {
-      await step(`${name}: the icon at the end, centred`, async () => {
-        const { field, icon } = parts(canvas.getByLabelText(name))
-        const box = field.getBoundingClientRect()
-        const glyph = icon.getBoundingClientRect()
-        await expect(getComputedStyle(icon).display).toBe('flex')
-        await expect(glyph.width).toBe(16)
-        await expect(glyph.height).toBe(16)
-        // The field's 16px end padding; centred in its height.
-        await expect(box.right - glyph.right).toBe(16)
-        await expect(glyph.top - box.top).toBe(box.bottom - glyph.bottom)
-        await expect(getComputedStyle(icon).color).toBe(
-          colorOf('text-control-border-invalid', field),
-        )
-        await expect(icon).toHaveAttribute('aria-hidden', 'true')
-      })
-    }
-
-    await step('the title stays grey', async () => {
-      const title = canvas.getByText('Name')
-      await expect(getComputedStyle(title).color).toBe(
-        colorOf('text-secondary', title.parentElement as HTMLElement),
-      )
-    })
-
-    await step('a valid field shows no icon', async () => {
-      const input = canvas.getByLabelText('City')
-      await expect(input).not.toBeInvalid()
-      await expect(getComputedStyle(parts(input).icon).display).toBe('none')
     })
   },
 }
@@ -377,7 +342,7 @@ export const EndIconsRTL: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
       <Input aria-label="الاسم" defaultValue="آدا" clearable />
-      <Input title="البريد" defaultValue="ada@" aria-invalid showErrorIcon />
+      <Input title="البريد" defaultValue="ada@" aria-invalid />
       <Input aria-label="المدينة" defaultValue="مدريد" status="success" />
     </div>
   ),
@@ -400,7 +365,7 @@ export const EndIconsRTL: Story = {
       beforeInput: true,
     })
     await expect(
-      leftGap(canvas.getByLabelText('البريد'), 'input-error-icon'),
+      leftGap(canvas.getByLabelText('البريد'), 'input-invalid-icon'),
     ).toEqual({ gap: 16, beforeInput: true })
     await expect(
       leftGap(canvas.getByLabelText('المدينة'), 'input-status-icon'),
@@ -464,6 +429,108 @@ export const Status: Story = {
   },
 }
 
+/**
+ * The end of the field with several states at once: the end content, then
+ * the status icon, the clear button and the Error icon. The kit draws one at
+ * a time, each 16px from the end; in this order each keeps that place in
+ * its own state, the Warning stays at the edge, and a field shows one status
+ * mark: In progress hides the Warning while the value is checked again, and
+ * an invalid field hides the Done check. The story ends with the last field
+ * focused: the ring, then the clear button.
+ */
+export const CombinedStates: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Input
+        aria-label="Checked again"
+        defaultValue="ada"
+        aria-invalid
+        status="progress"
+      />
+      <Input
+        aria-label="Invalid and done"
+        defaultValue="ada"
+        aria-invalid
+        status="success"
+      />
+      <Input
+        aria-label="Invalid with content"
+        defaultValue="ada"
+        aria-invalid
+        clearable
+        endContent={<ArrowLineUpDownIcon />}
+      />
+      <Input
+        title="Everything"
+        defaultValue="ada"
+        aria-invalid
+        status="progress"
+        clearable
+        endContent={<ArrowLineUpDownIcon />}
+      />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    // The shown parts at the end of the field, in order, with their boxes.
+    const endParts = (name: string) => {
+      const input = canvas.getByLabelText(name)
+      const field = input.closest('[data-slot="input"]') as HTMLElement
+      const parts = Array.from(field.children)
+        .slice(1)
+        .filter(
+          (part) =>
+            getComputedStyle(part).display !== 'none' &&
+            !part.classList.contains('sr-only'),
+        ) as HTMLElement[]
+      return {
+        field,
+        slots: parts.map(
+          (part) =>
+            part.getAttribute('data-status') ??
+            part.getAttribute('data-slot') ??
+            'end-content',
+        ),
+        boxes: parts.map((part) => part.getBoundingClientRect()),
+      }
+    }
+    const expectEnd = async (name: string, slots: string[]) => {
+      const { field, slots: shown, boxes } = endParts(name)
+      await expect(shown).toEqual(slots)
+      // 8px apart, never overlapping, the last one 16px from the end.
+      for (let i = 1; i < boxes.length; i++) {
+        await expect(boxes[i].left - boxes[i - 1].right).toBe(8)
+      }
+      await expect(
+        field.getBoundingClientRect().right - (boxes.at(-1)?.right ?? 0),
+      ).toBe(16)
+    }
+    await settleLayout(canvasElement)
+
+    await step('In progress hides the Warning', () =>
+      expectEnd('Checked again', ['progress']),
+    )
+    await step('an invalid field hides the Done check', () =>
+      expectEnd('Invalid and done', ['input-invalid-icon']),
+    )
+    await step('the clear button comes before the Warning', async () => {
+      await expectEnd('Invalid with content', [
+        'end-content',
+        'input-invalid-icon',
+      ])
+      await userEvent.click(canvas.getByLabelText('Invalid with content'))
+      await expectEnd('Invalid with content', [
+        'end-content',
+        'input-clear',
+        'input-invalid-icon',
+      ])
+    })
+    await step('end content, status, clear button', async () => {
+      await userEvent.click(canvas.getByLabelText('Everything'))
+      await expectEnd('Everything', ['end-content', 'progress', 'input-clear'])
+    })
+  },
+}
+
 const takenNames = ['admin', 'ada']
 
 /** A username field that checks the value when it loses focus. */
@@ -497,7 +564,6 @@ const UsernameCheck = () => {
         statusLabel={
           status === 'success' ? 'Username available' : 'Checking the username'
         }
-        showErrorIcon
         aria-invalid={!!error}
         aria-describedby={error ? 'username-error' : undefined}
       />

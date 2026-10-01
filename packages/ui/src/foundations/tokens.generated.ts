@@ -321,7 +321,7 @@ export const colorTokens: ColorToken[] = [
     light: '#d42020',
     dark: '#ff8080',
     swatch: 'bg-red-text',
-    note: 'Accessibility addition (not in the Figma kit): Secondary/Red is 3.36:1 on white and 3.76:1 on #333, so error text (FormMessage, an invalid FormLabel) is #D42020 in light mode and #FF8080 in dark mode (5.21:1 on background-1 in both).',
+    note: 'Accessibility addition (not in the Figma kit): Secondary/Red is 3.36:1 on white and 3.76:1 on #333, so error text (FormMessage) is #D42020 in light mode and #FF8080 in dark mode (5.21:1 on background-1 in both).',
   },
   {
     name: 'control-border',

@@ -7,6 +7,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment } from 'react'
 import { expect } from 'storybook/test'
 import { SIZES, TOGGLE_VARIANTS } from '../../constants'
+import { colorOf, settledColor } from '../../test/colors'
 import { Typography } from '../Text'
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup'
 
@@ -118,6 +119,53 @@ export const Solid: Story = {
   args: {
     type: 'single',
     defaultValue: 'up',
+  },
+}
+
+/**
+ * `filled` (5.2): the pill track with a Filled pressed item, Primary with the
+ * per-mode `white` label, as a `TabsList variant="filled"`.
+ */
+export const Filled: Story = {
+  args: {
+    type: 'single',
+    variant: 'filled',
+    defaultValue: 'up',
+  },
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const up = canvas.getByRole('radio', { name: 'Toggle up' })
+    const downUp = canvas.getByRole('radio', { name: 'Toggle down-up' })
+    const white = colorOf('text-white', canvasElement)
+    // After the transitions (settledColor finishes them).
+    const fill = async (element: HTMLElement) => {
+      await settledColor(element)
+      return getComputedStyle(element).backgroundColor
+    }
+    const probe = canvasElement.ownerDocument.createElement('span')
+    probe.className = 'bg-primary'
+    canvasElement.appendChild(probe)
+    const primaryFill = getComputedStyle(probe).backgroundColor
+    probe.remove()
+
+    await step('the pressed item is Filled, its icon white', async () => {
+      await expect(await settledColor(up)).toBe(white)
+      await expect(await fill(up)).toBe(primaryFill)
+      await expect(await settledColor(downUp)).toBe(
+        colorOf('text-secondary', canvasElement),
+      )
+    })
+
+    await step('the arrow keys and Space move the fill', async () => {
+      await userEvent.tab()
+      await expect(up).toHaveFocus()
+      await userEvent.keyboard('{ArrowRight}')
+      await expect(downUp).toHaveFocus()
+      await userEvent.keyboard(' ')
+      await expect(downUp).toHaveAttribute('aria-checked', 'true')
+      // Focused and pressed, the icon stays white.
+      await expect(await settledColor(downUp)).toBe(white)
+      await expect(await fill(up)).toBe('rgba(0, 0, 0, 0)')
+    })
   },
 }
 

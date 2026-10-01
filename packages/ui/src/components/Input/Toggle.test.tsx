@@ -1,6 +1,9 @@
 import { StarIcon } from '@holakirr/snow-ui-icons'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
+import { userEvent } from 'storybook/test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { TOGGLE_VARIANTS } from '../../constants'
+import type { ToggleVariant } from '../../types'
 import { resetUnnamedIconOnlyWarnings } from '../../utils/accessible-name'
 
 import { Toggle } from './Toggle'
@@ -171,6 +174,84 @@ describe('ToggleGroup', () => {
       'disabled:cursor-not-allowed',
     )
     expect(toggle).not.toHaveClass('disabled:opacity-20')
+  })
+})
+
+describe('filled (5.2)', () => {
+  it('is a ToggleVariant, in TOGGLE_VARIANTS', () => {
+    const variant: ToggleVariant = 'filled'
+    expect(TOGGLE_VARIANTS.filled).toBe(variant)
+  })
+
+  it('turns a toggle into a Filled button when pressed', () => {
+    render(<Toggle variant="filled">Bold</Toggle>)
+    const toggle = screen.getByRole('button', { name: 'Bold' })
+
+    // Off: Borderless, text-secondary, as the other variants.
+    expect(toggle).toHaveAttribute('data-state', 'off')
+    expect(toggle).toHaveClass('[--segment-fg:var(--color-text-secondary)]')
+    // On: Primary and the per-mode white label (as TabsList `filled`),
+    // unless disabled.
+    expect(toggle).toHaveClass(
+      'data-[state=on]:not-disabled:bg-primary',
+      'data-[state=on]:not-disabled:text-white',
+    )
+    expect(toggle).not.toHaveClass(
+      'data-[state=on]:bg-black-4',
+      'data-[state=on]:bg-white-80',
+    )
+    fireEvent.click(toggle)
+    expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('puts a ToggleGroup on the pill track, like TabsList filled', () => {
+    const { container } = render(
+      <ToggleGroup type="single" variant="filled" defaultValue="daily">
+        <ToggleGroupItem value="daily">Daily</ToggleGroupItem>
+        <ToggleGroupItem value="weekly">Weekly</ToggleGroupItem>
+      </ToggleGroup>,
+    )
+    const group = container.firstElementChild
+    const [daily, weekly] = screen.getAllByRole('radio')
+
+    expect(group).toHaveAttribute('data-variant', 'filled')
+    // The kit's Pill track: Black/4%, p4, gap 4, r20 at md.
+    expect(group).toHaveClass('bg-black-4', 'rounded-20', 'p-1', 'gap-1')
+    expect(daily).toHaveAttribute('data-state', 'on')
+    expect(daily).toHaveClass(
+      'data-[state=on]:not-disabled:bg-primary',
+      'data-[state=on]:not-disabled:text-white',
+      'rounded-16',
+    )
+    expect(weekly).toHaveAttribute('data-state', 'off')
+  })
+
+  it('keeps the arrow keys, in right-to-left text too', async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <div dir="rtl">
+        <ToggleGroup
+          type="single"
+          variant="filled"
+          dir="rtl"
+          defaultValue="daily"
+          onValueChange={onValueChange}
+        >
+          <ToggleGroupItem value="daily">Daily</ToggleGroupItem>
+          <ToggleGroupItem value="weekly">Weekly</ToggleGroupItem>
+        </ToggleGroup>
+      </div>,
+    )
+    const [daily, weekly] = screen.getAllByRole('radio')
+
+    act(() => (daily as HTMLElement).focus())
+    // Right-to-left, ArrowLeft moves to the next item.
+    await user.keyboard('{ArrowLeft}')
+    expect(weekly).toHaveFocus()
+    await user.keyboard(' ')
+    expect(weekly).toHaveAttribute('aria-checked', 'true')
+    expect(onValueChange).toHaveBeenCalledExactlyOnceWith('weekly')
   })
 })
 

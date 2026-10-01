@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
-import { colorOf, hasInsetRing, hasMoreContrast } from '../../test/colors'
-import { settleLayout } from '../../test/layout'
+import { hasInsetRing, hasMoreContrast } from '../../test/colors'
 
 import { Textarea } from './Textarea'
 
@@ -76,61 +75,48 @@ export const WithCount: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (the kit's Error stroke; its Warning icon is opt-in: see Error Icon). The Input stroke in Secondary/Red, 1px. Pair it with the error text: see Form.
+ * error (the kit's Error state). The Input stroke in Secondary/Red, 1px, and the kit's 16px `Warning` icon at the end of the first row, in Secondary/Red (a background image: the text stops 40px from the end). Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {
     defaultValue: 'Too short',
     'aria-invalid': true,
   },
-  play: async ({ canvas }) => {
+  play: async ({ canvas, globals }) => {
     const textarea = canvas.getByRole('textbox', { name: 'Message' })
 
     await expect(textarea).toBeInvalid()
     await expect(
       await hasInsetRing(textarea, 'text-control-border-invalid', '1px'),
     ).toBe(true)
+
+    // The Warning icon: 16px, 16px from the end and 14px from the top.
+    const style = getComputedStyle(textarea)
+    await expect(style.backgroundImage).toContain('data:image/svg+xml')
+    await expect(style.backgroundImage).toContain('ff4747')
+    await expect(style.backgroundSize).toBe('16px 16px')
+    await expect(style.backgroundRepeat).toBe('no-repeat')
+    await expect(style.paddingInlineEnd).toBe('40px')
+    const rtl = globals.dir === 'rtl'
+    await expect(style.direction).toBe(rtl ? 'rtl' : 'ltr')
+    await expect(style.backgroundPosition).toBe(
+      rtl ? '16px 14px' : 'calc(100% - 16px) 14px',
+    )
+
+    // A valid textarea has none.
+    textarea.setAttribute('aria-invalid', 'false')
+    await expect(getComputedStyle(textarea).backgroundImage).toBe('none')
+    textarea.setAttribute('aria-invalid', 'true')
   },
 }
 
 /**
- * The kit's Error icon (`showErrorIcon`, added in 5.2): while the textarea is
- * invalid, a 16px `Warning` at the end of the first row, in the red of the
- * stroke; the text stops 8px before it. It wraps the textarea in a `<div>`,
- * like `showCount`.
+ * Invalid in right-to-left text: the Warning icon at the end, on the left.
  */
-export const ErrorIcon: Story = {
-  args: {
-    defaultValue:
-      'Too short, and a line long enough to wrap before the Warning icon',
-    rows: 3,
-    'aria-invalid': true,
-    showErrorIcon: true,
-  },
-  play: async ({ canvas, canvasElement }) => {
-    const textarea = canvas.getByRole('textbox', { name: 'Message' })
-    const icon = canvasElement.querySelector(
-      '[data-slot="textarea-error-icon"]',
-    ) as HTMLElement
-    await settleLayout(canvasElement)
-
-    await expect(textarea).toBeInvalid()
-    const box = textarea.getBoundingClientRect()
-    const glyph = icon.getBoundingClientRect()
-    await expect(glyph.width).toBe(16)
-    await expect(glyph.height).toBe(16)
-    // 16px from the end, centred on the first 20px line (12px padding).
-    await expect(box.right - glyph.right).toBe(16)
-    await expect(glyph.top - box.top).toBe(14)
-    await expect(getComputedStyle(icon).color).toBe(
-      colorOf(
-        'text-control-border-invalid',
-        textarea.parentElement ?? textarea,
-      ),
-    )
-    // The text stops 8px before the icon: 40px end padding.
-    await expect(getComputedStyle(textarea).paddingRight).toBe('40px')
-  },
+export const InvalidRTL: Story = {
+  ...Invalid,
+  tags: ['!autodocs'],
+  globals: { dir: 'rtl' },
 }
 
 /**

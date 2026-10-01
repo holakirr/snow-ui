@@ -256,9 +256,7 @@ const FormItem: FC<FormItemProps> = ({
     >
       <div
         ref={setRef}
-        // `group/form-item`: an invalid `FormLabel` stays grey when the
-        // field shows the kit's Error icon (`showErrorIcon`).
-        className={twMerge('group/form-item relative space-y-2', className)}
+        className={twMerge('relative space-y-2', className)}
         {...props}
       >
         {children}
@@ -270,25 +268,14 @@ const FormItem: FC<FormItemProps> = ({
 FormItem.displayName = 'FormItem'
 
 /**
- * The field's label: `red-text` while the field is invalid, or grey, as the
- * kit's title, when the field shows the kit's Error icon (an Input or
- * Textarea with `showErrorIcon`): the icon, the red stroke and the
- * `FormMessage` mark the error.
+ * The field's label. It stays `text-secondary` when the field is invalid, as
+ * the kit's title does: the red stroke, the `Warning` icon of a text field
+ * and the `FormMessage` mark the error.
  */
 const FormLabel: FC<LabelProps> = ({ className, ...props }) => {
-  const { invalid, formItemId } = useFormField()
+  const { formItemId } = useFormField()
 
-  return (
-    <Label
-      className={twMerge(
-        invalid &&
-          'text-red-text group-has-[[data-error-icon]]/form-item:text-secondary',
-        className,
-      )}
-      htmlFor={formItemId}
-      {...props}
-    />
-  )
+  return <Label className={className} htmlFor={formItemId} {...props} />
 }
 
 FormLabel.displayName = 'FormLabel'

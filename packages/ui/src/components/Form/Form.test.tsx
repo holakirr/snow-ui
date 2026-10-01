@@ -60,6 +60,17 @@ const PlainField = ({ error }: { error?: string }) => (
 )
 
 describe('Form (library-agnostic)', () => {
+  it("keeps the label grey on an invalid field, as the kit's title", () => {
+    render(<PlainField error="Enter a valid email." />)
+
+    const label = screen.getByText('Email')
+    expect(screen.getByLabelText('Email')).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    )
+    expect(label.className).not.toMatch(/red/)
+  })
+
   it('is valid without an error', () => {
     render(<PlainField />)
 
@@ -83,39 +94,6 @@ describe('Form (library-agnostic)', () => {
       'aria-describedby',
       `${screen.getByText('Work email.').id} ${message.id}`,
     )
-  })
-
-  it('turns an invalid label red-text, or keeps it grey for the kit Error icon', () => {
-    const Field = ({ showErrorIcon }: { showErrorIcon?: boolean }) => (
-      <Core.Form>
-        <Core.FormItem error="Email is required" data-testid="item">
-          <Core.FormLabel>Email</Core.FormLabel>
-          <Core.FormControl>
-            <Input showErrorIcon={showErrorIcon} />
-          </Core.FormControl>
-          <Core.FormMessage />
-        </Core.FormItem>
-      </Core.Form>
-    )
-    const { rerender } = render(<Field />)
-
-    const label = screen.getByText('Email')
-    expect(screen.getByTestId('item')).toHaveClass('group/form-item')
-    expect(label).toHaveClass('text-red-text')
-    expect(document.querySelector('[data-error-icon]')).toBeNull()
-
-    // The grey wins (CSS) while the item holds a field with the Error icon.
-    rerender(<Field showErrorIcon />)
-    expect(label).toHaveClass(
-      'text-red-text',
-      'group-has-[[data-error-icon]]/form-item:text-secondary',
-    )
-    const input = screen.getByLabelText('Email')
-    expect(input).toBeInvalid()
-    expect(input).toHaveAccessibleDescription('Email is required')
-    expect(
-      screen.getByTestId('item').querySelector('[data-error-icon]'),
-    ).not.toBeNull()
   })
 
   it('announces the error: the message is an alert', () => {

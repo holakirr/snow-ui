@@ -46,7 +46,7 @@ The story below uses the react-hook-form adapter with a zod schema; type one cha
 
 1. **Form** (`Form`): a plain `<form>`; every prop goes to it.
 2. **Item** (`FormItem`): a `<div>` that stacks its children 8px apart and gives them a shared id and the field's state: `error`, `invalid` and `name`.
-3. **Label** (`FormLabel`, optional): a [Label](?path=/docs/components-label--docs) (12/16, `text-secondary`) linked to the control; `red-text` while the field is invalid, or grey, as the kit's title, when the field shows the kit's Error icon (`showErrorIcon`, 5.2).
+3. **Label** (`FormLabel`, optional): a [Label](?path=/docs/components-label--docs) (12/16, `text-secondary`) linked to the control. It stays `text-secondary` while the field is invalid, as the kit's title does.
 4. **Control** (`FormControl`): a Slot around exactly one control. It gives the control the item's `id`, `aria-invalid` and an `aria-describedby` with the ids of the description and the message that are rendered.
 5. **Description** (`FormDescription`, optional): a 12/16 `<p>` in `text-secondary`.
 6. **Message** (`FormMessage`): a 12/16 `<p>` in `red-text`, `role="alert"` while the field is invalid. It shows `error`; without one (or with `error={true}`) it shows its children, and it renders nothing when both are empty.
@@ -60,13 +60,9 @@ The same parts without a form library: the submit handler validates the value an
 ## States
 
 - **Valid:** `aria-invalid="false"`; `aria-describedby` points at the description, or is left out when there is none.
-- **Invalid** (a truthy `error`, or `invalid`): the `FormLabel` turns `red-text`, `FormMessage` shows the error, the control gets `aria-invalid="true"` and the message's id is added to its `aria-describedby`. `invalid` alone marks the field invalid without a message. Every field shows it with a red stroke or ring (see each field's Invalid state):
+- **Invalid** (a truthy `error`, or `invalid`): `FormMessage` shows the error, the control gets `aria-invalid="true"` and the message's id is added to its `aria-describedby`. `invalid` alone marks the field invalid without a message. Every field shows it with a red stroke or ring, and Input and Textarea with the kit's 16px `Warning` icon at the end too (see each field's Invalid state); the `FormLabel` stays grey, as the kit's title:
 
 <Canvas of={FormStories.InvalidFields} />
-
-**The kit's Error icon** (added in 5.2): Input and Textarea with `showErrorIcon` add the kit's 16px `Warning` at the end of the invalid field, in the red of the stroke, and the `FormLabel` of their item then stays grey, as the kit's title does. The `FormMessage` is still the error text, linked to the field.
-
-<Canvas of={FormStories.InvalidWithErrorIcon} />
 
 ## react-hook-form
 
@@ -131,8 +127,8 @@ The full table is in the package README.
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | Label and description in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
-| Error text (`FormMessage`, an invalid `FormLabel`) in Secondary/Red `#FF4747`: 3.36:1 on white, 3.76:1 on #333 | `red-text`: `#D42020` in light mode, `#FF8080` in dark mode (5.21:1 on `background-1` in both) | 1.4.3 |
-| Invalid fields: a Secondary/Red stroke on text fields, a 16px `Warning` icon at the end of the field and the message under it; the title stays grey | the same stroke (a ring on Checkbox and Radio, also on Switch and Slider) while the control has `aria-invalid` (3.36:1 on white), next to the error text; the `Warning` icon (and the grey label) with `showErrorIcon` on Input and Textarea, opt-in in 5.x; without it an invalid `FormLabel` turns `red-text` | 1.4.1, 1.4.11 |
+| Error text (`FormMessage`) in Secondary/Red `#FF4747`: 3.36:1 on white, 3.76:1 on #333 | `red-text`: `#D42020` in light mode, `#FF8080` in dark mode (5.21:1 on `background-1` in both) | 1.4.3 |
+| Invalid fields: a Secondary/Red stroke on text fields, a 16px `Warning` icon at the end of the field and the message under it; the title stays grey | the same stroke (a ring on Checkbox and Radio, also on Switch and Slider) while the control has `aria-invalid` (3.36:1 on white), next to the error text; Input and Textarea also show the `Warning` icon, in Secondary/Red (3.36:1 on a light field, 3.32:1 on a dark one on the page and 2.78:1 on a dark one in a dialog or popover, like the stroke), and the title and `FormLabel` stay grey | 1.4.1, 1.4.11 |
 
 ## Localization and RTL
 
@@ -194,7 +190,7 @@ A React context provider, with no props table: `value={{ name, error, invalid }}
 
 ### FormLabel
 
-A [Label](?path=/docs/components-label--docs) whose `htmlFor` points at the control, `red-text` while the field is invalid (grey, as the kit's title, when the item holds an Input or Textarea with `showErrorIcon`). It takes Label's props.
+A [Label](?path=/docs/components-label--docs) whose `htmlFor` points at the control. It stays `text-secondary` while the field is invalid, as the kit's title: the stroke, the `Warning` icon of a text field and the `FormMessage` mark the error. It takes Label's props.
 
 <ArgTypes of={FormLabel} />
 

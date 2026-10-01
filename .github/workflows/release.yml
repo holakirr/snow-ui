@@ -18,9 +18,9 @@
 #      decided as changesets/action decides it (scripts/release-mode.ts); only
 #      for the branch's head.
 #   5. version → `version`: opens/updates the "chore(release): version
-#      packages" PR (`bun run version-packages`), then dispatches Build Check
-#      on its branch: a PR opened with GITHUB_TOKEN triggers no workflows,
-#      and the ruleset requires Build Check's jobs on the PR's head commit.
+#      packages" PR (`bun run version-packages`), then approves the PR's
+#      Build Check run, which waits for approval (github-actions[bot] is an
+#      external contributor), since the ruleset requires its jobs on the PR.
 #   6. publish → `pack` (read-only): builds, and packs the versions npm
 #      doesn't have yet; then `publish` (npm OIDC, tags, releases; no build):
 #      scripts/publish.ts checks the packed plan and tarballs against the
@@ -227,9 +227,9 @@ jobs:
 
   # Changesets pending: open or update the "chore(release): version
   # packages" PR (`bun run version-packages`: versions, CHANGELOG.md,
-  # bun.lock), then run Build Check on its branch: a PR opened with
-  # GITHUB_TOKEN triggers no workflows, and the ruleset requires Build
-  # Check's jobs on the PR's head commit. No npm access in this job.
+  # bun.lock), then approve the PR's Build Check run, which waits for
+  # approval (github-actions[bot] is an external contributor), since the
+  # ruleset requires its jobs on the PR. No npm access in this job.
   version:
     needs: plan
     if: needs.plan.outputs.mode == 'version'
@@ -238,7 +238,7 @@ jobs:
     permissions:
       contents: write # the version branch
       pull-requests: write # open/update the version PR
-      actions: write # dispatch Build Check on the version PR's branch
+      actions: write # approve (or dispatch) Build Check on the version PR
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -290,9 +290,17 @@ jobs:
           commit-message: "chore(release): version packages"
           pr-title: "chore(release): version packages"
 
-      # The version PR's checks: Build Check on its branch
-      # (changeset-release/<branch>), whose jobs report on the PR's head
-      # commit. Superseded runs are cancelled (build-check.yml concurrency).
+      # The version PR's checks. Its update starts a `pull_request` Build Check,
+      # but the repository requires approval for runs by external
+      # contributors (Settings › Actions: all external contributors), and
+      # github-actions[bot] is one: the run waits as `action_required`, and the
+      # PR stays blocked (a dispatched run on the branch doesn't count for
+      # the PR's checks). Approve that run, and only that one: Build Check,
+      # event pull_request, by github-actions[bot], from this repository's
+      # version branch, on the commit this job just pushed there (the
+      # branch's head, read from the branch: the PR's head sha is updated
+      # asynchronously and may still be the previous commit). If none shows
+      # up, dispatch Build Check on the branch instead.
       - name: Run Build Check on the version PR
         if: steps.head.outputs.current == 'true' && steps.changesets.outputs.pr-number != ''
         env:
@@ -300,8 +308,33 @@ jobs:
           BRANCH: changeset-release/${{ github.ref_name }}
           PR: ${{ steps.changesets.outputs.pr-number }}
         run: |
+          if ! sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$BRANCH" --jq .object.sha) || [ -z "$sha" ]; then
+            echo "::warning title=Build Check not approved::Could not read the head of $BRANCH; approve PR #$PR's Build Check run by hand (Actions › the run › Approve and run)."
+            exit 0
+          fi
+          for _ in $(seq 18); do
+            # A failed lookup (e.g. a 5xx) is retried like a missing run.
+            run=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/build-check.yml/runs?head_sha=$sha&event=pull_request&per_page=10" \
+              --jq '[.workflow_runs[] | select(.actor.login == "github-actions[bot]" and .head_branch == env.BRANCH and .head_repository.full_name == env.GITHUB_REPOSITORY)][0] | select(.) | "\(.id) \(.conclusion // .status)"') || run=
+            case "$run" in
+              *" action_required")
+                id=${run% *}
+                if gh api -X POST "repos/$GITHUB_REPOSITORY/actions/runs/$id/approve" > /dev/null; then
+                  echo "Approved Build Check run $id on PR #$PR ($sha)." >> "$GITHUB_STEP_SUMMARY"
+                  exit 0
+                fi
+                echo "::warning title=Approval failed::Approve Build Check run $id of PR #$PR by hand (Actions › the run › Approve and run)."
+                exit 0
+                ;;
+              ?*)
+                echo "Build Check run ${run% *} on PR #$PR ($sha) needs no approval: ${run##* }." >> "$GITHUB_STEP_SUMMARY"
+                exit 0
+                ;;
+            esac
+            sleep 10
+          done
+          echo "::warning title=No pull_request run::No Build Check run for PR #$PR ($sha) after 3 minutes; dispatching one on $BRANCH (it may not count for the PR's checks)."
           gh workflow run build-check.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
-          echo "Dispatched Build Check on $BRANCH (PR #$PR)." >> "$GITHUB_STEP_SUMMARY"
 
   # Nothing pending: build the packages and pack the ones npm doesn't have
   # yet, in a job that can't write to the repository or publish to npm, so

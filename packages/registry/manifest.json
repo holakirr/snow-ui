@@ -106,7 +106,7 @@
       "registryDependencies": ["snow-core", "snow-ui-provider", "text"],
       "import": "components/Badge/Badge",
       "exports": ["Badge", "BadgeComponent"],
-      "types": ["BadgeComponentProps", "BadgeProps"],
+      "types": ["BadgeColor", "BadgeComponentProps", "BadgeProps"],
       "docs": "components-badge"
     },
     {
@@ -146,9 +146,12 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "files": ["components/Button/Button.tsx"],
+      "files": [
+        "components/Button/Button.tsx",
+        "components/Button/ButtonSpinner.tsx"
+      ],
       "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
-      "registryDependencies": ["snow-core", "text"],
+      "registryDependencies": ["snow-core", "spinner", "text"],
       "import": "components/Button/Button",
       "exports": ["Button", "buttonVariants"],
       "types": ["ButtonProps"],
@@ -680,7 +683,6 @@
       "files": [
         "components/Input/Textarea.tsx",
         "components/Input/TextareaCount.tsx",
-        "components/Input/fieldIcons.tsx",
         "components/Input/inputClasses.ts"
       ],
       "dependencies": ["@radix-ui/react-compose-refs"],
@@ -1159,6 +1161,7 @@
         "TabsContentProps",
         "TabsListProps",
         "TabsTriggerProps",
+        "TabsUnderline",
         "TabsVariant"
       ],
       "docs": "components-tabs"

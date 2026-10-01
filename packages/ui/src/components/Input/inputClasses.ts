@@ -39,10 +39,9 @@ export const staticInputClasses =
  * Invalid, while the field has `aria-invalid="true"` (`FormControl` sets it):
  * a 1px `control-border-invalid` stroke in every state: Secondary/Red (3.36:1
  * on white), `red-text` with more contrast: the kit's Error stroke. The kit
- * also puts a 16px `Warning` icon at the end of the field and keeps the
- * title grey: Input and Textarea draw it with `showErrorIcon` (opt-in in
- * 5.x). The error text is the `FormMessage` (an invalid `FormLabel` turns
- * `red-text`, grey next to the icon).
+ * also puts a 16px `Warning` icon at the end of the field (Input and
+ * Textarea draw it, see `invalidTextareaIconClasses`) and keeps the title
+ * grey; the error text is the `FormMessage`.
  *
  * The read-only states repeat it, because the Static ones (`read-only:hover:`)
  * would outweigh `aria-invalid:`.
@@ -52,3 +51,16 @@ export const staticInputClasses =
  */
 export const invalidInputClasses =
   'aria-invalid:inset-ring aria-invalid:inset-ring-control-border-invalid aria-invalid:read-only:hover:inset-ring-control-border-invalid aria-invalid:read-only:focus:inset-ring-control-border-invalid'
+
+/**
+ * The kit's Error icon in a Textarea, while it has `aria-invalid="true"`: the
+ * 16px Phosphor `Warning` in Secondary/Red at the end of the first row (16px
+ * from the end, 14px from the top), the text kept clear of it (40px end
+ * padding). A background image (`--field-warning-icon`, in theme.css), since
+ * a bare `<textarea>` can't hold an element. An image keeps one colour, so it
+ * stays Secondary/Red with more contrast too, where the stroke turns
+ * `red-text`. Input draws the same icon as an element, in the stroke's
+ * colour.
+ */
+export const invalidTextareaIconClasses =
+  'aria-invalid:bg-(image:--field-warning-icon) aria-invalid:bg-[length:16px_16px] aria-invalid:bg-no-repeat aria-invalid:bg-[position:right_16px_top_14px] rtl:aria-invalid:bg-[position:left_16px_top_14px] aria-invalid:pe-10'

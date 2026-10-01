@@ -12,11 +12,9 @@ import {
 } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
-import { TextareaErrorIcon } from './fieldIcons'
 
 type TextareaWithCountProps = ComponentProps<'textarea'> & {
   containerClassName?: string
-  showErrorIcon?: boolean
 }
 
 /** The number of characters of a textarea value, as `maxLength` counts them. */
@@ -32,7 +30,6 @@ const lengthOf = (value: ComponentProps<'textarea'>['value']) =>
  */
 const TextareaWithCount: FC<TextareaWithCountProps> = ({
   containerClassName,
-  showErrorIcon,
   value,
   defaultValue,
   onChange,
@@ -103,7 +100,6 @@ const TextareaWithCount: FC<TextareaWithCountProps> = ({
       <span id={countId} hidden>
         {messages.textarea.count(length, limit)}
       </span>
-      {showErrorIcon && <TextareaErrorIcon />}
     </div>
   )
 }

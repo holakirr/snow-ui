@@ -1,7 +1,9 @@
 import { StarIcon } from '@holakirr/snow-ui-icons'
 import { composeStories } from '@storybook/react'
 import { render, screen, within } from '@testing-library/react'
-import { forwardRef, memo } from 'react'
+import { createRef, forwardRef, memo } from 'react'
+import { renderToString } from 'react-dom/server'
+import { userEvent } from 'storybook/test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ROLES } from '../../constants'
 import { resetUnnamedIconOnlyWarnings } from '../../utils/accessible-name'
@@ -441,5 +443,213 @@ describe('Button without an accessible name', () => {
     render(button)
 
     expect(warn).not.toHaveBeenCalled()
+  })
+})
+
+describe('Button loading', () => {
+  // Composed stories run earlier in this file can leave their own buttons in
+  // the document: query inside each test's container.
+  const view = (ui: Parameters<typeof render>[0]) => {
+    const result = render(ui)
+    return { ...result, screen: within(result.container) }
+  }
+
+  it('keeps the name and size, adds aria-busy and a hidden spinner', () => {
+    const { screen } = view(
+      <Button variant="filled" size="md" label="Save Changes" loading />,
+    )
+
+    const button = screen.getByRole('button', { name: 'Save Changes' })
+    expect(button).toHaveAttribute('aria-busy', 'true')
+    expect(button).toHaveAttribute('aria-disabled', 'true')
+    expect(button).toHaveAttribute('data-loading')
+    expect(button).not.toBeDisabled()
+    // The content stays in the box (no layout shift), unpainted.
+    expect(button).toHaveTextContent('Save Changes')
+    expect(button).toHaveClass(
+      'relative',
+      '[-webkit-text-fill-color:transparent]',
+      '[&>:not([data-button-spinner])]:opacity-0',
+    )
+    // Filled turns Gray, as in the kit.
+    expect(button).toHaveClass('bg-black-4', 'text-black', 'hover:bg-black-4')
+    expect(button).not.toHaveClass('bg-primary', 'text-white')
+    expect(button).toHaveClass('active:scale-100')
+
+    // The spinner is Spinner's ring, hidden from assistive technology.
+    const spinner = button.querySelector('[data-button-spinner]')
+    expect(spinner).toHaveAttribute('aria-hidden', 'true')
+    expect(spinner).toHaveClass('absolute', 'size-4')
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+
+  it('sizes the spinner like the icon: 12/16/20, 16/20/24 alone', () => {
+    const { rerender, screen } = view(<Button size="sm" label="Save" loading />)
+    const spinner = () =>
+      screen.getByRole('button').querySelector('[data-button-spinner]')
+    expect(spinner()).toHaveClass('size-3')
+    rerender(<Button size="lg" label="Save" loading />)
+    expect(spinner()).toHaveClass('size-5')
+    rerender(
+      <Button size="md" aria-label="Star" startContent={<svg />} loading />,
+    )
+    expect(spinner()).toHaveClass('size-5')
+  })
+
+  it('is not activated by a click, Enter or Space and keeps focus', async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    const onParentClick = vi.fn()
+    const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault())
+    const { rerender, screen } = view(
+      // biome-ignore lint/a11y/noStaticElementInteractions: a click listener to check propagation
+      // biome-ignore lint/a11y/useKeyWithClickEvents: a click listener to check propagation
+      <div onClick={onParentClick}>
+        <form onSubmit={(event) => onSubmit(event.nativeEvent as SubmitEvent)}>
+          <input aria-label="Name" />
+          <Button type="submit" label="Save" loading onClick={onClick} />
+        </form>
+      </div>,
+    )
+    const button = screen.getByRole('button', { name: 'Save' })
+
+    await user.click(button)
+    button.focus()
+    await user.keyboard('{Enter}')
+    await user.keyboard(' ')
+    // Implicit submission (Enter in a field) clicks the default button.
+    screen.getByRole('textbox').focus()
+    await user.keyboard('a{Enter}')
+    expect(onClick).not.toHaveBeenCalled()
+    expect(onParentClick).not.toHaveBeenCalled()
+    expect(onSubmit).not.toHaveBeenCalled()
+
+    // Focusable while loading, and active again when done.
+    button.focus()
+    expect(button).toHaveFocus()
+    rerender(
+      // biome-ignore lint/a11y/noStaticElementInteractions: a click listener to check propagation
+      // biome-ignore lint/a11y/useKeyWithClickEvents: a click listener to check propagation
+      <div onClick={onParentClick}>
+        <form onSubmit={(event) => onSubmit(event.nativeEvent as SubmitEvent)}>
+          <input aria-label="Name" />
+          <Button type="submit" label="Save" onClick={onClick} />
+        </form>
+      </div>,
+    )
+    expect(button).toHaveFocus()
+    expect(button).not.toHaveAttribute('aria-busy')
+    expect(button).not.toHaveAttribute('aria-disabled')
+    expect(button.querySelector('[data-button-spinner]')).toBeNull()
+    await user.click(button)
+    expect(onClick).toHaveBeenCalledOnce()
+    expect(onSubmit).toHaveBeenCalledOnce()
+  })
+
+  it('does not follow an asChild link while loading', async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    const onLinkClick = vi.fn()
+    const { screen } = view(
+      <Button asChild label="Docs" loading onClick={onClick}>
+        {/* biome-ignore lint/a11y/useValidAnchor: a router link's own handler */}
+        {/* biome-ignore lint/a11y/useAnchorContent: the Button renders its label inside */}
+        <a href="#docs" onClick={onLinkClick} />
+      </Button>,
+    )
+    const link = screen.getByRole('link', { name: 'Docs' })
+    expect(link).toHaveAttribute('aria-busy', 'true')
+    expect(link).toHaveAttribute('aria-disabled', 'true')
+    expect(link.querySelector('[data-button-spinner]')).not.toBeNull()
+
+    await user.click(link)
+    link.focus()
+    await user.keyboard('{Enter}')
+    expect(onClick).not.toHaveBeenCalled()
+    expect(onLinkClick).not.toHaveBeenCalled()
+    expect(window.location.hash).toBe('')
+  })
+
+  it('keeps the other variants’ fills, without hover', () => {
+    const { rerender, screen } = view(
+      <Button variant="gray" label="A" loading />,
+    )
+    expect(screen.getByRole('button')).toHaveClass('bg-black-4')
+    rerender(<Button variant="outline" label="A" loading />)
+    expect(screen.getByRole('button')).toHaveClass(
+      'inset-ring-black-10',
+      'hover:bg-transparent',
+    )
+    expect(screen.getByRole('button')).not.toHaveClass('hover:bg-black-4')
+  })
+
+  it('leaves `disabled` to win and does nothing when not loading', () => {
+    const { rerender, screen } = view(<Button label="A" loading disabled />)
+    expect(screen.getByRole('button')).toBeDisabled()
+    rerender(<Button label="A" loading={false} />)
+    const button = screen.getByRole('button')
+    expect(button).not.toHaveAttribute('aria-busy')
+    expect(button).not.toHaveAttribute('data-loading')
+    expect(button.className).not.toContain('opacity-0')
+  })
+
+  it('forwards the ref while loading', () => {
+    const ref = createRef<HTMLElement>()
+    const { screen } = view(<Button ref={ref} label="A" loading />)
+    expect(ref.current).toBe(screen.getByRole('button'))
+  })
+
+  it('renders on the server with the busy state and the spinner', () => {
+    const html = renderToString(<Button label="Save" loading />)
+    expect(html).toContain('aria-busy="true"')
+    expect(html).toContain('aria-disabled="true"')
+    expect(html).toContain('data-button-spinner=""')
+    expect(html).toContain('Save')
+  })
+
+  it('places the spinner in the middle in right-to-left text too', () => {
+    const { screen } = view(
+      <div dir="rtl">
+        <Button label="حفظ" startContent={<svg />} loading />
+      </div>,
+    )
+    const spinner = screen
+      .getByRole('button')
+      .querySelector('[data-button-spinner]')
+    expect(spinner).toHaveClass('absolute', 'inset-0', 'm-auto')
+  })
+
+  it('puts text right in the button in an element, for forced colors', () => {
+    // Firefox's forced-colors mode repaints a transparent
+    // -webkit-text-fill-color, so text right in the button (or in an asChild
+    // link) would show under the spinner; an element's opacity stays.
+    const bareText = (element: Element) =>
+      [...element.childNodes].filter(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+      )
+    const { rerender, screen } = view(
+      <Button loading>
+        <svg /> Save {2}
+      </Button>,
+    )
+    const button = screen.getByRole('button', { name: 'Save 2' })
+    expect(bareText(button)).toEqual([])
+    expect(button.firstElementChild?.tagName).toBe('svg')
+    // One span for the run of text, the box the flex layout gave it.
+    expect(
+      [...button.children].map((child) => child.textContent?.trim()),
+    ).toEqual(['', 'Save 2', ''])
+
+    rerender(
+      <Button asChild loading>
+        <a href="#docs">Docs</a>
+      </Button>,
+    )
+    const link = screen.getByRole('link', { name: 'Docs' })
+    expect(bareText(link)).toEqual([])
+
+    // Not loading, the content is as before: no wrapper.
+    rerender(<Button>Save</Button>)
+    expect(screen.getByRole('button').firstChild?.nodeType).toBe(Node.TEXT_NODE)
   })
 })

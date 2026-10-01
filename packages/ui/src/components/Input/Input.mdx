@@ -39,9 +39,13 @@ import { Input } from '@holakirr/snow-ui'
 3. **Title** (`title`, optional): a 12/16 [Label](?path=/docs/components-label--docs) 8px above the value (`titleLayout="horizontal"`: 8px before it, on the same row), linked to the input. An id is generated when you don't pass `id`.
 4. **Input** (`inputClassName`, `inputStyle`, and every other prop): the native `<input>`, 14/20 text with a Black/20% placeholder. `ref` points at it.
 5. **End content** (`endContent`, optional): after the value, e.g. an icon, a button or a [KBD](?path=/docs/components-text-kbd--docs).
-6. **Clear button** (`clearable`, optional, added in 5.2): the kit's 16px `XCircle`, after the end content, while the field has focus and a value.
-7. **Error icon** (`showErrorIcon`, optional, added in 5.2): the kit's 16px `Warning`, after the end content, while the input is invalid.
-8. **Status icon** (`status`, optional, added in 5.2): the kit's In progress ring or Done check at the end of the field, and a visually hidden status region that announces the change.
+6. **Status icon** (`status`, optional, added in 5.2): the kit's In progress ring or Done check, after the end content, and a visually hidden status region that announces the change.
+7. **Clear button** (`clearable`, optional, added in 5.2): the kit's 16px `XCircle`, while the field has focus and a value.
+8. **Error icon**: the kit's 16px `Warning`, last, while the input is invalid (see Invalid).
+
+The kit draws one of the last three at a time, each 16px from the end of the field: the status in In progress and Done, the clear button in Focus, the Warning in Error. In this order the hidden ones take no room, so each sits where the kit draws it in its own state; when states combine, the Warning keeps the edge and the clear button stays next to it. A field shows one status mark: In progress hides the Warning while the value is checked again, and an invalid field hides the Done check.
+
+<Canvas of={InputStories.CombinedStates} />
 
 ## Variants
 
@@ -73,7 +77,7 @@ A button or a link in the start or end content keeps its own clicks; any other c
 - **Focus:** the Figma "Focus" state while the input has focus, by mouse or keyboard: a Black/40% stroke and the 4px Focus ring. The caret and the stroke mark focus, so text fields don't get the `focus-ring` outline. With more contrast the focus stroke is 2px (Black/80%, the stroke colour when read-only): the Figma 0.5px Black/40% stroke is 2.85:1 on the fill.
 - **Static** (`readOnly`): the stroke stays Black/20% on hover and focus; the 4px Focus ring still shows while the input has focus.
 - **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. This is the kit's Forms guidance look; the kit's Component state draws Disabled as the whole control at 20% opacity with the default arrow cursor; that look is planned for 6.0.
-- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets while the field has an error): a 1px Secondary/Red stroke, also on hover and focus. This is the kit's Error stroke; the kit's `Warning` icon is opt-in, see Error icon. The title stays grey; an invalid `FormLabel` turns `red-text` (grey with the icon). The error text is the `FormMessage`.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets while the field has an error): a 1px Secondary/Red stroke, also on hover and focus. This is the kit's Error state: the stroke and a 16px `Warning` icon at the end of the field, after the end content, in the stroke's colour: Secondary/Red (3.36:1 on a light field, 3.32:1 on a dark one on the page and 2.78:1 on a dark one in a dialog or popover, like the stroke), `red-text` with more contrast. The title and the `FormLabel` stay grey. The icon is decorative: `aria-invalid` and the error text, the `FormMessage`, tell the error. If your field already shows its own error icon in `endContent`, hide the built-in one: `className="[&_[data-slot=input-invalid-icon]]:hidden"`.
 
 <Canvas of={InputStories.Static} />
 
@@ -85,19 +89,13 @@ A button or a link in the start or end content keeps its own clicks; any other c
 
 <Canvas of={InputStories.Clearable} />
 
-Added in 5.2. With `clearable`, a focused field with a value shows the kit's clear button: a 16px `XCircle` (fill) in Black/100% (white in dark mode) after the end content, 16px from the end and centred in the field, as the kit's Focus state draws it. It hides while the field is empty, unfocused, `disabled` or `readOnly`.
+Added in 5.2. With `clearable`, a focused field with a value shows the kit's clear button: a 16px `XCircle` (fill) in Black/100% (white in dark mode) after the end content and the status icon, 16px from the end and centred in the field, as the kit's Focus state draws it (before the Error icon of an invalid field). It hides while the field is empty, unfocused, `disabled` or `readOnly`.
 
 - **Clearing** sets the input's value the way typing does (an `input` event), so `onChange` fires with an empty value: a controlled field gets it from you, an uncontrolled one clears itself, and react-hook-form (`register` or `FormField`) records it. `onClear` runs after that, and the focus goes back to the input.
 - **Keyboard:** the button is a tab stop while it shows (Tab from the input), Enter or Space clears. A press with the mouse or a finger keeps the focus in the input.
 - **Name:** `clearLabel`, or `messages.input.clear` of [SnowUIProvider](?path=/docs/components-snowuiprovider--docs) ("Clear").
 
 [Search](?path=/docs/components-search--docs) has a clear button of its own, shown whenever it has a value.
-
-### Error icon
-
-<Canvas of={InputStories.ErrorIcon} />
-
-Added in 5.2. With `showErrorIcon`, an invalid input also shows the kit's Error icon: a 16px `Warning` after the end content, 16px from the end and centred in the field's height (1 row and 2 row), in the red of the stroke (`control-border-invalid`: Secondary/Red, `red-text` with more contrast). The `title` stays grey, and so does an invalid `FormLabel` of a [Form](?path=/docs/components-form--docs) item that holds the field, as the kit's title. A valid field shows nothing. The icon is decorative (`aria-hidden`): `aria-invalid` and the error text (`FormMessage`, linked by `aria-describedby`) tell the error. It is opt-in in 5.x because it changes how invalid fields look.
 
 ### In progress and Done
 
@@ -110,7 +108,7 @@ Added in 5.2. `status` gives the kit's states for a value your app checks (the k
 | `progress` | In progress | the turning ring of [Spinner](?path=/docs/components-spinner--docs) in Black/100% (white in dark mode); it stops turning for reduced motion | `aria-busy="true"` |
 | `success` | Done | a `Check` in Secondary/Green; hidden while the field is invalid | — |
 
-The ring takes the Error icon's place while the check runs; a focused field keeps its clear button. A visually hidden status region (`role="status"`) is in the field while it has a `status`, and announces the change: "Checking" and "Valid" (`messages.input.progress` and `success`), or your `statusLabel`, e.g. "Username available". A status the field is rendered with is not announced. Set `status` back to `undefined` when the value changes, and show a failed check as an error (`aria-invalid` and a message, the Error icon with `showErrorIcon`):
+The ring takes the Error icon's place while the check runs, and the check hides while the field is invalid; a focused field keeps its clear button, after the status icon. A visually hidden status region (`role="status"`) is in the field while it has a `status`, and announces the change: "Checking" and "Valid" (`messages.input.progress` and `success`), or your `statusLabel`, e.g. "Username available". A status the field is rendered with is not announced. Set `status` back to `undefined` when the value changes, and show a failed check as an error (`aria-invalid` and a message; the Error icon follows):
 
 <Canvas of={InputStories.CheckOnBlur} />
 
@@ -185,6 +183,6 @@ Input is a native field: pass `value` with `onChange` to control it, or `default
 
 ## Props
 
-Input takes the props below (`clearable`, `clearLabel`, `onClear`, `showErrorIcon`, `status` and `statusLabel` are new in 5.2) and the attributes of the native `<input>`, which gets every other prop, `ref` included. `className` and `style` go to the field `<div>`; `inputClassName` and `inputStyle` to the `<input>`. The Figma field's class strings that Textarea uses (`basicInputClasses`, `focusInputClasses`, `staticInputClasses`, `disabledInputClasses`) are exported too, for fields of your own.
+Input takes the props below (`clearable`, `clearLabel`, `onClear`, `status` and `statusLabel` are new in 5.2) and the attributes of the native `<input>`, which gets every other prop, `ref` included. `className` and `style` go to the field `<div>`; `inputClassName` and `inputStyle` to the `<input>`. The Figma field's class strings that Textarea uses (`basicInputClasses`, `focusInputClasses`, `staticInputClasses`, `disabledInputClasses`) are exported too, for fields of your own.
 
 <Controls />

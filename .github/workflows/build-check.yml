@@ -5,10 +5,9 @@ on:
     branches: [main, next]
   push:
     branches: [main, next]
-  # The release workflow dispatches Build Check on the version PR's branch
-  # (changeset-release/main): the PR is opened with GITHUB_TOKEN, so it
-  # triggers no pull_request run, and a dispatched run reports its checks on
-  # the PR's head commit, where the ruleset's required checks look for them.
+  # The release workflow approves the version PR's pull_request run (opened
+  # with GITHUB_TOKEN, it waits for approval), and dispatches Build Check on
+  # the PR's branch (changeset-release/main) only if that run never shows up.
   # Also runnable by hand on any branch (Actions → Build Check → Run workflow),
   # e.g. before publishing a canary from it.
   workflow_dispatch:
@@ -195,7 +194,7 @@ jobs:
   # and fails under the thresholds in vitest.config.ts.
   storybook-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45 # apt for Playwright alone took 19 min on 2026-10-01
 
     env:
       STORYBOOK_DISABLE_TELEMETRY: 1
@@ -267,7 +266,7 @@ jobs:
   # each caches its browser like `storybook-tests` caches Chromium.
   storybook-browsers:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40 # apt for Playwright alone took 19 min on 2026-10-01
 
     strategy:
       fail-fast: false
@@ -340,7 +339,7 @@ jobs:
   # a hydration mismatch or logs an error while hydrating.
   ssr:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30 # apt for Playwright alone took 19 min on 2026-10-01
 
     steps:
       - name: Checkout code
@@ -388,7 +387,7 @@ jobs:
   docs:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35 # apt for Playwright alone took 19 min on 2026-10-01
 
     steps:
       - name: Checkout code
@@ -534,7 +533,7 @@ jobs:
   demo:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40 # apt for Playwright alone took 19 min on 2026-10-01
 
     env:
       NEXT_TELEMETRY_DISABLED: 1

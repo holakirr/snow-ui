@@ -266,63 +266,6 @@ describe('Input', () => {
   })
 })
 
-describe('Input showErrorIcon', () => {
-  const errorIcon = (input: HTMLElement) =>
-    input
-      .closest('[data-slot="input"]')
-      ?.querySelector('[data-slot="input-error-icon"]')
-
-  it('has no Error icon by default, invalid or not', () => {
-    render(<Input aria-label="Email" aria-invalid />)
-
-    const input = screen.getByRole('textbox')
-    expect(input).toBeInvalid()
-    expect(errorIcon(input)).toBeNull()
-  })
-
-  it('renders the Error icon after the end content, hidden from assistive technology', () => {
-    render(
-      <Input
-        aria-label="Email"
-        aria-invalid
-        showErrorIcon
-        endContent={<span data-testid="end" />}
-      />,
-    )
-
-    const input = screen.getByRole('textbox')
-    const icon = errorIcon(input)
-    expect(icon).toHaveAttribute('aria-hidden', 'true')
-    expect(icon).toHaveAttribute('data-error-icon')
-    // Shown by CSS while the input is invalid (`aria-invalid="true"`).
-    expect(icon).toHaveClass('hidden', 'group-has-aria-invalid/input:flex')
-    expect(icon?.querySelector('svg')).not.toBeNull()
-    expect(screen.getByTestId('end').parentElement?.nextElementSibling).toBe(
-      icon,
-    )
-    // The accessible name and description stay the field's own.
-    expect(input).toHaveAccessibleName('Email')
-    expect(input).not.toHaveAttribute('aria-describedby')
-  })
-
-  it('keeps the icon (hidden) while the field is valid, so a FormLabel can see the opt-in', () => {
-    render(<Input aria-label="Email" showErrorIcon />)
-
-    const input = screen.getByRole('textbox')
-    expect(input).not.toBeInvalid()
-    expect(errorIcon(input)).toHaveClass('hidden')
-  })
-
-  it('renders the icon on the server', () => {
-    const html = renderToString(
-      <Input aria-label="Email" aria-invalid showErrorIcon />,
-    )
-
-    expect(html).toContain('data-slot="input-error-icon"')
-    expect(html).toContain('aria-invalid="true"')
-  })
-})
-
 describe('Input clearable', () => {
   const clearButton = () => screen.queryByRole('button', { name: 'Clear' })
 
@@ -613,39 +556,87 @@ describe('Input status', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Верно')
   })
 
-  it('puts the ring in place of the Error icon, next to the clear button', () => {
-    const { rerender } = render(
+  it('orders the end: end content, status, clear button, Error icon', () => {
+    const { container } = render(
       <Input
         aria-label="Name"
         defaultValue="Ada"
         clearable
-        showErrorIcon
         aria-invalid
+        status="success"
+        endContent={<span data-testid="end" />}
       />,
     )
+    const field = container.querySelector('[data-slot="input"]') as HTMLElement
+    const order = Array.from(field.children)
+      .slice(1)
+      .map(
+        (part) =>
+          part.getAttribute('data-slot') ??
+          (part.contains(screen.getByTestId('end')) ? 'end-content' : '?'),
+      )
+
+    expect(order).toEqual([
+      'end-content',
+      'input-status',
+      'input-status-icon',
+      'input-clear',
+      'input-invalid-icon',
+    ])
+    // The Error icon stays the field's last child (the status region is
+    // visually hidden).
+    expect(field.lastElementChild).toHaveAttribute(
+      'data-slot',
+      'input-invalid-icon',
+    )
+  })
+
+  it('shows one status mark: the ring hides the Error icon, an invalid field the check', () => {
+    const { rerender } = render(
+      <Input aria-label="Name" defaultValue="Ada" clearable aria-invalid />,
+    )
     const input = screen.getByRole('textbox')
-    const errorIcon = () =>
+    const part = (slot: string) =>
       input
         .closest('[data-slot="input"]')
-        ?.querySelector('[data-slot="input-error-icon"]')
-    expect(screen.getByRole('button', { name: 'Clear' })).not.toBeNull()
-    expect(errorIcon()).toHaveClass('group-has-aria-invalid/input:flex')
+        ?.querySelector(`[data-slot="${slot}"]`)
+    expect(part('input-invalid-icon')).toHaveClass(
+      'group-has-aria-invalid/input:flex',
+    )
 
     rerender(
       <Input
         aria-label="Name"
         defaultValue="Ada"
         clearable
-        showErrorIcon
         aria-invalid
         status="progress"
       />,
     )
-    // A focused field keeps its clear button (the kit checks after focus
-    // leaves, so it draws them apart).
+    expect(part('input-invalid-icon')).toHaveClass(
+      'hidden',
+      'group-has-aria-invalid/input:hidden',
+    )
+    expect(part('input-invalid-icon')).not.toHaveClass(
+      'group-has-aria-invalid/input:flex',
+    )
+    // A focused field keeps its clear button while the value is checked.
     expect(screen.getByRole('button', { name: 'Clear' })).not.toBeNull()
-    expect(errorIcon()).toHaveClass('group-has-aria-invalid/input:hidden')
-    expect(errorIcon()).not.toHaveClass('group-has-aria-invalid/input:flex')
+
+    rerender(
+      <Input
+        aria-label="Name"
+        defaultValue="Ada"
+        aria-invalid
+        status="success"
+      />,
+    )
+    expect(part('input-status-icon')).toHaveClass(
+      'group-has-aria-invalid/input:hidden',
+    )
+    expect(part('input-invalid-icon')).toHaveClass(
+      'group-has-aria-invalid/input:flex',
+    )
   })
 
   it('keeps your own aria-busy', () => {

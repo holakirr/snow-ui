@@ -21,7 +21,7 @@ import { twMerge } from '../../utils/tw-merge'
 import { Label } from '../Label'
 import { useMessages } from '../SnowUIProvider'
 import { LoadingRing } from '../Spinner/ring'
-import { CheckGlyph, WarningGlyph } from './fieldIcons'
+import { CheckGlyph } from './fieldIcons'
 
 // The class strings the text fields share live in a module without
 // 'use client', so a server component (Textarea) can read them; re-exported
@@ -48,30 +48,41 @@ const fieldStaticClasses =
 const fieldInvalidClasses =
   'has-aria-invalid:inset-ring has-aria-invalid:inset-ring-control-border-invalid'
 
+// The kit's Error icon, after the end content, while the <input> is
+// invalid: the 16px Phosphor `Warning` in the stroke's colour,
+// `control-border-invalid`: Secondary/Red, `red-text` with more contrast.
+// Decorative: `aria-invalid` and the `FormMessage` tell the error.
+const invalidIconClasses =
+  'hidden shrink-0 items-center text-control-border-invalid group-has-aria-invalid/input:flex [&>svg]:size-4'
+
+// The "regular" weight of Phosphor's Warning (MIT), the kit's icon set, the
+// same glyph as the Textarea's background image. Inlined, as in Alert:
+// importing the icon would ship all six weights.
+const warningPath =
+  'M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z'
+
 const fieldDisabledClasses =
   'cursor-not-allowed bg-black-4 text-black-20 inset-ring-0 hover:inset-ring-0'
 
 const adornmentClasses =
   'flex shrink-0 items-center text-black-40 [&>svg]:size-4 [&>svg]:shrink-0'
 
-// The kit's status icons at the end of the field (Component state): 16px,
-// after the end content, 16px from the edge (the field's padding) and
-// centred in its height, in the 2 row layouts too.
+/*
+ * The end of the field: the end content, then the kit's status icon, the
+ * clear button and the Error icon. The kit's Component state draws one of
+ * them at a time, each 16px from the end of the field (the padding) and
+ * centred: In progress and Done (the status), Focus (the clear button),
+ * Error (the Warning). In that order, the hidden ones take no room, so each
+ * sits where the kit draws it in its own state; together, the Warning keeps
+ * its place at the edge and the clear button stays next to it. A field
+ * never shows two status marks: the In progress ring hides the Warning
+ * while the value is checked again, and the Done check hides while the
+ * field is invalid.
+ */
+
+// The kit's status icons (In progress, Done): 16px, centred in the field's
+// height, in the 2 row layouts too.
 const statusIconClasses = 'flex shrink-0 items-center [&>svg]:size-4'
-
-// The kit's Error icon (`showErrorIcon`), while the <input> is invalid: the
-// Warning in the stroke's colour, `control-border-invalid` (Secondary/Red,
-// `red-text` with more contrast). `data-error-icon` keeps an invalid
-// `FormLabel` grey, as the kit's title.
-const errorIconClasses =
-  'hidden text-control-border-invalid group-has-aria-invalid/input:flex'
-
-// The kit's clear button (Focus): a 16px XCircle Fill in Black/100% at the
-// end of the field, shown while the field has focus (the input, or the
-// button itself) and a value. `hit-area` makes it a 24px target (WCAG
-// 2.5.8); keyboard focus gets the `focus-ring` outline.
-const clearButtonClasses =
-  'relative hidden shrink-0 cursor-pointer items-center justify-center rounded-full text-black hit-area focus-ring group-focus-within/input:flex [&>svg]:size-4'
 
 // The kit's In progress icon: the turning ring of Spinner (Loading A), in
 // Black/100%, as the kit draws it. It stops turning for reduced motion.
@@ -82,6 +93,13 @@ const progressIconClasses = 'text-black'
 // of `black` (white in dark mode), Alert's success icon: 4.4:1 on white.
 const successIconClasses =
   'text-green group-has-aria-invalid/input:hidden contrast-more:text-[color:color-mix(in_srgb,var(--color-green),var(--color-black)_40%)]'
+
+// The kit's clear button (Focus): a 16px XCircle Fill in Black/100%, shown
+// while the field has focus (the input, or the button itself) and a value.
+// `hit-area` makes it a 24px target (WCAG 2.5.8); keyboard focus gets the
+// `focus-ring` outline.
+const clearButtonClasses =
+  'relative hidden shrink-0 cursor-pointer items-center justify-center rounded-full text-black hit-area focus-ring group-focus-within/input:flex [&>svg]:size-4'
 
 /**
  * The kit's field states "In progress" (a check of the value is running)
@@ -117,17 +135,6 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
    * Content after the value, e.g. a 16px icon, a button or a `KBD`.
    */
   endContent?: ReactNode
-
-  /**
-   * Shows the kit's Error icon while the input is invalid (`aria-invalid`,
-   * which `FormControl` of Form sets): a 16px `Warning` at the end of the
-   * field, in the red of the stroke. An invalid `FormLabel` then stays grey,
-   * as the kit's title does. The icon is decorative: `aria-invalid` and the
-   * error text (`FormMessage`) tell the error. Off by default in 5.x.
-   * Added in 5.2.
-   * @default false
-   */
-  showErrorIcon?: boolean
 
   /**
    * Shows the kit's clear button (an `XCircle`) at the end of the field
@@ -183,8 +190,8 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
  * Input component: the Figma Input (1 row, or 2 rows with a `title`: above
  * the value, or beside it with `titleLayout="horizontal"`), with optional
  * leading and trailing content. `readOnly` gives the Figma "Static" state;
- * `aria-invalid` the kit's Error stroke, and its `Warning` icon with
- * `showErrorIcon`.
+ * an `aria-invalid` input the kit's Error: a red stroke and a `Warning` icon
+ * at the end.
  */
 const Input: FC<InputProps> = ({
   className,
@@ -196,7 +203,6 @@ const Input: FC<InputProps> = ({
   titleLayout = 'vertical',
   startContent,
   endContent,
-  showErrorIcon = false,
   clearable = false,
   clearLabel,
   onClear,
@@ -334,34 +340,10 @@ const Input: FC<InputProps> = ({
         />
       </div>
       {endContent && <span className={adornmentClasses}>{endContent}</span>}
-      {canClear && (
-        <button
-          type="button"
-          aria-label={clearLabel ?? messages.input.clear}
-          title={clearLabel ?? messages.input.clear}
-          // Keeps the focus in the input, so the field stays focused (and the
-          // button shown) until the click: Safari doesn't focus buttons.
-          onPointerDown={(event) => event.preventDefault()}
-          onClick={clear}
-          className={clearButtonClasses}
-          data-slot="input-clear"
-        >
-          <XCircleIcon weight="fill" size={16} />
-        </button>
-      )}
-      {showErrorIcon && (
-        <span
-          aria-hidden
-          className={twMerge(
-            statusIconClasses,
-            errorIconClasses,
-            // The In progress ring takes its place.
-            status === 'progress' && 'group-has-aria-invalid/input:hidden',
-          )}
-          data-slot="input-error-icon"
-          data-error-icon=""
-        >
-          <WarningGlyph />
+      {/* Before the icons, so the Error icon stays the field's last child. */}
+      {status !== undefined && (
+        <span role="status" className="sr-only" data-slot="input-status">
+          {announced}
         </span>
       )}
       {(status === 'progress' || status === 'success') && (
@@ -377,11 +359,34 @@ const Input: FC<InputProps> = ({
           {status === 'progress' ? <LoadingRing /> : <CheckGlyph />}
         </span>
       )}
-      {status !== undefined && (
-        <span role="status" className="sr-only" data-slot="input-status">
-          {announced}
-        </span>
+      {canClear && (
+        <button
+          type="button"
+          aria-label={clearLabel ?? messages.input.clear}
+          title={clearLabel ?? messages.input.clear}
+          // Keeps the focus in the input, so the field stays focused (and the
+          // button shown) until the click: Safari doesn't focus buttons.
+          onPointerDown={(event) => event.preventDefault()}
+          onClick={clear}
+          className={clearButtonClasses}
+          data-slot="input-clear"
+        >
+          <XCircleIcon weight="fill" size={16} />
+        </button>
       )}
+      <span
+        aria-hidden
+        className={twMerge(
+          invalidIconClasses,
+          // The In progress ring stands for the field while it is checked.
+          status === 'progress' && 'group-has-aria-invalid/input:hidden',
+        )}
+        data-slot="input-invalid-icon"
+      >
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden>
+          <path d={warningPath} />
+        </svg>
+      </span>
     </div>
   )
 }

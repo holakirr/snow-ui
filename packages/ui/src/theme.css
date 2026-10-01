@@ -130,6 +130,18 @@
   --text-color-secondary: var(--color-text-secondary);
 }
 
+/*
+ * The kit's Error icon in an invalid Textarea: Phosphor's Warning (MIT,
+ * "regular") in Secondary/Red, as a background image, since a bare
+ * <textarea> can't hold an element. Once here, not in each class name.
+ */
+@layer base {
+  :root,
+  :host {
+    --field-warning-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='%23ff4747'%3E%3Cpath d='M236.8,188.1,149.3,36.2h0a24.8,24.8,0,0,0-42.7,0L19.2,188.1a23.5,23.5,0,0,0,0,23.7A24.4,24.4,0,0,0,40.5,224h174.9a24.4,24.4,0,0,0,21.3-12.2A23.5,23.5,0,0,0,236.8,188.1ZM222.9,203.8a8.5,8.5,0,0,1-7.5,4.2H40.5a8.5,8.5,0,0,1-7.5-4.2,7.6,7.6,0,0,1,0-7.7L120.5,44.2a8.8,8.8,0,0,1,15,0l87.5,151.9A7.6,7.6,0,0,1,222.9,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z'/%3E%3C/svg%3E");
+  }
+}
+
 @layer base {
   /*
    * The SnowUI Figma kit sets its text in the "Inter" family, not "Inter

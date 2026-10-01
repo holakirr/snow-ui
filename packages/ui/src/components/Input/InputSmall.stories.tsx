@@ -49,7 +49,7 @@ export const Outline: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (the kit's Error stroke; the kit draws its Warning icon on Input and Textarea only). A 1px Secondary/Red stroke on both variants. Pair it with the error text: see Form.
+ * error (the kit's Error state; the kit draws no Error for the small field, so no Warning icon). A 1px Secondary/Red stroke on both variants. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {

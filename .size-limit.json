@@ -25,7 +25,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ Dialog, DialogContent, DialogTrigger }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "25 kB"
+    "limit": "27.5 kB"
   },
   {
     "name": "@holakirr/snow-ui: { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent }",

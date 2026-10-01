@@ -103,6 +103,7 @@ export const ErrorIcon: Story = {
   args: {
     defaultValue:
       'Too short, and a line long enough to wrap before the Warning icon',
+    rows: 3,
     'aria-invalid': true,
     showErrorIcon: true,
   },

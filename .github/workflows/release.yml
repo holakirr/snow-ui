@@ -308,7 +308,10 @@ jobs:
           BRANCH: changeset-release/${{ github.ref_name }}
           PR: ${{ steps.changesets.outputs.pr-number }}
         run: |
-          sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$BRANCH" --jq .object.sha)
+          if ! sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$BRANCH" --jq .object.sha) || [ -z "$sha" ]; then
+            echo "::warning title=Build Check not approved::Could not read the head of $BRANCH; approve PR #$PR's Build Check run by hand (Actions › the run › Approve and run)."
+            exit 0
+          fi
           for _ in $(seq 18); do
             # A failed lookup (e.g. a 5xx) is retried like a missing run.
             run=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/build-check.yml/runs?head_sha=$sha&event=pull_request&per_page=10" \

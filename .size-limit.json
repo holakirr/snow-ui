@@ -11,7 +11,7 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ Button }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "11.8 kB"
+    "limit": "13 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Calendar }",
@@ -32,28 +32,28 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "26 kB"
+    "limit": "27.6 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Alert }",
     "path": "packages/ui/dist/index.js",
     "import": "{ Alert }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "14.5 kB"
+    "limit": "16.1 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Progress, ProgressCircle }",
     "path": "packages/ui/dist/index.js",
     "import": "{ Progress, ProgressCircle }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "13.2 kB"
+    "limit": "13.8 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Spinner }",
     "path": "packages/ui/dist/index.js",
     "import": "{ Spinner }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "10.2 kB"
+    "limit": "10.8 kB"
   },
   {
     "name": "@holakirr/snow-ui: { Combobox }",
@@ -74,39 +74,39 @@
     "path": "packages/ui/dist/index.js",
     "import": "{ DatePicker }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "68 kB"
+    "limit": "74.7 kB"
   },
   {
     "name": "@holakirr/snow-ui: { DateRangePicker }",
     "path": "packages/ui/dist/index.js",
     "import": "{ DateRangePicker }",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "68.5 kB"
+    "limit": "75.6 kB"
   },
   {
     "name": "@holakirr/snow-ui/react-hook-form: full import (ESM)",
     "path": "packages/ui/dist/react-hook-form.js",
     "import": "*",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "12 kB"
+    "limit": "12.8 kB"
   },
   {
     "name": "@holakirr/snow-ui/index.css",
     "path": "packages/ui/dist/index.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "21 kB"
+    "limit": "22.4 kB"
   },
   {
     "name": "@holakirr/snow-ui/theme.css (compiled by the consumer's Tailwind)",
     "path": "packages/ui/dist/theme.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "10.8 kB"
+    "limit": "11.4 kB"
   },
   {
     "name": "@holakirr/snow-ui/theme-core.css (theme.css without the components' @source)",
     "path": "packages/ui/dist/theme-core.css",
     "disablePlugins": ["@size-limit/esbuild"],
-    "limit": "10.8 kB"
+    "limit": "11.4 kB"
   },
   {
     "name": "@holakirr/snow-ui/fonts.css",

@@ -3,6 +3,7 @@ import { act, render, screen, within } from '@testing-library/react'
 import { ru } from 'date-fns/locale'
 import { ru as dayPickerRu } from 'react-day-picker/locale'
 import { beforeAll, describe, expect, it } from 'vitest'
+import { getNavButton } from '../../test/queries'
 import { Badge } from '../Badge'
 import {
   Breadcrumb,
@@ -644,8 +645,8 @@ describe('SnowUIProvider', () => {
       </SnowUIProvider>,
     )
     // A date-fns locale has no labels of its own: the messages name them.
-    expect(screen.getByRole('button', { name: 'Назад' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Вперёд' })).toBeInTheDocument()
+    expect(getNavButton('Назад')).toBeInTheDocument()
+    expect(getNavButton('Вперёд')).toBeInTheDocument()
 
     // The English defaults give way to a react-day-picker locale's labels…
     rerender(
@@ -653,9 +654,7 @@ describe('SnowUIProvider', () => {
         <Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />
       </SnowUIProvider>,
     )
-    expect(
-      screen.getByRole('button', { name: 'Перейти к предыдущему месяцу' }),
-    ).toBeInTheDocument()
+    expect(getNavButton('Перейти к предыдущему месяцу')).toBeInTheDocument()
     expect(
       screen.getByRole('navigation', { name: 'Панель навигации' }),
     ).toBeInTheDocument()
@@ -673,14 +672,12 @@ describe('SnowUIProvider', () => {
         />
       </SnowUIProvider>,
     )
-    expect(screen.getByRole('button', { name: 'Назад' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Next!' })).toBeInTheDocument()
+    expect(getNavButton('Назад')).toBeInTheDocument()
+    expect(getNavButton('Next!')).toBeInTheDocument()
 
     // Without a provider: the English defaults.
     rerender(<Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />)
-    expect(
-      screen.getByRole('button', { name: 'Go to the previous month' }),
-    ).toBeInTheDocument()
+    expect(getNavButton('Go to the previous month')).toBeInTheDocument()
     expect(
       screen.getByRole('navigation', { name: 'Month navigation' }),
     ).toBeInTheDocument()
@@ -697,8 +694,10 @@ describe('SnowUIProvider', () => {
     const { rerender } = render(
       <SnowUIProvider locale={ru}>{scheduler}</SnowUIProvider>,
     )
+    // In the first row of hour cells (row 0 is the header): see
+    // src/test/queries.ts.
     const cellLabel = () =>
-      screen
+      within(screen.getAllByRole('row')[1])
         .getAllByRole('button')
         .map((button) => button.getAttribute('aria-label') ?? '')
         .find((label) => label.includes('2025'))

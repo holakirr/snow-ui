@@ -3,6 +3,7 @@ import type { Locale } from 'date-fns'
 import { useState } from 'react'
 import { ja, ru } from 'react-day-picker/locale'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { getByRoleAndLabel } from '../../test/queries'
 import { SnowUIProvider } from '../SnowUIProvider'
 import {
   type DateRange,
@@ -28,7 +29,7 @@ const renderPicker = (props: Partial<DateRangePickerProps> = {}) =>
   render(<DateRangePicker aria-label="Stay" {...props} />)
 
 const field = () => screen.getByRole('combobox')
-const day = (name: RegExp) => screen.getByRole('button', { name })
+const day = (name: RegExp) => getByRoleAndLabel('button', name)
 const cell = (name: RegExp) => day(name).closest('[role="gridcell"]')
 
 describe('DateRangePicker', () => {

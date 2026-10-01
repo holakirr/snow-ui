@@ -53,10 +53,15 @@ const getCells = () =>
     .getAllByRole('button')
     .filter((button) => button.hasAttribute('aria-label'))
 
-/** The day of every column, from the first row of cells ("9/28/2026"). */
+/**
+ * The day of every column, from the first row of cells ("9/28/2026"; row 0
+ * is the header). Only that row is queried: a role query over all the hour
+ * cells is slow (see src/test/queries.ts).
+ */
 const getDays = () =>
-  getCells()
-    .slice(0, 7)
+  within(screen.getAllByRole('row')[1])
+    .getAllByRole('button')
+    .filter((button) => button.hasAttribute('aria-label'))
     .map((cell) => cell.getAttribute('aria-label')?.split(',')[0])
 
 /** The hour labels of the rows ("7 AM"…), with a regular space. */
@@ -695,8 +700,10 @@ describe('Scheduler', () => {
           </>,
         )
         const user = userEvent.setup()
-        const before = screen.getByRole('button', { name: 'Before' })
-        const after = screen.getByRole('button', { name: 'After' })
+        // The page's own buttons, by their text: a role query by name would
+        // compute the name of every hour cell too (see src/test/queries.ts).
+        const before = screen.getByText('Before')
+        const after = screen.getByText('After')
 
         before.focus()
         await user.tab()
@@ -1066,10 +1073,13 @@ describe('Scheduler', () => {
         )
         const { rerender } = render(grid([standup]))
         block('Standup').focus()
-        screen.getByRole('button', { name: 'Elsewhere' }).focus()
+        // By its text: a role query by name would compute the name of every
+        // hour cell too (see src/test/queries.ts).
+        const elsewhere = screen.getByText('Elsewhere')
+        elsewhere.focus()
 
         rerender(grid([]))
-        expect(screen.getByRole('button', { name: 'Elsewhere' })).toHaveFocus()
+        expect(elsewhere).toHaveFocus()
       })
     })
   })

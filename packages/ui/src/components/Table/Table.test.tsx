@@ -192,8 +192,13 @@ describe('TableToolbar and TableCell reveal', () => {
 
 const { TableA } = composeStories(stories)
 
+// The row of an order, by the text of its ID cell. A role query for the cell
+// computed the name of every cell on each call, slowly after a click (see
+// src/test/queries.ts): the selection test, with nine of them, went past 5 s
+// under coverage on CI. (The TableA story's play function still finds a cell
+// by role, in the browser.)
 const rowOf = (orderId: string) => {
-  const row = screen.getByRole('cell', { name: orderId }).closest('tr')
+  const row = screen.getByText(orderId).closest('tr')
   if (!row) throw new Error(`row ${orderId} not found`)
   return row
 }

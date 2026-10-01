@@ -9,7 +9,7 @@ import * as ToggleStories from './Toggle.stories'
 <FigmaLinks label="Tab component set" page="28002:98904" />
 <InstallTabs item="toggle" />
 
-Toggle is a button with two states, on and off, built on the Radix Toggle primitive. It is an item of the Figma Tab segmented controls, a Button instance: a Borderless button when off, a Gray button when on (a white, shadowed one for `pill`). It takes the Figma Button sizes. Put several related toggles in a [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
+Toggle is a button with two states, on and off, built on the Radix Toggle primitive. It is an item of the Figma Tab segmented controls, a Button instance: a Borderless button when off, a Gray button when on (a white, shadowed one for `pill`, a Filled one for `filled`, added in 5.2). It takes the Figma Button sizes. Put several related toggles in a [ToggleGroup](?path=/docs/components-input-togglegroup--docs).
 
 ```tsx
 import { Toggle } from '@holakirr/snow-ui'
@@ -48,6 +48,7 @@ import { StarIcon } from '@holakirr/snow-ui-icons'
 | `borderless` (default) | Button Borderless, Gray when on | no fill | Black/4% fill | toolbars, standalone toggles |
 | `outline` | Button Outline | 0.5px Black/10% stroke | Black/4% fill and the stroke | a toggle next to outline buttons |
 | `pill` | Tab "Pill" item | no fill | White/80% fill and the `shadow-2` shadow | items of a `ToggleGroup variant="pill"`, on its Black/4% track |
+| `filled` (added in 5.2) | Button Filled when on (the kit's segmented-control examples) | no fill | a Primary fill and the per-mode `white` label (black on the dark-mode indigo, 10.15:1), kept on hover and focus | items of a `ToggleGroup variant="filled"`, on its Black/4% track; a standalone toggle that has to stand out |
 
 ## Sizes
 
@@ -99,6 +100,7 @@ The full table is in the package README.
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | "Focus" effect: a 4px Black/4% ring (1.1:1); no focus state on Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| On `filled` toggles (5.2, after the kit's Filled Button): a white label on Primary in both modes, 2.07:1 on the dark-mode indigo | the per-mode `white` token, as on the Filled Button: white on black (21:1), black on indigo (10.15:1) | 1.4.3 |
 | Off items at 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus; disabled items keep Black/20% | 1.4.3, 1.4.11 |
 | Icon-only toggles: — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |
 

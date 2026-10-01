@@ -12,7 +12,9 @@ type ToggleVariantProps = {
   /**
    * `borderless` (default) and `outline` toggles turn into a Gray button when
    * on; `pill` toggles turn white with a shadow (use them in a
-   * `ToggleGroup variant="pill"`).
+   * `ToggleGroup variant="pill"`); `filled` toggles (added in 5.2) turn into
+   * a Filled button, Primary with the per-mode `white` label, as the active
+   * item of a `TabsList variant="filled"`.
    * @default "borderless"
    */
   variant?: ToggleVariant | null
@@ -32,14 +34,16 @@ const itemVariant = {
   borderless: 'solid',
   outline: 'outline',
   pill: 'pill',
-} as const
+  filled: 'filled',
+} as const satisfies { [K in ToggleVariant]: string }
 
 /**
  * Toggle styles: the Figma segmented-control items (see `Tabs`). Off, a
  * toggle is a Borderless button with a `text-secondary` label (Figma: 40%
  * opacity, 2.85:1), black on hover and keyboard focus; on, it is a Gray
- * button, or a white, shadowed one for `pill`. The colour is the
- * `--segment-fg` custom property: a `text-*` className sets it in every
+ * button, a white, shadowed one for `pill`, or a Filled one for `filled`
+ * (whose label stays the per-mode `white` on hover and focus). The colour is
+ * the `--segment-fg` custom property: a `text-*` className sets it in every
  * state, `[--segment-fg:…]` only the off colour.
  */
 const toggleVariants = ({

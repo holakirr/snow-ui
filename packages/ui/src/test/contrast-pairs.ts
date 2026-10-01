@@ -234,23 +234,23 @@ export const contrastPairs: ContrastPair[] = [
     background: () => ['red'],
   },
   {
-    // Tabs `filled` (5.2): the active item is a Filled button on the
-    // Black/4% track; Primary with the per-mode `white` label.
-    control: 'Filled tab: the active item vs the track',
+    // Tabs and ToggleGroup `filled` (5.2): the active item is a Filled
+    // button on the Black/4% track; Primary with the per-mode `white` label.
+    control: 'Filled tab or toggle: the active item vs the track',
     kind: 'nonText',
     standard: true,
     foreground: () => ['black-4', 'primary'],
     background: () => ['black-4'],
   },
   {
-    control: 'Filled tab: the active label',
+    control: 'Filled tab or toggle: the active label',
     kind: 'text',
     standard: true,
     foreground: () => ['primary', 'white'],
     background: () => ['primary'],
   },
   {
-    control: 'Filled tab: an inactive label on the track',
+    control: 'Filled tab or toggle: an inactive label on the track',
     kind: 'text',
     standard: true,
     foreground: () => ['black-4', 'text-secondary'],

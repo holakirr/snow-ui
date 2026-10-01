@@ -10,7 +10,7 @@ import * as ToggleGroupStories from './ToggleGroup.stories'
 <FigmaLinks label="Tab component set" page="28002:98904" />
 <InstallTabs item="toggle-group" />
 
-ToggleGroup is a set of toggles where one (`type="single"`) or any number (`type="multiple"`) can be on. It is the Figma Tab segmented control without panels, built on the Radix ToggleGroup primitive: `variant="pill"` puts the items on a blurred Black/4% track (Figma "Pill"); the other variants have no track (Figma "Solid"). The items are [Toggle](?path=/docs/components-input-toggle--docs)s and take the same variants and sizes.
+ToggleGroup is a set of toggles where one (`type="single"`) or any number (`type="multiple"`) can be on. It is the Figma Tab segmented control without panels, built on the Radix ToggleGroup primitive: `variant="pill"` puts the items on a blurred Black/4% track (Figma "Pill"), and so does `filled` (added in 5.2), with a Filled item when on; the other variants have no track (Figma "Solid"). The items are [Toggle](?path=/docs/components-input-toggle--docs)s and take the same variants and sizes.
 
 ```tsx
 import { ToggleGroup, ToggleGroupItem } from '@holakirr/snow-ui'
@@ -50,16 +50,21 @@ import { ToggleGroup, ToggleGroupItem } from '@holakirr/snow-ui'
 | `borderless` (default) | Tab "Solid" | no track | Black/4% fill | toolbars, light segmented controls |
 | `outline` | none (the library's own, with Button Outline items) | no track; each item has a 0.5px Black/10% stroke | Black/4% fill | options that need a visible shape when off |
 | `pill` | Tab "Pill" | a Black/4% track with a 10px background blur | White/80% fill and the `shadow-2` shadow | view switchers |
+| `filled` (added in 5.2) | — (the kit's segmented-control examples, as `TabsList variant="filled"`) | the `pill` track | a Filled button: Primary with the per-mode `white` label (white on black; black on the dark-mode indigo, 10.15:1) | a switcher that has to stand out: periods, views |
 
 <Canvas of={ToggleGroupStories.Pill} />
 
 <Canvas of={ToggleGroupStories.Solid} />
 
+`filled` is the toggle counterpart of [Tabs](?path=/docs/components-tabs--docs) `filled`: the same track, padding and radius as `pill`, and only the item that is on differs. Its label stays the per-mode `white` on hover and keyboard focus.
+
+<Canvas of={ToggleGroupStories.Filled} />
+
 ## Sizes
 
 The items take the Figma Button sizes of [Toggle](?path=/docs/components-input-toggle--docs) (24, 36 and 48px; `md` by default). The group sets the gap and, for `pill`, the track:
 
-| `size` | Gap | `pill` track padding | `pill` track radius |
+| `size` | Gap | `pill` / `filled` track padding | `pill` / `filled` track radius |
 | --- | --- | --- | --- |
 | `sm` | 2px | 2px | 16px |
 | `md` (default) | 4px | 4px | 20px |
@@ -72,7 +77,7 @@ Every variant and size, with the middle item on:
 ## States
 
 - **Off:** `text-secondary` label and icon; black on hover and keyboard focus, which adds the `focus-ring` utility.
-- **On** (`data-state="on"`): a black label and the variant's "on" fill.
+- **On** (`data-state="on"`): a black label and the variant's "on" fill (`filled`: a Primary fill and the per-mode `white` label, which hover and focus keep).
 - **Disabled:** `disabled` on the group disables every item; `disabled` on an item disables that one. Disabled items have Black/20% content on a Black/4% tile.
 
 <Canvas of={ToggleGroupStories.Disabled} />
@@ -103,6 +108,7 @@ The full table is in the package README.
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | "Focus" effect: a 4px Black/4% ring (1.1:1); no focus state on Tab | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| On `filled` items (5.2, after the kit's Filled Button): a white label on Primary in both modes, 2.07:1 on the dark-mode indigo | the per-mode `white` token, as on the Filled Button: white on black (21:1), black on indigo (10.15:1) | 1.4.3 |
 | Off items at 40% layer opacity: the label is 2.85:1 | the label and icon are `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus; disabled items keep Black/20% | 1.4.3, 1.4.11 |
 
 ## Localization and RTL
@@ -128,7 +134,7 @@ The full table is in the package README.
 <Dont>
 
 - Don't use a ToggleGroup to show and hide panels: use Tabs.
-- Don't mix `pill` items with other variants in one group.
+- Don't mix `pill` or `filled` items with other variants in one group.
 - Don't rely on the arrow keys to select an item: they only move focus.
 
 </Dont>

@@ -17,4 +17,5 @@ export const TOGGLE_VARIANTS: { [K in ToggleVariant]: K } = {
   borderless: 'borderless',
   outline: 'outline',
   pill: 'pill',
+  filled: 'filled',
 }

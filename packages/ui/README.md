@@ -349,7 +349,7 @@ This is a reference implementation, so where the Figma kit conflicts with WCAG 2
 | Error text: `FormMessage`, an invalid `FormLabel` | Secondary/Red `#FF4747`: 3.36:1 on white, 3.76:1 on #333 | `red-text`: `#D42020` in light mode, `#FF8080` in dark mode (5.21:1 on `background-1` in both) | 1.4.3 |
 | `TooltipShortcut` | 40% opacity: 2.8:1 | 70%: at least 5.5:1 on both tooltip variants in both modes | 1.4.3 |
 | Search clear button | 40% opacity: 2.85:1 | 60% (5.74:1) | 1.4.11 |
-| Filled Button label, the active `filled` tab (5.2), checked Checkbox mark | `#FFF` in both modes: 2.07:1 on the dark-mode indigo Primary | the per-mode `white` token: white on black (21:1), black on indigo (10.15:1) | 1.4.3, 1.4.11 |
+| Filled Button label, the active `filled` tab and the pressed `filled` toggle (5.2), checked Checkbox mark | `#FFF` in both modes: 2.07:1 on the dark-mode indigo Primary | the per-mode `white` token: white on black (21:1), black on indigo (10.15:1) | 1.4.3, 1.4.11 |
 | Badge number | `#FFF` on indigo, 2.07:1 | black on indigo, 10.15:1 | 1.4.3 |
 | Red Badge number (`color="red"`, 5.2) | `#FFF` on Secondary/Red, 3.36:1 | the per-mode `white` on `red-text`: white on `#D42020` (5.21:1), black on `#FF8080` in dark mode (8.65:1); the red dot keeps Secondary/Red (3.36:1 on white) | 1.4.3 |
 | Indigo text: default Link, active Tag | Secondary/Indigo `#ADADFB`: 2.07:1 on white | `indigo-text`: `#5B5BD6` in light mode (5.37:1; 5.04:1 on the active Tag tint), `#ADADFB` in dark mode (6.11:1). Fills keep the Figma indigo | 1.4.3 |

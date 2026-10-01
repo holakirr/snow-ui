@@ -261,10 +261,12 @@ type ListProps = Required<
  * 4.91:1 on the highlighted option). In dark mode #ADADFB is 3.78:1 on the
  * White/10% highlight, so there it is mixed with 30% white (6.47:1 and
  * 4.78:1).
- * No fill: the browser's yellow `<mark>` is replaced.
+ * No fill: the browser's yellow `<mark>` is replaced. In forced-colors mode,
+ * where the colour is dropped (and the transparent fill would hide the
+ * system's), the match takes the system `Mark` and `MarkText`.
  */
 const commandPaletteMatchClasses =
-  'bg-transparent text-indigo-text dark:text-[color:color-mix(in_srgb,var(--color-indigo-text),var(--color-black)_30%)]'
+  'bg-transparent text-indigo-text dark:text-[color:color-mix(in_srgb,var(--color-indigo-text),var(--color-black)_30%)] forced-colors:bg-[Mark] forced-colors:text-[MarkText]'
 
 /** Escapes a string for a `RegExp`. */
 const escapeRegExp = (text: string) =>

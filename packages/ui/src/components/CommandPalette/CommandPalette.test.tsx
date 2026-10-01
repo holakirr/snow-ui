@@ -458,6 +458,9 @@ describe('CommandPalette results (5.2)', () => {
       'bg-transparent',
       'text-indigo-text',
       'dark:text-[color:color-mix(in_srgb,var(--color-indigo-text),var(--color-black)_30%)]',
+      // Forced colours drop the colour: the system's mark instead.
+      'forced-colors:bg-[Mark]',
+      'forced-colors:text-[MarkText]',
     )
     // In the snippet too.
     expect(

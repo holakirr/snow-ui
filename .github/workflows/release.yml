@@ -503,7 +503,7 @@ jobs:
       needs.plan.outputs.mode == 'publish' && needs.pack.result == 'success' &&
       (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     permissions:
       contents: read # the release tags
     outputs:
@@ -541,20 +541,24 @@ jobs:
         env:
           SPECS: ${{ steps.tags.outputs.specs }}
         run: |
+          # Both the abbreviated metadata and the tarball: npm lists a new
+          # version minutes before its tarball replicates (5.2.0: the
+          # tarball was still 404 when verify installed it).
           read -r -a specs <<< "$SPECS"
           for spec in "${specs[@]}"; do
             name=${spec%@*}
             version=${spec##*@}
-            for _ in $(seq 1 30); do
-              if curl -fsS -H 'Accept: application/vnd.npm.install-v1+json' \
+            for _ in $(seq 1 120); do
+              tarball=$(curl -fsS -H 'Accept: application/vnd.npm.install-v1+json' \
                 "https://registry.npmjs.org/${name/\//%2f}" \
-                | jq -e --arg v "$version" '.versions[$v]' > /dev/null; then
-                echo "$spec is on npm"
+                | jq -r --arg v "$version" '.versions[$v].dist.tarball // empty') || tarball=
+              if [ -n "$tarball" ] && curl -fsSI -o /dev/null "$tarball"; then
+                echo "$spec is on npm ($tarball)"
                 continue 2
               fi
               sleep 10
             done
-            echo "::error title=Not on npm::npm doesn't serve $spec to package managers after 5 minutes."
+            echo "::error title=Not on npm::npm doesn't serve $spec (its metadata and tarball) to package managers after 20 minutes."
             exit 1
           done
 

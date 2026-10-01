@@ -108,9 +108,14 @@ export const Default: Story = {
  * as in DropdownMenu.
  */
 export const Destructive: Story = {
+  // Not modal, and the area tall enough for the menu: axe then sees the
+  // story's background-1 frame under the open menu (a modal menu turns off
+  // the pointer events of the page, which hides it from axe's stack, and the
+  // test runner's page is white).
+  parameters: { layout: 'padded' },
   render: () => (
-    <ContextMenu>
-      <ContextMenuTrigger className="flex h-[150px] w-[300px] items-center justify-center rounded-16 border border-dashed text-14">
+    <ContextMenu modal={false}>
+      <ContextMenuTrigger className="flex h-[300px] w-[300px] items-center justify-center rounded-16 border border-dashed text-14">
         Right click here
       </ContextMenuTrigger>
       <ContextMenuContent className="w-60">
@@ -138,9 +143,13 @@ export const Destructive: Story = {
   ),
   play: async ({ canvas, canvasElement, userEvent }) => {
     const page = within(canvasElement.ownerDocument.body)
+    // A right-click in the area, so the menu opens there.
+    const area = canvas.getByText('Right click here')
+    const box = area.getBoundingClientRect()
     await userEvent.pointer({
       keys: '[MouseRight]',
-      target: canvas.getByText('Right click here'),
+      target: area,
+      coords: { clientX: box.left + 24, clientY: box.top + 24 },
     })
     const menu = await page.findByRole('menu')
     const item = page.getByRole('menuitem', { name: /^Delete/ })

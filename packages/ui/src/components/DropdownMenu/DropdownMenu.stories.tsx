@@ -13,7 +13,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { expect, waitFor, within } from 'storybook/test'
 
-import { expectClosed } from '../../test/animations'
+import { animationsEnded, expectClosed } from '../../test/animations'
 import { colorOf } from '../../test/colors'
 import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
@@ -846,6 +846,8 @@ export const DestructiveConfirm: Story = {
     const page = within(canvasElement.ownerDocument.body)
     await userEvent.click(canvas.getByRole('button', { name: 'Property' }))
     const menu = await page.findByRole('menu')
+    // It fades in (only fades, with reduced motion): wait for it.
+    await animationsEnded(menu)
     await userEvent.click(
       page.getByRole('menuitem', { name: 'Delete property' }),
     )

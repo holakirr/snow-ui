@@ -88,7 +88,7 @@
     "path": "packages/ui/dist/react-hook-form.js",
     "import": "*",
     "ignore": ["react", "react-dom", "react-hook-form"],
-    "limit": "12.8 kB"
+    "limit": "12.9 kB"
   },
   {
     "name": "@holakirr/snow-ui/index.css",

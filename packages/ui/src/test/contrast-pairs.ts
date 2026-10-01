@@ -49,16 +49,33 @@ export interface ContrastPair {
   kind: keyof typeof AA
   /**
    * The two colours next to each other, as layers painted over the surface
-   * (token names).
+   * (token names). The mode is for a colour that differs in dark mode only
+   * (a `dark:` utility).
    */
-  foreground: (level: Level) => string[]
-  background: (level: Level) => string[]
+  foreground: (level: Level, mode: Mode) => string[]
+  background: (level: Level, mode: Mode) => string[]
   /**
    * AA with the standard (Figma) contrast too, not only with more: a pair
    * that doesn't depend on the contrast tokens.
    */
   standard?: true
 }
+
+/**
+ * A destructive menu item's text and icon: `red-text`, mixed with 40% of
+ * the per-mode `black` (white) in dark mode, where `red-text` is 4.36:1 on
+ * the popover and 3.22:1 on its White/10% highlight.
+ */
+const destructiveMenuText = (mode: Mode) =>
+  mode === 'dark' ? ['red-text', 'black/40'] : ['red-text']
+
+/**
+ * A CommandPalette match (`highlightMatches`): `indigo-text`, mixed with 30%
+ * of the per-mode `black` (white) in dark mode, where #ADADFB is 3.78:1 on
+ * the White/10% highlighted option.
+ */
+const commandPaletteMatch = (mode: Mode) =>
+  mode === 'dark' ? ['indigo-text', 'black/30'] : ['indigo-text']
 
 /** The Switch thumb: Figma's static white, the per-mode `white` with more contrast. */
 const thumb = (level: Level) => [level === 'more' ? 'white' : 'static-white']
@@ -119,6 +136,18 @@ export const contrastPairs: ContrastPair[] = [
     kind: 'nonText',
     foreground: thumb,
     background: () => ['primary'],
+  },
+  {
+    control: 'Menu switch item: off track on the highlighted item',
+    kind: 'nonText',
+    foreground: () => ['black-4', 'control-border'],
+    background: () => ['black-4'],
+  },
+  {
+    control: 'Menu switch item: on track on the highlighted item',
+    kind: 'nonText',
+    foreground: () => ['black-4', 'primary'],
+    background: () => ['black-4'],
   },
   {
     control: 'Slider bar (Black/4%) vs the surface',
@@ -200,6 +229,37 @@ export const contrastPairs: ContrastPair[] = [
   {
     control: 'Submenu chevron on the highlighted item',
     kind: 'nonText',
+    foreground: () => ['black-4', 'text-secondary'],
+    background: () => ['black-4'],
+  },
+  {
+    control: 'Destructive menu item on the menu',
+    kind: 'text',
+    foreground: (_, mode) => destructiveMenuText(mode),
+    background: () => [],
+  },
+  {
+    control: 'Destructive menu item on the highlighted item',
+    kind: 'text',
+    foreground: (_, mode) => ['black-4', ...destructiveMenuText(mode)],
+    background: () => ['black-4'],
+  },
+  {
+    control: 'CommandPalette match (indigo-text) on the palette',
+    kind: 'text',
+    foreground: (_, mode) => commandPaletteMatch(mode),
+    background: () => [],
+  },
+  {
+    control: 'CommandPalette match (indigo-text) on the highlighted option',
+    kind: 'text',
+    foreground: (_, mode) => ['black-4', ...commandPaletteMatch(mode)],
+    background: () => ['black-4'],
+  },
+  {
+    control:
+      'CommandPalette snippet (text-secondary) on the highlighted option',
+    kind: 'text',
     foreground: () => ['black-4', 'text-secondary'],
     background: () => ['black-4'],
   },
@@ -292,5 +352,8 @@ export const pairRatio = (
     composite(
       ...[...surface, ...layers].map((name) => tokenColor(name, mode, level)),
     )
-  return contrast(paint(pair.foreground(level)), paint(pair.background(level)))
+  return contrast(
+    paint(pair.foreground(level, mode)),
+    paint(pair.background(level, mode)),
+  )
 }

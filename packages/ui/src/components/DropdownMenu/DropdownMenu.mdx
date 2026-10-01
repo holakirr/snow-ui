@@ -15,6 +15,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuSwitchItem,
   DropdownMenuTrigger,
 } from './DropdownMenu'
 import * as DropdownMenuStories from './DropdownMenu.stories'
@@ -73,22 +74,90 @@ import {
 1. **Root** (`DropdownMenu`): holds the open state. It renders nothing itself.
 2. **Trigger** (`DropdownMenuTrigger`): the element that opens the menu, usually a Button (`asChild`).
 3. **Content** (`DropdownMenuContent`): the `role="menu"` panel, in a portal, 4px from the trigger (`sideOffset={4}`), at least 128px wide. The Figma Popover surface: 12px padding, a 16px radius, `background-3`, a 1px `surface-1` stroke and Glass 2. Taller than the room on its side of the trigger, it stops at the edge of the window and scrolls, with the kit's scrollbar (`scrollbar-snow`, in an 8px gutter at the end while it scrolls); submenus too. Portal submenus (`DropdownMenuPortal`): the content clips what overflows it.
-4. **Item** (`DropdownMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `inset` adds 32px of start padding, e.g. to line up items without an icon with items that have one.
+4. **Item** (`DropdownMenuItem`): 36px high (8px padding), a 12px radius, 14/20 text, 16px icons 8px apart. `variant="destructive"` (added in 5.2) makes it the kit's red row: text and icons in `red-text` (see [Destructive item](#destructive-item)). `inset` adds 32px of start padding, e.g. to line up items without an icon with items that have one.
 5. **Checkbox item** (`DropdownMenuCheckboxItem`) and **radio item** (`DropdownMenuRadioItem`, in a `DropdownMenuRadioGroup`): a 16px check mark in a slot 8px from the end, like Select's (the Figma selected item). Both kinds show the check; the role (`menuitemcheckbox`, `menuitemradio`) tells them apart.
+   **Switch item** (`DropdownMenuSwitchItem`, added in 5.2): a checkbox item that ends in the kit's Switch (28×16) instead of the check, as the kit's "Wrap Column" row. See [Switch item](#switch-item).
 6. **Label** (`DropdownMenuLabel`, optional): a group title, 14/20 `text-secondary`, 28px high (the kit's SearchPopup group title); takes `inset`.
 7. **Group** (`DropdownMenuGroup`, optional): groups items, with a 4px margin above and below (it merges into a separator's 7 and 8px).
 8. **Separator** (`DropdownMenuSeparator`): a 1px `black-4` line, 7px under the item above and 8px over the item below: 16px between the groups' items, as the kit's item group (8px padding above and below, a 1px Black/4% stroke inside its bottom edge).
 9. **Shortcut** (`DropdownMenuShortcut`, optional): a `KBD` (12/16) at the end of an item, from `keys`, as the kit's plain text in `text-secondary` (Figma: "⌘C" in Black/40%, no key cap). `separator=""` joins symbol keys as in the kit (`⌘C`, not `⌘+C`); a `variant` (`solid`, `border`) brings back the KBD key cap.
-10. **Submenu** (`DropdownMenuSub`): a `DropdownMenuSubTrigger` (an item with a 16px `text-secondary` chevron at the end, and an optional `hint` with the current value before it) and a `DropdownMenuSubContent` on the same surface. Wrap the sub content in `DropdownMenuPortal`, as the stories do.
+10. **Search** (`search` on `DropdownMenuContent`, optional, added in 5.2): the kit's Search field (Gray, 28px high, 4/8 padding, a 16px radius) in a 44px row with 8px of padding at the top of the menu; the items scroll under it. See [Search](#search).
+11. **Submenu** (`DropdownMenuSub`): a `DropdownMenuSubTrigger` (an item with a 16px `text-secondary` chevron at the end, and an optional `hint` with the current value before it) and a `DropdownMenuSubContent` on the same surface. Wrap the sub content in `DropdownMenuPortal`, as the stories do.
 
 The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdownmenu--open).
 
 ## States
 
 - **Highlighted** (hover or keyboard focus): Black/4% fill. A sub trigger keeps it while its submenu is open.
-- **Checked:** a check mark at the end (`checked` on a checkbox item, or the radio group's `value`).
+- **Checked:** a check mark at the end (`checked` on a checkbox item, or the radio group's `value`); a switch item's switch is on (`primary` track, the thumb at the end).
+- **Destructive** (`variant="destructive"`, added in 5.2): `red-text` text and icons, on the same Black/4% highlight; dimmed like any item when disabled.
 - **Disabled** (`disabled`): Black/20% text and a not-allowed cursor; the arrow keys and typeahead skip it.
 - **Open and closed:** `open` / `defaultOpen` / `onOpenChange` on `DropdownMenu`.
+
+## Search
+
+Added in 5.2. `search` on `DropdownMenuContent` puts a search field at the top of the menu that filters its items as you type. The kit's rule: give a menu the search when it has **more than 10 items, or more than 5 and a submenu**. The library doesn't count your items: you decide with `search`.
+
+```tsx
+<DropdownMenuContent search className="w-60">
+  <DropdownMenuItem>Ask AI</DropdownMenuItem>
+  {/* … more than 10 items … */}
+</DropdownMenuContent>
+
+// Or with options:
+<DropdownMenuContent
+  search={{ placeholder: 'Find a property', emptyMessage: 'No property', onQueryChange }}
+>
+```
+
+<Canvas of={DropdownMenuStories.SearchOpen} />
+
+- **Matching:** an item, checkbox item, radio item or sub trigger shows while its text contains every word of the query, in any case (`defaultDropdownMenuSearchFilter`, the CommandPalette default). The text is `textValue`, or the text of the item's children (icons and a `DropdownMenuShortcut` from `keys` add none). `filter(text, query)` replaces the matching.
+- **While filtering**, the matches are one list, as in the kit's "Have results": labels and separators are hidden and groups lose their margins. A submenu isn't filtered: its trigger is.
+- **Empty:** "No results" (`emptyMessage`, or `messages.dropdownMenu.empty`) under the field, in a polite live region. The empty menu is hidden.
+- **Query:** uncontrolled, it starts from `defaultQuery` every time the menu opens; or controlled with `query` and `onQueryChange`.
+- **Focus:** the field takes the focus when the menu opens (from the keyboard too, instead of the first item), so you type straight away. See [Keyboard](#keyboard).
+
+<Canvas of={DropdownMenuStories.WithSearch} />
+<Canvas of={DropdownMenuStories.SearchNoResults} />
+
+## Switch item
+
+Added in 5.2. `DropdownMenuSwitchItem` is the kit's "Wrap Column" row: a setting that turns on and off, with the kit's Switch at the end of the item (a 28×16 track, `control-border` off and `primary` on, a 12px thumb that moves to the end; a Black/10% or Black/20% track when disabled). It takes the props of a checkbox item, with a boolean `checked` and `onCheckedChange(checked)`.
+
+- **Semantics:** the item is the `menuitemcheckbox`, with `aria-checked`. The switch is a picture of that state (`aria-hidden`, no `role="switch"`): a menu item can't contain a control of its own, so don't put a [Switch](?path=/docs/components-input-switch--docs) in a `DropdownMenuItem`.
+- **Selecting** it (a click, Enter, Space) toggles it and closes the menu, as a checkbox item. To toggle in place, call `event.preventDefault()` in `onSelect`, as the story does.
+- In right-to-left text the thumb moves to the left when on.
+
+```tsx
+<DropdownMenuSwitchItem
+  checked={wrap}
+  onCheckedChange={setWrap}
+  onSelect={(event) => event.preventDefault()}
+>
+  <TextAlignLeftIcon />
+  Wrap column
+</DropdownMenuSwitchItem>
+```
+
+<Canvas of={DropdownMenuStories.SwitchItem} />
+
+## Destructive item
+
+Added in 5.2. `variant="destructive"` on `DropdownMenuItem` marks an action that deletes or can't be undone, as the kit's red "Delete Property" row: the text and the icons (which take `currentColor`) are `red-text`, as AlertDialog's red action. `red-text` is #D42020 in light mode; in dark mode it is mixed with 40% white, so it keeps 4.5:1 on the item's highlight too. The role stays `menuitem`: say what the item does in its label ("Delete property"), not with the colour alone.
+
+```tsx
+<DropdownMenuItem variant="destructive" onSelect={remove}>
+  <TrashIcon />
+  Delete property
+</DropdownMenuItem>
+```
+
+<Canvas of={DropdownMenuStories.Destructive} />
+
+The kit confirms in place: after a click the row reads "Confirm Deletion?" and a second click deletes. Keep the menu open on the first selection with `event.preventDefault()` in `onSelect` and change the label, as the story below does. A screen reader may not announce the focused item's new name, so for an action that can't be undone, confirm in an [AlertDialog](?path=/docs/components-alertdialog--docs) with its `destructive` action instead.
+
+<Canvas of={DropdownMenuStories.DestructiveConfirm} />
 
 ## Portal and theme
 
@@ -100,7 +169,8 @@ The Figma Popover as a menu, open: [Open story](?path=/story/components-dropdown
 - To keep the menu open after a selection, call `event.preventDefault()` in the item's `onSelect`.
 - The menu is modal by default (Radix `modal`): while it is open, focus stays in it, the rest of the page is hidden from assistive technology and ignores the pointer, and the page doesn't scroll. `modal={false}` turns this off.
 - When the menu closes, focus goes back to the trigger (not after a click outside a `modal={false}` menu).
-- There are no built-in strings. A `DropdownMenuShortcut` is a `<kbd>` with `aria-keyshortcuts`; it only shows the shortcut, so register the shortcut yourself.
+- The only built-in strings are the search field's name and empty state (`messages.dropdownMenu`). A `DropdownMenuShortcut` is a `<kbd>` with `aria-keyshortcuts`; it only shows the shortcut, so register the shortcut yourself.
+- With `search`, the field (a `searchbox` named "Search", with `aria-controls` on the menu) and the empty state sit next to the `role="menu"` list, in the popover: a menu may only contain items, groups and separators (axe `aria-required-children`). The list keeps the menu's name (the trigger) and `aria-orientation`; the popover itself has no role.
 
 ### Keyboard
 
@@ -118,6 +188,16 @@ From the stories' interaction tests and Radix Dropdown Menu; disabled items are 
 | Escape | close the menu, submenus included, and return focus to the trigger |
 | Tab, Shift + Tab | do nothing while the menu is open |
 
+With `search` (added in 5.2), in the field:
+
+| Key | Action |
+| --- | --- |
+| a character | type in the field and filter the items (no typeahead) |
+| ArrowDown / ArrowUp | move to the first / last item shown |
+| Escape | clear the field; in an empty field, close the menu |
+
+On an item, a letter goes to the field (the typeahead is off with a search); ArrowUp on the first item goes back to the field (without `loop`). Enter and Space select the item, as without a search.
+
 ### Deviations from the Figma kit
 
 The full table is in the package README.
@@ -126,16 +206,23 @@ The full table is in the package README.
 | --- | --- | --- |
 | Group labels, shortcuts and submenu value hints in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
 | Submenu chevron in Black/20%: 1.6:1 | `text-secondary`, as the Select chevron: Black/60% in light mode (at least 5.5:1, on the highlighted item too), White/70% in dark mode (at least 4.82:1) | 1.4.11 |
+| Destructive item (the red "Delete" row; 5.2): red text and icon | `variant="destructive"`: `red-text` (#D42020: 5.21:1 on the popover, 4.77:1 highlighted); in dark mode `red-text` mixed with 40% white (#FFB3B3: 6.21:1, 4.59:1 highlighted), as #FF8080 is 4.36:1 and 3.22:1 there | 1.4.3 |
+
+The kit selects the first result of a search by default ("Have results"). Here the focus stays in the field until ArrowDown moves it to the first result, so a screen reader announces the item before Enter picks it, and Enter in the field doesn't select one you haven't heard.
 
 The Black/4% item highlight (1.1:1) keeps the Figma value with the default contrast: the README lists it as a known gap. With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the highlighted item also gets a 2px `black-80` ring.
 
 ## Localization and RTL
 
-- The menu renders no text of its own: labels and shortcuts are yours to translate.
+- The menu renders no text of its own (labels and shortcuts are yours to translate), except with `search`: the field's name `messages.dropdownMenu.search` ("Search"), its placeholder `messages.search.placeholder`, and the empty state `messages.dropdownMenu.empty` ("No results"). `label`, `placeholder` and `emptyMessage` in `search` win over the provider.
 - The content takes `dir` from `SnowUIProvider`; without a provider (or a Radix `DirectionProvider`) it is `ltr`, whatever `<html dir>` says.
 - In right-to-left text the check marks (at the left end), `inset` padding and shortcuts swap sides, the submenu arrow points left, and ArrowLeft opens a submenu (to the left).
 
 <Canvas of={DropdownMenuStories.RTL} />
+
+With a search, the menu list gets the `dir` too:
+
+<Canvas of={DropdownMenuStories.SearchRTL} />
 
 ## Composition (asChild)
 
@@ -158,6 +245,7 @@ With `asChild`, calling `event.preventDefault()` in the child's handler skips th
 - Group related items with `DropdownMenuGroup`, a `DropdownMenuLabel` and separators.
 - Wrap `DropdownMenuSubContent` in `DropdownMenuPortal`.
 - Show a shortcut only for a shortcut that works.
+- Add `search` to a menu with more than 10 items (or more than 5 and a submenu), as the kit does.
 
 </Do>
 <Dont>
@@ -198,11 +286,13 @@ A `<button>` with `aria-haspopup="menu"` and `aria-expanded` that toggles the me
 
 The `role="menu"` panel, in a portal. It is placed below the trigger (`side="bottom"`), centred on it (`align="center"`), 4px away (`sideOffset`, 4 here instead of the Radix 0), and flips when there isn't room. `loop` (off by default) makes the arrow keys wrap around; the `on…` handlers can prevent the menu from closing.
 
+`search` (added in 5.2) adds the search field: `true`, or `{ query, defaultQuery, onQueryChange, filter, label, placeholder, emptyMessage }` (`DropdownMenuSearchOptions`). See [Search](#search).
+
 <ArgTypes of={DropdownMenuContent} />
 
 ### DropdownMenuItem
 
-A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text when the item's content isn't plain text; `inset` adds 32px of start padding.
+A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the typeahead text (and the text a `search` matches) when the item's content isn't plain text; `inset` adds 32px of start padding; `variant="destructive"` (added in 5.2) colours it `red-text` (see [Destructive item](#destructive-item)).
 
 <ArgTypes of={DropdownMenuItem} />
 
@@ -211,6 +301,12 @@ A `menuitem`. `onSelect` runs on a click, Enter or Space; `textValue` sets the t
 A `menuitemcheckbox` with a check mark at the end: `checked` and `onCheckedChange`.
 
 <ArgTypes of={DropdownMenuCheckboxItem} />
+
+### DropdownMenuSwitchItem
+
+Added in 5.2. A `menuitemcheckbox` that ends in the kit's Switch: a boolean `checked` and `onCheckedChange`; the other props of `DropdownMenuCheckboxItem`. See [Switch item](#switch-item).
+
+<ArgTypes of={DropdownMenuSwitchItem} />
 
 ### DropdownMenuRadioGroup
 

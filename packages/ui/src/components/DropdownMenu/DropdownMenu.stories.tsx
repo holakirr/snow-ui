@@ -1,10 +1,23 @@
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  EyeSlashIcon,
+  FunnelIcon,
+  SparkleIcon,
+  TagIcon,
+  TextAlignLeftIcon,
+  TextTIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 import { expect, waitFor, within } from 'storybook/test'
 
-import { expectClosed } from '../../test/animations'
+import { animationsEnded, expectClosed } from '../../test/animations'
 import { colorOf } from '../../test/colors'
 import { settleLayout } from '../../test/layout'
 import { Button } from '../Button'
+import { popoverItemDestructiveClasses } from '../Popover/surface'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -20,6 +33,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuSwitchItem,
   DropdownMenuTrigger,
 } from './DropdownMenu'
 
@@ -439,4 +453,511 @@ export const Open: Story = {
       </DropdownMenu>
     </div>
   ),
+}
+
+/**
+ * The kit's property menu ("Popover interactive guidance"): more than ten
+ * items, so it gets the search field.
+ */
+const PropertyMenuItems = () => (
+  <>
+    <DropdownMenuGroup>
+      <DropdownMenuItem>
+        <SparkleIcon />
+        Ask AI
+      </DropdownMenuItem>
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger hint="Multi-Select">
+          <TagIcon />
+          Tags
+        </DropdownMenuSubTrigger>
+        <DropdownMenuPortal>
+          <DropdownMenuSubContent sideOffset={8}>
+            <DropdownMenuItem>Text</DropdownMenuItem>
+            <DropdownMenuItem>Single select</DropdownMenuItem>
+            <DropdownMenuItem>Multi-Select</DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuPortal>
+      </DropdownMenuSub>
+      <DropdownMenuItem>
+        <TextTIcon />
+        Edit property
+      </DropdownMenuItem>
+    </DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuGroup>
+      <DropdownMenuItem>
+        <ArrowUpIcon />
+        Sort ascending
+        <DropdownMenuShortcut keys={['⌘', 'U']} separator="" />
+      </DropdownMenuItem>
+      <DropdownMenuItem>
+        <ArrowDownIcon />
+        Sort descending
+        <DropdownMenuShortcut keys={['⌘', 'D']} separator="" />
+      </DropdownMenuItem>
+      <DropdownMenuItem>
+        <FunnelIcon />
+        Filter
+      </DropdownMenuItem>
+    </DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuGroup>
+      <DropdownMenuItem>
+        <EyeSlashIcon />
+        Hide in view
+      </DropdownMenuItem>
+      <DropdownMenuCheckboxItem checked>
+        <TextAlignLeftIcon />
+        Wrap column
+      </DropdownMenuCheckboxItem>
+    </DropdownMenuGroup>
+  </>
+)
+
+/**
+ * `search` (added in 5.2) puts the kit's search field at the top of the
+ * menu: it takes the focus when the menu opens, typing filters the items,
+ * ArrowDown moves into them, Escape clears the field and then closes the
+ * menu.
+ */
+export const WithSearch: Story = {
+  render: () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" label="Property" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent search align="start" className="w-60">
+        <PropertyMenuItems />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const trigger = canvas.getByRole('button', { name: 'Property' })
+    trigger.focus()
+    await userEvent.keyboard('{Enter}')
+    const field = await page.findByRole('searchbox', { name: 'Search' })
+    const content = field.closest('[data-radix-menu-content]') as HTMLElement
+
+    await step('the field takes the focus, outside the menu', async () => {
+      await waitFor(() => expect(field).toHaveFocus())
+      await expect(page.getByRole('menu')).not.toContainElement(field)
+      await expect(page.getByRole('menu')).toHaveAccessibleName('Property')
+    })
+
+    await step('typing filters the items', async () => {
+      await userEvent.keyboard('sort')
+      await expect(field).toHaveFocus()
+      await expect(
+        page.getAllByRole('menuitem').map((item) => item.textContent),
+      ).toEqual(['Sort ascending⌘U', 'Sort descending⌘D'])
+      await expect(page.queryByRole('separator')).not.toBeInTheDocument()
+    })
+
+    await step('ArrowDown moves into the items, ArrowUp back', async () => {
+      await userEvent.keyboard('{ArrowDown}')
+      await expect(
+        page.getByRole('menuitem', { name: /^Sort ascending/ }),
+      ).toHaveFocus()
+      await userEvent.keyboard('{ArrowUp}')
+      await expect(field).toHaveFocus()
+    })
+
+    await step('nothing matches: "No results", announced', async () => {
+      await userEvent.keyboard('zzz')
+      await expect(page.getByRole('status')).toHaveTextContent('No results')
+      await expect(page.queryByRole('menu')).not.toBeInTheDocument()
+    })
+
+    await step('Escape clears the field, the next one closes', async () => {
+      await userEvent.keyboard('{Escape}')
+      await expect(field).toHaveValue('')
+      await expect(page.getAllByRole('menuitem')).toHaveLength(7)
+      await userEvent.keyboard('{Escape}')
+      await expectClosed(content)
+      await waitFor(() =>
+        expect(page.queryByRole('menu')).not.toBeInTheDocument(),
+      )
+      await expect(trigger).toHaveFocus()
+    })
+  },
+}
+
+/**
+ * The menu with its search open (Figma: the focused Search Gray, 200×28,
+ * in a 44px row at the top of the 240px Popover).
+ */
+export const SearchOpen: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="h-120">
+      <DropdownMenu defaultOpen modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="Property" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent search align="start" className="w-60">
+          <PropertyMenuItems />
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+  play: async ({ canvasElement, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const field = await page.findByRole('searchbox', { name: 'Search' })
+    const content = field.closest('[data-radix-menu-content]') as HTMLElement
+    await settleLayout(content)
+
+    await step('the kit sizes: a 200×28 field in a 44px row', async () => {
+      const search = field.closest('[data-variant]') as HTMLElement
+      const box = search.getBoundingClientRect()
+      const row = (search.parentElement as HTMLElement).getBoundingClientRect()
+      await expect(content.getBoundingClientRect().width).toBeCloseTo(240, 0)
+      // Figma: 200 = 240 - 2 × 12 - 2 × 8. The popover's 1px stroke is
+      // inside its 240px here, as for the items (214 for the kit's 216).
+      await expect(box.width).toBeCloseTo(198, 0)
+      await expect(box.height).toBeCloseTo(28, 0)
+      await expect(row.height).toBeCloseTo(44, 0)
+      // 12px inside the popover's 1px stroke; the first item under the row
+      // (after its group's 4px margin).
+      await expect(row.top - content.getBoundingClientRect().top).toBeCloseTo(
+        13,
+        0,
+      )
+      const first = page
+        .getByRole('menuitem', { name: 'Ask AI' })
+        .getBoundingClientRect()
+      await expect(first.top - row.bottom).toBeCloseTo(4, 0)
+    })
+  },
+}
+
+/** A query that matches nothing: the kit's "No results" under the field. */
+export const SearchNoResults: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="h-48">
+      <DropdownMenu defaultOpen modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="Property" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          search={{ defaultQuery: 'Status' }}
+          align="start"
+          className="w-60"
+        >
+          <PropertyMenuItems />
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await expect(await page.findByRole('status')).toHaveTextContent(
+      'No results',
+    )
+    await expect(page.queryByRole('menuitem')).not.toBeInTheDocument()
+  },
+}
+
+/**
+ * Right-to-left text: the search field, the items, the switch item (its
+ * thumb at the left when on) and the destructive item follow the menu's
+ * `dir`.
+ */
+export const SearchRTL: Story = {
+  globals: { dir: 'rtl' },
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="flex h-72 items-start justify-center">
+      <DropdownMenu defaultOpen modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="الخاصية" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          search={{ label: 'بحث', placeholder: 'بحث' }}
+          align="start"
+          className="w-60"
+        >
+          <DropdownMenuItem>
+            <SparkleIcon />
+            اسأل الذكاء الاصطناعي
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <ArrowUpIcon />
+            ترتيب تصاعدي
+            <DropdownMenuShortcut keys={['⌘', 'U']} separator="" />
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <FunnelIcon />
+            تصفية
+          </DropdownMenuItem>
+          <DropdownMenuSwitchItem checked>
+            <TextAlignLeftIcon />
+            التفاف العمود
+          </DropdownMenuSwitchItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="destructive">
+            <TrashIcon />
+            حذف الخاصية
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const field = await page.findByRole('searchbox', { name: 'بحث' })
+    const menu = page.getByRole('menu')
+    await expect(menu).toHaveAttribute('dir', 'rtl')
+    const content = field.closest('[data-radix-menu-content]') as HTMLElement
+    await settleLayout(content)
+    // The field's icon is at its start: on the right.
+    const box = (
+      field.closest('[data-variant]') as HTMLElement
+    ).getBoundingClientRect()
+    const icon = (field.closest('[data-variant]') as HTMLElement)
+      .querySelector('svg')
+      ?.getBoundingClientRect()
+    await expect((icon?.right ?? 0) > box.right - 16).toBe(true)
+    // The switch is at the end of its item (the left), its thumb at the
+    // switch's end (the left) when on.
+    const item = page.getByRole('menuitemcheckbox', { name: 'التفاف العمود' })
+    const track = item.querySelector('[aria-hidden] > span')
+      ?.parentElement as HTMLElement
+    const thumb = track.firstElementChild as HTMLElement
+    await expect(
+      track.getBoundingClientRect().left - item.getBoundingClientRect().left,
+    ).toBeCloseTo(8, 0)
+    await expect(
+      thumb.getBoundingClientRect().left - track.getBoundingClientRect().left,
+    ).toBeCloseTo(2, 0)
+  },
+}
+
+/**
+ * `variant="destructive"` (added in 5.2): the kit's red "Delete Property"
+ * row, its text and icon in `red-text` (lighter in dark mode, so it keeps
+ * 4.5:1 on the highlight). Here it is highlighted, as under the pointer.
+ */
+export const Destructive: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div className="h-72">
+      <DropdownMenu defaultOpen modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" label="Property" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-60">
+          <DropdownMenuItem>
+            <TextTIcon />
+            Edit property
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <EyeSlashIcon />
+            Hide in view
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="destructive">
+            <TrashIcon />
+            Delete property
+          </DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" disabled>
+            <TrashIcon />
+            Delete all properties
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  ),
+  play: async ({ canvasElement, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const menu = await page.findByRole('menu')
+    const item = page.getByRole('menuitem', { name: 'Delete property' })
+    item.focus()
+    await settleLayout(menu)
+
+    await step('the text and the icon are red-text', async () => {
+      const red = colorOf(popoverItemDestructiveClasses, menu)
+      await expect(item).toHaveAttribute('data-variant', 'destructive')
+      await expect(item).toHaveAttribute('data-highlighted')
+      await expect(getComputedStyle(item).color).toBe(red)
+      await expect(
+        getComputedStyle(item.querySelector('svg') as SVGElement).color,
+      ).toBe(red)
+    })
+
+    await step('a disabled one is dimmed like the others', async () => {
+      const disabled = page.getByRole('menuitem', {
+        name: 'Delete all properties',
+      })
+      await expect(getComputedStyle(disabled).color).toBe(
+        colorOf('text-black-20', menu),
+      )
+    })
+  },
+}
+
+/**
+ * The kit's confirmation in place: the first selection keeps the menu open
+ * and asks "Confirm deletion?", the second one deletes. A screen reader may
+ * not announce the new name of the focused item: for an action that can't
+ * be undone, confirm in an AlertDialog with a `destructive` action.
+ */
+export const DestructiveConfirm: Story = {
+  render: function Render() {
+    const [confirming, setConfirming] = useState(false)
+    const [deleted, setDeleted] = useState(false)
+    return (
+      <div className="flex flex-col items-center gap-4">
+        <DropdownMenu onOpenChange={() => setConfirming(false)}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" label="Property" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-60">
+            <DropdownMenuItem>
+              <TextTIcon />
+              Edit property
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={(event) => {
+                if (confirming) {
+                  setDeleted(true)
+                  return
+                }
+                event.preventDefault()
+                setConfirming(true)
+              }}
+            >
+              <TrashIcon />
+              {confirming ? 'Confirm deletion?' : 'Delete property'}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <p className="text-14" role="status">
+          {deleted ? 'Property deleted' : ''}
+        </p>
+      </div>
+    )
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(canvas.getByRole('button', { name: 'Property' }))
+    const menu = await page.findByRole('menu')
+    // It fades in (only fades, with reduced motion): wait for it.
+    await animationsEnded(menu)
+    await userEvent.click(
+      page.getByRole('menuitem', { name: 'Delete property' }),
+    )
+    // Still open, asking.
+    const confirm = page.getByRole('menuitem', { name: 'Confirm deletion?' })
+    await expect(confirm).toBeVisible()
+    await userEvent.click(confirm)
+    await expectClosed(menu)
+    await waitFor(() =>
+      expect(page.queryByRole('menu')).not.toBeInTheDocument(),
+    )
+    await expect(canvas.getByRole('status')).toHaveTextContent(
+      'Property deleted',
+    )
+  },
+}
+
+/**
+ * `DropdownMenuSwitchItem` (added in 5.2): the kit's "Wrap Column" row, a
+ * checkbox item that ends in a Switch. It stays a `menuitemcheckbox`; here
+ * `onSelect` keeps the menu open, so Space or Enter toggles in place.
+ */
+export const SwitchItem: Story = {
+  parameters: { layout: 'padded' },
+  render: function Render() {
+    const [wrap, setWrap] = useState(true)
+    const [frozen, setFrozen] = useState(false)
+    return (
+      <div className="h-64">
+        <DropdownMenu defaultOpen modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" label="Column" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-60">
+            <DropdownMenuItem>
+              <EyeSlashIcon />
+              Hide in view
+            </DropdownMenuItem>
+            <DropdownMenuSwitchItem
+              checked={wrap}
+              onCheckedChange={setWrap}
+              onSelect={(event) => event.preventDefault()}
+            >
+              <TextAlignLeftIcon />
+              Wrap column
+            </DropdownMenuSwitchItem>
+            <DropdownMenuSwitchItem
+              checked={frozen}
+              onCheckedChange={setFrozen}
+              onSelect={(event) => event.preventDefault()}
+            >
+              <ArrowUpIcon />
+              Freeze column
+            </DropdownMenuSwitchItem>
+            <DropdownMenuSwitchItem checked disabled>
+              <TextTIcon />
+              Show title
+            </DropdownMenuSwitchItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    )
+  },
+  play: async ({ canvasElement, userEvent, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const menu = await page.findByRole('menu')
+    const wrap = page.getByRole('menuitemcheckbox', { name: 'Wrap column' })
+    const track = (item: HTMLElement) =>
+      item.querySelector(':scope > [aria-hidden]') as HTMLElement
+    await settleLayout(menu)
+
+    await step('the kit Switch at the end, 28×16, on', async () => {
+      const box = track(wrap).getBoundingClientRect()
+      await expect(wrap).toHaveAttribute('aria-checked', 'true')
+      await expect(box.width).toBeCloseTo(28, 0)
+      await expect(box.height).toBeCloseTo(16, 0)
+      await expect(wrap.getBoundingClientRect().right - box.right).toBeCloseTo(
+        8,
+        0,
+      )
+      await expect(getComputedStyle(track(wrap)).backgroundColor).toBe(
+        colorOf('text-primary', menu),
+      )
+      const thumb = (
+        track(wrap).firstElementChild as HTMLElement
+      ).getBoundingClientRect()
+      await expect(box.right - thumb.right).toBeCloseTo(2, 0)
+    })
+
+    await step('Space toggles it in place, the menu stays open', async () => {
+      wrap.focus()
+      await userEvent.keyboard(' ')
+      await waitFor(() => expect(wrap).toHaveAttribute('aria-checked', 'false'))
+      await expect(menu).toBeVisible()
+      await settleLayout(menu)
+      await expect(getComputedStyle(track(wrap)).backgroundColor).toBe(
+        colorOf('text-control-border', menu),
+      )
+      await userEvent.keyboard(' ')
+      await waitFor(() => expect(wrap).toHaveAttribute('aria-checked', 'true'))
+    })
+
+    await step('disabled: a Black/20% track when on', async () => {
+      const disabled = page.getByRole('menuitemcheckbox', {
+        name: 'Show title',
+      })
+      await expect(disabled).toHaveAttribute('aria-disabled', 'true')
+      await expect(getComputedStyle(track(disabled)).backgroundColor).toBe(
+        colorOf('text-black-20', menu),
+      )
+    })
+  },
 }

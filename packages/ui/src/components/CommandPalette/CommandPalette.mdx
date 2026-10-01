@@ -57,8 +57,11 @@ const groups: CommandPaletteGroup[] = [
 6. **Enter hint**: a ↩ in `text-secondary` at the end of the highlighted item.
 7. **List**: scrolls past 484px or 60% of the viewport height, whichever is smaller, with the kit's scrollbar (`scrollbar-snow`, in an 8px gutter at the end while it scrolls).
 8. **Empty message**: "No results" (`emptyMessage`) in 14/20 `text-secondary`, when nothing matches.
+9. **Result count** (`showCount`, optional, added in 5.2): the kit's "105 results" above the list while there is a query, in 12/16 `text-secondary`; the number of items shown, or `resultCount`.
+10. **Snippet** (`snippet` of an item, optional, added in 5.2): a second line under the label in 12/16 `text-secondary`, such as the text on the page that matched (the kit's "Text on the page" result).
+11. **Match** (`highlightMatches`, optional, added in 5.2): the words of the query in each label and snippet, in a `<mark>` in `indigo-text` (the kit's Secondary/Indigo) with no fill.
 
-Items are `{ id, label, icon?, keywords?, disabled?, onSelect? }`, in groups of `{ id, heading?, items }`. Ids must be unique within their group.
+Items are `{ id, label, icon?, keywords?, snippet?, disabled?, onSelect? }`, in groups of `{ id, heading?, items }`. Ids must be unique within their group.
 
 ## States
 
@@ -75,9 +78,30 @@ Items are `{ id, label, icon?, keywords?, disabled?, onSelect? }`, in groups of 
 
 Dark theme, open: [OpenDark story](?path=/story/components-commandpalette--open-dark).
 
+## Search results
+
+Added in 5.2: the kit's search results, opt-in.
+
+- `showCount` shows the number of results above the list while there is a query ("105 results", `messages.commandPalette.results(count)`), in a polite live region, so a screen reader hears it as the results change. It counts the items shown; pass `resultCount` when the list holds only some of them (the first page from a server). Nothing shows without a query, while `loading`, or with no results (the empty message says so).
+- `highlightMatches` marks every word of the query in the labels and snippets (case-insensitive), the kit's indigo match. The `<mark>`s don't change an option's name.
+- An item's `snippet` is the second line, and the option's description (`aria-describedby`): its name stays the label. The default filter matches it.
+
+```tsx
+<CommandPalette
+  groups={results}
+  showCount
+  resultCount={total}
+  highlightMatches
+/>
+// An item with a snippet:
+{ id: 'overview', label: 'Overview', snippet: 'I’m ByeWind, a Product UX/UI Designer…' }
+```
+
+<Canvas of={CommandPaletteStories.SearchResults} />
+
 ## Filtering and server results
 
-- **Default filter** (`defaultCommandPaletteFilter`): every word of the query must appear in the label or the `keywords`, in any order, case-insensitively. An empty query shows every item.
+- **Default filter** (`defaultCommandPaletteFilter`): every word of the query must appear in the label, the `keywords` or the `snippet` (5.2), in any order, case-insensitively. An empty query shows every item.
 - **Custom filter:** `filter={(item, query) => boolean}` gets the trimmed, non-empty query.
 - **Server results:** `filter={false}` shows `groups` as they are. Read the query with `onQueryChange` (or control it with `query`), fetch, and pass the results as `groups` with `loading` while waiting. The highlighted item survives new `groups` as long as its group and item ids stay.
 
@@ -88,7 +112,7 @@ Dark theme, open: [OpenDark story](?path=/story/components-commandpalette--open-
 - **Trigger:** `trigger` opens the palette on click.
 - **Hotkey:** `hotkey` toggles it from anywhere on the page: a key (`'/'`) or modifiers and a key joined with `+` (`'mod+k'`, where `mod` is ⌘ or Ctrl; also `ctrl`, `meta`, `alt`, `shift`). A hotkey without `mod`, `ctrl`, `meta` or `alt` is ignored while the user types in a field.
 - **Open state:** `open` / `defaultOpen` / `onOpenChange`. The query and the highlight reset every time it opens (to `defaultQuery`, or the controlled `query`).
-- **Selecting:** Enter or a click calls the item's `onSelect`, then the palette's `onSelect(item, event)`, and closes the palette (`closeOnSelect={false}` keeps it open). The event is the click or the Enter key press: check `event.metaKey` or `event.ctrlKey` to open the result in a new tab.
+- **Selecting:** Enter or a click calls the item's `onSelect`, then the palette's `onSelect(item, event)`, and closes the palette (`closeOnSelect={false}` keeps it open). The event is the click or the Enter key press: check `event.metaKey` or `event.ctrlKey` to open the result in a new tab. The kit's rule: ⌘ + click (Ctrl + click) opens a result in a new tab.
 
 <Canvas of={CommandPaletteStories.WithButtonTrigger} />
 
@@ -102,7 +126,8 @@ The popup renders in a portal at the end of `<body>`, so it takes the theme of `
 - The field is a `combobox` (`aria-expanded`, `aria-autocomplete="list"`) that controls a `listbox` named by `label`. Focus stays in the field; the highlighted `option` is `aria-selected` and the field's `aria-activedescendant`. Items are grouped in `group`s named by their heading.
 - The palette is a modal Radix Dialog: opening moves focus to the search field, the rest of the page is hidden from assistive technology and ignores the pointer, and a click outside closes it. Closing returns focus to the trigger.
 - The empty message and the loading text are in a `status` live region, so screen readers announce them; `loading` also sets `aria-busy` on the list.
-- Built-in strings: `label` ("Search"), `placeholder` ("Search"), `emptyMessage` ("No results") and `loadingLabel` ("Loading").
+- With `showCount`, the count is a polite `status` too. A `snippet` is its option's description, and `highlightMatches` uses `<mark>`, which some screen readers announce as highlighted.
+- Built-in strings: `label` ("Search"), `placeholder` ("Search"), `emptyMessage` ("No results"), `loadingLabel` ("Loading") and, with `showCount`, the count (`messages.commandPalette.results`: "105 results").
 
 ### Keyboard
 
@@ -124,10 +149,12 @@ The full table is in the package README.
 | --- | --- | --- |
 | Group headings and the empty message in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333, at least 4.76:1 on the lightest popover surface) | 1.4.3 |
 | The Enter hint in Black/20%: 1.6:1 | `text-secondary` | 1.4.3 |
+| The match in Secondary/Indigo (#ADADFB): 2.07:1 on white | `indigo-text`: #5B5BD6 in light mode (5.37:1 on the palette, 4.91:1 on the highlighted option); in dark mode #ADADFB mixed with 30% white (6.47:1, 4.78:1), as #ADADFB is 3.78:1 on the White/10% highlight | 1.4.3 |
+| The result count and the snippet (5.2): light grey text in the guidance frame, with no measured value | `text-secondary`, 12/16 | 1.4.3 |
 
 ## Localization and RTL
 
-- `messages.commandPalette` holds the four strings: `label`, `placeholder`, `empty` and `loading`. The `label`, `placeholder`, `emptyMessage` and `loadingLabel` props override them.
+- `messages.commandPalette` holds the strings: `label`, `placeholder`, `empty`, `loading` and, added in 5.2, `results(count)` (the `showCount` count; a function, so a translation can inflect it). The `label`, `placeholder`, `emptyMessage` and `loadingLabel` props override them.
 - The portalled popup takes `dir` from `SnowUIProvider`. Without a provider it has no `dir` and follows `<html dir>`.
 - The field's clear button is named by `messages.search.clear` ("Clear search"), from [Search](?path=/docs/components-search--docs).
 

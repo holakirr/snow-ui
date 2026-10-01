@@ -1,8 +1,10 @@
 import { SearchIcon } from '@holakirr/snow-ui-icons'
+import { FileTextIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type ComponentProps, useEffect, useState } from 'react'
 import { expect, fn, waitFor, within } from 'storybook/test'
 import { expectClosed } from '../../test/animations'
+import { colorOf } from '../../test/colors'
 import { Avatar, AvatarFallback } from '../Avatar'
 import { Button } from '../Button'
 import { IconBox } from '../IconBox'
@@ -278,6 +280,107 @@ export const AsyncResults: Story = {
           Selected: {selected ?? 'nothing'}
         </Typography>
       </div>
+    )
+  },
+}
+
+const pageIcon = (
+  <IconBox size={16}>
+    <FileTextIcon />
+  </IconBox>
+)
+
+// The kit's "Search results": a user, a page, text on a page (with the
+// matching text under it) and data in a table.
+const searchResults: CommandPaletteGroup[] = [
+  {
+    id: 'results',
+    items: [
+      { id: 'user', label: 'ByeWind', icon: avatar('BW') },
+      { id: 'page', label: 'ByeWind', icon: pageIcon },
+      {
+        id: 'text',
+        label: 'Overview',
+        icon: pageIcon,
+        snippet: 'I’m ByeWind, a Product UX/UI Designer, based in China.',
+      },
+      { id: 'profile', label: 'ByeWind’s profile', icon: pageIcon },
+      { id: 'farewell', label: 'Farewell to Wind', icon: pageIcon },
+      {
+        id: 'twitter',
+        label: 'https://twitter.com/FarewelltoWind',
+        icon: pageIcon,
+      },
+    ],
+  },
+]
+
+/**
+ * The kit's search results (added in 5.2): `showCount` shows "105 results"
+ * (`resultCount`, when the list holds only the first ones), `highlightMatches`
+ * marks the query in each label and snippet, and an item's `snippet` is the
+ * second line.
+ */
+export const SearchResults: Story = {
+  decorators: [
+    (Story) => (
+      <>
+        {/* The palette is translucent (Background/3 at 90%): the app's
+            background-1 page under it, as in an app. The test runner's page
+            is white, which would put the dark-mode palette on white. */}
+        <div aria-hidden className="fixed inset-0 bg-background-1" />
+        <Story />
+      </>
+    ),
+  ],
+  args: {
+    defaultOpen: true,
+    groups: searchResults,
+    defaultQuery: 'Wind',
+    showCount: true,
+    resultCount: 105,
+    highlightMatches: true,
+  },
+  play: async ({ canvasElement, step }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const dialog = await page.findByRole('dialog')
+
+    await step('the count, announced politely', async () => {
+      const count = within(dialog).getByText('105 results')
+      await expect(count).toHaveAttribute('role', 'status')
+      await expect(getComputedStyle(count).fontSize).toBe('12px')
+      await expect(getComputedStyle(count).color).toBe(
+        colorOf('text-secondary', dialog),
+      )
+    })
+
+    await step('the match is marked in indigo, without a fill', async () => {
+      const [first] = page.getAllByRole('option')
+      const mark = first.querySelector('mark') as HTMLElement
+      await expect(mark).toHaveTextContent('Wind')
+      await expect(getComputedStyle(mark).backgroundColor).toBe(
+        'rgba(0, 0, 0, 0)',
+      )
+      await expect(getComputedStyle(mark).color).toBe(
+        colorOf(
+          'text-indigo-text dark:text-[color:color-mix(in_srgb,var(--color-indigo-text),var(--color-black)_30%)]',
+          first,
+        ),
+      )
+      await expect(first).toHaveAccessibleName('BW ByeWind')
+    })
+
+    await step(
+      'the snippet is the second line and the description',
+      async () => {
+        const option = page.getByRole('option', { name: 'Overview' })
+        await expect(option).toHaveAccessibleDescription(
+          'I’m ByeWind, a Product UX/UI Designer, based in China.',
+        )
+        const snippet = within(option).getByText(/Product UX\/UI/)
+        await expect(getComputedStyle(snippet).fontSize).toBe('12px')
+        await expect(snippet.querySelector('mark')).toHaveTextContent('Wind')
+      },
     )
   },
 }

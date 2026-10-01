@@ -9,12 +9,16 @@ import {
   popoverChevronClasses,
   popoverHintClasses,
   popoverItemClasses,
+  popoverItemDestructiveClasses,
   popoverLabelClasses,
   popoverScrollClasses,
   popoverSeparatorClasses,
   popoverShortcutClasses,
   popoverShortcutEndClasses,
   popoverSurfaceClasses,
+  popoverSwitchItemClasses,
+  popoverSwitchThumbClasses,
+  popoverSwitchTrackClasses,
 } from '../Popover/surface'
 import { useSnowUI } from '../SnowUIProvider'
 import { KBD, type KBDProps } from '../Text'
@@ -131,15 +135,29 @@ const itemClasses = popoverItemClasses
 
 type ContextMenuItemProps = ComponentProps<typeof CtxMenuPrimitive.Item> & {
   inset?: boolean
+  /**
+   * `destructive`: an action that deletes or can't be undone (the kit's red
+   * "Delete" row): text and icons in `red-text`, at least 4.5:1 on the menu
+   * and its highlight in both modes. Added in 5.2.
+   * @default 'default'
+   */
+  variant?: 'default' | 'destructive'
 }
 
 const ContextMenuItem: FC<ContextMenuItemProps> = ({
   className,
   inset,
+  variant = 'default',
   ...props
 }) => (
   <CtxMenuPrimitive.Item
-    className={twMerge(itemClasses, inset && 'ps-8', className)}
+    data-variant={variant === 'destructive' ? variant : undefined}
+    className={twMerge(
+      itemClasses,
+      variant === 'destructive' && popoverItemDestructiveClasses,
+      inset && 'ps-8',
+      className,
+    )}
     {...props}
   />
 )
@@ -170,6 +188,42 @@ const ContextMenuCheckboxItem: FC<ContextMenuCheckboxItemProps> = ({
   </CtxMenuPrimitive.CheckboxItem>
 )
 ContextMenuCheckboxItem.displayName = CtxMenuPrimitive.CheckboxItem.displayName
+
+type ContextMenuSwitchItemProps = Omit<
+  ComponentProps<typeof CtxMenuPrimitive.CheckboxItem>,
+  'checked' | 'onCheckedChange'
+> & {
+  /** Controlled on / off state. */
+  checked?: boolean
+  /** Called with the new state when the item is selected. */
+  onCheckedChange?: (checked: boolean) => void
+}
+
+/**
+ * A checkbox item that ends in the kit's Switch instead of a check (Figma:
+ * the "Wrap Column" row). It is a `menuitemcheckbox` with `aria-checked`;
+ * the switch only shows its state (`aria-hidden`), it isn't a control of its
+ * own. Selecting it closes the menu, as a checkbox item: call
+ * `event.preventDefault()` in `onSelect` to keep the menu open. Added in 5.2.
+ */
+const ContextMenuSwitchItem: FC<ContextMenuSwitchItemProps> = ({
+  className,
+  children,
+  ...props
+}) => {
+  return (
+    <CtxMenuPrimitive.CheckboxItem
+      className={twMerge(itemClasses, popoverSwitchItemClasses, className)}
+      {...props}
+    >
+      {children}
+      <span aria-hidden className={popoverSwitchTrackClasses}>
+        <span className={popoverSwitchThumbClasses} />
+      </span>
+    </CtxMenuPrimitive.CheckboxItem>
+  )
+}
+ContextMenuSwitchItem.displayName = 'ContextMenuSwitchItem'
 
 type ContextMenuRadioItemProps = ComponentProps<
   typeof CtxMenuPrimitive.RadioItem
@@ -274,5 +328,7 @@ export {
   type ContextMenuSubContentProps,
   ContextMenuSubTrigger,
   type ContextMenuSubTriggerProps,
+  ContextMenuSwitchItem,
+  type ContextMenuSwitchItemProps,
   ContextMenuTrigger,
 }

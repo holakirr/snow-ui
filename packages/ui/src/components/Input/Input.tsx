@@ -12,6 +12,7 @@ import {
 } from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import { Label } from '../Label'
+import { WarningGlyph } from './fieldIcons'
 
 // The class strings the text fields share live in a module without
 // 'use client', so a server component (Textarea) can read them; re-exported
@@ -44,6 +45,18 @@ const fieldDisabledClasses =
 const adornmentClasses =
   'flex shrink-0 items-center text-black-40 [&>svg]:size-4 [&>svg]:shrink-0'
 
+// The kit's status icons at the end of the field (Component state): 16px,
+// after the end content, 16px from the edge (the field's padding) and
+// centred in its height, in the 2 row layouts too.
+const statusIconClasses = 'flex shrink-0 items-center [&>svg]:size-4'
+
+// The kit's Error icon (`showErrorIcon`), while the <input> is invalid: the
+// Warning in the stroke's colour, `control-border-invalid` (Secondary/Red,
+// `red-text` with more contrast). `data-error-icon` keeps an invalid
+// `FormLabel` grey, as the kit's title.
+const errorIconClasses =
+  'hidden text-control-border-invalid group-has-aria-invalid/input:flex'
+
 type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
   /**
    * The Figma "2 row" title: a 12/16 label in `text-secondary` (Figma:
@@ -70,6 +83,17 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
   endContent?: ReactNode
 
   /**
+   * Shows the kit's Error icon while the input is invalid (`aria-invalid`,
+   * which `FormControl` of Form sets): a 16px `Warning` at the end of the
+   * field, in the red of the stroke. An invalid `FormLabel` then stays grey,
+   * as the kit's title does. The icon is decorative: `aria-invalid` and the
+   * error text (`FormMessage`) tell the error. Off by default in 5.x.
+   * Added in 5.2.
+   * @default false
+   */
+  showErrorIcon?: boolean
+
+  /**
    * Class names for the `<input>` element. `className` styles the field.
    */
   inputClassName?: string
@@ -83,7 +107,9 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
 /**
  * Input component: the Figma Input (1 row, or 2 rows with a `title`: above
  * the value, or beside it with `titleLayout="horizontal"`), with optional
- * leading and trailing content. `readOnly` gives the Figma "Static" state.
+ * leading and trailing content. `readOnly` gives the Figma "Static" state;
+ * `aria-invalid` the kit's Error stroke, and its `Warning` icon with
+ * `showErrorIcon`.
  */
 const Input: FC<InputProps> = ({
   className,
@@ -95,6 +121,7 @@ const Input: FC<InputProps> = ({
   titleLayout = 'vertical',
   startContent,
   endContent,
+  showErrorIcon = false,
   disabled,
   readOnly,
   ref,
@@ -168,6 +195,16 @@ const Input: FC<InputProps> = ({
         />
       </div>
       {endContent && <span className={adornmentClasses}>{endContent}</span>}
+      {showErrorIcon && (
+        <span
+          aria-hidden
+          className={twMerge(statusIconClasses, errorIconClasses)}
+          data-slot="input-error-icon"
+          data-error-icon=""
+        >
+          <WarningGlyph />
+        </span>
+      )}
     </div>
   )
 }

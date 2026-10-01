@@ -285,7 +285,7 @@ export const Open: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (the kit's Error state, without its Warning icon yet). The trigger gets the red Input stroke, also while the list is open. Pair it with the error text: see Form.
+ * error (the kit's Error state: the kit draws the Select without a Warning icon). The trigger gets the red Input stroke, also while the list is open. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   render: () => (

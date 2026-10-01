@@ -12,6 +12,7 @@ import {
   FormItem,
   FormMessage,
 } from '../../react-hook-form'
+import { colorOf } from '../../test/colors'
 import { Button } from '../Button'
 import {
   Checkbox,
@@ -283,5 +284,62 @@ export const InvalidFields: Story = {
     }
     // The errors are alerts, announced when they appear.
     await expect(canvas.getAllByRole('alert')).toHaveLength(fields.length)
+  },
+}
+
+/**
+ * The kit's Error look on text fields (`showErrorIcon` on Input and
+ * Textarea, added in 5.2): the red stroke and a 16px `Warning` at the end of
+ * the field, and the label stays grey, as the kit's title does. The error is
+ * still the `FormMessage`, linked to the field.
+ */
+export const InvalidWithErrorIcon: Story = {
+  render: () => (
+    <Plain.Form className="grid w-80 gap-6">
+      <Plain.FormItem error="Enter a valid email.">
+        <Plain.FormLabel>Email</Plain.FormLabel>
+        <Plain.FormControl>
+          <Input defaultValue="name@" showErrorIcon />
+        </Plain.FormControl>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+      <Plain.FormItem error="Write at least 20 characters.">
+        <Plain.FormLabel>Bio</Plain.FormLabel>
+        <Plain.FormControl>
+          <Textarea defaultValue="Hi" showErrorIcon />
+        </Plain.FormControl>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+      <Plain.FormItem error="Enter your city.">
+        <Plain.FormLabel>City</Plain.FormLabel>
+        <Plain.FormControl>
+          <Input />
+        </Plain.FormControl>
+        <Plain.FormMessage />
+      </Plain.FormItem>
+    </Plain.Form>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    for (const [name, error] of [
+      ['Email', 'Enter a valid email.'],
+      ['Bio', 'Write at least 20 characters.'],
+    ] as const) {
+      const control = canvas.getByRole('textbox', { name })
+      await expect(control).toBeInvalid()
+      await expect(control).toHaveAccessibleDescription(error)
+      const label = canvas.getByText(name)
+      await expect(getComputedStyle(label).color).toBe(
+        colorOf('text-secondary', canvasElement),
+      )
+    }
+    const icons = canvasElement.querySelectorAll('[data-error-icon]')
+    await expect(icons).toHaveLength(2)
+    for (const icon of icons) {
+      await expect(getComputedStyle(icon).display).not.toBe('none')
+    }
+    // Without the icon, an invalid label is still red-text.
+    await expect(getComputedStyle(canvas.getByText('City')).color).toBe(
+      colorOf('text-red-text', canvasElement),
+    )
   },
 }

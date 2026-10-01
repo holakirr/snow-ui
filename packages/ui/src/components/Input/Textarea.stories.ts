@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
-import { hasInsetRing, hasMoreContrast } from '../../test/colors'
+import { colorOf, hasInsetRing, hasMoreContrast } from '../../test/colors'
+import { settleLayout } from '../../test/layout'
 
 import { Textarea } from './Textarea'
 
@@ -75,7 +76,7 @@ export const WithCount: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (the kit's Error state, without its Warning icon yet). The Input stroke in Secondary/Red, 1px. Pair it with the error text: see Form.
+ * error (the kit's Error stroke; its Warning icon is opt-in: see Error Icon). The Input stroke in Secondary/Red, 1px. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {
@@ -89,6 +90,45 @@ export const Invalid: Story = {
     await expect(
       await hasInsetRing(textarea, 'text-control-border-invalid', '1px'),
     ).toBe(true)
+  },
+}
+
+/**
+ * The kit's Error icon (`showErrorIcon`, added in 5.2): while the textarea is
+ * invalid, a 16px `Warning` at the end of the first row, in the red of the
+ * stroke; the text stops 8px before it. It wraps the textarea in a `<div>`,
+ * like `showCount`.
+ */
+export const ErrorIcon: Story = {
+  args: {
+    defaultValue:
+      'Too short, and a line long enough to wrap before the Warning icon',
+    'aria-invalid': true,
+    showErrorIcon: true,
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const textarea = canvas.getByRole('textbox', { name: 'Message' })
+    const icon = canvasElement.querySelector(
+      '[data-slot="textarea-error-icon"]',
+    ) as HTMLElement
+    await settleLayout(canvasElement)
+
+    await expect(textarea).toBeInvalid()
+    const box = textarea.getBoundingClientRect()
+    const glyph = icon.getBoundingClientRect()
+    await expect(glyph.width).toBe(16)
+    await expect(glyph.height).toBe(16)
+    // 16px from the end, centred on the first 20px line (12px padding).
+    await expect(box.right - glyph.right).toBe(16)
+    await expect(glyph.top - box.top).toBe(14)
+    await expect(getComputedStyle(icon).color).toBe(
+      colorOf(
+        'text-control-border-invalid',
+        textarea.parentElement ?? textarea,
+      ),
+    )
+    // The text stops 8px before the icon: 40px end padding.
+    await expect(getComputedStyle(textarea).paddingRight).toBe('40px')
   },
 }
 

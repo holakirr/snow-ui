@@ -145,7 +145,7 @@ export const AllVariantsDark: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (the kit's Error state, without its Warning icon yet). A 1px Secondary/Red stroke on both types. Pair it with the error text: see Form.
+ * error (the kit's Error stroke; the kit draws its Warning icon on Input and Textarea only). A 1px Secondary/Red stroke on both types. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {

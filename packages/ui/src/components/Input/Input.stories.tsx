@@ -5,7 +5,8 @@ import {
 } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
-import { hasInsetRing, hasMoreContrast } from '../../test/colors'
+import { colorOf, hasInsetRing, hasMoreContrast } from '../../test/colors'
+import { settleLayout } from '../../test/layout'
 import { Combobox, MultiSelect } from '../Combobox'
 import { Search } from '../Search'
 import { KBD } from '../Text'
@@ -204,7 +205,7 @@ export const States: Story = {
 
 /**
  * Invalid: `aria-invalid`, which `FormControl` sets while the field has an
- * error (the kit's Error state, without its Warning icon yet). A 1px Secondary/Red stroke, also on hover and focus (2px on focus with more contrast). Pair it with the error text: see Form.
+ * error: the kit's Error stroke, a 1px Secondary/Red stroke, also on hover and focus (2px on focus with more contrast). The kit's Warning icon is opt-in: see Error Icon. Pair it with the error text: see Form.
  */
 export const Invalid: Story = {
   args: {
@@ -229,6 +230,68 @@ export const Invalid: Story = {
         await hasInsetRing(field, 'text-control-border-invalid', width),
       ).toBe(true)
       await userEvent.tab()
+    })
+  },
+}
+
+/**
+ * The kit's Error icon (`showErrorIcon`, added in 5.2): while the input is
+ * invalid, a 16px `Warning` at the end of the field, in the red of the
+ * stroke, centred in the 1 row and 2 row fields; the title stays grey. A
+ * valid field with `showErrorIcon` shows nothing.
+ */
+export const ErrorIcon: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Input
+        aria-label="Email"
+        defaultValue="name@"
+        aria-invalid
+        showErrorIcon
+      />
+      <Input title="Name" defaultValue="A" aria-invalid showErrorIcon />
+      <Input title="City" defaultValue="Madrid" showErrorIcon />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, step }) => {
+    const parts = (input: HTMLElement) => {
+      const field = input.closest('[data-slot="input"]') as HTMLElement
+      const icon = field.querySelector(
+        '[data-slot="input-error-icon"]',
+      ) as HTMLElement
+      return { field, icon }
+    }
+    await settleLayout(canvasElement)
+
+    for (const name of ['Email', 'Name']) {
+      await step(`${name}: the icon at the end, centred`, async () => {
+        const { field, icon } = parts(canvas.getByLabelText(name))
+        const box = field.getBoundingClientRect()
+        const glyph = icon.getBoundingClientRect()
+        await expect(getComputedStyle(icon).display).toBe('flex')
+        await expect(glyph.width).toBe(16)
+        await expect(glyph.height).toBe(16)
+        // The field's 16px end padding; centred in its height.
+        await expect(box.right - glyph.right).toBe(16)
+        await expect(glyph.top - box.top).toBe(box.bottom - glyph.bottom)
+        await expect(getComputedStyle(icon).color).toBe(
+          colorOf('text-control-border-invalid', field),
+        )
+        await expect(icon).toHaveAttribute('aria-hidden', 'true')
+      })
+    }
+
+    await step('the title stays grey', async () => {
+      const title = canvas.getByText('Name')
+      await expect(getComputedStyle(title).color).toBe(
+        colorOf('text-secondary', title.parentElement as HTMLElement),
+      )
+    })
+
+    await step('a valid field shows no icon', async () => {
+      const input = canvas.getByLabelText('City')
+      await expect(input).not.toBeInvalid()
+      await expect(getComputedStyle(parts(input).icon).display).toBe('none')
     })
   },
 }

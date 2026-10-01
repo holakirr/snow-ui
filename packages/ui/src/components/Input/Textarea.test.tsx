@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { createRef, useState } from 'react'
+import { renderToString } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
 import { SnowUIProvider } from '../SnowUIProvider'
 import { Textarea } from './Textarea'
@@ -206,5 +207,71 @@ describe('Textarea', () => {
     expect(screen.getByRole('textbox')).toHaveAccessibleDescription(
       '5 / 30 Zeichen',
     )
+  })
+})
+
+describe('Textarea showErrorIcon', () => {
+  const errorIcon = (container: HTMLElement) =>
+    container.querySelector('[data-slot="textarea-error-icon"]')
+
+  it('stays a plain textarea without it', () => {
+    const { container } = render(<Textarea aria-label="Bio" aria-invalid />)
+
+    expect(container.firstElementChild?.tagName).toBe('TEXTAREA')
+    expect(errorIcon(container)).toBeNull()
+  })
+
+  it('puts the textarea and the Error icon in a wrapper', () => {
+    const ref = createRef<HTMLTextAreaElement>()
+    const { container } = render(
+      <Textarea
+        ref={ref}
+        aria-label="Bio"
+        aria-invalid
+        showErrorIcon
+        className="h-24"
+        containerClassName="w-80"
+      />,
+    )
+
+    const textarea = screen.getByRole('textbox')
+    const wrapper = container.firstElementChild
+    expect(wrapper).toHaveAttribute('data-slot', 'textarea-field')
+    expect(wrapper).toHaveClass('relative', 'w-80')
+    expect(textarea).toHaveClass('h-24', 'peer', 'aria-invalid:pe-10')
+    expect(ref.current).toBe(textarea)
+
+    const icon = errorIcon(container)
+    expect(icon).toHaveAttribute('aria-hidden', 'true')
+    expect(icon).toHaveAttribute('data-error-icon')
+    // A later sibling of the textarea (the `peer`): shown while it is invalid.
+    expect(icon).toHaveClass('hidden', 'peer-aria-invalid:block')
+    expect(textarea.compareDocumentPosition(icon as Node)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+  })
+
+  it('adds the icon to the counter wrapper', () => {
+    const { container } = render(
+      <Textarea aria-label="Bio" showCount maxLength={200} showErrorIcon />,
+    )
+
+    expect(
+      container.querySelectorAll('[data-slot="textarea-field"]'),
+    ).toHaveLength(1)
+    expect(counter(container)).not.toBeNull()
+    expect(errorIcon(container)).not.toBeNull()
+    expect(screen.getByRole('textbox')).toHaveAccessibleDescription(
+      '0 of 200 characters',
+    )
+  })
+
+  it('renders on the server without client code', () => {
+    const html = renderToString(
+      <Textarea aria-label="Bio" aria-invalid showErrorIcon />,
+    )
+
+    expect(html).toMatch(/^<div[^>]*data-slot="textarea-field"/)
+    expect(html).toContain('data-slot="textarea-error-icon"')
   })
 })

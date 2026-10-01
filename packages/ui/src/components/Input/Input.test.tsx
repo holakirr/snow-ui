@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { createRef, useState } from 'react'
+import { renderToString } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
 
 import { Input } from './Input'
@@ -258,5 +259,62 @@ describe('Input', () => {
     render(<Input aria-label="Name" titleLayout="horizontal" />)
 
     expect(screen.getByRole('textbox')).not.toHaveClass('text-end')
+  })
+})
+
+describe('Input showErrorIcon', () => {
+  const errorIcon = (input: HTMLElement) =>
+    input
+      .closest('[data-slot="input"]')
+      ?.querySelector('[data-slot="input-error-icon"]')
+
+  it('has no Error icon by default, invalid or not', () => {
+    render(<Input aria-label="Email" aria-invalid />)
+
+    const input = screen.getByRole('textbox')
+    expect(input).toBeInvalid()
+    expect(errorIcon(input)).toBeNull()
+  })
+
+  it('renders the Error icon after the end content, hidden from assistive technology', () => {
+    render(
+      <Input
+        aria-label="Email"
+        aria-invalid
+        showErrorIcon
+        endContent={<span data-testid="end" />}
+      />,
+    )
+
+    const input = screen.getByRole('textbox')
+    const icon = errorIcon(input)
+    expect(icon).toHaveAttribute('aria-hidden', 'true')
+    expect(icon).toHaveAttribute('data-error-icon')
+    // Shown by CSS while the input is invalid (`aria-invalid="true"`).
+    expect(icon).toHaveClass('hidden', 'group-has-aria-invalid/input:flex')
+    expect(icon?.querySelector('svg')).not.toBeNull()
+    expect(screen.getByTestId('end').parentElement?.nextElementSibling).toBe(
+      icon,
+    )
+    // The accessible name and description stay the field's own.
+    expect(input).toHaveAccessibleName('Email')
+    expect(input).not.toHaveAttribute('aria-describedby')
+  })
+
+  it('keeps the icon (hidden) while the field is valid, so a FormLabel can see the opt-in', () => {
+    render(<Input aria-label="Email" showErrorIcon />)
+
+    const input = screen.getByRole('textbox')
+    expect(input).not.toBeInvalid()
+    expect(errorIcon(input)).toHaveClass('hidden')
+  })
+
+  it('renders the icon on the server', () => {
+    const html = renderToString(
+      <Input aria-label="Email" aria-invalid showErrorIcon />,
+    )
+
+    expect(html).toContain('data-slot="input-error-icon"')
+    expect(html).toContain('aria-invalid="true"')
   })
 })

@@ -40,8 +40,9 @@ export const staticInputClasses =
  * a 1px `control-border-invalid` stroke in every state: Secondary/Red (3.36:1
  * on white), `red-text` with more contrast: the kit's Error stroke. The kit
  * also puts a 16px `Warning` icon at the end of the field and keeps the
- * title grey; here there is no icon yet, and the error text is the
- * `FormMessage` (an invalid `FormLabel` turns `red-text`).
+ * title grey: Input and Textarea draw it with `showErrorIcon` (opt-in in
+ * 5.x). The error text is the `FormMessage` (an invalid `FormLabel` turns
+ * `red-text`, grey next to the icon).
  *
  * The read-only states repeat it, because the Static ones (`read-only:hover:`)
  * would outweigh `aria-invalid:`.

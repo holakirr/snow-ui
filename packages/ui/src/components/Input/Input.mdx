@@ -39,6 +39,7 @@ import { Input } from '@holakirr/snow-ui'
 3. **Title** (`title`, optional): a 12/16 [Label](?path=/docs/components-label--docs) 8px above the value (`titleLayout="horizontal"`: 8px before it, on the same row), linked to the input. An id is generated when you don't pass `id`.
 4. **Input** (`inputClassName`, `inputStyle`, and every other prop): the native `<input>`, 14/20 text with a Black/20% placeholder. `ref` points at it.
 5. **End content** (`endContent`, optional): after the value, e.g. an icon, a button or a [KBD](?path=/docs/components-text-kbd--docs).
+6. **Error icon** (`showErrorIcon`, optional, added in 5.2): the kit's 16px `Warning`, after the end content, while the input is invalid.
 
 ## Variants
 
@@ -70,13 +71,19 @@ A button or a link in the start or end content keeps its own clicks; any other c
 - **Focus:** the Figma "Focus" state while the input has focus, by mouse or keyboard: a Black/40% stroke and the 4px Focus ring. The caret and the stroke mark focus, so text fields don't get the `focus-ring` outline. With more contrast the focus stroke is 2px (Black/80%, the stroke colour when read-only): the Figma 0.5px Black/40% stroke is 2.85:1 on the fill.
 - **Static** (`readOnly`): the stroke stays Black/20% on hover and focus; the 4px Focus ring still shows while the input has focus.
 - **Disabled** (`disabled`): Black/4% fill, no stroke, Black/20% text and a not-allowed cursor. This is the kit's Forms guidance look; the kit's Component state draws Disabled as the whole control at 20% opacity with the default arrow cursor; that look is planned for 6.0.
-- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets while the field has an error): a 1px Secondary/Red stroke, also on hover and focus. This is the kit's Error stroke. The kit also puts a 16px `Warning` icon at the end of the field and keeps the title grey; here there is no icon yet, and an invalid `FormLabel` turns `red-text`. The error text is the `FormMessage`.
+- **Invalid** (`aria-invalid`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets while the field has an error): a 1px Secondary/Red stroke, also on hover and focus. This is the kit's Error stroke; the kit's `Warning` icon is opt-in, see Error icon. The title stays grey; an invalid `FormLabel` turns `red-text` (grey with the icon). The error text is the `FormMessage`.
 
 <Canvas of={InputStories.Static} />
 
 <Canvas of={InputStories.Disabled} />
 
 <Canvas of={InputStories.Invalid} />
+
+### Error icon
+
+<Canvas of={InputStories.ErrorIcon} />
+
+Added in 5.2. With `showErrorIcon`, an invalid input also shows the kit's Error icon: a 16px `Warning` after the end content, 16px from the end and centred in the field's height (1 row and 2 row), in the red of the stroke (`control-border-invalid`: Secondary/Red, `red-text` with more contrast). The `title` stays grey, and so does an invalid `FormLabel` of a [Form](?path=/docs/components-form--docs) item that holds the field, as the kit's title. A valid field shows nothing. The icon is decorative (`aria-hidden`): `aria-invalid` and the error text (`FormMessage`, linked by `aria-describedby`) tell the error. It is opt-in in 5.x because it changes how invalid fields look.
 
 ## Accessibility
 
@@ -146,6 +153,6 @@ Input is a native field: pass `value` with `onChange` to control it, or `default
 
 ## Props
 
-Input takes the props below and the attributes of the native `<input>`, which gets every other prop, `ref` included. `className` and `style` go to the field `<div>`; `inputClassName` and `inputStyle` to the `<input>`. The Figma field's class strings that Textarea uses (`basicInputClasses`, `focusInputClasses`, `staticInputClasses`, `disabledInputClasses`) are exported too, for fields of your own.
+Input takes the props below (`showErrorIcon` is new in 5.2) and the attributes of the native `<input>`, which gets every other prop, `ref` included. `className` and `style` go to the field `<div>`; `inputClassName` and `inputStyle` to the `<input>`. The Figma field's class strings that Textarea uses (`basicInputClasses`, `focusInputClasses`, `staticInputClasses`, `disabledInputClasses`) are exported too, for fields of your own.
 
 <Controls />

@@ -1,17 +1,24 @@
 'use client'
 
+import { XCircleIcon } from '@holakirr/snow-ui-icons'
 import { useComposedRefs } from '@radix-ui/react-compose-refs'
 import {
+  type ChangeEvent,
   type ComponentProps,
   type CSSProperties,
   type FC,
+  type FocusEvent,
   type PointerEvent,
   type ReactNode,
   useId,
   useRef,
+  useState,
 } from 'react'
+import { useFormReset } from '../../utils/form-field'
+import { setNativeValue } from '../../utils/native-value'
 import { twMerge } from '../../utils/tw-merge'
 import { Label } from '../Label'
+import { useMessages } from '../SnowUIProvider'
 import { WarningGlyph } from './fieldIcons'
 
 // The class strings the text fields share live in a module without
@@ -57,6 +64,17 @@ const statusIconClasses = 'flex shrink-0 items-center [&>svg]:size-4'
 const errorIconClasses =
   'hidden text-control-border-invalid group-has-aria-invalid/input:flex'
 
+// The kit's clear button (Focus): a 16px XCircle Fill in Black/100% at the
+// end of the field, shown while the field has focus (the input, or the
+// button itself) and a value. `hit-area` makes it a 24px target (WCAG
+// 2.5.8); keyboard focus gets the `focus-ring` outline.
+const clearButtonClasses =
+  'relative hidden shrink-0 cursor-pointer items-center justify-center rounded-full text-black hit-area focus-ring group-focus-within/input:flex [&>svg]:size-4'
+
+/** Whether a field value is not empty. */
+const hasText = (value: ComponentProps<'input'>['value']) =>
+  value != null && String(value) !== ''
+
 type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
   /**
    * The Figma "2 row" title: a 12/16 label in `text-secondary` (Figma:
@@ -94,6 +112,27 @@ type InputProps = Omit<ComponentProps<'input'>, 'title'> & {
   showErrorIcon?: boolean
 
   /**
+   * Shows the kit's clear button (an `XCircle`) at the end of the field
+   * while it has focus and a value, unless it is disabled or read-only.
+   * Clearing goes through the input's `onChange` (an `input` event), so a
+   * controlled field, an uncontrolled one and react-hook-form all get the
+   * empty value; focus returns to the input. Off by default. Added in 5.2.
+   * @default false
+   */
+  clearable?: boolean
+
+  /**
+   * Accessible name of the clear button.
+   * @default messages.input.clear: "Clear"
+   */
+  clearLabel?: string
+
+  /**
+   * Called after the clear button cleared the field (after `onChange`).
+   */
+  onClear?: () => void
+
+  /**
    * Class names for the `<input>` element. `className` styles the field.
    */
   inputClassName?: string
@@ -122,16 +161,58 @@ const Input: FC<InputProps> = ({
   startContent,
   endContent,
   showErrorIcon = false,
+  clearable = false,
+  clearLabel,
+  onClear,
+  value,
+  defaultValue,
+  onChange,
+  onFocus,
   disabled,
   readOnly,
   ref,
   ...props
 }) => {
+  const messages = useMessages()
   const generatedId = useId()
   const inputId = id ?? (title ? generatedId : undefined)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const setRef = useComposedRefs(inputRef, ref)
   const horizontal = !!title && titleLayout === 'horizontal'
+
+  // Whether the field has a value, for the clear button. A controlled value
+  // is read from the prop (`value={null}` leaves the field uncontrolled, as
+  // React does); an uncontrolled one follows typing, and is read again from
+  // the element on focus (the button only shows on focus) and after a
+  // reset of the form, which change the value without `onChange`
+  // (react-hook-form's `reset`, a value set through the ref).
+  const [ownFilled, setOwnFilled] = useState(() => hasText(defaultValue))
+  const filled = value != null ? hasText(value) : ownFilled
+  const canClear = clearable && filled && !disabled && !readOnly
+  const syncFilled = () => {
+    if (clearable && inputRef.current) {
+      setOwnFilled(inputRef.current.value !== '')
+    }
+  }
+  useFormReset(inputRef, syncFilled)
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (clearable) setOwnFilled(event.target.value !== '')
+    onChange?.(event)
+  }
+
+  const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
+    syncFilled()
+    onFocus?.(event)
+  }
+
+  const clear = () => {
+    const input = inputRef.current
+    if (!input) return
+    setNativeValue(input, '')
+    input.focus()
+    onClear?.()
+  }
 
   // Clicks on the padding or the adornments focus the input.
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
@@ -189,12 +270,31 @@ const Input: FC<InputProps> = ({
           style={inputStyle}
           id={inputId}
           ref={setRef}
+          value={value}
+          defaultValue={defaultValue}
+          onChange={handleChange}
+          onFocus={handleFocus}
           disabled={disabled}
           readOnly={readOnly}
           {...props}
         />
       </div>
       {endContent && <span className={adornmentClasses}>{endContent}</span>}
+      {canClear && (
+        <button
+          type="button"
+          aria-label={clearLabel ?? messages.input.clear}
+          title={clearLabel ?? messages.input.clear}
+          // Keeps the focus in the input, so the field stays focused (and the
+          // button shown) until the click: Safari doesn't focus buttons.
+          onPointerDown={(event) => event.preventDefault()}
+          onClick={clear}
+          className={clearButtonClasses}
+          data-slot="input-clear"
+        >
+          <XCircleIcon weight="fill" size={16} />
+        </button>
+      )}
       {showErrorIcon && (
         <span
           aria-hidden

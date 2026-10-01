@@ -39,7 +39,8 @@ import { Input } from '@holakirr/snow-ui'
 3. **Title** (`title`, optional): a 12/16 [Label](?path=/docs/components-label--docs) 8px above the value (`titleLayout="horizontal"`: 8px before it, on the same row), linked to the input. An id is generated when you don't pass `id`.
 4. **Input** (`inputClassName`, `inputStyle`, and every other prop): the native `<input>`, 14/20 text with a Black/20% placeholder. `ref` points at it.
 5. **End content** (`endContent`, optional): after the value, e.g. an icon, a button or a [KBD](?path=/docs/components-text-kbd--docs).
-6. **Error icon** (`showErrorIcon`, optional, added in 5.2): the kit's 16px `Warning`, after the end content, while the input is invalid.
+6. **Clear button** (`clearable`, optional, added in 5.2): the kit's 16px `XCircle`, after the end content, while the field has focus and a value.
+7. **Error icon** (`showErrorIcon`, optional, added in 5.2): the kit's 16px `Warning`, after the end content, while the input is invalid.
 
 ## Variants
 
@@ -79,6 +80,18 @@ A button or a link in the start or end content keeps its own clicks; any other c
 
 <Canvas of={InputStories.Invalid} />
 
+### Clear button
+
+<Canvas of={InputStories.Clearable} />
+
+Added in 5.2. With `clearable`, a focused field with a value shows the kit's clear button: a 16px `XCircle` (fill) in Black/100% (white in dark mode) after the end content, 16px from the end and centred in the field, as the kit's Focus state draws it. It hides while the field is empty, unfocused, `disabled` or `readOnly`.
+
+- **Clearing** sets the input's value the way typing does (an `input` event), so `onChange` fires with an empty value: a controlled field gets it from you, an uncontrolled one clears itself, and react-hook-form (`register` or `FormField`) records it. `onClear` runs after that, and the focus goes back to the input.
+- **Keyboard:** the button is a tab stop while it shows (Tab from the input), Enter or Space clears. A press with the mouse or a finger keeps the focus in the input.
+- **Name:** `clearLabel`, or `messages.input.clear` of [SnowUIProvider](?path=/docs/components-snowuiprovider--docs) ("Clear").
+
+Search has had its own clear button since 5.0, shown whenever it has a value.
+
 ### Error icon
 
 <Canvas of={InputStories.ErrorIcon} />
@@ -95,11 +108,12 @@ Added in 5.2. With `showErrorIcon`, an invalid input also shows the kit's Error 
 
 ### Keyboard
 
-Keyboard behaviour is the browser's:
+Keyboard behaviour is the browser's, plus the clear button of a `clearable` field:
 
 | Key | Action |
 | --- | --- |
-| Tab | move focus to the input; a button or a link in the start or end content is a tab stop of its own |
+| Tab | move focus to the input; a button or a link in the start or end content is a tab stop of its own, and so is the clear button of a `clearable` field while it shows |
+| Enter, Space (on the clear button) | clear the field and put the focus back in the input |
 | Enter | submit the form the input is in, when the form has a submit button or this is its only text field (the browser's implicit submission) |
 
 ### Deviations from the Figma kit
@@ -114,8 +128,8 @@ Known gaps with the default contrast, which keeps the Figma values: the 0.5px Bl
 
 ## Localization and RTL
 
-- `startContent` and `endContent` follow the text direction: in right-to-left text the start content is on the right and the text starts on the right.
-- Input renders no built-in strings: the title, placeholder and adornments are yours to translate.
+- `startContent` and `endContent` follow the text direction: in right-to-left text the start content is on the right and the text starts on the right. The clear button and the Error icon follow it too: they are on the left in right-to-left text.
+- Input's one built-in string is the clear button's name (`messages.input.clear`, or `clearLabel`); the title, placeholder and adornments are yours to translate.
 
 <Canvas of={InputStories.RTL} />
 
@@ -153,6 +167,6 @@ Input is a native field: pass `value` with `onChange` to control it, or `default
 
 ## Props
 
-Input takes the props below (`showErrorIcon` is new in 5.2) and the attributes of the native `<input>`, which gets every other prop, `ref` included. `className` and `style` go to the field `<div>`; `inputClassName` and `inputStyle` to the `<input>`. The Figma field's class strings that Textarea uses (`basicInputClasses`, `focusInputClasses`, `staticInputClasses`, `disabledInputClasses`) are exported too, for fields of your own.
+Input takes the props below (`clearable`, `clearLabel`, `onClear` and `showErrorIcon` are new in 5.2) and the attributes of the native `<input>`, which gets every other prop, `ref` included. `className` and `style` go to the field `<div>`; `inputClassName` and `inputStyle` to the `<input>`. The Figma field's class strings that Textarea uses (`basicInputClasses`, `focusInputClasses`, `staticInputClasses`, `disabledInputClasses`) are exported too, for fields of your own.
 
 <Controls />

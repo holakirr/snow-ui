@@ -562,8 +562,11 @@
         "components/Input/fieldIcons.tsx",
         "components/Input/inputClasses.ts"
       ],
-      "dependencies": ["@radix-ui/react-compose-refs"],
-      "registryDependencies": ["label", "snow-core"],
+      "dependencies": [
+        "@holakirr/snow-ui-icons",
+        "@radix-ui/react-compose-refs"
+      ],
+      "registryDependencies": ["label", "snow-core", "snow-ui-provider"],
       "import": "components/Input/Input",
       "exports": [
         "Input",
@@ -1380,6 +1383,7 @@
         "utils/env.ts",
         "utils/form-field.tsx",
         "utils/keyboard.ts",
+        "utils/native-value.ts",
         "utils/radio-mark.tsx",
         "utils/slot.ts",
         "utils/token-scales.generated.ts",

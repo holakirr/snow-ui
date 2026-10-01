@@ -10,8 +10,8 @@
  *
  * The namespaces added in 5.1 (`alert`, `alertDialog`, `avatarGroup`,
  * `charts`, `combobox`, `datePicker`, `listCards`, `progress`, `spinner`)
- * are optional, so a translation typed as `Messages` before they existed
- * still compiles; the English defaults fill them in, and `useMessages()`
+ * and 5.2 (`input`) are optional, so a translation typed as `Messages`
+ * before they existed still compiles; the English defaults fill them in, and `useMessages()`
  * always returns every namespace (`Required<Messages>`). They become
  * required in 6.0.
  */
@@ -188,6 +188,10 @@ export type Messages = {
   dialog: {
     /** The close button of `DialogHeader`. */
     close: string
+  }
+  input?: {
+    /** The clear button of an `Input` with `clearable`. Added in 5.2. */
+    clear: string
   }
   link: {
     /** Screen-reader text appended to `external` links. */
@@ -380,6 +384,9 @@ export const defaultMessages: Required<Messages> = {
   },
   dialog: {
     close: 'Close',
+  },
+  input: {
+    clear: 'Clear',
   },
   link: {
     external: '(opens in a new tab)',

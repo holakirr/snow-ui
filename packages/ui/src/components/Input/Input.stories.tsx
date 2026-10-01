@@ -296,6 +296,113 @@ export const ErrorIcon: Story = {
   },
 }
 
+/**
+ * The kit's clear button (`clearable`, added in 5.2): a 16px `XCircle` at
+ * the end of a focused field with a value. It is a button (Tab reaches it,
+ * Enter or Space clears), named by `messages.input.clear`; clearing fires
+ * `onChange` with an empty value and puts the focus back in the input. The
+ * story ends on the kit's Focus state: the first field focused, with a value.
+ */
+export const Clearable: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Input aria-label="Name" defaultValue="Ada Lovelace" clearable />
+      <Input title="Email" defaultValue="ada@example.com" clearable />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
+    const name = canvas.getByRole('textbox', { name: 'Name' })
+    const email = canvas.getByRole('textbox', { name: 'Email' })
+    const clearOf = (input: HTMLElement) =>
+      input
+        .closest('[data-slot="input"]')
+        ?.querySelector('[data-slot="input-clear"]') as HTMLElement | null
+    await settleLayout(canvasElement)
+
+    await step('hidden while the field is not focused', async () => {
+      for (const input of [name, email]) {
+        await expect(
+          getComputedStyle(clearOf(input) as HTMLElement).display,
+        ).toBe('none')
+      }
+    })
+
+    await step('shown on focus: 16px, Black/100%, at the end', async () => {
+      await userEvent.click(email)
+      const button = clearOf(email) as HTMLElement
+      const field = email.closest('[data-slot="input"]') as HTMLElement
+      await expect(button).toBeVisible()
+      await expect(button).toHaveAccessibleName('Clear')
+      const box = field.getBoundingClientRect()
+      const icon = button.getBoundingClientRect()
+      await expect(icon.width).toBe(16)
+      await expect(icon.height).toBe(16)
+      await expect(box.right - icon.right).toBe(16)
+      await expect(icon.top - box.top).toBe(box.bottom - icon.bottom)
+      await expect(getComputedStyle(button).color).toBe(
+        colorOf('text-black', field),
+      )
+    })
+
+    await step('a click clears and keeps the focus in the input', async () => {
+      await userEvent.click(clearOf(email) as HTMLElement)
+      await expect(email).toHaveValue('')
+      await expect(email).toHaveFocus()
+      await expect(clearOf(email)).toBeNull()
+    })
+
+    await step('Tab reaches it, Enter clears', async () => {
+      await userEvent.click(name)
+      await userEvent.tab()
+      await expect(clearOf(name)).toHaveFocus()
+      await userEvent.keyboard('{Enter}')
+      await expect(name).toHaveValue('')
+      await expect(name).toHaveFocus()
+    })
+
+    await step('it comes back with a value', async () => {
+      await userEvent.type(name, 'Ada Lovelace')
+      await expect(clearOf(name)).toBeVisible()
+    })
+  },
+}
+
+/**
+ * Right-to-left text: the clear button and the kit's Error icon are at the
+ * end of the field, on the left, 16px from the edge.
+ */
+export const EndIconsRTL: Story = {
+  globals: { dir: 'rtl' },
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Input aria-label="الاسم" defaultValue="آدا" clearable />
+      <Input title="البريد" defaultValue="ada@" aria-invalid showErrorIcon />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const leftGap = (input: HTMLElement, slot: string) => {
+      const field = input.closest('[data-slot="input"]') as HTMLElement
+      const icon = field.querySelector(`[data-slot="${slot}"]`) as HTMLElement
+      const { left, right } = icon.getBoundingClientRect()
+      return {
+        gap: left - field.getBoundingClientRect().left,
+        beforeInput: right <= input.getBoundingClientRect().left,
+      }
+    }
+    await settleLayout(canvasElement)
+    const name = canvas.getByRole('textbox', { name: 'الاسم' })
+    // Ends focused, so the screenshot shows the clear button.
+    await userEvent.click(name)
+    await expect(leftGap(name, 'input-clear')).toEqual({
+      gap: 16,
+      beforeInput: true,
+    })
+    await expect(
+      leftGap(canvas.getByLabelText('البريد'), 'input-error-icon'),
+    ).toEqual({ gap: 16, beforeInput: true })
+  },
+}
+
 const fruits = [
   { value: 'apple', label: 'Apple' },
   { value: 'banana', label: 'Banana' },

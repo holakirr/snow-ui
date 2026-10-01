@@ -12,6 +12,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { setNativeValue } from '../../utils/native-value'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
 import { KBD } from '../Text'
@@ -113,19 +114,6 @@ export type SearchProps = Omit<ComponentProps<'input'>, 'size' | 'type'> & {
 
 const iconSizes: Record<SearchSize, number> = { sm: 16, lg: 24 }
 const clearIconSizes: Record<SearchSize, number> = { sm: 16, lg: 20 }
-
-/**
- * Sets an input's value the way the browser does, so React's `onChange`
- * fires for both controlled and uncontrolled inputs.
- */
-const setNativeValue = (input: HTMLInputElement, value: string) => {
-  const setter = Object.getOwnPropertyDescriptor(
-    HTMLInputElement.prototype,
-    'value',
-  )?.set
-  setter?.call(input, value)
-  input.dispatchEvent(new Event('input', { bubbles: true }))
-}
 
 /**
  * Search is a search field with a leading search icon, an optional keyboard

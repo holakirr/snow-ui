@@ -104,6 +104,9 @@ export const ruMessages: Messages = {
   dialog: {
     close: 'Закрыть',
   },
+  input: {
+    clear: 'Очистить',
+  },
   link: {
     external: '(откроется в новой вкладке)',
   },

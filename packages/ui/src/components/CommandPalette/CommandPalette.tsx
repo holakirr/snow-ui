@@ -17,7 +17,7 @@ import {
 import { isComposingKey } from '../../utils/keyboard'
 import { twMerge } from '../../utils/tw-merge'
 import { Search } from '../Search'
-import { useSnowUI } from '../SnowUIProvider'
+import { useMessages, useSnowUI } from '../SnowUIProvider'
 import { LoadingRing } from '../Spinner/ring'
 import { Typography } from '../Text'
 
@@ -41,6 +41,13 @@ export type CommandPaletteItem = {
   icon?: ReactNode
   /** Extra words the default filter matches. */
   keywords?: string[]
+  /**
+   * A second line under the label, in 12/16 `text-secondary`: e.g. the text
+   * on the page that matched (the kit's "Text on the page" result). The
+   * default filter matches it too; it is the option's description. Added in
+   * 5.2.
+   */
+  snippet?: string
   /** Shown but can't be highlighted or selected. */
   disabled?: boolean
   /** Called when this item is selected (before the palette's `onSelect`). */
@@ -69,14 +76,14 @@ export type CommandPaletteFilter = (
 ) => boolean
 
 /**
- * The default filter: every word of the query must appear in the label or the
- * keywords (case-insensitive).
+ * The default filter: every word of the query must appear in the label, the
+ * keywords or the snippet (case-insensitive).
  */
 export const defaultCommandPaletteFilter: CommandPaletteFilter = (
   item,
   query,
 ) => {
-  const haystack = [item.label, ...(item.keywords ?? [])]
+  const haystack = [item.label, ...(item.keywords ?? []), item.snippet ?? '']
     .join(' ')
     .toLowerCase()
   return query
@@ -160,6 +167,29 @@ export type CommandPaletteProps = {
    */
   closeOnSelect?: boolean
 
+  /**
+   * Show the number of results above the list while there is a query (the
+   * kit's "105 results"), in 12/16 `text-secondary`, announced politely.
+   * Added in 5.2.
+   * @default false
+   */
+  showCount?: boolean
+
+  /**
+   * The number `showCount` shows, when the list holds only some of the
+   * results (e.g. the first page from a server). Without it, the items shown.
+   * Added in 5.2.
+   */
+  resultCount?: number
+
+  /**
+   * Mark the words of the query in each label and snippet with `<mark>`, in
+   * `indigo-text` (the kit's Secondary/Indigo match, darker in light mode for
+   * 4.5:1). Added in 5.2.
+   * @default false
+   */
+  highlightMatches?: boolean
+
   /** Class name for the popup. */
   className?: string
 }
@@ -218,9 +248,57 @@ type ListProps = Required<
     | 'onQueryChange'
     | 'filter'
     | 'loading'
+    | 'showCount'
+    | 'resultCount'
+    | 'highlightMatches'
   > & {
     close: () => void
   }
+
+/**
+ * A match in a label or snippet (`highlightMatches`): the kit's
+ * Secondary/Indigo text, as `indigo-text` (#5B5BD6: 5.37:1 on the palette,
+ * 4.91:1 on the highlighted option). In dark mode #ADADFB is 3.78:1 on the
+ * White/10% highlight, so there it is mixed with 30% white (6.47:1 and
+ * 4.78:1).
+ * No fill: the browser's yellow `<mark>` is replaced. In forced-colors mode,
+ * where the colour is dropped (and the transparent fill would hide the
+ * system's), the match takes the system `Mark` and `MarkText`.
+ */
+const commandPaletteMatchClasses =
+  'bg-transparent text-indigo-text dark:text-[color:color-mix(in_srgb,var(--color-indigo-text),var(--color-black)_30%)] forced-colors:bg-[Mark] forced-colors:text-[MarkText]'
+
+/** Escapes a string for a `RegExp`. */
+const escapeRegExp = (text: string) =>
+  text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+/**
+ * `text` with every occurrence of the query's words (case-insensitive) in a
+ * `<mark>`: the kit's Secondary/Indigo match, in `indigo-text`.
+ */
+const highlight = (text: string, query: string): ReactNode => {
+  const words = query.split(/\s+/).filter(Boolean)
+  if (words.length === 0) return text
+  // Longer words first, so "bye" doesn't cut "byewind" short.
+  const pattern = new RegExp(
+    `(${words
+      .sort((a, b) => b.length - a.length)
+      .map(escapeRegExp)
+      .join('|')})`,
+    'gi',
+  )
+  // With a capturing group, the matches are at the odd indexes.
+  return text.split(pattern).map((part, index) =>
+    index % 2 === 1 ? (
+      // biome-ignore lint/suspicious/noArrayIndexKey: the parts of one string, in order
+      <mark key={index} className={commandPaletteMatchClasses}>
+        {part}
+      </mark>
+    ) : (
+      part
+    ),
+  )
+}
 
 /**
  * The search field and the list. Mounted only while the palette is open, so the
@@ -239,8 +317,12 @@ const CommandPaletteList: FC<ListProps> = ({
   emptyMessage,
   loading = false,
   loadingLabel,
+  showCount = false,
+  resultCount,
+  highlightMatches = false,
   close,
 }) => {
+  const messages = useMessages()
   const baseId = useId()
   const listId = `${baseId}-list`
   const [innerQuery, setInnerQuery] = useState(defaultQuery)
@@ -335,6 +417,15 @@ const CommandPaletteList: FC<ListProps> = ({
   }
 
   const isEmpty = options.length === 0 && !loading
+  const trimmedQuery = query.trim()
+  const shownCount = visibleGroups.reduce(
+    (count, group) => count + group.items.length,
+    0,
+  )
+  const count = resultCount ?? shownCount
+  const showsCount = showCount && trimmedQuery !== '' && !loading && count > 0
+  const mark = (text: string) =>
+    highlightMatches ? highlight(text, trimmedQuery) : text
 
   return (
     <>
@@ -365,6 +456,20 @@ const CommandPaletteList: FC<ListProps> = ({
         // The SearchPopup header: no fill, a Black/10% hairline under it.
         className="h-12 shrink-0 rounded-none border-b-[0.5px] border-black-10 bg-transparent px-2 pt-1 pb-4 backdrop-blur-none hover:bg-transparent focus-within:bg-transparent focus-within:ring-0 focus-within:inset-ring-0"
       />
+      {showCount && (
+        // The kit's "105 results": the number of results for the query.
+        <Typography
+          asChild
+          size={12}
+          // The live region stays in the accessibility tree while empty,
+          // so its first count is announced; only the padding goes.
+          className={showsCount ? 'px-2 pt-2 text-secondary' : 'text-secondary'}
+        >
+          <p role="status" aria-live="polite">
+            {showsCount ? messages.commandPalette.results?.(count) : null}
+          </p>
+        </Typography>
+      )}
       <div
         id={listId}
         role="listbox"
@@ -405,6 +510,9 @@ const CommandPaletteList: FC<ListProps> = ({
                     aria-selected={isActive}
                     aria-disabled={item.disabled || undefined}
                     data-active={isActive || undefined}
+                    aria-describedby={
+                      item.snippet ? `${optionId(key)}-snippet` : undefined
+                    }
                     onMouseMove={() => {
                       if (!item.disabled && !isActive) setActiveKey(key)
                     }}
@@ -420,9 +528,27 @@ const CommandPaletteList: FC<ListProps> = ({
                         {item.icon}
                       </span>
                     )}
-                    <Typography size={14} className="min-w-0 flex-1 truncate">
-                      {item.label}
-                    </Typography>
+                    {item.snippet ? (
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <Typography size={14} className="truncate">
+                          {mark(item.label)}
+                        </Typography>
+                        {/* The option's description (not its name): hidden
+                            from the name, read through aria-describedby. */}
+                        <Typography
+                          id={`${optionId(key)}-snippet`}
+                          aria-hidden
+                          size={12}
+                          className="truncate text-secondary"
+                        >
+                          {mark(item.snippet)}
+                        </Typography>
+                      </span>
+                    ) : (
+                      <Typography size={14} className="min-w-0 flex-1 truncate">
+                        {mark(item.label)}
+                      </Typography>
+                    )}
                     {isActive && (
                       <Typography
                         size={14}
@@ -439,7 +565,8 @@ const CommandPaletteList: FC<ListProps> = ({
           )
         })}
       </div>
-      <div role="status" aria-live="polite" className="empty:hidden">
+      {/* Always rendered (not display: none while empty), so "No results" is announced. */}
+      <div role="status" aria-live="polite">
         {isEmpty && (
           <Typography
             asChild
@@ -479,6 +606,9 @@ const CommandPalette: FC<CommandPaletteProps> = ({
   loading,
   loadingLabel,
   closeOnSelect = true,
+  showCount,
+  resultCount,
+  highlightMatches,
   className,
 }) => {
   const { messages, dir, theme, contrast } = useSnowUI()
@@ -550,6 +680,9 @@ const CommandPalette: FC<CommandPaletteProps> = ({
             emptyMessage={emptyMessage ?? messages.commandPalette.empty}
             loading={loading}
             loadingLabel={loadingLabel ?? messages.commandPalette.loading}
+            showCount={showCount}
+            resultCount={resultCount}
+            highlightMatches={highlightMatches}
             close={close}
           />
         </DialogPrimitive.Content>

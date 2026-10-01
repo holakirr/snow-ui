@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+import { SnowUIProvider } from '../SnowUIProvider'
 import {
   CommandPalette,
   type CommandPaletteGroup,
@@ -343,5 +344,174 @@ describe('defaultCommandPaletteFilter', () => {
     expect(defaultCommandPaletteFilter(item, 'DESIGN landing')).toBe(true)
     expect(defaultCommandPaletteFilter(item, 'web page')).toBe(true)
     expect(defaultCommandPaletteFilter(item, 'landing mobile')).toBe(false)
+  })
+})
+
+describe('CommandPalette results (5.2)', () => {
+  const results: CommandPaletteGroup[] = [
+    {
+      id: 'results',
+      items: [
+        { id: 'user', label: 'ByeWind' },
+        { id: 'page', label: 'Byewind’s profile' },
+        {
+          id: 'text',
+          label: 'Overview',
+          snippet: 'I’m ByeWind, a Product UX/UI Designer, based in China.',
+        },
+        { id: 'other', label: 'Projects' },
+      ],
+    },
+  ]
+  const type = (value: string) =>
+    fireEvent.change(screen.getByRole('combobox'), { target: { value } })
+
+  it('counts the results for the query, in a polite status', () => {
+    render(<CommandPalette groups={results} defaultOpen showCount />)
+    const status = () =>
+      screen
+        .getAllByRole('status')
+        .find((element) => element.tagName === 'P') as HTMLElement
+
+    // Nothing to count without a query.
+    expect(status()).toBeEmptyDOMElement()
+    // Empty but in the accessibility tree (no display: none), and no padding.
+    expect(status()).toHaveClass('text-12', 'text-secondary')
+    expect(status()).not.toHaveClass('empty:hidden', 'pt-2')
+    expect(status()).toHaveAttribute('aria-live', 'polite')
+
+    type('wind')
+    // The snippet matches too: three results.
+    expect(status()).toHaveTextContent('3 results')
+    type('projects')
+    expect(status()).toHaveTextContent('1 result')
+    expect(status()).not.toHaveTextContent('1 results')
+    // No results: the empty message instead of a count.
+    type('zzz')
+    expect(status()).toBeEmptyDOMElement()
+    expect(screen.getByText('No results')).toBeInTheDocument()
+  })
+
+  it('shows `resultCount` instead, and nothing while loading', () => {
+    const { rerender } = render(
+      <CommandPalette
+        groups={results}
+        defaultOpen
+        defaultQuery="bye"
+        showCount
+        resultCount={105}
+      />,
+    )
+    expect(screen.getByText('105 results')).toBeInTheDocument()
+    rerender(
+      <CommandPalette
+        groups={results}
+        defaultOpen
+        defaultQuery="bye"
+        showCount
+        resultCount={105}
+        loading
+      />,
+    )
+    expect(screen.queryByText('105 results')).not.toBeInTheDocument()
+  })
+
+  it('has no counter without `showCount`', () => {
+    render(<CommandPalette groups={results} defaultOpen defaultQuery="bye" />)
+    expect(screen.queryByText(/results?$/)).not.toBeInTheDocument()
+  })
+
+  it('takes the count message from the provider', () => {
+    render(
+      <SnowUIProvider
+        messages={{
+          commandPalette: { results: (count) => `${count} результата` },
+        }}
+      >
+        <CommandPalette
+          groups={results}
+          defaultOpen
+          defaultQuery="bye"
+          showCount
+        />
+      </SnowUIProvider>,
+    )
+    expect(screen.getByText('3 результата')).toBeInTheDocument()
+  })
+
+  it('marks the words of the query with <mark>, in any case', () => {
+    render(
+      <CommandPalette
+        groups={results}
+        defaultOpen
+        defaultQuery="WIND bye"
+        highlightMatches
+      />,
+    )
+    const [user, page, text] = screen.getAllByRole('option')
+    expect(
+      Array.from(user.querySelectorAll('mark')).map((mark) => mark.textContent),
+    ).toEqual(['Bye', 'Wind'])
+    expect(page.querySelectorAll('mark')).toHaveLength(2)
+    // The accessible name is unchanged.
+    expect(user).toHaveAccessibleName('ByeWind')
+    const mark = user.querySelector('mark') as HTMLElement
+    expect(mark).toHaveClass(
+      'bg-transparent',
+      'text-indigo-text',
+      'dark:text-[color:color-mix(in_srgb,var(--color-indigo-text),var(--color-black)_30%)]',
+      // Forced colours drop the colour: the system's mark instead.
+      'forced-colors:bg-[Mark]',
+      'forced-colors:text-[MarkText]',
+    )
+    // In the snippet too.
+    expect(
+      Array.from(text.querySelectorAll('mark')).map((m) => m.textContent),
+    ).toEqual(['Bye', 'Wind'])
+  })
+
+  it('escapes the query and marks nothing without `highlightMatches`', () => {
+    const { unmount } = render(
+      <CommandPalette
+        groups={[{ id: 'g', items: [{ id: 'a', label: 'C++ (beta)' }] }]}
+        defaultOpen
+        defaultQuery="c++ (b"
+        highlightMatches
+      />,
+    )
+    expect(
+      Array.from(
+        screen.getByRole('option').querySelectorAll('mark'),
+        (mark) => mark.textContent,
+      ),
+    ).toEqual(['C++', '(b'])
+    unmount()
+
+    render(<CommandPalette groups={results} defaultOpen defaultQuery="bye" />)
+    expect(document.querySelector('mark')).toBeNull()
+  })
+
+  it('shows the snippet under the label as the option’s description', () => {
+    render(<CommandPalette groups={results} defaultOpen />)
+    const option = screen.getByRole('option', { name: 'Overview' })
+    expect(option).toHaveAccessibleDescription(
+      'I’m ByeWind, a Product UX/UI Designer, based in China.',
+    )
+    const snippet = within(option).getByText(/Product UX\/UI/)
+    expect(snippet).toHaveClass('text-12', 'text-secondary', 'truncate')
+    expect(snippet).toHaveAttribute('aria-hidden', 'true')
+    // An item without a snippet has no description.
+    expect(
+      screen.getByRole('option', { name: 'Projects' }),
+    ).not.toHaveAttribute('aria-describedby')
+  })
+
+  it('matches the snippet with the default filter', () => {
+    expect(
+      defaultCommandPaletteFilter(
+        { id: 'a', label: 'Overview', snippet: 'based in China' },
+        'china',
+      ),
+    ).toBe(true)
   })
 })

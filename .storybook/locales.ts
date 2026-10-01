@@ -16,6 +16,12 @@ const YEAR_FORMS: Partial<Record<Intl.LDMLPluralRule, string>> = {
   few: 'года',
 }
 const years = (count: number) => YEAR_FORMS[ruPlural.select(count)] ?? 'лет'
+const RESULT_FORMS: Partial<Record<Intl.LDMLPluralRule, string>> = {
+  one: 'результат',
+  few: 'результата',
+}
+const results = (count: number) =>
+  RESULT_FORMS[ruPlural.select(count)] ?? 'результатов'
 
 export const ruMessages: Messages = {
   alert: {
@@ -70,6 +76,7 @@ export const ruMessages: Messages = {
     placeholder: 'Поиск',
     empty: 'Ничего не найдено',
     loading: 'Загрузка',
+    results: (count) => `${count} ${results(count)}`,
   },
   datePicker: {
     placeholder: 'Выберите дату',
@@ -103,6 +110,10 @@ export const ruMessages: Messages = {
   },
   dialog: {
     close: 'Закрыть',
+  },
+  dropdownMenu: {
+    search: 'Поиск',
+    empty: 'Ничего не найдено',
   },
   input: {
     clear: 'Очистить',

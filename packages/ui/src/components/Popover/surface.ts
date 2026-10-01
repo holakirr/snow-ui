@@ -29,6 +29,49 @@ export const popoverItemClasses =
   'relative flex cursor-pointer select-none items-center gap-2 rounded-12 p-2 text-14 text-black outline-none transition-colors focus:bg-black-4 data-[highlighted]:bg-black-4 data-[state=open]:bg-black-4 data-[disabled]:cursor-not-allowed data-[disabled]:text-black-20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 contrast-more:focus:inset-ring-2 contrast-more:focus:inset-ring-black-80 contrast-more:data-[highlighted]:inset-ring-2 contrast-more:data-[highlighted]:inset-ring-black-80'
 
 /**
+ * A destructive menu item (`variant="destructive"`, added in 5.2): the kit's
+ * red "Delete Property" row, its text and icons in `red-text` (#D42020:
+ * 5.21:1 on the popover, 4.77:1 highlighted). In dark mode `red-text`
+ * (#FF8080) is 4.36:1 on the popover and 3.22:1 on its White/10% highlight,
+ * so there it is mixed with 40% white (#FFB3B3): 6.21:1 and 4.59:1 (WCAG
+ * 1.4.3). A disabled one is dimmed like the others.
+ */
+export const popoverItemDestructiveClasses =
+  'text-red-text dark:text-[color:color-mix(in_srgb,var(--color-red-text),var(--color-black)_40%)]'
+
+/**
+ * A menu switch item (`DropdownMenuSwitchItem`, `ContextMenuSwitchItem`,
+ * added in 5.2): a checkbox item that ends in the kit's Switch instead of a
+ * check (the "Wrap Column" row). The item names the group its switch reads
+ * the state from.
+ */
+export const popoverSwitchItemClasses = 'group/switch-item'
+
+/**
+ * The switch at the end of a menu switch item: the Figma Switch (a 28×16
+ * pill with the inner shadow, `control-border` off, `primary` on; a 12px
+ * thumb inset 2px that travels 12px), drawn from the item's `data-state`.
+ * It is a picture of the item's state (`aria-hidden`), not a control: the
+ * item is the `menuitemcheckbox`. The row's highlight shows hover and focus,
+ * so the track keeps its colour. Disabled: a Black/10% track (Black/20% on)
+ * without the shadow, as Switch. In forced-colors mode, where the fills are
+ * dropped (track and thumb would both be the canvas), the track and the
+ * thumb are outlined in `CanvasText` (`GrayText` disabled): the thumb's
+ * place shows the state.
+ */
+export const popoverSwitchTrackClasses =
+  'pointer-events-none ms-auto inline-flex h-4 w-7 shrink-0 items-center rounded-80 bg-control-border p-0.5 inset-shadow-inner transition-colors group-data-[state=checked]/switch-item:bg-primary group-data-[disabled]/switch-item:bg-black-10 group-data-[disabled]/switch-item:inset-shadow-none group-data-[disabled]/switch-item:group-data-[state=checked]/switch-item:bg-black-20 forced-colors:outline forced-colors:-outline-offset-1 forced-colors:outline-[CanvasText] forced-colors:group-data-[disabled]/switch-item:outline-[GrayText]'
+
+/**
+ * The thumb of a menu switch item's switch: Switch's thumb (static white,
+ * "Drop shadow 2"; the per-mode `white` with more contrast), at the end when
+ * checked (the start in right-to-left text). Outlined in forced-colors mode,
+ * as the track.
+ */
+export const popoverSwitchThumbClasses =
+  'block size-3 rounded-full bg-static-white shadow-2 transition-transform group-data-[state=checked]/switch-item:translate-x-3 rtl:group-data-[state=checked]/switch-item:-translate-x-3 motion-reduce:transition-none contrast-more:bg-white forced-colors:outline forced-colors:-outline-offset-1 forced-colors:outline-[CanvasText] forced-colors:group-data-[disabled]/switch-item:outline-[GrayText]'
+
+/**
  * A group title in a popover: the kit's SearchPopup group title (a Text,
  * 4/8 padding, 28px high) in 14/20 `text-secondary` (Figma: Black/40%).
  */

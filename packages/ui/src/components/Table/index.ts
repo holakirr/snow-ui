@@ -1,1 +1,6 @@
 export * from './Table'
+export * from './TableCopyButton'
+export * from './TableLoadMore'
+export * from './TablePageSize'
+export * from './TableResults'
+export * from './TableSelectionBar'

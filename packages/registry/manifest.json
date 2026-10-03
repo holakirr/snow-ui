@@ -1123,9 +1123,12 @@
       "name": "table",
       "type": "registry:ui",
       "title": "Table",
-      "files": ["components/Table/Table.tsx"],
-      "dependencies": ["@holakirr/snow-ui-icons"],
-      "registryDependencies": ["snow-core"],
+      "files": [
+        "components/Table/Table.tsx",
+        "components/Table/filter-mark.tsx"
+      ],
+      "dependencies": ["@holakirr/snow-ui-icons", "@phosphor-icons/react"],
+      "registryDependencies": ["snow-core", "snow-ui-provider"],
       "import": "components/Table/Table",
       "exports": [
         "Table",
@@ -1150,6 +1153,71 @@
         "TableSortDirection",
         "TableToolbarProps"
       ],
+      "docs": "components-table"
+    },
+    {
+      "name": "table-copy-button",
+      "type": "registry:ui",
+      "title": "TableCopyButton",
+      "files": ["components/Table/TableCopyButton.tsx"],
+      "dependencies": ["@phosphor-icons/react"],
+      "registryDependencies": ["snow-core", "snow-ui-provider"],
+      "import": "components/Table/TableCopyButton",
+      "exports": ["TableCopyButton"],
+      "types": ["TableCopyButtonProps"],
+      "docs": "components-table"
+    },
+    {
+      "name": "table-load-more",
+      "type": "registry:ui",
+      "title": "TableLoadMore",
+      "files": ["components/Table/TableLoadMore.tsx"],
+      "dependencies": ["@radix-ui/react-compose-refs"],
+      "registryDependencies": ["snow-core", "snow-ui-provider", "spinner"],
+      "import": "components/Table/TableLoadMore",
+      "exports": ["TableLoadMore"],
+      "types": ["TableLoadMoreProps"],
+      "docs": "components-table"
+    },
+    {
+      "name": "table-page-size",
+      "type": "registry:ui",
+      "title": "TablePageSize",
+      "files": ["components/Table/TablePageSize.tsx"],
+      "dependencies": ["@holakirr/snow-ui-icons", "@radix-ui/react-select"],
+      "registryDependencies": ["select", "snow-core", "snow-ui-provider"],
+      "import": "components/Table/TablePageSize",
+      "exports": ["TablePageSize"],
+      "types": ["TablePageSizeProps"],
+      "docs": "components-table"
+    },
+    {
+      "name": "table-results",
+      "type": "registry:ui",
+      "title": "TableResults",
+      "files": ["components/Table/TableResults.tsx"],
+      "dependencies": [],
+      "registryDependencies": ["snow-core", "snow-ui-provider"],
+      "import": "components/Table/TableResults",
+      "exports": ["TableResults"],
+      "types": ["TableResultsProps"],
+      "docs": "components-table"
+    },
+    {
+      "name": "table-selection-bar",
+      "type": "registry:ui",
+      "title": "TableSelectionBar",
+      "files": ["components/Table/TableSelectionBar.tsx"],
+      "dependencies": ["@phosphor-icons/react"],
+      "registryDependencies": [
+        "button",
+        "separator",
+        "snow-core",
+        "snow-ui-provider"
+      ],
+      "import": "components/Table/TableSelectionBar",
+      "exports": ["TableSelectionBar"],
+      "types": ["TableSelectionBarProps"],
       "docs": "components-table"
     },
     {
@@ -1504,6 +1572,11 @@
         "spinner",
         "strip",
         "table",
+        "table-copy-button",
+        "table-load-more",
+        "table-page-size",
+        "table-results",
+        "table-selection-bar",
         "tabs",
         "tag",
         "kbd",

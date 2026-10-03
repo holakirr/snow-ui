@@ -2,6 +2,7 @@ import { composeStories } from '@storybook/react'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { userEvent } from 'storybook/test'
 import { describe, expect, it, vi } from 'vitest'
+import { SnowUIProvider } from '../SnowUIProvider'
 import {
   Table,
   TableBody,
@@ -190,7 +191,124 @@ describe('TableToolbar and TableCell reveal', () => {
   })
 })
 
-const { TableA } = composeStories(stories)
+describe('TableHead (5.3)', () => {
+  it('reveal hides the header elements while the pointer is off the table', () => {
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead reveal>
+              <input type="checkbox" aria-label="Select all" />
+            </TableHead>
+            <TableHead>Name</TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>,
+    )
+    const [reveal, plain] = screen.getAllByRole('columnheader')
+    const hide = [...(reveal?.classList ?? [])].find((name) =>
+      name.endsWith(':opacity-0'),
+    )
+    // Like TableCell's: hover media, then the table instead of the row.
+    expect(hide).toMatch(/^\[@media\(hover:hover\)\]:\[table:not\(:hover\)_&/)
+    for (const condition of [
+      ':focus-within',
+      '[aria-checked=true]',
+      '[aria-checked=mixed]',
+      '[type=checkbox]:checked',
+      '[type=checkbox]:indeterminate',
+      '[aria-expanded=true]',
+    ]) {
+      expect(hide).toContain(condition)
+    }
+    expect(reveal).not.toHaveAttribute('reveal')
+    expect(plain?.className).not.toContain('opacity-0')
+  })
+
+  it('filtered puts the funnel before a black label and says "Filtered"', () => {
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead filtered>Status</TableHead>
+            <TableHead filtered sortDirection="asc" onSort={() => {}}>
+              Email
+            </TableHead>
+            <TableHead>Plain</TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>,
+    )
+    const status = screen.getByRole('columnheader', {
+      name: 'Filtered Status',
+    })
+    expect(status).toHaveClass('text-black')
+    // The kit's IconText: FunnelSimple 16, 4px before the label.
+    const label = status.firstElementChild as HTMLElement
+    expect(label).toHaveClass('inline-flex', 'items-center', 'gap-1')
+    const icon = label.firstElementChild
+    expect(icon?.tagName.toLowerCase()).toBe('svg')
+    expect(icon).toHaveAttribute('aria-hidden', 'true')
+    expect(icon).toHaveAttribute('width', '16')
+
+    // A sortable header: the mark goes inside its button.
+    const email = screen.getByRole('columnheader', { name: 'Filtered Email' })
+    expect(
+      within(email).getByRole('button', { name: 'Filtered Email' }),
+    ).toBeInTheDocument()
+
+    const plain = screen.getByRole('columnheader', { name: 'Plain' })
+    expect(plain).not.toHaveClass('text-black')
+    expect(plain.querySelector('svg')).toBeNull()
+  })
+
+  it('takes "Filtered" from SnowUIProvider', () => {
+    render(
+      <SnowUIProvider messages={{ table: { filtered: 'Отфильтровано' } }}>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead filtered>Статус</TableHead>
+            </TableRow>
+          </TableHeader>
+        </Table>
+      </SnowUIProvider>,
+    )
+    expect(
+      screen.getByRole('columnheader', { name: 'Отфильтровано Статус' }),
+    ).toBeInTheDocument()
+  })
+
+  it('highlights a selected column: data-state="selected" on its cells', () => {
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead data-state="selected">Name</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell data-state="selected">Natali Craig</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    )
+    // The row highlight, rounded at the top of the header and the bottom of
+    // the last row.
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveClass(
+      'data-[state=selected]:bg-black-4',
+      'data-[state=selected]:rounded-t-12',
+      'data-[state=selected]:text-black',
+    )
+    expect(screen.getByRole('cell', { name: 'Natali Craig' })).toHaveClass(
+      'data-[state=selected]:bg-black-4',
+      '[tr:last-child>&]:data-[state=selected]:rounded-b-12',
+    )
+  })
+})
+
+const { TableA, SortableHeaders } = composeStories(stories)
 
 // The row of an order, by the text of its ID cell. A role query for the cell
 // computed the name of every cell on each call, slowly after a click (see
@@ -203,9 +321,9 @@ const rowOf = (orderId: string) => {
   return row
 }
 
-describe('Table A (TanStack Table)', () => {
+describe('Table stories (TanStack Table)', () => {
   it('cycles aria-sort through ascending, descending and none', () => {
-    render(<TableA />)
+    render(<SortableHeaders />)
 
     const header = screen.getByRole('columnheader', { name: /user/i })
     const button = within(header).getByRole('button', { name: /user/i })
@@ -235,24 +353,28 @@ describe('Table A (TanStack Table)', () => {
   it('selects rows with their checkboxes and marks them data-state="selected"', () => {
     render(<TableA />)
 
-    // #CM9804 starts selected, so "Select all" is indeterminate.
+    // #CM9807 and #CM9808 start selected (the kit's "2 Selected"), so
+    // "Select all" is indeterminate.
     const selectAll = screen.getByRole('checkbox', { name: 'Select all' })
     expect(selectAll).toHaveAttribute('aria-checked', 'mixed')
-    expect(rowOf('#CM9804')).toHaveAttribute('data-state', 'selected')
+    expect(screen.getByText('2 Selected')).toBeInTheDocument()
+    expect(rowOf('#CM9807')).toHaveAttribute('data-state', 'selected')
     expect(rowOf('#CM9801')).not.toHaveAttribute('data-state')
 
     fireEvent.click(screen.getByRole('checkbox', { name: 'Select #CM9801' }))
     expect(rowOf('#CM9801')).toHaveAttribute('data-state', 'selected')
+    expect(screen.getByText('3 Selected')).toBeInTheDocument()
 
     fireEvent.click(selectAll)
-    for (const id of ['#CM9801', '#CM9802', '#CM9803', '#CM9804', '#CM9805']) {
+    for (const id of ['#CM9801', '#CM9805', '#CM9820']) {
       expect(rowOf(id)).toHaveAttribute('data-state', 'selected')
     }
     expect(selectAll).toHaveAttribute('aria-checked', 'true')
 
     fireEvent.click(selectAll)
-    expect(rowOf('#CM9804')).not.toHaveAttribute('data-state')
+    expect(rowOf('#CM9807')).not.toHaveAttribute('data-state')
     expect(selectAll).toHaveAttribute('aria-checked', 'false')
+    expect(screen.queryByText(/ Selected$/)).toBeNull()
   })
 
   it('toggles a row with the keyboard', async () => {

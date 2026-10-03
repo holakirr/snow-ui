@@ -207,10 +207,15 @@ type RefTargets = {
   TableBody: HTMLTableSectionElement
   TableCaption: HTMLElement
   TableCell: HTMLTableCellElement
+  TableCopyButton: HTMLButtonElement
   TableFooter: HTMLTableSectionElement
   TableHead: HTMLTableCellElement
   TableHeader: HTMLTableSectionElement
+  TableLoadMore: HTMLDivElement
+  TablePageSize: HTMLButtonElement
+  TableResults: HTMLParagraphElement
   TableRow: HTMLTableRowElement
+  TableSelectionBar: HTMLDivElement
   TableToolbar: HTMLDivElement
   Tabs: HTMLDivElement
   TabsContent: HTMLDivElement

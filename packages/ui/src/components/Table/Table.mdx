@@ -11,6 +11,11 @@ import {
   TableRow,
   TableToolbar,
 } from './Table'
+import { TableCopyButton } from './TableCopyButton'
+import { TableLoadMore } from './TableLoadMore'
+import { TablePageSize } from './TablePageSize'
+import { TableResults } from './TableResults'
+import { TableSelectionBar } from './TableSelectionBar'
 import * as TableStories from './Table.stories'
 
 <Meta of={TableStories} />
@@ -20,7 +25,9 @@ import * as TableStories from './Table.stories'
 <FigmaLinks label="Table page" />
 <InstallTabs item="table" />
 
-Table shows records in rows and columns. It is a styled native `<table>` in the Figma Table style: 12/16 text, 40px rows, a Black/20% line under the header, Black/4% lines between rows and a rounded Black/4% highlight on hovered and selected rows. `TableHead` can be a sort button, `TableToolbar` is the function bar above the table, and `TableCell reveal` shows a row's checkbox and actions on hover. Table holds no data or state: pair it with a library such as TanStack Table for sorting, filtering, selection and pages, as the stories do.
+Table shows records in rows and columns. It is a styled native `<table>` in the Figma Table style: 12/16 text, 40px rows, a Black/20% line under the header, Black/4% lines between rows and a rounded Black/4% highlight on hovered and selected rows. `TableToolbar` is the function bar above the table, `TableCell reveal` shows a row's checkbox and actions on hover, and `TableHead reveal` shows "Select all" while the pointer is over the table. Ready-made parts (5.3) draw the rest of the kit: the "2 Selected" bar (`TableSelectionBar`), the copy button of a cell (`TableCopyButton`), rows per page (`TablePageSize`), the result count (`TableResults`) and the spinner that loads more rows (`TableLoadMore`).
+
+Table holds no data or state: pair it with a library such as TanStack Table for sorting, filtering, selection and pages, as the stories do. The stories are recipes of the kit's interactive guidance (Table A, Search results, No results, loading data dynamically, column selection): copy what you need.
 
 ```tsx
 import {
@@ -66,32 +73,35 @@ import {
 1. **Scroll container**: a `<div>` with `overflow: auto` around the table, so a wide table scrolls instead of overflowing.
 2. **Table** (`Table`): the `<table>`, full width, 12/16 `text-black`, in the separate border model (cells can't have rounded corners in the collapsed one), so the lines are drawn on the cells.
 3. **Caption** (`TableCaption`, optional): 14/20 semibold, start-aligned, above the table with 4px between them.
-4. **Header** (`TableHeader`, `TableRow`, `TableHead`): `<thead>` and `<th>` cells, `text-secondary`, with a Black/20% line below.
+4. **Header** (`TableHeader`, `TableRow`, `TableHead`): `<thead>` and `<th>` cells, `text-secondary`, with a Black/20% line below. A filtered column's header (`filtered`) starts with a 16px FunnelSimple, 4px before its label, which turns black.
 5. **Body** (`TableBody`, `TableRow`, `TableCell`): `<tbody>` and `<td>` cells with a Black/4% line below each.
 6. **Footer** (`TableFooter`, optional): `<tfoot>`, its cells with a Black/20% line above and none below.
-7. **Function bar** (`TableToolbar`, optional, outside the `Table`): a `<div>` above the table, a Background/2 strip with radius 12, padded 8px and at least 44px high, its children in a row 16px apart. The kit puts borderless icon buttons (add, filter, sort) at the start and a [Search](?path=/docs/components-search--docs) at the end (`ms-auto`).
+7. **Function bar** (`TableToolbar`, optional, outside the `Table`): a `<div>` above the table, a Background/2 strip with radius 12, padded 8px and at least 44px high, its children in a row 16px apart. The kit puts a group of borderless icon buttons at the start (add, filter, sort: 24px, 8px apart, so wrap them in a `flex gap-2` element) and a [Search](?path=/docs/components-search--docs) at the end (`ms-auto`). While rows are selected, `TableSelectionBar` follows the buttons: a 12px Black/10% divider 16px from them, "2 Selected", Delete and Duplicate, 8px apart.
+8. **Pages** (outside the `Table`, below it): `TablePageSize` ("20 ∨") and `TableResults` ("105 results") 8px apart, then the [Pagination](?path=/docs/components-pagination--docs) 40px after them, filling the rest of the row. When rows load as the user scrolls instead, `TableLoadMore` sits right under the table: a 40px row with a 16px spinner in its middle.
 
 Header and body cells are 40px high, padded 8px top and bottom and 12px at the sides, start-aligned and vertically centred. A cell that holds a `role="checkbox"` element has no end padding.
 
 ## Variants
 
-The stories show the two Figma tables. "Table A" (Order List), at the top of this page: the function bar with a Search that filters the users ("/" focuses it while the focus is in the table, so the one-key shortcut stays scoped to it), sortable headers, selectable rows with a select-all checkbox, the row checkbox and "…" action shown on hover, dates with a calendar icon and the pagination below.
+"Table A" (Order List), at the top of this page, follows the kit's interactive guidance: the function bar with a Filter menu (the Status header gets the funnel), a Sort menu (the sorted header gets an arrow before its label and `aria-sort`) and a Search that filters the users ("/" focuses it while the focus is in the table, so the one-key shortcut stays scoped to it); selectable rows whose checkbox and "…" action show on hover, a "Select all" shown while the pointer is over the table; the "2 Selected" bar, whose Delete shows a "Deleted" toast with Undo and whose Duplicate puts the copies under the last selected row and selects them (the bar's spinner shows meanwhile); the address copy button, dates with a calendar icon, and rows per page, the result count and the pages below.
 
 "Table B": a compact table with a caption, inside a dashboard block ([Card](?path=/docs/components-card--docs) `variant="block"`). As in Figma, it has no lines between the rows and no total row, and its first column starts on the caption's edge (`[&_td]:border-b-0`, `ps-0` on the first cells).
 
 <Canvas of={TableStories.TableB} />
 
-A filterable list, as in the Figma "Search results" guidance, with an empty state:
+The kit's "Search results": the results replace the rows as you type, with the Search "In progress" ([Search](?path=/docs/components-search--docs) `status="progress"`) until they come, and the result count follows them:
 
-<Canvas of={TableStories.Filtered} />
+<Canvas of={TableStories.SearchResults} />
 
-When nothing matches: one 40px row, "No results." at the start in `text-secondary`:
+When nothing matches: an empty select column, then one 40px row with "No results" at the start of the data columns, in `text-secondary`:
 
 <Canvas of={TableStories.NoResults} />
 
 ## Sorting
 
-`sortDirection` makes a `TableHead` a sort button with a 16px sort icon, and sets `aria-sort` on the `<th>`. `onSort` is called on click.
+The kit's headers are plain text: the table is sorted from the function bar's Sort menu, and the sorted column's header shows an arrow before its label. Table A does it with a [DropdownMenu](?path=/docs/components-dropdownmenu--docs) (the column, then the direction) and TanStack's `setSorting`; set `aria-sort` on the sorted `TableHead` (`ascending` or `descending`) yourself, as the story does.
+
+A table without a function bar can make its headers sort buttons instead: `sortDirection` makes a `TableHead` a button with a 16px sort icon after its label, and sets `aria-sort` on the `<th>`; `onSort` is called on click.
 
 | `sortDirection` | Icon | Label | `aria-sort` |
 | --- | --- | --- | --- |
@@ -111,23 +121,75 @@ With TanStack Table:
 </TableHead>
 ```
 
+<Canvas of={TableStories.SortableHeaders} />
+
+## Filtering
+
+`filtered` on a `TableHead` marks a column with an active filter: the kit's 16px FunnelSimple before the label, the label in black, and "Filtered" for screen readers (`messages.table.filtered`), so the header reads "Filtered Status". It goes inside the sort button of a sortable header. With TanStack Table pass `filtered={column.getIsFiltered()}`. Where the filter is set is yours: Table A uses a menu in the function bar.
+
+## Selecting columns
+
+The kit selects a column with a click on the blank area of its cells; Ctrl (⌘ on a Mac) adds or removes one, Shift selects a range, and a click outside the table clears the choice. `data-state="selected"` on the cells of a column (its `TableHead` and `TableCell`s) gives them the row highlight, Black/4%, rounded 12px at the top of the header and the bottom of the last row; the header label turns black. With forced colours, which drop the fill, the cells get a 2px Highlight outline. The clicks are yours, as in the story below, which also makes each header a toggle button (`aria-pressed`), so the keyboard can select columns too.
+
+<Canvas of={TableStories.ColumnSelection} />
+
+## Ready-made parts
+
+### TableSelectionBar
+
+The function bar's "when data is selected" state: a 12px Black/10% divider, the number of selected rows ("2 Selected", `messages.table.selected`) and the Delete (Trash) and Duplicate (Copy) buttons, 8px apart. It renders the buttons you pass handlers for (`onDelete`, `onDuplicate`) and your own actions after them (`children`). While an action runs, `busy` makes the two buttons `aria-disabled`: they do nothing but stay in place, so the focus stays on them (Table A shows the kit's Loading spinner next to the bar meanwhile). Render it in the `TableToolbar`, after the buttons, while rows are selected; count the selected rows that the search and filters show, so Delete never removes rows the user can't see. The kit then shows a "Deleted" toast with Undo (`toast()` with a `ToastAction`, see [Toaster](?path=/docs/components-toaster--docs)) and puts duplicates under the last selected row, selected.
+
+<InstallTabs item="table-selection-bar" />
+
+### TableCopyButton
+
+A 16px ClipboardText button for a cell, after its text (`flex gap-1`): it shows while the pointer is over its cell or while it has the keyboard focus, and always on touch screens. A click copies `value` with the Clipboard API, shows a check mark for 2 seconds, announces "Copied" and calls `onCopy`. When the browser refuses the clipboard (no permission, an insecure page), nothing changes.
+
+<InstallTabs item="table-copy-button" />
+
+### TablePageSize and TableResults
+
+`TablePageSize` is the kit's "20 ∨": a small borderless button with the rows per page and an ArrowLineDown, which opens the list of `options` (20, 50 and 100 by default). It is a Radix Select: controlled with `value` and `onValueChange` (called with a number), or uncontrolled with `defaultValue`; `name`, `form` and `required` make it a form field. A value that isn't one of the `options` is added to the list, in order. With TanStack Table: `value={table.state.pagination.pageSize}` and `onValueChange={table.setPageSize}`, with `initialState: { pagination: { pageSize: 20 } }` for the kit's default (TanStack's own is 10).
+
+`TableResults` is the kit's "105 results": the number of rows across every page (TanStack's `getPrePaginatedRowModel().rows.length`), in 12/16 `text-secondary`, announced when it changes.
+
+<InstallTabs item="table-page-size" />
+<InstallTabs item="table-results" />
+
+### TableLoadMore
+
+The kit's "loading data dynamically": instead of pages, the next rows load when the user scrolls to the end of the table. Put `TableLoadMore` right under the table, with `onLoadMore` (it is called when the row scrolls into view, through an IntersectionObserver) and `loading` while the rows load: it shows a 16px spinner and announces "Loading more" (`messages.table.loadingMore`). When `loading` turns false with the row still in view, `onLoadMore` is called again, so the rows fill the view. Remove it when there are no more rows; after a failed request, leave out `onLoadMore` and show a retry button instead, or it would retry at once.
+
+<Canvas of={TableStories.LoadMore} />
+
+<InstallTabs item="table-load-more" />
+
 ## States
 
 - **Row hover:** the row's cells get a Black/4% fill, rounded 12px at the first and last cell. Header rows don't react, and neither does a header cell without sorting: the kit's Table Title darkens on hover, but a header that does nothing shouldn't look like a control. A sortable header does (below).
 - **Selected row:** `data-state="selected"` on a `TableRow` gives the same highlight. Selection itself is yours (the stories use checkboxes and TanStack's row selection).
-- **Revealed controls:** the elements of a `TableCell` with `reveal` are transparent until their row is hovered or selected, or while they hold the keyboard focus, a checked (or mixed) checkbox, the Checkbox component or a native `<input type="checkbox">`, or an open menu (`aria-expanded="true"`). On devices without hover (touch screens) they always show.
+- **Selected column:** `data-state="selected"` on the `TableHead` and `TableCell`s of a column (see Selecting columns).
+- **Revealed controls:** the elements of a `TableCell` with `reveal` are transparent until their row is hovered or selected; those of a `TableHead` with `reveal` until the pointer is over the table. Both also show while they hold the keyboard focus, a checked (or mixed) checkbox, the Checkbox component or a native `<input type="checkbox">`, or an open menu (`aria-expanded="true"`). On devices without hover (touch screens) they always show.
+- **Filtered column:** `filtered` on its `TableHead` (see Filtering).
 - **Sort button:** hover turns the label black; keyboard focus shows the `focus-ring`.
-- **Empty:** Table has no empty state of its own; render a row with one cell spanning every column, as the NoResults story does.
+- **Copy button:** hidden until its cell is hovered or it has the keyboard focus; a check mark for 2 seconds after a copy.
+- **Loading:** `TableLoadMore loading` under the table; the Search's `status="progress"` while results load; a 16px [Spinner](?path=/docs/components-spinner--docs) in the function bar while an action runs (Table A's Duplicate).
+- **Empty:** Table has no empty state of its own; render a row with one cell spanning the data columns, as the NoResults story does.
 
 ## Accessibility
 
 - The parts are native table elements, so screen readers announce rows, columns and headers. `TableCell` also sets `role="cell"`.
-- A sortable header is a `<button type="button">` inside the `<th>`. The `<th>` carries `aria-sort`; the sort icon is decorative.
+- A sortable header is a `<button type="button">` inside the `<th>`. The `<th>` carries `aria-sort`; the sort icon is decorative. When the sorting is elsewhere (Table A's Sort menu), set `aria-sort` on the sorted header yourself.
+- A filtered header says "Filtered" to screen readers before its label; the funnel is decorative.
 - Name the table: a `TableCaption`, or `aria-label` / `aria-labelledby` on `Table` (they go on the `<table>`).
 - Selection checkboxes need a name per row (the stories use "Select #CM9801" and "Select all"). The select-all checkbox reports `aria-checked="mixed"` when only some rows are selected (the Table A tests check it).
-- Controls that appear on hover must also appear on keyboard focus: `reveal` shows them while they have focus, and keeps them in the tab order and the accessibility tree (they are transparent, not hidden), so they have names like any control.
+- Controls that appear on hover must also appear on keyboard focus: `reveal` and `TableCopyButton` show them while they have focus, and keep them in the tab order and the accessibility tree (they are transparent, not hidden), so they have names like any control.
+- `TableSelectionBar` is a `role="group"` named by its count ("2 Selected"); its buttons are named Delete and Duplicate (`deleteLabel` and `duplicateLabel` win over `messages.table`). When a deletion removes the bar, move the focus somewhere useful: Table A moves it to "Select all".
+- `TableCopyButton` is named "Copy" (`messages.table.copy`): name it after what it copies when a row has several ("Copy the address of #CM9801"). "Copied" is announced through a live region that is always rendered.
+- `TablePageSize` is a `combobox` named "Rows per page" (`messages.table.pageSize`), its list a `listbox`. `TableResults` is a `role="status"` region, so a new count is announced politely; so is `TableLoadMore`'s "Loading more".
+- A scrolling block of rows (the LoadMore story) needs to be reachable by the keyboard: give it `tabIndex={0}` and a name, as the story does.
 - `TableToolbar` is a plain `<div>`: give its buttons names (the story's "Add order", "Filter", "Sort"). Add `role="toolbar"` only if you also move between its controls with the arrow keys.
-- Hover and the selected highlight are a fill only; say which rows are selected with the checkboxes' state, not the fill.
+- Hover and the selected highlight are a fill only; say which rows (or columns) are selected with the checkboxes' (or toggle buttons') state, not the fill.
 
 ### Keyboard
 
@@ -135,9 +197,13 @@ The table itself isn't focusable and has no arrow-key navigation; its sort butto
 
 | Key | Action |
 | --- | --- |
-| Tab / Shift + Tab | move to the next / previous control: sort buttons, then the controls in the cells, row by row |
-| Enter, Space | on a sort button: call `onSort`, which changes the sort |
+| Tab / Shift + Tab | move to the next / previous control: the function bar, sort buttons, then the controls in the cells, row by row, then the pages |
+| Enter, Space | on a sort button: call `onSort`, which changes the sort; on a copy button: copy; on a selection bar button: delete or duplicate |
 | Space | on a selection [Checkbox](?path=/docs/components-input-checkbox--docs): toggle the row (the Table A tests check it) |
+| Enter, Space, Arrow Down / Up | on `TablePageSize`: open the list; then the arrow keys move, Enter picks, Escape closes |
+| / | in Table A, while the focus is in the table: focus the Search |
+
+The function bar's menus are [DropdownMenu](?path=/docs/components-dropdownmenu--docs)s, with its keyboard.
 
 ### Deviations from the Figma kit
 
@@ -146,14 +212,17 @@ The full table is in the package README.
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | Header text in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`), White/70% in dark mode (7.08:1 on #333) | 1.4.3 |
-| The "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring` on the sort buttons: the ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| "105 results" in Black/40% | `text-secondary`, as the headers | 1.4.3 |
+| The "20 ∨" arrow in Black/40% (2.85:1) | `text-secondary` (3:1 or more) | 1.4.11 |
+| The 16px copy and sort buttons | the same look with a 24px hit area (`hit-area`) | 2.5.8 |
+| The "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring` on the sort, copy and rows-per-page buttons: the ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 
 The stories' status cells colour only the dot: the Secondary colours are 1.7–2.4:1 as text, so the text stays black and carries the meaning.
 
 ## Localization and RTL
 
-- Table renders no built-in strings: headers, captions and the names of your checkboxes and actions are yours to translate.
-- The cells are start-aligned and the row highlight rounds the start and end cells (`rounded-s-12`, `rounded-e-12`), so both follow the text direction.
+- The table parts render a few built-in strings, all in `messages.table` (5.3): "Filtered", "2 Selected", Delete, Duplicate, Copy, Copied, "Rows per page", "105 results" and "Loading more". Translate them with [SnowUIProvider](?path=/docs/components-snowuiprovider--docs); a part's own label prop wins. Headers, captions and the names of your checkboxes and actions are yours to translate.
+- The cells are start-aligned and the row highlight rounds the start and end cells (`rounded-s-12`, `rounded-e-12`), so both follow the text direction, as do the function bar and the footer.
 
 ## Do and don't
 
@@ -161,9 +230,10 @@ The stories' status cells colour only the dot: the Secondary colours are 1.7–2
 <Do>
 
 - Name the table with a caption or `aria-label`.
-- Pass `sortDirection={false}` for sortable columns that aren't sorted, and `undefined` for the others.
+- Sort from the function bar, as the kit does, and set `aria-sort` on the sorted header; or pass `sortDirection={false}` for sortable columns that aren't sorted, and `undefined` for the others.
 - Mark selected rows with `data-state="selected"` and a checked checkbox.
 - Show hover-only actions on keyboard focus too: use `reveal` on their cells.
+- Undo a deletion with a toast action, as the kit does, rather than asking to confirm it.
 
 </Do>
 <Dont>
@@ -171,6 +241,7 @@ The stories' status cells colour only the dot: the Secondary colours are 1.7–2
 - Don't use a table for layout.
 - Don't colour status text with the Secondary colours: colour a dot next to it.
 - Don't make whole rows clickable without a focusable control in them.
+- Don't use `TableLoadMore` and pages together: the kit loads rows dynamically instead of paging.
 
 </Dont>
 </DoDont>
@@ -179,6 +250,8 @@ The stories' status cells colour only the dot: the Secondary colours are 1.7–2
 
 - [Pagination](?path=/docs/components-pagination--docs): the page links under "Table A".
 - [Search](?path=/docs/components-search--docs): the search in the function bar.
+- [DropdownMenu](?path=/docs/components-dropdownmenu--docs): the Filter and Sort menus.
+- [Toaster](?path=/docs/components-toaster--docs): the "Deleted" toast with Undo.
 - [Checkbox](?path=/docs/components-input-checkbox--docs): row selection.
 - [Card](?path=/docs/components-card--docs): the dashboard block around "Table B".
 - [AvatarGroup](?path=/docs/components-avatar-avatargroup--docs) and [Avatar](?path=/docs/components-avatar-avatar--docs): people in a cell.
@@ -219,13 +292,13 @@ A `<tr>`: the hover highlight, and the selected one with `data-state="selected"`
 
 ### TableHead
 
-A header cell, `<th>`. With `sortDirection` (`'asc'`, `'desc'` or `false`) it renders a sort button and sets `aria-sort`; `onSort` is the button's click handler.
+A header cell, `<th>`. With `sortDirection` (`'asc'`, `'desc'` or `false`) it renders a sort button and sets `aria-sort`; `onSort` is the button's click handler. `reveal` and `filtered` were added in 5.3; `data-state="selected"` marks a selected column.
 
 <ArgTypes of={TableHead} />
 
 ### TableCell
 
-A data cell, `<td>`. `reveal` (added in 5.1) shows its elements only on hover, focus and selection (see States).
+A data cell, `<td>`. `reveal` (added in 5.1) shows its elements only on hover, focus and selection (see States); `data-state="selected"` marks a selected column (5.3).
 
 <ArgTypes of={TableCell} />
 
@@ -240,3 +313,33 @@ The `<caption>`, which names the table.
 The function bar above the table, a `<div>`. Added in 5.1.
 
 <ArgTypes of={TableToolbar} />
+
+### TableSelectionBar
+
+The "2 Selected" bar, a `<div role="group">`. Added in 5.3.
+
+<ArgTypes of={TableSelectionBar} />
+
+### TableCopyButton
+
+The copy button of a cell, a `<button>`. Added in 5.3.
+
+<ArgTypes of={TableCopyButton} />
+
+### TablePageSize
+
+The rows-per-page field: the props other than the value ones go to its `<button role="combobox">`. Added in 5.3.
+
+<ArgTypes of={TablePageSize} />
+
+### TableResults
+
+The result count, a `<p role="status">`. Added in 5.3.
+
+<ArgTypes of={TableResults} />
+
+### TableLoadMore
+
+The row under the table that loads more rows, a `<div>`. Added in 5.3.
+
+<ArgTypes of={TableLoadMore} />

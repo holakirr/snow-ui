@@ -20,4 +20,9 @@ export const addedIn: Readonly<Record<string, string>> = {
   'text-strip': '5.1',
   image: '5.1',
   'list-card': '5.1',
+  'table-copy-button': '5.3',
+  'table-load-more': '5.3',
+  'table-page-size': '5.3',
+  'table-results': '5.3',
+  'table-selection-bar': '5.3',
 }

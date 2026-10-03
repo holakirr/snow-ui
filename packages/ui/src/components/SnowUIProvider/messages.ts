@@ -9,10 +9,11 @@
  * wins over the provider.
  *
  * The namespaces added in 5.1 (`alert`, `alertDialog`, `avatarGroup`,
- * `charts`, `combobox`, `datePicker`, `listCards`, `progress`, `spinner`)
- * and 5.2 (`input`) are optional, so a translation typed as `Messages`
- * before they existed still compiles; the English defaults fill them in, and `useMessages()`
- * always returns every namespace (`Required<Messages>`). They become
+ * `charts`, `combobox`, `datePicker`, `listCards`, `progress`, `spinner`),
+ * 5.2 (`input`) and 5.3 (`table`) are optional, so a translation typed as
+ * `Messages` before they existed still compiles; the English defaults fill
+ * them in, and `useMessages()` always returns every namespace
+ * (`Required<Messages>`). They become
  * required in 6.0, as do the `dropdownMenu` namespace and
  * `commandPalette.results` added in 5.2.
  */
@@ -282,6 +283,27 @@ export type Messages = {
     /** The screen-reader text of a `Spinner`. */
     label: string
   }
+  /** The ready-made table parts (5.3 and later). */
+  table?: {
+    /** Screen-reader text of a `TableHead` with `filtered`. */
+    filtered: string
+    /** The number of selected rows in `TableSelectionBar`: "2 Selected". */
+    selected: (count: number) => string
+    /** The delete button of `TableSelectionBar`. */
+    delete: string
+    /** The duplicate button of `TableSelectionBar`. */
+    duplicate: string
+    /** The button of `TableCopyButton`. */
+    copy: string
+    /** Announced when `TableCopyButton` has copied its value. */
+    copied: string
+    /** The rows-per-page field of `TablePageSize`. */
+    pageSize: string
+    /** The number of rows in `TableResults`: "105 results". */
+    results: (count: number) => string
+    /** The screen-reader text of `TableLoadMore`'s spinner. */
+    loadingMore: string
+  }
   tag: {
     /** The remove button of a `Tag`. */
     remove: (label: string) => string
@@ -457,6 +479,17 @@ export const defaultMessages: Required<Messages> = {
   },
   spinner: {
     label: 'Loading',
+  },
+  table: {
+    filtered: 'Filtered',
+    selected: (count) => `${count} Selected`,
+    delete: 'Delete',
+    duplicate: 'Duplicate',
+    copy: 'Copy',
+    copied: 'Copied',
+    pageSize: 'Rows per page',
+    results: (count) => (count === 1 ? '1 result' : `${count} results`),
+    loadingMore: 'Loading more',
   },
   tag: {
     remove: (label) => `Remove tag ${label}`,

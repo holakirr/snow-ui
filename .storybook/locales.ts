@@ -162,6 +162,17 @@ export const ruMessages: Messages = {
   spinner: {
     label: 'Загрузка',
   },
+  table: {
+    filtered: 'Отфильтровано',
+    selected: (count) => `Выбрано: ${count}`,
+    delete: 'Удалить',
+    duplicate: 'Дублировать',
+    copy: 'Копировать',
+    copied: 'Скопировано',
+    pageSize: 'Строк на странице',
+    results: (count) => `${count} ${results(count)}`,
+    loadingMore: 'Загрузка строк',
+  },
   tag: {
     remove: (label) => `Удалить тег ${label}`,
   },

@@ -913,12 +913,10 @@ export const TableA: Story = {
       ).toHaveAttribute('aria-checked', 'true')
       await expect(canvas.getByText('107 results')).toBeInTheDocument()
       // Back to 20 rows: the kit's state, for the screenshot.
-      await pick(
-        canvas.getByRole('combobox', { name: 'Rows per page' }),
-        'option',
-        '20',
-      )
+      const size = canvas.getByRole('combobox', { name: 'Rows per page' })
+      await pick(size, 'option', '20')
       await expect(dataRows()).toHaveLength(20)
+      size.blur()
     })
   },
   render: () => <TableAExample />,
@@ -1186,6 +1184,9 @@ export const LoadMore: Story = {
     await waitFor(() => expect(rows()).toHaveLength(LOAD_COUNT * 2), {
       timeout: 3000,
     })
+    // The new rows push it out of view: no more loading.
+    await expect(canvas.queryByText('Loading more')).toBeNull()
+    scroller.scrollTop = 0
   },
   render: () => <LoadMoreExample />,
 }

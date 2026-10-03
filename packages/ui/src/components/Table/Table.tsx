@@ -124,6 +124,10 @@ const ARIA_SORT = {
   none: 'none',
 } as const
 
+// A selected column's cells with forced colours, which drop the fill.
+const SELECTED_FORCED =
+  'forced-colors:data-[state=selected]:outline-2 forced-colors:data-[state=selected]:-outline-offset-2 forced-colors:data-[state=selected]:outline-[Highlight]'
+
 // `reveal` on a header cell: as TableCell's, while the pointer isn't over
 // the table.
 const HEAD_REVEAL =
@@ -150,6 +154,8 @@ const TableHead: FC<TableHeadProps> = ({
         // A selected column (`data-state="selected"` on its cells): the
         // row highlight, rounded at the top.
         'data-[state=selected]:rounded-t-12 data-[state=selected]:bg-black-4 data-[state=selected]:text-black',
+        // Forced colours drop the fill: a Highlight outline instead.
+        SELECTED_FORCED,
         filtered && 'text-black',
         reveal && HEAD_REVEAL,
         className,
@@ -209,6 +215,7 @@ const TableCell: FC<TableCellProps> = ({ className, reveal, ...props }) => (
       // A selected column: `data-state="selected"` on the cells of a column
       // gives them the row highlight, rounded at the bottom of the last row.
       'data-[state=selected]:bg-black-4 [tr:last-child>&]:data-[state=selected]:rounded-b-12',
+      SELECTED_FORCED,
       reveal && REVEAL,
       className,
     )}

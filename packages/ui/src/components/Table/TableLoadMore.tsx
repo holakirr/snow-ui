@@ -1,7 +1,13 @@
 'use client'
 
 import { useComposedRefs } from '@radix-ui/react-compose-refs'
-import { type ComponentProps, type FC, useEffect, useRef } from 'react'
+import {
+  type ComponentProps,
+  type FC,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react'
 import { twMerge } from '../../utils/tw-merge'
 import { useMessages } from '../SnowUIProvider'
 import { LoadingRing } from '../Spinner/ring'
@@ -11,8 +17,10 @@ type TableLoadMoreProps = ComponentProps<'div'> & {
   loading?: boolean
   /**
    * Called when the element scrolls into view while not `loading`: load the
-   * next rows. Called again while it stays in view after they load (the
-   * rows didn't fill the view). Leave it out when there are no more rows.
+   * next rows, with `loading` set meanwhile. When `loading` turns false
+   * with the element still in view (the rows didn't fill the view, or the
+   * request failed) it is called again. Leave it out when there are no more
+   * rows, or after an error (show a retry button instead).
    */
   onLoadMore?: () => void
   /**
@@ -43,7 +51,9 @@ const TableLoadMore: FC<TableLoadMoreProps> = ({
   const composedRef = useComposedRefs(nodeRef, ref)
   // The latest callback, so a new function each render doesn't observe anew.
   const onLoadMoreRef = useRef(onLoadMore)
-  onLoadMoreRef.current = onLoadMore
+  useLayoutEffect(() => {
+    onLoadMoreRef.current = onLoadMore
+  })
   const canLoad = Boolean(onLoadMore) && !loading
 
   useEffect(() => {

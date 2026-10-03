@@ -24,12 +24,18 @@ type TablePageSizeProps = Omit<
   /** Called with the rows per page the user picks. */
   onValueChange?: (value: number) => void
   /**
-   * The choices, in the order they are listed.
+   * The choices, in the order they are listed. A `value` or `defaultValue`
+   * that isn't one of them is added, in order: TanStack Table's default
+   * page size, 10, shows as 10 rather than as an empty field.
    * @default [20, 50, 100]
    */
   options?: readonly number[]
   /** The name of the field in a form; it submits the rows per page. */
   name?: string
+  /** The `id` of the form the field belongs to, when it is outside it. */
+  form?: string
+  /** The field must have a value to submit its form. */
+  required?: boolean
 }
 
 /**
@@ -45,12 +51,19 @@ const TablePageSize: FC<TablePageSizeProps> = ({
   onValueChange,
   options = DEFAULT_OPTIONS,
   name,
+  form,
+  required,
   disabled,
   className,
   'aria-label': ariaLabel,
   ...props
 }) => {
   const messages = useMessages()
+  const current = value ?? defaultValue
+  const choices =
+    current === undefined || options.includes(current)
+      ? options
+      : [...options, current].sort((a, b) => a - b)
 
   return (
     <SelectPrimitive.Root
@@ -58,6 +71,8 @@ const TablePageSize: FC<TablePageSizeProps> = ({
       defaultValue={String(defaultValue ?? options[0])}
       onValueChange={(next) => onValueChange?.(Number(next))}
       name={name}
+      form={form}
+      required={required}
       disabled={disabled}
     >
       <SelectPrimitive.Trigger
@@ -82,7 +97,7 @@ const TablePageSize: FC<TablePageSizeProps> = ({
         </SelectPrimitive.Icon>
       </SelectPrimitive.Trigger>
       <SelectContent>
-        {options.map((option) => (
+        {choices.map((option) => (
           <SelectItem key={option} value={String(option)}>
             {option}
           </SelectItem>

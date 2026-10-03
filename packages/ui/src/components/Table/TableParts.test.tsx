@@ -55,6 +55,41 @@ describe('TableSelectionBar', () => {
     expect(within(bar).queryByRole('button', { name: 'Duplicate' })).toBeNull()
   })
 
+  it('busy: the buttons stay, aria-disabled, and do nothing', () => {
+    const onDelete = vi.fn()
+    const onDuplicate = vi.fn()
+    const { rerender } = render(
+      <TableSelectionBar
+        count={2}
+        onDelete={onDelete}
+        onDuplicate={onDuplicate}
+        busy
+      />,
+    )
+    const duplicate = screen.getByRole('button', { name: 'Duplicate' })
+    duplicate.focus()
+    for (const button of screen.getAllByRole('button')) {
+      expect(button).toHaveAttribute('aria-disabled', 'true')
+      expect(button).not.toBeDisabled()
+      fireEvent.click(button)
+    }
+    expect(onDelete).not.toHaveBeenCalled()
+    expect(onDuplicate).not.toHaveBeenCalled()
+
+    rerender(
+      <TableSelectionBar
+        count={2}
+        onDelete={onDelete}
+        onDuplicate={onDuplicate}
+      />,
+    )
+    // The same button, still focused.
+    expect(duplicate).toHaveFocus()
+    expect(duplicate).not.toHaveAttribute('aria-disabled')
+    fireEvent.click(duplicate)
+    expect(onDuplicate).toHaveBeenCalledTimes(1)
+  })
+
   it('takes its strings from SnowUIProvider', () => {
     render(
       <SnowUIProvider
@@ -126,6 +161,14 @@ describe('TableCopyButton', () => {
     expect(writeText).toHaveBeenCalledWith('Meadow Lane Oakland')
     expect(onCopy).toHaveBeenCalledWith('Meadow Lane Oakland')
     expect(button).toHaveAttribute('data-state', 'copied')
+    expect(screen.getByRole('status')).toHaveTextContent('Copied')
+
+    // Another copy changes the live region's text, so it is announced again.
+    const first = screen.getByRole('status').textContent
+    await act(async () => {
+      fireEvent.click(button)
+    })
+    expect(screen.getByRole('status').textContent).not.toBe(first)
     expect(screen.getByRole('status')).toHaveTextContent('Copied')
   })
 
@@ -226,6 +269,17 @@ describe('TablePageSize', () => {
       key: 'Enter',
     })
     expect(onValueChange).toHaveBeenCalledWith(10)
+  })
+
+  it('adds a value that is not one of the options, in order', () => {
+    // TanStack Table's default page size.
+    render(<TablePageSize value={10} />)
+    const trigger = screen.getByRole('combobox', { name: 'Rows per page' })
+    expect(trigger).toHaveTextContent('10')
+    fireEvent.keyDown(trigger, { key: 'Enter' })
+    expect(
+      screen.getAllByRole('option').map((option) => option.textContent),
+    ).toEqual(['10', '20', '50', '100'])
   })
 
   it('shows a controlled value; aria-label and SnowUIProvider name it', () => {

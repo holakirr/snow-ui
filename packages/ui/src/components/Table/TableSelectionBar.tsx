@@ -27,6 +27,12 @@ type TableSelectionBarProps = ComponentProps<'div'> & {
    */
   onDuplicate?: MouseEventHandler<HTMLButtonElement>
   /**
+   * An action is running (the kit shows its Loading spinner in the function
+   * bar meanwhile): the Delete and Duplicate buttons are `aria-disabled` and
+   * do nothing, but stay in place and keep the focus.
+   */
+  busy?: boolean
+  /**
    * Accessible name of the Delete button.
    * @default messages.table.delete: "Delete"
    */
@@ -49,6 +55,7 @@ const TableSelectionBar: FC<TableSelectionBarProps> = ({
   count,
   onDelete,
   onDuplicate,
+  busy = false,
   deleteLabel,
   duplicateLabel,
   className,
@@ -57,6 +64,14 @@ const TableSelectionBar: FC<TableSelectionBarProps> = ({
 }) => {
   const messages = useMessages()
   const countId = useId()
+  // `aria-disabled` rather than `disabled`, so a busy button keeps the focus.
+  const busyProps = busy
+    ? {
+        'aria-disabled': true,
+        className:
+          'aria-disabled:cursor-not-allowed aria-disabled:text-black-20 aria-disabled:hover:bg-transparent aria-disabled:active:scale-100',
+      }
+    : undefined
 
   return (
     // biome-ignore lint/a11y/useSemanticElements: a group of toolbar controls, not form fields
@@ -79,14 +94,16 @@ const TableSelectionBar: FC<TableSelectionBarProps> = ({
         <Button
           aria-label={deleteLabel ?? messages.table.delete}
           startContent={<Trash size={16} />}
-          onClick={onDelete}
+          onClick={busy ? undefined : onDelete}
+          {...busyProps}
         />
       )}
       {onDuplicate && (
         <Button
           aria-label={duplicateLabel ?? messages.table.duplicate}
           startContent={<Copy size={16} />}
-          onClick={onDuplicate}
+          onClick={busy ? undefined : onDuplicate}
+          {...busyProps}
         />
       )}
       {children}

@@ -542,7 +542,7 @@ const SortMenu = ({ table }: { table: OrdersTable }) => {
 }
 
 /** How long the story's fake server takes to duplicate rows. */
-const DUPLICATE_DELAY = 300
+const DUPLICATE_DELAY = 800
 
 const TableAExample = () => {
   const [data, setData] = useState(ORDERS)
@@ -565,7 +565,11 @@ const TableAExample = () => {
   const root = useRef<HTMLDivElement>(null)
   const search = useRef<HTMLInputElement>(null)
   const selection = table.state.rowSelection
-  const selected = data.filter((order) => selection[order.id])
+  // The selected rows the search and the filter show: the bar counts,
+  // deletes and duplicates only those.
+  const selected = table
+    .getFilteredSelectedRowModel()
+    .rows.map((row) => row.original)
 
   // The "/" hint of the Search is only a hint: the shortcut is bound here,
   // to the table's own region, not the document: a single-character
@@ -574,6 +578,8 @@ const TableAExample = () => {
     const target = event.target as HTMLElement
     if (
       event.key !== '/' ||
+      // React also bubbles the keys of the portalled menus here.
+      !event.currentTarget.contains(target) ||
       target.isContentEditable ||
       target.closest('input, textarea, select')
     )
@@ -587,7 +593,8 @@ const TableAExample = () => {
   const deleteSelected = () => {
     const before = data
     const beforeSelection = selection
-    setData(data.filter((order) => !selection[order.id]))
+    const deleted = new Set(selected)
+    setData(data.filter((order) => !deleted.has(order)))
     table.resetRowSelection(true)
     // The bar and its buttons are gone: the focus goes to "Select all".
     root.current?.querySelector<HTMLElement>('thead [role="checkbox"]')?.focus()
@@ -609,16 +616,24 @@ const TableAExample = () => {
   }
 
   // The kit: the copies go "below the last choice data" and are selected
-  // when they are done; the function bar's Loading spinner shows meanwhile.
+  // when they are done; the function bar's Loading spinner shows meanwhile,
+  // and the bar is `busy`.
   const duplicateSelected = () => {
     setDuplicating(true)
+    const originals = selected
     duplicateTimer.current = setTimeout(() => {
-      const copies = selected.map((order) => ({
+      const copies = originals.map((order) => ({
         ...order,
         id: `#CM${9801 + nextId.current++}`,
       }))
-      const last = data.indexOf(selected[selected.length - 1])
-      setData([...data.slice(0, last + 1), ...copies, ...data.slice(last + 1)])
+      setData((current) => {
+        const last = current.indexOf(originals[originals.length - 1])
+        return [
+          ...current.slice(0, last + 1),
+          ...copies,
+          ...current.slice(last + 1),
+        ]
+      })
       table.setRowSelection(
         Object.fromEntries(copies.map((copy) => [copy.id, true])),
       )
@@ -649,7 +664,8 @@ const TableAExample = () => {
               count={selected.length}
               className="ms-2"
               onDelete={deleteSelected}
-              onDuplicate={duplicating ? undefined : duplicateSelected}
+              onDuplicate={duplicateSelected}
+              busy={duplicating}
             />
           )}
         </div>
@@ -866,14 +882,19 @@ export const TableA: Story = {
           canvas.getByRole('checkbox', { name: 'Select #CM9808' }),
         )
         const bar = canvas.getByRole('group', { name: '2 Selected' })
-        await userEvent.click(
-          within(bar).getByRole('button', { name: 'Duplicate' }),
-        )
-        // The function bar's Loading spinner, while the copies are made.
+        const duplicate = within(bar).getByRole('button', { name: 'Duplicate' })
+        await userEvent.click(duplicate)
+        // The function bar's Loading spinner while the copies are made; the
+        // bar is busy, and its button keeps the focus.
         await expect(canvas.getByText('Loading')).toBeInTheDocument()
-        await waitFor(() =>
-          expect(canvas.getByRole('cell', { name: '#CM9906' })).toBeVisible(),
+        await expect(duplicate).toHaveAttribute('aria-disabled', 'true')
+        await expect(duplicate).toHaveFocus()
+        await waitFor(
+          () =>
+            expect(canvas.getByRole('cell', { name: '#CM9906' })).toBeVisible(),
+          { timeout: 3000 },
         )
+        await expect(duplicate).not.toHaveAttribute('aria-disabled')
         await expect(
           dataRows()
             .slice(6, 10)
@@ -928,7 +949,7 @@ export const TableADark: Story = {
 }
 
 /** The kit's "In progress" search: results come this long after a key. */
-const SEARCH_DELAY = 300
+const SEARCH_DELAY = 800
 
 /**
  * The Figma "Search results" guidance: the results replace the rows as you
@@ -1006,8 +1027,9 @@ export const SearchResults: Story = {
     const search = canvas.getByRole('searchbox', { name: 'Search users' })
     await userEvent.type(search, 'kate')
     await expect(search).toHaveAttribute('aria-busy', 'true')
-    await waitFor(() =>
-      expect(canvas.getByText('21 results')).toBeInTheDocument(),
+    await waitFor(
+      () => expect(canvas.getByText('21 results')).toBeInTheDocument(),
+      { timeout: 3000 },
     )
     await expect(search).not.toHaveAttribute('aria-busy')
     for (const row of canvas.getAllByRole('row').slice(1)) {
@@ -1109,7 +1131,7 @@ export const SortableHeaders: Story = {
 /** How many rows the LoadMore story loads at a time, and how fast. */
 const LOAD_COUNT = 10
 const LOAD_MAX = 40
-const LOAD_DELAY = 300
+const LOAD_DELAY = 800
 
 const LoadMoreExample = () => {
   const [rows, setRows] = useState(() => makeOrders(LOAD_COUNT))

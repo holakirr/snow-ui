@@ -43,10 +43,20 @@ const TableCopyButton: FC<TableCopyButtonProps> = ({
   ...props
 }) => {
   const messages = useMessages()
-  const [copied, setCopied] = useState(false)
+  // How many copies in a row (0: none shown): each one changes the live
+  // region's text, so a copy within the 2 seconds is announced again.
+  const [copies, setCopies] = useState(0)
+  const copied = copies > 0
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const mounted = useRef(false)
 
-  useEffect(() => () => clearTimeout(timer.current), [])
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+      clearTimeout(timer.current)
+    }
+  }, [])
 
   const copy = async (event: MouseEvent<HTMLButtonElement>) => {
     onClick?.(event)
@@ -57,10 +67,12 @@ const TableCopyButton: FC<TableCopyButtonProps> = ({
       // Denied (no permission, or the page isn't focused): nothing copied.
       return
     }
-    setCopied(true)
-    clearTimeout(timer.current)
-    timer.current = setTimeout(() => setCopied(false), COPIED_DURATION)
     onCopy?.(value)
+    // Removed while the clipboard was being written: nothing to show.
+    if (!mounted.current) return
+    setCopies((count) => count + 1)
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setCopies(0), COPIED_DURATION)
   }
 
   const Icon = copied ? Check : ClipboardText
@@ -84,7 +96,10 @@ const TableCopyButton: FC<TableCopyButtonProps> = ({
       </button>
       {/* Always rendered, so the change to "Copied" is announced. */}
       <span role="status" className="sr-only">
-        {copied ? messages.table.copied : ''}
+        {copied
+          ? // A trailing no-break space on every other copy: new text.
+            `${messages.table.copied}${copies % 2 ? '' : '\u00a0'}`
+          : ''}
       </span>
     </>
   )

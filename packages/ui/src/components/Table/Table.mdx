@@ -129,7 +129,7 @@ With TanStack Table:
 
 ## Selecting columns
 
-The kit selects a column with a click on the blank area of its cells; Ctrl (⌘ on a Mac) adds or removes one, Shift selects a range, and a click outside the table clears the choice. `data-state="selected"` on the cells of a column (its `TableHead` and `TableCell`s) gives them the row highlight, Black/4%, rounded 12px at the top of the header and the bottom of the last row; the header label turns black. The clicks are yours, as in the story below, which also makes each header a toggle button (`aria-pressed`), so the keyboard can select columns too.
+The kit selects a column with a click on the blank area of its cells; Ctrl (⌘ on a Mac) adds or removes one, Shift selects a range, and a click outside the table clears the choice. `data-state="selected"` on the cells of a column (its `TableHead` and `TableCell`s) gives them the row highlight, Black/4%, rounded 12px at the top of the header and the bottom of the last row; the header label turns black. With forced colours, which drop the fill, the cells get a 2px Highlight outline. The clicks are yours, as in the story below, which also makes each header a toggle button (`aria-pressed`), so the keyboard can select columns too.
 
 <Canvas of={TableStories.ColumnSelection} />
 
@@ -137,7 +137,7 @@ The kit selects a column with a click on the blank area of its cells; Ctrl (⌘ 
 
 ### TableSelectionBar
 
-The function bar's "when data is selected" state: a 12px Black/10% divider, the number of selected rows ("2 Selected", `messages.table.selected`) and the Delete (Trash) and Duplicate (Copy) buttons, 8px apart. It renders the buttons you pass handlers for (`onDelete`, `onDuplicate`) and your own actions after them (`children`). Render it in the `TableToolbar`, after the buttons, while rows are selected. The kit then shows a "Deleted" toast with Undo (`toast()` with a `ToastAction`, see [Toaster](?path=/docs/components-toaster--docs)) and puts duplicates under the last selected row, selected.
+The function bar's "when data is selected" state: a 12px Black/10% divider, the number of selected rows ("2 Selected", `messages.table.selected`) and the Delete (Trash) and Duplicate (Copy) buttons, 8px apart. It renders the buttons you pass handlers for (`onDelete`, `onDuplicate`) and your own actions after them (`children`). While an action runs, `busy` makes the two buttons `aria-disabled`: they do nothing but stay in place, so the focus stays on them (Table A shows the kit's Loading spinner next to the bar meanwhile). Render it in the `TableToolbar`, after the buttons, while rows are selected; count the selected rows that the search and filters show, so Delete never removes rows the user can't see. The kit then shows a "Deleted" toast with Undo (`toast()` with a `ToastAction`, see [Toaster](?path=/docs/components-toaster--docs)) and puts duplicates under the last selected row, selected.
 
 <InstallTabs item="table-selection-bar" />
 
@@ -149,7 +149,7 @@ A 16px ClipboardText button for a cell, after its text (`flex gap-1`): it shows 
 
 ### TablePageSize and TableResults
 
-`TablePageSize` is the kit's "20 ∨": a small borderless button with the rows per page and an ArrowLineDown, which opens the list of `options` (20, 50 and 100 by default). It is a Radix Select: controlled with `value` and `onValueChange` (called with a number), or uncontrolled with `defaultValue`. With TanStack Table: `value={table.state.pagination.pageSize}` and `onValueChange={table.setPageSize}`.
+`TablePageSize` is the kit's "20 ∨": a small borderless button with the rows per page and an ArrowLineDown, which opens the list of `options` (20, 50 and 100 by default). It is a Radix Select: controlled with `value` and `onValueChange` (called with a number), or uncontrolled with `defaultValue`; `name`, `form` and `required` make it a form field. A value that isn't one of the `options` is added to the list, in order. With TanStack Table: `value={table.state.pagination.pageSize}` and `onValueChange={table.setPageSize}`, with `initialState: { pagination: { pageSize: 20 } }` for the kit's default (TanStack's own is 10).
 
 `TableResults` is the kit's "105 results": the number of rows across every page (TanStack's `getPrePaginatedRowModel().rows.length`), in 12/16 `text-secondary`, announced when it changes.
 
@@ -158,7 +158,7 @@ A 16px ClipboardText button for a cell, after its text (`flex gap-1`): it shows 
 
 ### TableLoadMore
 
-The kit's "loading data dynamically": instead of pages, the next rows load when the user scrolls to the end of the table. Put `TableLoadMore` right under the table, with `onLoadMore` (it is called when the row scrolls into view, through an IntersectionObserver) and `loading` while the rows load: it shows a 16px spinner and announces "Loading more" (`messages.table.loadingMore`). Remove it when there are no more rows.
+The kit's "loading data dynamically": instead of pages, the next rows load when the user scrolls to the end of the table. Put `TableLoadMore` right under the table, with `onLoadMore` (it is called when the row scrolls into view, through an IntersectionObserver) and `loading` while the rows load: it shows a 16px spinner and announces "Loading more" (`messages.table.loadingMore`). When `loading` turns false with the row still in view, `onLoadMore` is called again, so the rows fill the view. Remove it when there are no more rows; after a failed request, leave out `onLoadMore` and show a retry button instead, or it would retry at once.
 
 <Canvas of={TableStories.LoadMore} />
 

@@ -692,6 +692,50 @@ const TableAExample = () => {
   )
 }
 
+type PlayContext = Parameters<NonNullable<Story['play']>>[0]
+
+/** What the Table A plays share: queries, and picking from a menu. */
+const tableA = ({ canvas, canvasElement, userEvent }: PlayContext) => {
+  const page = within(canvasElement.ownerDocument.body)
+  const dataRows = () => canvas.getAllByRole('row').slice(1)
+  const cellOf = (row: HTMLElement, column: number) =>
+    within(row).getAllByRole('cell')[column]
+  const opacity = (element: Element) =>
+    Number(getComputedStyle(element).opacity)
+  const hover = matchMedia('(hover: hover)').matches
+  const selectAll = () => canvas.getByRole('checkbox', { name: 'Select all' })
+  // Opens a menu (or the rows-per-page list) and picks an item. Until the
+  // popup's exit animation ends, Radix keeps the rest of the page
+  // aria-hidden, so the rows can't be found by role: wait for it.
+  const pick = async (
+    trigger: HTMLElement,
+    role: 'menuitem' | 'menuitemradio' | 'option',
+    name: string,
+  ) => {
+    await userEvent.click(trigger)
+    const item = await page.findByRole(role, { name })
+    const popup = item.closest('[role="menu"], [role="listbox"]')
+    await userEvent.click(item)
+    if (!popup) return
+    await expectClosed(popup)
+    await waitFor(() => expect(popup).not.toBeInTheDocument())
+  }
+  const sortButton = () => canvas.getByRole('button', { name: 'Sort' })
+  const filterButton = () => canvas.getByRole('button', { name: 'Filter' })
+
+  return {
+    page,
+    dataRows,
+    cellOf,
+    opacity,
+    hover,
+    selectAll,
+    pick,
+    sortButton,
+    filterButton,
+  }
+}
+
 /**
  * The Figma "Table A" (Order List), as in its interactive guidance: the
  * function bar (TableToolbar) with Add, a Filter menu (the Status header
@@ -705,33 +749,9 @@ const TableAExample = () => {
  * (TablePageSize), the result count (TableResults) and the pages.
  */
 export const TableA: Story = {
-  play: async ({ canvas, canvasElement, userEvent, step }) => {
-    const page = within(canvasElement.ownerDocument.body)
-    const dataRows = () => canvas.getAllByRole('row').slice(1)
-    const cellOf = (row: HTMLElement, column: number) =>
-      within(row).getAllByRole('cell')[column]
-    const opacity = (element: Element) =>
-      Number(getComputedStyle(element).opacity)
-    const hover = matchMedia('(hover: hover)').matches
-    const selectAll = () => canvas.getByRole('checkbox', { name: 'Select all' })
-    // Opens a menu (or the rows-per-page list) and picks an item. Until the
-    // popup's exit animation ends, Radix keeps the rest of the page
-    // aria-hidden, so the rows can't be found by role: wait for it.
-    const pick = async (
-      trigger: HTMLElement,
-      role: 'menuitem' | 'menuitemradio' | 'option',
-      name: string,
-    ) => {
-      await userEvent.click(trigger)
-      const item = await page.findByRole(role, { name })
-      const popup = item.closest('[role="menu"], [role="listbox"]')
-      await userEvent.click(item)
-      if (!popup) return
-      await expectClosed(popup)
-      await waitFor(() => expect(popup).not.toBeInTheDocument())
-    }
-    const sortButton = () => canvas.getByRole('button', { name: 'Sort' })
-    const filterButton = () => canvas.getByRole('button', { name: 'Filter' })
+  play: async (context) => {
+    const { dataRows, opacity, hover, selectAll, pick } = tableA(context)
+    const { canvas, userEvent, step } = context
 
     await step('the kit state: two rows selected, "2 Selected"', async () => {
       await expect(dataRows()).toHaveLength(20)
@@ -773,40 +793,6 @@ export const TableA: Story = {
       await waitFor(() => expect(opacity(more)).toBe(0))
     })
 
-    await step('"Select all" selects and clears the page', async () => {
-      // Mixed: a click selects every row of the page, the next clears it.
-      await userEvent.click(selectAll())
-      for (const box of canvas.getAllByRole('checkbox', {
-        name: /^Select #/,
-      })) {
-        await expect(box).toHaveAttribute('aria-checked', 'true')
-      }
-      await expect(
-        canvas.getByRole('group', { name: '20 Selected' }),
-      ).toBeInTheDocument()
-      await userEvent.click(selectAll())
-      for (const box of canvas.getAllByRole('checkbox', {
-        name: /^Select #/,
-      })) {
-        await expect(box).toHaveAttribute('aria-checked', 'false')
-      }
-      await expect(canvas.queryByRole('group', { name: /Selected/ })).toBeNull()
-    })
-
-    await step('"Select all" shows on hover, focus or selection', async () => {
-      const all = selectAll()
-      all.blur()
-      // Nothing selected and no pointer over the table: hidden.
-      if (hover) {
-        await animationsEnded(all)
-        await waitFor(() => expect(opacity(all)).toBe(0))
-      }
-      all.focus()
-      await animationsEnded(all)
-      await waitFor(() => expect(opacity(all)).toBe(1))
-      all.blur()
-    })
-
     await step(
       '"/" in the table focuses the Search, which filters the users',
       async () => {
@@ -826,6 +812,32 @@ export const TableA: Story = {
         search.blur()
       },
     )
+    await step('rows per page: 20, 50 or 100', async () => {
+      const size = canvas.getByRole('combobox', { name: 'Rows per page' })
+      await expect(size).toHaveTextContent('20')
+      await pick(size, 'option', '50')
+      await expect(dataRows()).toHaveLength(50)
+      await expect(size).toHaveTextContent('50')
+      // Back to 20: the kit's state, for the screenshot.
+      await pick(size, 'option', '20')
+      await expect(dataRows()).toHaveLength(20)
+      size.blur()
+    })
+  },
+  render: () => <TableAExample />,
+}
+
+/**
+ * Table A's Sort and Filter menus: the sorted header gets the arrow and
+ * `aria-sort`, the filtered one the funnel.
+ */
+export const TableASortAndFilter: Story = {
+  name: 'Table A: sort and filter',
+  tags: ['skip-visual'],
+  play: async (context) => {
+    const { page, dataRows, cellOf, pick, sortButton, filterButton } =
+      tableA(context)
+    const { canvas, userEvent, step } = context
 
     await step('the Sort menu sorts; the header shows it', async () => {
       const user = canvas.getByRole('columnheader', { name: 'User' })
@@ -863,13 +875,54 @@ export const TableA: Story = {
       ).toBeInTheDocument()
       await expect(canvas.getByText('105 results')).toBeInTheDocument()
     })
+  },
+  render: () => <TableAExample />,
+}
 
-    await step('rows per page: 20, 50 or 100', async () => {
-      const size = canvas.getByRole('combobox', { name: 'Rows per page' })
-      await expect(size).toHaveTextContent('20')
-      await pick(size, 'option', '50')
-      await expect(dataRows()).toHaveLength(50)
-      await expect(size).toHaveTextContent('50')
+/**
+ * Table A's selection: "Select all", then the "2 Selected" bar's Duplicate
+ * (busy meanwhile) and Delete (a "Deleted" toast with Undo).
+ */
+export const TableASelection: Story = {
+  name: 'Table A: selection',
+  tags: ['skip-visual'],
+  play: async (context) => {
+    const { page, dataRows, cellOf, opacity, hover, selectAll } =
+      tableA(context)
+    const { canvas, userEvent, step } = context
+
+    await step('"Select all" selects and clears the page', async () => {
+      // Mixed: a click selects every row of the page, the next clears it.
+      await userEvent.click(selectAll())
+      for (const box of canvas.getAllByRole('checkbox', {
+        name: /^Select #/,
+      })) {
+        await expect(box).toHaveAttribute('aria-checked', 'true')
+      }
+      await expect(
+        canvas.getByRole('group', { name: '20 Selected' }),
+      ).toBeInTheDocument()
+      await userEvent.click(selectAll())
+      for (const box of canvas.getAllByRole('checkbox', {
+        name: /^Select #/,
+      })) {
+        await expect(box).toHaveAttribute('aria-checked', 'false')
+      }
+      await expect(canvas.queryByRole('group', { name: /Selected/ })).toBeNull()
+    })
+
+    await step('"Select all" shows on hover, focus or selection', async () => {
+      const all = selectAll()
+      all.blur()
+      // Nothing selected and no pointer over the table: hidden.
+      if (hover) {
+        await animationsEnded(all)
+        await waitFor(() => expect(opacity(all)).toBe(0))
+      }
+      all.focus()
+      await animationsEnded(all)
+      await waitFor(() => expect(opacity(all)).toBe(1))
+      all.blur()
     })
 
     await step(
@@ -933,11 +986,6 @@ export const TableA: Story = {
         canvas.getByRole('checkbox', { name: 'Select #CM9906' }),
       ).toHaveAttribute('aria-checked', 'true')
       await expect(canvas.getByText('107 results')).toBeInTheDocument()
-      // Back to 20 rows: the kit's state, for the screenshot.
-      const size = canvas.getByRole('combobox', { name: 'Rows per page' })
-      await pick(size, 'option', '20')
-      await expect(dataRows()).toHaveLength(20)
-      size.blur()
     })
   },
   render: () => <TableAExample />,

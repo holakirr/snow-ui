@@ -544,7 +544,7 @@ const SortMenu = ({ table }: { table: OrdersTable }) => {
 /** How long the story's fake server takes to duplicate rows. */
 const DUPLICATE_DELAY = 800
 
-const TableAExample = () => {
+const TableAExample = ({ pageSize = 20 }: { pageSize?: number }) => {
   const [data, setData] = useState(ORDERS)
   const nextId = useRef(ORDERS.length)
   const [duplicating, setDuplicating] = useState(false)
@@ -557,7 +557,7 @@ const TableAExample = () => {
     getRowId: (order) => order.id,
     enableRowSelection: true,
     initialState: {
-      pagination: { pageIndex: 0, pageSize: 20 },
+      pagination: { pageIndex: 0, pageSize },
       // The kit's selected state: two rows and the "2 Selected" bar.
       rowSelection: { '#CM9807': true, '#CM9808': true },
     },
@@ -694,45 +694,80 @@ const TableAExample = () => {
 
 type PlayContext = Parameters<NonNullable<Story['play']>>[0]
 
-/** What the Table A plays share: queries, and picking from a menu. */
-const tableA = ({ canvas, canvasElement, userEvent }: PlayContext) => {
-  const page = within(canvasElement.ownerDocument.body)
-  const dataRows = () => canvas.getAllByRole('row').slice(1)
-  const cellOf = (row: HTMLElement, column: number) =>
-    within(row).getAllByRole('cell')[column]
+/**
+ * What the Table A plays share. Role queries scan the whole table and check
+ * the style of every element, which took seconds per call on CI under
+ * coverage: these find elements by label, text or selector, and role
+ * queries only run inside a small element (the function bar, a menu).
+ */
+const tableA = ({ canvasElement, userEvent }: PlayContext) => {
+  const doc = canvasElement.ownerDocument
+  const root = within(canvasElement)
+  const toolbar = () =>
+    within(
+      canvasElement.querySelector('[data-slot="table-toolbar"]') as HTMLElement,
+    )
+  const button = (name: string) => toolbar().getByRole('button', { name })
+  const bar = () =>
+    canvasElement.querySelector<HTMLElement>(
+      '[data-slot="table-selection-bar"]',
+    )
+  const dataRows = () => [
+    ...canvasElement.querySelectorAll<HTMLTableRowElement>('tbody tr'),
+  ]
+  const idOf = (row: HTMLTableRowElement) => row.cells[1]?.textContent
+  const rowOf = (id: string) =>
+    root.getByText(id).closest('tr') as HTMLTableRowElement
+  const header = (column: number) =>
+    canvasElement.querySelectorAll<HTMLElement>('thead th')[
+      column
+    ] as HTMLElement
+  const checkbox = (name: string) => root.getByLabelText(name)
+  const selectAll = () => checkbox('Select all')
   const opacity = (element: Element) =>
     Number(getComputedStyle(element).opacity)
   const hover = matchMedia('(hover: hover)').matches
-  const selectAll = () => canvas.getByRole('checkbox', { name: 'Select all' })
-  // Opens a menu (or the rows-per-page list) and picks an item. Until the
-  // popup's exit animation ends, Radix keeps the rest of the page
-  // aria-hidden, so the rows can't be found by role: wait for it.
+  // The open menu or list (in a portal). Until its exit animation ends,
+  // Radix keeps the rest of the page aria-hidden: wait for it to go.
+  const popup = () =>
+    waitFor(() => {
+      const element = doc.querySelector<HTMLElement>(
+        '[role="menu"], [role="listbox"]',
+      )
+      if (!element) throw new Error('no menu')
+      return element
+    })
+  const closed = async (element: HTMLElement) => {
+    await expectClosed(element)
+    await waitFor(() => expect(element).not.toBeInTheDocument())
+  }
   const pick = async (
     trigger: HTMLElement,
-    role: 'menuitem' | 'menuitemradio' | 'option',
+    role: 'menuitem' | 'menuitemradio' | 'menuitemcheckbox' | 'option',
     name: string,
   ) => {
     await userEvent.click(trigger)
-    const item = await page.findByRole(role, { name })
-    const popup = item.closest('[role="menu"], [role="listbox"]')
-    await userEvent.click(item)
-    if (!popup) return
-    await expectClosed(popup)
-    await waitFor(() => expect(popup).not.toBeInTheDocument())
+    const menu = await popup()
+    await userEvent.click(within(menu).getByRole(role, { name }))
+    // A checkbox item leaves the menu open: Escape closes it.
+    if (role === 'menuitemcheckbox') await userEvent.keyboard('{Escape}')
+    await closed(menu)
   }
-  const sortButton = () => canvas.getByRole('button', { name: 'Sort' })
-  const filterButton = () => canvas.getByRole('button', { name: 'Filter' })
 
   return {
-    page,
+    root,
+    button,
+    bar,
     dataRows,
-    cellOf,
+    idOf,
+    rowOf,
+    header,
+    checkbox,
+    selectAll,
     opacity,
     hover,
-    selectAll,
     pick,
-    sortButton,
-    filterButton,
+    closed,
   }
 }
 
@@ -746,22 +781,25 @@ const tableA = ({ canvas, canvasElement, userEvent }: PlayContext) => {
  * "2 Selected" bar (TableSelectionBar) whose Delete shows a "Deleted" toast
  * with Undo and whose Duplicate puts the copies under the selection; the
  * address copy button (TableCopyButton), and the footer with rows per page
- * (TablePageSize), the result count (TableResults) and the pages.
+ * (TablePageSize), the result count (TableResults) and the pages. The
+ * test-only "Table A: …" stories after it run its interactions.
  */
 export const TableA: Story = {
   play: async (context) => {
-    const { dataRows, opacity, hover, selectAll, pick } = tableA(context)
-    const { canvas, userEvent, step } = context
+    const { root, bar, dataRows, rowOf, selectAll, checkbox, opacity, hover } =
+      tableA(context)
+    const { step } = context
 
     await step('the kit state: two rows selected, "2 Selected"', async () => {
       await expect(dataRows()).toHaveLength(20)
-      await expect(canvas.getByText('105 results')).toBeInTheDocument()
-      const bar = canvas.getByRole('group', { name: '2 Selected' })
+      await expect(root.getByText('105 results')).toBeInTheDocument()
+      const selection = bar() as HTMLElement
+      await expect(selection).toHaveAccessibleName('2 Selected')
       await expect(
-        within(bar).getByRole('button', { name: 'Delete' }),
+        within(selection).getByRole('button', { name: 'Delete' }),
       ).toBeInTheDocument()
       await expect(
-        within(bar).getByRole('button', { name: 'Duplicate' }),
+        within(selection).getByRole('button', { name: 'Duplicate' }),
       ).toBeInTheDocument()
       await expect(selectAll()).toHaveAttribute('aria-checked', 'mixed')
     })
@@ -769,20 +807,14 @@ export const TableA: Story = {
     await step('row controls show on focus and on selected rows', async () => {
       // Hover media only: a device without hover always shows them.
       if (!hover) return
-      const row = canvas
-        .getByRole('cell', { name: '#CM9801' })
-        .closest('tr') as HTMLElement
-      const more = within(row).getByRole('button', { name: /More actions/ })
+      const row = rowOf('#CM9801')
+      const more = within(row).getByLabelText(/More actions/)
       await expect(opacity(more)).toBe(0)
-      await expect(opacity(within(row).getByRole('checkbox'))).toBe(0)
+      await expect(opacity(within(row).getByLabelText(/^Select/))).toBe(0)
       // The copy button shows on its cell's hover or keyboard focus.
-      await expect(
-        opacity(within(row).getByRole('button', { name: /^Copy/ })),
-      ).toBe(0)
+      await expect(opacity(within(row).getByLabelText(/^Copy/))).toBe(0)
       // A selected row keeps its checkbox.
-      await expect(
-        opacity(canvas.getByRole('checkbox', { name: 'Select #CM9807' })),
-      ).toBe(1)
+      await expect(opacity(checkbox('Select #CM9807'))).toBe(1)
       // It fades in and out: a busy runner may take longer than `waitFor`'s
       // timeout to render the transition.
       more.focus()
@@ -792,123 +824,137 @@ export const TableA: Story = {
       await animationsEnded(more)
       await waitFor(() => expect(opacity(more)).toBe(0))
     })
+  },
+  render: () => <TableAExample />,
+}
+
+/**
+ * The interactions of Table A, each in a story of its own: on CI, under
+ * coverage, one long play went past the 15 s test timeout. They render ten
+ * rows per page (10 isn't one of the kit's options, so TablePageSize adds
+ * it), and they are tests only: no sidebar entry, docs or screenshot.
+ */
+const TEST_ONLY = ['!dev', '!autodocs', 'skip-visual']
+
+/** "/" in the table focuses the Search, which filters the users. */
+export const TableASearch: Story = {
+  name: 'Table A: search',
+  tags: TEST_ONLY,
+  play: async (context) => {
+    const { root, button, dataRows } = tableA(context)
+    const { userEvent, step } = context
 
     await step(
       '"/" in the table focuses the Search, which filters the users',
       async () => {
-        const search = canvas.getByRole('searchbox', { name: 'Search users' })
+        const search = root.getByLabelText('Search users')
         // Outside the table "/" does nothing (WCAG 2.1.4).
         await userEvent.keyboard('/')
         await expect(search).not.toHaveFocus()
-        canvas.getByRole('button', { name: 'Add order' }).focus()
+        button('Add order').focus()
         await userEvent.keyboard('/')
         await expect(search).toHaveFocus()
         await expect(search).toHaveValue('')
         await userEvent.type(search, 'andi')
-        await expect(canvas.getByText('21 results')).toBeInTheDocument()
-        await expect(dataRows()).toHaveLength(20)
+        await expect(root.getByText('21 results')).toBeInTheDocument()
+        await expect(dataRows()).toHaveLength(10)
         await userEvent.keyboard('{Escape}')
-        await expect(canvas.getByText('105 results')).toBeInTheDocument()
+        await expect(root.getByText('105 results')).toBeInTheDocument()
         search.blur()
       },
     )
-    await step('rows per page: 20, 50 or 100', async () => {
-      const size = canvas.getByRole('combobox', { name: 'Rows per page' })
-      await expect(size).toHaveTextContent('20')
-      await pick(size, 'option', '50')
-      await expect(dataRows()).toHaveLength(50)
-      await expect(size).toHaveTextContent('50')
-      // Back to 20: the kit's state, for the screenshot.
-      await pick(size, 'option', '20')
-      await expect(dataRows()).toHaveLength(20)
-      size.blur()
-    })
   },
-  render: () => <TableAExample />,
+  render: () => <TableAExample pageSize={10} />,
 }
 
-/**
- * Table A's Sort and Filter menus: the sorted header gets the arrow and
- * `aria-sort`, the filtered one the funnel.
- */
-export const TableASortAndFilter: Story = {
-  name: 'Table A: sort and filter',
-  tags: ['skip-visual'],
+/** The Sort menu; the sorted header gets the arrow and `aria-sort`. */
+export const TableASort: Story = {
+  name: 'Table A: sort',
+  tags: TEST_ONLY,
   play: async (context) => {
-    const { page, dataRows, cellOf, pick, sortButton, filterButton } =
-      tableA(context)
-    const { canvas, userEvent, step } = context
+    const { button, dataRows, header, pick } = tableA(context)
+    const { step } = context
 
     await step('the Sort menu sorts; the header shows it', async () => {
-      const user = canvas.getByRole('columnheader', { name: 'User' })
+      const user = header(2)
       await expect(user).not.toHaveAttribute('aria-sort')
-      await pick(sortButton(), 'menuitemradio', 'User')
+      await pick(button('Sort'), 'menuitemradio', 'User')
       await expect(user).toHaveAttribute('aria-sort', 'ascending')
-      await expect(cellOf(dataRows()[0], 2)).toHaveTextContent('Andi Lane')
-      await pick(sortButton(), 'menuitemradio', 'Descending')
+      await expect(dataRows()[0]?.cells[2]).toHaveTextContent('Andi Lane')
+      await pick(button('Sort'), 'menuitemradio', 'Descending')
       await expect(user).toHaveAttribute('aria-sort', 'descending')
-      await expect(cellOf(dataRows()[0], 2)).toHaveTextContent('Orlando Diggs')
+      await expect(dataRows()[0]?.cells[2]).toHaveTextContent('Orlando Diggs')
       // The header is text, not a sort button.
-      await expect(within(user).queryByRole('button')).toBeNull()
-      await pick(sortButton(), 'menuitem', 'Clear sort')
+      await expect(user.querySelector('button')).toBeNull()
+      await pick(button('Sort'), 'menuitem', 'Clear sort')
       await expect(user).not.toHaveAttribute('aria-sort')
-    })
-
-    await step('the Filter menu filters; the header shows it', async () => {
-      await userEvent.click(filterButton())
-      await userEvent.click(
-        await page.findByRole('menuitemcheckbox', { name: 'Pending' }),
-      )
-      // A checkbox item leaves the menu open: Escape closes it.
-      const menu = page.getByRole('menu')
-      await userEvent.keyboard('{Escape}')
-      await expectClosed(menu)
-      await waitFor(() => expect(menu).not.toBeInTheDocument())
-      await expect(canvas.getByText('21 results')).toBeInTheDocument()
-      // The funnel, and "Filtered" for screen readers.
-      await expect(
-        canvas.getByRole('columnheader', { name: 'Filtered Status' }),
-      ).toBeInTheDocument()
-      await pick(filterButton(), 'menuitem', 'Clear filter')
-      await expect(
-        canvas.getByRole('columnheader', { name: 'Status' }),
-      ).toBeInTheDocument()
-      await expect(canvas.getByText('105 results')).toBeInTheDocument()
     })
   },
-  render: () => <TableAExample />,
+  render: () => <TableAExample pageSize={10} />,
 }
 
-/**
- * Table A's selection: "Select all", then the "2 Selected" bar's Duplicate
- * (busy meanwhile) and Delete (a "Deleted" toast with Undo).
- */
-export const TableASelection: Story = {
-  name: 'Table A: selection',
-  tags: ['skip-visual'],
+/** The Filter menu; the filtered header gets the funnel. */
+export const TableAFilter: Story = {
+  name: 'Table A: filter',
+  tags: TEST_ONLY,
   play: async (context) => {
-    const { page, dataRows, cellOf, opacity, hover, selectAll } =
-      tableA(context)
-    const { canvas, userEvent, step } = context
+    const { root, button, header, pick } = tableA(context)
+    const { step } = context
+
+    await step('the Filter menu filters; the header shows it', async () => {
+      const status = header(6)
+      await pick(button('Filter'), 'menuitemcheckbox', 'Pending')
+      await expect(root.getByText('21 results')).toBeInTheDocument()
+      // The funnel, and "Filtered" for screen readers.
+      await expect(status).toHaveAccessibleName('Filtered Status')
+      await pick(button('Filter'), 'menuitem', 'Clear filter')
+      await expect(status).toHaveAccessibleName('Status')
+      await expect(root.getByText('105 results')).toBeInTheDocument()
+    })
+  },
+  render: () => <TableAExample pageSize={10} />,
+}
+
+/** Rows per page: 10 (added), 20, 50 or 100. */
+export const TableARowsPerPage: Story = {
+  name: 'Table A: rows per page',
+  tags: TEST_ONLY,
+  play: async (context) => {
+    const { root, dataRows, pick } = tableA(context)
+    const { step } = context
+
+    await step('rows per page: 10 (added), 20, 50 or 100', async () => {
+      const size = root.getByLabelText('Rows per page')
+      await expect(size).toHaveTextContent('10')
+      await pick(size, 'option', '20')
+      await expect(dataRows()).toHaveLength(20)
+      await expect(size).toHaveTextContent('20')
+    })
+  },
+  render: () => <TableAExample pageSize={10} />,
+}
+
+/** "Select all" selects and clears the page, and shows on hover or focus. */
+export const TableASelectAll: Story = {
+  name: 'Table A: select all',
+  tags: TEST_ONLY,
+  play: async (context) => {
+    const { root, bar, selectAll, opacity, hover } = tableA(context)
+    const { userEvent, step } = context
+    const boxes = () => root.getAllByLabelText(/^Select #/)
 
     await step('"Select all" selects and clears the page', async () => {
       // Mixed: a click selects every row of the page, the next clears it.
       await userEvent.click(selectAll())
-      for (const box of canvas.getAllByRole('checkbox', {
-        name: /^Select #/,
-      })) {
+      for (const box of boxes()) {
         await expect(box).toHaveAttribute('aria-checked', 'true')
       }
-      await expect(
-        canvas.getByRole('group', { name: '20 Selected' }),
-      ).toBeInTheDocument()
+      await expect(bar()).toHaveAccessibleName('10 Selected')
       await userEvent.click(selectAll())
-      for (const box of canvas.getAllByRole('checkbox', {
-        name: /^Select #/,
-      })) {
+      for (const box of boxes()) {
         await expect(box).toHaveAttribute('aria-checked', 'false')
       }
-      await expect(canvas.queryByRole('group', { name: /Selected/ })).toBeNull()
+      await expect(bar()).toBeNull()
     })
 
     await step('"Select all" shows on hover, focus or selection', async () => {
@@ -924,71 +970,82 @@ export const TableASelection: Story = {
       await waitFor(() => expect(opacity(all)).toBe(1))
       all.blur()
     })
+  },
+  render: () => <TableAExample pageSize={10} />,
+}
+
+/** The "2 Selected" bar: Duplicate (busy meanwhile), Delete and Undo. */
+export const TableASelectionBar: Story = {
+  name: 'Table A: selection bar',
+  tags: TEST_ONLY,
+  play: async (context) => {
+    const { root, bar, dataRows, idOf, checkbox, selectAll, closed } =
+      tableA(context)
+    const { userEvent, step } = context
 
     await step(
       'Duplicate puts selected copies under the selection',
       async () => {
-        await userEvent.click(
-          canvas.getByRole('checkbox', { name: 'Select #CM9807' }),
-        )
-        await userEvent.click(
-          canvas.getByRole('checkbox', { name: 'Select #CM9808' }),
-        )
-        const bar = canvas.getByRole('group', { name: '2 Selected' })
-        const duplicate = within(bar).getByRole('button', { name: 'Duplicate' })
+        // The kit's two rows start selected.
+        await expect(bar()).toHaveAccessibleName('2 Selected')
+        const duplicate = within(bar() as HTMLElement).getByRole('button', {
+          name: 'Duplicate',
+        })
         await userEvent.click(duplicate)
         // The function bar's Loading spinner while the copies are made; the
         // bar is busy, and its button keeps the focus.
-        await expect(canvas.getByText('Loading')).toBeInTheDocument()
+        await expect(root.getByText('Loading')).toBeInTheDocument()
         await expect(duplicate).toHaveAttribute('aria-disabled', 'true')
         await expect(duplicate).toHaveFocus()
         await waitFor(
-          () =>
-            expect(canvas.getByRole('cell', { name: '#CM9906' })).toBeVisible(),
+          () => expect(root.getByText('#CM9906')).toBeInTheDocument(),
           { timeout: 3000 },
         )
         await expect(duplicate).not.toHaveAttribute('aria-disabled')
-        await expect(
-          dataRows()
-            .slice(6, 10)
-            .map((row) => cellOf(row, 1).textContent),
-        ).toEqual(['#CM9807', '#CM9808', '#CM9906', '#CM9907'])
-        await expect(
-          canvas.getByRole('checkbox', { name: 'Select #CM9906' }),
-        ).toHaveAttribute('aria-checked', 'true')
-        await expect(
-          canvas.getByRole('checkbox', { name: 'Select #CM9807' }),
-        ).toHaveAttribute('aria-checked', 'false')
-        await expect(canvas.getByText('107 results')).toBeInTheDocument()
+        await expect(dataRows().slice(6, 10).map(idOf)).toEqual([
+          '#CM9807',
+          '#CM9808',
+          '#CM9906',
+          '#CM9907',
+        ])
+        await expect(checkbox('Select #CM9906')).toHaveAttribute(
+          'aria-checked',
+          'true',
+        )
+        await expect(checkbox('Select #CM9807')).toHaveAttribute(
+          'aria-checked',
+          'false',
+        )
+        await expect(root.getByText('107 results')).toBeInTheDocument()
       },
     )
 
     await step('Delete shows "Deleted" with Undo, which restores', async () => {
-      await userEvent.click(canvas.getByRole('button', { name: 'Delete' }))
-      await expect(
-        canvas.queryByRole('cell', { name: '#CM9906' }),
-      ).not.toBeInTheDocument()
-      await expect(canvas.getByText('105 results')).toBeInTheDocument()
+      await userEvent.click(
+        within(bar() as HTMLElement).getByRole('button', { name: 'Delete' }),
+      )
+      await expect(root.queryByText('#CM9906')).toBeNull()
+      await expect(root.getByText('105 results')).toBeInTheDocument()
       // The bar is gone; the focus is on "Select all".
-      await expect(canvas.queryByRole('group', { name: /Selected/ })).toBeNull()
+      await expect(bar()).toBeNull()
       await expect(selectAll()).toHaveFocus()
       // Undo closes the toast, so it doesn't outlive the story; wait for its
       // exit, as it covers the pages below it until then.
-      const undo = await page.findByRole('button', { name: 'Undo' })
+      const undo = (await root.findByText('Undo')).closest(
+        'button',
+      ) as HTMLElement
       const deleted = undo.closest('li') as HTMLElement
       await userEvent.click(undo)
-      await expectClosed(deleted)
-      await waitFor(() => expect(deleted).not.toBeInTheDocument())
-      await waitFor(() =>
-        expect(canvas.getByRole('cell', { name: '#CM9906' })).toBeVisible(),
+      await closed(deleted)
+      await expect(root.getByText('#CM9906')).toBeInTheDocument()
+      await expect(checkbox('Select #CM9906')).toHaveAttribute(
+        'aria-checked',
+        'true',
       )
-      await expect(
-        canvas.getByRole('checkbox', { name: 'Select #CM9906' }),
-      ).toHaveAttribute('aria-checked', 'true')
-      await expect(canvas.getByText('107 results')).toBeInTheDocument()
+      await expect(root.getByText('107 results')).toBeInTheDocument()
     })
   },
-  render: () => <TableAExample />,
+  render: () => <TableAExample pageSize={10} />,
 }
 
 export const TableADark: Story = {
@@ -1003,8 +1060,46 @@ const SEARCH_DELAY = 800
  * The Figma "Search results" guidance: the results replace the rows as you
  * type, with the Search "In progress" (`status="progress"`) until they come.
  */
-const SearchTable = ({ defaultQuery = '' }: { defaultQuery?: string }) => {
+/**
+ * The Search of SearchTable: its own state, so typing re-renders the field,
+ * not the rows. A fake server sends the results of the last query
+ * SEARCH_DELAY later; the field is "In progress" until then.
+ */
+const ResultsSearch = ({
+  table,
+  defaultQuery,
+}: {
+  table: OrdersTable
+  defaultQuery: string
+}) => {
   const [query, setQuery] = useState(defaultQuery)
+  const column = table.getColumn('user')
+  const applied = (column?.getFilterValue() as string | undefined) ?? ''
+  const searching = query !== applied
+
+  useEffect(() => {
+    if (!searching) return
+    const timer = setTimeout(
+      () => column?.setFilterValue(query || undefined),
+      SEARCH_DELAY,
+    )
+    return () => clearTimeout(timer)
+  }, [searching, query, column])
+
+  return (
+    <Search
+      variant="outline"
+      placeholder="Search"
+      aria-label="Search users"
+      className="ms-auto w-40"
+      status={searching ? 'progress' : undefined}
+      value={query}
+      onValueChange={setQuery}
+    />
+  )
+}
+
+const SearchTable = ({ defaultQuery = '' }: { defaultQuery?: string }) => {
   const table = useTable({
     features,
     data: ORDERS,
@@ -1016,20 +1111,6 @@ const SearchTable = ({ defaultQuery = '' }: { defaultQuery?: string }) => {
       columnFilters: defaultQuery ? [{ id: 'user', value: defaultQuery }] : [],
     },
   })
-  const column = table.getColumn('user')
-  const applied = (column?.getFilterValue() as string | undefined) ?? ''
-  const searching = query !== applied
-
-  // A fake server: the results of the last query, SEARCH_DELAY later.
-  useEffect(() => {
-    if (!searching) return
-    const timer = setTimeout(
-      () => column?.setFilterValue(query || undefined),
-      SEARCH_DELAY,
-    )
-    return () => clearTimeout(timer)
-  }, [searching, query, column])
-
   return (
     <div className="flex w-[892px] flex-col gap-4">
       <TableToolbar>
@@ -1047,15 +1128,7 @@ const SearchTable = ({ defaultQuery = '' }: { defaultQuery?: string }) => {
             startContent={<ArrowsDownUpIcon size={16} />}
           />
         </div>
-        <Search
-          variant="outline"
-          placeholder="Search"
-          aria-label="Search users"
-          className="ms-auto w-40"
-          status={searching ? 'progress' : undefined}
-          value={query}
-          onValueChange={setQuery}
-        />
+        <ResultsSearch table={table} defaultQuery={defaultQuery} />
       </TableToolbar>
       <Table>
         <OrdersHeader table={table} />
@@ -1071,8 +1144,9 @@ const SearchTable = ({ defaultQuery = '' }: { defaultQuery?: string }) => {
  * the results replace the rows, and the result count follows them.
  */
 export const SearchResults: Story = {
-  play: async ({ canvas, userEvent }) => {
-    const search = canvas.getByRole('searchbox', { name: 'Search users' })
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    // By label and selector: role queries over the rows are slow on CI.
+    const search = canvas.getByLabelText('Search users')
     await userEvent.type(search, 'kate')
     await expect(search).toHaveAttribute('aria-busy', 'true')
     await waitFor(
@@ -1080,7 +1154,7 @@ export const SearchResults: Story = {
       { timeout: 3000 },
     )
     await expect(search).not.toHaveAttribute('aria-busy')
-    for (const row of canvas.getAllByRole('row').slice(1)) {
+    for (const row of canvasElement.querySelectorAll('tbody tr')) {
       await expect(row).toHaveTextContent('Kate Morrison')
     }
   },
@@ -1089,9 +1163,9 @@ export const SearchResults: Story = {
 
 /** Figma "No results": the search matches no row. */
 export const NoResults: Story = {
-  play: async ({ canvas }) => {
-    await expect(canvas.getAllByRole('row')).toHaveLength(2)
-    await expect(canvas.getByRole('cell', { name: 'No results' })).toBeVisible()
+  play: async ({ canvas, canvasElement }) => {
+    await expect(canvasElement.querySelectorAll('tbody tr')).toHaveLength(1)
+    await expect(canvas.getByText('No results')).toBeVisible()
     await expect(canvas.getByText('0 results')).toBeInTheDocument()
   },
   render: () => <SearchTable defaultQuery="Typing" />,

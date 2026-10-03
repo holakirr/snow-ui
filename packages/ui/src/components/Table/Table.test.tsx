@@ -308,7 +308,8 @@ describe('TableHead (5.3)', () => {
   })
 })
 
-const { TableA, SortableHeaders } = composeStories(stories)
+// TableASelectAll: Table A with ten rows per page, so the tests render less.
+const { TableASelectAll, SortableHeaders } = composeStories(stories)
 
 // The row of an order, by the text of its ID cell. A role query for the cell
 // computed the name of every cell on each call, slowly after a click (see
@@ -351,22 +352,23 @@ describe('Table stories (TanStack Table)', () => {
   })
 
   it('selects rows with their checkboxes and marks them data-state="selected"', () => {
-    render(<TableA />)
+    render(<TableASelectAll />)
 
     // #CM9807 and #CM9808 start selected (the kit's "2 Selected"), so
-    // "Select all" is indeterminate.
-    const selectAll = screen.getByRole('checkbox', { name: 'Select all' })
+    // "Select all" is indeterminate. The checkboxes are found by label: a
+    // role query computes every element's role, slowly under coverage.
+    const selectAll = screen.getByLabelText('Select all')
     expect(selectAll).toHaveAttribute('aria-checked', 'mixed')
     expect(screen.getByText('2 Selected')).toBeInTheDocument()
     expect(rowOf('#CM9807')).toHaveAttribute('data-state', 'selected')
     expect(rowOf('#CM9801')).not.toHaveAttribute('data-state')
 
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Select #CM9801' }))
+    fireEvent.click(screen.getByLabelText('Select #CM9801'))
     expect(rowOf('#CM9801')).toHaveAttribute('data-state', 'selected')
     expect(screen.getByText('3 Selected')).toBeInTheDocument()
 
     fireEvent.click(selectAll)
-    for (const id of ['#CM9801', '#CM9805', '#CM9820']) {
+    for (const id of ['#CM9801', '#CM9805', '#CM9810']) {
       expect(rowOf(id)).toHaveAttribute('data-state', 'selected')
     }
     expect(selectAll).toHaveAttribute('aria-checked', 'true')
@@ -379,9 +381,9 @@ describe('Table stories (TanStack Table)', () => {
 
   it('toggles a row with the keyboard', async () => {
     const user = userEvent.setup()
-    render(<TableA />)
+    render(<TableASelectAll />)
 
-    const checkbox = screen.getByRole('checkbox', { name: 'Select #CM9802' })
+    const checkbox = screen.getByLabelText('Select #CM9802')
     checkbox.focus()
     await user.keyboard(' ')
     expect(rowOf('#CM9802')).toHaveAttribute('data-state', 'selected')

@@ -136,9 +136,10 @@ for (const theme of ['light', 'dark'] as const) {
       for (const label of await labels.all()) {
         const bounds = await label.boundingBox()
         expect(bounds).not.toBeNull()
-        expect(bounds?.x).toBeGreaterThanOrEqual(plotBounds?.x ?? 0)
+        // Font advance boxes may overhang the viewport by a fraction of a pixel.
+        expect(bounds?.x).toBeGreaterThanOrEqual((plotBounds?.x ?? 0) - 0.5)
         expect((bounds?.x ?? 0) + (bounds?.width ?? 0)).toBeLessThanOrEqual(
-          (plotBounds?.x ?? 0) + (plotBounds?.width ?? 0),
+          (plotBounds?.x ?? 0) + (plotBounds?.width ?? 0) + 0.5,
         )
       }
       const widths = await labels.evaluateAll((elements) =>

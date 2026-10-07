@@ -34,10 +34,7 @@ export const SourceOverviewChart = ({
       locale={locale}
       table
       overlay={
-        <svg
-          fill="none"
-          width="100%"
-          height="100%"
+        <div
           style={{
             pointerEvents: 'none',
             position: 'absolute',
@@ -48,11 +45,16 @@ export const SourceOverviewChart = ({
           role="img"
           aria-label={label}
         >
-          <title>{label}</title>
           {/* Scale the artwork independently so axis text keeps its 12px size. */}
           <svg
-            x={39}
-            width="calc(100% - 39px)"
+            fill="none"
+            width="100%"
+            style={{
+              position: 'absolute',
+              left: 39,
+              top: 0,
+              width: 'calc(100% - 39px)',
+            }}
             height="100%"
             viewBox="39 0 575 246"
             preserveAspectRatio="none"
@@ -178,26 +180,44 @@ export const SourceOverviewChart = ({
               </g>
             </g>
           </svg>
-          <g
-            fill="var(--color-text-secondary)"
-            fontSize={12}
-            fontFamily="inherit"
+          <svg
+            width="100%"
+            height="100%"
+            style={{ position: 'absolute', inset: 0 }}
+            aria-hidden="true"
           >
-            {['30K', '20K', '10K', '0'].map((value, index) => (
-              <text
-                key={value}
-                x={25}
-                y={`${((36 + index * 62) / 246) * 100}%`}
-                textAnchor="end"
-              >
-                {value}
-              </text>
-            ))}
-            <svg
-              x={39}
-              width="calc(100% - 39px)"
-              height="100%"
-              aria-hidden="true"
+            <g
+              fill="var(--color-text-secondary)"
+              fontSize={12}
+              fontFamily="inherit"
+            >
+              {['30K', '20K', '10K', '0'].map((value, index) => (
+                <text
+                  key={value}
+                  x={25}
+                  y={`${((36 + index * 62) / 246) * 100}%`}
+                  textAnchor="end"
+                >
+                  {value}
+                </text>
+              ))}
+            </g>
+          </svg>
+          <svg
+            width="100%"
+            height="100%"
+            style={{
+              position: 'absolute',
+              left: 39,
+              top: 0,
+              width: 'calc(100% - 39px)',
+            }}
+            aria-hidden="true"
+          >
+            <g
+              fill="var(--color-text-secondary)"
+              fontSize={12}
+              fontFamily="inherit"
             >
               {Array.from({ length: 7 }, (_, index) => (
                 <text
@@ -209,9 +229,9 @@ export const SourceOverviewChart = ({
                   {month(index)}
                 </text>
               ))}
-            </svg>
-          </g>
-        </svg>
+            </g>
+          </svg>
+        </div>
       }
     />
   )

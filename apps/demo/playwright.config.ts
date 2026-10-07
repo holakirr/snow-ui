@@ -37,6 +37,12 @@ export default defineConfig({
         viewport: { width: 1440, height: 900 },
       },
     },
+    {
+      name: 'webkit-axis',
+      testMatch: 'pages.spec.ts',
+      grep: /overview axis labels/,
+      use: { browserName: 'webkit' },
+    },
   ],
   webServer: {
     command: 'bun run start',

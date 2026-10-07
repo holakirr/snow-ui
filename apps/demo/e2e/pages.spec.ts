@@ -112,6 +112,7 @@ for (const theme of ['light', 'dark'] as const) {
       .getByRole('img', { name: 'Total Users', exact: true })
     const labels = plot.locator('text')
     await expect(labels).toHaveCount(11)
+    await expect(plot.locator('svg')).toHaveCount(3)
     let referenceWidths: number[] | undefined
     for (const width of [1440, 2320, 375]) {
       await page.setViewportSize({ width, height: 900 })
@@ -133,6 +134,13 @@ for (const theme of ['light', 'dark'] as const) {
       await page.evaluate(() => document.fonts.ready)
       const plotBounds = await plot.boundingBox()
       expect(plotBounds).not.toBeNull()
+      // Artwork and month frames reserve the gutter; the value frame spans the plot.
+      for (const frame of await plot.locator('svg').all()) {
+        const bounds = await frame.boundingBox()
+        const gutter = (await frame.locator('text').count()) === 4 ? 0 : 39
+        expect(bounds?.x).toBeCloseTo((plotBounds?.x ?? 0) + gutter, 1)
+        expect(bounds?.width).toBeCloseTo((plotBounds?.width ?? 0) - gutter, 1)
+      }
       for (const label of await labels.all()) {
         const bounds = await label.boundingBox()
         expect(bounds).not.toBeNull()

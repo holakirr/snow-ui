@@ -1,20 +1,22 @@
 import { Card, IconBox, IconText, Typography } from '@holakirr/snow-ui'
-import { Sparkline } from '@holakirr/snow-ui-charts'
 import { ArrowFallIcon, ArrowRiseIcon } from '@holakirr/snow-ui-icons'
 import { kpis } from '@/lib/data'
 import { formatChange, formatNumber } from '@/lib/format'
 import type { Dictionary } from '@/lib/i18n/dictionaries'
-import { intlLocale, type Lang } from '@/lib/preferences'
+import type { Lang } from '@/lib/preferences'
 
-/**
- * The Figma "Views / Visits / New Users / Active Users" cards (Color 1 and
- * Color 2 tints, static black text in both themes) with a Sparkline of the
- * last 7 days. A Server Component: Sparkline is plain SVG, rendered on the
- * server; only its tiny module ships to the client.
- */
-export const KpiCards = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => (
+/** The kit’s 108px KPI cards: label, value and change. */
+export const KpiCards = ({
+  dict,
+  lang,
+  period = 'today',
+}: {
+  dict: Dictionary
+  lang: Lang
+  period?: 'today' | 'week' | 'month'
+}) => (
   <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-7 xl:grid-cols-4">
-    {kpis.map(({ key, value, change, trend, color }, index) => {
+    {kpis.map(({ key, value, change }, index) => {
       const label = dict.dashboard.kpi[key]
       const up = change >= 0
       return (
@@ -25,12 +27,15 @@ export const KpiCards = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => (
               index % 2 ? 'bg-color-2' : 'bg-color-1'
             }`}
           >
-            <Typography asChild size={14} semibold>
+            <Typography asChild size={14}>
               <h2>{label}</h2>
             </Typography>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Typography size={24} semibold>
-                {formatNumber(lang, value)}
+                {formatNumber(
+                  lang,
+                  value * (period === 'week' ? 7 : period === 'month' ? 30 : 1),
+                )}
               </Typography>
               <IconText
                 flip
@@ -50,15 +55,6 @@ export const KpiCards = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => (
                 </Typography>
               </IconText>
             </div>
-            <Sparkline
-              title={`${label}, ${dict.dashboard.kpi.trend}`}
-              data={trend}
-              color={color}
-              locale={intlLocale(lang)}
-              area
-              width="100%"
-              height={32}
-            />
           </Card>
         </li>
       )

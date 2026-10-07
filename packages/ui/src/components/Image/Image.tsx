@@ -32,13 +32,12 @@ type SizeSpec = {
 
 // The corners are the kit's squircle where the browser supports
 // `corner-shape` (a rounded square elsewhere), with the radius tokens. The
-// icon inset and the mark sizes are measured on the components overview
-// (the raw Figma data doesn't have them); the radii are read from the kit's
-// Image instances.
+// icon insets and radii come from the source Image variants (33400:47953).
+// Selection mark sizes use the source overview composition.
 const sizeSpecs: { [K in ImageSize]: SizeSpec } = {
   12: {
     frame: 'size-3 rounded-4',
-    icon: 'p-0.5 *:rounded-4',
+    icon: 'p-0 *:rounded-4',
     mark: [8, 'top-0 end-0'],
   },
   16: {
@@ -58,47 +57,47 @@ const sizeSpecs: { [K in ImageSize]: SizeSpec } = {
   },
   28: {
     frame: 'size-7 rounded-8',
-    icon: 'p-1 *:rounded-4',
+    icon: 'p-1.5 *:rounded-4',
     mark: [12, 'top-0.5 end-0.5'],
   },
   32: {
     frame: 'size-8 rounded-8',
-    icon: 'p-1 *:rounded-4',
+    icon: 'p-2 *:rounded-4',
     mark: [12, 'top-1 end-1'],
   },
   40: {
     frame: 'size-10 rounded-12',
-    icon: 'p-1.5 *:rounded-8',
+    icon: 'p-2.5 *:rounded-8',
     mark: [12, 'top-1 end-1'],
   },
   48: {
     frame: 'size-12 rounded-12',
-    icon: 'p-2 *:rounded-8',
+    icon: 'p-3 *:rounded-8',
     mark: [16, 'top-1 end-1'],
   },
   56: {
     frame: 'size-14 rounded-16',
-    icon: 'p-2 *:rounded-8',
+    icon: 'p-3.5 *:rounded-8',
     mark: [16, 'top-1.5 end-1.5'],
   },
   64: {
     frame: 'size-16 rounded-20',
-    icon: 'p-2.5 *:rounded-12',
+    icon: 'p-4 *:rounded-12',
     mark: [20, 'top-1.5 end-1.5'],
   },
   72: {
     frame: 'size-18 rounded-20',
-    icon: 'p-3 *:rounded-12',
+    icon: 'p-4 *:rounded-12',
     mark: [20, 'top-2 end-2'],
   },
   80: {
     frame: 'size-20 rounded-20',
-    icon: 'p-3 *:rounded-16',
+    icon: 'p-4 *:rounded-16',
     mark: [20, 'top-2 end-2'],
   },
   free: {
     frame: 'rounded-20',
-    icon: 'p-3 *:rounded-12',
+    icon: 'p-4 *:rounded-12',
     mark: [20, 'top-2 end-2'],
   },
 }

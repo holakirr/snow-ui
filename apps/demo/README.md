@@ -7,11 +7,13 @@ Live: [demo.snow-ui.holakirr.com](https://demo.snow-ui.holakirr.com) (deployment
 | Route | What it shows |
 | --- | --- |
 | `/` | Redirects to `/dashboard`. |
-| `/dashboard` | The kit's "Dashboard": the Sidebar (Favorites / Recently, Dashboards and Pages, collapsible, a sheet on small screens), the header (breadcrumb, Search with a ⌘K / Ctrl+K `CommandPalette`, theme, language and direction controls, the notifications panel toggle), KPI cards with `Sparkline`s, Total Users (`AreaChart`), Traffic by Website (`Strip`), Traffic by Device and Marketing & SEO (`BarChart`), Traffic by Location (`DonutChart`), a sortable, selectable, filterable, paginated order `Table`, and the right sidebar (`ListItem`s). |
-| `/sign-in` | The kit's authentication page: react-hook-form with the `@holakirr/snow-ui/react-hook-form` adapter and zod (`zod/mini`), a password visibility toggle, remember me, social buttons. Submitting shows a toast; there is no authentication. |
-| `/settings` | Tabs of forms: Profile (the library-agnostic `Form*` components, an avatar upload placeholder), Account, Notifications (`RadioGroup`, `Checkbox`, `Switch`, `Slider`) and Appearance (theme, language and direction, applied at once). `?tab=` opens a tab. |
+| `/dashboard` | The kit's Dashboard: collapsible sidebar, breadcrumb/search, theme and history tools, notifications panel, 108px KPI cards, metric tabs and period selection, charts and segmented website traffic. Language and direction controls are in the history panel. |
+| `/orders` | Sortable, selectable, filterable and paginated order table. |
+| `/sign-in` | The kit's Sign In composition: a 680px card, 384px form, Apple and Google buttons, validation and a submit toast. There is no authentication. |
+| `/settings` | Account → Settings: profile details, sign-in method, connected accounts, email preferences, notifications and deactivation. |
+| `/preferences` | Settings → Profile standalone panel with seven sections: Profile, Theme, Time and language, Notifications, Privacy, Payment and Plugins. `?tab=` selects a section. |
 
-The data is mock data (`lib/data.ts`); avatars are initials, with no images from the Figma kit.
+The data is mock data (`lib/data.ts`); avatars are initials, with no images from the Figma kit. The two settings views share demo profile and notification data persisted in localStorage. Account security, payment, integrations and session actions are demonstrations; they do not call a backend. Font size and accent choices are stored preferences, while theme, language and direction apply to the interface.
 
 ## Run it
 

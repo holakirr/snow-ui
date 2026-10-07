@@ -1,16 +1,26 @@
 'use client'
 
 import {
+  Card,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@holakirr/snow-ui'
+import {
   AreaChart,
   BarChart,
   type ChartConfig,
+  ChartLegendContent,
   DonutChart,
 } from '@holakirr/snow-ui-charts'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { usePreferences } from '@/app/providers'
 import {
   marketing,
   marketingColors,
+  operatingStatus,
+  totalProjects,
   totalUsers,
   totalUsersConfig,
   trafficByDevice,
@@ -20,6 +30,8 @@ import {
 } from '@/lib/data'
 import { formatCompact, formatNumber, monthName } from '@/lib/format'
 import { intlLocale } from '@/lib/preferences'
+import { SourceDonutArtwork } from './source-donut-artwork'
+import { SourceOverviewChart } from './source-overview-chart'
 
 /*
  * The dashboard's Recharts-based charts. A client module because the charts
@@ -44,7 +56,8 @@ const useChartLocale = () => {
 }
 
 /** Figma "Total Users": this year (Primary, gradient) against last year (dashed). */
-export const TotalUsersChart = ({ labelledBy }: ChartProps) => {
+export const TotalUsersChart = () => {
+  const [metric, setMetric] = useState('totalUsers')
   const { dict, locale, keyboardHint, month, compact } = useChartLocale()
   const config = useMemo<ChartConfig>(
     () => ({
@@ -59,23 +72,85 @@ export const TotalUsersChart = ({ labelledBy }: ChartProps) => {
     }),
     [dict],
   )
+  const metrics = [
+    { key: 'totalUsers', label: dict.dashboard.totalUsers, data: totalUsers },
+    {
+      key: 'totalProjects',
+      label: dict.dashboard.totalProjects,
+      data: totalProjects,
+    },
+    {
+      key: 'operatingStatus',
+      label: dict.dashboard.operatingStatus,
+      data: operatingStatus,
+    },
+  ]
   return (
-    <AreaChart
-      aria-labelledby={labelledBy}
-      description={dict.dashboard.totalUsersDescription}
-      data={totalUsers}
-      xKey="month"
-      config={config}
-      categoryLabel={dict.dashboard.month}
-      categoryFormatter={month}
-      yTickFormatter={compact}
-      locale={locale}
-      keyboardHint={keyboardHint}
-      grid={false}
-      legend
-      fade
-      height={232}
-    />
+    <Card variant="block" className="min-w-0">
+      <Tabs
+        value={metric}
+        onValueChange={setMetric}
+        className="flex flex-col gap-4"
+      >
+        <div className="flex flex-wrap items-center gap-4">
+          <TabsList
+            aria-label={dict.dashboard.metric}
+            className="justify-start gap-4"
+          >
+            {metrics.map(({ key, label }) => (
+              <TabsTrigger
+                key={key}
+                value={key}
+                className="gap-0 rounded-12 data-[state=active]:font-semibold data-[state=active]:text-black [&>span:last-child]:hidden"
+              >
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <span aria-hidden className="h-4 w-px bg-black-10" />
+          <ChartLegendContent
+            config={config}
+            className="[&_.snow-chart-swatch]:size-1"
+          />
+        </div>
+        {metrics.map(({ key, label, data }) => (
+          <TabsContent key={key} value={key} className="mt-0">
+            {key === 'totalUsers' ? (
+              <SourceOverviewChart
+                label={label}
+                description={dict.dashboard.totalUsersDescription}
+                month={month}
+                locale={locale}
+                config={config}
+              />
+            ) : (
+              <AreaChart
+                aria-label={label}
+                description={
+                  key === 'totalUsers'
+                    ? dict.dashboard.totalUsersDescription
+                    : undefined
+                }
+                data={data}
+                xKey="month"
+                config={config}
+                categoryLabel={dict.dashboard.month}
+                categoryFormatter={month}
+                yTickFormatter={
+                  key === 'operatingStatus' ? (value) => `${value}%` : compact
+                }
+                locale={locale}
+                keyboardHint={keyboardHint}
+                grid={false}
+                legend={false}
+                fade
+                height={246}
+              />
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
+    </Card>
   )
 }
 
@@ -110,6 +185,9 @@ export const TrafficByDeviceChart = ({ labelledBy }: ChartProps) => {
       locale={locale}
       keyboardHint={keyboardHint}
       grid={false}
+      plotMargin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+      xAxisHeight={28}
+      yAxisWidth={39}
       height={196}
     />
   )
@@ -141,7 +219,10 @@ export const TrafficByLocationChart = ({ labelledBy }: ChartProps) => {
       }
       valueLabel={dict.dashboard.visitsShare}
       locale={locale}
-      style={{ minHeight: 196 }}
+      plotWidth={160}
+      overlay={<SourceDonutArtwork />}
+      style={{ minHeight: 196, columnGap: 16 }}
+      className="[&_.snow-chart-swatch]:size-1 [&_.recharts-pie-sector_path]:fill-transparent"
     />
   )
 }
@@ -176,7 +257,11 @@ export const MarketingChart = ({ labelledBy }: ChartProps) => {
       locale={locale}
       keyboardHint={keyboardHint}
       grid={false}
-      barSize={20}
+      barSize={28}
+      domain={[0, 30000]}
+      plotMargin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+      xAxisHeight={28}
+      yAxisWidth={39}
       height={196}
     />
   )

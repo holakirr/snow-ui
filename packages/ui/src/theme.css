@@ -166,7 +166,7 @@
   /*
    * Tailwind v4's preflight no longer gives buttons a pointer cursor. Restore
    * it for every interactive control (native and ARIA roles), and show
-   * not-allowed on disabled ones. Utilities (cursor-*) still override these.
+   * the default arrow on disabled ones. Utilities (cursor-*) still override these.
    */
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -189,7 +189,7 @@
     [aria-disabled="true"],
     [data-disabled]:not([data-disabled="false"])
   ) {
-    cursor: not-allowed;
+    cursor: default;
   }
 }
 
@@ -206,18 +206,10 @@
   @apply bg-background-3 backdrop-blur-bg-40 shadow-glass-2;
 }
 
-/*
- * Keyboard focus indicator for every focusable control. The Figma "Focus"
- * effect (a 4px Black/4% ring) is too faint to see, so it is combined with a
- * 2px Black/80% outline (White/80% in dark mode) 2px outside the element:
- * 12.6:1 on background-1 in light mode and 8.7:1 in dark mode (WCAG 1.4.11).
- * Only shown on :focus-visible, i.e. for keyboard focus.
- */
+/* The kit's 4px focus geometry, with a stronger colour for contrast. */
 @utility focus-ring {
   &:focus-visible {
-    @apply ring-4 ring-focus;
-    outline: 2px solid var(--color-black-80);
-    outline-offset: 2px;
+    @apply ring-4 ring-black-80;
   }
 }
 
@@ -259,8 +251,8 @@
  * 4px rounded thumb in Black/10% (`black-10`) that widens to 8px in Black/20%
  * (`control-border`) under the pointer and while it is dragged. With more
  * contrast the resting thumb is `control-border` too (3:1 or more). The kit
- * shows the thumb only while the pointer is over the container; it stays
- * visible here, for keyboard and touch users. Where the browser has the WebKit
+ * shows the thumb while the pointer is over the container. Keyboard focus
+ * also exposes it. Where the browser has the WebKit
  * scrollbar pseudo-elements (Chrome, Edge, Safari) the thumb sits in an 8px
  * gutter (the kit overlays it). Firefox can't style a hovered thumb: its thin
  * scrollbar keeps its own width and turns `control-border` while the pointer
@@ -281,6 +273,10 @@
       &::-webkit-scrollbar-thumb {
         border: 2px solid transparent;
         border-radius: 9999px;
+        background: transparent padding-box;
+      }
+      &:hover::-webkit-scrollbar-thumb,
+      &:focus-within::-webkit-scrollbar-thumb {
         background: var(--scrollbar-snow-thumb) padding-box;
       }
       &::-webkit-scrollbar-thumb:hover,
@@ -295,8 +291,9 @@
     }
     @supports not selector(::-webkit-scrollbar) {
       scrollbar-width: thin;
-      scrollbar-color: var(--scrollbar-snow-thumb) transparent;
-      &:hover {
+      scrollbar-color: transparent transparent;
+      &:hover,
+      &:focus-within {
         scrollbar-color: var(--color-control-border) transparent;
       }
     }

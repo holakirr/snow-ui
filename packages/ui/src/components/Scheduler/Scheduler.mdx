@@ -42,7 +42,7 @@ const events: CalendarEvent[] = [
 ## Anatomy
 
 1. **Grid**: a `<div>` CSS grid with a 59px hour column and seven 100px day columns, 16px apart, and 48px rows. Each row is a subgrid of these columns where `subgrid` is supported (Chrome and Edge 117+), and repeats them elsewhere. Other `div` props, `className` and `style` go to it.
-2. **Day labels**: the header row, the short weekday and the day number in 12px `text-secondary`, with radius 4 and padding 2 / 4px. Today's label has a Secondary/Indigo fill with static black text, and is semibold.
+2. **Day labels**: the header row, the short weekday and the day number in 12px `text-secondary`, with radius 4 and padding 2 / 4px. Today's label has a Secondary/Indigo fill with static black text.
 3. **Day separators**: Black/4% vertical lines between the days.
 4. **Hour labels**: 12px `text-secondary` hours in the locale's clock ("9 AM" in `en-US`). The rows run from 7 to 20 (8 pm) and grow to fit the events of the shown week (events of other weeks don't change them). An event that ends on the hour doesn't add that hour's row, and the rows make room for an event's minimum 48px block. The labels don't depend on today's date, so a daylight saving change doesn't repeat or skip one.
 5. **Hour cells**: one per day and hour, each with a `<button>` that fills the cell. A click calls `onDateClick` with the start of that hour.
@@ -67,7 +67,7 @@ An event is a `CalendarEvent`. Scheduler reads `id`, `title`, `date` (the start)
 
 ## States
 
-- **Today:** the day label on Secondary/Indigo, semibold.
+- **Today:** the day label on Secondary/Indigo.
 - **Keyboard focus:** the `focus-ring` utility on hour cells and events. A focused hour cell is drawn above the events, so they don't hide its ring.
 - **Empty:** without events the grid still shows the hours from 7 to 20.
 - **Now:** the current-time tag and line, placed by the hour and minute at render, only in the week that contains today.
@@ -106,10 +106,10 @@ The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
-| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma 4px ring in `black-80` (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Day and hour labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary` (5.74:1 light, 7.08:1 dark) | 1.4.3 |
 | Today's day label: white on Secondary/Indigo, 2.06:1 | static black on Secondary/Indigo | 1.4.3 |
-| Today's day label is told by its fill colour only | also semibold, not by colour alone (and `aria-current="date"`) | 1.4.1 |
+| Today's day label | `aria-current="date"` announces today | 1.4.1 |
 | Event times at 40% on Color 2 | 60% static black on Color 2 (5.5:1) | 1.4.3 |
 
 ## Localization and RTL

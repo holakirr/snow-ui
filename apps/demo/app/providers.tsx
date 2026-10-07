@@ -19,6 +19,7 @@ import {
   useSyncExternalStore,
   useTransition,
 } from 'react'
+import { SettingsDataProvider } from '@/components/settings/settings-data'
 import { type Dictionary, dictionaries } from '@/lib/i18n/dictionaries'
 import { ruMessages } from '@/lib/i18n/snow-messages'
 import {
@@ -179,7 +180,7 @@ export const Providers = ({
     <PreferencesContext value={value}>
       <SnowUIProvider messages={messages} locale={locale} dir={dir}>
         <TooltipProvider delayDuration={300}>
-          {children}
+          <SettingsDataProvider>{children}</SettingsDataProvider>
           <Toaster />
         </TooltipProvider>
       </SnowUIProvider>

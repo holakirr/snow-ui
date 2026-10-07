@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react'
 import { useDictionary } from '@/app/providers'
-import { BellIcon } from '@/components/icons'
+import { BellIcon, SidebarSimpleIcon } from '@/components/icons'
 import { IconButton } from './icon-button'
 
 const PANEL_ID = 'right-panel'
@@ -36,14 +36,15 @@ export const RightPanelProvider = ({ children }: { children: ReactNode }) => {
 }
 
 /** The header's bell: shows and hides the notifications panel (wide screens). */
-export const RightPanelToggle = () => {
+export const RightPanelToggle = ({ layout = false }: { layout?: boolean }) => {
   const dict = useDictionary()
   const { open, toggle } = useRightPanel()
   return (
     <IconButton
-      label={dict.header.notificationsPanel}
-      icon={<BellIcon />}
-      badge
+      label={layout ? dict.header.rightSidebar : dict.header.notificationsPanel}
+      icon={
+        layout ? <SidebarSimpleIcon className="-scale-x-100" /> : <BellIcon />
+      }
       aria-expanded={open}
       aria-controls={PANEL_ID}
       className="hidden xl:inline-flex"
@@ -75,7 +76,7 @@ export const RightPanel = ({
       // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region
       tabIndex={0}
       // Stays in view while the page scrolls, like the left sidebar.
-      className="sticky top-0 hidden h-svh w-70 shrink-0 flex-col gap-6 self-start overflow-y-auto border-s-[0.5px] border-black-10 p-5 xl:flex"
+      className="sticky top-0 hidden h-svh w-70 shrink-0 flex-col gap-4 self-start overflow-y-auto border-s-[0.5px] border-black-10 p-4 xl:flex"
     >
       {children}
     </aside>

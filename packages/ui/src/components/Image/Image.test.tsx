@@ -70,7 +70,7 @@ describe('Image', () => {
     const content = document.querySelector(
       '[data-slot="image-content"]',
     ) as HTMLElement
-    expect(content).toHaveClass('p-3', '*:rounded-16')
+    expect(content).toHaveClass('p-4', '*:rounded-16')
   })
 
   it('darkens the top edge on hover when interactive', () => {

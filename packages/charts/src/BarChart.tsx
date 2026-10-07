@@ -45,6 +45,12 @@ export interface BarChartProps<TDatum extends object>
   radius?: number
   /** The maximum bar thickness in px; bars get thinner when there's no room. @default 28 */
   barSize?: number
+  /** Space around the plot, in px. */
+  plotMargin?: { top?: number; right?: number; bottom?: number; left?: number }
+  /** Reserved height for the horizontal axis, in px. @default 30 */
+  xAxisHeight?: number
+  /** Reserved width for the vertical axis; auto fits translated labels. @default auto */
+  yAxisWidth?: number | 'auto'
 }
 
 /** The config with an entry (and a palette colour) for every category. */
@@ -87,6 +93,9 @@ const Plot = <TDatum extends object>({
   colorBy = 'series',
   radius = 8,
   barSize = 28,
+  plotMargin = { top: 8, right: 4, bottom: 0, left: 4 },
+  xAxisHeight = 30,
+  yAxisWidth = 'auto',
   children,
   ...svgLabel
 }: PlotProps<TDatum>) => {
@@ -149,7 +158,7 @@ const Plot = <TDatum extends object>({
     <RechartsBarChart
       data={data as unknown as Record<string, unknown>[]}
       layout={horizontal ? 'vertical' : 'horizontal'}
-      margin={{ top: 8, right: 4, bottom: 0, left: 4 }}
+      margin={plotMargin}
       maxBarSize={barSize}
       barGap={4}
       {...svgLabel}
@@ -174,13 +183,14 @@ const Plot = <TDatum extends object>({
             orientation={rtl ? 'right' : 'left'}
             axisLine={grid ? BASELINE : false}
             tickMargin={16}
-            width="auto"
+            width={yAxisWidth}
           />
         </>
       ) : (
         <>
           <XAxis
             {...categoryAxis}
+            height={xAxisHeight}
             reversed={rtl}
             axisLine={grid ? BASELINE : false}
             tickMargin={12}
@@ -193,7 +203,7 @@ const Plot = <TDatum extends object>({
             orientation={rtl ? 'right' : 'left'}
             axisLine={false}
             tickMargin={16}
-            width="auto"
+            width={yAxisWidth}
           />
         </>
       )}
@@ -239,6 +249,7 @@ export const BarChart = <TDatum extends object>({
   colorBy,
   title,
   description,
+  overlay,
   height,
   loading,
   emptyMessage,
@@ -285,6 +296,7 @@ export const BarChart = <TDatum extends object>({
       config={fullConfig}
       title={title}
       description={description}
+      overlay={overlay}
       height={height}
       loading={loading}
       empty={data.length === 0}

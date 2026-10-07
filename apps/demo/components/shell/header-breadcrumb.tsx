@@ -17,9 +17,11 @@ export const HeaderBreadcrumb = () => {
   const dict = useDictionary()
   const pathname = usePathname()
   const [section, page] =
-    pathname === '/settings'
-      ? [dict.nav.pages, dict.nav.settings]
-      : [dict.nav.dashboards, dict.nav.default]
+    pathname === '/orders'
+      ? [dict.nav.pages, dict.orders.title]
+      : pathname === '/settings'
+        ? [dict.nav.pages, dict.nav.settings]
+        : [dict.nav.dashboards, dict.nav.default]
 
   return (
     <Breadcrumb className="hidden sm:block">

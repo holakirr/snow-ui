@@ -86,9 +86,8 @@ export const ClearButtonFocus: Story = {
     await animationsEnded(clear)
     await waitFor(() => expect(getComputedStyle(clear).opacity).toBe('1'))
     const style = getComputedStyle(clear)
-    await expect(style.outlineStyle).toBe('solid')
-    await expect(style.outlineWidth).toBe('2px')
-    await expect(style.outlineOffset).toBe('2px')
+    await expect(style.boxShadow).toContain('4px')
+    await expect(style.boxShadow).not.toBe('none')
   },
 }
 

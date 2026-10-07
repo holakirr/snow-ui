@@ -315,6 +315,7 @@ export const SeriesChart = <TDatum extends object>({
   legendValues,
   title,
   description,
+  overlay,
   height,
   loading,
   emptyMessage,
@@ -347,6 +348,7 @@ export const SeriesChart = <TDatum extends object>({
       config={config}
       title={title}
       description={description}
+      overlay={overlay}
       height={height}
       loading={loading}
       empty={data.length === 0}

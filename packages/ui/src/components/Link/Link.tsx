@@ -26,10 +26,10 @@ const linkVariants = cva(
     variants: {
       variant: {
         // Indigo text (`indigo-text`: Figma's indigo is 2.07:1 on white), with
-        // Figma's Black/80% overlay on hover plus an underline, so the hover
-        // state doesn't rely on colour alone. Inline, so it wraps in prose.
+        // Figma's Black/80% overlay on hover.
+        // Inline, so it wraps in prose.
         default:
-          'text-indigo-text underline-offset-2 hover:text-[color-mix(in_srgb,var(--color-indigo-text),var(--color-black)_80%)] hover:underline',
+          'text-indigo-text underline-offset-2 hover:text-[color-mix(in_srgb,var(--color-indigo-text),var(--color-black)_80%)]',
         // Black with a 40% up-right arrow; indigo on hover.
         arrow:
           'inline-flex items-center gap-0.5 text-black hover:text-indigo-text',

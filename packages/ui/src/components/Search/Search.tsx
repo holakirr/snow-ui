@@ -216,7 +216,7 @@ const Search: FC<SearchProps> = ({
         disabled={disabled}
         readOnly={readOnly}
         className={twMerge(
-          'h-full min-w-0 flex-1 bg-transparent text-black outline-none placeholder:text-placeholder disabled:cursor-not-allowed [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden',
+          'h-full min-w-0 flex-1 bg-transparent text-black outline-none placeholder:text-placeholder disabled:cursor-default [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden',
           inputClassName,
         )}
       />

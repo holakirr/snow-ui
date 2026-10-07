@@ -93,7 +93,7 @@ describe('DropdownMenu', () => {
     const [profile] = screen.getAllByRole('menuitem')
 
     // The Figma Popover surface and 36px items with a 12px radius.
-    expect(menu).toHaveClass('p-3', 'rounded-16', 'border-surface-1')
+    expect(menu).toHaveClass('p-3', 'rounded-16', 'inset-ring-surface-1')
     expect(profile).toHaveClass('p-2', 'rounded-12', 'text-14')
     // Taller than the room on its side, it scrolls, with the kit scrollbar.
     expect(menu).toHaveClass(

@@ -76,7 +76,7 @@ The Figma Notifications (icon tiles), Activities (avatars) and Contacts (title o
 - Without `asChild` ListItem is a `<div>`. In a list, render `<li>` rows (`asChild`) inside a `<ul>` or `<ol>`, so screen readers announce the list and the number of items; give the list or its section a name.
 - For a row that does something, use a link or a `<button type="button">` as the child: it brings the role and the keyboard behaviour. `interactive` alone only styles the row. The accessible name is the row's whole text: the title, the description, trailing content and an avatar's initials.
 - `active` isn't announced: set `aria-current` or another state on the element yourself.
-- Keyboard focus on any focusable row shows the `focus-ring` utility of the other controls (inherited from IconText), on `:focus-visible` only: the Figma "Focus" ring plus a 2px `black-80` outline offset by 2px, outside the row, so the hover and active fills don't hide it.
+- Keyboard focus on any focusable row shows the `focus-ring` utility of the other controls (inherited from IconText), on `:focus-visible` only: the Figma 4px ring in `black-80`, outside the row, so the hover and active fills don't hide it.
 - Truncated text is cut only visually; screen readers read all of it. When the full text matters to sighted people too, show it elsewhere.
 
 ### Keyboard
@@ -96,7 +96,7 @@ The full table is in the package README.
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | Descriptions in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: Black/60% in light mode (5.74:1 on `background-1`, at least 5.5:1 on the Black/4% hover), White/70% in dark mode (7.08:1 on #333) | 1.4.3 |
-| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the ring plus a 2px `black-80` outline, offset 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma 4px ring in `black-80` (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 
 ## Localization and RTL
 

@@ -63,7 +63,7 @@ Both have a 16px radius, an 8px gap and a 10px background blur. Set the width wi
 ## States
 
 - **Hover:** the variant's hover fill or stroke; the search icon turns Black/40%.
-- **Focus:** while the input has focus, by mouse or keyboard, both types become Surface/1 with a 0.5px Black/40% stroke and the 4px Focus ring (the Figma "Focus"); the search icon turns `primary`. Text fields don't get the `focus-ring` outline. With more contrast the focus stroke is 2px (Black/80%, the stroke colour when read-only): the Figma 0.5px Black/40% stroke is 2.85:1 on the fill.
+- **Focus:** while the input has focus, by mouse or keyboard, both types become Surface/1 with a 0.5px Black/40% stroke and the 4px Focus ring (the Figma "Focus"); the search icon turns `primary`. Text fields don't get the `focus-ring` colour. With more contrast the focus stroke is 2px (Black/80%, the stroke colour when read-only): the Figma 0.5px Black/40% stroke is 2.85:1 on the fill.
 - **Typing:** a value replaces the shortcut hint with the clear button.
 - **Disabled** (`disabled`): the whole field at 40% opacity, with no pointer events and no clear button. The kit uses 20% with the default arrow cursor: planned for 6.0.
 - **Invalid** (`aria-invalid`): a 1px Secondary/Red stroke on both types, in every state (the kit's Error stroke; the kit draws no Error for Search, so it has no `Warning` icon, unlike Input).
@@ -102,7 +102,7 @@ The full table is in the package README.
 | --- | --- | --- |
 | Shortcut hint in Black/20%: 1.6:1 | `text-secondary`, with no fill of its own (a second Black/4% layer on the hovered dark field took it under 4.5:1) | 1.4.3 |
 | Clear button at 40% opacity: 2.85:1 | 60% (5.74:1), 80% on hover | 1.4.11 |
-| Clear button: no focus state | on keyboard focus, full opacity and `focus-ring` (a 2px `black-80` outline: 12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| Clear button: no focus state | on keyboard focus, full opacity and `focus-ring` (a 4px `black-80` ring: 12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 
 Known gaps with the default contrast, which keeps the Figma values: the Black/20% placeholder (it is never the field's only label) and the Black/4% fill of the `gray` field (1.1:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the placeholder and the icon are Black/60% (at least 5.25:1; White/75% in dark mode) and both variants get a 1px `control-border` stroke (at least 3.3:1).
 

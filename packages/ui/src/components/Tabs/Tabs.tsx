@@ -111,12 +111,12 @@ TabsList.displayName = TabsPrimitive.List.displayName
  */
 const lineTriggerVariants = cva(
   [
-    'group inline-flex flex-col items-center justify-center gap-1 whitespace-nowrap transition-all',
-    // The small tabs are 22px high: `hit-area` makes them 24 (WCAG 2.5.8).
+    'group inline-flex flex-col items-center justify-center gap-0 whitespace-nowrap transition-all',
+    // The active small tab is 20px high; the invisible hit area reaches 24px.
     'relative cursor-pointer rounded-4 focus-ring hit-area',
     'text-(--tab-fg) [--tab-fg:var(--color-text-secondary)]',
     'hover:[--tab-fg:var(--color-black)] focus-visible:[--tab-fg:var(--color-black)] data-[state=active]:[--tab-fg:var(--color-primary)]',
-    'disabled:cursor-not-allowed disabled:text-black-20 [&_svg]:shrink-0',
+    'disabled:cursor-default disabled:text-black-20 [&_svg]:shrink-0',
   ],
   {
     variants: {
@@ -223,10 +223,17 @@ const TabsTrigger: FC<TabsTriggerProps> = ({
       <span
         aria-hidden
         className={twMerge(
-          'h-0.5 w-full rounded-full bg-transparent transition-colors group-data-[state=active]:bg-primary',
-          underlineStyle === 'short' && 'mt-0.5 h-0.75 w-1.5',
+          'relative mt-1 hidden h-0 w-full group-data-[state=active]:block',
+          underlineStyle === 'short' && 'mt-1.5 h-0.75 w-1.5',
         )}
-      />
+      >
+        <span
+          className={twMerge(
+            'absolute -top-px h-0.5 w-full rounded-full bg-primary',
+            underlineStyle === 'short' && 'top-0 h-0.75',
+          )}
+        />
+      </span>
     )
 
     return (

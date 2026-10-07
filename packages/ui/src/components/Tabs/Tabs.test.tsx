@@ -51,7 +51,13 @@ describe('Tabs', () => {
       '[--tab-fg:var(--color-text-secondary)]',
       'data-[state=active]:[--tab-fg:var(--color-primary)]',
     )
-    expect(line).toHaveClass('h-0.5', 'group-data-[state=active]:bg-primary')
+    expect(line).toHaveClass(
+      'h-0',
+      'mt-1',
+      'hidden',
+      'group-data-[state=active]:block',
+    )
+    expect(line?.firstElementChild).toHaveClass('h-0.5', 'bg-primary')
   })
 
   it('sizes the line tabs with the Figma text styles', () => {
@@ -196,7 +202,7 @@ describe('Tabs', () => {
       expect(one.className).not.toMatch(/enabled:/)
       if (variant === 'line') {
         expect(one.lastElementChild).toHaveClass(
-          'group-data-[state=active]:bg-primary',
+          'group-data-[state=active]:block',
         )
       }
 
@@ -350,7 +356,8 @@ describe('Tabs', () => {
         'data-underline',
         'full',
       )
-      expect(line).toHaveClass('h-0.5', 'w-full')
+      expect(line).toHaveClass('h-0', 'w-full')
+      expect(line?.firstElementChild).toHaveClass('h-0.5')
     })
 
     it('draws a 6×3px centred dash, 2px lower', () => {
@@ -367,9 +374,8 @@ describe('Tabs', () => {
       expect(line).toHaveClass(
         'w-1.5',
         'h-0.75',
-        'mt-0.5',
-        'rounded-full',
-        'group-data-[state=active]:bg-primary',
+        'mt-1.5',
+        'group-data-[state=active]:block',
       )
       expect(line).not.toHaveClass('w-full')
       expect(line).not.toHaveClass('h-0.5')

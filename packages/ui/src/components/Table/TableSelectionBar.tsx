@@ -69,7 +69,7 @@ const TableSelectionBar: FC<TableSelectionBarProps> = ({
     ? {
         'aria-disabled': true,
         className:
-          'aria-disabled:cursor-not-allowed aria-disabled:text-black-20 aria-disabled:hover:bg-transparent aria-disabled:active:scale-100',
+          'aria-disabled:cursor-default aria-disabled:text-black-20 aria-disabled:hover:bg-transparent aria-disabled:active:scale-100',
       }
     : undefined
 

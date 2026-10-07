@@ -11,6 +11,7 @@ export type ChartFrameProps = Pick<
   ChartContainerProps,
   | 'title'
   | 'description'
+  | 'overlay'
   | 'height'
   | 'loading'
   | 'emptyMessage'

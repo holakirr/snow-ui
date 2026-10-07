@@ -162,8 +162,8 @@ export const Variants: Story = {
 /**
  * Rich tooltips (added in 5.2), as the kit's examples: a `TooltipTitle` in
  * semibold over a `TooltipDescription`, or a description alone for a
- * multi-line tip. They stack, start-aligned, with an 8px radius, and wrap at
- * 280px. Text only: for links or buttons use a Popover.
+ * multi-line tip. The source rich surface has a 12px radius, 16/12 padding
+ * and 255px width. Text only: for links or buttons use a Popover.
  */
 export const Rich: Story = {
   args: {},
@@ -222,7 +222,7 @@ export const Rich: Story = {
       await expect(text).toHaveAttribute('data-slot', 'tooltip-description')
       await expect(
         text.getBoundingClientRect().top - title.getBoundingClientRect().bottom,
-      ).toBeCloseTo(4, 0)
+      ).toBeCloseTo(0, 0)
       // Aligned at the start edge: the left one, or the right one in RTL.
       const edge =
         getComputedStyle(tooltip).direction === 'rtl' ? 'right' : 'left'
@@ -232,14 +232,18 @@ export const Rich: Story = {
       ).toBeCloseTo(0, 0)
     })
 
-    await step('an 8px radius, wrapping at 280px', async () => {
-      const style = getComputedStyle(tooltip)
-      await expect(style.borderTopLeftRadius).toBe('8px')
-      await expect(tooltip.getBoundingClientRect().width).toBeLessThanOrEqual(
-        280,
-      )
-      await expect(tooltip.getBoundingClientRect().height).toBeGreaterThan(48)
-    })
+    await step(
+      'the source 255px surface with 12px radius and 16/12 padding',
+      async () => {
+        const style = getComputedStyle(tooltip)
+        await expect(style.borderTopLeftRadius).toBe('12px')
+        await expect(tooltip.getBoundingClientRect().width).toBe(255)
+        await expect(style.paddingLeft).toBe('16px')
+        await expect(style.paddingTop).toBe('12px')
+        await expect(getComputedStyle(title).fontSize).toBe('14px')
+        await expect(tooltip.getBoundingClientRect().height).toBeGreaterThan(48)
+      },
+    )
 
     await step(
       'the trigger is described by the title and the text',
@@ -256,7 +260,7 @@ export const Rich: Story = {
       )
         .find((element) => element.closest('[data-side]') !== null)
         ?.closest('[data-side]') as HTMLElement
-      await expect(getComputedStyle(views).borderTopLeftRadius).toBe('8px')
+      await expect(getComputedStyle(views).borderTopLeftRadius).toBe('12px')
     })
   },
 }

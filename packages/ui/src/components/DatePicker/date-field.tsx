@@ -328,9 +328,9 @@ export const DateField = ({
         data-placeholder={empty || undefined}
         data-active={(index === active && segment === viewSegment) || undefined}
         className={twMerge(
-          // 24px high and at least 24px wide: the Figma click ranges, as
-          // targets (WCAG 2.5.8).
-          'inline-flex h-6 min-w-6 cursor-default items-center justify-center rounded-4 px-1 tabular-nums whitespace-nowrap caret-transparent outline-none transition-colors select-none hover:bg-black-4 focus:bg-black-4 focus-ring data-active:bg-black-4',
+          // Figma segments: 24px high, intrinsic proportional text width plus 4px padding.
+          // The invisible hit area preserves pointer target size.
+          'relative inline-flex h-6 cursor-default items-center justify-center rounded-4 px-1 hit-area whitespace-nowrap caret-transparent outline-none transition-colors select-none hover:bg-black-4 focus:bg-black-4 focus-ring data-active:bg-black-4',
           className,
           empty && 'text-secondary',
         )}
@@ -411,7 +411,14 @@ export const DateField = ({
           return (
             <Fragment key={segment}>
               {colon && separator(layout.timeSeparator, `sep-${segment}`)}
-              {renderSegment(active, segment, invalid && 'text-red-text')}
+              {renderSegment(
+                active,
+                segment,
+                twMerge(
+                  segment === 'dayPeriod' && 'ms-1',
+                  invalid && 'text-red-text',
+                ),
+              )}
             </Fragment>
           )
         })}
@@ -427,7 +434,7 @@ export const DateField = ({
     <div
       ref={container}
       data-slot="date-picker-top-area"
-      className="flex min-h-14 items-center gap-1 border-b-[0.5px] border-black-10 px-4 py-3.5 text-14"
+      className="relative flex min-h-14 items-center gap-2 px-4 py-4 text-14 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-[0.5px] after:bg-black-10"
       onPointerDown={(event: PointerEvent<HTMLDivElement>) => {
         if ((event.target as Element).closest('[role="spinbutton"]')) return
         event.preventDefault()

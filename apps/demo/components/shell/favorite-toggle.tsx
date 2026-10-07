@@ -1,8 +1,8 @@
 'use client'
 
-import { StarIcon } from '@holakirr/snow-ui-icons'
 import { useState } from 'react'
 import { useDictionary } from '@/app/providers'
+import { StarIcon } from '@/components/icons'
 import { IconButton } from './icon-button'
 
 /** The header's star: a toggle button (`aria-pressed`), local state only. */

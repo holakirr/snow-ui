@@ -557,14 +557,14 @@ export const comboboxInvalidClasses =
 
 /** The disabled look of `Input` (`disabledInputClasses`). */
 export const comboboxDisabledClasses =
-  'cursor-not-allowed bg-black-4 text-black-20 inset-ring-0 hover:inset-ring-0'
+  'cursor-default bg-black-4 text-black-20 inset-ring-0 hover:inset-ring-0'
 
 /** Figma "Static" (read-only): the stroke doesn't react to hover or focus. */
 export const comboboxStaticClasses =
   'hover:inset-ring-control-border focus-within:inset-ring-control-border'
 
 export const comboboxInputClasses =
-  'min-w-0 flex-1 bg-transparent text-inherit outline-none placeholder:text-placeholder disabled:cursor-not-allowed'
+  'min-w-0 flex-1 bg-transparent text-inherit outline-none placeholder:text-placeholder disabled:cursor-default'
 
 type ComboboxAdornmentsProps = {
   loading: boolean

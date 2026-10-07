@@ -52,9 +52,15 @@ const Panels = ({ values }: { values: string[] }) => (
 )
 
 export const Default: Story = {
-  play: async ({ canvas, userEvent, step }) => {
+  play: async ({ canvas, canvasElement, userEvent, step }) => {
     const account = canvas.getByRole('tab', { name: 'Account' })
     const password = canvas.getByRole('tab', { name: 'Password' })
+
+    await step('matches the Medium Underline geometry in Figma', async () => {
+      await canvasElement.ownerDocument.fonts.ready
+      await expect(account.getBoundingClientRect().height).toBeCloseTo(24, 0)
+      await expect(password.getBoundingClientRect().height).toBeCloseTo(20, 0)
+    })
 
     await step('Tab moves into the list, onto the selected tab', async () => {
       await userEvent.tab()
@@ -202,7 +208,9 @@ export const ShortUnderline: Story = {
       // Primary, like the label (after the colour transitions).
       await settledColor(overview)
       await expect(
-        getComputedStyle(overview.lastElementChild as Element).backgroundColor,
+        getComputedStyle(
+          overview.lastElementChild?.firstElementChild as Element,
+        ).backgroundColor,
       ).toBe(colorOf('text-primary', canvasElement))
     })
 

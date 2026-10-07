@@ -51,7 +51,7 @@ const [due, setDue] = useState<Date | null>(null)
 - **Open:** a Black/40% stroke and the 4px Focus ring.
 - **Placeholder:** no date yet; the placeholder is the trigger's text, in `text-secondary`.
 - **Invalid** (`aria-invalid`, set by `FormControl` when the field has an error): a Red stroke.
-- **Disabled** (`disabled`): a Black/4% field with no stroke, Black/20% text and icon, a not-allowed cursor. It doesn't open.
+- **Disabled** (`disabled`): a Black/4% field with no stroke, Black/20% text and icon, a default arrow cursor. It doesn't open.
 - **Disabled days** (`minDate`, `maxDate`, `disabledDates`): Black/20% and not selectable; the calendar doesn't go past the months of `minDate` and `maxDate`.
 
 <Canvas of={DatePickerStories.Open} />
@@ -76,7 +76,7 @@ Closing the popover confirms the date: Enter in the top area, a click outside, o
 
 ## Months and years
 
-A click on the month in the top area, or on the "Feb" caption, shows the twelve months of the shown year ("‹ 2026 ›" switches the year, and is a button to the years); a click on the year shows twelve years ("‹ ›" pages them). The month or year of the date is selected (Primary), the current one is Secondary/Indigo, marked as the Calendar's today (with its dot in dark mode). Picking one changes the date's month or year (the day stays, within the month) and returns to the days; "This month" and "This year" pick the current one, "‹ Back" returns without a change.
+A click on the month in the top area, or on the "Feb" caption, shows the twelve months of the shown year ("‹ 2026 ›" switches the year, and is a button to the years); a click on the year shows twelve years ("‹ ›" pages them). The month or year of the date is selected (Primary), the current one is Secondary/Indigo, marked as the Calendar's today with `aria-current` (a dot only in forced colours). Picking one changes the date's month or year (the day stays, within the month) and returns to the days; "This month" and "This year" pick the current one, "‹ Back" returns without a change.
 
 <Canvas of={DatePickerStories.MonthsView} />
 
@@ -140,12 +140,12 @@ The full table is in the package README; the calendar has the deviations listed 
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
-| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px | 2.4.7, 1.4.11 |
+| "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma 4px ring in `black-80` | 2.4.7, 1.4.11 |
 | Placeholder in Black/20%: 1.6:1 | `text-secondary`: it is the trigger's visible text, as in Select | 1.4.3 |
 | The clear icon at 40% opacity (2.85:1) | 60% (the 3:1 of a control's icon) | 1.4.11 |
 | Top area: the separators and the dimmed date in Black/20% (1.6:1) | `text-secondary` (5.74:1) | 1.4.3 |
 | Today (and the current month, year and time): white on Secondary/Indigo (2.07:1) | static black on Secondary/Indigo (10:1) | 1.4.3 |
-| Top area parts about 16px wide ("If the click area is too small, make the component 1.5 or 2 times larger") | 24px high and at least 24px wide | 2.5.8 |
+| Top area parts: proportional text with 4px horizontal padding and 24px height | The same visible geometry; an invisible hit area enlarges small pointer targets | 2.5.8 |
 
 Known gap with the default contrast, which keeps the Figma value, as in [Select](?path=/docs/components-input-select--docs#accessibility): the 0.5px Black/20% stroke (1.6:1). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) the stroke is a 1px `control-border`, the invalid stroke `control-border-invalid` and the calendar icon `control-border-strong`. The clear button is a 16px icon with a 24×24px hit area (2.5.8).
 

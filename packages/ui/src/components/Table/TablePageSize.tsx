@@ -80,7 +80,7 @@ const TablePageSize: FC<TablePageSizeProps> = ({
         className={twMerge(
           // The kit's Button Small Borderless with a right icon.
           'group inline-flex min-h-6 shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap rounded-12 px-3 py-1 text-12 text-black transition-colors hover:bg-black-4 focus-ring data-[state=open]:bg-black-4',
-          'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-black-20',
+          'disabled:cursor-default disabled:bg-transparent disabled:text-black-20',
           className,
         )}
         disabled={disabled}

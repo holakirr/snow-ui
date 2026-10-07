@@ -1,17 +1,18 @@
 'use client'
 
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
+  IconBox,
 } from '@holakirr/snow-ui'
 import { usePreferences } from '@/app/providers'
 import {
   ArrowsLeftRightIcon,
-  DesktopIcon,
   MoonIcon,
   SunIcon,
   TranslateIcon,
@@ -22,7 +23,7 @@ import { IconButton } from './icon-button'
 const THEME_ICONS: Record<Theme, typeof SunIcon> = {
   light: SunIcon,
   dark: MoonIcon,
-  system: DesktopIcon,
+  system: SunIcon,
 }
 
 /** Light / dark / system, stored in localStorage (see `themeScript`). */
@@ -104,12 +105,17 @@ export const DirectionToggle = () => {
   const rtl = dir === 'rtl'
 
   return (
-    <IconButton
-      label={dict.header.directionRtl}
-      icon={<ArrowsLeftRightIcon />}
+    <Button
+      aria-label={dict.header.directionRtl}
+      title={dict.header.directionRtl}
+      startContent={
+        <IconBox size={20}>
+          <ArrowsLeftRightIcon />
+        </IconBox>
+      }
       aria-pressed={rtl}
       data-testid="direction-toggle"
-      className={rtl ? 'bg-black-4' : undefined}
+      className={`rounded-12 p-1 ${rtl ? 'bg-black-4' : ''}`}
       onClick={() => setDir(rtl ? 'ltr' : 'rtl')}
     />
   )

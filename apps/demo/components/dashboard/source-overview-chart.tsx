@@ -186,7 +186,7 @@ export const SourceOverviewChart = ({
             {['30K', '20K', '10K', '0'].map((value, index) => (
               <text
                 key={value}
-                x={23}
+                x={25}
                 y={`${((36 + index * 62) / 246) * 100}%`}
                 textAnchor="end"
               >

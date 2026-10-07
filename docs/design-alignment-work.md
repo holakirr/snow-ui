@@ -70,3 +70,10 @@
 - Все1030 применимых visual снимков подтверждены:1014 в полном compare и16 исправленных в повторном compare зависимых групп(26 passed/2 skip). Неожиданных отличий после исправлений нет.
 - Финальные first-load JS: Dashboard388.3KiB (<420), Settings280.1KiB (<290), SignIn218.7KiB (<275); все бюджеты passed без изменения порогов.
 - Итоговые E2E screenshots сохранены в каталоге визуализаций: snowui-dashboard-final.png, snowui-account-settings-final.png, snowui-sign-in-final.png. Финальные две геометрические проверки passed после сохранения скриншотов. Viewport override сброшен, demo оставлено открытым на3102, временная Storybook-вкладка/сервер закрыты.
+
+## Publication and live verification, 7 October
+
+- Commits b9d0725b and 6a91290e pushed to codex/design-alignment, PR #225. Main rejected a direct push because 15 required checks and CodeQL must pass; protections remain enabled.
+- Live HTTP: Storybook, next preview, demo Dashboard/Sign In/Settings and /r/button.json return 200. /preferences still returns 404 on the previous production demo.
+- Pro HTTPS fails; HTTP returns Vercel DEPLOYMENT_NOT_FOUND. CI for Pro commit72e059e passed; a working public deployment is not confirmed.
+- CI found an outdated resting scrollbar expectation in dist.test.ts. It now verifies hidden, hover and focus-within states; local published-package tests passed (UI26, charts9). Repeat CI pending.

@@ -100,6 +100,68 @@ test('the dashboard shows every block of the kit', async ({
   await expect(panel).toBeVisible()
 })
 
+// SVG artwork can stretch to the card, but typography must keep native proportions.
+for (const theme of ['light', 'dark'] as const) {
+  test(`overview axis labels keep their proportions on resize (${theme})`, async ({
+    page,
+  }) => {
+    await useTheme(page, theme)
+    await page.goto('/dashboard')
+    const plot = page
+      .getByRole('figure', { name: 'Total Users', exact: true })
+      .getByRole('img', { name: 'Total Users', exact: true })
+    const labels = plot.locator('text')
+    await expect(labels).toHaveCount(11)
+    await expect(plot.locator('svg')).toHaveCount(3)
+    let referenceWidths: number[] | undefined
+    for (const width of [1440, 2320, 375]) {
+      await page.setViewportSize({ width, height: 900 })
+      await expect(plot).toBeVisible()
+      await expect
+        .poll(() =>
+          labels.evaluateAll((elements) =>
+            elements.every((element) => {
+              const matrix = (element as SVGTextElement).getScreenCTM()
+              return (
+                matrix !== null &&
+                Math.abs(matrix.a - 1) < 0.001 &&
+                Math.abs(matrix.d - 1) < 0.001
+              )
+            }),
+          ),
+        )
+        .toBe(true)
+      await page.evaluate(() => document.fonts.ready)
+      const plotBounds = await plot.boundingBox()
+      expect(plotBounds).not.toBeNull()
+      // Artwork and month frames reserve the gutter; the value frame spans the plot.
+      for (const frame of await plot.locator('svg').all()) {
+        const bounds = await frame.boundingBox()
+        const gutter = (await frame.locator('text').count()) === 4 ? 0 : 39
+        expect(bounds?.x).toBeCloseTo((plotBounds?.x ?? 0) + gutter, 1)
+        expect(bounds?.width).toBeCloseTo((plotBounds?.width ?? 0) - gutter, 1)
+      }
+      for (const label of await labels.all()) {
+        const bounds = await label.boundingBox()
+        expect(bounds).not.toBeNull()
+        // Font advance boxes may overhang the viewport by a fraction of a pixel.
+        expect(bounds?.x).toBeGreaterThanOrEqual((plotBounds?.x ?? 0) - 0.5)
+        expect((bounds?.x ?? 0) + (bounds?.width ?? 0)).toBeLessThanOrEqual(
+          (plotBounds?.x ?? 0) + (plotBounds?.width ?? 0) + 0.5,
+        )
+      }
+      const widths = await labels.evaluateAll((elements) =>
+        elements.map((element) => element.getBoundingClientRect().width),
+      )
+      if (referenceWidths)
+        widths.forEach((value, index) => {
+          expect(value).toBeCloseTo(referenceWidths?.[index] ?? 0, 1)
+        })
+      else referenceWidths = widths
+    }
+  })
+}
+
 test('the sidebar collapses and stays collapsed after a reload', async ({
   page,
 }) => {

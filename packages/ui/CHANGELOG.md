@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.3.1
+
+### Patch Changes
+
+- [#225](https://github.com/holakirr/snow-ui/pull/225) [`ce23a41`](https://github.com/holakirr/snow-ui/commit/ce23a41bf2f3746bd3b6a94daefa8ecc3a0b9635) Thanks [@holakirr](https://github.com/holakirr)! - Align non-colour component states with the SnowUI kit: keep popover strokes inside their surfaces, restore the single 4px focus ring, use the default disabled cursor, remove the extra Link hover underline and the standard-theme Calendar today dot, and keep Scheduler today text at its designed weight. Preserve contrast-adjusted colours, semantic current-date markers and forced-colours support.
+
+  Restore source Button, Tabs, counted Textarea, Tooltip and DatePicker geometry, and reveal scrollbars on hover/focus. Charts accept optional plot margins, axis dimensions, plot width and overlay artwork while retaining existing defaults and accessible data interactions.
+
 ## 5.3.0
 
 ### Minor Changes

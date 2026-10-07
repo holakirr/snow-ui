@@ -100,8 +100,8 @@ export const Active: Story = {
     // timeout to render the transition.
     await animationsEnded(line)
     await waitFor(() => expect(getComputedStyle(line).opacity).toBe('1'))
-    await expect(getComputedStyle(bar).outlineStyle).toBe('solid')
-    await expect(getComputedStyle(bar).outlineColor).toBe(
+    await expect(getComputedStyle(bar).boxShadow).toContain('4px')
+    await expect(getComputedStyle(bar).boxShadow).toContain(
       colorOf('text-black-80', canvasElement),
     )
 

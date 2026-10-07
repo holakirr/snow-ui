@@ -39,8 +39,7 @@ const FIGMA_MONTH = new Date(2023, 1, 1)
 
 /**
  * Whether today's dot (the `::after` of its day button) shows: where the
- * indigo fill doesn't tell today apart, in dark mode, while selected and with
- * forced colours; not in the light theme, as in the kit.
+ * system colours suppress the fill; standard themes retain the kit geometry.
  */
 const todayDotShown = (canvasElement: HTMLElement) => {
   const today = canvasElement.querySelector<HTMLElement>(
@@ -200,7 +199,7 @@ export const States: Story = {
     // Today (the 10th) is the indigo fill alone in the light theme; in dark
     // mode, where the selected 17th is indigo too, it also has the dot.
     await expect(todayDotShown(canvasElement)).toBe(
-      isDark(canvasElement) || matchMedia('(forced-colors: active)').matches,
+      matchMedia('(forced-colors: active)').matches,
     )
     if (
       isDark(canvasElement) &&
@@ -250,7 +249,9 @@ export const TodaySelected: Story = {
     )
   },
   play: async ({ canvasElement }) => {
-    await expect(todayDotShown(canvasElement)).toBe(true)
+    await expect(todayDotShown(canvasElement)).toBe(
+      matchMedia('(forced-colors: active)').matches,
+    )
     // Selected, today keeps the selected fill, in dark mode too, where an
     // unselected today has none.
     const today = canvasElement.querySelector(

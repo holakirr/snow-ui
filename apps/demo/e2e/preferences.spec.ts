@@ -28,6 +28,7 @@ test('the direction toggle renders the app right to left', async ({ page }) => {
   const html = page.locator('html')
   await expect(html).toHaveAttribute('dir', 'ltr')
 
+  await page.getByRole('button', { name: 'Recently', exact: true }).click()
   const toggle = page.getByRole('button', { name: 'Right to left' })
   await toggle.click()
   await expect(html).toHaveAttribute('dir', 'rtl')
@@ -42,6 +43,7 @@ test('the direction toggle renders the app right to left', async ({ page }) => {
   await expect(html).toHaveAttribute('dir', 'rtl')
   await checkA11y(page)
 
+  await page.getByRole('button', { name: 'Recently', exact: true }).click()
   await page.getByRole('button', { name: 'Right to left' }).click()
   await expect(html).toHaveAttribute('dir', 'ltr')
 })
@@ -50,6 +52,7 @@ test('the language menu translates the app and the components', async ({
   page,
 }) => {
   await page.goto('/dashboard')
+  await page.getByRole('button', { name: 'Recently', exact: true }).click()
   await page.getByRole('button', { name: 'Language: English' }).click()
   await page.getByRole('menuitemradio', { name: 'Русский' }).click()
 
@@ -61,9 +64,7 @@ test('the language menu translates the app and the components', async ({
   await expect(
     page.getByRole('button', { name: 'Показать или скрыть боковую панель' }),
   ).toBeVisible()
-  await expect(
-    page.getByRole('navigation', { name: 'Навигация по страницам' }),
-  ).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Страницы' })).toBeVisible()
   // Numbers use the Russian format.
   await expect(page.getByText('7 265')).toBeVisible()
 
@@ -71,6 +72,7 @@ test('the language menu translates the app and the components', async ({
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Обзор')
   await checkA11y(page)
 
+  await page.getByRole('button', { name: 'Недавние', exact: true }).click()
   await page.getByRole('button', { name: 'Язык: Русский' }).click()
   await page.getByRole('menuitemradio', { name: 'English' }).click()
   await expect(html).toHaveAttribute('lang', 'en')

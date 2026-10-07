@@ -43,7 +43,7 @@ export const NavLink = ({
         <span className="flex items-center gap-1">
           {arrow && (
             <IconBox size={16} className="text-black-20" aria-hidden>
-              <ArrowLineRightIcon className="rtl:-scale-x-100" />
+              {!active && <ArrowLineRightIcon className="rtl:-scale-x-100" />}
             </IconBox>
           )}
           <IconBox size={20} aria-hidden>

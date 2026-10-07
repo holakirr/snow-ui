@@ -34,7 +34,7 @@ const RadioGroupItem: FC<RadioGroupItemProps> = ({ className, ...props }) => (
       // Disabled: a Black/4% circle with a Black/10% ring and a Black/20%
       // dot. Visible in both modes. The kit dims the whole radio to 20% with
       // the arrow cursor: planned for 6.0.
-      'disabled:cursor-not-allowed disabled:bg-black-4 disabled:inset-ring-black-10',
+      'disabled:cursor-default disabled:bg-black-4 disabled:inset-ring-black-10',
       className,
     )}
     {...props}

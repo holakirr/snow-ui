@@ -85,7 +85,7 @@ An icon in `startContent` with no `label` and no `endContent` makes a square ico
 - **Hover:** the variant's hover fill (Bare: a black label), and the label's extra 4px padding.
 - **Pressed:** the button scales to 95%.
 - **Keyboard focus:** the `focus-ring` utility (see Accessibility).
-- **Disabled:** `disabled` gives a Black/20% label and a not-allowed cursor; Gray and Filled keep a Black/4% fill, the others have none. The kit's docs list Disabled too ("State: Default, Hover, Disabled"), drawn as the whole button at 20% opacity with the default arrow cursor; 5.x keeps this look and cursor, and the kit's is planned for 6.0.
+- **Disabled:** `disabled` gives a Black/20% label and a default arrow cursor; Gray and Filled keep a Black/4% fill, the others have none. The kit's docs list Disabled too ("State: Default, Hover, Disabled"), drawn as the whole button at 20% opacity with the default arrow cursor; Disabled colours are retained for contrast; the cursor follows the kit.
 
 <Canvas of={ButtonStories.Disabled} />
 
@@ -119,7 +119,7 @@ The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
-| No focus state on Button | `focus-ring`: the Figma "Focus" ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| No focus state on Button | `focus-ring`: the Figma 4px ring in `black-80` (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Filled label `#FFF` in both modes: 2.07:1 on the dark-mode indigo Primary | the per-mode `white` token: white on black (21:1), black on indigo (10.15:1) | 1.4.3 |
 | Bare at 40% layer opacity: 2.85:1 | `text-secondary` (5.74:1 light, 7.08:1 dark), black on hover and keyboard focus | 1.4.3, 1.4.11 |
 | Icon-only buttons: — | a development warning without `aria-label` / `aria-labelledby` | 4.1.2 |

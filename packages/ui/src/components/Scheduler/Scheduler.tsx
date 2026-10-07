@@ -400,7 +400,6 @@ const Scheduler: FC<SchedulerProps> = ({
             {/* Today is semibold too, not told by its colour alone. */}
             <Typography
               size={TEXT_SIZES[12]}
-              semibold={day === todayIndex}
               className={twMerge(
                 'text-secondary px-1 py-0.5 rounded-4',
                 day === todayIndex && 'bg-indigo text-static-black',

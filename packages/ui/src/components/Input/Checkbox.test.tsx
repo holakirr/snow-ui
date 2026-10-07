@@ -67,7 +67,7 @@ describe('Checkbox', () => {
       'disabled:bg-black-4',
       'disabled:inset-ring-black-10',
       'data-[state=checked]:disabled:bg-black-10',
-      'disabled:cursor-not-allowed',
+      'disabled:cursor-default',
     )
     expect(checkbox).not.toHaveClass('disabled:opacity-40')
   })

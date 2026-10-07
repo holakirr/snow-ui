@@ -1,14 +1,9 @@
 import { IconBox, ListItem, Typography } from '@holakirr/snow-ui'
+import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { BroadcastIcon, BugBeetleIcon, UserIcon } from '@/components/icons'
 import { InitialsAvatar } from '@/components/initials-avatar'
-import {
-  activities,
-  contacts,
-  notificationKinds,
-  notificationTimes,
-} from '@/lib/data'
-import { formatAgo } from '@/lib/format'
+import { activities, contacts, notificationKinds } from '@/lib/data'
 import type { Dictionary } from '@/lib/i18n/dictionaries'
 import type { Lang } from '@/lib/preferences'
 
@@ -21,11 +16,11 @@ const Section = ({
   title: string
   children: ReactNode
 }) => (
-  <section aria-labelledby={id} className="flex flex-col gap-2">
-    <Typography asChild size={14} semibold className="px-1 py-2">
+  <section aria-labelledby={id} className="flex flex-col gap-1">
+    <Typography asChild size={14} className="px-1 py-2">
       <h2 id={id}>{title}</h2>
     </Typography>
-    <ul className="flex flex-col gap-2">{children}</ul>
+    <ul className="flex flex-col gap-1">{children}</ul>
   </section>
 )
 
@@ -41,7 +36,6 @@ const NOTIFICATION_ICONS = {
  */
 export const RightPanelContent = ({
   dict,
-  lang,
 }: {
   dict: Dictionary
   lang: Lang
@@ -65,12 +59,9 @@ export const RightPanelContent = ({
                 {icon}
               </IconBox>
             }
+            className="p-2"
             title={title}
-            description={formatAgo(
-              lang,
-              notificationTimes[index],
-              dict.app.justNow,
-            )}
+            description={dict.panel.sourceTimes[index]}
           >
             <li />
           </ListItem>
@@ -78,14 +69,23 @@ export const RightPanelContent = ({
       })}
     </Section>
     <Section id="panel-activities" title={dict.panel.activities}>
-      {activities.map(({ user, minutesAgo }, index) => (
+      {activities.map(({ user }, index) => (
         <ListItem
           key={user}
           asChild
-          icon={<InitialsAvatar name={user} />}
+          icon={
+            <Image
+              src={`/avatars/activity-${index + 1}.png`}
+              width={24}
+              height={24}
+              alt=""
+              aria-hidden
+              className="size-6 rounded-full"
+            />
+          }
           title={dict.panel.activityItems[index]}
-          description={formatAgo(lang, minutesAgo, dict.app.justNow)}
-          className="relative"
+          description={dict.panel.sourceTimes[index]}
+          className="relative p-2"
         >
           <li>
             {index < activities.length - 1 && (
@@ -104,6 +104,7 @@ export const RightPanelContent = ({
           key={name}
           asChild
           icon={<InitialsAvatar name={name} />}
+          className="p-2"
           title={name}
         >
           <li />

@@ -7,7 +7,7 @@ const dotOf = (chip: HTMLElement) =>
   chip.querySelector('[data-slot="chip-dot"]')
 
 describe('Chip', () => {
-  it('is a tinted 12/16 purple chip by default: H 20, padding 4/2, radius 4', () => {
+  it('is a tinted 12/16 purple chip by default: H 20, padding 8/2, radius 4', () => {
     render(<Chip>Label</Chip>)
     const chip = screen.getByText('Label')
 
@@ -15,7 +15,7 @@ describe('Chip', () => {
     expect(chip).toHaveAttribute('data-color', 'purple')
     expect(chip).toHaveClass(
       'rounded-4',
-      'px-1',
+      'px-2',
       'py-0.5',
       'text-12',
       'bg-(--chip-fill)',
@@ -53,7 +53,7 @@ describe('Chip', () => {
     render(<Chip big>Label</Chip>)
     const chip = screen.getByText('Label')
     expect(chip).toHaveClass('text-14', 'rounded-80', 'px-3', 'py-1')
-    expect(chip).not.toHaveClass('text-12', 'rounded-4', 'px-1', 'py-0.5')
+    expect(chip).not.toHaveClass('text-12', 'rounded-4', 'px-2', 'py-0.5')
   })
 
   it('shows a decorative dot, and no tint, without background', () => {
@@ -61,7 +61,7 @@ describe('Chip', () => {
     let chip = screen.getByText('Label')
     let dot = dotOf(chip) as HTMLElement
 
-    expect(chip).not.toHaveClass('bg-(--chip-fill)', 'rounded-4', 'px-1')
+    expect(chip).not.toHaveClass('bg-(--chip-fill)', 'rounded-4', 'px-2')
     expect(dot).toHaveAttribute('aria-hidden', 'true')
     expect(dot).toHaveClass('size-3')
     expect(dot.firstElementChild).toHaveClass('size-[4.5px]', 'bg-(--chip-dot)')

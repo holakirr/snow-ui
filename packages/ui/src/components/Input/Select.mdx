@@ -72,9 +72,9 @@ The menu, open: [Open story](?path=/story/components-input-select--open).
 - **Trigger keyboard focus:** the `focus-ring` utility (see Accessibility).
 - **Open:** the trigger keeps a Black/40% stroke and the 4px Focus ring (the Figma "Focus").
 - **Placeholder:** no value yet; the placeholder is in `text-secondary`.
-- **Disabled** (`disabled` on `Select`): a Black/4% trigger with no stroke, Black/20% text and icon, and a not-allowed cursor. It doesn't open.
+- **Disabled** (`disabled` on `Select`): a Black/4% trigger with no stroke, Black/20% text and icon, and a default arrow cursor. It doesn't open.
 - **Invalid** (`aria-invalid` on `SelectTrigger`, which `FormControl` of [Form](?path=/docs/components-form--docs) sets): the Input's 1px Secondary/Red stroke, also on hover and while open (the kit's Error state: as in the kit, the chevron stays and there is no `Warning` icon).
-- **Disabled item** (`disabled` on `SelectItem`): Black/20% text and a not-allowed cursor; it can't be highlighted or selected.
+- **Disabled item** (`disabled` on `SelectItem`): Black/20% text and a default arrow cursor; it can't be highlighted or selected.
 
 <Canvas of={SelectStories.Disabled} />
 
@@ -111,7 +111,7 @@ The full table is in the package README.
 
 | Figma | Library | WCAG |
 | --- | --- | --- |
-| "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| "Focus" effect: 4px ring, black 4% (1.1:1) | `focus-ring`: the Figma 4px ring in `black-80` (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 | Placeholder in Black/20%: 1.6:1 | `text-secondary`; the placeholder is the trigger's visible text, not a native placeholder | 1.4.3 |
 | Group labels in Black/40%: 2.85:1 on white, 3.41:1 on #333 | `text-secondary`: 5.74:1 light, 7.08:1 dark | 1.4.3 |
 | Chevron in Black/40%: 2.85:1 | `text-secondary`: Black/60% in light mode (at least 5.72:1 on the trigger), White/70% in dark mode (at least 5.58:1) | 1.4.11 |

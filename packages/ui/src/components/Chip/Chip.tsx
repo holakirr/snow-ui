@@ -87,11 +87,11 @@ const Chip: FC<ChipProps> = ({
     'inline-flex w-fit shrink-0 items-center whitespace-nowrap font-normal text-(--chip-color)',
     big ? 'text-14' : 'text-12',
     background
-      ? // Figma: H 20, padding 4/2, radius 4; Big: a pill, H 28, padding
+      ? // Figma: H 20, padding 8/2, radius 4; Big: a pill, H 28, padding
         // 12/4, radius 80, 14/20 text.
         [
           'bg-(--chip-fill)',
-          big ? 'rounded-80 px-3 py-1' : 'rounded-4 px-1 py-0.5',
+          big ? 'rounded-80 px-3 py-1' : 'rounded-4 px-2 py-0.5',
         ]
       : // Figma: H 16, no padding; the dot in a 12px (Big: 16px) box.
         undefined,

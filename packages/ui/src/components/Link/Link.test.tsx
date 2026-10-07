@@ -11,11 +11,7 @@ describe('Link', () => {
     const link = screen.getByRole('link', { name: 'Docs' })
 
     expect(link).not.toHaveClass('inline-flex')
-    expect(link).toHaveClass(
-      'text-indigo-text',
-      'hover:underline',
-      'focus-ring',
-    )
+    expect(link).toHaveClass('text-indigo-text', 'focus-ring')
     expect(link).not.toHaveAttribute('target')
   })
 

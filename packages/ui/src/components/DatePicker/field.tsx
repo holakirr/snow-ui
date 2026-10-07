@@ -442,7 +442,7 @@ export const DatePickerField = ({
               data-placeholder={hasValue ? undefined : ''}
               onKeyDown={handleKeyDown}
               className={twMerge(
-                'flex min-h-11 w-full min-w-0 cursor-pointer items-center rounded-16 py-3 ps-4 text-start focus-ring disabled:cursor-not-allowed data-[placeholder]:text-secondary group-data-disabled/date-picker:text-black-20',
+                'flex min-h-11 w-full min-w-0 cursor-pointer items-center rounded-16 py-3 ps-4 text-start focus-ring disabled:cursor-default data-[placeholder]:text-secondary group-data-disabled/date-picker:text-black-20',
                 // The Figma "2 row" field: the title above the value.
                 title && 'flex-col items-start gap-2',
                 canClear ? 'pe-16' : 'pe-10',

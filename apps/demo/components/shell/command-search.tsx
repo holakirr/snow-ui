@@ -38,7 +38,6 @@ const useModifierKey = () =>
 /** A button drawn as the Figma Search field; it opens the palette. */
 const SearchButton = ({
   label,
-  modifier,
   ...props
 }: ComponentProps<'button'> & { label: string; modifier: string }) => (
   <button
@@ -57,7 +56,7 @@ const SearchButton = ({
      * text-secondary hint to 4.38:1 in dark mode (Black/4% is 10% there).
      */}
     <KBD
-      keys={[modifier, 'K']}
+      keys={['/']}
       separator=""
       aria-hidden
       className="inline-flex h-4 items-center rounded-[6px] border-[0.5px] border-black-10 bg-transparent px-1 text-12 text-secondary"

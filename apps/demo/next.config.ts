@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   typedRoutes: true,
+  experimental: {
+    optimizePackageImports: [
+      '@holakirr/snow-ui',
+      '@holakirr/snow-ui-icons',
+      '@holakirr/snow-ui-charts',
+    ],
+  },
   turbopack: {
     root: monorepoRoot,
   },

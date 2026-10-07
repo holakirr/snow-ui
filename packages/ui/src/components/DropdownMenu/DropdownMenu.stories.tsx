@@ -614,14 +614,14 @@ export const SearchOpen: Story = {
       const row = (search.parentElement as HTMLElement).getBoundingClientRect()
       await expect(content.getBoundingClientRect().width).toBeCloseTo(240, 0)
       // Figma: 200 = 240 - 2 × 12 - 2 × 8. The popover's 1px stroke is
-      // inside its 240px here, as for the items (214 for the kit's 216).
-      await expect(box.width).toBeCloseTo(198, 0)
+      // inside the surface and does not consume layout space.
+      await expect(box.width).toBeCloseTo(200, 0)
       await expect(box.height).toBeCloseTo(28, 0)
       await expect(row.height).toBeCloseTo(44, 0)
-      // 12px inside the popover's 1px stroke; the first item under the row
+      // 12px from the popover edge (its stroke stays inside); the first item under the row
       // (after its group's 4px margin).
       await expect(row.top - content.getBoundingClientRect().top).toBeCloseTo(
-        13,
+        12,
         0,
       )
       const first = page

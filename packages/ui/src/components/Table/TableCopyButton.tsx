@@ -85,7 +85,7 @@ const TableCopyButton: FC<TableCopyButtonProps> = ({
         data-state={copied ? 'copied' : undefined}
         onClick={copy}
         className={twMerge(
-          'relative inline-flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-4 align-middle text-black transition-opacity focus-ring hit-area disabled:cursor-not-allowed disabled:text-black-20',
+          'relative inline-flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-4 align-middle text-black transition-opacity focus-ring hit-area disabled:cursor-default disabled:text-black-20',
           // Shown while the pointer is over the cell, or on keyboard focus.
           '[@media(hover:hover)]:[:is(td,th):not(:hover)_&:not(:focus-visible)]:opacity-0',
           className,

@@ -45,7 +45,7 @@ import { Link } from '@holakirr/snow-ui'
 
 | `variant` | Figma | Look | Use for |
 | --- | --- | --- | --- |
-| `default` (default) | Default | `indigo-text`, inline so it wraps in prose; darker with an underline on hover | links in text |
+| `default` (default) | Default | `indigo-text`, inline so it wraps in prose; darker on hover | links in text |
 | `arrow` | Arrow | black text and a 40% up-right arrow; `indigo-text` and a full-opacity arrow on hover | "see more" links |
 | `external` | External | black text and a 40% external-link icon; `indigo-text` and a full-opacity icon on hover | links to other sites |
 
@@ -57,7 +57,7 @@ import { Link } from '@holakirr/snow-ui'
 
 ## States
 
-- **Hover:** `default` mixes 80% black into `indigo-text` (Figma's Black/80% overlay) and underlines the text (2px offset). `arrow` and `external` turn `indigo-text`, and their icon goes from 40% to full opacity.
+- **Hover:** `default` mixes 80% black into `indigo-text` (Figma's Black/80% overlay). `arrow` and `external` turn `indigo-text`, and their icon goes from 40% to full opacity.
 - **Keyboard focus:** the `focus-ring` utility, with a 4px radius (see Accessibility).
 - There is no visited, pressed or disabled style.
 
@@ -81,9 +81,8 @@ The full table is in the package README.
 | Figma | Library | WCAG |
 | --- | --- | --- |
 | Default Link in Secondary/Indigo `#ADADFB`: 2.07:1 on white | `indigo-text`: `#5B5BD6` in light mode (5.37:1), `#ADADFB` in dark mode (6.11:1) | 1.4.3 |
-| Default Link hover: colour change only | colour change plus an underline | 1.4.1 |
 | External Link: — | `target="_blank"` and `rel="noopener noreferrer"` by default, and a visually hidden "(opens in a new tab)" (`externalLabel`) | 3.2.5 (advisory) |
-| The "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the ring plus a 2px `black-80` outline offset by 2px (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
+| The "Focus" effect: a 4px Black/4% ring (1.1:1) | `focus-ring`: the Figma 4px ring in `black-80` (12.6:1 light, 8.7:1 dark) | 2.4.7, 1.4.11 |
 
 A known gap with the default contrast: the arrow and the external icon keep the Figma 40% opacity at rest (2.85:1 on white). With more contrast (`prefers-contrast: more` or `data-contrast="more"`; see [Contrast](?path=/docs/guides-contrast--docs)) they are fully opaque.
 
@@ -116,7 +115,6 @@ A known gap with the default contrast: the arrow and the external icon keep the 
 
 - Don't use a link for an action: use a [Button](?path=/docs/components-button--docs).
 - Don't put an `arrow` or `external` link mid-sentence where its text has to wrap.
-- Don't remove the underline on hover of a `default` link: it is what marks the hover without colour.
 
 </Dont>
 </DoDont>

@@ -30,7 +30,7 @@ const Switch: FC<SwitchProps> = ({ className, ...props }) => (
       // Disabled: a Black/10% track (Black/20% when on) with the white thumb,
       // so it stays visible in both modes. The kit dims the whole switch to
       // 20% with the arrow cursor: planned for 6.0.
-      'disabled:cursor-not-allowed disabled:data-[state=unchecked]:bg-black-10 disabled:data-[state=checked]:bg-black-20 disabled:inset-shadow-none',
+      'disabled:cursor-default disabled:data-[state=unchecked]:bg-black-10 disabled:data-[state=checked]:bg-black-20 disabled:inset-shadow-none',
       className,
     )}
     {...props}

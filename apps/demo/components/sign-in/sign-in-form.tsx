@@ -1,22 +1,20 @@
 'use client'
 
-import { Button, Checkbox, Input, toast } from '@holakirr/snow-ui'
+import { Button, InputSmall, toast } from '@holakirr/snow-ui'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@holakirr/snow-ui/react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 // zod/mini: the same schemas, tree-shakable (the classic `zod` build is
 // about 110 kB compressed; this page loads a fraction of it).
 import * as z from 'zod/mini'
 import { useDictionary } from '@/app/providers'
-import { EyeIcon, EyeSlashIcon } from '@/components/icons'
 import type { Dictionary } from '@/lib/i18n/dictionaries'
 
 const makeSchema = (errors: Dictionary['signIn']['errors']) =>
@@ -33,7 +31,6 @@ const makeSchema = (errors: Dictionary['signIn']['errors']) =>
         z.minLength(1, { error: errors.passwordRequired }),
         z.minLength(8, { error: errors.passwordShort }),
       ),
-    remember: z.boolean(),
   })
 
 type Values = z.infer<ReturnType<typeof makeSchema>>
@@ -48,11 +45,10 @@ export const SignInForm = () => {
   const dict = useDictionary()
   const t = dict.signIn
   const schema = useMemo(() => makeSchema(t.errors), [t.errors])
-  const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<Values>({
     resolver: zodResolver(schema),
-    defaultValues: { email: '', password: '', remember: true },
+    defaultValues: { email: '', password: '' },
   })
 
   const onSubmit = (values: Values) => {
@@ -77,11 +73,13 @@ export const SignInForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input
-                  title={t.email}
+                <InputSmall
+                  variant="outline"
+                  className="h-10 w-full px-3"
+                  aria-label={t.email}
                   type="email"
                   autoComplete="email"
-                  placeholder={t.emailPlaceholder}
+                  placeholder={t.email}
                   {...field}
                 />
               </FormControl>
@@ -95,26 +93,13 @@ export const SignInForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input
-                  title={t.password}
-                  type={showPassword ? 'text' : 'password'}
+                <InputSmall
+                  variant="outline"
+                  className="h-10 w-full px-3"
+                  aria-label={t.password}
+                  type="password"
                   autoComplete="current-password"
-                  placeholder={t.passwordPlaceholder}
-                  endContent={
-                    <button
-                      type="button"
-                      aria-label={t.showPassword}
-                      aria-pressed={showPassword}
-                      onClick={() => setShowPassword((shown) => !shown)}
-                      className="flex size-6 items-center justify-center rounded-8 text-secondary hover:text-black focus-ring"
-                    >
-                      {showPassword ? (
-                        <EyeSlashIcon size={16} aria-hidden />
-                      ) : (
-                        <EyeIcon size={16} aria-hidden />
-                      )}
-                    </button>
-                  }
+                  placeholder={t.password}
                   {...field}
                 />
               </FormControl>
@@ -122,32 +107,12 @@ export const SignInForm = () => {
             </FormItem>
           )}
         />
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <FormField
-            control={form.control}
-            name="remember"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked) =>
-                      field.onChange(checked === true)
-                    }
-                    onBlur={field.onBlur}
-                    name={field.name}
-                  />
-                </FormControl>
-                <FormLabel className="text-14 text-black">
-                  {t.remember}
-                </FormLabel>
-              </FormItem>
-            )}
-          />
+        <div className="flex justify-end">
           <Button
             variant="bare"
             label={t.forgot}
             textSize={14}
+            className="text-indigo-text"
             onClick={() =>
               toast({ title: t.forgot, description: t.forgotToast })
             }
@@ -156,9 +121,9 @@ export const SignInForm = () => {
         <Button
           type="submit"
           variant="filled"
-          size="lg"
+          size="md"
           label={t.submit}
-          className="w-full"
+          className="mt-3 w-full"
         />
       </form>
     </Form>

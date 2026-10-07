@@ -171,7 +171,7 @@ describe('ToggleGroup', () => {
     expect(toggle).toHaveClass(
       'disabled:text-black-20',
       'disabled:bg-black-4',
-      'disabled:cursor-not-allowed',
+      'disabled:cursor-default',
     )
     expect(toggle).not.toHaveClass('disabled:opacity-20')
   })

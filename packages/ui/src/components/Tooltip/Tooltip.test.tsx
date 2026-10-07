@@ -59,8 +59,10 @@ describe('rich Tooltip', () => {
     expect(content).toHaveClass(
       `${RICH}:flex-col`,
       `${RICH}:items-start`,
-      `${RICH}:rounded-8`,
-      `${RICH}:max-w-70`,
+      'has-[[data-slot=tooltip-description]]:not-has-[[data-slot=tooltip-title]]:max-w-[169px]',
+      'has-[[data-slot=tooltip-title]]:max-w-[255px]',
+      'has-[[data-slot=tooltip-title]]:px-4',
+      'has-[[data-slot=tooltip-title]]:py-3',
       // The plain tooltip's classes stay for tooltips without the parts.
       'rounded-12',
       'gap-1',

@@ -3,7 +3,7 @@ import type { ChartConfig } from '@holakirr/snow-ui-charts'
 /*
  * Mock data of the SnowUI "Dashboard" (Figma "Dashboard - Light mode"), read
  * off the drawings like the charts' stories. No real people: the names are
- * the kit's placeholder names, the avatars are initials.
+ * the kit's placeholder names and original kit portraits.
  */
 
 export type KpiKey = 'views' | 'visits' | 'newUsers' | 'activeUsers'
@@ -12,36 +12,26 @@ export const kpis: {
   key: KpiKey
   value: number
   change: number
-  trend: number[]
-  color: 'primary' | 'blue' | 'green' | 'purple'
 }[] = [
   {
     key: 'views',
     value: 7265,
     change: 11.01,
-    trend: [5, 9, 7, 12, 10, 14, 16],
-    color: 'primary',
   },
   {
     key: 'visits',
     value: 3671,
     change: -0.03,
-    trend: [9, 8, 10, 7, 9, 8, 8],
-    color: 'blue',
   },
   {
     key: 'newUsers',
     value: 256,
     change: 15.03,
-    trend: [2, 3, 5, 4, 6, 8, 9],
-    color: 'green',
   },
   {
     key: 'activeUsers',
     value: 2318,
     change: 6.08,
-    trend: [10, 12, 11, 13, 15, 14, 17],
-    color: 'purple',
   },
 ]
 
@@ -56,6 +46,22 @@ export const totalUsers = [
   { month: 6, thisYear: 24000, lastYear: 29500 },
 ]
 
+// Illustrative demo series for the other tabs; no backend connection.
+export const totalProjects = totalUsers.map(
+  ({ month, thisYear, lastYear }) => ({
+    month,
+    thisYear: Math.round(thisYear / 100),
+    lastYear: Math.round(lastYear / 100),
+  }),
+)
+export const operatingStatus = totalUsers.map(
+  ({ month, thisYear, lastYear }) => ({
+    month,
+    thisYear: 60 + thisYear / 1000,
+    lastYear: 60 + lastYear / 1000,
+  }),
+)
+
 export const totalUsersConfig = {
   thisYear: { color: 'primary' },
   lastYear: { color: 'cyan', dashed: true, opacity: 0 },
@@ -63,12 +69,12 @@ export const totalUsersConfig = {
 
 /** "Traffic by Website": a share of 6 segments per site. */
 export const trafficByWebsite = [
-  { site: 'Google', share: 4 },
-  { site: 'YouTube', share: 5 },
-  { site: 'Instagram', share: 3 },
-  { site: 'Pinterest', share: 6 },
-  { site: 'Facebook', share: 2 },
-  { site: 'Twitter', share: 4 },
+  { site: 'Google', share: 11 },
+  { site: 'YouTube', share: 21 },
+  { site: 'Instagram', share: 14 },
+  { site: 'Pinterest', share: 28 },
+  { site: 'Facebook', share: 10 },
+  { site: 'Twitter', share: 16 },
 ]
 
 /** "Traffic by Device": one colour per device. */
@@ -107,8 +113,8 @@ export const trafficByLocationColors = {
 
 /** "Marketing & SEO": campaigns per month (0 = January), one colour each. */
 export const marketing = [
-  16000, 28000, 20000, 32000, 12000, 24000, 18000, 30000, 22000, 34000, 14000,
-  26000,
+  30000, 15000, 26250, 18750, 11250, 22500, 30000, 15000, 26250, 18750, 11250,
+  22500,
 ].map((campaigns, month) => ({ month, campaigns }))
 
 export const marketingColors = [
@@ -228,8 +234,8 @@ export const activities = [
 export const contacts = [
   'Natali Craig',
   'Drew Cano',
-  'Orlando Diggs',
   'Andi Lane',
-  'Kate Morrison',
   'Koray Okumus',
+  'Kate Morrison',
+  'Melody Macy',
 ]

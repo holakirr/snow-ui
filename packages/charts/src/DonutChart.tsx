@@ -30,6 +30,8 @@ export interface DonutChartProps<TDatum extends object>
   valueLabel?: string
   /** Diameter in px. @default 120 */
   size?: number
+  /** Plot width in px; the ring stays centred at its specified size. @default size */
+  plotWidth?: number
   /** Ring thickness in px. @default 30 (half the radius, as in Figma) */
   thickness?: number
   /** Gap between slices, in degrees. @default 3 */
@@ -79,6 +81,7 @@ export const DonutChart = <TDatum extends object>({
   valueKey,
   valueLabel: valueLabelProp,
   size = 120,
+  plotWidth = size,
   thickness = 30,
   padAngle = 3,
   cornerRadius = 4,
@@ -180,7 +183,7 @@ export const DonutChart = <TDatum extends object>({
       config={fullConfig}
       title={title}
       height={size}
-      width={size}
+      width={plotWidth}
       empty={data.length === 0 || total === 0}
       keyboardHint={false}
       data={data}

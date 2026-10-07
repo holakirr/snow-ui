@@ -492,9 +492,9 @@ export const EffectsPage = () => (
         <>
           Figma "Focus": a 4px ring at black 4%. It is too faint to be a focus
           indicator on its own, so components use the <Code>focus-ring</Code>{' '}
-          utility: on <Code>:focus-visible</Code> it draws the Figma ring plus a
-          2px <Code>black-80</Code> outline, offset by 2px (12.6:1 in light
-          mode, 8.7:1 in dark mode). Press Tab to focus the second card.
+          utility: on <Code>:focus-visible</Code> it draws the Figma 4px ring in
+          <Code>black-80</Code> (12.6:1 in light mode, 8.7:1 in dark mode).
+          Press Tab to focus the second card.
         </>
       }
     >
@@ -618,13 +618,14 @@ export const ScrollbarPage = () => (
         or more). Add the <Code>scrollbar-snow</Code> utility to a scroll
         container; the Select, Combobox, MultiSelect, DropdownMenu,
         CommandPalette and Sidebar scroll areas already have it. The kit shows
-        the bar only while the pointer is over the scroll area; here the thumb
-        stays visible, so keyboard and touch users can find it. Browsers with
-        the WebKit scrollbar pseudo-elements (Chrome, Edge, Safari) draw the
-        kit's thumb in an 8px gutter, where the kit overlays it. Firefox can't
-        style a hovered thumb: its thin scrollbar keeps its own width and turns{' '}
-        <Code>control-border</Code> while the pointer is over the container.
-        Nothing animates, and forced-colors mode keeps the system scrollbar.
+        the bar while the pointer is over the scroll area. The utility also
+        exposes the thumb when the scroll area contains keyboard focus. Browsers
+        with the WebKit scrollbar pseudo-elements (Chrome, Edge, Safari) draw
+        the kit's thumb in an 8px gutter, where the kit overlays it. Firefox
+        can't style a hovered thumb: its thin scrollbar keeps its own width and
+        turns <Code>control-border</Code> while the pointer is over the
+        container. Nothing animates, and forced-colors mode keeps the system
+        scrollbar.
       </>
     }
   >

@@ -3,7 +3,8 @@ import type { Dictionary } from '@/lib/i18n/dictionaries'
 import { CommandSearch } from './command-search'
 import { FavoriteToggle } from './favorite-toggle'
 import { HeaderBreadcrumb } from './header-breadcrumb'
-import { DirectionToggle, LanguageMenu, ThemeMenu } from './preference-controls'
+import { HistoryMenu } from './history-menu'
+import { ThemeMenu } from './preference-controls'
 import { RightPanelToggle } from './right-panel'
 
 /**
@@ -11,7 +12,7 @@ import { RightPanelToggle } from './right-panel'
  * and the tools. A Server Component that lays out client leaves.
  */
 export const AppHeader = ({ dict }: { dict: Dictionary }) => (
-  <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b-[0.5px] border-black-10 px-4 py-4 md:px-7 md:py-5">
+  <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 relative after:absolute after:inset-x-0 after:bottom-0 after:h-[0.5px] after:bg-black-10 px-4 py-4 md:px-7 md:py-5">
     <div className="flex items-center gap-2">
       <Group aria-label={dict.header.layout}>
         {/* Named by the SnowUI message `sidebar.toggle` (translated). */}
@@ -24,9 +25,9 @@ export const AppHeader = ({ dict }: { dict: Dictionary }) => (
       <CommandSearch />
       <Group aria-label={dict.header.tools}>
         <ThemeMenu />
-        <LanguageMenu />
-        <DirectionToggle />
+        <HistoryMenu />
         <RightPanelToggle />
+        <RightPanelToggle layout />
       </Group>
     </div>
   </header>

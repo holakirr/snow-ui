@@ -521,7 +521,7 @@ const CommandPaletteList: FC<ListProps> = ({
                     onClick={(event) => select(item, event)}
                     // The Black/4% highlight is 1.1:1: with more contrast
                     // the active option also gets the focus-ring colour.
-                    className="flex min-h-9 cursor-pointer items-center gap-2 rounded-12 p-2 text-black data-active:bg-black-4 aria-disabled:cursor-not-allowed aria-disabled:opacity-40 contrast-more:data-active:inset-ring-2 contrast-more:data-active:inset-ring-black-80"
+                    className="flex min-h-9 cursor-pointer items-center gap-2 rounded-12 p-2 text-black data-active:bg-black-4 aria-disabled:cursor-default aria-disabled:opacity-40 contrast-more:data-active:inset-ring-2 contrast-more:data-active:inset-ring-black-80"
                   >
                     {item.icon && (
                       <span className="flex shrink-0 items-center justify-center">

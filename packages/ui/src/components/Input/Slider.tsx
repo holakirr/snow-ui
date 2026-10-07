@@ -317,11 +317,11 @@ const Slider: FC<SliderProps> = ({
             // #000 at 20%, not a style: black in both themes. With more
             // contrast it gets a `control-border-strong` border (it is 1:1
             // on white).
-            'relative block size-7 cursor-grab rounded-full bg-static-white shadow-[0_2px_8px_rgb(0_0_0/0.2)] transition-colors focus-ring hit-area active:cursor-grabbing contrast-more:not-aria-invalid:border contrast-more:not-aria-invalid:border-control-border-strong aria-invalid:border aria-invalid:border-control-border-invalid data-disabled:cursor-not-allowed forced-colors:border'
+            'relative block size-7 cursor-grab rounded-full bg-static-white shadow-[0_2px_8px_rgb(0_0_0/0.2)] transition-colors focus-ring hit-area active:cursor-grabbing contrast-more:not-aria-invalid:border contrast-more:not-aria-invalid:border-control-border-strong aria-invalid:border aria-invalid:border-control-border-invalid data-disabled:cursor-default forced-colors:border'
           : // The bar's thumb is invisible: a 1px-wide, full-height target at
             // the value, with a 24px hit area (`hit-area`, WCAG 2.5.8). The
             // bar shows the handle line and the focus ring for it.
-            'relative block h-8 w-px cursor-grab outline-none hit-area active:cursor-grabbing data-disabled:cursor-not-allowed'
+            'relative block h-8 w-px cursor-grab outline-none hit-area active:cursor-grabbing data-disabled:cursor-default'
       }
     />
   ))
@@ -336,12 +336,12 @@ const Slider: FC<SliderProps> = ({
         'group/slider relative flex w-full touch-none select-none items-center',
         range
           ? twMerge(
-              'h-8 cursor-pointer data-disabled:cursor-not-allowed',
+              'h-8 cursor-pointer data-disabled:cursor-default',
               wrapped ? 'min-w-0 grow' : 'data-disabled:opacity-40',
             )
           : // Figma "Slider2": 32px high, an 8px radius. The focus-ring look
             // goes on the bar while its thumb has keyboard focus.
-            'h-8 cursor-pointer rounded-8 has-focus-visible:ring-4 has-focus-visible:ring-focus has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-black-80 data-disabled:cursor-not-allowed data-disabled:opacity-40',
+            'h-8 cursor-pointer rounded-8 has-focus-visible:ring-4 has-focus-visible:ring-black-80 data-disabled:cursor-default data-disabled:opacity-40',
         !wrapped && className,
       )}
       data-invalid={invalid || undefined}

@@ -15,10 +15,10 @@ export const basicInputClasses =
  * The disabled look: Black/4% fill, no stroke, Black/20% text, as in the
  * kit's Forms guidance. The kit's Component state draws Disabled as the
  * whole field at 20% opacity with the arrow cursor; that look is planned for
- * 6.0, and 5.x keeps this one and the not-allowed cursor.
+ * 6.0, and 5.x keeps this one and the default arrow cursor.
  */
 export const disabledInputClasses =
-  'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0'
+  'disabled:cursor-default disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0'
 
 /**
  * Figma "Focus": a Black/40% stroke plus the Focus effect (4px Black/4% ring).

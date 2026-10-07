@@ -56,7 +56,7 @@ export const segmentedItemVariants = cva(
     'hover:[--segment-fg:var(--color-black)] focus-visible:[--segment-fg:var(--color-black)] data-[state=active]:[--segment-fg:var(--color-black)] data-[state=on]:[--segment-fg:var(--color-black)]',
     // Disabled items stay visible: Black/20% content and a 0.5px Black/10%
     // outline so the item's shape shows even when it's off.
-    'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20',
+    'disabled:cursor-default disabled:bg-black-4 disabled:text-black-20',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
   ],
   {

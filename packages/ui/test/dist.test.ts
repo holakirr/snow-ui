@@ -137,19 +137,24 @@ describe('index.css (precompiled)', () => {
 
   it('has the theme utilities no component uses, for your own markup', () => {
     // `scrollbar-snow`: outside forced-colors mode, the resting thumb colour
-    // (`control-border` with more contrast), the 4px WebKit thumb in its 8px
-    // gutter, 8px in `control-border` under the pointer and dragged, and the
-    // standard thin scrollbar, `control-border` on a container hover.
+    // (`control-border` with more contrast), hidden at rest and revealed by
+    // container hover or focus. The WebKit thumb grows from 4px to 8px when
+    // hovered or dragged; the fallback stays thin.
     expect(read('index.css')).toMatch(
-      /@media not all and \(forced-colors:\s*active\)\{\.scrollbar-snow\{--scrollbar-snow-more:var\(--contrast-more\) var\(--color-control-border\);--scrollbar-snow-thumb:var\(--scrollbar-snow-more,var\(--color-black-10\)\)\}@supports selector\(::-webkit-scrollbar\)\{\.scrollbar-snow::-webkit-scrollbar\{background:0 0;width:8px;height:8px\}\.scrollbar-snow::-webkit-scrollbar-thumb\{background:var\(--scrollbar-snow-thumb\) padding-box;border:2px solid #0000;/,
+      /@media not all and \(forced-colors:\s*active\)\{\.scrollbar-snow\{--scrollbar-snow-more:var\(--contrast-more\) var\(--color-control-border\);--scrollbar-snow-thumb:var\(--scrollbar-snow-more,var\(--color-black-10\)\)\}@supports selector\(::-webkit-scrollbar\)\{\.scrollbar-snow::-webkit-scrollbar\{background:0 0;width:8px;height:8px\}\.scrollbar-snow::-webkit-scrollbar-thumb\{background:padding-box padding-box;border:2px solid #0000;/,
     )
+    for (const state of ['hover', 'focus-within']) {
+      expect(read('index.css')).toContain(
+        `.scrollbar-snow:${state}::-webkit-scrollbar-thumb{background:var(--scrollbar-snow-thumb) padding-box}`,
+      )
+    }
     for (const state of ['hover', 'active']) {
       expect(read('index.css')).toContain(
         `.scrollbar-snow::-webkit-scrollbar-thumb:${state}{background-color:var(--color-control-border);border-width:0}`,
       )
     }
     expect(read('index.css')).toMatch(
-      /@supports not selector\(::-webkit-scrollbar\)\{\.scrollbar-snow\{scrollbar-width:thin;scrollbar-color:var\(--scrollbar-snow-thumb\) transparent\}\.scrollbar-snow:hover\{scrollbar-color:var\(--color-control-border\) transparent\}\}/,
+      /@supports not selector\(::-webkit-scrollbar\)\{\.scrollbar-snow\{scrollbar-width:thin;scrollbar-color:transparent transparent\}\.scrollbar-snow:hover,\.scrollbar-snow:focus-within\{scrollbar-color:var\(--color-control-border\) transparent\}\}/,
     )
   })
 })

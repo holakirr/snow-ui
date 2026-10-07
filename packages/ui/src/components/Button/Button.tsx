@@ -107,15 +107,14 @@ type ButtonProps<C extends ElementType = typeof defaultTag> =
  * in the kit's docs ("State: Default, Hover, Disabled"), drawn as the whole
  * button at 20% opacity with the default arrow cursor. 5.x keeps its own
  * disabled look instead (a Black/20% label, the Gray and Filled fill Black/4%,
- * the not-allowed cursor); the kit's look is planned for 6.0. The focus ring
+ * the default arrow cursor); the kit's look is planned for 6.0. The focus ring
  * (`ring-focus`) is the library's own, built from the same tokens.
  */
 const buttonVariants = cva(
   [
     'group inline-flex shrink-0 items-center justify-center whitespace-nowrap font-normal text-black transition-all',
-    // The press scale is motion: none with reduced motion.
-    'cursor-pointer focus-ring active:scale-95 motion-reduce:active:scale-100',
-    'disabled:cursor-not-allowed disabled:scale-100 disabled:text-black-20',
+    'cursor-pointer focus-ring',
+    'disabled:cursor-default disabled:scale-100 disabled:text-black-20',
   ],
   {
     variants: {
@@ -185,7 +184,7 @@ const iconButtonClasses: { [K in Size]: string } = {
 }
 
 /**
- * A loading button has no hover fill (and no press scale, see `classes`). A
+ * A loading button has no hover fill. A
  * Filled one turns Gray, as the kit's "Save Changes" button does: the same
  * width, Black/4% and a spinner.
  */

@@ -939,7 +939,7 @@ function Calendar({
               rdpClassNames.dropdown_root,
               // The select is transparent, so the chip draws the
               // focus-ring look (ring plus outline) for it.
-              'h-7 cursor-pointer rounded-8 px-1 transition-colors hover:bg-black-4 has-focus-visible:ring-4 has-focus-visible:ring-focus has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-black-80',
+              'h-7 cursor-pointer rounded-8 px-1 transition-colors hover:bg-black-4 has-focus-visible:ring-4 has-focus-visible:ring-black-80',
             ),
             dropdown: twMerge(rdpClassNames.dropdown, 'cursor-pointer'),
             // Replaces rdp-chevron, whose accent fill would make it blue.
@@ -980,18 +980,11 @@ function Calendar({
               'day-range-end [&>button]:rounded-s-none',
               rangeEndClassName,
             ),
-            // Figma "Today": Secondary/Indigo, unless selected. The text is
-            // static black (10:1) instead of Figma's white (2.07:1). In dark
-            // mode a selected day is indigo too, so there today has no fill:
-            // indigo text (5:1 on the panel; white on the hover fill, where
-            // indigo is under 4.5:1) and the dot, which keeps an unselected
-            // today apart from a selected one. The dot (the
-            // `::after`) also marks a selected today and today with forced
-            // colours.
+            // Keep the kit's geometry; today is also announced with aria-current.
             today: twMerge(
               'not-aria-selected:[&>button]:bg-indigo not-aria-selected:[&>button]:text-static-black not-aria-selected:[&>button]:hover:bg-indigo/80',
               'dark:not-aria-selected:[&>button]:bg-transparent dark:not-aria-selected:[&>button]:text-indigo dark:not-aria-selected:[&>button]:hover:bg-black-4 dark:not-aria-selected:[&>button]:hover:text-black',
-              '[&>button]:relative [&>button]:after:pointer-events-none [&>button]:after:absolute [&>button]:after:inset-x-0 [&>button]:after:bottom-[5px] [&>button]:after:mx-auto [&>button]:after:hidden [&>button]:after:size-1 [&>button]:after:rounded-full [&>button]:after:bg-current aria-selected:[&>button]:after:block dark:[&>button]:after:block forced-colors:[&>button]:after:block forced-colors:[&>button]:after:forced-color-adjust-none',
+              '[&>button]:relative [&>button]:after:pointer-events-none [&>button]:after:absolute [&>button]:after:inset-x-0 [&>button]:after:bottom-[5px] [&>button]:after:mx-auto [&>button]:after:hidden [&>button]:after:size-1 [&>button]:after:rounded-full [&>button]:after:bg-current forced-colors:[&>button]:after:block forced-colors:[&>button]:after:forced-color-adjust-none',
               todayClassName,
             ),
             outside: twMerge('day-outside text-secondary', outsideClassName),

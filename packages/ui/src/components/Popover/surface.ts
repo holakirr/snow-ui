@@ -5,7 +5,7 @@
  * (20px background blur and a 0 8 28 shadow).
  */
 export const popoverSurfaceClasses =
-  'rounded-16 border border-surface-1 bg-background-3 p-3 text-14 text-black shadow-glass-2 backdrop-blur-bg-40'
+  'rounded-16 inset-ring inset-ring-surface-1 forced-colors:outline forced-colors:-outline-offset-1 forced-colors:outline-[CanvasText] bg-background-3 p-3 text-14 text-black shadow-glass-2 backdrop-blur-bg-40'
 
 /**
  * The Figma "Scrollbar" on a popover's scroll area (`scrollbar-snow`: a 4px
@@ -21,12 +21,12 @@ export const popoverScrollClasses =
 /**
  * Figma popover items: 36px high (8px padding), a 12px radius, 14/20 text,
  * 16px icons with an 8px gap, and a Black/4% highlight. Disabled items show
- * the not-allowed cursor (Radix ignores their selection). The highlight marks
+ * the default arrow cursor (Radix ignores their selection). The highlight marks
  * the keyboard focus but is 1.1:1, so with more contrast it gets a 2px
  * `black-80` ring, the colour of `focus-ring` (WCAG 1.4.11).
  */
 export const popoverItemClasses =
-  'relative flex cursor-pointer select-none items-center gap-2 rounded-12 p-2 text-14 text-black outline-none transition-colors focus:bg-black-4 data-[highlighted]:bg-black-4 data-[state=open]:bg-black-4 data-[disabled]:cursor-not-allowed data-[disabled]:text-black-20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 contrast-more:focus:inset-ring-2 contrast-more:focus:inset-ring-black-80 contrast-more:data-[highlighted]:inset-ring-2 contrast-more:data-[highlighted]:inset-ring-black-80'
+  'relative flex cursor-pointer select-none items-center gap-2 rounded-12 p-2 text-14 text-black outline-none transition-colors focus:bg-black-4 data-[highlighted]:bg-black-4 data-[state=open]:bg-black-4 data-[disabled]:cursor-default data-[disabled]:text-black-20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 contrast-more:focus:inset-ring-2 contrast-more:focus:inset-ring-black-80 contrast-more:data-[highlighted]:inset-ring-2 contrast-more:data-[highlighted]:inset-ring-black-80'
 
 /**
  * A destructive menu item (`variant="destructive"`, added in 5.2): the kit's

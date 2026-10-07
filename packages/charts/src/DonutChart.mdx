@@ -70,3 +70,5 @@ Percentages and values follow the provider's locale. In right-to-left text the l
 The table has the chart's own props and the frame props it passes to [ChartContainer](?path=/docs/charts-chartcontainer--docs) (`title`, `description`, `loading`…). The chart renders a `<figure>`: `className` is added to its class, `ref` points at it, and `aria-label`, `aria-labelledby`, `aria-describedby`, `id` and `style` go to it too.
 
 <ArgTypes of={DonutChartStories} />
+
+`plotWidth` optionally sets the plot frame width independently of the ring `size`; the ring remains centred. This supports the wider frame in the source kit.

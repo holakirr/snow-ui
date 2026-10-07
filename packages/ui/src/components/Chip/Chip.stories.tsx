@@ -33,7 +33,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The Figma "Chip": a short coloured label in seven colours, tinted (`background`, H 20, padding 4/2, radius 4; `big`, a 28px pill) or a dot and coloured text (H 16), in 12/16 or, `big`, 14/20. The text mixes the Secondary colour with 45% of black (white in dark mode), so it reads at 4.5:1 or more.',
+          'The Figma "Chip": a short coloured label in seven colours, tinted (`background`, H 20, padding 8/2, radius 4; `big`, a 28px pill) or a dot and coloured text (H 16), in 12/16 or, `big`, 14/20. The text mixes the Secondary colour with 45% of black (white in dark mode), so it reads at 4.5:1 or more.',
       },
     },
   },
@@ -58,7 +58,7 @@ export const Default: Story = {
   play: async ({ canvas }) => {
     const chip = canvas.getByText('Label')
     await expect(chip).toHaveAttribute('data-color', 'purple')
-    await expect(chip).toHaveClass('rounded-4', 'px-1', 'py-0.5', 'text-12')
+    await expect(chip).toHaveClass('rounded-4', 'px-2', 'py-0.5', 'text-12')
     await expect(chip.getBoundingClientRect().height).toBe(20)
     // A tinted chip has no dot.
     await expect(chip.querySelector('[data-slot="chip-dot"]')).toBeNull()

@@ -61,7 +61,7 @@ const SelectTrigger: FC<SelectTriggerProps> = ({
         title && 'items-end',
         'hover:inset-ring-control-border-strong data-[state=open]:inset-ring-control-border-strong',
         'focus-ring data-[state=open]:ring-4 data-[state=open]:ring-focus',
-        'disabled:cursor-not-allowed disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0',
+        'disabled:cursor-default disabled:bg-black-4 disabled:text-black-20 disabled:inset-ring-0',
         // Invalid: the red Input stroke, also while the list is open.
         invalidInputClasses,
         'aria-invalid:data-[state=open]:inset-ring-control-border-invalid',

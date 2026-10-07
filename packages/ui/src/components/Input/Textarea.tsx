@@ -56,9 +56,8 @@ const Textarea: FC<TextareaProps> = ({
   // Without the counter, a plain <textarea> (no client code).
   return showCount ? (
     <TextareaWithCount
-      // The text stops above the counter (the Figma 44px frame lets it run
-      // under it): one row is 52px high.
-      className={twMerge(classes, 'pb-5')}
+      // The counter sits inside the original 44px field.
+      className={classes}
       containerClassName={containerClassName}
       {...props}
     />

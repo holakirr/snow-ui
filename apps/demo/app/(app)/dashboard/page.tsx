@@ -8,7 +8,7 @@ import {
   TrafficByLocationChart,
 } from '@/components/dashboard/charts'
 import { KpiCards } from '@/components/dashboard/kpi-cards'
-import { OrdersTable } from '@/components/dashboard/orders-table'
+import { PeriodMenu } from '@/components/dashboard/period-menu'
 import { TrafficByWebsite } from '@/components/dashboard/traffic-by-website'
 import { getRequestPreferences } from '@/lib/i18n/server'
 
@@ -19,29 +19,35 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * The SnowUI "Dashboard" (Default): KPI cards, Total Users, the traffic
- * blocks, Marketing & SEO and the order list. A Server Component; the
- * charts and the table are the client islands.
+ * blocks and Marketing & SEO. A Server Component; the
+ * charts and period menu are the client islands.
  */
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ period?: string }>
+}) {
+  const { period: raw } = await searchParams
+  const period = raw === 'week' || raw === 'month' ? raw : 'today'
   const { dict, lang } = await getRequestPreferences()
 
   return (
     <div className="flex flex-col gap-4 p-4 md:gap-7 md:p-7">
-      <div className="flex items-center justify-between">
-        <Typography asChild size={14} semibold>
-          <h1>{dict.dashboard.title}</h1>
-        </Typography>
-        <Typography size={12} className="text-secondary">
-          {dict.dashboard.today}
-        </Typography>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between px-2 py-1">
+          <Typography asChild size={14} semibold>
+            <h1>{dict.dashboard.title}</h1>
+          </Typography>
+          <PeriodMenu />
+        </div>
+
+        <KpiCards dict={dict} lang={lang} period={period} />
       </div>
 
-      <KpiCards dict={dict} lang={lang} />
-
-      <div className="grid gap-4 md:gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(12.5rem,16rem)]">
-        <Block id="total-users" title={dict.dashboard.totalUsers}>
-          <TotalUsersChart labelledBy="total-users" />
-        </Block>
+      <div className="grid gap-4 md:gap-7 lg:grid-cols-4">
+        <div className="min-w-0 lg:col-span-3">
+          <TotalUsersChart />
+        </div>
         <Block id="traffic-website" title={dict.dashboard.trafficByWebsite}>
           <TrafficByWebsite dict={dict} />
         </Block>
@@ -58,13 +64,6 @@ export default async function DashboardPage() {
 
       <Block id="marketing" title={dict.dashboard.marketing}>
         <MarketingChart labelledBy="marketing" />
-      </Block>
-
-      <Block id="orders" title={dict.orders.title}>
-        <Typography size={12} className="-mt-2 text-secondary">
-          {dict.orders.description}
-        </Typography>
-        <OrdersTable captionId="orders" />
       </Block>
     </div>
   )

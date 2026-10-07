@@ -72,10 +72,7 @@ describe('Slider', () => {
     const root = container.firstElementChild
 
     expect(thumb).toHaveClass('cursor-grab', 'active:cursor-grabbing')
-    expect(root).toHaveClass(
-      'cursor-pointer',
-      'data-disabled:cursor-not-allowed',
-    )
+    expect(root).toHaveClass('cursor-pointer', 'data-disabled:cursor-default')
     expect(root).toContainElement(container.querySelector('.bg-primary'))
   })
 

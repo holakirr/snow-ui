@@ -496,8 +496,7 @@ describe('Scheduler', () => {
       expect(headers.filter((h) => h.hasAttribute('aria-current'))).toEqual([
         today,
       ])
-      // Semibold too: today isn't told by its colour alone (WCAG 1.4.1).
-      expect(within(today).getByText('29 Tue')).toHaveClass('font-semibold')
+      expect(within(today).getByText('29 Tue')).toHaveClass('font-normal')
       expect(screen.getByText('30 Wed')).not.toHaveClass('font-semibold')
 
       const now = slotAt(at(29, 10))

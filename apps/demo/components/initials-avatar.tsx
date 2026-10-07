@@ -1,30 +1,36 @@
-import { Avatar, AvatarFallback, IconBox } from '@holakirr/snow-ui'
+import { Avatar, AvatarFallback, AvatarImage, IconBox } from '@holakirr/snow-ui'
 import { avatarTint, initials } from '@/lib/data'
 
 const TEXT_SIZES = {
   16: 'text-[8px]',
   24: 'text-12',
   40: 'text-14',
+  48: 'text-18',
   80: 'text-24',
 }
 
-/**
- * A placeholder avatar: the initials on one of the kit's secondary colours
- * (no photos from the Figma kit). The initials are static black, which keeps
- * 4.5:1 on every tint in both themes; the name is always next to it, so the
- * avatar is decorative.
- */
+/** Original kit portraits. Initials remain the fallback for user-edited names. */
+const portraits: Record<string, string> = {
+  ByeWind: '/avatars/byewind.png',
+  'Melody Macy': '/avatars/melody-macy.png',
+  'Drew Cano': '/avatars/drew-cano.png',
+  'Andi Lane': '/avatars/andi-lane.png',
+  'Koray Okumus': '/avatars/koray-okumus.png',
+  'Natali Craig': '/avatars/natali-craig.png',
+  'Orlando Diggs': '/avatars/orlando-diggs.png',
+  'Kate Morrison': '/avatars/kate-morrison.png',
+}
 export const InitialsAvatar = ({
   name,
   size = 24,
 }: {
   name: string
-  size?: 16 | 24 | 40 | 80
+  size?: 16 | 24 | 40 | 48 | 80
 }) => (
   <IconBox size={size} aria-hidden>
     <Avatar>
+      {portraits[name] && <AvatarImage src={portraits[name]} alt="" />}
       <AvatarFallback className={avatarTint(name)}>
-        {/* AvatarFallback sets 12px text whatever the avatar size. */}
         <span className={TEXT_SIZES[size]}>{initials(name)}</span>
       </AvatarFallback>
     </Avatar>

@@ -73,7 +73,7 @@ export function resolveRelative(
   const candidates = [
     ...(EXTENSIONS.some((ext) => base.endsWith(ext)) ? [base] : []),
     ...EXTENSIONS.map((ext) => `${base}${ext}`),
-    ...EXTENSIONS.map((ext) => `${base}/index${ext}`),
+    ...EXTENSIONS.map((ext) => posix.join(base, `index${ext}`)),
   ]
   return candidates.find(exists)
 }

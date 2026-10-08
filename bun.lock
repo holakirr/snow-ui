@@ -67,7 +67,7 @@
     },
     "packages/charts": {
       "name": "@holakirr/snow-ui-charts",
-      "version": "0.1.0",
+      "version": "0.2.1",
       "dependencies": {
         "react-is": "^19.0.0",
         "recharts": "^3.10.1",
@@ -99,7 +99,7 @@
     },
     "packages/icons": {
       "name": "@holakirr/snow-ui-icons",
-      "version": "2.2.0",
+      "version": "2.2.2",
       "devDependencies": {
         "@arethetypeswrong/core": "^0.18.5",
         "@phosphor-icons/react": "^2.1.10",
@@ -138,9 +138,9 @@
     },
     "packages/ui": {
       "name": "@holakirr/snow-ui",
-      "version": "5.0.0",
+      "version": "5.3.1",
       "dependencies": {
-        "@holakirr/snow-ui-icons": "^2.2.0",
+        "@holakirr/snow-ui-icons": "^2.2.1",
         "@radix-ui/react-accordion": "^1.2.20",
         "@radix-ui/react-alert-dialog": "^1.1.23",
         "@radix-ui/react-avatar": "^1.2.6",
@@ -218,6 +218,9 @@
   "patchedDependencies": {
     "@joshwooding/vite-plugin-react-docgen-typescript@0.7.0": "patches/@joshwooding%2Fvite-plugin-react-docgen-typescript@0.7.0.patch",
     "react-docgen-typescript@2.4.0": "patches/react-docgen-typescript@2.4.0.patch",
+  },
+  "overrides": {
+    "source-map-js": "1.2.2",
   },
   "packages": {
     "@adobe/css-tools": ["@adobe/css-tools@4.5.0", "", {}, "sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q=="],
@@ -2030,7 +2033,7 @@
 
     "source-map": ["source-map@0.6.1", "", {}, "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g=="],
 
-    "source-map-js": ["source-map-js@1.2.1", "", {}, "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA=="],
+    "source-map-js": ["source-map-js@1.2.2", "", {}, "sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw=="],
 
     "statuses": ["statuses@2.0.2", "", {}, "sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw=="],
 

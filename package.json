@@ -83,5 +83,8 @@
   "patchedDependencies": {
     "react-docgen-typescript@2.4.0": "patches/react-docgen-typescript@2.4.0.patch",
     "@joshwooding/vite-plugin-react-docgen-typescript@0.7.0": "patches/@joshwooding%2Fvite-plugin-react-docgen-typescript@0.7.0.patch"
+  },
+  "overrides": {
+    "source-map-js": "1.2.2"
   }
 }

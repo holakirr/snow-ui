@@ -87,7 +87,7 @@ export const RTL: Story = {
     </ToastProvider>
   ),
   play: async ({ canvas }) => {
-    const title = canvas.getByText('تم الحفظ')
+    const title = await canvas.findByText('تم الحفظ')
     const close = canvas.getByRole('button', { name: 'Close' })
     await expect(close.getBoundingClientRect().right).toBeLessThanOrEqual(
       title.getBoundingClientRect().left,

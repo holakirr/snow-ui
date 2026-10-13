@@ -1,3 +1,4 @@
+import { DIR_COOKIE } from '../lib/preferences'
 import { animationsDone, checkA11y, expect, test } from './fixtures'
 
 test('the theme menu switches and remembers the theme', async ({ page }) => {
@@ -39,6 +40,13 @@ test('the direction toggle renders the app right to left', async ({ page }) => {
   expect(box?.x ?? 0).toBeGreaterThan(1000)
 
   // The cookie keeps it, rendered by the server.
+  // The HTML changes optimistically, before the Server Action has persisted it.
+  await expect
+    .poll(async () => {
+      const cookies = await page.context().cookies()
+      return cookies.find((cookie) => cookie.name === DIR_COOKIE)?.value
+    })
+    .toBe('rtl')
   await page.reload()
   await expect(html).toHaveAttribute('dir', 'rtl')
   await checkA11y(page)

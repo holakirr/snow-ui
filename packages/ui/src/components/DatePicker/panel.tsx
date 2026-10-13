@@ -307,10 +307,12 @@ export const DatePickerPanel = ({
     if (view === 'months') {
       const options: GridOption[] = Array.from({ length: 12 }, (_, m) => {
         const date = new Date(shownYear, m, 1)
+        const label = format(date, 'LLL', { locale })
         return {
           value: m,
-          label: format(date, 'LLL', { locale }),
-          ariaLabel: format(date, 'LLLL y', { locale }),
+          label,
+          // Speech input needs the visible abbreviation as a word too.
+          ariaLabel: `${label}, ${format(date, 'LLLL y', { locale })}`,
           selected:
             activeDate?.getFullYear() === shownYear &&
             activeDate.getMonth() === m,

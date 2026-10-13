@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, waitFor, within } from 'storybook/test'
 import { BarChart } from './BarChart'
 import { DashboardCard } from './test/DashboardCard'
 import {
@@ -120,7 +120,7 @@ export const ProjectionsVsActuals: Story = {
       )}
     </DashboardCard>
   ),
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, userEvent }) => {
     const surface = await chartSurface(canvasElement)
     surface.focus()
     // Focus shows January; → moves to February.

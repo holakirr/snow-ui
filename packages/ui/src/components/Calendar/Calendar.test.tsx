@@ -27,6 +27,32 @@ const RangeCalendar = () => {
 }
 
 describe('Calendar', () => {
+  it('includes the visible day number as a word in its selected date name', () => {
+    render(
+      <Calendar
+        mode="single"
+        selected={new Date(2025, 0, 31)}
+        defaultMonth={new Date(2025, 0, 1)}
+      />,
+    )
+    const day = screen.getByRole('button', { name: /January 31st.*selected/ })
+    expect(day).toHaveTextContent('31')
+    expect(day).toHaveAccessibleName(/\b31\b/)
+  })
+
+  it('preserves a caller-provided day label', () => {
+    render(
+      <Calendar
+        mode="single"
+        defaultMonth={new Date(2025, 0, 1)}
+        labels={{ labelDayButton: (date) => `Custom day ${date.getDate()}` }}
+      />,
+    )
+    expect(
+      screen.getByRole('button', { name: 'Custom day 15' }),
+    ).toHaveTextContent('15')
+  })
+
   it('renders focusable navigation buttons', () => {
     render(<Calendar mode="single" defaultMonth={new Date(2025, 0, 1)} />)
 

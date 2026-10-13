@@ -194,11 +194,13 @@ describe('asChild', () => {
     const current = screen.getByRole('link', { name: '2' })
     expect(current).toHaveAttribute('aria-current', 'page')
     expect(current).toHaveClass('h-8', 'bg-black-4')
-    const previous = screen.getByRole('link', { name: 'Go to previous page' })
+    const previous = screen.getByRole('link', {
+      name: 'Prev Go to previous page',
+    })
     expect(previous).toHaveAttribute('href', '#1')
     expect(previous).toHaveClass('ps-2')
     expect(previous.querySelector('svg')).toHaveClass('rtl:-scale-x-100')
-    const next = screen.getByRole('link', { name: 'Go to next page' })
+    const next = screen.getByRole('link', { name: 'Next Go to next page' })
     expect(next).toHaveTextContent('Next')
     expect(next).toHaveClass('px-6')
   })

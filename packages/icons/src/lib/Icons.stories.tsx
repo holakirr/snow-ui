@@ -146,7 +146,7 @@ const meta = {
           }}
         >
           <Icon {...args} alt={`Icon ${name}`} />
-          <span className="text-sm text-neutral-900">{name}</span>
+          <span className="text-sm text-secondary">{name}</span>
         </div>
       ))}
     </div>
@@ -186,7 +186,7 @@ const Template: (iconName: keyof typeof allIcons) => Story = (iconName) => ({
                 weight={weight}
                 alt={`Icon ${iconName}, weight ${weight}`}
               />
-              <span className="w-min text-sm text-neutral-900">{weight}</span>
+              <span className="w-min text-sm text-secondary">{weight}</span>
             </div>
           ))}
         </div>

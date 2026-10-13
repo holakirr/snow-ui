@@ -12,6 +12,37 @@ import {
   PaginationPrevious,
 } from './Pagination'
 
+it('keeps custom visible paging text in the accessible name, including asChild', () => {
+  render(
+    <Pagination>
+      <PaginationPrevious href="#previous">
+        <strong>Prev</strong>
+      </PaginationPrevious>
+      <PaginationNext asChild>
+        <a href="#next">
+          <strong>Continue</strong>
+        </a>
+      </PaginationNext>
+    </Pagination>,
+  )
+  expect(
+    screen.getByRole('link', { name: 'Prev Go to previous page' }),
+  ).toHaveAttribute('href', '#previous')
+  expect(
+    screen.getByRole('link', { name: 'Continue Go to next page' }),
+  ).toHaveAttribute('href', '#next')
+})
+
+it('preserves an explicit paging label with visible content', () => {
+  render(
+    <PaginationPrevious href="#previous" aria-label="Back">
+      Back
+    </PaginationPrevious>,
+  )
+  const previous = screen.getByRole('link', { name: 'Back' })
+  expect(previous).not.toHaveAttribute('aria-labelledby')
+})
+
 const renderPagination = () =>
   render(
     <Pagination>
@@ -75,7 +106,7 @@ describe('Pagination', () => {
     expect(previous).toHaveClass('px-1', 'min-w-6')
     expect(previous.querySelector('span')).toBeNull()
 
-    const next = screen.getByRole('link', { name: 'Go to next page' })
+    const next = screen.getByRole('link', { name: /Go to next page$/ })
     expect(next).toHaveClass('pe-2')
     expect(next).toHaveTextContent('Next')
   })
@@ -120,7 +151,7 @@ describe('Pagination', () => {
         </PaginationNext>
       </Pagination>,
     )
-    const next = screen.getByRole('link', { name: 'Go to next page' })
+    const next = screen.getByRole('link', { name: /Go to next page$/ })
 
     expect(next).toHaveAttribute('aria-disabled', 'true')
     expect(next).toHaveAttribute('tabindex', '-1')
@@ -136,7 +167,7 @@ describe('Pagination', () => {
         <PaginationNext href="?page=3" page={3} disabled />
       </Pagination>,
     )
-    const next = screen.getByRole('link', { name: 'Go to next page' })
+    const next = screen.getByRole('link', { name: /Go to next page$/ })
 
     expect(next).not.toHaveAttribute('href')
     expect(next).toHaveAttribute('tabindex', '0')
@@ -148,7 +179,7 @@ describe('Pagination', () => {
     const onClick = vi.fn()
     render(<PaginationNext href="/page/2" onClick={onClick} />)
 
-    const next = screen.getByRole('link', { name: 'Go to next page' })
+    const next = screen.getByRole('link', { name: /Go to next page$/ })
     expect(next).toHaveAttribute('href', '/page/2')
     expect(next).not.toHaveAttribute('role')
     fireEvent.click(next)
@@ -195,7 +226,7 @@ describe('Pagination', () => {
       expect(current).toHaveClass('bg-black-4', 'h-6', 'rounded-12')
 
       fireEvent.click(screen.getByRole('button', { name: '2' }))
-      fireEvent.click(screen.getByRole('button', { name: 'Go to next page' }))
+      fireEvent.click(screen.getByRole('button', { name: /Go to next page$/ }))
       expect(onPageChange.mock.calls).toEqual([[2], [2]])
 
       // Disabled with aria-disabled: it ignores clicks but keeps focus.

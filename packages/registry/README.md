@@ -17,7 +17,7 @@ bun packages/registry/smoke/smoke.ts --app next --app vite   # install every ite
 
    A new component directory is picked up automatically; a new top-level module fails the generation until a rule covers it. `registryDependencies` come from the relative imports, npm `dependencies` from the bare ones (version ranges from `packages/ui/package.json` at build time).
 2. **Manifest** (`manifest.json`, committed): the items, files, dependencies, import paths and docs ids — no versions and no descriptions, so only a change of the import graph makes it stale. Storybook's `InstallTabs` reads it.
-3. **Build** (`src/build.ts`): stages the files with the licence header and the barrel rewrites (below) in `.build/`, writes `registry.json`, validates it (zod schemas from `shadcn/schema`, `shadcn registry validate`) and runs `shadcn build` (pinned `shadcn@4.21.0`) into `/r/`, plus `llms.txt`.
+3. **Build** (`src/build.ts`): stages the files with the licence header and the barrel rewrites (below) in `.build/`, writes `registry.json`, validates it (zod schemas from `shadcn/schema`, `shadcn registry validate`) and runs `shadcn build` (pinned `shadcn@4.21.4`) into `/r/`, plus `llms.txt`.
 
 Files keep their place below `packages/ui/src` in the user's project (`target: "@components/snow-ui/<path>"`): `import { Button } from '@/components/snow-ui/components/Button/Button'`. Those paths are public API from the first release: renaming them later is a breaking change for everyone who copied the code.
 

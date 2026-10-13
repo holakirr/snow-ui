@@ -1,5 +1,15 @@
 # Changelog
 
+## 5.3.2
+
+### Patch Changes
+
+- [#233](https://github.com/holakirr/snow-ui/pull/233) [`488e677`](https://github.com/holakirr/snow-ui/commit/488e677723b30a10efaad0662055fd984aa09383) Thanks [@holakirr](https://github.com/holakirr)! - Update react-day-picker to 10.0.2, including fixes for controlled-month focus and locale imports.
+
+- [#235](https://github.com/holakirr/snow-ui/pull/235) [`f91549a`](https://github.com/holakirr/snow-ui/commit/f91549acbe1bef941bfee78397e8ae0fd6b75076) Thanks [@holakirr](https://github.com/holakirr)! - Update Radix primitives, React Hook Form, and React Day Picker to the latest stable releases, together with the build and test tooling.
+
+  Include visible day numbers and pagination text in accessible names, preserving localized date descriptions and caller overrides. Fix dark-theme contrast in the icon previews.
+
 ## 5.3.1
 
 ### Patch Changes

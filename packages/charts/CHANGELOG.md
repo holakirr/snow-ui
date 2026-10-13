@@ -1,5 +1,11 @@
 # @holakirr/snow-ui-charts
 
+## 0.2.2
+
+### Patch Changes
+
+- Update the react-is runtime dependency to ^19.3.0 alongside the stack refresh.
+
 ## 0.2.1
 
 ### Patch Changes

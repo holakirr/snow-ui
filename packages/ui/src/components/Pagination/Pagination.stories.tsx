@@ -89,8 +89,8 @@ export const RTL: Story = {
   globals: { dir: 'rtl' },
   render: () => <Template labels />,
   play: async ({ canvas }) => {
-    const previous = canvas.getByRole('link', { name: 'Go to previous page' })
-    const next = canvas.getByRole('link', { name: 'Go to next page' })
+    const previous = canvas.getByRole('link', { name: /Go to previous page$/ })
+    const next = canvas.getByRole('link', { name: /Go to next page$/ })
     await expect(previous.getBoundingClientRect().left).toBeGreaterThan(
       next.getBoundingClientRect().left,
     )
@@ -129,7 +129,7 @@ export const AsChild: Story = {
     const current = canvas.getByRole('link', { name: '2' })
     await expect(current).toHaveAttribute('aria-current', 'page')
     await expect(current).toHaveAttribute('href', '#page-2')
-    const next = canvas.getByRole('link', { name: 'Go to next page' })
+    const next = canvas.getByRole('link', { name: /Go to next page$/ })
     await expect(next).toHaveAttribute('href', '#page-3')
     await expect(next).toHaveTextContent('Next')
     await expect(next.querySelector('svg')).not.toBeNull()
@@ -240,8 +240,10 @@ export const ClientSide: Story = {
   render: () => <ClientSideExample />,
   play: async ({ canvas, userEvent, step }) => {
     const status = canvas.getByRole('status')
-    const previous = canvas.getByRole('button', { name: 'Go to previous page' })
-    const next = canvas.getByRole('button', { name: 'Go to next page' })
+    const previous = canvas.getByRole('button', {
+      name: /Go to previous page$/,
+    })
+    const next = canvas.getByRole('button', { name: /Go to next page$/ })
 
     await step('the first page is current; previous is disabled', async () => {
       await expect(canvas.queryByRole('link')).not.toBeInTheDocument()

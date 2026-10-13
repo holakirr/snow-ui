@@ -185,10 +185,10 @@ describe('DatePicker popup', () => {
     renderPicker({ defaultValue: new Date(2025, 0, 20), onValueChange })
     fireEvent.pointerDown(segment('Month'))
     const months = screen.getByRole('grid', { name: '2025' })
-    expect(getByRoleAndLabel('button', 'January 2025', months)).toHaveAttribute(
-      'data-selected',
-    )
-    fireEvent.click(getByRoleAndLabel('button', 'March 2025', months))
+    expect(
+      getByRoleAndLabel('button', 'Jan, January 2025', months),
+    ).toHaveAttribute('data-selected')
+    fireEvent.click(getByRoleAndLabel('button', 'Mar, March 2025', months))
     // Back to the days, in March; the date is March 20.
     expect(screen.getByRole('grid', { name: 'March 2025' })).toBeInTheDocument()
     expect(segment('Month')).toHaveAttribute('aria-valuenow', '3')
@@ -218,12 +218,12 @@ describe('DatePicker popup', () => {
     renderPicker({ defaultValue: new Date(2025, 0, 20) })
     fireEvent.click(getByRoleAndLabel('button', 'Jan, choose a month'))
     await waitFor(() =>
-      expect(getByRoleAndLabel('button', 'January 2025')).toHaveFocus(),
+      expect(getByRoleAndLabel('button', 'Jan, January 2025')).toHaveFocus(),
     )
     fireEvent.keyDown(document.activeElement as HTMLElement, {
       key: 'ArrowRight',
     })
-    expect(getByRoleAndLabel('button', 'February 2025')).toHaveFocus()
+    expect(getByRoleAndLabel('button', 'Feb, February 2025')).toHaveFocus()
     fireEvent.click(getByRoleAndLabel('button', '2025, choose a year'))
     expect(
       screen.getByRole('grid', { name: '2020 – 2031' }),
@@ -244,10 +244,10 @@ describe('DatePicker popup', () => {
   it("doesn't page the months or the years past maxDate", async () => {
     renderPicker({ maxDate: new Date(2025, 11, 31) })
     fireEvent.click(getByRoleAndLabel('button', 'Jan, choose a month'))
-    const january = getByRoleAndLabel('button', 'January 2025')
+    const january = getByRoleAndLabel('button', 'Jan, January 2025')
     await waitFor(() => expect(january).toHaveFocus())
     // There is no 2026: PageDown, and ↓ from the last row, stay in 2025.
-    const september = getByRoleAndLabel('button', 'September 2025')
+    const september = getByRoleAndLabel('button', 'Sep, September 2025')
     act(() => september.focus())
     fireEvent.keyDown(september, { key: 'PageDown' })
     fireEvent.keyDown(september, { key: 'ArrowDown' })

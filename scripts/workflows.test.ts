@@ -102,7 +102,9 @@ describe('Bun in the Playwright image', () => {
 
   // bun's postinstall downloads a binary package missing from node_modules
   // from the registry, unverified: the runners' ones must be in the lock.
-  it.each(['linux-x64', 'linux-x64-baseline', 'linux-aarch64'])(
+  // Bun 1.4 ships one x64 binary instead of a separate baseline package.
+  // These are the two Linux architectures used by the browser jobs.
+  it.each(['linux-x64', 'linux-aarch64'])(
     '.github/bun locks @oven/bun-%s with its hash',
     (platform) => {
       const { version, integrity } =

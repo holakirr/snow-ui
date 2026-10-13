@@ -130,7 +130,7 @@ Keep an `href` next to the `page` when the page also has a URL (the table footer
 
 - `Pagination` is a `navigation` landmark named "Pagination" (`messages.pagination.label`). A page with several paginations needs a distinct `aria-label` on each.
 - Page links are `<a href>` links; in client-side paging (`onPageChange` without `href`) the items are buttons. The current page has `aria-current="page"`. Announce the new page yourself if the content that changes is far from the pagination (the ClientSide story uses a `status`).
-- Previous and next are named by `aria-label`: "Go to previous page" and "Go to next page". The name replaces any visible text, so keep the text's words in it if you pass your own (a "Prev" label read as "Go to previous page" doesn't match what a speech-input user says).
+- Icon-only previous and next controls are named "Go to previous page" and "Go to next page". With visible text, `aria-labelledby` includes that text first and the action message after it, so "Prev" is announced as "Prev Go to previous page" and speech input can use the visible word. An explicit `aria-label` overrides this name; keep the visible words in your override.
 - A disabled link has no `href`, `role="link"` and `aria-disabled="true"`: it is announced as an unavailable link.
 - The ellipsis glyph is hidden from assistive technology; screen readers read "More pages" (`messages.pagination.more`) instead.
 - Arrows are decorative icons; the links' names carry the meaning.

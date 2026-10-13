@@ -2,7 +2,7 @@ import {
   defineConfig,
   type TestProjectInlineConfiguration,
 } from 'vitest/config'
-import { storybookProject } from './vitest.config'
+import { storybookProject } from './vitest.config.ts'
 
 // `bun run test:storybook:browsers`: every story in headless Firefox and
 // WebKit (Safari's engine) through Playwright, in the light theme: render

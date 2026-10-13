@@ -62,6 +62,11 @@ export const storybookProject = (
   ],
   test: {
     name,
+    setupFiles: [
+      fileURLToPath(
+        new URL('.storybook/browser-focus.setup.ts', import.meta.url),
+      ),
+    ],
     browser: {
       enabled: true,
       headless: true,

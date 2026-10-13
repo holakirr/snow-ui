@@ -195,7 +195,7 @@ export const MonthsView: Story = {
     )
     const months = page.getByRole('grid', { name: '2025' })
     await expect(
-      within(months).getByRole('button', { name: 'January 2025' }),
+      within(months).getByRole('button', { name: 'Jan, January 2025' }),
     ).toHaveAttribute('data-selected')
   },
 }

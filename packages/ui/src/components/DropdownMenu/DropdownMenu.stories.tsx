@@ -337,8 +337,10 @@ export const Scrollable: Story = {
       await userEvent.keyboard('{End}')
       const last = page.getByRole('menuitem', { name: 'Everywhere else' })
       await waitFor(() => expect(last).toHaveFocus())
+      // scrollIntoView uses the integer clientHeight. WebKit can round the
+      // menu's fractional bottom down while the last item's bottom is whole.
       await expect(last.getBoundingClientRect().bottom).toBeLessThanOrEqual(
-        menu.getBoundingClientRect().bottom,
+        Math.ceil(menu.getBoundingClientRect().bottom),
       )
     })
 

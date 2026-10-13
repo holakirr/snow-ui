@@ -31,7 +31,7 @@ bun run test:demo      # Playwright smoke tests against `next start`
 
 ## Development
 
-Requirements: [Bun](https://bun.sh) 1.3.11 (see `packageManager`). The repo uses Bun workspaces (`packages/*` and `apps/*`) with a single `bun.lock` at the root.
+Requirements: [Bun](https://bun.sh) 1.4.3 (see `packageManager`). Use a supported Node.js version: 22.22.2+, 24.15.0+, or 26+ (see `engines`). The repo uses Bun workspaces (`packages/*` and `apps/*`) with a single `bun.lock` at the root.
 
 ```bash
 bun install            # install all workspaces

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import { animationsEnded } from '../../test/animations'
 import { colorOf, hasInsetRing } from '../../test/colors'
 import { Typography } from '../Text'
@@ -63,8 +63,10 @@ export const InProgress: Story = {
     ) as SVGElement
     await expect(input).toHaveAttribute('aria-busy', 'true')
     await expect(canvas.queryByRole('button')).toBeNull()
-    const { width, height } = ring.getBoundingClientRect()
-    await expect([width, height]).toEqual([16, 16])
+    // A rotating square's viewport bounds grow between frames. Check its
+    // untransformed layout size, which stays 16px while the ring turns.
+    const style = getComputedStyle(ring)
+    await expect([style.width, style.height]).toEqual(['16px', '16px'])
     await expect(getComputedStyle(ring).color).toBe(
       colorOf('text-black', canvasElement),
     )
@@ -76,8 +78,11 @@ export const ClearButtonFocus: Story = {
   // A behaviour check: the same look as Typing plus the focus ring.
   tags: ['skip-visual'],
   args: { defaultValue: 'Typing' },
-  play: async ({ canvas }) => {
-    await userEvent.tab()
+  play: async ({ canvas, userEvent }) => {
+    // Begin in this story's input rather than whichever iframe last had focus.
+    const input = canvas.getByRole('searchbox')
+    input.focus()
+    await expect(input).toHaveFocus()
     await userEvent.tab()
     const clear = canvas.getByRole('button', { name: 'Clear search' })
     await expect(clear).toHaveFocus()

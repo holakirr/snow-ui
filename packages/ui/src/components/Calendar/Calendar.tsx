@@ -26,9 +26,11 @@ import {
   type ChevronProps,
   type ClassNames,
   type CustomComponents,
+  DateLib,
   DayPicker,
   type DayPickerProps,
   getDefaultClassNames,
+  labelDayButton,
   useDayPicker,
 } from 'react-day-picker'
 import { resolveWeekStart } from '../../utils/date'
@@ -760,6 +762,20 @@ const messageLabels = (
     locale?.labels ?? {}
   const english = defaultMessages.calendar
   const labels: DayPickerLabels = {}
+
+  const localizedDayLabel = locale?.labels?.labelDayButton ?? labelDayButton
+  labels.labelDayButton = (date, modifiers, options, dateLib) => {
+    const label =
+      typeof localizedDayLabel === 'function'
+        ? localizedDayLabel(date, modifiers, options, dateLib)
+        : localizedDayLabel
+    const day = (dateLib ?? new DateLib(options)).format(date, 'd')
+    // Speech input uses the visible number. An ordinal such as "31st"
+    // is a different word, so retain the localized date and include "31".
+    return label.split(/[^\p{L}\p{N}]+/u).includes(day)
+      ? label
+      : `${day}, ${label}`
+  }
 
   if (messages.navigation !== english.navigation || !own.labelNav) {
     labels.labelNav = () => messages.navigation

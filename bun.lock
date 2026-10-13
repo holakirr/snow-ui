@@ -67,7 +67,7 @@
     },
     "packages/charts": {
       "name": "@holakirr/snow-ui-charts",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "dependencies": {
         "react-is": "^19.3.0",
         "recharts": "^3.10.1",

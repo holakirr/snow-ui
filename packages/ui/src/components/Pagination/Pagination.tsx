@@ -302,6 +302,16 @@ const linkText = (asChild: boolean | undefined, children: ReactNode) =>
     ? children.props.children
     : children
 
+/** Explicit names on a slotted link keep Radix Slot's child precedence. */
+const hasSlottedName = (asChild: boolean | undefined, children: ReactNode) =>
+  asChild &&
+  isValidElement<{
+    'aria-label'?: string
+    'aria-labelledby'?: string
+  }>(children) &&
+  (children.props['aria-label'] !== undefined ||
+    children.props['aria-labelledby'] !== undefined)
+
 /**
  * The link to the previous page: an arrow (pointing to the start side, so
  * right in right-to-left text) and optional text. Its name includes visible
@@ -320,7 +330,11 @@ const PaginationPrevious: FC<PaginationItemLinkProps> = ({
   const hasText = !!linkText(asChild, children)
   const textId = useId()
   const actionId = useId()
-  const useVisibleLabel = hasText && ariaLabel === undefined
+  const useVisibleLabel =
+    hasText &&
+    ariaLabel === undefined &&
+    props['aria-labelledby'] === undefined &&
+    !hasSlottedName(asChild, children)
 
   return (
     <PaginationLink
@@ -371,7 +385,11 @@ const PaginationNext: FC<PaginationItemLinkProps> = ({
   const hasText = !!linkText(asChild, children)
   const textId = useId()
   const actionId = useId()
-  const useVisibleLabel = hasText && ariaLabel === undefined
+  const useVisibleLabel =
+    hasText &&
+    ariaLabel === undefined &&
+    props['aria-labelledby'] === undefined &&
+    !hasSlottedName(asChild, children)
 
   return (
     <PaginationLink

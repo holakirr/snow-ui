@@ -12,6 +12,30 @@ import {
   PaginationPrevious,
 } from './Pagination'
 
+it('preserves explicit accessible names on both slotted paging links', () => {
+  render(
+    <Pagination>
+      <span id="previous-page-label">Return to page 1</span>
+      <PaginationPrevious asChild>
+        <a href="?page=1" aria-labelledby="previous-page-label">
+          Return
+        </a>
+      </PaginationPrevious>
+      <PaginationNext asChild>
+        <a href="?page=2" aria-label="Continue to page 2">
+          Continue
+        </a>
+      </PaginationNext>
+    </Pagination>,
+  )
+  expect(
+    screen.getByRole('link', { name: 'Return to page 1' }),
+  ).toHaveAttribute('aria-labelledby', 'previous-page-label')
+  expect(
+    screen.getByRole('link', { name: 'Continue to page 2' }),
+  ).not.toHaveAttribute('aria-labelledby')
+})
+
 it('keeps custom visible paging text in the accessible name, including asChild', () => {
   render(
     <Pagination>

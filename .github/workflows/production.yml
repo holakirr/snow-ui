@@ -39,24 +39,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SITE_SHA: ${{ inputs.site-sha }}
           DEMO_SHA: ${{ inputs.demo-sha }}
-        shell: bash
-        run: |
-          # A manual main run checks the currently released site and the main demo.
-          site=$SITE_SHA
-          demo=$DEMO_SHA
-          if [ -z "$site" ]; then
-            site=$(node --input-type=module -e '
-              const response = await fetch(`${process.env.GITHUB_API_URL}/repos/${process.env.GITHUB_REPOSITORY}/git/ref/heads/release`, {
-                headers: { Authorization: `Bearer ${process.env.GH_TOKEN}`, Accept: "application/vnd.github+json" }, redirect: "error"
-              });
-              if (!response.ok()) throw new Error("Cannot resolve release branch");
-              console.log((await response.json()).object.sha);
-            ')
-          fi
-          if [ -z "$demo" ]; then demo=$GITHUB_SHA; fi
-          [[ "$site" =~ ^[a-f0-9]{40}$ && "$demo" =~ ^[a-f0-9]{40}$ ]]
-          echo "site=$site" >> "$GITHUB_OUTPUT"
-          echo "demo=$demo" >> "$GITHUB_OUTPUT"
+        run: node scripts/production-commits.ts
       - name: Setup locked Bun
         run: |
           npm ci --prefix .github/bun --no-audit --no-fund

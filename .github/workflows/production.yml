@@ -10,6 +10,9 @@ on:
         required: true
   workflow_dispatch:
 permissions: {}
+defaults:
+  run:
+    shell: bash
 concurrency:
   group: production-check
   cancel-in-progress: false
@@ -27,8 +30,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - name: Install archive support and GitHub CLI
-        run: apt-get update -qq && apt-get install -y -qq unzip gh
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24
       - name: Resolve expected production commits
         id: commits
         env:
@@ -41,19 +45,22 @@ jobs:
           site=$SITE_SHA
           demo=$DEMO_SHA
           if [ -z "$site" ]; then
-            site=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/release" --jq .object.sha)
+            site=$(node --input-type=module -e '
+              const response = await fetch(`${process.env.GITHUB_API_URL}/repos/${process.env.GITHUB_REPOSITORY}/git/ref/heads/release`, {
+                headers: { Authorization: `Bearer ${process.env.GH_TOKEN}`, Accept: "application/vnd.github+json" }, redirect: "error"
+              });
+              if (!response.ok()) throw new Error("Cannot resolve release branch");
+              console.log((await response.json()).object.sha);
+            ')
           fi
           if [ -z "$demo" ]; then demo=$GITHUB_SHA; fi
           [[ "$site" =~ ^[a-f0-9]{40}$ && "$demo" =~ ^[a-f0-9]{40}$ ]]
           echo "site=$site" >> "$GITHUB_OUTPUT"
           echo "demo=$demo" >> "$GITHUB_OUTPUT"
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
-        with:
-          bun-version-file: package.json
-          no-cache: true
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
-        with:
-          node-version: 24
+      - name: Setup locked Bun
+        run: |
+          npm ci --prefix .github/bun --no-audit --no-fund
+          echo "$PWD/.github/bun/node_modules/.bin" >> "$GITHUB_PATH"
       - run: bun install --frozen-lockfile --ignore-scripts
       - name: Verify deployed commits and run all production scenarios
         env:

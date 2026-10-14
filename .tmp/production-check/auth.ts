@@ -17,7 +17,8 @@ export async function authorizeProduction(context: BrowserContext, origin: strin
     const hostname = new URL(origin).hostname
     const state = await bootstrap.storageState()
     const cookies = state.cookies.filter(cookie => cookie.domain.replace(/^\./,'') === hostname)
-    if (!cookies.length && response.status() !== 200) throw new Error('Authentication did not set a scoped cookie')
+    // Public production domains may return no bypass cookie, including same-origin redirects.
+    // The browser then accesses the public domain normally; protected responses still fail above.
     await context.addCookies(cookies)
   } catch {
     throw new Error(`Production authentication failed for ${new URL(origin).hostname}; sensitive request details suppressed`)

@@ -650,6 +650,18 @@ jobs:
               ;;
           esac
 
+  # Verify the public domains after npm verification and release promotion.
+  # No secrets in this caller: the main-only environment belongs to the callee.
+  production:
+    needs: [released, promote]
+    if: needs.released.outputs.released == 'true' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/production.yml
+    with:
+      site-sha: ${{ github.sha }}
+      demo-sha: ${{ github.sha }}
+
   # A CycloneDX SBOM of each published package (scripts/sbom.ts): what it
   # pulls in, at the versions installed from bun.lock. Attached to the
   # package's GitHub release (tag `<name>@<version>`) and kept as an

@@ -1,6 +1,23 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { expect, test } from '@playwright/test'
+import { test as base, expect } from '@playwright/test'
+import { authorizeProduction } from '../production/auth'
+
+const production = process.env.PRODUCTION_E2E === 'true'
+const test = base.extend<{ productionAccess: undefined }>({
+  productionAccess: [
+    async ({ context }, use) => {
+      if (production)
+        await authorizeProduction(
+          context,
+          'https://snow-ui.holakirr.com',
+          'SNOWUI_SITE_AUTOMATION_SECRET',
+        )
+      await use(undefined)
+    },
+    { auto: true },
+  ],
+})
 
 // One test per docs page of the built Storybook (the `docs` entries of
 // storybook-static/index.json: the guides, the MDX usage pages and the
@@ -13,8 +30,8 @@ import { expect, test } from '@playwright/test'
 //   - a story's render or play function fails. Inline stories only play with
 //     `parameters.docs.story.autoplay`; a story in an iframe always plays.
 // Every story iframe is loaded, not only those in the viewport. Nothing
-// leaves the machine: remote images get a placeholder, any other remote
-// request fails (and its console error fails the page).
+// leaves the machine in local mode: remote images get a placeholder and other
+// remote requests fail. Production mode loads the actual remote resources.
 
 interface IndexEntry {
   id: string
@@ -39,9 +56,9 @@ interface CheckWindow {
 // Stand-in for remote images (avatars etc.), as in the visual tests.
 const PLACEHOLDER_IMAGE = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="#a8c5da"/><circle cx="32" cy="26" r="12" fill="#e5ecf6"/><rect x="12" y="42" width="40" height="22" rx="11" fill="#e5ecf6"/></svg>`
 
-const indexPath = fileURLToPath(
-  new URL('../storybook-static/index.json', import.meta.url),
-)
+const indexPath = production
+  ? 'test-results/production/index.json'
+  : fileURLToPath(new URL('../storybook-static/index.json', import.meta.url))
 if (!existsSync(indexPath)) {
   throw new Error(
     `${indexPath} not found. Build Storybook first: bun run build:storybook`,
@@ -230,16 +247,17 @@ for (const page of docsPages) {
       errors.push(`console error: ${message.text().split('\n')[0]}`)
     })
     // Only the local Storybook server is reachable (in every frame).
-    await browserPage.route(
-      (url) => url.hostname !== '127.0.0.1' && url.hostname !== 'localhost',
-      (route) =>
-        route.request().resourceType() === 'image'
-          ? route.fulfill({
-              contentType: 'image/svg+xml',
-              body: PLACEHOLDER_IMAGE,
-            })
-          : route.abort('internetdisconnected'),
-    )
+    if (!production)
+      await browserPage.route(
+        (url) => url.hostname !== '127.0.0.1' && url.hostname !== 'localhost',
+        (route) =>
+          route.request().resourceType() === 'image'
+            ? route.fulfill({
+                contentType: 'image/svg+xml',
+                body: PLACEHOLDER_IMAGE,
+              })
+            : route.abort('internetdisconnected'),
+      )
     await browserPage.addInitScript(instrument)
 
     await browserPage.goto(
@@ -248,7 +266,7 @@ for (const page of docsPages) {
     await browserPage
       .waitForFunction(`(${pendingWork})().length === 0`, undefined, {
         polling: 100,
-        timeout: 20_000,
+        timeout: production ? 45_000 : 20_000,
       })
       .catch(async (error: Error) => {
         const pending = await browserPage.evaluate(pendingWork)

@@ -298,3 +298,39 @@ CI publishes with npm Trusted Publishing, and npm only lets you add a Trusted Pu
 4. On npmjs.com → the package → Settings → Trusted Publisher: GitHub Actions, repository `holakirr/snow-ui`, workflow `release.yml` (and the publishing-access settings you use for the other packages).
 
 From the next version on, the release workflow publishes it with provenance like the others. If the owner merges the version PR and forgets step 2, nothing breaks: every release run skips the package and warns again.
+
+### Production verification after a release
+
+`Release` calls `Production Check` after npm verification and the `release`
+branch promotion. The check waits up to 15 minutes for the public Storybook
+registry and the demo's build-time `/api/release` endpoint to report the exact
+release commit. A timeout fails the release run instead of testing an older
+deployment. A manual run of `Production Check` on `main` checks the current
+`release` site and the demo built from that main commit.
+
+The same docs and demo tests used in Build Check run against the public domains,
+without resource mocks or a local server. Production tests have no retries;
+failures, skipped tests and flaky tests fail the run. Reports and redacted logs
+are retained for seven days. Traces, video, screenshots and saved browser state
+are disabled. Only sanitized report files are uploaded.
+
+Configure GitHub Environment `production-e2e` to allow **only the `main`
+branch**, with no tag policies, and store these environment secrets:
+
+- `SNOWUI_SITE_AUTOMATION_SECRET`: SnowUI project's `production-e2e` bypass.
+- `SNOWUI_DEMO_AUTOMATION_SECRET`: demo project's separate bypass.
+
+Keep Vercel Standard Protection enabled. Secrets are available only in the test
+step, after installing dependencies with scripts disabled. Each secret is bound
+to its own HTTPS origin and credential requests never follow redirects. Cookies
+are copied only into that domain's browser context; public responses may not set
+cookies. Cross-origin redirects and rejected access fail the test. No credentials
+are passed to third-party asset hosts, URLs, build jobs or PR checks. The runner
+clears Playwright debug flags before launching browsers. Vercel system security
+challenges can still reject automation; diagnose access without disabling
+protection or weakening the assertions.
+
+For rotation, create a new project-specific Vercel bypass, replace the matching
+GitHub environment secret, verify a manual main run, then revoke the old Vercel
+bypass. Do not store these credentials as repository secrets. Tests of sign-in
+exercise the demo form, not real authentication with another service.

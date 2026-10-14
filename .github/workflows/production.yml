@@ -1,0 +1,74 @@
+name: Production Check
+on:
+  workflow_call:
+    inputs:
+      site-sha:
+        type: string
+        required: true
+      demo-sha:
+        type: string
+        required: true
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: production-check
+  cancel-in-progress: false
+jobs:
+  production:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production-e2e
+    permissions:
+      contents: read
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.0-noble@sha256:06a9939e57531807f8d5fd76ce44b53165ffb7d7501d87ab10e285c20b1e971f
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Install archive support and GitHub CLI
+        run: apt-get update -qq && apt-get install -y -qq unzip gh
+      - name: Resolve expected production commits
+        id: commits
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SITE_SHA: ${{ inputs.site-sha }}
+          DEMO_SHA: ${{ inputs.demo-sha }}
+        shell: bash
+        run: |
+          # A manual main run checks the currently released site and the main demo.
+          site=$SITE_SHA
+          demo=$DEMO_SHA
+          if [ -z "$site" ]; then
+            site=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/release" --jq .object.sha)
+          fi
+          if [ -z "$demo" ]; then demo=$GITHUB_SHA; fi
+          [[ "$site" =~ ^[a-f0-9]{40}$ && "$demo" =~ ^[a-f0-9]{40}$ ]]
+          echo "site=$site" >> "$GITHUB_OUTPUT"
+          echo "demo=$demo" >> "$GITHUB_OUTPUT"
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version-file: package.json
+          no-cache: true
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Verify deployed commits and run all production scenarios
+        env:
+          PRODUCTION_SITE_SHA: ${{ steps.commits.outputs.site }}
+          PRODUCTION_DEMO_SHA: ${{ steps.commits.outputs.demo }}
+          SNOWUI_SITE_AUTOMATION_SECRET: ${{ secrets.SNOWUI_SITE_AUTOMATION_SECRET }}
+          SNOWUI_DEMO_AUTOMATION_SECRET: ${{ secrets.SNOWUI_DEMO_AUTOMATION_SECRET }}
+        run: bun production/run.ts
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: production-results
+          path: |
+            test-results/production/docs.json
+            test-results/production/demo.json
+            test-results/production/docs.log
+            test-results/production/demo.log
+          retention-days: 7

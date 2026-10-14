@@ -73,6 +73,13 @@ describe('Playwright image', () => {
     ])
   })
 
+  it('production uses the same locked browser image as Build Check', () => {
+    const source = workflows.find(
+      ({ file }) => file === 'production.yml',
+    )?.source
+    expect(source?.match(/^ +image: (.+)$/m)?.[1]).toBe(pinned)
+  })
+
   it.each(workflows)(
     "$file doesn't install Playwright's browsers",
     ({ source }) => {

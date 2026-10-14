@@ -1,11 +1,28 @@
 import AxeBuilder from '@axe-core/playwright'
 import { test as base, expect, type Page } from '@playwright/test'
+import { authorizeProduction } from '../../../production/auth'
 
 /**
  * `test` with a console guard: every test fails if the page logs a console
  * error or throws (hydration mismatches, React warnings, failed requests…).
  */
-export const test = base.extend<{ consoleErrors: string[] }>({
+export const test = base.extend<{
+  consoleErrors: string[]
+  productionAccess: undefined
+}>({
+  productionAccess: [
+    async ({ context }, use) => {
+      if (process.env.PRODUCTION_E2E === 'true') {
+        await authorizeProduction(
+          context,
+          'https://demo.snow-ui.holakirr.com',
+          'SNOWUI_DEMO_AUTOMATION_SECRET',
+        )
+      }
+      await use(undefined)
+    },
+    { auto: true },
+  ],
   consoleErrors: [
     async ({ page }, use) => {
       const errors: string[] = []

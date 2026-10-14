@@ -617,21 +617,27 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: write # move the release branch
+    outputs:
+      current: ${{ steps.promotion.outputs.current }}
     steps:
       - name: Fast-forward the release branch to ${{ github.sha }}
+        id: promotion
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          echo "current=false" >> "$GITHUB_OUTPUT"
           current=$(gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/heads/release" \
             --jq '.[] | select(.ref == "refs/heads/release") | .object.sha')
           if [ -z "$current" ]; then
             gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" \
               -f ref=refs/heads/release -f sha="$GITHUB_SHA" > /dev/null
             echo "Created release at $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"
+            echo "current=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           if [ "$current" = "$GITHUB_SHA" ]; then
             echo "release is already at $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"
+            echo "current=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           status=$(gh api "repos/$GITHUB_REPOSITORY/compare/$current...$GITHUB_SHA" --jq .status)
@@ -639,6 +645,7 @@ jobs:
             ahead)
               gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/heads/release" \
                 -f sha="$GITHUB_SHA" -F force=false > /dev/null
+              echo "current=true" >> "$GITHUB_OUTPUT"
               echo "Fast-forwarded release from $current to $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"
               ;;
             behind)
@@ -649,6 +656,18 @@ jobs:
               exit 1
               ;;
           esac
+
+  # Verify the public domains after npm verification and release promotion.
+  # No secrets in this caller: the main-only environment belongs to the callee.
+  production:
+    needs: [released, promote]
+    if: needs.released.outputs.released == 'true' && needs.promote.outputs.current == 'true' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/production.yml
+    with:
+      site-sha: ${{ github.sha }}
+      demo-sha: ${{ github.sha }}
 
   # A CycloneDX SBOM of each published package (scripts/sbom.ts): what it
   # pulls in, at the versions installed from bun.lock. Attached to the

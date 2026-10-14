@@ -5,26 +5,41 @@ export async function resolveProductionCommits(
   env: NodeJS.ProcessEnv,
   fetcher: typeof fetch = fetch,
 ) {
-  let site = env.SITE_SHA
-  const demo = env.DEMO_SHA || env.GITHUB_SHA
-  if (!site) {
+  const api = `${env.GITHUB_API_URL}/repos/${env.GITHUB_REPOSITORY}`
+  const get = async (path: string) => {
     try {
-      const response = await fetcher(
-        `${env.GITHUB_API_URL}/repos/${env.GITHUB_REPOSITORY}/git/ref/heads/release`,
-        {
-          headers: {
-            Authorization: `Bearer ${env.GH_TOKEN}`,
-            Accept: 'application/vnd.github+json',
-          },
-          redirect: 'error',
+      const response = await fetcher(`${api}${path}`, {
+        headers: {
+          Authorization: `Bearer ${env.GH_TOKEN}`,
+          Accept: 'application/vnd.github+json',
         },
-      )
-      if (!response.ok) throw new Error('GitHub rejected release lookup')
-      site = (await response.json()).object.sha
+        redirect: 'error',
+      })
+      if (!response.ok) throw new Error('GitHub rejected production lookup')
+      return await response.json()
     } catch {
       throw new Error(
-        'Cannot resolve release branch; request details suppressed',
+        'Cannot resolve production commits; request details suppressed',
       )
+    }
+  }
+  let site = env.SITE_SHA
+  let demo = env.DEMO_SHA
+  if (!site) site = (await get('/git/ref/heads/release')).object.sha
+  if (!demo) {
+    // Vercel intentionally skips workflow-only commits. A manual run verifies
+    // the active production deployment; release callers always pass exact SHAs.
+    const deployments: { id: number; sha: string }[] = await get(
+      `/deployments?environment=${encodeURIComponent('Production – snow-ui-demo')}&per_page=100`,
+    )
+    for (const deployment of deployments) {
+      const statuses: { state: string }[] = await get(
+        `/deployments/${deployment.id}/statuses?per_page=1`,
+      )
+      if (statuses[0]?.state === 'success') {
+        demo = deployment.sha
+        break
+      }
     }
   }
   if (

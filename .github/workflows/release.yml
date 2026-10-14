@@ -664,6 +664,7 @@ jobs:
     if: needs.released.outputs.released == 'true' && needs.promote.outputs.current == 'true' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
+      deployments: read
     uses: ./.github/workflows/production.yml
     with:
       site-sha: ${{ github.sha }}

@@ -306,7 +306,10 @@ branch promotion. The check waits up to 15 minutes for the public Storybook
 registry and the demo's build-time `/api/release` endpoint to report the exact
 release commit. A timeout fails the release run instead of testing an older
 deployment. A manual run of `Production Check` on `main` checks the current
-`release` site and the demo built from that main commit.
+`release` site and the active successful production demo deployment. Vercel
+may skip builds for workflow-only commits, so the manual check resolves the
+active demo SHA from GitHub deployment statuses rather than assuming main was
+rebuilt. Release-triggered checks always require the exact release SHA.
 
 The same docs and demo tests used in Build Check run against the public domains,
 without resource mocks or a local server. Production tests have no retries;

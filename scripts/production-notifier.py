@@ -86,16 +86,13 @@ def events_from_github(state):
             event = dict(runId=run['id'], attempt=attempt, sha=run['head_sha'], url=run['html_url'], status=job['status'], conclusion=job['conclusion'], startedAt=job.get('started_at') or run.get('run_started_at'), steps=job.get('steps', []), reports={})
             if job['conclusion'] in FAILURES or job['conclusion'] == 'cancelled':
                 # Reports are data only, never executable; no raw logs returned.
-                try:
-                    artifacts = [artifact for page in api('/actions/runs/'+str(run['id'])+'/artifacts?per_page=100') for artifact in page['artifacts']]
-                    current_artifact = max(
-                        (artifact for artifact in artifacts if artifact['name'] == 'production-results'
-                         and not artifact.get('expired') and job.get('started_at')
-                         and artifact.get('created_at', '') >= job['started_at']),
-                        key=lambda artifact: artifact['created_at'], default=None,
-                    )
-                except RuntimeError:
-                    current_artifact = None
+                artifacts = [artifact for page in api('/actions/runs/'+str(run['id'])+'/artifacts?per_page=100') for artifact in page['artifacts']]
+                current_artifact = max(
+                    (artifact for artifact in artifacts if artifact['name'] == 'production-results'
+                     and not artifact.get('expired') and job.get('started_at')
+                     and artifact.get('created_at', '') >= job['started_at']),
+                    key=lambda artifact: artifact['created_at'], default=None,
+                )
                 if current_artifact:
                     artifact_id = current_artifact['id']
                     if type(artifact_id) is not int or artifact_id <= 0:
@@ -104,6 +101,8 @@ def events_from_github(state):
                         ['gh', 'api', 'repos/'+REPO+'/actions/artifacts/'+str(artifact_id)+'/zip'],
                         capture_output=True, timeout=90,
                     )
+                    if downloaded.returncode != 0:
+                        raise RuntimeError('Production artifact unavailable')
                     if downloaded.returncode == 0:
                         for name, data in reports_from_zip(downloaded.stdout).items():
                             if not isinstance(data, dict) or not isinstance(data.get('stats', {}), dict):
@@ -171,7 +170,7 @@ def evaluate(state, events):
 def write_state(path, state):
     fd, temporary = tempfile.mkstemp(dir=path.parent)
     try:
-        with os.fdopen(fd, 'w') as output:
+        with os.fdopen(fd, 'w', encoding='utf-8') as output:
             json.dump(state, output, indent=2)
             output.write('\n')
         os.replace(temporary, path)
@@ -195,7 +194,7 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX)
         marker = Path(str(state_path) + '.observer-error')
         try:
-            state = json.loads(state_path.read_text()) if state_path.exists() else {
+            state = json.loads(state_path.read_text(encoding='utf-8')) if state_path.exists() else {
                 'schemaVersion': 1, 'repository': REPO, 'startedAt': STARTED_AT,
                 'processedAttempts': {}, 'notifiedFailures': {}, 'observerError': None,
             }
@@ -213,7 +212,7 @@ def main():
             marker.unlink()
         try:
             if args.fixture:
-                events = json.loads(args.fixture.read_text())
+                events = json.loads(args.fixture.read_text(encoding='utf-8'))
                 if not all(event.get('test') is True for event in events):
                     raise ValueError('Test events must be explicitly labelled')
                 count = None
@@ -229,9 +228,22 @@ def main():
             message = 'GitHub observation could not be completed; production failure is not established.'
             new = state.get('observerError') != message
             state['observerError'] = message
-            write_state(state_path, state)
+            try:
+                write_state(state_path, state)
+            except OSError:
+                message = 'Observer state could not be saved; deduplication unavailable; production failure is not established.'
+                new = True
             print(json.dumps({'decision': 'NOTIFY' if new else 'DONT_NOTIFY', 'observerError': message}))
 
 
+def cli():
+    try:
+        main()
+    except OSError:
+        # A read-only directory/full disk may also prevent creating the lock/marker.
+        print(json.dumps({'decision': 'NOTIFY', 'observerError':
+            'Observer storage unavailable; deduplication unavailable; production failure is not established.'}))
+
+
 if __name__ == '__main__':
-    main()
+    cli()

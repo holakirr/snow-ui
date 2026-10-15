@@ -337,3 +337,11 @@ For rotation, create a new project-specific Vercel bypass, replace the matching
 GitHub environment secret, verify a manual main run, then revoke the old Vercel
 bypass. Do not store these credentials as repository secrets. Tests of sign-in
 exercise the demo form, not real authentication with another service.
+
+### Braces security automation
+
+`bun run test:braces-security` runs the standard-library Python 3 suite for
+`scripts/braces-security-check.py`. It is also included in `bun run test:scripts`,
+`bun run test`, and the Build Check scripts step. Tests use isolated state and
+mocked npm/GitHub responses; they never install packages or mutate GitHub.
+See [the automation runbook](docs/braces-security-automation.md) for live usage.

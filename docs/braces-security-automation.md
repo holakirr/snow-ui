@@ -26,6 +26,9 @@ handler used this same state path, so switching paths preserves in-flight work.
 `START_UPDATE` and resume actions deliberately use `DONT_NOTIFY`.
 Before creating a PR, query the handler and GitHub again. The lock serializes
 planning, not the whole update workflow. Never start concurrent updater agents.
+If the advisory changes during an active update, the target version is refreshed
+while keeping the reserved branch. Recheck manifests and every locked copy before
+continuing checks or merging.
 Existing PRs use branches `codex/braces-security-X-Y-Z` or the explicit body marker
 `[braces-security-remediation]`. PRs from forks and unrelated braces documentation
 or automation PRs are excluded. Closed PRs block automatic replacement.

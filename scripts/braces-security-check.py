@@ -44,7 +44,7 @@ def live_data():
     prs = []
     if patched:
         prs = [pr for page in github('/repos/' + REPO + '/pulls?state=all&base=main&per_page=100') for pr in page]
-        prs = [{'number': p['number'], 'state': 'MERGED' if p.get('merged_at') else p['state'].upper(), 'branch': p['head']['ref'], 'url': p['html_url'], 'title': p['title'], 'body': p.get('body') or ''} for p in prs if p['head'].get('repo', {}).get('full_name') == REPO]
+        prs = [{'number': p['number'], 'state': 'MERGED' if p.get('merged_at') else p['state'].upper(), 'branch': p['head']['ref'], 'url': p['html_url'], 'title': p['title'], 'body': p.get('body') or ''} for p in prs if (p['head'].get('repo') or {}).get('full_name') == REPO]
     return {'patched': patched, 'affected': v['vulnerable_version_range'], 'versions': list(npm['versions']), 'prs': prs}
 
 
@@ -63,6 +63,9 @@ def decide(data, state):
         raise ValueError('unsupported_or_conflicting_advisory')
     if patched not in data['versions']:
         return {'decision': 'DONT_NOTIFY', 'action': 'WAIT_PUBLICATION'}
+    if active:
+        # Keep the reserved branch, but never resume an obsolete vulnerable target.
+        active['version'] = patched
     related = [p for p in data['prs'] if re.fullmatch(r'codex/braces-security-\d+-\d+-\d+', p['branch']) or '[braces-security-remediation]' in p.get('body', '')]
     opened = [p for p in related if p['state'] == 'OPEN']
     if len(opened) > 1:

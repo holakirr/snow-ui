@@ -43,6 +43,16 @@ class Decisions(unittest.TestCase):
         actions = [m.run(PATCHED, state)['action'] for _ in range(3)]
         self.assertEqual(actions, ['START_UPDATE', 'RESUME_BRANCH', 'RESUME_BRANCH'])
 
+    def test_changed_advisory_refreshes_active_target(self):
+        state = {}
+        first = m.run(PATCHED, state)
+        newer = dict(PATCHED, patched='3.0.5', affected='<= 3.0.4', versions=['3.0.3', '3.0.4', '3.0.5'])
+        result = m.run(newer, state)
+        self.assertEqual(result['action'], 'RESUME_BRANCH')
+        self.assertEqual(result['version'], '3.0.5')
+        self.assertEqual(state['active']['version'], '3.0.5')
+        self.assertEqual(result['branch'], first['branch'])
+
     def test_open_pr_resumes_without_new_pr(self):
         state = {}
         data = dict(PATCHED, prs=[pr()])
@@ -107,7 +117,9 @@ class Decisions(unittest.TestCase):
             self.assertEqual(args[:2], ['gh', 'api'])
             self.assertIn('--paginate', args)
             self.assertFalse(any(x in args for x in ['--method', '-X', '-f', '-F']))
-            out = [advisory] if '/advisories/' in args[2] else [[], [raw]]
+            deleted_fork = dict(raw, number=999998, head={'ref': 'old-fork', 'repo': None})
+            other_fork = dict(raw, number=999997, head={'ref': pr()['branch'], 'repo': {'full_name': 'someone/snow-ui'}})
+            out = [advisory] if '/advisories/' in args[2] else [[deleted_fork, other_fork], [raw]]
             return subprocess.CompletedProcess(args, 0, json.dumps(out), '')
         with patch.object(m.urllib.request, 'urlopen', return_value=Response()), patch.object(m.subprocess, 'run', side_effect=call):
             self.assertEqual(m.run(m.live_data(), {})['action'], 'RESUME_PR')

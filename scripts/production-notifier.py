@@ -68,6 +68,12 @@ def events_from_github(state):
                             if files:
                                 try:
                                     data = json.loads(files[0].read_text())
+                                    if not isinstance(data, dict) or not isinstance(data.get('stats', {}), dict):
+                                        raise RuntimeError('Invalid production report structure')
+                                    for counter in ('expected', 'unexpected', 'skipped', 'flaky'):
+                                        value = data.get('stats', {}).get(counter, 0)
+                                        if type(value) is not int or value < 0:
+                                            raise RuntimeError('Invalid production report counter')
                                     # Avoid reporting any raw error content or credential data.
                                     event['reports'][name] = data.get('stats', {})
                                     event.setdefault('failures', {})[name] = report_failures(data)
@@ -184,7 +190,7 @@ def main():
             next_state['lastAudit'] = {'releaseRunsRead': count, 'newOrUpdatedRuns': len(events), 'newProductionFailures': len(notifications)}
             write_state(state_path, next_state)
             print(json.dumps({'decision': 'NOTIFY' if notifications else 'DONT_NOTIFY', 'notifications': notifications, 'audit': next_state['lastAudit']}))
-        except (RuntimeError, OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired):
+        except (RuntimeError, OSError, ValueError, KeyError, TypeError, AttributeError, subprocess.TimeoutExpired):
             message = 'GitHub observation could not be completed; production failure is not established.'
             new = state.get('observerError') != message
             state['observerError'] = message

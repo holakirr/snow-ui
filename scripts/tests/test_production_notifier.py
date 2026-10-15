@@ -2,6 +2,7 @@
 import concurrent.futures
 import copy
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -172,6 +173,30 @@ class Decisions(unittest.TestCase):
         with patch.object(m,'api',side_effect=api),patch.object(m.subprocess,'run',side_effect=download):
             events,_=m.events_from_github(baseline())
         self.assertEqual(events[0]['reports']['demo']['unexpected'],1)
+
+    def test_malformed_artifact_is_deduplicated_observer_error(self):
+        run={'id':42,'head_sha':'1'*40,'html_url':'https://example.invalid/run','status':'completed','updated_at':'2026-10-15T00:00:00Z','run_started_at':'2026-10-15T00:00:00Z','run_attempt':2}
+        def api(path):
+            if '/workflows/' in path:return [{'workflow_runs':[run]}]
+            if '/artifacts' in path:return [{'artifacts':[{'name':'production-results','expired':False,'created_at':'2026-10-15T00:01:00Z'}]}]
+            return [{'jobs':[{'name':'production','status':'completed','conclusion':'failure','steps':[],'started_at':'2026-10-15T00:00:00Z'}]}]
+        for malformed in [[], {'stats': []}, {'stats': {'unexpected': 'secret'}}, {'stats': {'unexpected': -1}}, {'stats': {}, 'specs': [None]}]:
+            with self.subTest(data=malformed), tempfile.TemporaryDirectory() as directory:
+                target=Path(directory)/'state.json'
+                def download(args, **kwargs):
+                    destination=Path(args[args.index('--dir')+1])
+                    (destination/'demo.json').write_text(json.dumps(malformed))
+                    return subprocess.CompletedProcess(args,0,b'',b'')
+                decisions=[]
+                for _ in range(2):
+                    output=io.StringIO()
+                    with patch.object(m,'STATE',target),patch.object(m,'api',side_effect=api),patch.object(m.subprocess,'run',side_effect=download),patch.object(sys,'argv',[str(SCRIPT)]),patch.object(sys,'stdout',output):
+                        m.main()
+                    result=json.loads(output.getvalue())
+                    self.assertIn('observerError',result)
+                    self.assertNotIn('secret',output.getvalue())
+                    decisions.append(result['decision'])
+                self.assertEqual(decisions,['NOTIFY','DONT_NOTIFY'])
 
     def test_fixture_cannot_target_real_state_from_other_cwd(self):
         for suffix in [[],['--state',str(m.STATE)]]:

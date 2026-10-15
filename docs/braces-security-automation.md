@@ -28,7 +28,8 @@ Before creating a PR, query the handler and GitHub again. The lock serializes
 planning, not the whole update workflow. Never start concurrent updater agents.
 If the advisory changes during an active update, the target version is refreshed
 while keeping the reserved branch. Recheck manifests and every locked copy before
-continuing checks or merging.
+continuing checks or merging. A newer patch after the old branch has merged
+reserves a new branch rather than verifying the older merge again.
 Existing PRs use branches `codex/braces-security-X-Y-Z` or the explicit body marker
 `[braces-security-remediation]`. PRs from forks and unrelated braces documentation
 or automation PRs are excluded. Closed PRs block automatic replacement.
@@ -38,7 +39,9 @@ An update requires both a stable version published in npm and a compatible
 range parser supports `<= X.Y.Z`; changed or conflicting advisory formats cause
 an observation error rather than an assumed fix. Source messages and credentials
 are never printed. Repeated observation errors/blocks are deduplicated in state.
-Malformed state or a missing handler must be reported as an observation fault;
+Malformed state is preserved and reported once using a separate `.observer-error`
+marker; repairing state clears this marker. A missing handler must also be
+reported as an observation fault;
 they are not evidence that no patch exists.
 
 ## Tests

@@ -53,6 +53,17 @@ class Decisions(unittest.TestCase):
         self.assertEqual(state['active']['version'], '3.0.5')
         self.assertEqual(result['branch'], first['branch'])
 
+    def test_new_patch_after_old_merge_starts_new_branch(self):
+        state = {}
+        m.run(PATCHED, state)
+        merged = dict(PATCHED, prs=[pr('MERGED')])
+        self.assertEqual(m.run(merged, state)['action'], 'VERIFY_MERGED')
+        newer = dict(merged, patched='3.0.5', affected='<= 3.0.4', versions=['3.0.4', '3.0.5'])
+        result = m.run(newer, state)
+        self.assertEqual(result['action'], 'START_UPDATE')
+        self.assertEqual(result['version'], '3.0.5')
+        self.assertEqual(result['branch'], 'codex/braces-security-3-0-5')
+
     def test_open_pr_resumes_without_new_pr(self):
         state = {}
         data = dict(PATCHED, prs=[pr()])
@@ -128,6 +139,22 @@ class Decisions(unittest.TestCase):
         r = subprocess.run([sys.executable, str(SCRIPT), '--fixture', '/tmp/not-used.json', '--state', str(m.STATE)], capture_output=True)
         self.assertNotEqual(r.returncode, 0)
         self.assertIn(b'production state is forbidden', r.stderr)
+
+    def test_corrupt_state_reports_once_without_overwrite(self):
+        for broken in ['{broken', '[]', '{"active": {}}']:
+            with self.subTest(broken=broken), tempfile.TemporaryDirectory() as temp:
+                f, state = Path(temp)/'patch.json', Path(temp)/'state.json'
+                f.write_text(json.dumps(BASE))
+                state.write_text(broken)
+                args = [sys.executable, str(SCRIPT), '--fixture', str(f), '--state', str(state)]
+                results = [json.loads(subprocess.run(args, capture_output=True, text=True, check=True).stdout) for _ in range(2)]
+                self.assertEqual([r['decision'] for r in results], ['NOTIFY', 'DONT_NOTIFY'])
+                self.assertEqual(state.read_text(), broken)
+                self.assertTrue(all(r['action']=='OBSERVER_ERROR' for r in results))
+                state.write_text('{}')
+                self.assertEqual(json.loads(subprocess.run(args, capture_output=True, text=True, check=True).stdout)['action'], 'WAIT_NO_PATCH')
+                state.write_text(broken)
+                self.assertEqual(json.loads(subprocess.run(args, capture_output=True, text=True, check=True).stdout)['decision'], 'NOTIFY')
 
     def test_concurrent_cli_only_starts_once(self):
         with tempfile.TemporaryDirectory() as temp:

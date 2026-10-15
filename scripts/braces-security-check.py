@@ -63,6 +63,13 @@ def decide(data, state):
         raise ValueError('unsupported_or_conflicting_advisory')
     if patched not in data['versions']:
         return {'decision': 'DONT_NOTIFY', 'action': 'WAIT_PUBLICATION'}
+    if active and active['version'] != patched and any(
+        p['state'] == 'MERGED' and p['branch'] == active['branch']
+        for p in data['prs']
+    ):
+        # A completed older patch must not capture the next remediation.
+        active = None
+        state.pop('active', None)
     if active:
         # Keep the reserved branch, but never resume an obsolete vulnerable target.
         active['version'] = patched
@@ -122,7 +129,26 @@ def main():
     target.parent.mkdir(parents=True, exist_ok=True)
     with open(str(target) + '.lock', 'a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        state = json.loads(target.read_text()) if target.exists() else {'schema': 1}
+        fault_marker = Path(str(target) + '.observer-error')
+        try:
+            state = json.loads(target.read_text()) if target.exists() else {'schema': 1}
+            if not isinstance(state, dict):
+                raise ValueError('invalid state')
+            active = state.get('active')
+            if active is not None and (
+                not isinstance(active, dict)
+                or not isinstance(active.get('branch'), str)
+                or not isinstance(active.get('version'), str)
+            ):
+                raise ValueError('invalid active state')
+        except (OSError, ValueError):
+            result = {'decision': 'DONT_NOTIFY' if fault_marker.exists() else 'NOTIFY',
+                      'action': 'OBSERVER_ERROR', 'observerError': 'source_or_state_unavailable'}
+            fault_marker.write_text('source_or_state_unavailable\n')
+            print(json.dumps(result))
+            return
+        if fault_marker.exists():
+            fault_marker.unlink()
         if args.fixture:
             data = json.loads(args.fixture.read_text())
         else:

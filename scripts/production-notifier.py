@@ -10,11 +10,45 @@ STARTED_AT = '2026-10-14T11:11:46Z'
 REPO = 'holakirr/snow-ui'
 FAILURES = {'failure', 'timed_out', 'startup_failure', 'action_required'}
 
-def api(path):
-    result = subprocess.run(['gh', 'api', 'repos/'+REPO+path, '--paginate', '--slurp'], capture_output=True, text=True, timeout=90)
+class ObservationError(RuntimeError):
+    def __init__(self, stage, category):
+        super().__init__('GitHub data unavailable')
+        self.diagnostic = {'stage': stage, 'category': category}
+
+
+def github_request(arguments, stage, **options):
+    try:
+        result = subprocess.run(arguments, capture_output=True, timeout=90, **options)
+    except subprocess.TimeoutExpired:
+        raise ObservationError(stage, 'timeout') from None
+    except FileNotFoundError:
+        raise ObservationError(stage, 'cli-unavailable') from None
     if result.returncode:
-        raise RuntimeError('GitHub data unavailable')
-    return json.loads(result.stdout)
+        # Inspect locally, but return only fixed labels: stderr may contain secrets.
+        stderr = result.stderr or ''
+        if isinstance(stderr, bytes):
+            stderr = stderr.decode('utf-8', errors='replace')
+        stderr = stderr.lower()
+        category = 'request-failed'
+        if 'rate limit' in stderr:
+            category = 'rate-limited'
+        elif 'http 401' in stderr or 'http 403' in stderr or 'gh auth login' in stderr:
+            category = 'access-denied'
+        elif any(value in stderr for value in ('http 500', 'http 502', 'http 503', 'http 504')):
+            category = 'github-unavailable'
+        elif any(value in stderr for value in ('timeout', 'timed out', 'could not resolve', 'no such host', 'connection', 'tls handshake', 'error connecting')):
+            category = 'network-error'
+        raise ObservationError(stage, category)
+    return result
+
+
+def api(path):
+    stage = 'release-list' if '/workflows/' in path else 'artifact-list' if '/artifacts?' in path else 'job-list'
+    result = github_request(['gh', 'api', 'repos/'+REPO+path, '--paginate', '--slurp'], stage, text=True)
+    try:
+        return json.loads(result.stdout)
+    except ValueError:
+        raise ObservationError(stage, 'invalid-json') from None
 
 def safe_text(text):
     text = str(text).split('\n')[0]
@@ -97,9 +131,9 @@ def events_from_github(state):
                     artifact_id = current_artifact['id']
                     if type(artifact_id) is not int or artifact_id <= 0:
                         raise RuntimeError('Invalid artifact identity')
-                    downloaded = subprocess.run(
+                    downloaded = github_request(
                         ['gh', 'api', 'repos/'+REPO+'/actions/artifacts/'+str(artifact_id)+'/zip'],
-                        capture_output=True, timeout=90,
+                        'artifact-download',
                     )
                     if downloaded.returncode != 0:
                         raise RuntimeError('Production artifact unavailable')
@@ -220,20 +254,23 @@ def main():
                 events, count = events_from_github(state)
             next_state, notifications = evaluate(state, events)
             next_state['observerError'] = None
+            next_state.pop('observerDiagnostic', None)
             next_state['lastCheckedAt'] = datetime.now(timezone.utc).isoformat()
             next_state['lastAudit'] = {'releaseRunsRead': count, 'newOrUpdatedRuns': len(events), 'newProductionFailures': len(notifications)}
             write_state(state_path, next_state)
             print(json.dumps({'decision': 'NOTIFY' if notifications else 'DONT_NOTIFY', 'notifications': notifications, 'audit': next_state['lastAudit']}))
-        except (RuntimeError, OSError, ValueError, KeyError, TypeError, AttributeError, subprocess.TimeoutExpired):
+        except (RuntimeError, OSError, ValueError, KeyError, TypeError, AttributeError, subprocess.TimeoutExpired) as error:
             message = 'GitHub observation could not be completed; production failure is not established.'
             new = state.get('observerError') != message
             state['observerError'] = message
+            diagnostic = error.diagnostic if isinstance(error, ObservationError) else {'stage': 'observation', 'category': 'invalid-data-or-storage'}
+            state['observerDiagnostic'] = diagnostic
             try:
                 write_state(state_path, state)
             except OSError:
                 message = 'Observer state could not be saved; deduplication unavailable; production failure is not established.'
                 new = True
-            print(json.dumps({'decision': 'NOTIFY' if new else 'DONT_NOTIFY', 'observerError': message}))
+            print(json.dumps({'decision': 'NOTIFY' if new else 'DONT_NOTIFY', 'observerError': message, 'observerDiagnostic': diagnostic}))
 
 
 def cli():

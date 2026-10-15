@@ -41,6 +41,46 @@ def event(**changes):
 
 
 class Decisions(unittest.TestCase):
+    def test_github_diagnostics_are_fixed_labels_without_stderr(self):
+        for stderr, category in [
+            ('HTTP 503 private diagnostic', 'github-unavailable'),
+            ('HTTP 403 rate limit exceeded private diagnostic', 'rate-limited'),
+            ('HTTP 401 private diagnostic', 'access-denied'),
+            ('error connecting: TLS handshake timeout private diagnostic', 'network-error'),
+            ('private diagnostic', 'request-failed'),
+        ]:
+            with patch.object(m.subprocess, 'run', return_value=subprocess.CompletedProcess([], 1, '', stderr)):
+                with self.assertRaises(m.ObservationError) as caught:
+                    m.api('/actions/workflows/release.yml/runs')
+            self.assertEqual(caught.exception.diagnostic, {'stage': 'release-list', 'category': category})
+            self.assertNotIn('private diagnostic', str(caught.exception))
+        with patch.object(m.subprocess, 'run', side_effect=subprocess.TimeoutExpired(['gh', 'private'], 90)):
+            with self.assertRaises(m.ObservationError) as caught:
+                m.api('/actions/runs/42/jobs')
+        self.assertEqual(caught.exception.diagnostic, {'stage': 'job-list', 'category': 'timeout'})
+
+    def test_diagnostic_preserves_existing_dedup_and_clears_on_silent_recovery(self):
+        original, _ = m.evaluate(baseline(), [event()])
+        original['observerError'] = 'GitHub observation could not be completed; production failure is not established.'
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / 'state.json'
+            target.write_text(json.dumps(original))
+            for failure in [True, False]:
+                output = io.StringIO()
+                adapter = patch.object(m, 'events_from_github', side_effect=m.ObservationError('release-list', 'network-error')) if failure else patch.object(m, 'events_from_github', return_value=([], 139))
+                with patch.object(m, 'STATE', target), adapter, patch.object(sys, 'argv', [str(SCRIPT)]), patch.object(sys, 'stdout', output):
+                    m.main()
+                result = json.loads(output.getvalue())
+                self.assertEqual(result['decision'], 'DONT_NOTIFY')
+                saved = json.loads(target.read_text())
+                for key in ['processedAttempts', 'notifiedFailures', 'startedAt']:
+                    self.assertEqual(saved[key], original[key])
+                if failure:
+                    self.assertEqual(saved['observerDiagnostic'], {'stage': 'release-list', 'category': 'network-error'})
+                else:
+                    self.assertNotIn('observerDiagnostic', saved)
+                    self.assertIsNone(saved['observerError'])
+
     def test_failure_explains_scenario_once(self):
         state, notices = m.evaluate(baseline(), [event()])
         self.assertEqual(len(notices), 1)

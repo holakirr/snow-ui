@@ -83,7 +83,7 @@ jobs:
       # page outline (scripts/docs-pages.test.ts); the workflows
       # (scripts/workflows.test.ts), e.g. that the browser jobs below run in
       # visual/Dockerfile's Playwright image, of the locked Playwright.
-      - name: Unit tests (scripts)
+      - name: Unit tests (scripts and braces automation)
         run: bun run test:scripts
 
       # Builds icons, then ui (ui's type declarations import icons' dist), then

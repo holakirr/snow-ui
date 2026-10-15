@@ -1,0 +1,31 @@
+[
+  {
+    "test": true,
+    "runId": "TEST-PRODUCTION-001",
+    "attempt": 1,
+    "sha": "0000000000000000000000000000000000000000",
+    "url": "https://example.invalid/test-production-run",
+    "startedAt": "2026-10-14T12:00:00Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "steps": [
+      {
+        "name": "Verify deployed commits and run all production scenarios",
+        "conclusion": "failure",
+        "started_at": "2026-10-14T12:00:00Z"
+      }
+    ],
+    "reports": {
+      "docs": { "expected": 75, "unexpected": 0, "skipped": 0, "flaky": 0 },
+      "demo": { "expected": 32, "unexpected": 1, "skipped": 0, "flaky": 0 }
+    },
+    "failures": {
+      "demo": [
+        {
+          "title": "sign-in: empty form validation",
+          "message": "Expected a visible validation message; it was hidden."
+        }
+      ]
+    }
+  }
+]

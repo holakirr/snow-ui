@@ -345,3 +345,11 @@ exercise the demo form, not real authentication with another service.
 `bun run test`, and the Build Check scripts step. Tests use isolated state and
 mocked npm/GitHub responses; they never install packages or mutate GitHub.
 See [the automation runbook](docs/braces-security-automation.md) for live usage.
+
+### Production notification automation
+
+`bun run test:production-notifier` runs isolated Python standard-library tests for
+`scripts/production-notifier.py`. It is included in `test:scripts`, `test` and the
+Build Check scripts step. Tests mock GitHub and artifacts; no CI runs, real
+notifications or production requests are made. See
+[the runbook](docs/production-notification-automation.md) for live usage and state.

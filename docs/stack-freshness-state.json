@@ -4828,7 +4828,20 @@
         "manifest": "apps/demo/package.json",
         "lockfile": "bun.lock",
         "installed_next": "16.4.1",
-        "status": "local_patch_installed_production_pending"
+        "status": "local_patch_installed_production_pending",
+        "local_validation": {
+          "frozen_install": true,
+          "lint": true,
+          "typecheck": true,
+          "demo_typecheck": true,
+          "build_libraries_and_demo": true,
+          "package_unit": 1926,
+          "scripts": 114,
+          "storybook": 1683,
+          "dist": 35,
+          "size": true,
+          "demo_e2e": 33
+        }
       }
     }
   },
@@ -5670,7 +5683,7 @@
       "id": "next-security-20261014",
       "priority": "high",
       "status": "patched_locally_production_pending",
-      "summary": "Security-релиз опубликован: Next.js 16.4.1 / 15.5.28. В SnowUI установлен 16.4.0; High DoS Server Actions применима. Условия двух Critical в текущем коде не выявлены, sharp уже 0.35.5.",
+      "summary": "Next.js 16.4.1 установлен локально и закреплён в манифесте/lockfile; содержит исправления двух Critical и одной High. Локальные проверки прошли, production ожидает слияния PR.",
       "action": "Дождаться независимого ревью и зелёного CI, слить PR и подтвердить production-прогон обновлённого демо.",
       "source": "https://nextjs.org/blog/upcoming-nextjs-security-update-october-2026",
       "first_seen": "2026-10-13",

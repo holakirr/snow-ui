@@ -4683,7 +4683,154 @@
         }
       }
     },
-    "known_advisory_package_count": 1
+    "known_advisory_package_count": 1,
+    "nextjs_october_2026": {
+      "checked_at": "2026-10-14T21:04:28.198871+00:00",
+      "checked_date_moscow": "2026-10-15T00:04:28.198871+03:00",
+      "revision": "a463ff36b7ba5c6d89a8269a9f6e093705fa6a68",
+      "scope": "Targeted read-only Next.js advisory and package check; only report files updated. Not a full stack audit.",
+      "release_status": "published",
+      "npm_latest": "16.4.1",
+      "patched_version": "16.4.1",
+      "patched_published_at": "2026-10-14T17:43:55.246Z",
+      "backport_version": "15.5.28",
+      "backport_published_at": "2026-10-14T17:36:08.917Z",
+      "installed_next": "16.4.0",
+      "manifest_next": "16.4.0",
+      "locked_next": "16.4.0",
+      "locked_sharp": "0.35.5",
+      "installed_sharp": "0.35.5",
+      "local_platform": "darwin arm64",
+      "runtime_production_validation": "Not performed; no production probing, installation or deployment.",
+      "advisories": [
+        {
+          "ghsa_id": "GHSA-2464-fhr4-w9xw",
+          "cve_id": "CVE-2026-96889",
+          "summary": "Unauthenticated Remote Code Execution in Image Optimization API when SVG files are used",
+          "severity": "critical",
+          "published_at": "2026-10-14T17:46:48Z",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-2464-fhr4-w9xw",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "vulnerable_version_range": ">= 10.0.0  <= 15.5.27",
+              "patched_versions": "15.5.28",
+              "vulnerable_functions": []
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "vulnerable_version_range": "> 16.0.0 <= 16.4.0",
+              "patched_versions": "16.4.1",
+              "vulnerable_functions": []
+            }
+          ],
+          "status": "affected_version_upstream_workaround_present",
+          "applicability": "Next.js 16.4.0 входит в диапазон. В lockfile и node_modules sharp 0.35.5, что соответствует workaround upstream. SVG-логотипы используют unoptimized; dangerouslyAllowSVG=false, remotePatterns=[]; локально Darwin arm64. Риск glibc/Linux Image Optimization в фактической Vercel-среде отдельно не проверен.",
+          "evidence": [
+            "bun.lock: sharp@0.35.5",
+            "node_modules/sharp/package.json: 0.35.5",
+            "Next resolves node_modules/sharp/dist/index.cjs",
+            "apps/demo/components/brand-logo.tsx",
+            "apps/demo/components/brand-wordmark.tsx",
+            "apps/demo/next.config.ts",
+            "apps/demo/.next/required-server-files.json: dangerouslyAllowSVG=false"
+          ],
+          "checked_at": "2026-10-14T21:04:28.198871+00:00",
+          "recommended_version": "16.4.1"
+        },
+        {
+          "ghsa_id": "GHSA-673q-mjm6-r5xr",
+          "cve_id": null,
+          "summary": "Unauthenticated Remote Code Execution in `use cache` functions returning typed arrays",
+          "severity": "critical",
+          "published_at": "2026-10-14T17:47:07Z",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-673q-mjm6-r5xr",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "vulnerable_version_range": ">=16.0.0 <= 16.4.0",
+              "patched_versions": "16.4.1",
+              "vulnerable_functions": []
+            }
+          ],
+          "status": "affected_version_required_features_absent",
+          "applicability": "Next.js 16.4.0 входит в диапазон, но cacheComponents=false в defaults установленного Next и существующем build manifest; use cache и возврат typed arrays в production-коде демо не найдены. Условия описанного RCE не выявлены. Upstream всё равно требует обновиться.",
+          "evidence": [
+            "apps/demo/next.config.ts",
+            "node_modules/next/dist/server/config-shared.js: cacheComponents=false",
+            "apps/demo/.next/required-server-files.json: cacheComponents=false",
+            "Search of apps/demo/app, components, lib: no use cache"
+          ],
+          "checked_at": "2026-10-14T21:04:28.198871+00:00",
+          "recommended_version": "16.4.1"
+        },
+        {
+          "ghsa_id": "GHSA-p3m5-59mp-jv5r",
+          "cve_id": null,
+          "summary": "Denial of Service in App Router using Server Actions",
+          "severity": "high",
+          "published_at": "2026-10-14T17:47:43Z",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-p3m5-59mp-jv5r",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "vulnerable_version_range": ">=13.0.0 <= 15.5.27",
+              "patched_versions": "15.5.28",
+              "vulnerable_functions": []
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "vulnerable_version_range": ">= 16.0.0 <= 16.4.0",
+              "patched_versions": "16.4.1",
+              "vulnerable_functions": []
+            }
+          ],
+          "status": "affected_configuration_update_required",
+          "applicability": "Подтверждена применимость по версии и конфигурации: App Router и Server Actions setLanguage/setDirection, используемые провайдером. Возможна чрезмерная загрузка CPU и блокирование запросов процесса. Эксплуатация не проверялась и не подтверждалась; upstream не предлагает workaround кроме обновления.",
+          "evidence": [
+            "apps/demo/app/actions.ts: use server, setLanguage, setDirection",
+            "apps/demo/app/providers.tsx: imports and calls both Server Actions",
+            "apps/demo/app/(app)/layout.tsx",
+            "apps/demo/package.json: next 16.4.0"
+          ],
+          "checked_at": "2026-10-14T21:04:28.198871+00:00",
+          "recommended_version": "16.4.1"
+        }
+      ],
+      "sources": [
+        "https://nextjs.org/blog/upcoming-nextjs-security-update-october-2026",
+        "https://github.com/vercel/next.js/releases/tag/v16.4.1",
+        "https://registry.npmjs.org/next",
+        "https://github.com/vercel/next.js/security/advisories/GHSA-2464-fhr4-w9xw",
+        "https://github.com/vercel/next.js/security/advisories/GHSA-673q-mjm6-r5xr",
+        "https://github.com/vercel/next.js/security/advisories/GHSA-p3m5-59mp-jv5r"
+      ],
+      "urgency": "Urgent update of demo to Next.js 16.4.1: High Server Actions DoS applies; current version remains unpatched.",
+      "exploitation_evidence": "No exploit attempts, compromise checks or confirmation of exploitation in this check.",
+      "remediation": {
+        "updated_at": "2026-10-15T09:55:30.219447+00:00",
+        "version": "16.4.1",
+        "manifest": "apps/demo/package.json",
+        "lockfile": "bun.lock",
+        "installed_next": "16.4.1",
+        "status": "local_patch_installed_production_pending"
+      }
+    }
   },
   "official_runtime_and_security": {
     "node_releases": {
@@ -5522,15 +5669,23 @@
     {
       "id": "next-security-20261014",
       "priority": "high",
-      "status": "awaiting_advisories",
-      "summary": "На 14 октября анонсированы исправления двух Critical и одной High уязвимости; применимость пока не раскрыта.",
-      "action": "Проверить официальные advisory и исправленную версию после публикации.",
+      "status": "patched_locally_production_pending",
+      "summary": "Security-релиз опубликован: Next.js 16.4.1 / 15.5.28. В SnowUI установлен 16.4.0; High DoS Server Actions применима. Условия двух Critical в текущем коде не выявлены, sharp уже 0.35.5.",
+      "action": "Дождаться независимого ревью и зелёного CI, слить PR и подтвердить production-прогон обновлённого демо.",
       "source": "https://nextjs.org/blog/upcoming-nextjs-security-update-october-2026",
       "first_seen": "2026-10-13",
-      "last_seen": "2026-10-13",
-      "last_reported": "2026-10-13",
+      "last_seen": "2026-10-15",
+      "last_reported": "2026-10-15",
       "automation_id": "snowui-security-next-js-14",
-      "scheduled": "2026-10-14T21:00:00+03:00"
+      "scheduled": "2026-10-14T21:00:00+03:00",
+      "checked_at": "2026-10-14T21:04:28.198871+00:00",
+      "automation_status": "one_shot_completed_deleted",
+      "advisory_ids": [
+        "GHSA-2464-fhr4-w9xw",
+        "GHSA-673q-mjm6-r5xr",
+        "GHSA-p3m5-59mp-jv5r"
+      ],
+      "resolution": "Next.js 16.4.1 закреплён в манифесте и bun.lock, локальная установка синхронизирована. CI, слияние и production-проверка выполняются в рамках обновления."
     },
     {
       "id": "braces-GHSA-vfj7-8cjw-p6xm",
@@ -5617,6 +5772,54 @@
       "last_reported": "2026-10-13",
       "resolved_at": "2026-10-13T16:39:48.845603+00:00",
       "resolution": "Все 9 GitHub Actions закреплены на SHA последних стабильных тегов."
+    },
+    {
+      "id": "next-GHSA-2464-fhr4-w9xw",
+      "first_seen": "2026-10-15",
+      "priority": "high",
+      "severity": "critical",
+      "status": "patched_locally_production_pending",
+      "summary": "Next.js 16.4.0 входит в диапазон. В lockfile и node_modules sharp 0.35.5, что соответствует workaround upstream. SVG-логотипы используют unoptimized; dangerouslyAllowSVG=false, remotePatterns=[]; локально Darwin arm64. Риск glibc/Linux Image Optimization в фактической Vercel-среде отдельно не проверен.",
+      "source": "https://github.com/vercel/next.js/security/advisories/GHSA-2464-fhr4-w9xw",
+      "affected_ranges": [">= 10.0.0  <= 15.5.27", "> 16.0.0 <= 16.4.0"],
+      "patched_versions": ["15.5.28", "16.4.1"],
+      "recommended_version": "16.4.1",
+      "last_seen": "2026-10-15",
+      "last_reported": "2026-10-15",
+      "resolution": "Next.js 16.4.1 закреплён в манифесте и bun.lock, локальная установка синхронизирована. CI, слияние и production-проверка выполняются в рамках обновления.",
+      "action": "Дождаться независимого ревью и зелёного CI, слить PR и подтвердить production-прогон обновлённого демо."
+    },
+    {
+      "id": "next-GHSA-673q-mjm6-r5xr",
+      "first_seen": "2026-10-15",
+      "priority": "high",
+      "severity": "critical",
+      "status": "patched_locally_production_pending",
+      "summary": "Next.js 16.4.0 входит в диапазон, но cacheComponents=false в defaults установленного Next и существующем build manifest; use cache и возврат typed arrays в production-коде демо не найдены. Условия описанного RCE не выявлены. Upstream всё равно требует обновиться.",
+      "source": "https://github.com/vercel/next.js/security/advisories/GHSA-673q-mjm6-r5xr",
+      "affected_ranges": [">=16.0.0 <= 16.4.0"],
+      "patched_versions": ["16.4.1"],
+      "recommended_version": "16.4.1",
+      "last_seen": "2026-10-15",
+      "last_reported": "2026-10-15",
+      "resolution": "Next.js 16.4.1 закреплён в манифесте и bun.lock, локальная установка синхронизирована. CI, слияние и production-проверка выполняются в рамках обновления.",
+      "action": "Дождаться независимого ревью и зелёного CI, слить PR и подтвердить production-прогон обновлённого демо."
+    },
+    {
+      "id": "next-GHSA-p3m5-59mp-jv5r",
+      "first_seen": "2026-10-15",
+      "priority": "high",
+      "severity": "high",
+      "status": "patched_locally_production_pending",
+      "summary": "Подтверждена применимость по версии и конфигурации: App Router и Server Actions setLanguage/setDirection, используемые провайдером. Возможна чрезмерная загрузка CPU и блокирование запросов процесса. Эксплуатация не проверялась и не подтверждалась; upstream не предлагает workaround кроме обновления.",
+      "source": "https://github.com/vercel/next.js/security/advisories/GHSA-p3m5-59mp-jv5r",
+      "affected_ranges": [">=13.0.0 <= 15.5.27", ">= 16.0.0 <= 16.4.0"],
+      "patched_versions": ["15.5.28", "16.4.1"],
+      "recommended_version": "16.4.1",
+      "last_seen": "2026-10-15",
+      "last_reported": "2026-10-15",
+      "resolution": "Next.js 16.4.1 закреплён в манифесте и bun.lock, локальная установка синхронизирована. CI, слияние и production-проверка выполняются в рамках обновления.",
+      "action": "Дождаться независимого ревью и зелёного CI, слить PR и подтвердить production-прогон обновлённого демо."
     }
   ],
   "limitations": [
@@ -5759,6 +5962,20 @@
         },
         "ci_bun_install": "npm ci passed; binary 1.4.3"
       }
+    },
+    {
+      "date": "2026-10-15",
+      "checked_at": "2026-10-14T21:04:28.198871+00:00",
+      "kind": "nextjs_october_security_check",
+      "finding_ids": [
+        "next-security-20261014",
+        "next-GHSA-2464-fhr4-w9xw",
+        "next-GHSA-673q-mjm6-r5xr",
+        "next-GHSA-p3m5-59mp-jv5r"
+      ],
+      "result": "published_update_required",
+      "installed": "16.4.0",
+      "recommended": "16.4.1"
     }
   ],
   "working_tree_changes": true,
@@ -5966,5 +6183,6 @@
       "peer_issues": []
     },
     "ci_bun_install": "npm ci passed; binary 1.4.3"
-  }
+  },
+  "last_targeted_security_check_at": "2026-10-14T21:04:28.198871+00:00"
 }

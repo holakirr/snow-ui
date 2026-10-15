@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Read-only release production observer; durable notification deduplication."""
-import argparse, copy, fcntl, hashlib, json, os, re, subprocess, tempfile
+import argparse, copy, fcntl, hashlib, io, json, os, re, subprocess, tempfile, zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -39,6 +39,37 @@ def report_failures(data):
     visit(data)
     return found[:3]
 
+def reports_from_zip(payload):
+    # Read only bounded JSON members; never extract files or execute artifact data.
+    if len(payload) > 20 * 1024 * 1024:
+        raise RuntimeError('Production artifact too large')
+    reports = {}
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+            members = archive.infolist()
+            if len(members) > 128:
+                raise RuntimeError('Too many artifact members')
+            for member in members:
+                path = Path(member.filename)
+                if path.name not in ('docs.json', 'demo.json') or member.is_dir():
+                    continue
+                if path.is_absolute() or '..' in path.parts or '\\' in member.filename:
+                    raise RuntimeError('Unsafe report member')
+                if (member.external_attr >> 16) & 0o170000 == 0o120000:
+                    raise RuntimeError('Report symlink forbidden')
+                name = path.stem
+                if name in reports or member.file_size > 2 * 1024 * 1024:
+                    raise RuntimeError('Duplicate or oversized report')
+                with archive.open(member) as source:
+                    data = source.read(2 * 1024 * 1024 + 1)
+                if len(data) > 2 * 1024 * 1024:
+                    raise RuntimeError('Oversized report')
+                reports[name] = json.loads(data)
+    except (zipfile.BadZipFile, ValueError, OSError) as error:
+        raise RuntimeError('Unreadable production artifact') from error
+    return reports
+
+
 def events_from_github(state):
     runs = [run for page in api('/actions/workflows/release.yml/runs?branch=main&per_page=100') for run in page['workflow_runs']]
     events = []
@@ -57,28 +88,32 @@ def events_from_github(state):
                 # Reports are data only, never executable; no raw logs returned.
                 try:
                     artifacts = [artifact for page in api('/actions/runs/'+str(run['id'])+'/artifacts?per_page=100') for artifact in page['artifacts']]
-                    current_artifact = any(artifact['name'] == 'production-results' and not artifact.get('expired') and job.get('started_at') and artifact.get('created_at', '') >= job['started_at'] for artifact in artifacts)
+                    current_artifact = max(
+                        (artifact for artifact in artifacts if artifact['name'] == 'production-results'
+                         and not artifact.get('expired') and job.get('started_at')
+                         and artifact.get('created_at', '') >= job['started_at']),
+                        key=lambda artifact: artifact['created_at'], default=None,
+                    )
                 except RuntimeError:
-                    current_artifact = False
-                with tempfile.TemporaryDirectory(prefix='snowui-notifier-') as directory:
-                    downloaded = subprocess.run(['gh', 'run', 'download', str(run['id']), '--repo', REPO, '--name', 'production-results', '--dir', directory], capture_output=True, timeout=90) if current_artifact else None
-                    if current_artifact and downloaded is not None and downloaded.returncode == 0:
-                        for name in ('docs', 'demo'):
-                            files = list(Path(directory).rglob(name+'.json'))
-                            if files:
-                                try:
-                                    data = json.loads(files[0].read_text())
-                                    if not isinstance(data, dict) or not isinstance(data.get('stats', {}), dict):
-                                        raise RuntimeError('Invalid production report structure')
-                                    for counter in ('expected', 'unexpected', 'skipped', 'flaky'):
-                                        value = data.get('stats', {}).get(counter, 0)
-                                        if type(value) is not int or value < 0:
-                                            raise RuntimeError('Invalid production report counter')
-                                    # Avoid reporting any raw error content or credential data.
-                                    event['reports'][name] = data.get('stats', {})
-                                    event.setdefault('failures', {})[name] = report_failures(data)
-                                except (ValueError, OSError):
-                                    pass
+                    current_artifact = None
+                if current_artifact:
+                    artifact_id = current_artifact['id']
+                    if type(artifact_id) is not int or artifact_id <= 0:
+                        raise RuntimeError('Invalid artifact identity')
+                    downloaded = subprocess.run(
+                        ['gh', 'api', 'repos/'+REPO+'/actions/artifacts/'+str(artifact_id)+'/zip'],
+                        capture_output=True, timeout=90,
+                    )
+                    if downloaded.returncode == 0:
+                        for name, data in reports_from_zip(downloaded.stdout).items():
+                            if not isinstance(data, dict) or not isinstance(data.get('stats', {}), dict):
+                                raise RuntimeError('Invalid production report structure')
+                            for counter in ('expected', 'unexpected', 'skipped', 'flaky'):
+                                value = data.get('stats', {}).get(counter, 0)
+                                if type(value) is not int or value < 0:
+                                    raise RuntimeError('Invalid production report counter')
+                            event['reports'][name] = data.get('stats', {})
+                            event.setdefault('failures', {})[name] = report_failures(data)
             events.append(event)
     return events, len(runs)
 

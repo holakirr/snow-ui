@@ -23,6 +23,9 @@ error. Cancellation before any step starts stays silent.
 
 For failures the observer inspects failed steps and sanitized `production-results`
 JSON from the current attempt (artifact timestamp must not precede job start).
+The newest eligible artifact is downloaded by its exact ID, not by name. Only
+bounded docs/demo JSON members are read from ZIP in memory; files are never
+extracted. Duplicate, traversal, symlink and oversized report members are rejected.
 Report statistics retain unexpected failures, skips and flaky results; at most
 three scenario titles and first-line errors are emitted. Credentials are redacted
 before truncation, sensitive headers are suppressed, and raw workflow logs are

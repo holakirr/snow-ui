@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
@@ -20,6 +21,13 @@ m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 FIXTURE = Path(__file__).parent / 'fixtures' / 'production-notifier-failure.json'
 FAILURE = json.loads(FIXTURE.read_text())[0]
+
+
+def archive_bytes(data, filename='demo.json'):
+    output=io.BytesIO()
+    with zipfile.ZipFile(output,'w') as archive:
+        archive.writestr(filename,json.dumps(data))
+    return output.getvalue()
 
 
 def baseline():
@@ -153,7 +161,7 @@ class Decisions(unittest.TestCase):
         run={'id':42,'head_sha':'1'*40,'html_url':'https://example.invalid/run','status':'completed','updated_at':'2026-10-15T00:00:00Z','run_started_at':'2026-10-15T00:00:00Z','run_attempt':2}
         def api(path):
             if '/workflows/' in path:return [{'workflow_runs':[run]}]
-            if '/artifacts' in path:return [{'artifacts':[{'name':'production-results','expired':False,'created_at':'2026-10-14T00:00:00Z'}]}]
+            if '/artifacts' in path:return [{'artifacts':[{'id':2,'name':'production-results','expired':False,'created_at':'2026-10-14T00:00:00Z'}]}]
             return [{'jobs':[{'name':'production','status':'completed','conclusion':'failure','steps':[],'started_at':'2026-10-15T00:00:00Z'}]}]
         with patch.object(m,'api',side_effect=api),patch.object(m.subprocess,'run') as download:
             events,_=m.events_from_github(baseline())
@@ -164,12 +172,11 @@ class Decisions(unittest.TestCase):
         run={'id':42,'head_sha':'1'*40,'html_url':'https://example.invalid/run','status':'completed','updated_at':'2026-10-15T00:00:00Z','run_started_at':'2026-10-15T00:00:00Z','run_attempt':2}
         def api(path):
             if '/workflows/' in path:return [{'workflow_runs':[run]}]
-            if '/artifacts' in path:return [{'artifacts':[{'name':'production-results','expired':False,'created_at':'2026-10-15T00:01:00Z'}]}]
+            if '/artifacts' in path:return [{'artifacts':[{'id':1,'name':'production-results','expired':False,'created_at':'2026-10-14T00:00:00Z'}, {'id':2,'name':'production-results','expired':False,'created_at':'2026-10-15T00:01:00Z'}]}]
             return [{'jobs':[{'name':'production','status':'completed','conclusion':'failure','steps':[],'started_at':'2026-10-15T00:00:00Z'}]}]
         def download(args,**kwargs):
-            self.assertEqual(args[:3],['gh','run','download'])
-            target=Path(args[args.index('--dir')+1]);(target/'demo.json').write_text(json.dumps({'stats':{'unexpected':1},'specs':[]}))
-            return subprocess.CompletedProcess(args,0,b'',b'')
+            self.assertEqual(args,['gh','api','repos/holakirr/snow-ui/actions/artifacts/2/zip'])
+            return subprocess.CompletedProcess(args,0,archive_bytes({'stats':{'unexpected':1},'specs':[]}),b'')
         with patch.object(m,'api',side_effect=api),patch.object(m.subprocess,'run',side_effect=download):
             events,_=m.events_from_github(baseline())
         self.assertEqual(events[0]['reports']['demo']['unexpected'],1)
@@ -178,15 +185,13 @@ class Decisions(unittest.TestCase):
         run={'id':42,'head_sha':'1'*40,'html_url':'https://example.invalid/run','status':'completed','updated_at':'2026-10-15T00:00:00Z','run_started_at':'2026-10-15T00:00:00Z','run_attempt':2}
         def api(path):
             if '/workflows/' in path:return [{'workflow_runs':[run]}]
-            if '/artifacts' in path:return [{'artifacts':[{'name':'production-results','expired':False,'created_at':'2026-10-15T00:01:00Z'}]}]
+            if '/artifacts' in path:return [{'artifacts':[{'id':1,'name':'production-results','expired':False,'created_at':'2026-10-14T00:00:00Z'}, {'id':2,'name':'production-results','expired':False,'created_at':'2026-10-15T00:01:00Z'}]}]
             return [{'jobs':[{'name':'production','status':'completed','conclusion':'failure','steps':[],'started_at':'2026-10-15T00:00:00Z'}]}]
         for malformed in [[], {'stats': []}, {'stats': {'unexpected': 'secret'}}, {'stats': {'unexpected': -1}}, {'stats': {}, 'specs': [None]}]:
             with self.subTest(data=malformed), tempfile.TemporaryDirectory() as directory:
                 target=Path(directory)/'state.json'
                 def download(args, **kwargs):
-                    destination=Path(args[args.index('--dir')+1])
-                    (destination/'demo.json').write_text(json.dumps(malformed))
-                    return subprocess.CompletedProcess(args,0,b'',b'')
+                    return subprocess.CompletedProcess(args,0,archive_bytes(malformed),b'')
                 decisions=[]
                 for _ in range(2):
                     output=io.StringIO()
@@ -197,6 +202,19 @@ class Decisions(unittest.TestCase):
                     self.assertNotIn('secret',output.getvalue())
                     decisions.append(result['decision'])
                 self.assertEqual(decisions,['NOTIFY','DONT_NOTIFY'])
+
+    def test_archive_limits_and_no_extraction(self):
+        for payload in [b'not a zip', archive_bytes({}, '../demo.json'), archive_bytes({}, '/demo.json')]:
+            with self.subTest(payload=payload[:10]), self.assertRaises(RuntimeError):
+                m.reports_from_zip(payload)
+        output=io.BytesIO()
+        with zipfile.ZipFile(output,'w') as archive:
+            archive.writestr('demo.json','{}')
+            archive.writestr('nested/demo.json','{}')
+        with self.assertRaises(RuntimeError): m.reports_from_zip(output.getvalue())
+        with self.assertRaises(RuntimeError): m.reports_from_zip(archive_bytes('x'*(2*1024*1024)))
+        # Unrelated artifact members are ignored, including logs and executable text.
+        self.assertEqual(m.reports_from_zip(archive_bytes('do not execute', 'raw.log')), {})
 
     def test_fixture_cannot_target_real_state_from_other_cwd(self):
         for suffix in [[],['--state',str(m.STATE)]]:

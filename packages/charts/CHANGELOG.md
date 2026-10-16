@@ -1,5 +1,11 @@
 # @holakirr/snow-ui-charts
 
+## 0.2.3
+
+### Patch Changes
+
+- [#248](https://github.com/holakirr/snow-ui/pull/248) [`4407631`](https://github.com/holakirr/snow-ui/commit/4407631a3084fa298f14e9ae63cb89ece17ea683) Thanks [@holakirr](https://github.com/holakirr)! - Update the React Is runtime dependency to the stable React 19.3.1 patch.
+
 ## 0.2.2
 
 ### Patch Changes

@@ -5902,6 +5902,172 @@
       "production_run": "https://github.com/holakirr/snow-ui/actions/runs/38718849274",
       "merge_commit": "cecd2d43e04323c2e655660566b49dcf5d6a11b3",
       "applicability_at_audit": "Подтверждена применимость по версии и конфигурации: App Router и Server Actions setLanguage/setDirection, используемые провайдером. Возможна чрезмерная загрузка CPU и блокирование запросов процесса. Эксплуатация не проверялась и не подтверждалась; upstream не предлагает workaround кроме обновления."
+    },
+    {
+      "id": "scorecard-BranchProtectionID",
+      "first_seen": "2026-10-16",
+      "first_seen_note": "Дата включения в этот реестр; alert GitHub существовал ранее.",
+      "last_seen": "2026-10-16",
+      "checked_at": "2026-10-16T09:55:04.222616+00:00",
+      "priority": "high",
+      "severity": "high",
+      "status": "open_requires_policy_decision",
+      "category": "security_practice",
+      "summary": "Scorecard: защита main и release не соответствует максимальным требованиям проверки.",
+      "cause": "На main required_approving_review_count=0, require_code_owner_review=false и require_last_push_approval=false. Ruleset release содержит deletion и non_fast_forward, но не pull_request или required_status_checks.",
+      "blocker": "Нужно отдельное решение о политике одобрений и продвижении release. Пользователь запретил менять настройки защиты в этой задаче. Штатный release workflow проверяется отдельно; предупреждение не доказывает отсутствие всех проверок релиза.",
+      "action": "После согласования применить подходящие правила и подтвердить результат новым Scorecard-анализом; не ослаблять существующие CI и CodeQL.",
+      "source": "https://github.com/holakirr/snow-ui/security/code-scanning/3",
+      "alert_number": 3,
+      "tool": "Scorecard",
+      "rule_id": "BranchProtectionID",
+      "analysis_commit": "0ebf9985a5b720c1b4739306e12d605c63a4471d",
+      "evidence": {
+        "scorecard_score": 3,
+        "main_required_approvals": 0,
+        "main_code_owner_review": false,
+        "main_last_push_approval": false,
+        "main_pr_and_ci_required": true,
+        "release_rules": ["deletion", "non_fast_forward"]
+      },
+      "monitoring": {
+        "workflow": ".github/workflows/scorecard.yml",
+        "triggers": [
+          "push to main",
+          "branch_protection_rule",
+          "weekly Monday 05:27 UTC / 08:27 MSK"
+        ],
+        "destination": "GitHub Security / Code scanning",
+        "dedicated_remediation_automation": false,
+        "stack_review_automation": {
+          "id": "snowui",
+          "schedule": "Monday 10:00 MSK",
+          "mode": "read-only; report material changes"
+        }
+      },
+      "closure_criteria": "Согласованная политика реализована, повторный Scorecard подтверждает устранение причины; исторический alert закрыт по результату анализа."
+    },
+    {
+      "id": "scorecard-CodeReviewID",
+      "first_seen": "2026-10-16",
+      "first_seen_note": "Дата включения в этот реестр; alert GitHub существовал ранее.",
+      "last_seen": "2026-10-16",
+      "checked_at": "2026-10-16T09:55:04.222616+00:00",
+      "priority": "high",
+      "severity": "high",
+      "status": "open_requires_human_review",
+      "category": "security_practice",
+      "summary": "Scorecard: в проверенной выборке нет одобрений изменений, распознаваемых проверкой.",
+      "cause": "Последний Scorecard сообщил 0/13 approved changesets. Независимое ревью агентом перед merge проводится, но не является человеческим GitHub approval; правила main требуют 0 одобряющих ревью.",
+      "blocker": "Нужен рабочий процесс с доступным независимым человеком-ревьюером и реальными одобрениями. Запись результата агентского ревью в PR не устраняет эту причину.",
+      "action": "Согласовать человеческое ревью и, при отдельном разрешении, обязательность одобрений; проверить обновлённую выборку изменений и Scorecard.",
+      "source": "https://github.com/holakirr/snow-ui/security/code-scanning/5",
+      "alert_number": 5,
+      "tool": "Scorecard",
+      "rule_id": "CodeReviewID",
+      "analysis_commit": "0ebf9985a5b720c1b4739306e12d605c63a4471d",
+      "evidence": {
+        "scorecard_score": 0,
+        "approved_changesets": 0,
+        "sampled_changesets": 13,
+        "main_required_approvals": 0
+      },
+      "monitoring": {
+        "workflow": ".github/workflows/scorecard.yml",
+        "triggers": [
+          "push to main",
+          "branch_protection_rule",
+          "weekly Monday 05:27 UTC / 08:27 MSK"
+        ],
+        "destination": "GitHub Security / Code scanning",
+        "dedicated_remediation_automation": false,
+        "stack_review_automation": {
+          "id": "snowui",
+          "schedule": "Monday 10:00 MSK",
+          "mode": "read-only; report material changes"
+        }
+      },
+      "closure_criteria": "Новые изменения имеют реальные одобрения, распознаваемые Scorecard, и повторная проверка подтверждает устранение причины."
+    },
+    {
+      "id": "scorecard-FuzzingID",
+      "first_seen": "2026-10-16",
+      "first_seen_note": "Дата включения в этот реестр; alert GitHub существовал ранее.",
+      "last_seen": "2026-10-16",
+      "checked_at": "2026-10-16T09:55:04.222616+00:00",
+      "priority": "medium",
+      "severity": "medium",
+      "status": "open_requires_fuzzing_integration",
+      "category": "security_practice",
+      "summary": "Scorecard: интеграция fuzz-тестирования не обнаружена.",
+      "cause": "Последний Scorecard: project is not fuzzed; no fuzzer integrations found.",
+      "blocker": "Не выбраны цели, модель входных данных и интеграция fuzz-тестов. Обычные unit-, E2E- и визуальные тесты не заменяют fuzzing.",
+      "action": "Определить подходящие цели, внедрить и выполнить fuzz-тестирование; подтвердить, что интеграцию распознаёт Scorecard.",
+      "source": "https://github.com/holakirr/snow-ui/security/code-scanning/4",
+      "alert_number": 4,
+      "tool": "Scorecard",
+      "rule_id": "FuzzingID",
+      "analysis_commit": "0ebf9985a5b720c1b4739306e12d605c63a4471d",
+      "evidence": {
+        "scorecard_score": 0,
+        "fuzzer_integrations_detected": false
+      },
+      "monitoring": {
+        "workflow": ".github/workflows/scorecard.yml",
+        "triggers": [
+          "push to main",
+          "branch_protection_rule",
+          "weekly Monday 05:27 UTC / 08:27 MSK"
+        ],
+        "destination": "GitHub Security / Code scanning",
+        "dedicated_remediation_automation": false,
+        "stack_review_automation": {
+          "id": "snowui",
+          "schedule": "Monday 10:00 MSK",
+          "mode": "read-only; report material changes"
+        }
+      },
+      "closure_criteria": "Работающая интеграция и её результаты подтверждены; повторный Scorecard обнаруживает fuzzing."
+    },
+    {
+      "id": "scorecard-CIIBestPracticesID",
+      "first_seen": "2026-10-16",
+      "first_seen_note": "Дата включения в этот реестр; alert GitHub существовал ранее.",
+      "last_seen": "2026-10-16",
+      "checked_at": "2026-10-16T09:55:04.222616+00:00",
+      "priority": "low",
+      "severity": "low",
+      "status": "open_requires_best_practices_badge",
+      "category": "security_practice",
+      "summary": "Scorecard: OpenSSF Best Practices Badge не обнаружен.",
+      "cause": "Последний Scorecard: no effort to earn an OpenSSF best practices badge detected.",
+      "blocker": "Нужно участие сопровождающего в программе OpenSSF, проверка критериев и подтверждение практик. Одной правки README недостаточно.",
+      "action": "Пройти применимые критерии программы, получить badge и проверить его обнаружение повторным Scorecard.",
+      "source": "https://github.com/holakirr/snow-ui/security/code-scanning/6",
+      "alert_number": 6,
+      "tool": "Scorecard",
+      "rule_id": "CIIBestPracticesID",
+      "analysis_commit": "0ebf9985a5b720c1b4739306e12d605c63a4471d",
+      "evidence": {
+        "scorecard_score": 0,
+        "badge_detected": false
+      },
+      "monitoring": {
+        "workflow": ".github/workflows/scorecard.yml",
+        "triggers": [
+          "push to main",
+          "branch_protection_rule",
+          "weekly Monday 05:27 UTC / 08:27 MSK"
+        ],
+        "destination": "GitHub Security / Code scanning",
+        "dedicated_remediation_automation": false,
+        "stack_review_automation": {
+          "id": "snowui",
+          "schedule": "Monday 10:00 MSK",
+          "mode": "read-only; report material changes"
+        }
+      },
+      "closure_criteria": "Badge получен и распознаётся Scorecard; повторный анализ подтверждает устранение причины."
     }
   ],
   "limitations": [
@@ -6286,5 +6452,6 @@
     "ci_bun_install": "npm ci passed; binary 1.4.3"
   },
   "last_targeted_security_check_at": "2026-10-14T21:04:28.198871+00:00",
-  "last_targeted_security_resolution_at": "2026-10-15T10:16:46Z"
+  "last_targeted_security_resolution_at": "2026-10-15T10:16:46Z",
+  "last_targeted_scorecard_check_at": "2026-10-16T09:55:04.222616+00:00"
 }

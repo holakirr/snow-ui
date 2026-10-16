@@ -119,7 +119,6 @@ const ChoiceRow = ({
     <DropdownMenuTrigger asChild>
       <button
         type="button"
-        aria-label={title}
         className="flex min-h-14 w-full items-center gap-4 rounded-16 px-3 py-2 text-start hover:bg-black-4 focus-ring"
       >
         <span className="min-w-0 flex-1">

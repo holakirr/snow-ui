@@ -333,84 +333,107 @@
       opacity: 0;
     }
   }
+  /* Popups move a short distance independent of their content size. Sheets
+   * opt into 100%. Individual translate/scale preserve positioned transforms
+   * (notably the stacked toasts) throughout the animation. */
   @keyframes slide-in-from-top {
     from {
-      transform: translateY(-100%);
+      opacity: 0;
+      translate: 0 calc(-1 * var(--snow-slide-distance, 6px));
     }
     to {
-      transform: translateY(0);
+      opacity: 1;
+      translate: 0 0;
     }
   }
   @keyframes slide-in-from-right {
     from {
-      transform: translateX(100%);
+      opacity: 0;
+      translate: var(--snow-slide-distance, 6px) 0;
     }
     to {
-      transform: translateX(0);
+      opacity: 1;
+      translate: 0 0;
     }
   }
   @keyframes slide-in-from-left {
     from {
-      transform: translateX(-100%);
+      opacity: 0;
+      translate: calc(-1 * var(--snow-slide-distance, 6px)) 0;
     }
     to {
-      transform: translateX(0);
+      opacity: 1;
+      translate: 0 0;
     }
   }
   @keyframes slide-in-from-bottom {
     from {
-      transform: translateY(100%);
+      opacity: 0;
+      translate: 0 var(--snow-slide-distance, 6px);
     }
     to {
-      transform: translateY(0);
+      opacity: 1;
+      translate: 0 0;
     }
   }
   @keyframes slide-out-to-top {
     from {
-      transform: translateY(0);
+      opacity: 1;
+      translate: 0 0;
     }
     to {
-      transform: translateY(-100%);
+      opacity: 0;
+      translate: 0 calc(-1 * var(--snow-slide-distance, 6px));
     }
   }
   @keyframes slide-out-to-right {
     from {
-      transform: translateX(0);
+      opacity: 1;
+      translate: 0 0;
     }
     to {
-      transform: translateX(100%);
+      opacity: 0;
+      translate: var(--snow-slide-distance, 6px) 0;
     }
   }
   @keyframes slide-out-to-left {
     from {
-      transform: translateX(0);
+      opacity: 1;
+      translate: 0 0;
     }
     to {
-      transform: translateX(-100%);
+      opacity: 0;
+      translate: calc(-1 * var(--snow-slide-distance, 6px)) 0;
     }
   }
   @keyframes slide-out-to-bottom {
     from {
-      transform: translateY(0);
+      opacity: 1;
+      translate: 0 0;
     }
     to {
-      transform: translateY(100%);
+      opacity: 0;
+      translate: 0 var(--snow-slide-distance, 6px);
     }
   }
   @keyframes zoom-in-95 {
     from {
-      transform: scale(0.95);
+      opacity: 0;
+      scale: 0.95;
     }
     to {
-      transform: scale(1);
+      opacity: 1;
+      scale: 1;
     }
   }
   @keyframes zoom-out-95 {
     from {
-      transform: scale(1);
+      opacity: 1;
+      scale: 1;
     }
     to {
-      transform: scale(0.95);
+      opacity: 0;
+      scale: 0.95;
     }
   }
   /*

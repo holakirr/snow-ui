@@ -99,6 +99,8 @@ The full table is in the package README.
 
 ## Controlled and uncontrolled
 
+`AccordionContent` animates an unpadded outer region. Its padding and `className` are applied to an inner wrapper, so opening starts at zero height and closing does not leave a padding-sized gap. Keep spacing customizations on `className` rather than adding padding through the outer region's `style`.
+
 `defaultValue` sets the open items once; `value` and `onValueChange` control them. With `type="single"` the value is a string (an item's `value`, or `''` for none); with `type="multiple"` it is an array of strings.
 
 ```tsx

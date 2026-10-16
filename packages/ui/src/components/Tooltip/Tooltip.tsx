@@ -27,7 +27,7 @@ const tooltipVariants = cva(
   [
     'z-50 flex min-h-6 items-center gap-1 overflow-hidden rounded-12 px-2 py-1 text-12 backdrop-blur-[10px]',
     'has-[[data-slot=tooltip-description]]:not-has-[[data-slot=tooltip-title]]:max-w-[169px] has-[[data-slot^=tooltip-]]:flex-col has-[[data-slot^=tooltip-]]:items-start has-[[data-slot=tooltip-title]]:w-[255px] has-[[data-slot=tooltip-title]]:max-w-[255px] has-[[data-slot=tooltip-title]]:gap-0 has-[[data-slot=tooltip-title]]:px-4 has-[[data-slot=tooltip-title]]:py-3',
-    'animate-in animate-zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:animate-zoom-out-95 data-[side=bottom]:animate-slide-in-from-top data-[side=left]:animate-slide-in-from-right data-[side=right]:animate-slide-in-from-left data-[side=top]:animate-slide-in-from-bottom',
+    'animate-in animate-zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:animate-zoom-out-95 data-[state=open]:data-[side=bottom]:animate-slide-in-from-top data-[state=open]:data-[side=left]:animate-slide-in-from-right data-[state=open]:data-[side=right]:animate-slide-in-from-left data-[state=open]:data-[side=top]:animate-slide-in-from-bottom',
   ],
   {
     variants: {

@@ -10,16 +10,17 @@ import { Typography } from '../Text'
 type AccordionContentProps = ComponentProps<typeof AccordionPrimitive.Content>
 
 const AccordionContent: FC<AccordionContentProps> = ({
+  children,
   className,
   ...props
 }) => (
   <AccordionPrimitive.Content
-    className={twMerge(
-      'p-4 pt-1 transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden',
-      className,
-    )}
+    className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
     {...props}
-  />
+  >
+    {/* Keep padding inside the animated height so both ends reach zero. */}
+    <div className={twMerge('p-4 pt-1', className)}>{children}</div>
+  </AccordionPrimitive.Content>
 )
 
 type AccordionTriggerProps = ComponentProps<typeof AccordionPrimitive.Trigger>

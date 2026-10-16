@@ -12,6 +12,7 @@ import { Typography } from '../Text'
 import {
   dialogMotionClasses,
   dialogOverlayClasses,
+  dialogOverlayMotionClasses,
   dialogPopupClasses,
   dialogPositionClasses,
 } from './styles'
@@ -29,7 +30,11 @@ const DialogOverlay: FC<ComponentProps<typeof DialogPrimitive.Overlay>> = ({
   ...props
 }) => (
   <DialogPrimitive.Overlay
-    className={twMerge(dialogOverlayClasses, dialogMotionClasses, className)}
+    className={twMerge(
+      dialogOverlayClasses,
+      dialogOverlayMotionClasses,
+      className,
+    )}
     {...props}
   />
 )

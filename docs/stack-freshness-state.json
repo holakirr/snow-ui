@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-10-13T16:39:48.845603+00:00",
-  "revision": "8992b3eeb7032f1d8f55e76a3fb47ddc16e6f9e9",
+  "checked_at": "2026-10-16T21:42:23.357539+00:00",
+  "revision": "bc5d0fc8c71da836a2a2e61e854aae3379b97240",
   "manifests": {
     "package.json": {
       "name": "snow-ui-monorepo",
@@ -17,7 +17,9 @@
         "build:demo": "bun run --filter @holakirr/snow-ui-demo build",
         "tokens": "bun run --filter @holakirr/snow-ui tokens",
         "test": "bun run --filter './packages/*' test && bun run test:scripts",
-        "test:scripts": "vitest run -c scripts/vitest.config.ts",
+        "test:scripts": "vitest run -c scripts/vitest.config.ts && bun run test:braces-security && bun run test:production-notifier",
+        "test:braces-security": "python3 -B scripts/tests/test_braces_security.py",
+        "test:production-notifier": "python3 -B scripts/tests/test_production_notifier.py",
         "test:dist": "bun run --filter @holakirr/snow-ui --filter @holakirr/snow-ui-charts test:dist",
         "test:storybook": "vitest run --project storybook --project storybook-dark --project storybook-prefs",
         "test:storybook:browsers": "vitest run -c vitest.browsers.config.ts",
@@ -51,8 +53,8 @@
         "@changesets/cli": "^3.0.3",
         "@changesets/pre": "^3.0.0",
         "@changesets/read": "^1.0.1",
-        "@figma/code-connect": "^2.0.1",
-        "@playwright/test": "1.64.0",
+        "@figma/code-connect": "^2.0.2",
+        "@playwright/test": "1.64.1",
         "@size-limit/esbuild": "^14.2.0",
         "@size-limit/file": "^14.2.0",
         "@storybook/addon-a11y": "^10.6.2",
@@ -65,10 +67,10 @@
         "@types/node": "^26.6.5",
         "@typescript/typescript6": "^6.0.2",
         "@vitejs/plugin-react": "^6.1.2",
-        "@vitest/browser-playwright": "^5.0.4",
-        "playwright": "1.64.0",
-        "react": "^19.3.0",
-        "react-dom": "^19.3.0",
+        "@vitest/browser-playwright": "^5.0.5",
+        "playwright": "1.64.1",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
         "remark-gfm": "^4.0.1",
         "size-limit": "^14.2.0",
         "storybook": "^10.6.2",
@@ -76,7 +78,7 @@
         "tailwindcss": "^4.3.3",
         "typescript": "^7.0.2",
         "vite": "^8.3.4",
-        "vitest": "^5.0.4"
+        "vitest": "^5.0.5"
       },
       "engines": {
         "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
@@ -92,7 +94,7 @@
     "packages/ui/package.json": {
       "name": "@holakirr/snow-ui",
       "private": false,
-      "version": "5.3.1",
+      "version": "5.3.2",
       "type": "module",
       "main": "./dist/index.cjs",
       "types": "./dist/index.d.cts",
@@ -208,8 +210,8 @@
         "@storybook/react-vite": "^10.6.2",
         "@tailwindcss/cli": "^4.3.3",
         "@tanstack/react-table": "^9.3.1",
-        "@terrazzo/cli": "^2.8.0",
-        "@terrazzo/parser": "^2.8.0",
+        "@terrazzo/cli": "^2.9.0",
+        "@terrazzo/parser": "^2.9.0",
         "@testing-library/jest-dom": "^7.0.1",
         "@testing-library/react": "^16.3.3",
         "@types/bun": "^1.4.3",
@@ -217,20 +219,20 @@
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.2",
-        "@vitest/coverage-v8": "^5.0.4",
-        "@vitest/ui": "^5.0.4",
+        "@vitest/coverage-v8": "^5.0.5",
+        "@vitest/ui": "^5.0.5",
         "better-commits": "^1.26.1",
-        "jsdom": "^30.1.2",
+        "jsdom": "^30.1.3",
         "publint": "^0.3.25",
-        "react": "^19.3.0",
-        "react-dom": "^19.3.0",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
         "react-hook-form": "^7.90.0",
         "storybook": "^10.6.2",
         "tailwindcss": "^4.3.3",
         "tsdown": "^0.23.1",
         "typescript": "^7.0.2",
         "vite": "^8.3.4",
-        "vitest": "^5.0.4",
+        "vitest": "^5.0.5",
         "zod": "^4.6.7"
       },
       "engines": {
@@ -243,7 +245,7 @@
     "packages/charts/package.json": {
       "name": "@holakirr/snow-ui-charts",
       "private": false,
-      "version": "0.2.1",
+      "version": "0.2.2",
       "type": "module",
       "main": "./dist/index.cjs",
       "types": "./dist/index.d.cts",
@@ -305,7 +307,7 @@
         "react-dom": "^19.0.0"
       },
       "dependencies": {
-        "react-is": "^19.3.0",
+        "react-is": "^19.3.1",
         "recharts": "^3.10.1"
       },
       "devDependencies": {
@@ -317,15 +319,15 @@
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.2",
-        "@vitest/coverage-v8": "^5.0.4",
-        "jsdom": "^30.1.2",
+        "@vitest/coverage-v8": "^5.0.5",
+        "jsdom": "^30.1.3",
         "publint": "^0.3.25",
-        "react": "^19.3.0",
-        "react-dom": "^19.3.0",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
         "tsdown": "^0.23.1",
         "typescript": "^7.0.2",
         "vite": "^8.3.4",
-        "vitest": "^5.0.4"
+        "vitest": "^5.0.5"
       },
       "engines": {
         "node": ">=18"
@@ -396,15 +398,15 @@
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.2",
-        "jsdom": "^30.1.2",
+        "jsdom": "^30.1.3",
         "publint": "^0.3.25",
-        "react": "^19.3.0",
-        "react-dom": "^19.3.0",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
         "storybook": "^10.6.2",
         "tsdown": "^0.23.1",
         "typescript": "^7.0.2",
         "vite": "^8.3.4",
-        "vitest": "^5.0.4"
+        "vitest": "^5.0.5"
       },
       "license": "MIT",
       "bugs": {
@@ -433,10 +435,10 @@
       },
       "devDependencies": {
         "@types/node": "^26.6.5",
-        "shadcn": "4.21.4",
+        "shadcn": "4.22.0",
         "ts-morph": "^28.0.0",
         "typescript": "^7.0.2",
-        "vitest": "^5.0.4"
+        "vitest": "^5.0.5"
       },
       "engines": {
         "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
@@ -462,15 +464,15 @@
         "@hookform/resolvers": "^5.9.1",
         "@phosphor-icons/react": "^2.1.10",
         "date-fns": "^4.4.0",
-        "next": "16.4.0",
-        "react": "^19.3.0",
-        "react-dom": "^19.3.0",
+        "next": "16.4.2",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
         "react-hook-form": "^7.90.0",
         "zod": "^4.6.7"
       },
       "devDependencies": {
-        "@axe-core/playwright": "^4.13.0",
-        "@playwright/test": "1.64.0",
+        "@axe-core/playwright": "^4.14.0",
+        "@playwright/test": "1.64.1",
         "@tailwindcss/postcss": "^4.3.3",
         "@types/node": "^26.6.5",
         "@types/react": "^19.3.0",
@@ -496,9 +498,9 @@
     "@alloc/quick-lru": ["5.3.0"],
     "@andrewbranch/untar.js": ["1.0.4"],
     "@arethetypeswrong/core": ["0.18.5"],
-    "@asamuzakjp/css-color": ["7.1.5", "3.2.0"],
-    "@asamuzakjp/dom-selector": ["9.2.4"],
-    "@axe-core/playwright": ["4.13.0"],
+    "@asamuzakjp/css-color": ["7.1.6", "3.2.0"],
+    "@asamuzakjp/dom-selector": ["10.0.3"],
+    "@axe-core/playwright": ["4.14.0"],
     "@babel/code-frame": ["7.29.7"],
     "@babel/compat-data": ["7.29.7"],
     "@babel/core": ["7.29.7"],
@@ -600,7 +602,7 @@
     "@esbuild/win32-ia32": ["0.28.2"],
     "@esbuild/win32-x64": ["0.28.2"],
     "@exodus/bytes": ["1.16.0"],
-    "@figma/code-connect": ["2.0.1"],
+    "@figma/code-connect": ["2.0.2"],
     "@figspec/components": ["2.1.0"],
     "@figspec/react": ["2.0.1"],
     "@floating-ui/core": ["1.8.0"],
@@ -610,7 +612,7 @@
     "@holakirr/snow-ui": ["workspace:packages/ui"],
     "@holakirr/snow-ui-charts": ["workspace:packages/charts"],
     "@holakirr/snow-ui-demo": ["workspace:apps/demo"],
-    "@holakirr/snow-ui-icons": ["workspace:packages/icons"],
+    "@holakirr/snow-ui-icons": ["2.2.2"],
     "@holakirr/snow-ui-registry": ["workspace:packages/registry"],
     "@hono/node-server": ["2.1.5"],
     "@hookform/resolvers": ["5.9.1"],
@@ -658,15 +660,15 @@
     "@mdx-js/react": ["3.1.1"],
     "@modelcontextprotocol/sdk": ["1.32.1"],
     "@napi-rs/wasm-runtime": ["1.2.5", "1.2.4"],
-    "@next/env": ["16.4.0"],
-    "@next/swc-darwin-arm64": ["16.4.0"],
-    "@next/swc-darwin-x64": ["16.4.0"],
-    "@next/swc-linux-arm64-gnu": ["16.4.0"],
-    "@next/swc-linux-arm64-musl": ["16.4.0"],
-    "@next/swc-linux-x64-gnu": ["16.4.0"],
-    "@next/swc-linux-x64-musl": ["16.4.0"],
-    "@next/swc-win32-arm64-msvc": ["16.4.0"],
-    "@next/swc-win32-x64-msvc": ["16.4.0"],
+    "@next/env": ["16.4.2"],
+    "@next/swc-darwin-arm64": ["16.4.2"],
+    "@next/swc-darwin-x64": ["16.4.2"],
+    "@next/swc-linux-arm64-gnu": ["16.4.2"],
+    "@next/swc-linux-arm64-musl": ["16.4.2"],
+    "@next/swc-linux-x64-gnu": ["16.4.2"],
+    "@next/swc-linux-x64-musl": ["16.4.2"],
+    "@next/swc-win32-arm64-msvc": ["16.4.2"],
+    "@next/swc-win32-x64-msvc": ["16.4.2"],
     "@nodelib/fs.scandir": ["2.1.5"],
     "@nodelib/fs.stat": ["2.0.5"],
     "@nodelib/fs.walk": ["1.2.8"],
@@ -690,7 +692,7 @@
     "@oxc-parser/binding-win32-arm64-msvc": ["0.127.0"],
     "@oxc-parser/binding-win32-ia32-msvc": ["0.127.0"],
     "@oxc-parser/binding-win32-x64-msvc": ["0.127.0"],
-    "@oxc-project/types": ["0.127.0", "0.153.0"],
+    "@oxc-project/types": ["0.127.0", "0.154.0"],
     "@oxc-resolver/binding-android-arm-eabi": ["11.21.2"],
     "@oxc-resolver/binding-android-arm64": ["11.21.2"],
     "@oxc-resolver/binding-darwin-arm64": ["11.21.2"],
@@ -725,7 +727,7 @@
     "@parcel/watcher-win32-ia32": ["2.5.1"],
     "@parcel/watcher-win32-x64": ["2.5.1"],
     "@phosphor-icons/react": ["2.1.10"],
-    "@playwright/test": ["1.64.0"],
+    "@playwright/test": ["1.64.1"],
     "@pnpm/deps.graph-sequencer": ["1100.0.1"],
     "@polka/url": ["1.0.0-next.29"],
     "@publint/pack": ["0.1.7"],
@@ -779,25 +781,25 @@
     "@radix-ui/react-visually-hidden": ["1.2.13"],
     "@radix-ui/rect": ["1.1.3"],
     "@reduxjs/toolkit": ["2.13.0"],
-    "@rolldown/binding-android-arm-eabi": ["1.2.13"],
-    "@rolldown/binding-android-arm64": ["1.2.13"],
-    "@rolldown/binding-darwin-arm64": ["1.2.13"],
-    "@rolldown/binding-darwin-x64": ["1.2.13"],
-    "@rolldown/binding-freebsd-x64": ["1.2.13"],
-    "@rolldown/binding-linux-arm-gnueabihf": ["1.2.13"],
-    "@rolldown/binding-linux-arm64-gnu": ["1.2.13"],
-    "@rolldown/binding-linux-arm64-musl": ["1.2.13"],
-    "@rolldown/binding-linux-ppc64-gnu": ["1.2.13"],
-    "@rolldown/binding-linux-s390x-gnu": ["1.2.13"],
-    "@rolldown/binding-linux-x64-gnu": ["1.2.13"],
-    "@rolldown/binding-linux-x64-musl": ["1.2.13"],
-    "@rolldown/binding-openharmony-arm64": ["1.2.13"],
-    "@rolldown/binding-win32-arm64-msvc": ["1.2.13"],
-    "@rolldown/binding-win32-x64-msvc": ["1.2.13"],
+    "@rolldown/binding-android-arm-eabi": ["1.2.14"],
+    "@rolldown/binding-android-arm64": ["1.2.14"],
+    "@rolldown/binding-darwin-arm64": ["1.2.14"],
+    "@rolldown/binding-darwin-x64": ["1.2.14"],
+    "@rolldown/binding-freebsd-x64": ["1.2.14"],
+    "@rolldown/binding-linux-arm-gnueabihf": ["1.2.14"],
+    "@rolldown/binding-linux-arm64-gnu": ["1.2.14"],
+    "@rolldown/binding-linux-arm64-musl": ["1.2.14"],
+    "@rolldown/binding-linux-ppc64-gnu": ["1.2.14"],
+    "@rolldown/binding-linux-s390x-gnu": ["1.2.14"],
+    "@rolldown/binding-linux-x64-gnu": ["1.2.14"],
+    "@rolldown/binding-linux-x64-musl": ["1.2.14"],
+    "@rolldown/binding-openharmony-arm64": ["1.2.14"],
+    "@rolldown/binding-win32-arm64-msvc": ["1.2.14"],
+    "@rolldown/binding-win32-x64-msvc": ["1.2.14"],
     "@rolldown/pluginutils": ["1.0.1"],
     "@rollup/pluginutils": ["5.4.0"],
     "@sec-ant/readable-stream": ["0.4.1"],
-    "@shadcn/registry": ["0.1.3"],
+    "@shadcn/registry": ["0.2.0"],
     "@sindresorhus/merge-streams": ["4.0.0"],
     "@size-limit/esbuild": ["14.2.0"],
     "@size-limit/file": ["14.2.0"],
@@ -811,7 +813,7 @@
     "@storybook/addon-vitest": ["10.6.2"],
     "@storybook/builder-vite": ["10.6.2"],
     "@storybook/global": ["5.0.0"],
-    "@storybook/icons": ["2.1.0"],
+    "@storybook/icons": ["2.2.0"],
     "@storybook/react": ["10.6.2"],
     "@storybook/react-dom-shim": ["10.6.2"],
     "@storybook/react-vite": ["10.6.2"],
@@ -837,11 +839,11 @@
     "@tanstack/react-table": ["9.3.1"],
     "@tanstack/store": ["0.11.2"],
     "@tanstack/table-core": ["9.3.1"],
-    "@terrazzo/cli": ["2.8.0"],
+    "@terrazzo/cli": ["2.9.0"],
     "@terrazzo/json-schema-tools": ["0.3.0"],
-    "@terrazzo/parser": ["2.8.0"],
-    "@terrazzo/token-tools": ["2.8.0"],
-    "@terrazzo/token-types": ["2.8.0"],
+    "@terrazzo/parser": ["2.9.0"],
+    "@terrazzo/token-tools": ["2.9.0"],
+    "@terrazzo/token-types": ["2.9.0"],
     "@testing-library/dom": ["10.4.2"],
     "@testing-library/jest-dom": ["7.0.1", "6.9.1"],
     "@testing-library/react": ["16.3.3"],
@@ -902,17 +904,17 @@
     "@typescript/typescript-win32-x64": ["7.0.2"],
     "@typescript/typescript6": ["6.0.2"],
     "@vitejs/plugin-react": ["6.1.2"],
-    "@vitest/browser": ["5.0.4"],
-    "@vitest/browser-playwright": ["5.0.4"],
-    "@vitest/coverage-v8": ["5.0.4"],
+    "@vitest/browser": ["5.0.5"],
+    "@vitest/browser-playwright": ["5.0.5"],
+    "@vitest/coverage-v8": ["5.0.5"],
     "@vitest/expect": ["3.2.4"],
     "@vitest/istanbul-lib-coverage": ["1.0.2"],
     "@vitest/istanbul-lib-report": ["1.0.2"],
-    "@vitest/mocker": ["5.0.4"],
-    "@vitest/pretty-format": ["5.0.4", "3.2.4"],
-    "@vitest/spy": ["3.2.4", "5.0.4"],
-    "@vitest/ui": ["5.0.4"],
-    "@vitest/utils": ["5.0.4", "3.2.4"],
+    "@vitest/mocker": ["5.0.5"],
+    "@vitest/pretty-format": ["5.0.5", "3.2.4"],
+    "@vitest/spy": ["3.2.4", "5.0.5"],
+    "@vitest/ui": ["5.0.5"],
+    "@vitest/utils": ["5.0.5", "3.2.4"],
     "@webcontainer/env": ["1.1.1"],
     "@yuku-core/binding-android-arm64": ["0.19.0"],
     "@yuku-core/binding-darwin-arm64": ["0.19.0"],
@@ -943,11 +945,11 @@
     "ast-v8-to-istanbul": ["1.0.7"],
     "asynckit": ["0.4.0"],
     "atomically": ["1.7.0"],
-    "axe-core": ["4.14.0", "4.13.0"],
+    "axe-core": ["4.14.0"],
     "bail": ["2.0.2"],
     "balanced-match": ["1.0.2", "4.0.4"],
     "base64-js": ["1.5.1"],
-    "baseline-browser-mapping": ["2.11.28"],
+    "baseline-browser-mapping": ["2.11.29"],
     "better-commits": ["1.26.1"],
     "bidi-js": ["1.1.0"],
     "bl": ["4.1.0"],
@@ -1043,7 +1045,7 @@
     "dts-resolver": ["3.0.0"],
     "dunder-proto": ["1.0.1"],
     "ee-first": ["1.1.1"],
-    "electron-to-chromium": ["1.5.453"],
+    "electron-to-chromium": ["1.5.458"],
     "emoji-regex": ["8.0.0", "10.6.0"],
     "empathic": ["2.1.0"],
     "encodeurl": ["2.0.0"],
@@ -1160,7 +1162,7 @@
     "jose": ["6.2.12"],
     "js-base64": ["3.9.4"],
     "js-tokens": ["10.0.0", "4.0.0"],
-    "jsdom": ["30.1.2", "24.1.3"],
+    "jsdom": ["30.1.3", "24.1.3"],
     "jsesc": ["3.1.0"],
     "json-schema-traverse": ["1.0.0"],
     "json-schema-typed": ["8.0.2", "7.0.3"],
@@ -1181,7 +1183,7 @@
     "lightningcss-linux-x64-musl": ["1.33.0", "1.32.0"],
     "lightningcss-win32-arm64-msvc": ["1.33.0", "1.32.0"],
     "lightningcss-win32-x64-msvc": ["1.33.0", "1.32.0"],
-    "lilconfig": ["3.1.3"],
+    "lilconfig": ["3.1.4"],
     "locate-path": ["6.0.0", "3.0.0"],
     "lodash": ["4.18.1"],
     "log-symbols": ["4.1.0", "6.0.0"],
@@ -1256,9 +1258,9 @@
     "nanoid": ["3.3.20"],
     "nanospinner": ["1.2.2"],
     "negotiator": ["1.1.0"],
-    "next": ["16.4.0"],
+    "next": ["16.4.2"],
     "node-addon-api": ["7.1.1"],
-    "node-releases": ["2.0.58"],
+    "node-releases": ["2.0.59"],
     "npm-run-path": ["6.0.0", "4.0.1"],
     "nwsapi": ["2.2.28"],
     "object-assign": ["4.1.1"],
@@ -1293,8 +1295,8 @@
     "picomatch": ["4.0.7", "2.3.2"],
     "pkce-challenge": ["5.0.1"],
     "pkg-up": ["3.1.0"],
-    "playwright": ["1.64.0"],
-    "playwright-core": ["1.64.0"],
+    "playwright": ["1.64.1"],
+    "playwright-core": ["1.64.1"],
     "pngjs": ["7.0.0"],
     "postcss": ["8.5.30", "8.5.23"],
     "postcss-selector-parser": ["7.1.6"],
@@ -1307,19 +1309,19 @@
     "psl": ["1.15.0"],
     "publint": ["0.3.25"],
     "punycode": ["2.3.1"],
-    "qs": ["6.16.0"],
+    "qs": ["6.16.1"],
     "quansync": ["1.0.0"],
     "querystringify": ["2.2.0"],
     "queue-microtask": ["1.2.3"],
     "range-parser": ["1.3.0"],
     "raw-body": ["3.0.2"],
-    "react": ["19.3.0"],
+    "react": ["19.3.1"],
     "react-day-picker": ["10.0.2"],
     "react-docgen": ["8.0.4"],
     "react-docgen-typescript": ["2.4.0"],
-    "react-dom": ["19.3.0"],
+    "react-dom": ["19.3.1"],
     "react-hook-form": ["7.90.0"],
-    "react-is": ["19.3.0", "17.0.2"],
+    "react-is": ["19.3.1", "17.0.2"],
     "react-redux": ["9.3.0"],
     "react-remove-scroll": ["2.7.2"],
     "react-remove-scroll-bar": ["2.3.8"],
@@ -1341,7 +1343,7 @@
     "resolve-pkg-maps": ["1.0.0"],
     "restore-cursor": ["3.1.0", "5.1.0"],
     "reusify": ["1.1.0"],
-    "rolldown": ["1.2.13"],
+    "rolldown": ["1.2.14"],
     "rolldown-plugin-dts": ["0.28.8"],
     "router": ["2.2.0"],
     "rrweb-cssom": ["0.7.1", "0.8.0"],
@@ -1357,7 +1359,7 @@
     "send": ["1.2.1"],
     "serve-static": ["2.2.1"],
     "setprototypeof": ["1.2.0"],
-    "shadcn": ["4.21.4"],
+    "shadcn": ["4.22.0"],
     "sharp": ["0.35.5"],
     "shebang-command": ["2.0.0"],
     "shebang-regex": ["3.0.0"],
@@ -1417,8 +1419,8 @@
     "type-fest": ["0.20.2", "4.41.0"],
     "type-is": ["2.1.0"],
     "unconfig-core": ["7.5.0"],
-    "undici": ["7.30.0", "8.11.2"],
-    "undici-types": ["8.9.0"],
+    "undici": ["7.30.1", "8.12.2"],
+    "undici-types": ["8.9.0", "8.12.2"],
     "unicode-trie": ["2.0.0"],
     "unicorn-magic": ["0.3.0"],
     "unified": ["11.0.5"],
@@ -1443,14 +1445,14 @@
     "victory-vendor": ["37.3.6"],
     "vite": ["8.3.4"],
     "vite-node": ["6.0.0"],
-    "vitest": ["5.0.4"],
+    "vitest": ["5.0.5"],
     "w3c-xmlserializer": ["6.0.0", "5.0.0"],
     "wcwidth": ["1.0.1"],
     "webidl-conversions": ["8.0.1", "7.0.0"],
     "webpack-virtual-modules": ["0.6.2"],
     "whatwg-encoding": ["3.1.1"],
     "whatwg-mimetype": ["5.0.0", "4.0.0"],
-    "whatwg-url": ["17.2.0", "14.2.0"],
+    "whatwg-url": ["17.3.0", "14.2.0"],
     "which": ["2.0.2", "4.0.0"],
     "why-is-node-running": ["3.2.1"],
     "widest-line": ["3.1.0"],
@@ -1471,7 +1473,7 @@
     "yuku-codegen": ["0.19.0"],
     "yuku-core": ["0.19.0"],
     "yuku-parser": ["0.19.0"],
-    "zod": ["4.6.7", "3.25.58", "3.25.76"],
+    "zod": ["4.6.7", "3.25.76"],
     "zod-to-json-schema": ["3.25.2"],
     "zod-validation-error": ["3.5.4"],
     "zwitch": ["2.0.4"]
@@ -1509,14 +1511,14 @@
       "installed": "0.18.5"
     },
     "@axe-core/playwright": {
-      "locked": ["4.13.0"],
-      "latest": "4.13.0",
+      "locked": ["4.14.0"],
+      "latest": "4.14.0",
       "dist_tags": {
-        "latest": "4.13.0",
-        "rc": "4.14.1-d1531a9.0.sha-d1531a9",
-        "next": "4.13.1-063f669.0.sha-063f669"
+        "latest": "4.14.0"
       },
-      "engines": {},
+      "engines": {
+        "node": ">=22.12.0"
+      },
       "peerDependencies": {
         "playwright-core": ">= 1.0.0"
       },
@@ -1526,17 +1528,15 @@
         {
           "file": "apps/demo/package.json",
           "field": "devDependencies",
-          "range": "^4.13.0"
+          "range": "^4.14.0"
         }
       ],
-      "installed": "4.13.0"
+      "installed": "4.14.0"
     },
     "@biomejs/biome": {
       "locked": ["2.5.15"],
       "latest": "2.5.15",
       "dist_tags": {
-        "nightly": "1.9.5-nightly.81fdedb",
-        "beta": "2.0.0-beta.6",
         "latest": "2.5.15"
       },
       "engines": {
@@ -1558,9 +1558,6 @@
       "locked": ["1.0.1"],
       "latest": "1.0.1",
       "dist_tags": {
-        "temp": "0.4.3-temp.0",
-        "pr1845": "0.0.0-pr1845.8583df5",
-        "next": "1.0.0-next.9",
         "latest": "1.0.1"
       },
       "engines": {
@@ -1582,10 +1579,6 @@
       "locked": ["3.0.3"],
       "latest": "3.0.3",
       "dist_tags": {
-        "temp": "2.22.0-temp.0",
-        "pr1845": "0.0.0-pr1845.8583df5",
-        "maintenance-v2": "2.31.1",
-        "next": "3.0.0-next.12",
         "latest": "3.0.3"
       },
       "engines": {
@@ -1610,9 +1603,7 @@
       "locked": ["3.0.0"],
       "latest": "3.0.0",
       "dist_tags": {
-        "temp": "1.0.9-temp.0",
-        "latest": "3.0.0",
-        "next": "3.0.0-next.9"
+        "latest": "3.0.0"
       },
       "engines": {
         "node": "^22.11 || ^24 || >=26"
@@ -1633,8 +1624,6 @@
       "locked": ["1.0.1"],
       "latest": "1.0.1",
       "dist_tags": {
-        "temp": "0.5.3-temp.0",
-        "next": "1.0.0-next.10",
         "latest": "1.0.1"
       },
       "engines": {
@@ -1653,10 +1642,10 @@
       "installed": "1.0.1"
     },
     "@figma/code-connect": {
-      "locked": ["2.0.1"],
-      "latest": "2.0.1",
+      "locked": ["2.0.2"],
+      "latest": "2.0.2",
       "dist_tags": {
-        "latest": "2.0.1"
+        "latest": "2.0.2"
       },
       "engines": {
         "node": ">=18"
@@ -1668,18 +1657,18 @@
         {
           "file": "package.json",
           "field": "devDependencies",
-          "range": "^2.0.1"
+          "range": "^2.0.2"
         }
       ],
-      "installed": "2.0.1"
+      "installed": "2.0.2"
     },
     "@holakirr/snow-ui-icons": {
       "latest": "2.2.2",
-      "source": "https://registry.npmjs.org/@holakirr%2fsnow-ui-icons/latest",
+      "source": "https://registry.npmjs.org/%40holakirr%2Fsnow-ui-icons",
       "engines": {
         "node": ">=18"
       },
-      "locked": ["workspace:packages/icons"],
+      "locked": ["2.2.2"],
       "installed": "2.2.2",
       "declared": [
         {
@@ -1692,15 +1681,20 @@
           "field": "dependencies",
           "range": "workspace:*"
         }
-      ]
+      ],
+      "dist_tags": {
+        "latest": "2.2.2"
+      },
+      "peerDependencies": {
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
+      },
+      "deprecated": null
     },
     "@hookform/resolvers": {
       "locked": ["5.9.1"],
       "latest": "5.9.1",
       "dist_tags": {
-        "next": "1.0.0-rc.2",
-        "beta": "2.0.0-beta.17",
-        "release-1.x": "1.3.8",
         "latest": "5.9.1"
       },
       "engines": {},
@@ -1782,13 +1776,10 @@
       "installed": "2.1.10"
     },
     "@playwright/test": {
-      "locked": ["1.64.0"],
-      "latest": "1.64.0",
+      "locked": ["1.64.1"],
+      "latest": "1.64.1",
       "dist_tags": {
-        "rc": "1.18.0-rc1",
-        "latest": "1.64.0",
-        "beta": "1.64.0-beta-1791568591000",
-        "next": "1.65.0-alpha-2026-10-13"
+        "latest": "1.64.1"
       },
       "engines": {
         "node": ">=20"
@@ -1800,21 +1791,20 @@
         {
           "file": "package.json",
           "field": "devDependencies",
-          "range": "1.64.0"
+          "range": "1.64.1"
         },
         {
           "file": "apps/demo/package.json",
           "field": "devDependencies",
-          "range": "1.64.0"
+          "range": "1.64.1"
         }
       ],
-      "installed": "1.64.0"
+      "installed": "1.64.1"
     },
     "@radix-ui/react-accordion": {
       "locked": ["1.3.1"],
       "latest": "1.3.1",
       "dist_tags": {
-        "next": "1.3.2-rc.1791897977948",
         "latest": "1.3.1"
       },
       "engines": {},
@@ -1839,7 +1829,6 @@
       "locked": ["1.2.1"],
       "latest": "1.2.1",
       "dist_tags": {
-        "next": "1.2.2-rc.1791897977948",
         "latest": "1.2.1"
       },
       "engines": {},
@@ -1864,7 +1853,6 @@
       "locked": ["1.3.1"],
       "latest": "1.3.1",
       "dist_tags": {
-        "next": "1.3.2-rc.1791897977948",
         "latest": "1.3.1"
       },
       "engines": {},
@@ -1889,7 +1877,6 @@
       "locked": ["1.4.1"],
       "latest": "1.4.1",
       "dist_tags": {
-        "next": "1.4.2-rc.1791897977948",
         "latest": "1.4.1"
       },
       "engines": {},
@@ -1914,7 +1901,6 @@
       "locked": ["1.1.5"],
       "latest": "1.1.5",
       "dist_tags": {
-        "next": "1.1.3-rc.1780677407053",
         "latest": "1.1.5"
       },
       "engines": {},
@@ -1937,7 +1923,6 @@
       "locked": ["2.4.1"],
       "latest": "2.4.1",
       "dist_tags": {
-        "next": "2.4.2-rc.1791897977948",
         "latest": "2.4.1"
       },
       "engines": {},
@@ -1962,7 +1947,6 @@
       "locked": ["1.3.1"],
       "latest": "1.3.1",
       "dist_tags": {
-        "next": "1.3.2-rc.1791897977948",
         "latest": "1.3.1"
       },
       "engines": {},
@@ -1987,8 +1971,7 @@
       "locked": ["1.2.0"],
       "latest": "1.2.0",
       "dist_tags": {
-        "latest": "1.2.0",
-        "next": "1.2.0-rc.1791763750187"
+        "latest": "1.2.0"
       },
       "engines": {},
       "peerDependencies": {
@@ -2010,7 +1993,6 @@
       "locked": ["2.2.1"],
       "latest": "2.2.1",
       "dist_tags": {
-        "next": "2.2.2-rc.1791897977948",
         "latest": "2.2.1"
       },
       "engines": {},
@@ -2035,8 +2017,7 @@
       "locked": ["2.1.17"],
       "latest": "2.1.17",
       "dist_tags": {
-        "latest": "2.1.17",
-        "next": "2.1.17-rc.1791763750187"
+        "latest": "2.1.17"
       },
       "engines": {},
       "peerDependencies": {
@@ -2060,7 +2041,6 @@
       "locked": ["1.3.1"],
       "latest": "1.3.1",
       "dist_tags": {
-        "next": "1.3.2-rc.1791897977948",
         "latest": "1.3.1"
       },
       "engines": {},
@@ -2085,7 +2065,6 @@
       "locked": ["1.2.1"],
       "latest": "1.2.1",
       "dist_tags": {
-        "next": "1.2.2-rc.1791897977948",
         "latest": "1.2.1"
       },
       "engines": {},
@@ -2110,7 +2089,6 @@
       "locked": ["1.5.1"],
       "latest": "1.5.1",
       "dist_tags": {
-        "next": "1.5.2-rc.1791897977948",
         "latest": "1.5.1"
       },
       "engines": {},
@@ -2135,7 +2113,6 @@
       "locked": ["2.4.1"],
       "latest": "2.4.1",
       "dist_tags": {
-        "next": "2.4.2-rc.1791897977948",
         "latest": "2.4.1"
       },
       "engines": {},
@@ -2160,8 +2137,7 @@
       "locked": ["1.2.0"],
       "latest": "1.2.0",
       "dist_tags": {
-        "latest": "1.2.0",
-        "next": "1.2.0-rc.1791763750187"
+        "latest": "1.2.0"
       },
       "engines": {},
       "peerDependencies": {
@@ -2185,7 +2161,6 @@
       "locked": ["1.6.1"],
       "latest": "1.6.1",
       "dist_tags": {
-        "next": "1.6.2-rc.1791897977948",
         "latest": "1.6.1"
       },
       "engines": {},
@@ -2210,8 +2185,7 @@
       "locked": ["1.5.0"],
       "latest": "1.5.0",
       "dist_tags": {
-        "latest": "1.5.0",
-        "next": "1.5.0-rc.1791763750187"
+        "latest": "1.5.0"
       },
       "engines": {},
       "peerDependencies": {
@@ -2233,7 +2207,6 @@
       "locked": ["1.4.1"],
       "latest": "1.4.1",
       "dist_tags": {
-        "next": "1.4.2-rc.1791897977948",
         "latest": "1.4.1"
       },
       "engines": {},
@@ -2258,7 +2231,6 @@
       "locked": ["1.2.1"],
       "latest": "1.2.1",
       "dist_tags": {
-        "next": "1.2.2-rc.1791897977948",
         "latest": "1.2.1"
       },
       "engines": {},
@@ -2283,7 +2255,6 @@
       "locked": ["1.3.1"],
       "latest": "1.3.1",
       "dist_tags": {
-        "next": "1.3.2-rc.1791897977948",
         "latest": "1.3.1"
       },
       "engines": {},
@@ -2308,7 +2279,6 @@
       "locked": ["1.2.1"],
       "latest": "1.2.1",
       "dist_tags": {
-        "next": "1.2.0-rc.1791763750187",
         "latest": "1.2.1"
       },
       "engines": {},
@@ -2333,7 +2303,6 @@
       "locked": ["1.2.1"],
       "latest": "1.2.1",
       "dist_tags": {
-        "next": "1.2.2-rc.1791897977948",
         "latest": "1.2.1"
       },
       "engines": {},
@@ -2358,7 +2327,6 @@
       "locked": ["1.4.1"],
       "latest": "1.4.1",
       "dist_tags": {
-        "next": "1.4.2-rc.1791897977948",
         "latest": "1.4.1"
       },
       "engines": {},
@@ -2429,22 +2397,7 @@
       "locked": ["10.6.2"],
       "latest": "10.6.2",
       "dist_tags": {
-        "debug": "6.0.28-alpha.3",
-        "foo": "6.4.0-alpha.27",
-        "prerelease": "6.5.17-alpha.0",
-        "future": "7.1.0-alpha.29",
-        "pr-22631": "7.1.1-pr-22631-1689802540-351503cb.0",
-        "pr-23508": "7.1.1-pr-23508-1689802571-5ec8c1c3.0",
-        "tag-for-publishing-older-releases": "8.2.10",
-        "v8-canary": "0.0.0-pr-34009-sha-c90626e7",
-        "v7-canary": "0.0.0-pr-34011-sha-c45b0f3f",
-        "v8": "8.6.19",
-        "v7": "7.6.24",
-        "v9-canary": "0.0.0-pr-35198-sha-9d05c353",
-        "canary": "0.0.0-pr-36141-sha-6ddbeb4a",
-        "next": "11.0.0-alpha.6",
-        "latest": "10.6.2",
-        "v9": "9.1.21"
+        "latest": "10.6.2"
       },
       "engines": {},
       "peerDependencies": {
@@ -2470,8 +2423,6 @@
       "locked": ["11.1.4"],
       "latest": "11.1.4",
       "dist_tags": {
-        "next": "11.0.0-next.0",
-        "canary": "11.1.3--canary.290.5d5e905.0",
         "latest": "11.1.4"
       },
       "engines": {},
@@ -2496,21 +2447,7 @@
       "locked": ["10.6.2"],
       "latest": "10.6.2",
       "dist_tags": {
-        "debug": "6.0.28-alpha.3",
-        "prerelease": "6.5.17-alpha.0",
-        "future": "7.1.0-alpha.29",
-        "pr-22631": "7.1.1-pr-22631-1689802540-351503cb.0",
-        "pr-23508": "7.1.1-pr-23508-1689802571-5ec8c1c3.0",
-        "tag-for-publishing-older-releases": "8.2.10",
-        "v8-canary": "0.0.0-pr-34009-sha-c90626e7",
-        "v7-canary": "0.0.0-pr-34011-sha-c45b0f3f",
-        "v8": "8.6.19",
-        "v7": "7.6.24",
-        "v9-canary": "0.0.0-pr-35198-sha-9d05c353",
-        "canary": "0.0.0-pr-36141-sha-6ddbeb4a",
-        "next": "11.0.0-alpha.6",
-        "latest": "10.6.2",
-        "v9": "9.1.21"
+        "latest": "10.6.2"
       },
       "engines": {},
       "peerDependencies": {
@@ -2537,21 +2474,7 @@
       "locked": ["10.6.2"],
       "latest": "10.6.2",
       "dist_tags": {
-        "debug": "6.0.28-alpha.3",
-        "prerelease": "6.5.17-alpha.0",
-        "future": "7.1.0-alpha.29",
-        "pr-22631": "7.1.1-pr-22631-1689802540-351503cb.0",
-        "pr-23508": "7.1.1-pr-23508-1689802571-5ec8c1c3.0",
-        "tag-for-publishing-older-releases": "8.2.10",
-        "v8-canary": "0.0.0-pr-34009-sha-c90626e7",
-        "v7-canary": "0.0.0-pr-34011-sha-c45b0f3f",
-        "v8": "8.6.19",
-        "v7": "7.6.24",
-        "v9-canary": "0.0.0-pr-35198-sha-9d05c353",
-        "canary": "0.0.0-pr-36141-sha-6ddbeb4a",
-        "next": "11.0.0-alpha.6",
-        "latest": "10.6.2",
-        "v9": "9.1.21"
+        "latest": "10.6.2"
       },
       "engines": {},
       "peerDependencies": {
@@ -2574,16 +2497,7 @@
       "locked": ["10.6.2"],
       "latest": "10.6.2",
       "dist_tags": {
-        "tag-for-publishing-older-releases": "8.2.10",
-        "v8-canary": "0.0.0-pr-34009-sha-c90626e7",
-        "v7-canary": "0.0.0-pr-34011-sha-c45b0f3f",
-        "v8": "8.6.19",
-        "v7": "7.6.24",
-        "v9-canary": "0.0.0-pr-35198-sha-9d05c353",
-        "canary": "0.0.0-pr-36141-sha-6ddbeb4a",
-        "next": "11.0.0-alpha.6",
-        "latest": "10.6.2",
-        "v9": "9.1.21"
+        "latest": "10.6.2"
       },
       "engines": {},
       "peerDependencies": {
@@ -2609,10 +2523,6 @@
       "locked": ["10.6.2"],
       "latest": "10.6.2",
       "dist_tags": {
-        "v9": "9.1.21",
-        "v9-canary": "0.0.0-pr-35198-sha-9d05c353",
-        "canary": "0.0.0-pr-36141-sha-6ddbeb4a",
-        "next": "11.0.0-alpha.6",
         "latest": "10.6.2"
       },
       "engines": {},
@@ -2638,19 +2548,7 @@
       "locked": ["10.6.2"],
       "latest": "10.6.2",
       "dist_tags": {
-        "future": "7.1.0-alpha.29",
-        "pr-22631": "7.1.1-pr-22631-1689802540-351503cb.0",
-        "pr-23508": "7.1.1-pr-23508-1689802571-5ec8c1c3.0",
-        "tag-for-publishing-older-releases": "8.2.10",
-        "v8-canary": "0.0.0-pr-34009-sha-c90626e7",
-        "v7-canary": "0.0.0-pr-34011-sha-c45b0f3f",
-        "v8": "8.6.19",
-        "v7": "7.6.24",
-        "v9-canary": "0.0.0-pr-35198-sha-9d05c353",
-        "canary": "0.0.0-pr-36141-sha-6ddbeb4a",
-        "next": "11.0.0-alpha.6",
-        "latest": "10.6.2",
-        "v9": "9.1.21"
+        "latest": "10.6.2"
       },
       "engines": {},
       "peerDependencies": {
@@ -2685,10 +2583,7 @@
       "locked": ["4.3.3"],
       "latest": "4.3.3",
       "dist_tags": {
-        "internal": "0.0.0-internal.b2586d4e",
-        "next": "4.0.0",
-        "latest": "4.3.3",
-        "insiders": "0.0.0-insiders.9833b48"
+        "latest": "4.3.3"
       },
       "engines": {},
       "peerDependencies": {},
@@ -2707,10 +2602,7 @@
       "locked": ["4.3.3"],
       "latest": "4.3.3",
       "dist_tags": {
-        "internal": "0.0.0-internal.b2586d4e",
-        "next": "4.0.0",
-        "latest": "4.3.3",
-        "insiders": "0.0.0-insiders.9833b48"
+        "latest": "4.3.3"
       },
       "engines": {},
       "peerDependencies": {},
@@ -2729,10 +2621,7 @@
       "locked": ["4.3.3"],
       "latest": "4.3.3",
       "dist_tags": {
-        "internal": "0.0.0-internal.b2586d4e",
-        "next": "4.0.0",
-        "latest": "4.3.3",
-        "insiders": "0.0.0-insiders.9833b48"
+        "latest": "4.3.3"
       },
       "engines": {},
       "peerDependencies": {
@@ -2766,15 +2655,17 @@
           "field": "devDependencies",
           "range": "^9.3.1"
         }
-      ]
+      ],
+      "dist_tags": {
+        "latest": "9.3.1"
+      },
+      "deprecated": null
     },
     "@terrazzo/cli": {
-      "locked": ["2.8.0"],
-      "latest": "2.8.0",
+      "locked": ["2.9.0"],
+      "latest": "2.9.0",
       "dist_tags": {
-        "rc": "2.0.0-rc.0",
-        "alpha": "2.0.0-rc.0",
-        "latest": "2.8.0"
+        "latest": "2.9.0"
       },
       "engines": {},
       "peerDependencies": {},
@@ -2784,18 +2675,16 @@
         {
           "file": "packages/ui/package.json",
           "field": "devDependencies",
-          "range": "^2.8.0"
+          "range": "^2.9.0"
         }
       ],
-      "installed": "2.8.0"
+      "installed": "2.9.0"
     },
     "@terrazzo/parser": {
-      "locked": ["2.8.0"],
-      "latest": "2.8.0",
+      "locked": ["2.9.0"],
+      "latest": "2.9.0",
       "dist_tags": {
-        "alpha": "2.0.0-rc.0",
-        "rc": "2.0.0-rc.0",
-        "latest": "2.8.0"
+        "latest": "2.9.0"
       },
       "engines": {},
       "peerDependencies": {
@@ -2807,16 +2696,15 @@
         {
           "file": "packages/ui/package.json",
           "field": "devDependencies",
-          "range": "^2.8.0"
+          "range": "^2.9.0"
         }
       ],
-      "installed": "2.8.0"
+      "installed": "2.9.0"
     },
     "@testing-library/jest-dom": {
       "locked": ["7.0.1", "6.9.1"],
       "latest": "7.0.1",
       "dist_tags": {
-        "beta": "5.7.0-beta.1",
         "latest": "7.0.1"
       },
       "engines": {
@@ -2853,10 +2741,6 @@
       "locked": ["16.3.3"],
       "latest": "16.3.3",
       "dist_tags": {
-        "beta": "11.0.0-beta.1",
-        "release-12.x": "12.1.5",
-        "alpha": "14.0.0-alpha.3",
-        "release-14.x": "14.3.1",
         "latest": "16.3.3"
       },
       "engines": {
@@ -2894,8 +2778,6 @@
       "locked": ["14.6.8"],
       "latest": "14.6.8",
       "dist_tags": {
-        "alpha": "14.0.0-alpha.18",
-        "beta": "14.0.0-beta.14",
         "latest": "14.6.8"
       },
       "engines": {
@@ -2920,24 +2802,7 @@
       "locked": ["1.4.3"],
       "latest": "1.4.3",
       "dist_tags": {
-        "ts4.6": "1.0.8",
-        "ts4.7": "1.1.5",
-        "ts4.9": "1.1.13",
-        "ts4.8": "1.1.13",
-        "ts5.0": "1.2.8",
-        "ts5.1": "1.2.19",
-        "ts5.2": "1.3.11",
-        "ts5.5": "1.3.14",
-        "ts5.3": "1.3.14",
-        "ts5.4": "1.3.14",
-        "ts7.0": "1.4.3",
-        "latest": "1.4.3",
-        "ts5.9": "1.4.3",
-        "ts6.0": "1.4.3",
-        "ts5.6": "1.4.3",
-        "ts5.8": "1.4.3",
-        "ts5.7": "1.4.3",
-        "ts7.1": "1.4.3"
+        "latest": "1.4.3"
       },
       "engines": {},
       "peerDependencies": {},
@@ -2956,51 +2821,7 @@
       "locked": ["26.6.5"],
       "latest": "26.6.5",
       "dist_tags": {
-        "ts2.6": "12.12.6",
-        "ts2.0": "12.12.6",
-        "ts2.7": "12.12.6",
-        "ts2.1": "12.12.6",
-        "ts2.5": "12.12.6",
-        "ts2.2": "12.12.6",
-        "ts2.4": "12.12.6",
-        "ts2.3": "12.12.6",
-        "ts2.8": "13.13.4",
-        "ts2.9": "14.0.1",
-        "ts3.0": "14.6.0",
-        "ts3.1": "14.10.1",
-        "ts3.2": "14.14.9",
-        "ts3.3": "14.14.20",
-        "ts3.4": "14.14.31",
-        "ts3.5": "15.6.1",
-        "ts3.6": "16.6.2",
-        "ts3.7": "16.11.7",
-        "ts3.8": "17.0.21",
-        "ts3.9": "17.0.41",
-        "ts4.0": "18.7.14",
-        "ts4.1": "18.11.9",
-        "ts4.2": "18.15.3",
-        "ts4.4": "20.6.0",
-        "ts4.3": "20.6.0",
-        "ts4.5": "20.10.0",
-        "ts4.6": "20.11.25",
-        "ts4.7": "20.14.8",
-        "ts4.8": "22.9.0",
-        "ts4.9": "22.9.3",
-        "ts5.0": "22.13.14",
-        "ts5.1": "24.1.0",
-        "ts5.2": "25.5.0",
-        "ts5.3": "25.9.3",
-        "ts5.5": "25.9.3",
-        "ts5.4": "25.9.3",
-        "ts5.8": "26.6.5",
-        "ts6.0": "26.6.5",
-        "ts5.6": "26.6.5",
-        "ts7.0": "26.6.5",
-        "ts7.1": "26.6.5",
-        "latest": "26.6.5",
-        "ts5.9": "26.6.5",
-        "ts5.7": "26.6.5",
-        "old-version": "24.19.2"
+        "latest": "26.6.5"
       },
       "engines": {},
       "peerDependencies": {},
@@ -3044,50 +2865,7 @@
       "locked": ["19.3.0"],
       "latest": "19.3.0",
       "dist_tags": {
-        "ts2.0": "15.0.1",
-        "ts2.1": "15.0.20",
-        "ts2.2": "15.0.30",
-        "ts2.4": "16.0.36",
-        "ts2.3": "16.0.36",
-        "ts2.5": "16.0.36",
-        "ts2.7": "16.4.7",
-        "ts2.6": "16.4.7",
-        "ts2.8": "16.9.34",
-        "ts2.9": "16.9.35",
-        "ts3.0": "16.9.46",
-        "ts3.1": "16.9.49",
-        "ts3.2": "16.9.56",
-        "ts3.3": "17.0.0",
-        "ts3.4": "17.0.2",
-        "ts3.5": "17.0.8",
-        "ts3.6": "17.0.19",
-        "ts3.7": "17.0.35",
-        "ts3.8": "17.0.39",
-        "ts3.9": "18.0.12",
-        "ts4.0": "18.0.18",
-        "ts4.1": "18.0.25",
-        "ts4.2": "18.0.28",
-        "ts4.3": "18.2.21",
-        "ts4.4": "18.2.21",
-        "ts4.5": "18.2.39",
-        "ts4.6": "18.2.64",
-        "ts4.7": "18.3.3",
-        "ts4.9": "18.3.12",
-        "ts4.8": "18.3.12",
-        "ts5.0": "19.0.12",
-        "ts5.1": "19.1.9",
-        "ts5.2": "19.2.14",
-        "ts5.4": "19.2.17",
-        "ts5.3": "19.2.17",
-        "ts5.5": "19.2.17",
-        "ts5.9": "19.3.0",
-        "ts5.6": "19.3.0",
-        "ts5.8": "19.3.0",
-        "ts7.0": "19.3.0",
-        "ts5.7": "19.3.0",
-        "ts6.0": "19.3.0",
-        "latest": "19.3.0",
-        "ts7.1": "19.3.0"
+        "latest": "19.3.0"
       },
       "engines": {},
       "peerDependencies": {},
@@ -3121,50 +2899,7 @@
       "locked": ["19.3.0"],
       "latest": "19.3.0",
       "dist_tags": {
-        "ts2.0": "0.14.20",
-        "ts2.1": "15.5.0",
-        "ts2.2": "15.5.0",
-        "ts2.5": "16.0.3",
-        "ts2.3": "16.0.3",
-        "ts2.4": "16.0.3",
-        "ts2.7": "16.0.6",
-        "ts2.6": "16.0.6",
-        "ts2.8": "16.9.7",
-        "ts3.0": "16.9.8",
-        "ts2.9": "16.9.8",
-        "ts3.1": "16.9.8",
-        "ts3.2": "16.9.9",
-        "ts3.3": "17.0.0",
-        "ts3.4": "17.0.1",
-        "ts3.5": "17.0.5",
-        "ts3.6": "17.0.9",
-        "ts3.8": "17.0.11",
-        "ts3.7": "17.0.11",
-        "ts3.9": "18.0.5",
-        "ts4.0": "18.0.6",
-        "ts4.1": "18.0.9",
-        "ts4.2": "18.0.11",
-        "ts4.4": "18.2.7",
-        "ts4.3": "18.2.7",
-        "ts4.5": "18.2.17",
-        "ts4.6": "18.2.21",
-        "ts4.7": "18.3.0",
-        "ts4.8": "18.3.1",
-        "ts4.9": "18.3.1",
-        "ts5.0": "19.0.4",
-        "ts5.1": "19.1.7",
-        "ts5.2": "19.2.3",
-        "ts5.5": "19.2.3",
-        "ts5.3": "19.2.3",
-        "ts5.4": "19.2.3",
-        "ts5.8": "19.3.0",
-        "ts5.7": "19.3.0",
-        "ts6.0": "19.3.0",
-        "ts5.9": "19.3.0",
-        "ts7.0": "19.3.0",
-        "ts5.6": "19.3.0",
-        "latest": "19.3.0",
-        "ts7.1": "19.3.0"
+        "latest": "19.3.0"
       },
       "engines": {},
       "peerDependencies": {
@@ -3219,8 +2954,6 @@
       "locked": ["6.1.2"],
       "latest": "6.1.2",
       "dist_tags": {
-        "alpha": "3.0.0-alpha.2",
-        "beta": "6.0.0-beta.0",
         "latest": "6.1.2"
       },
       "engines": {
@@ -3259,36 +2992,37 @@
       "installed": "6.1.2"
     },
     "@vitest/browser-playwright": {
-      "locked": ["5.0.4"],
+      "locked": ["5.0.5"],
       "source": "https://registry.npmjs.org/%40vitest%2Fbrowser-playwright",
-      "latest": "5.0.4",
+      "latest": "5.0.5",
       "engines": {},
       "peerDependencies": {
-        "vitest": "5.0.4",
+        "vitest": "5.0.5",
         "playwright": "*"
       },
-      "installed": "5.0.4",
+      "installed": "5.0.5",
       "declared": [
         {
           "file": "package.json",
           "field": "devDependencies",
-          "range": "^5.0.4"
+          "range": "^5.0.5"
         }
-      ]
+      ],
+      "dist_tags": {
+        "latest": "5.0.5"
+      },
+      "deprecated": null
     },
     "@vitest/coverage-v8": {
-      "locked": ["5.0.4"],
-      "latest": "5.0.4",
+      "locked": ["5.0.5"],
+      "latest": "5.0.5",
       "dist_tags": {
-        "V3": "3.2.7",
-        "beta": "5.0.0-beta.7",
-        "rc": "5.0.0-rc.4",
-        "latest": "5.0.4"
+        "latest": "5.0.5"
       },
       "engines": {},
       "peerDependencies": {
-        "vitest": "5.0.4",
-        "@vitest/browser": "5.0.4"
+        "vitest": "5.0.5",
+        "@vitest/browser": "5.0.5"
       },
       "deprecated": null,
       "source": "https://registry.npmjs.org/%40vitest%2Fcoverage-v8",
@@ -3296,28 +3030,25 @@
         {
           "file": "packages/ui/package.json",
           "field": "devDependencies",
-          "range": "^5.0.4"
+          "range": "^5.0.5"
         },
         {
           "file": "packages/charts/package.json",
           "field": "devDependencies",
-          "range": "^5.0.4"
+          "range": "^5.0.5"
         }
       ],
-      "installed": "5.0.4"
+      "installed": "5.0.5"
     },
     "@vitest/ui": {
-      "locked": ["5.0.4"],
-      "latest": "5.0.4",
+      "locked": ["5.0.5"],
+      "latest": "5.0.5",
       "dist_tags": {
-        "V3": "3.2.7",
-        "beta": "5.0.0-beta.7",
-        "rc": "5.0.0-rc.4",
-        "latest": "5.0.4"
+        "latest": "5.0.5"
       },
       "engines": {},
       "peerDependencies": {
-        "vitest": "5.0.4"
+        "vitest": "5.0.5"
       },
       "deprecated": null,
       "source": "https://registry.npmjs.org/%40vitest%2Fui",
@@ -3325,18 +3056,15 @@
         {
           "file": "packages/ui/package.json",
           "field": "devDependencies",
-          "range": "^5.0.4"
+          "range": "^5.0.5"
         }
       ],
-      "installed": "5.0.4"
+      "installed": "5.0.5"
     },
     "better-commits": {
       "locked": ["1.26.1"],
       "latest": "1.26.1",
       "dist_tags": {
-        "beta": "1.15.8-feature-branch",
-        "temp": "1.20.1-temp.0",
-        "feat-116-autocomplete": "1.20.1-feat-116-autocomplete.0",
         "latest": "1.26.1"
       },
       "engines": {
@@ -3358,14 +3086,18 @@
       "locked": ["1.4.3"],
       "latest": "1.4.3",
       "dist_tags": {
-        "latest": "1.4.3",
-        "canary": "1.4.3-canary.20261013.1"
+        "latest": "1.4.3"
       },
       "engines": {},
       "peerDependencies": {},
       "deprecated": null,
       "source": "https://registry.npmjs.org/bun",
       "declared": [
+        {
+          "file": "package.json",
+          "field": "packageManager",
+          "range": "bun@1.4.3"
+        },
         {
           "file": ".github/bun/package.json",
           "field": "dependencies",
@@ -3378,8 +3110,7 @@
       "locked": ["0.7.1"],
       "latest": "0.7.1",
       "dist_tags": {
-        "latest": "0.7.1",
-        "canary": "0.7.1-canary.2"
+        "latest": "0.7.1"
       },
       "engines": {},
       "peerDependencies": {},
@@ -3398,7 +3129,6 @@
       "locked": ["4.4.0"],
       "latest": "4.4.0",
       "dist_tags": {
-        "next": "5.0.0-alpha.0",
         "latest": "4.4.0"
       },
       "engines": {},
@@ -3420,10 +3150,10 @@
       "installed": "4.4.0"
     },
     "jsdom": {
-      "locked": ["30.1.2", "24.1.3"],
-      "latest": "30.1.2",
+      "locked": ["30.1.3", "24.1.3"],
+      "latest": "30.1.3",
       "dist_tags": {
-        "latest": "30.1.2"
+        "latest": "30.1.3"
       },
       "engines": {
         "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
@@ -3437,41 +3167,26 @@
         {
           "file": "packages/ui/package.json",
           "field": "devDependencies",
-          "range": "^30.1.2"
+          "range": "^30.1.3"
         },
         {
           "file": "packages/charts/package.json",
           "field": "devDependencies",
-          "range": "^30.1.2"
+          "range": "^30.1.3"
         },
         {
           "file": "packages/icons/package.json",
           "field": "devDependencies",
-          "range": "^30.1.2"
+          "range": "^30.1.3"
         }
       ],
-      "installed": "30.1.2"
+      "installed": "30.1.3"
     },
     "next": {
-      "locked": ["16.4.0"],
-      "latest": "16.4.0",
+      "locked": ["16.4.2"],
+      "latest": "16.4.2",
       "dist_tags": {
-        "next-11": "11.1.4",
-        "next-12-2-6": "12.2.6",
-        "next-14-1": "14.1.1",
-        "rc": "15.0.0-rc.1",
-        "next-13": "13.5.11",
-        "next-12-3-2": "12.3.7",
-        "beta": "16.0.0-beta.0",
-        "next-14": "14.2.35",
-        "next-15-3": "15.3.9",
-        "next-15-2": "15.2.9",
-        "next-15-0": "15.1.12",
-        "next-15-0-0": "15.0.8",
-        "preview": "16.3.0-preview.10",
-        "backport": "15.5.27",
-        "latest": "16.4.0",
-        "canary": "16.5.0-canary.9"
+        "latest": "16.4.2"
       },
       "engines": {
         "node": ">=20.9.0"
@@ -3490,19 +3205,16 @@
         {
           "file": "apps/demo/package.json",
           "field": "dependencies",
-          "range": "16.4.0"
+          "range": "16.4.2"
         }
       ],
-      "installed": "16.4.0"
+      "installed": "16.4.2"
     },
     "playwright": {
-      "locked": ["1.64.0"],
-      "latest": "1.64.0",
+      "locked": ["1.64.1"],
+      "latest": "1.64.1",
       "dist_tags": {
-        "rc": "1.18.0-rc1",
-        "latest": "1.64.0",
-        "beta": "1.64.0-beta-1791568591000",
-        "next": "1.65.0-alpha-2026-10-13"
+        "latest": "1.64.1"
       },
       "engines": {
         "node": ">=20"
@@ -3514,10 +3226,10 @@
         {
           "file": "package.json",
           "field": "devDependencies",
-          "range": "1.64.0"
+          "range": "1.64.1"
         }
       ],
-      "installed": "1.64.0"
+      "installed": "1.64.1"
     },
     "publint": {
       "locked": ["0.3.25"],
@@ -3551,16 +3263,10 @@
       "installed": "0.3.25"
     },
     "react": {
-      "locked": ["19.3.0"],
-      "latest": "19.3.0",
+      "locked": ["19.3.1"],
+      "latest": "19.3.1",
       "dist_tags": {
-        "beta": "19.0.0-beta-26f2496093-20240514",
-        "rc": "19.0.0-rc.1",
-        "next": "19.3.0-canary-d5736f09-20260507",
-        "backport": "19.0.8",
-        "latest": "19.3.0",
-        "experimental": "0.0.0-experimental-9f2e1f88-20261012",
-        "canary": "19.3.0-canary-9f2e1f88-20261012"
+        "latest": "19.3.1"
       },
       "engines": {
         "node": ">=0.10.0"
@@ -3572,52 +3278,35 @@
         {
           "file": "package.json",
           "field": "devDependencies",
-          "range": "^19.3.0"
+          "range": "^19.3.1"
         },
         {
           "file": "packages/ui/package.json",
           "field": "devDependencies",
-          "range": "^19.3.0"
-        },
-        {
-          "file": "packages/ui/package.json",
-          "field": "peerDependencies",
-          "range": "^19.0.0"
+          "range": "^19.3.1"
         },
         {
           "file": "packages/charts/package.json",
           "field": "devDependencies",
-          "range": "^19.3.0"
-        },
-        {
-          "file": "packages/charts/package.json",
-          "field": "peerDependencies",
-          "range": "^19.0.0"
+          "range": "^19.3.1"
         },
         {
           "file": "packages/icons/package.json",
           "field": "devDependencies",
-          "range": "^19.3.0"
-        },
-        {
-          "file": "packages/icons/package.json",
-          "field": "peerDependencies",
-          "range": "^19.0.0"
+          "range": "^19.3.1"
         },
         {
           "file": "apps/demo/package.json",
           "field": "dependencies",
-          "range": "^19.3.0"
+          "range": "^19.3.1"
         }
       ],
-      "installed": "19.3.0"
+      "installed": "19.3.1"
     },
     "react-day-picker": {
       "locked": ["10.0.2"],
       "latest": "10.0.2",
       "dist_tags": {
-        "legacy-v8": "8.10.2",
-        "next": "10.0.0-next.6",
         "latest": "10.0.2"
       },
       "engines": {
@@ -3639,20 +3328,14 @@
       "installed": "10.0.2"
     },
     "react-dom": {
-      "locked": ["19.3.0"],
-      "latest": "19.3.0",
+      "locked": ["19.3.1"],
+      "latest": "19.3.1",
       "dist_tags": {
-        "beta": "19.0.0-beta-26f2496093-20240514",
-        "rc": "19.0.0-rc.1",
-        "next": "19.3.0-canary-d5736f09-20260507",
-        "backport": "19.0.8",
-        "latest": "19.3.0",
-        "experimental": "0.0.0-experimental-9f2e1f88-20261012",
-        "canary": "19.3.0-canary-9f2e1f88-20261012"
+        "latest": "19.3.1"
       },
       "engines": {},
       "peerDependencies": {
-        "react": "^19.3.0"
+        "react": "^19.3.1"
       },
       "deprecated": null,
       "source": "https://registry.npmjs.org/react-dom",
@@ -3660,54 +3343,36 @@
         {
           "file": "package.json",
           "field": "devDependencies",
-          "range": "^19.3.0"
+          "range": "^19.3.1"
         },
         {
           "file": "packages/ui/package.json",
           "field": "devDependencies",
-          "range": "^19.3.0"
-        },
-        {
-          "file": "packages/ui/package.json",
-          "field": "peerDependencies",
-          "range": "^19.0.0"
+          "range": "^19.3.1"
         },
         {
           "file": "packages/charts/package.json",
           "field": "devDependencies",
-          "range": "^19.3.0"
-        },
-        {
-          "file": "packages/charts/package.json",
-          "field": "peerDependencies",
-          "range": "^19.0.0"
+          "range": "^19.3.1"
         },
         {
           "file": "packages/icons/package.json",
           "field": "devDependencies",
-          "range": "^19.3.0"
-        },
-        {
-          "file": "packages/icons/package.json",
-          "field": "peerDependencies",
-          "range": "^19.0.0"
+          "range": "^19.3.1"
         },
         {
           "file": "apps/demo/package.json",
           "field": "dependencies",
-          "range": "^19.3.0"
+          "range": "^19.3.1"
         }
       ],
-      "installed": "19.3.0"
+      "installed": "19.3.1"
     },
     "react-hook-form": {
       "locked": ["7.90.0"],
       "latest": "7.90.0",
       "dist_tags": {
-        "next": "7.60.0-next.0",
-        "alpha": "8.0.0-alpha.5",
-        "latest": "7.90.0",
-        "beta": "8.0.0-beta.4"
+        "latest": "7.90.0"
       },
       "engines": {
         "node": ">=18.0.0"
@@ -3725,11 +3390,6 @@
           "range": "^7.90.0"
         },
         {
-          "file": "packages/ui/package.json",
-          "field": "peerDependencies",
-          "range": "^7.60.0"
-        },
-        {
           "file": "apps/demo/package.json",
           "field": "dependencies",
           "range": "^7.90.0"
@@ -3738,16 +3398,10 @@
       "installed": "7.90.0"
     },
     "react-is": {
-      "locked": ["19.3.0", "17.0.2"],
-      "latest": "19.3.0",
+      "locked": ["19.3.1", "17.0.2"],
+      "latest": "19.3.1",
       "dist_tags": {
-        "beta": "19.0.0-beta-26f2496093-20240514",
-        "rc": "19.0.0-rc.1",
-        "next": "19.3.0-canary-d5736f09-20260507",
-        "backport": "19.0.8",
-        "latest": "19.3.0",
-        "experimental": "0.0.0-experimental-9f2e1f88-20261012",
-        "canary": "19.3.0-canary-9f2e1f88-20261012"
+        "latest": "19.3.1"
       },
       "engines": {},
       "peerDependencies": {},
@@ -3757,19 +3411,16 @@
         {
           "file": "packages/charts/package.json",
           "field": "dependencies",
-          "range": "^19.3.0"
+          "range": "^19.3.1"
         }
       ],
-      "installed": "19.3.0"
+      "installed": "19.3.1"
     },
     "recharts": {
       "locked": ["3.10.1"],
       "latest": "3.10.1",
       "dist_tags": {
-        "alpha": "3.0.0-alpha.9",
-        "beta": "3.0.0-beta.2",
-        "latest": "3.10.1",
-        "canary": "3.11.0-canary.6"
+        "latest": "3.10.1"
       },
       "engines": {
         "node": ">=18"
@@ -3810,13 +3461,10 @@
       "installed": "4.0.1"
     },
     "shadcn": {
-      "locked": ["4.21.4"],
-      "latest": "4.21.4",
+      "locked": ["4.22.0"],
+      "latest": "4.22.0",
       "dist_tags": {
-        "canary": "4.2.0-canary.0",
-        "beta": "0.0.0-beta-20261005184138",
-        "latest": "4.21.4",
-        "rc": "0.0.0-rc-20261007105214"
+        "latest": "4.22.0"
       },
       "engines": {
         "node": ">=20.18.1"
@@ -3828,10 +3476,10 @@
         {
           "file": "packages/registry/package.json",
           "field": "devDependencies",
-          "range": "4.21.4"
+          "range": "4.22.0"
         }
       ],
-      "installed": "4.21.4"
+      "installed": "4.22.0"
     },
     "size-limit": {
       "locked": ["14.2.0"],
@@ -3858,15 +3506,7 @@
       "locked": ["10.6.2"],
       "latest": "10.6.2",
       "dist_tags": {
-        "v8-canary": "0.0.0-pr-34009-sha-c90626e7",
-        "v7-canary": "0.0.0-pr-34011-sha-c45b0f3f",
-        "v8": "8.6.19",
-        "v7": "7.6.24",
-        "v9-canary": "0.0.0-pr-35198-sha-9d05c353",
-        "canary": "0.0.0-pr-36141-sha-6ddbeb4a",
-        "next": "11.0.0-alpha.6",
-        "latest": "10.6.2",
-        "v9": "9.1.21"
+        "latest": "10.6.2"
       },
       "engines": {},
       "peerDependencies": {
@@ -3899,9 +3539,7 @@
       "locked": ["3.7.0"],
       "latest": "3.7.0",
       "dist_tags": {
-        "tailwind-merge-2": "2.6.1",
-        "latest": "3.7.0",
-        "dev": "3.7.0-dev.8396cc3d1f18c143a608a08ce8d2ca7487aa7b75"
+        "latest": "3.7.0"
       },
       "engines": {},
       "peerDependencies": {},
@@ -3925,10 +3563,7 @@
       "locked": ["4.3.3"],
       "latest": "4.3.3",
       "dist_tags": {
-        "next": "4.0.0",
-        "v3-lts": "3.4.19",
-        "latest": "4.3.3",
-        "insiders": "0.0.0-insiders.9833b48"
+        "latest": "4.3.3"
       },
       "engines": {},
       "peerDependencies": {},
@@ -3957,7 +3592,6 @@
       "locked": ["28.0.0", "27.0.2", "26.0.0"],
       "latest": "28.0.0",
       "dist_tags": {
-        "rc": "2.0.4-rc",
         "latest": "28.0.0"
       },
       "engines": {},
@@ -3977,8 +3611,6 @@
       "locked": ["0.23.1"],
       "latest": "0.23.1",
       "dist_tags": {
-        "beta": "0.23.0-beta.3",
-        "rc": "0.23.0-rc.1",
         "latest": "0.23.1"
       },
       "engines": {
@@ -4020,13 +3652,7 @@
       "locked": ["6.0.3", "7.0.2", "5.6.1-rc"],
       "latest": "7.0.2",
       "dist_tags": {
-        "dev": "3.9.4",
-        "tag-for-publishing-older-releases": "4.1.6",
-        "insiders": "4.6.2-insiders.20220225",
-        "beta": "6.0.0-beta",
-        "rc": "7.0.1-rc",
-        "latest": "7.0.2",
-        "next": "7.1.0-dev.20261013.1"
+        "latest": "7.0.2"
       },
       "engines": {
         "node": ">=16.20.0"
@@ -4072,10 +3698,7 @@
       "locked": ["8.3.4"],
       "latest": "8.3.4",
       "dist_tags": {
-        "alpha": "6.0.0-alpha.24",
-        "beta": "8.3.0-beta.1",
-        "latest": "8.3.4",
-        "previous": "6.4.4"
+        "latest": "8.3.4"
       },
       "engines": {
         "node": "^20.19.0 || >=22.12.0"
@@ -4121,14 +3744,10 @@
       "installed": "8.3.4"
     },
     "vitest": {
-      "locked": ["5.0.4"],
-      "latest": "5.0.4",
+      "locked": ["5.0.5"],
+      "latest": "5.0.5",
       "dist_tags": {
-        "V3": "3.2.7",
-        "beta": "5.0.0-beta.7",
-        "V4": "4.1.11",
-        "rc": "5.0.0-rc.4",
-        "latest": "5.0.4"
+        "latest": "5.0.5"
       },
       "engines": {
         "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
@@ -4137,14 +3756,14 @@
         "vite": "^6.4.0 || ^7.0.0 || ^8.0.0",
         "jsdom": "*",
         "happy-dom": "*",
-        "@vitest/ui": "5.0.4",
+        "@vitest/ui": "5.0.5",
         "@types/node": "^22.0.0 || >=24.0.0",
         "@edge-runtime/vm": "*",
         "@opentelemetry/api": "^1.9.0",
-        "@vitest/coverage-v8": "5.0.4",
-        "@vitest/browser-preview": "5.0.4",
-        "@vitest/coverage-istanbul": "5.0.4",
-        "@vitest/browser-playwright": "5.0.4",
+        "@vitest/coverage-v8": "5.0.5",
+        "@vitest/browser-preview": "5.0.5",
+        "@vitest/coverage-istanbul": "5.0.5",
+        "@vitest/browser-playwright": "5.0.5",
         "@vitest/browser-webdriverio": "^5.0.0-beta.5 || >=5.0.0"
       },
       "deprecated": null,
@@ -4153,39 +3772,35 @@
         {
           "file": "package.json",
           "field": "devDependencies",
-          "range": "^5.0.4"
+          "range": "^5.0.5"
         },
         {
           "file": "packages/ui/package.json",
           "field": "devDependencies",
-          "range": "^5.0.4"
+          "range": "^5.0.5"
         },
         {
           "file": "packages/charts/package.json",
           "field": "devDependencies",
-          "range": "^5.0.4"
+          "range": "^5.0.5"
         },
         {
           "file": "packages/icons/package.json",
           "field": "devDependencies",
-          "range": "^5.0.4"
+          "range": "^5.0.5"
         },
         {
           "file": "packages/registry/package.json",
           "field": "devDependencies",
-          "range": "^5.0.4"
+          "range": "^5.0.5"
         }
       ],
-      "installed": "5.0.4"
+      "installed": "5.0.5"
     },
     "zod": {
-      "locked": ["4.6.7", "3.25.58", "3.25.76"],
+      "locked": ["4.6.7", "3.25.76"],
       "latest": "4.6.7",
       "dist_tags": {
-        "next": "3.25.0-beta.20250519T094321",
-        "alpha": "3.25.68-alpha.11",
-        "beta": "4.1.13-beta.0",
-        "canary": "4.5.0-canary.20260828T171753",
         "latest": "4.6.7"
       },
       "engines": {},
@@ -4208,16 +3823,28 @@
     }
   },
   "schema_version": 2,
-  "checked_date_moscow": "2026-10-13",
-  "completed_at": "2026-10-13T16:39:48.845603+00:00",
+  "checked_date_moscow": "2026-10-17",
+  "completed_at": "2026-10-16T21:56:52.729138+00:00",
   "status": "updated_and_verified_with_known_upstream_advisory",
   "scope": "current SnowUI monorepo, demo, registry, CI; separate SnowUI Pro repository excluded",
-  "lockfile_sha256": "532abbac4b7c165790d9afff24e4a96b5d57160d74adc6812919b9a1f21b52b3",
+  "lockfile_sha256": "bc0ea4e10949c39a5aa40ecefec725431edbcb5b019f51afc6eefb9d484a0277",
   "installed": {
-    "local_node": "v26.11.1",
+    "local_node": "v26.12.0",
     "local_bun": "1.4.3",
-    "local_npm": "12.2.0",
+    "local_npm": "11.20.0",
     "packages": {
+      "@arethetypeswrong/core": {
+        "version": "0.18.5",
+        "engines": {
+          "node": ">=20"
+        }
+      },
+      "@axe-core/playwright": {
+        "version": "4.14.0",
+        "engines": {
+          "node": ">=22.12.0"
+        }
+      },
       "@biomejs/biome": {
         "version": "2.5.15",
         "engines": {
@@ -4252,135 +3879,31 @@
         }
       },
       "@figma/code-connect": {
-        "version": "2.0.1",
+        "version": "2.0.2",
         "engines": {
           "node": ">=18"
-        }
-      },
-      "@playwright/test": {
-        "version": "1.64.0",
-        "engines": {
-          "node": ">=20"
-        }
-      },
-      "@size-limit/esbuild": {
-        "version": "14.2.0",
-        "engines": {
-          "node": "^22.19.0 || ^24.5.0 || >=26.0.0"
-        }
-      },
-      "@size-limit/file": {
-        "version": "14.2.0",
-        "engines": {
-          "node": "^22.19.0 || ^24.5.0 || >=26.0.0"
-        }
-      },
-      "@storybook/addon-a11y": {
-        "version": "10.6.2",
-        "engines": {}
-      },
-      "@storybook/addon-designs": {
-        "version": "11.1.4",
-        "engines": {}
-      },
-      "@storybook/addon-docs": {
-        "version": "10.6.2",
-        "engines": {}
-      },
-      "@storybook/addon-themes": {
-        "version": "10.6.2",
-        "engines": {}
-      },
-      "@storybook/addon-vitest": {
-        "version": "10.6.2",
-        "engines": {}
-      },
-      "@storybook/react-vite": {
-        "version": "10.6.2",
-        "engines": {}
-      },
-      "@tailwindcss/vite": {
-        "version": "4.3.3",
-        "engines": {}
-      },
-      "@types/node": {
-        "version": "26.6.5",
-        "engines": {}
-      },
-      "@typescript/typescript6": {
-        "version": "6.0.2",
-        "engines": {}
-      },
-      "@vitejs/plugin-react": {
-        "version": "6.1.2",
-        "engines": {
-          "node": "^20.19.0 || >=22.12.0"
-        }
-      },
-      "@vitest/browser-playwright": {
-        "version": "5.0.4",
-        "engines": {}
-      },
-      "playwright": {
-        "version": "1.64.0",
-        "engines": {
-          "node": ">=20"
-        }
-      },
-      "react": {
-        "version": "19.3.0",
-        "engines": {
-          "node": ">=0.10.0"
-        }
-      },
-      "react-dom": {
-        "version": "19.3.0",
-        "engines": {}
-      },
-      "remark-gfm": {
-        "version": "4.0.1",
-        "engines": {}
-      },
-      "size-limit": {
-        "version": "14.2.0",
-        "engines": {
-          "node": "^22.19.0 || ^24.5.0 || >=26.0.0"
-        }
-      },
-      "storybook": {
-        "version": "10.6.2",
-        "engines": {}
-      },
-      "tailwind-merge": {
-        "version": "3.7.0",
-        "engines": {}
-      },
-      "tailwindcss": {
-        "version": "4.3.3",
-        "engines": {}
-      },
-      "typescript": {
-        "version": "7.0.2",
-        "engines": {
-          "node": ">=16.20.0"
-        }
-      },
-      "vite": {
-        "version": "8.3.4",
-        "engines": {
-          "node": "^20.19.0 || >=22.12.0"
-        }
-      },
-      "vitest": {
-        "version": "5.0.4",
-        "engines": {
-          "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
         }
       },
       "@holakirr/snow-ui-icons": {
         "version": "2.2.2",
         "engines": {
           "node": ">=18"
+        }
+      },
+      "@hookform/resolvers": {
+        "version": "5.9.1",
+        "engines": {}
+      },
+      "@phosphor-icons/react": {
+        "version": "2.1.10",
+        "engines": {
+          "node": ">=10"
+        }
+      },
+      "@playwright/test": {
+        "version": "1.64.1",
+        "engines": {
+          "node": ">=20"
         }
       },
       "@radix-ui/react-accordion": {
@@ -4475,41 +3998,55 @@
         "version": "1.4.1",
         "engines": {}
       },
-      "class-variance-authority": {
-        "version": "0.7.1",
-        "engines": {}
-      },
-      "date-fns": {
-        "version": "4.4.0",
-        "engines": {}
-      },
-      "react-day-picker": {
-        "version": "10.0.2",
+      "@size-limit/esbuild": {
+        "version": "14.2.0",
         "engines": {
-          "node": ">=18"
+          "node": "^22.19.0 || ^24.5.0 || >=26.0.0"
         }
       },
-      "@arethetypeswrong/core": {
-        "version": "0.18.5",
+      "@size-limit/file": {
+        "version": "14.2.0",
         "engines": {
-          "node": ">=20"
+          "node": "^22.19.0 || ^24.5.0 || >=26.0.0"
         }
       },
-      "@hookform/resolvers": {
-        "version": "5.9.1",
+      "@storybook/addon-a11y": {
+        "version": "10.6.2",
         "engines": {}
       },
-      "@phosphor-icons/react": {
-        "version": "2.1.10",
-        "engines": {
-          "node": ">=10"
-        }
+      "@storybook/addon-designs": {
+        "version": "11.1.4",
+        "engines": {}
+      },
+      "@storybook/addon-docs": {
+        "version": "10.6.2",
+        "engines": {}
       },
       "@storybook/addon-links": {
         "version": "10.6.2",
         "engines": {}
       },
+      "@storybook/addon-themes": {
+        "version": "10.6.2",
+        "engines": {}
+      },
+      "@storybook/addon-vitest": {
+        "version": "10.6.2",
+        "engines": {}
+      },
+      "@storybook/react-vite": {
+        "version": "10.6.2",
+        "engines": {}
+      },
       "@tailwindcss/cli": {
+        "version": "4.3.3",
+        "engines": {}
+      },
+      "@tailwindcss/postcss": {
+        "version": "4.3.3",
+        "engines": {}
+      },
+      "@tailwindcss/vite": {
         "version": "4.3.3",
         "engines": {}
       },
@@ -4520,11 +4057,11 @@
         }
       },
       "@terrazzo/cli": {
-        "version": "2.8.0",
+        "version": "2.9.0",
         "engines": {}
       },
       "@terrazzo/parser": {
-        "version": "2.8.0",
+        "version": "2.9.0",
         "engines": {}
       },
       "@testing-library/jest-dom": {
@@ -4541,8 +4078,19 @@
           "node": ">=18"
         }
       },
+      "@testing-library/user-event": {
+        "version": "14.6.8",
+        "engines": {
+          "node": ">=12",
+          "npm": ">=6"
+        }
+      },
       "@types/bun": {
         "version": "1.4.3",
+        "engines": {}
+      },
+      "@types/node": {
+        "version": "26.6.5",
         "engines": {}
       },
       "@types/react": {
@@ -4553,12 +4101,26 @@
         "version": "19.3.0",
         "engines": {}
       },
+      "@typescript/typescript6": {
+        "version": "6.0.2",
+        "engines": {}
+      },
+      "@vitejs/plugin-react": {
+        "version": "6.1.2",
+        "engines": {
+          "node": "^20.19.0 || >=22.12.0"
+        }
+      },
+      "@vitest/browser-playwright": {
+        "version": "5.0.5",
+        "engines": {}
+      },
       "@vitest/coverage-v8": {
-        "version": "5.0.4",
+        "version": "5.0.5",
         "engines": {}
       },
       "@vitest/ui": {
-        "version": "5.0.4",
+        "version": "5.0.5",
         "engines": {}
       },
       "better-commits": {
@@ -4567,10 +4129,30 @@
           "node": ">=20.19.0"
         }
       },
+      "class-variance-authority": {
+        "version": "0.7.1",
+        "engines": {}
+      },
+      "date-fns": {
+        "version": "4.4.0",
+        "engines": {}
+      },
       "jsdom": {
-        "version": "30.1.2",
+        "version": "30.1.3",
         "engines": {
           "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+        }
+      },
+      "next": {
+        "version": "16.4.2",
+        "engines": {
+          "node": ">=20.9.0"
+        }
+      },
+      "playwright": {
+        "version": "1.64.1",
+        "engines": {
+          "node": ">=20"
         }
       },
       "publint": {
@@ -4579,24 +4161,30 @@
           "node": ">=18"
         }
       },
+      "react": {
+        "version": "19.3.1",
+        "engines": {
+          "node": ">=0.10.0"
+        }
+      },
+      "react-day-picker": {
+        "version": "10.0.2",
+        "engines": {
+          "node": ">=18"
+        }
+      },
+      "react-dom": {
+        "version": "19.3.1",
+        "engines": {}
+      },
       "react-hook-form": {
         "version": "7.90.0",
         "engines": {
           "node": ">=18.0.0"
         }
       },
-      "tsdown": {
-        "version": "0.23.1",
-        "engines": {
-          "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
-        }
-      },
-      "zod": {
-        "version": "4.6.7",
-        "engines": {}
-      },
       "react-is": {
-        "version": "19.3.0",
+        "version": "19.3.1",
         "engines": {}
       },
       "recharts": {
@@ -4605,44 +4193,71 @@
           "node": ">=18"
         }
       },
-      "@testing-library/user-event": {
-        "version": "14.6.8",
-        "engines": {
-          "node": ">=12",
-          "npm": ">=6"
-        }
+      "remark-gfm": {
+        "version": "4.0.1",
+        "engines": {}
       },
       "shadcn": {
-        "version": "4.21.4",
+        "version": "4.22.0",
         "engines": {
           "node": ">=20.18.1"
         }
+      },
+      "size-limit": {
+        "version": "14.2.0",
+        "engines": {
+          "node": "^22.19.0 || ^24.5.0 || >=26.0.0"
+        }
+      },
+      "storybook": {
+        "version": "10.6.2",
+        "engines": {}
+      },
+      "tailwind-merge": {
+        "version": "3.7.0",
+        "engines": {}
+      },
+      "tailwindcss": {
+        "version": "4.3.3",
+        "engines": {}
       },
       "ts-morph": {
         "version": "28.0.0",
         "engines": {}
       },
-      "next": {
-        "version": "16.4.0",
+      "tsdown": {
+        "version": "0.23.1",
         "engines": {
-          "node": ">=20.9.0"
+          "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
         }
       },
-      "@axe-core/playwright": {
-        "version": "4.13.0",
-        "engines": {}
+      "typescript": {
+        "version": "7.0.2",
+        "engines": {
+          "node": ">=16.20.0"
+        }
       },
-      "@tailwindcss/postcss": {
-        "version": "4.3.3",
-        "engines": {}
+      "vite": {
+        "version": "8.3.4",
+        "engines": {
+          "node": "^20.19.0 || >=22.12.0"
+        }
       },
-      "bun": {
-        "version": "1.4.3",
+      "vitest": {
+        "version": "5.0.5",
+        "engines": {
+          "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+        }
+      },
+      "zod": {
+        "version": "4.6.7",
         "engines": {}
       }
     },
     "engineProblems": [],
-    "peerProblems": []
+    "peerProblems": [],
+    "user_prefix_npm": "12.2.0",
+    "user_prefix_npm_path": "/Users/holakirr/.npm-global/bin/npm"
   },
   "security": {
     "bun_audit": {
@@ -4904,6 +4519,37 @@
       "source": "https://nodejs.org/dist/index.json",
       "data": [
         {
+          "version": "v26.12.0",
+          "date": "2026-10-14",
+          "files": [
+            "aix-ppc64",
+            "headers",
+            "linux-arm64",
+            "linux-ppc64le",
+            "linux-s390x",
+            "linux-x64",
+            "linux-x64-musl",
+            "osx-arm64-tar",
+            "osx-x64-pkg",
+            "osx-x64-tar",
+            "src",
+            "win-arm64-7z",
+            "win-arm64-zip",
+            "win-x64-7z",
+            "win-x64-exe",
+            "win-x64-msi",
+            "win-x64-zip"
+          ],
+          "npm": "11.20.0",
+          "v8": "14.6.202.34",
+          "uv": "1.52.1",
+          "zlib": "1.3.2.1-motley",
+          "openssl": "3.5.9",
+          "modules": "147",
+          "lts": false,
+          "security": false
+        },
+        {
           "version": "v26.11.1",
           "date": "2026-10-07",
           "files": [
@@ -5088,8 +4734,100 @@
           "modules": "147",
           "lts": false,
           "security": false
+        },
+        {
+          "version": "v26.8.0",
+          "date": "2026-08-25",
+          "files": [
+            "aix-ppc64",
+            "headers",
+            "linux-arm64",
+            "linux-ppc64le",
+            "linux-s390x",
+            "linux-x64",
+            "linux-x64-musl",
+            "osx-arm64-tar",
+            "osx-x64-pkg",
+            "osx-x64-tar",
+            "src",
+            "win-arm64-7z",
+            "win-arm64-zip",
+            "win-x64-7z",
+            "win-x64-exe",
+            "win-x64-msi",
+            "win-x64-zip"
+          ],
+          "npm": "11.19.0",
+          "v8": "14.6.202.34",
+          "uv": "1.52.1",
+          "zlib": "1.3.2.1-motley",
+          "openssl": "3.5.7",
+          "modules": "147",
+          "lts": false,
+          "security": false
+        },
+        {
+          "version": "v26.7.0",
+          "date": "2026-08-05",
+          "files": [
+            "aix-ppc64",
+            "headers",
+            "linux-arm64",
+            "linux-ppc64le",
+            "linux-s390x",
+            "linux-x64",
+            "osx-arm64-tar",
+            "osx-x64-pkg",
+            "osx-x64-tar",
+            "src",
+            "win-arm64-7z",
+            "win-arm64-zip",
+            "win-x64-7z",
+            "win-x64-exe",
+            "win-x64-msi",
+            "win-x64-zip"
+          ],
+          "npm": "11.19.0",
+          "v8": "14.6.202.34",
+          "uv": "1.52.1",
+          "zlib": "1.3.2.1-motley",
+          "openssl": "3.5.7",
+          "modules": "147",
+          "lts": false,
+          "security": false
+        },
+        {
+          "version": "v26.6.0",
+          "date": "2026-08-03",
+          "files": [
+            "aix-ppc64",
+            "headers",
+            "linux-arm64",
+            "linux-ppc64le",
+            "linux-s390x",
+            "linux-x64",
+            "osx-arm64-tar",
+            "osx-x64-pkg",
+            "osx-x64-tar",
+            "src",
+            "win-arm64-7z",
+            "win-arm64-zip",
+            "win-x64-7z",
+            "win-x64-exe",
+            "win-x64-msi",
+            "win-x64-zip"
+          ],
+          "npm": "11.18.0",
+          "v8": "14.6.202.34",
+          "uv": "1.52.1",
+          "zlib": "1.3.2.1-motley",
+          "openssl": "3.5.7",
+          "modules": "147",
+          "lts": false,
+          "security": false
         }
-      ]
+      ],
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "node_schedule": {
       "source": "https://raw.githubusercontent.com/nodejs/Release/main/schedule.json",
@@ -5252,232 +4990,2144 @@
           "end": "2030-04-30",
           "codename": ""
         }
-      }
+      },
+      "checked_at": "2026-10-13T16:39:48.845603+00:00",
+      "historical": true
     },
     "bun_security": {
       "source": "https://api.github.com/repos/oven-sh/bun/security-advisories?per_page=100",
-      "data": []
+      "data": [],
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "next_security": {
       "source": "https://api.github.com/repos/vercel/next.js/security-advisories?per_page=100",
       "data": [
         {
-          "ghsa_id": "GHSA-h694-7cp9-m8p3",
-          "summary": "Cache leak across root param values in nested 'use cache' functions",
-          "severity": "medium",
-          "published_at": "2026-09-30T16:14:26Z",
-          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-h694-7cp9-m8p3",
+          "ghsa_id": "GHSA-2464-fhr4-w9xw",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-2464-fhr4-w9xw",
+          "published_at": "2026-10-14T17:46:48Z",
+          "severity": "critical",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": "16.3.0",
+              "patched_versions": "15.5.28",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 10.0.0  <= 15.5.27"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.4.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "> 16.0.0 <= 16.4.0"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-h694-7cp9-m8p3",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-h694-7cp9-m8p3",
+          "published_at": "2026-09-30T16:14:26Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
               "patched_versions": "16.3.8",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "16.3.0"
             }
           ]
         },
         {
           "ghsa_id": "GHSA-vcvr-r3jv-pc5j",
-          "summary": "Remote Code Execution in next/og ImageResponse",
-          "severity": "critical",
-          "published_at": "2026-09-22T17:03:51Z",
           "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-vcvr-r3jv-pc5j",
+          "published_at": "2026-09-22T17:03:51Z",
+          "severity": "critical",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 16.2.0 < 16.3.6",
               "patched_versions": "16.3.6",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.2.0 < 16.3.6"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-673q-mjm6-r5xr",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-673q-mjm6-r5xr",
+          "published_at": "2026-10-14T17:47:07Z",
+          "severity": "critical",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.4.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=16.0.0 <= 16.4.0"
             }
           ]
         },
         {
           "ghsa_id": "GHSA-3w37-wq28-93x7",
-          "summary": "Pending `use cache` fill can leak Draft Mode content into regular responses and persisted pages",
-          "severity": "medium",
-          "published_at": "2026-09-30T16:14:35Z",
           "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-3w37-wq28-93x7",
+          "published_at": "2026-09-30T16:14:35Z",
+          "severity": "medium",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": "16.3.0",
               "patched_versions": "16.3.?",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "16.3.0"
             }
           ]
         },
         {
           "ghsa_id": "GHSA-cjq9-62q9-8jv4",
-          "summary": "Server-Side Request Forgery in Image Optimization",
-          "severity": "high",
-          "published_at": "2026-09-30T16:15:36Z",
           "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-cjq9-62q9-8jv4",
+          "published_at": "2026-09-30T16:15:36Z",
+          "severity": "high",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 16.0.0 < 16.3.?",
               "patched_versions": "16.3.?",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.3.?"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-p3m5-59mp-jv5r",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-p3m5-59mp-jv5r",
+          "published_at": "2026-10-14T17:47:43Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.28",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 <= 15.5.27"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.4.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 <= 16.4.0"
             }
           ]
         },
         {
           "ghsa_id": "GHSA-39w2-rjm5-chcv",
-          "summary": "Information disclosure in the Next.js development server's Model Context Protocol endpoint",
-          "severity": "low",
-          "published_at": "2026-09-30T16:14:15Z",
           "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-39w2-rjm5-chcv",
+          "published_at": "2026-09-30T16:14:15Z",
+          "severity": "low",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 16.0.0",
               "patched_versions": "16.3.?",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0"
             }
           ]
         },
         {
           "ghsa_id": "GHSA-4jqv-mc3x-m676",
-          "summary": "Cache poisoning of SSG and ISR pages in self-hosted Next.js applications",
-          "severity": "medium",
-          "published_at": "2026-09-30T16:14:22Z",
           "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-4jqv-mc3x-m676",
+          "published_at": "2026-09-30T16:14:22Z",
+          "severity": "medium",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 15.0.0",
               "patched_versions": "15.5.?",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 15.0.0"
             },
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 16.0.0",
               "patched_versions": "16.3.?",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0"
             }
           ]
         },
         {
           "ghsa_id": "GHSA-mcj8-r9mp-w47p",
-          "summary": "Cache poisoning in Next.js SSG/ISR rendering leads to cross-user content substitution and persistent denial of service",
-          "severity": "medium",
-          "published_at": "2026-09-30T16:14:19Z",
           "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-mcj8-r9mp-w47p",
+          "published_at": "2026-09-30T16:14:19Z",
+          "severity": "medium",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 16.0.0",
               "patched_versions": "16.3.?",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0"
             },
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 15.0.0",
               "patched_versions": "15.5.?",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 15.0.0"
             }
           ]
         },
         {
           "ghsa_id": "GHSA-f87g-xv8r-7p7x",
-          "summary": "Information disclosure in Next.js App Router metadata image routes via dynamicParams bypass",
-          "severity": "medium",
-          "published_at": "2026-09-30T16:14:44Z",
           "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-f87g-xv8r-7p7x",
+          "published_at": "2026-09-30T16:14:44Z",
+          "severity": "medium",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 16.0.0",
               "patched_versions": "16.3.?",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0"
             }
           ]
         },
         {
           "ghsa_id": "GHSA-2xp9-vwfh-vxw4",
-          "summary": "Unauthenticated Remote Code Execution in Image Optimization API when AVIF files are used",
-          "severity": "critical",
-          "published_at": "2026-08-25T16:16:28Z",
           "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-2xp9-vwfh-vxw4",
+          "published_at": "2026-08-25T16:16:28Z",
+          "severity": "critical",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 10.0.0 < 15.5.24",
               "patched_versions": "15.5.24",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 10.0.0 < 15.5.24"
             },
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": "< 16.3.3",
               "patched_versions": "16.3.3",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "< 16.3.3"
             }
           ]
         },
         {
           "ghsa_id": "GHSA-p293-qw3h-jr36",
-          "summary": "Unauthenticated Remote Code Execution on windows-hosted servers",
-          "severity": "critical",
-          "published_at": "2026-08-25T16:15:42Z",
           "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-p293-qw3h-jr36",
+          "published_at": "2026-08-25T16:15:42Z",
+          "severity": "critical",
           "vulnerabilities": [
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 13.4 < 15.5.24",
               "patched_versions": "15.5.24",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 13.4 < 15.5.24"
             },
             {
               "package": {
                 "ecosystem": "npm",
                 "name": "next"
               },
-              "vulnerable_version_range": ">= 16.0 < 16.3.3",
               "patched_versions": "16.3.3",
-              "vulnerable_functions": []
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0 < 16.3.3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-p9j2-gv94-2wf4",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-p9j2-gv94-2wf4",
+          "published_at": "2026-07-21T16:02:54Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.21",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 12.0.0 < 15.5.21"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.11"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-4c39-4ccg-62r3",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-4c39-4ccg-62r3",
+          "published_at": "2026-07-21T16:02:59Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.21",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 < 15.5.21"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.11"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-89xv-2m56-2m9x",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-89xv-2m56-2m9x",
+          "published_at": "2026-07-21T16:03:06Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.21",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 14.1.1 < 15.5.21"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.11"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-68g3-v927-f742",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-68g3-v927-f742",
+          "published_at": "2026-07-21T16:03:02Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.21",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 < 15.5.21"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": " >= 16.0.0 < 16.2.11"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-6gpp-xcg3-4w24",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-6gpp-xcg3-4w24",
+          "published_at": "2026-07-21T16:02:47Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": " >= 16.0.0 < 16.2.11"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-m99w-x7hq-7vfj",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-m99w-x7hq-7vfj",
+          "published_at": "2026-07-21T16:02:35Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.21",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 < 15.5.21"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": " >= 16.0.0 < 16.2.11"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-4633-3j49-mh5q",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-4633-3j49-mh5q",
+          "published_at": "2026-07-21T16:03:04Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.21",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 < 15.5.21"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": " >= 16.0.0 < 16.2.11"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-q8wf-6r8g-63ch",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-q8wf-6r8g-63ch",
+          "published_at": "2026-07-21T16:02:56Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.21",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=15.5.0 < 15.5.21"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": " >= 16.0.0 < 16.2.11"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-955p-x3mx-jcvp",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-955p-x3mx-jcvp",
+          "published_at": "2026-07-21T16:02:51Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.21",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 13.0.0 < 15.5.21"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": " >= 16.0.0 < 16.2.11"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-26hh-7cqf-hhc6",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-26hh-7cqf-hhc6",
+          "published_at": "2026-05-07T19:42:05Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.18",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 15.2.0 < 15.5.18"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.6",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.6"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-267c-6grr-h53f",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-267c-6grr-h53f",
+          "published_at": "2026-05-06T18:42:50Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 15.2.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-ffhc-5mcf-pf4q",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-ffhc-5mcf-pf4q",
+          "published_at": "2026-05-06T18:44:34Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 13.4.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-vfv6-92ff-j949",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-vfv6-92ff-j949",
+          "published_at": "2026-05-06T18:44:23Z",
+          "severity": "low",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 13.4.6 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-gx5p-jg67-6x7h",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-gx5p-jg67-6x7h",
+          "published_at": "2026-05-06T18:44:07Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-mg66-mrh9-m8jx",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-mg66-mrh9-m8jx",
+          "published_at": "2026-05-06T18:43:50Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=15.0.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-492v-c6pp-mqqv",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-492v-c6pp-mqqv",
+          "published_at": "2026-05-06T18:42:36Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 15.4.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-h64f-5h5j-jqjh",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-h64f-5h5j-jqjh",
+          "published_at": "2026-05-06T18:43:34Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=10.0.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-c4j6-fc7j-m34r",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-c4j6-fc7j-m34r",
+          "published_at": "2026-05-06T18:43:19Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 13.4.13 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-wfc6-r584-vfw7",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-wfc6-r584-vfw7",
+          "published_at": "2026-05-06T18:43:05Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 14.2.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-36qx-fr4f-26g5",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-36qx-fr4f-26g5",
+          "published_at": "2026-05-06T18:42:18Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= v12.2.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-8h8q-6873-q5fj",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-8h8q-6873-q5fj",
+          "published_at": "2026-05-06T18:40:57Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-3g8h-86w9-wvmq",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-3g8h-86w9-wvmq",
+          "published_at": "2026-05-06T18:41:26Z",
+          "severity": "low",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.16",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 12.2.0 < 15.5.16"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 16.0.0 < 16.2.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-q4gf-8mx6-v5v3",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-q4gf-8mx6-v5v3",
+          "published_at": "2026-04-08T19:09:37Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.15, 16.2.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 < 15.5.15, >= 16.0 < 16.2.3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-3x4c-7xq6-9pq8",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-3x4c-7xq6-9pq8",
+          "published_at": "2026-03-16T23:18:02Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.14, 16.1.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=10.0.0"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-mq59-m269-xvcx",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-mq59-m269-xvcx",
+          "published_at": "2026-03-16T23:17:47Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.1.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=16.0.1"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-jcc7-9wpm-mj36",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-jcc7-9wpm-mj36",
+          "published_at": "2026-03-16T23:17:28Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.1.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=16.0.1"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-h27x-g6w4-24gq",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-h27x-g6w4-24gq",
+          "published_at": "2026-03-16T23:16:46Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.1.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=16.1.0"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-ggv3-7p47-pfv8",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-ggv3-7p47-pfv8",
+          "published_at": "2026-03-16T23:16:21Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.1.7, 15.5.13",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=9.5.0"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-9g9p-9gw9-jx7f",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-9g9p-9gw9-jx7f",
+          "published_at": "2026-01-26T19:13:02Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "10.0.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "11.0.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "12.0.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "13.0.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "14.0.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.10",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.0.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.1.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "16.0.0"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-5f7q-jpqc-wp7h",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-5f7q-jpqc-wp7h",
+          "published_at": "2026-01-26T19:13:06Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.0.0",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.0.0-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.0.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.0.1-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.0.2",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.0.2-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.0.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.0.3-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.0.4",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.0.4-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.0",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.0-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.1-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.2",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.2-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.3-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.4",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.4-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.5-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.6",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.6-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.7-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.0",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.2.0-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.2.1-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.2",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.2.2-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.2.3-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.4",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.2.4-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.2.5-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.0",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.3.0-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.3.1-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.2",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.3.2-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.8",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.8-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.3.3-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.0",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.0-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.4",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.3.4-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.3.5-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.1-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.2",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.2-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.3-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.4",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.4-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.5-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.6",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.6-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.7-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.0",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.0-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.1-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.2",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.2-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.3-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.4",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.4-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.5-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.6",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.6-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.7-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.8",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.8-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.9",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.9-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.0.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.0.5-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.6",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.3.6-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.6",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.2.6-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.8",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.8-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.9",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.9-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.3.7-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.2.7-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.10",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.10-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.0.6",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.0.6-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.5.9",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.5.9-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.10",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.4.10-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.8",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.3.8-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.8",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.2.8-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.11",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.1.11-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.0.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "15.0.7-canary.0"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.1.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "16.1.0"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-h25m-26qc-wcjf",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-h25m-26qc-wcjf",
+          "published_at": "2026-01-26T19:17:26Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.0.8, 15.1.12, 15.2.9, 15.3.9, 15.4.11, 15.5.10, 15.6.0-canary.61, 16.0.11, 16.1.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 <15.0.8, >=15.0.0 <15.6.0-canary.61, >=16.0.0 <16.1.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-5j59-xgg2-r9c4",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-5j59-xgg2-r9c4",
+          "published_at": "2025-12-11T23:51:32Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "14.2.35, 15.0.7, 15.1.11, 15.2.8, 15.3.8, 15.4.10, 15.5.9, 15.6.0-canary.60, 16.0.10, 16.1.0-canary.19",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 13.3, >= 14, >=15, >=16"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-w37m-7fhw-fmv9",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-w37m-7fhw-fmv9",
+          "published_at": "2025-12-11T21:05:54Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.0.9, 15.5.8, 15.4.9, 15.3.7, 15.2.7, 15.1.10, 15.0.6, 15.6.0-canary.59, 16.1.0-canary.17",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=15, >=16"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-mwv6-3258-q52c",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-mwv6-3258-q52c",
+          "published_at": "2025-12-11T21:05:41Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "16.0.9, 15.5.8, 15.4.9, 15.3.7, 15.2.7, 15.1.10, 15.0.6, 14.2.34, 15.6.0-canary.59, 16.1.0-canary.17",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 13.3, >= 14, >=15, >=16"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-9qr9-h5gf-34mp",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-9qr9-h5gf-34mp",
+          "published_at": "2025-12-03T15:43:12Z",
+          "severity": "critical",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "v16.0.7, v15.5.7, v15.4.8, v15.3.6, v15.2.6, v15.1.9, v15.0.5, 15.6.0-canary.58, 16.1.0-canary.12",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=14.3.0-canary.77, >=15, >=16"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-4342-x723-ch2f",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-4342-x723-ch2f",
+          "published_at": "2025-08-29T21:23:04Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next.js"
+              },
+              "patched_versions": "14.2.32, 15.4.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "<14.2.32, <15.4.7"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-xv57-4mr9-wg8v",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-xv57-4mr9-wg8v",
+          "published_at": "2025-08-29T21:36:06Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next.js"
+              },
+              "patched_versions": "15.4.5, 14.2.31",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "< 14.2.31, 15.0.0 - 15.4.4"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-g5qg-72qw-gw5v",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-g5qg-72qw-gw5v",
+          "published_at": "2025-08-29T21:36:23Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.4.5, 14.2.31",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "< 14.2.31, 15.0.0 - 15.4.4"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-r2fc-ccr8-96c4",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-r2fc-ccr8-96c4",
+          "published_at": "2025-07-03T19:37:40Z",
+          "severity": "low",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.3.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 15.3.0 < 15.3.3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-67rr-84xm-4c7r",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-67rr-84xm-4c7r",
+          "published_at": "2025-07-03T19:25:20Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "≤15.0.4 and ≥15.2.0",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">15.0.4 and <15.2.0"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-223j-4rm8-mrmf",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-223j-4rm8-mrmf",
+          "published_at": "2025-04-02T17:25:20Z",
+          "severity": "low",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "=>12.3.6, =>13.5.10, =>14.2.26, =>15.2.4",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "<=12.3.5, <=13.5.9, <=14.2.25, <=15.2.3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-qpjv-v59x-3qc4",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-qpjv-v59x-3qc4",
+          "published_at": "2025-05-14T21:54:58Z",
+          "severity": "low",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "",
+                "name": "next"
+              },
+              "patched_versions": "≥14.2.24 <15.0.0, ≥15.1.6",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "<14.2.24, >15.0.0 and <15.1.6"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-f82v-jwr5-mffw",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-f82v-jwr5-mffw",
+          "published_at": "2025-03-21T10:17:21Z",
+          "severity": "critical",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "12.3.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "=> 11.1.4 < 12.3.5"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "14.2.25",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "=>14.0 <14.2.25"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.2.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "=>15.0 <15.2.3"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "13.5.9",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 13.0.0, < 13.5.9"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-3h52-269p-cp9r",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-3h52-269p-cp9r",
+          "published_at": "2025-05-28T21:42:07Z",
+          "severity": "low",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "14.2.30, >= 15.2.2",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.0.0 <14.2.30, >=15.0.0 <15.2.2"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-7m27-7ghc-44w9",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-7m27-7ghc-44w9",
+          "published_at": "2025-01-03T20:07:18Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "15.1.2, 14.2.21, 13.5.8",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">= 13.0.0 < 14.2.21, >= 15.0.0 < 15.1.1"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-7gfc-8cq8-jh5f",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-7gfc-8cq8-jh5f",
+          "published_at": "2024-12-17T14:18:11Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "14.2.15",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=9.5.5 <=14.2.14"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-g77x-44xx-532m",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-g77x-44xx-532m",
+          "published_at": "2024-10-14T08:46:56Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "10.x"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "11.x"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "12.x"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "13.x"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": ">=14.2.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "<14.2.7"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-gp8f-8m3g-qvj9",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-gp8f-8m3g-qvj9",
+          "published_at": "2024-09-17T20:37:13Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "13.5.7",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.5.1"
+            },
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "14.2.10",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "<14.2.10"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-fq54-2j52-jc42",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-fq54-2j52-jc42",
+          "published_at": "2024-07-10T09:29:38Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": ">=13.5",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.3.1 <13.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-77r5-gw3j-2mpf",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-77r5-gw3j-2mpf",
+          "published_at": "2024-05-09T15:50:30Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": ">=13.5.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.4 <13.5.1"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-fr5h-rqp8-mj6g",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-fr5h-rqp8-mj6g",
+          "published_at": "2024-05-09T15:47:01Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "14.1.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": ">=13.4 <14.1.1"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-wff4-fpwg-qqv3",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-wff4-fpwg-qqv3",
+          "published_at": "2022-08-24T17:10:11Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "12.2.4",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "12.2.3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-fmvm-x8mv-47mj",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-fmvm-x8mv-47mj",
+          "published_at": "2022-02-17T17:08:06Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "12.1.0",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "10.0.0 <= 12.0.10"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-wr66-vrwm-5g5x",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-wr66-vrwm-5g5x",
+          "published_at": "2022-01-28T15:30:16Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "12.0.9",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "12.0.0 <= 12.0.8"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-25mp-g6fv-mqxx",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-25mp-g6fv-mqxx",
+          "published_at": "2021-12-06T10:53:03Z",
+          "severity": "high",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "12.0.5,11.1.3",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "< 12.0.5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-9gr3-7897-pp7m",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-9gr3-7897-pp7m",
+          "published_at": "2021-08-30T22:14:41Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "11.1.1",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "10.0.0 <= 11.1.0"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-vxf5-wxwp-m7g9",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-vxf5-wxwp-m7g9",
+          "published_at": "2021-08-11T16:11:59Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "11.1.0",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "<=11.0.1"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-x56p-c8cg-q435",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-x56p-c8cg-q435",
+          "published_at": "2020-10-08T09:04:06Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "9.5.4",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "9.5.0 <= 9.5.3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-fq77-7p7r-83rj",
+          "html_url": "https://github.com/vercel/next.js/security/advisories/GHSA-fq77-7p7r-83rj",
+          "published_at": "2020-03-30T08:36:57Z",
+          "severity": "medium",
+          "vulnerabilities": [
+            {
+              "package": {
+                "ecosystem": "npm",
+                "name": "next"
+              },
+              "patched_versions": "9.3.2",
+              "vulnerable_functions": [],
+              "vulnerable_version_range": "< 9.3.2"
             }
           ]
         }
-      ]
+      ],
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "action:actions/checkout": {
       "source": "https://api.github.com/repos/actions/checkout/releases/latest",
@@ -5489,7 +7139,8 @@
         "uses": "actions/checkout",
         "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1",
         "comment": "v7.0.1"
-      }
+      },
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "action:oven-sh/setup-bun": {
       "source": "https://api.github.com/repos/oven-sh/setup-bun/releases/latest",
@@ -5500,8 +7151,9 @@
         "target_commitish": "main",
         "uses": "oven-sh/setup-bun",
         "sha": "0c5077e51419868618aeaa5fe8019c62421857d6",
-        "comment": "v2"
-      }
+        "comment": "v2.2.0"
+      },
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "action:actions/setup-node": {
       "source": "https://api.github.com/repos/actions/setup-node/releases/latest",
@@ -5511,9 +7163,10 @@
         "html_url": "https://github.com/actions/setup-node/releases/tag/v7.1.0",
         "target_commitish": "main",
         "uses": "actions/setup-node",
-        "sha": "820762786026740c76f36085b0efc47a31fe5020",
-        "comment": "v7.0.0"
-      }
+        "sha": "949feb2413d6458794dcd2491c4babbbce0c15c1",
+        "comment": "v7.1.0"
+      },
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "action:changesets/action": {
       "source": "https://api.github.com/repos/changesets/action/releases/latest",
@@ -5525,7 +7178,8 @@
         "uses": "changesets/action",
         "sha": "ae32849d5ba541f9ae29e40e22a623bc13562f51",
         "comment": "v2.1.2"
-      }
+      },
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "action:actions/upload-artifact": {
       "source": "https://api.github.com/repos/actions/upload-artifact/releases/latest",
@@ -5535,9 +7189,10 @@
         "html_url": "https://github.com/actions/upload-artifact/releases/tag/v7.0.2",
         "target_commitish": "main",
         "uses": "actions/upload-artifact",
-        "sha": "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
-        "comment": "v7.0.1"
-      }
+        "sha": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+        "comment": "v7.0.2"
+      },
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "action:actions/download-artifact": {
       "source": "https://api.github.com/repos/actions/download-artifact/releases/latest",
@@ -5547,9 +7202,10 @@
         "html_url": "https://github.com/actions/download-artifact/releases/tag/v8.0.2",
         "target_commitish": "main",
         "uses": "actions/download-artifact",
-        "sha": "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
-        "comment": "v8.0.1"
-      }
+        "sha": "9000827ccba6bdab643e8b6fd33ac0654aef8333",
+        "comment": "v8.0.2"
+      },
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "action:actions/cache": {
       "source": "https://api.github.com/repos/actions/cache/releases/latest",
@@ -5561,7 +7217,8 @@
         "uses": "actions/cache",
         "sha": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
         "comment": "v6.1.0"
-      }
+      },
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "action:ossf/scorecard-action": {
       "source": "https://api.github.com/repos/ossf/scorecard-action/releases/latest",
@@ -5571,26 +7228,29 @@
         "html_url": "https://github.com/ossf/scorecard-action/releases/tag/v2.5.0",
         "target_commitish": "main",
         "uses": "ossf/scorecard-action",
-        "sha": "2d1146689b8cda280b9bc96326124645441f03bc",
-        "comment": "v2.4.4"
-      }
+        "sha": "fa7117db83c52d787ae5a89f350999701505d78e",
+        "comment": "v2.5.0"
+      },
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "action:github/codeql-action": {
-      "source": "https://api.github.com/repos/github/codeql-action/releases/latest",
+      "source": "https://api.github.com/repos/github/codeql-action/releases/tags/v4.39.0",
       "data": {
-        "tag_name": "codeql-bundle-v2.27.2",
-        "published_at": "2026-10-07T09:38:20Z",
-        "html_url": "https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.27.2",
+        "tag_name": "v4.39.0",
+        "published_at": "2026-10-15T10:57:05Z",
+        "html_url": "https://github.com/github/codeql-action/releases/tag/v4.39.0",
         "target_commitish": "main",
         "uses": "github/codeql-action/upload-sarif",
-        "sha": "2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2",
-        "comment": "v4.38.2"
-      }
+        "sha": "6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee",
+        "comment": "v4.39.0"
+      },
+      "checked_at": "2026-10-16T21:42:23.357539+00:00"
     },
     "playwright_container": {
-      "source": "https://mcr.microsoft.com/v2/playwright/manifests/v1.64.0-noble",
+      "source": "https://mcr.microsoft.com/v2/playwright/manifests/v1.64.1-noble",
+      "checked_at": "2026-10-16T21:42:23.357539+00:00",
       "data": {
-        "digest": "sha256:06a9939e57531807f8d5fd76ce44b53165ffb7d7501d87ab10e285c20b1e971f",
+        "digest": "sha256:7852dc5a7d72f5fe458a597d690f6c42fbc8e9e26ddfa95f8e6ef552558d9bbf",
         "platforms": [
           {
             "architecture": "amd64",
@@ -5718,15 +7378,15 @@
       "previous_tag": "v2.4.4"
     },
     "action:github/codeql-action": {
-      "tag_name": "codeql-bundle-v2.27.2",
-      "published_at": "2026-10-07T09:38:20Z",
-      "html_url": "https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.27.2",
+      "tag_name": "v4.39.0",
+      "published_at": "2026-10-15T10:57:05Z",
+      "html_url": "https://github.com/github/codeql-action/releases/tag/v4.39.0",
       "target_commitish": "main",
       "uses": "github/codeql-action/upload-sarif",
-      "sha": "24c54180a607b1449ed407dd24f251e4e9147c8d",
-      "comment": "v4.38.3",
-      "latest_action_tag": "v4.38.3",
-      "latest_action_sha": "24c54180a607b1449ed407dd24f251e4e9147c8d",
+      "sha": "6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee",
+      "comment": "v4.39.0",
+      "latest_action_tag": "v4.39.0",
+      "latest_action_sha": "6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee",
       "up_to_date": true,
       "previous_sha": "2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2",
       "previous_tag": "v4.38.2"
@@ -6074,8 +7734,8 @@
     "braces 3.0.3 остаётся в уязвимом диапазоне; исправленная версия не опубликована. Находка относится к инструментам, удалённая эксплуатация в демо не подтверждена.",
     "react-docgen-typescript 2.4.0 остаётся latest. Его Vite plugin 0.7.0 с локальным патчем соответствует ^0.7.0, который требует последний Storybook 10.6.2; принудительная подмена на несовместимую 0.9.0 не выполнялась. Другие транзитивные версии тоже сохраняют ограничения родителей.",
     "Production-прогон Next.js 16.4.1 прошёл на Vercel; ОС и внутренний image runtime не сканировались на уязвимости, эксплуатация advisory не проверялась.",
-    "Полный аудит остальных зависимостей относится к 13 октября. Обновление Next.js отдельно прошло локальные проверки, hosted CI и production-прогон 15 октября.",
-    "56 визуальных историй имеют прежние явные skips; новые skips, отключения axe, снижение coverage или size budgets не добавлялись."
+    "56 визуальных историй имеют прежние явные skips; новые skips, отключения axe, снижение coverage или size budgets не добавлялись.",
+    "Обновление 17 октября проверяет локальную ветку и CI; новый production-прогон для Next.js 16.4.2 ещё не выполнялся. Исторические результаты production относятся к Next.js 16.4.1."
   ],
   "history": [
     {
@@ -6243,6 +7903,108 @@
       "skipped": 0,
       "flaky": 0,
       "errors": 0
+    },
+    {
+      "date": "2026-10-17",
+      "checked_at": "2026-10-16T21:42:23.357539+00:00",
+      "event": "stable_stack_refresh",
+      "previous_checked_at": "2026-10-13T16:39:48.845603+00:00",
+      "previous_revision": "8992b3eeb7032f1d8f55e76a3fb47ddc16e6f9e9",
+      "direct_packages": 88,
+      "previous_versions": {
+        "@arethetypeswrong/core": ["0.18.5"],
+        "@axe-core/playwright": ["4.13.0"],
+        "@biomejs/biome": ["2.5.15"],
+        "@changesets/changelog-github": ["1.0.1"],
+        "@changesets/cli": ["3.0.3"],
+        "@changesets/pre": ["3.0.0"],
+        "@changesets/read": ["1.0.1"],
+        "@figma/code-connect": ["2.0.1"],
+        "@holakirr/snow-ui-icons": ["workspace:packages/icons"],
+        "@hookform/resolvers": ["5.9.1"],
+        "@phosphor-icons/react": ["2.1.10"],
+        "@playwright/test": ["1.64.0"],
+        "@radix-ui/react-accordion": ["1.3.1"],
+        "@radix-ui/react-alert-dialog": ["1.2.1"],
+        "@radix-ui/react-avatar": ["1.3.1"],
+        "@radix-ui/react-checkbox": ["1.4.1"],
+        "@radix-ui/react-compose-refs": ["1.1.5"],
+        "@radix-ui/react-context-menu": ["2.4.1"],
+        "@radix-ui/react-dialog": ["1.3.1"],
+        "@radix-ui/react-direction": ["1.2.0"],
+        "@radix-ui/react-dropdown-menu": ["2.2.1"],
+        "@radix-ui/react-label": ["2.1.17"],
+        "@radix-ui/react-popover": ["1.3.1"],
+        "@radix-ui/react-progress": ["1.2.1"],
+        "@radix-ui/react-radio-group": ["1.5.1"],
+        "@radix-ui/react-select": ["2.4.1"],
+        "@radix-ui/react-separator": ["1.2.0"],
+        "@radix-ui/react-slider": ["1.6.1"],
+        "@radix-ui/react-slot": ["1.5.0"],
+        "@radix-ui/react-switch": ["1.4.1"],
+        "@radix-ui/react-tabs": ["1.2.1"],
+        "@radix-ui/react-toast": ["1.3.1"],
+        "@radix-ui/react-toggle": ["1.2.1"],
+        "@radix-ui/react-toggle-group": ["1.2.1"],
+        "@radix-ui/react-tooltip": ["1.4.1"],
+        "@size-limit/esbuild": ["14.2.0"],
+        "@size-limit/file": ["14.2.0"],
+        "@storybook/addon-a11y": ["10.6.2"],
+        "@storybook/addon-designs": ["11.1.4"],
+        "@storybook/addon-docs": ["10.6.2"],
+        "@storybook/addon-links": ["10.6.2"],
+        "@storybook/addon-themes": ["10.6.2"],
+        "@storybook/addon-vitest": ["10.6.2"],
+        "@storybook/react-vite": ["10.6.2"],
+        "@tailwindcss/cli": ["4.3.3"],
+        "@tailwindcss/postcss": ["4.3.3"],
+        "@tailwindcss/vite": ["4.3.3"],
+        "@tanstack/react-table": ["9.3.1"],
+        "@terrazzo/cli": ["2.8.0"],
+        "@terrazzo/parser": ["2.8.0"],
+        "@testing-library/jest-dom": ["7.0.1", "6.9.1"],
+        "@testing-library/react": ["16.3.3"],
+        "@testing-library/user-event": ["14.6.8"],
+        "@types/bun": ["1.4.3"],
+        "@types/node": ["26.6.5"],
+        "@types/react": ["19.3.0"],
+        "@types/react-dom": ["19.3.0"],
+        "@typescript/typescript6": ["6.0.2"],
+        "@vitejs/plugin-react": ["6.1.2"],
+        "@vitest/browser-playwright": ["5.0.4"],
+        "@vitest/coverage-v8": ["5.0.4"],
+        "@vitest/ui": ["5.0.4"],
+        "better-commits": ["1.26.1"],
+        "bun": ["1.4.3"],
+        "class-variance-authority": ["0.7.1"],
+        "date-fns": ["4.4.0"],
+        "jsdom": ["30.1.2", "24.1.3"],
+        "next": ["16.4.0"],
+        "playwright": ["1.64.0"],
+        "publint": ["0.3.25"],
+        "react": ["19.3.0"],
+        "react-day-picker": ["10.0.2"],
+        "react-dom": ["19.3.0"],
+        "react-hook-form": ["7.90.0"],
+        "react-is": ["19.3.0", "17.0.2"],
+        "recharts": ["3.10.1"],
+        "remark-gfm": ["4.0.1"],
+        "shadcn": ["4.21.4"],
+        "size-limit": ["14.2.0"],
+        "storybook": ["10.6.2"],
+        "tailwind-merge": ["3.7.0"],
+        "tailwindcss": ["4.3.3"],
+        "ts-morph": ["28.0.0", "27.0.2", "26.0.0"],
+        "tsdown": ["0.23.1"],
+        "typescript": ["6.0.3", "7.0.2", "5.6.1-rc"],
+        "vite": ["8.3.4"],
+        "vitest": ["5.0.4"],
+        "zod": ["4.6.7", "3.25.58", "3.25.76"]
+      },
+      "protection_changed": false,
+      "braces_version": "3.0.3",
+      "verification": "local_passed_ci_required_before_merge",
+      "completed_at": "2026-10-16T21:56:52.729138+00:00"
     }
   ],
   "working_tree_changes": true,
@@ -6341,55 +8103,58 @@
     }
   },
   "verification": {
-    "lint": "passed",
-    "typecheck_packages": "passed",
-    "typecheck_demo": "passed",
+    "status": "local_passed_ci_required_before_merge",
+    "metadata_compatibility": {
+      "direct_packages": 88,
+      "mismatches": [],
+      "engine_issues": [],
+      "peer_issues": []
+    },
     "unit_packages": {
-      "passed": 1925,
-      "detail": {
-        "ui": 1444,
-        "charts": 87,
-        "icons": 120,
-        "registry": 274
-      }
+      "passed": 1926
     },
     "scripts": {
-      "passed": 101
+      "passed": 114,
+      "python_braces": 18,
+      "python_production": 31
     },
     "build_packages": "passed, publint and attw clean",
     "build_storybook": "passed",
     "build_demo": "passed",
+    "lint": "passed",
+    "typecheck_packages": "passed",
+    "typecheck_demo": "passed",
     "dist_css": {
       "passed": 35
     },
     "size_budgets": "passed",
     "chromium_coverage": {
-      "passed": 3214,
+      "passed": 3215,
       "files": 273,
       "coverage": {
         "lines": {
-          "total": 3923,
-          "covered": 3836,
+          "total": 3925,
+          "covered": 3838,
           "skipped": 0,
           "pct": 97.78
         },
         "statements": {
-          "total": 4410,
-          "covered": 4276,
+          "total": 4412,
+          "covered": 4278,
           "skipped": 0,
           "pct": 96.96
         },
         "functions": {
-          "total": 1031,
-          "covered": 995,
+          "total": 1032,
+          "covered": 996,
           "skipped": 0,
-          "pct": 96.5
+          "pct": 96.51
         },
         "branches": {
-          "total": 3891,
-          "covered": 3621,
+          "total": 3899,
+          "covered": 3630,
           "skipped": 0,
-          "pct": 93.06
+          "pct": 93.1
         },
         "branchesTrue": {
           "total": 0,
@@ -6398,11 +8163,6 @@
           "pct": 100
         }
       }
-    },
-    "firefox_webkit": {
-      "passed": 1122,
-      "files": 134,
-      "retries": 0
     },
     "ssr": {
       "render_passed": 450,
@@ -6414,44 +8174,41 @@
     "demo_e2e": {
       "passed": 33
     },
-    "registry_smoke": [
-      {
-        "app": "next",
-        "exit_code": 0,
-        "log": "/tmp/snowui-registry-final-next.log"
-      },
-      {
-        "app": "vite",
-        "exit_code": 0,
-        "log": "/tmp/snowui-registry-final-vite.log"
-      },
-      {
-        "app": "next-shadcn",
-        "exit_code": 0,
-        "log": "/tmp/snowui-registry-final-next-shadcn.log"
-      }
-    ],
     "visual": {
       "passed": 1030,
       "existing_skips": 56,
-      "changed_baselines": 100,
-      "all_changed_images_reviewed": true,
-      "scope": "Only icon preview label colors; dimensions and content bounding boxes unchanged"
+      "changed_baselines": 0
     },
+    "firefox_webkit": {
+      "passed": 1122,
+      "files": 134
+    },
+    "registry_smoke": [
+      {
+        "app": "next",
+        "exit_code": 0
+      },
+      {
+        "app": "vite",
+        "exit_code": 0
+      },
+      {
+        "app": "next-shadcn",
+        "exit_code": 0
+      }
+    ],
     "frozen_install": {
-      "installs": 956,
-      "packages": 1106,
+      "installs": 954,
+      "packages": 1105,
       "lockfile_changes": false
     },
-    "metadata_compatibility": {
-      "direct_packages": 88,
-      "mismatches": [],
-      "engine_issues": [],
-      "peer_issues": []
-    },
-    "ci_bun_install": "npm ci passed; binary 1.4.3"
+    "code_connect": "passed",
+    "local_test_base_revision": "bc5d0fc8c71da836a2a2e61e854aae3379b97240",
+    "integration_validation": "Full hosted Build Check required for final HEAD rebased on main PR #247"
   },
   "last_targeted_security_check_at": "2026-10-14T21:04:28.198871+00:00",
   "last_targeted_security_resolution_at": "2026-10-15T10:16:46Z",
-  "last_targeted_scorecard_check_at": "2026-10-16T09:55:04.222616+00:00"
+  "last_targeted_scorecard_check_at": "2026-10-16T09:55:04.222616+00:00",
+  "candidate_branch": "codex/stack-stable-2026-10-17",
+  "candidate_base_revision": "dec12406"
 }

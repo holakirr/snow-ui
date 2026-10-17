@@ -55,7 +55,7 @@ export const colorTokens: ColorToken[] = [
     light: '#000',
     dark: '#adadfb',
     swatch: 'bg-primary',
-    note: 'Figma alias: Black/100% in SnowUI-Light, Secondary/Indigo in SnowUI-Dark.',
+    note: "Figma alias: Black/100% in SnowUI-Light. Dark mode retains the agreed accessible Indigo primary: the updated source's White/40% fails text and selected-control contrast checks.",
   },
   {
     name: 'primary-hover',
@@ -253,8 +253,8 @@ export const colorTokens: ColorToken[] = [
   {
     name: 'blue',
     figma: 'Secondary/Blue',
-    light: '#7dbbff',
-    dark: '#7dbbff',
+    light: '#33d1ff',
+    dark: '#33d1ff',
     swatch: 'bg-blue',
   },
   {

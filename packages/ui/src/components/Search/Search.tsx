@@ -196,6 +196,7 @@ const Search: FC<SearchProps> = ({
     <div
       data-variant={variant ?? 'gray'}
       data-size={size}
+      aria-disabled={disabled || undefined}
       className={twMerge(searchStyles({ variant, size }), className)}
     >
       <SearchIcon

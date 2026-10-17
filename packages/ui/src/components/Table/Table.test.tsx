@@ -51,7 +51,8 @@ describe('Table', () => {
       'font-normal',
       'h-10',
       'px-3',
-      'py-2',
+      'pt-2',
+      'pb-[7px]',
       'border-black-4',
     )
     expect(cell).not.toHaveClass('font-light', 'first-of-type:ps-0')

@@ -29,7 +29,7 @@ export default async function SignInPage() {
 
   return (
     <div className="relative flex min-h-svh flex-col bg-background-2">
-      <header className="absolute inset-x-0 top-0 flex items-center justify-between gap-4 px-4 py-4 md:px-7">
+      <header className="absolute inset-x-0 top-0 flex items-center justify-between gap-4 px-4 py-4 md:grid md:grid-cols-[1fr_auto_1fr] md:items-start md:px-7">
         <IconText
           asChild
           interactive
@@ -46,12 +46,12 @@ export default async function SignInPage() {
         </IconText>
         <nav
           aria-label={dict.nav.main}
-          className="hidden items-center gap-10 text-12 md:flex"
+          className="hidden items-center gap-4 text-12 md:flex"
         >
           {Object.entries(t.navigation).map(([key, label]) => (
             <a
               key={key}
-              className="rounded-4 focus-ring"
+              className="rounded-4 px-3 py-1 focus-ring"
               href={
                 key === 'download'
                   ? 'https://github.com/holakirr/snow-ui/releases'
@@ -64,15 +64,15 @@ export default async function SignInPage() {
             </a>
           ))}
         </nav>
-        <div className="flex items-center gap-2 text-12">
+        <div className="flex items-center justify-end gap-2 text-12">
           <span className="rounded-16 bg-black-4 px-3 py-1">
-            <SignUpButton />
+            <SignUpButton header />
           </span>
           <a
             href="#content"
             className="rounded-16 bg-primary px-3 py-1 text-white focus-ring"
           >
-            {t.title}
+            {dict.nav.signIn}
           </a>
         </div>
       </header>
@@ -96,7 +96,7 @@ export default async function SignInPage() {
 
           <SocialButtons />
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Separator decorative className="flex-1" />
             <Typography size={14} className="text-secondary">
               {t.or}
@@ -115,7 +115,7 @@ export default async function SignInPage() {
           </div>
         </Card>
       </main>
-      <footer className="absolute inset-x-0 bottom-6 px-4 text-center text-12 text-secondary">
+      <footer className="absolute inset-x-0 bottom-12 px-4 text-center text-12 text-secondary">
         © 2026 SnowUI
       </footer>
     </div>

@@ -12,7 +12,7 @@ import {
   ChartPieSliceIcon,
   ChatsTeardropIcon,
   ClockCounterClockwiseIcon,
-  FolderOpenIcon,
+  FolderIcon,
   IdentificationBadgeIcon,
   IdentificationCardIcon,
   NotebookIcon,
@@ -45,7 +45,6 @@ import {
   ListItem,
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarProvider,
   Strip,
@@ -107,7 +106,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: 'Overview', icon: ChartPieSliceIcon, active: true },
   { label: 'eCommerce', icon: ShoppingBagOpenIcon, directory: true },
-  { label: 'Projects', icon: FolderOpenIcon, directory: true },
+  { label: 'Projects', icon: FolderIcon, directory: true },
 ]
 
 const pageItems: NavItem[] = [
@@ -218,11 +217,6 @@ const DashboardSidebar = () => (
         <NavList items={pageItems} />
       </nav>
     </SidebarContent>
-    <SidebarFooter className="items-center p-0">
-      <Typography size={14} semibold className="text-secondary">
-        SnowUI
-      </Typography>
-    </SidebarFooter>
   </Sidebar>
 )
 
@@ -241,7 +235,7 @@ const SearchButton = (props: ComponentProps<'button'>) => (
     <SearchIcon size={16} />
     <span className="flex-1 text-left">Search</span>
     <KBD
-      keys={['/']}
+      keys={['⌘K']}
       aria-hidden
       // No fill of its own, like Search's hint: KBD's Black/4% on the gray
       // field took the dark-mode text under 4.5:1 (4.37:1; 3.89:1 hovered).
@@ -308,7 +302,7 @@ const DashboardHeader = ({
     <div className="flex items-center gap-5">
       <CommandPalette
         groups={searchGroups}
-        hotkey="/"
+        hotkey="mod+k"
         defaultOpen={searchOpen}
         trigger={<SearchButton />}
       />
@@ -580,7 +574,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The SnowUI dashboard layout built from the library: `Sidebar` (212px, `Tabs` for Favorites / Recently, IconText nav items), a sticky header (`Group` of icon `Button`s, `Breadcrumb`, a Search-styled trigger for the `CommandPalette` — press "/"), the content (`Card variant="block"` tiles and blocks, `Strip`) and a 280px right sidebar (`ListItem` rows for Notifications, Activities and Contacts). The kit\'s blocks are also resizable, snapped to the grid with one height per column; that is app behaviour (a grid layout and saving it), so the recipe leaves it to you. A recipe, not an exported component: copy it and adapt it.',
+          'The SnowUI dashboard layout built from the library: `Sidebar` (212px, `Tabs` for Favorites / Recently, IconText nav items), a sticky header (`Group` of icon `Button`s, `Breadcrumb`, a Search-styled trigger for the `CommandPalette` — press "⌘K" ("Ctrl+K" on non-Apple platforms; the pictured hint follows the source)), the content (`Card variant="block"` tiles and blocks, `Strip`) and a 280px right sidebar (`ListItem` rows for Notifications, Activities and Contacts). The kit\'s blocks are also resizable, snapped to the grid with one height per column; that is app behaviour (a grid layout and saving it), so the recipe leaves it to you. A recipe, not an exported component: copy it and adapt it.',
       },
       story: { inline: false, height: '900px' },
     },

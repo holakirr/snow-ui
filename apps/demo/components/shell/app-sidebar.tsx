@@ -3,21 +3,18 @@ import {
   IconText,
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   Typography,
 } from '@holakirr/snow-ui'
 import { ArrowLineRightIcon } from '@holakirr/snow-ui-icons'
 import type { ReactNode } from 'react'
-import { BrandLogo } from '@/components/brand-logo'
-import { BrandWordmark } from '@/components/brand-wordmark'
 import {
-  AddressBookIcon,
   ChartPieSliceIcon,
   ChatsTeardropIcon,
-  FolderOpenIcon,
+  FolderIcon,
   GearSixIcon,
   IdentificationBadgeIcon,
+  IdentificationCardIcon,
   ListBulletsIcon,
   NotebookIcon,
   ShoppingBagOpenIcon,
@@ -65,7 +62,7 @@ const StaticItem = ({
         ) : undefined
       }
     >
-      <span className={icon ? 'text-14' : 'ps-10 text-14'}>{label}</span>
+      <span className={icon ? 'text-14' : 'ps-12 text-14'}>{label}</span>
     </IconText>
   </li>
 )
@@ -110,11 +107,7 @@ export const AppSidebar = ({ dict }: { dict: Dictionary }) => (
             label={dict.nav.eCommerce}
             arrow
           />
-          <StaticItem
-            icon={<FolderOpenIcon />}
-            label={dict.nav.projects}
-            arrow
-          />
+          <StaticItem icon={<FolderIcon />} label={dict.nav.projects} arrow />
         </ul>
       </nav>
       <nav aria-labelledby="nav-pages" className="flex flex-col gap-1 pb-3">
@@ -144,7 +137,7 @@ export const AppSidebar = ({ dict }: { dict: Dictionary }) => (
                   <ArrowLineRightIcon />
                 </IconBox>
                 <IconBox size={20}>
-                  <AddressBookIcon />
+                  <IdentificationCardIcon />
                 </IconBox>
                 {dict.nav.account}
               </summary>
@@ -181,17 +174,5 @@ export const AppSidebar = ({ dict }: { dict: Dictionary }) => (
         </ul>
       </nav>
     </SidebarContent>
-    <SidebarFooter className="items-center px-4 pt-0 pb-3">
-      <IconText
-        icon={
-          <IconBox size={20} aria-hidden className="text-black">
-            <BrandLogo name="SnowUI" size={20} />
-          </IconBox>
-        }
-        className="gap-1 p-2 text-secondary"
-      >
-        <BrandWordmark />
-      </IconText>
-    </SidebarFooter>
   </Sidebar>
 )

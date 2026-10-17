@@ -58,7 +58,7 @@ export const BadgeComponent = ({
         'z-10 block rounded-80 text-center transition-all',
         content
           ? ['min-w-4.5 px-1.5 py-px', colorClasses[color].number]
-          : ['size-1.5', colorClasses[color].dot],
+          : ['size-4 bg-clip-content p-[5px]', colorClasses[color].dot],
         className,
       )}
       {...props}
@@ -106,7 +106,7 @@ const Badge = ({
       color={color}
       // On the top end corner: top right, top left in right-to-left text.
       className={twMerge(
-        'absolute -top-[1px] start-full -translate-x-2 rtl:translate-x-2',
+        'absolute -top-[6px] start-full -translate-x-[13px] rtl:translate-x-[13px]',
         content && '-top-[6px] -translate-x-1/2 rtl:translate-x-1/2',
         badgeClassName,
       )}

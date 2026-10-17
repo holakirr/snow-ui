@@ -475,7 +475,7 @@ const CommandPaletteList: FC<ListProps> = ({
         role="listbox"
         aria-label={label}
         aria-busy={loading || undefined}
-        className="scrollbar-snow -mx-1 max-h-[min(30.25rem,60vh)] overflow-y-auto px-1 pt-2 empty:hidden"
+        className="scrollbar-snow -mx-1 max-h-[min(30.25rem,60vh)] flex flex-col gap-3 overflow-y-auto px-1 pt-3 empty:hidden"
       >
         {visibleGroups.map((group) => {
           const headingId = `${baseId}-group-${group.groupIndex}`
@@ -485,14 +485,10 @@ const CommandPaletteList: FC<ListProps> = ({
               key={group.id}
               role="group"
               aria-labelledby={group.heading ? headingId : undefined}
-              className="flex flex-col gap-1 pb-2"
+              className="flex flex-col gap-1"
             >
               {group.heading && (
-                <Typography
-                  asChild
-                  size={14}
-                  className="px-2 py-1 text-secondary"
-                >
+                <Typography asChild size={14} className="px-2 text-secondary">
                   <div id={headingId} role="presentation">
                     {group.heading}
                   </div>

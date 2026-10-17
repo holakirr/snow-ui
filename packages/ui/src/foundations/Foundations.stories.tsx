@@ -44,7 +44,7 @@ export const Spacing: Story = { render: () => <SpacingPage /> }
 export const Effects: Story = { render: () => <EffectsPage /> }
 
 /**
- * The `scrollbar-snow` utility: the kit's 4px Black/10% thumb in an 8px
+ * The `scrollbar-snow` utility: the kit's 4px Black/10% thumb in a 12px
  * gutter in Chromium and WebKit, 8px in `control-border` under the pointer;
  * the thin scrollbar in Firefox, `control-border` while the pointer is over
  * the container. Headless browsers hide scrollbars, so the screenshots don't
@@ -95,7 +95,9 @@ export const Scrollbar: Story = {
         await expect(thumb?.getPropertyValue('background-color')).toBe(
           'var(--color-control-border)',
         )
-        await expect(thumb?.getPropertyValue('border-width')).toMatch(/^0/)
+        await expect(
+          thumb?.getPropertyValue('border-inline-start-width'),
+        ).toMatch(/^0/)
       }
     } else {
       // Firefox can't style a hovered thumb: a hover on the container turns

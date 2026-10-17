@@ -95,7 +95,7 @@ const meta: Meta<typeof Sidebar> = {
   parameters: {
     design: {
       type: 'figma',
-      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=34611-43783',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33534-44220',
     },
     layout: 'fullscreen',
     docs: {
@@ -116,7 +116,7 @@ const Header = () => (
       <SidebarMenuItem>
         <SidebarMenuButton>
           <picture>
-            <Avatar size="sm" className="group-data-[collapsible=icon]:size-4">
+            <Avatar size="sm" className="group-data-[collapsible=icon]:size-6">
               <AvatarImage src={photos[3]} alt="" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
@@ -199,6 +199,27 @@ export const Default: Story = {
       </main>
     </SidebarProvider>
   ),
+}
+
+/** Figma Fold=True: 80px column, 48px buttons and 24px icons. */
+export const Folded: Story = {
+  render: () => (
+    <SidebarProvider open={false}>
+      <AppSidebar />
+      <main className="flex-1" />
+    </SidebarProvider>
+  ),
+  play: async ({ canvasElement }) => {
+    const panel = canvasElement.querySelector(
+      '[data-sidebar="sidebar"]',
+    ) as HTMLElement
+    const item = canvasElement.querySelector(
+      '[data-sidebar="menu-button"]',
+    ) as HTMLElement
+    await expect(panel.getBoundingClientRect().width).toBe(80)
+    await expect(item.getBoundingClientRect().width).toBe(48)
+    await expect(item.getBoundingClientRect().height).toBe(48)
+  },
 }
 
 const rtlItems = [

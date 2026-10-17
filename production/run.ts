@@ -125,7 +125,7 @@ const codes = await Promise.all(
             )
             resolve(
               code === 0 &&
-                completeSuite(stats, name === 'docs' ? docsCount : 33)
+                completeSuite(stats, name === 'docs' ? docsCount : 34)
                 ? 0
                 : 1,
             )

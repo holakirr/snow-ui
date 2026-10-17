@@ -1,3 +1,12 @@
+import portraitAndiLane from './assets/avatars/andi-lane.png'
+import portraitByeWind from './assets/avatars/byewind.png'
+import portraitDrewCano from './assets/avatars/drew-cano.png'
+import portraitEmmaSmith from './assets/avatars/emma-smith.png'
+import portraitKateMorrison from './assets/avatars/kate-morrison.png'
+import portraitMelodyMacy from './assets/avatars/melody-macy.png'
+import portraitNataliCraig from './assets/avatars/natali-craig.png'
+import portraitOrlandoDiggs from './assets/avatars/orlando-diggs.png'
+
 /**
  * A stand-in for a user photo in the stories: a silhouette on a colour of
  * the palette, as an SVG data URI, so the stories and their docs pages load
@@ -24,3 +33,15 @@ export const photos = [
 export const cutout = `data:image/svg+xml,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="26" r="12" fill="#1c1c1c"/><rect x="12" y="42" width="40" height="30" rx="15" fill="#1c1c1c"/></svg>',
 )}`
+
+/** Selected original portraits exported from the licensed kit for source examples. */
+export const sourcePortraits: Record<string, string> = {
+  ByeWind: portraitByeWind,
+  'Emma Smith': portraitEmmaSmith,
+  'Melody Macy': portraitMelodyMacy,
+  'Natali Craig': portraitNataliCraig,
+  'Kate Morrison': portraitKateMorrison,
+  'Drew Cano': portraitDrewCano,
+  'Orlando Diggs': portraitOrlandoDiggs,
+  'Andi Lane': portraitAndiLane,
+}

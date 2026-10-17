@@ -621,11 +621,11 @@ export const ScrollbarPage = () => (
         the bar while the pointer is over the scroll area. The utility also
         exposes the thumb when the scroll area contains keyboard focus. Browsers
         with the WebKit scrollbar pseudo-elements (Chrome, Edge, Safari) draw
-        the kit's thumb in an 8px gutter, where the kit overlays it. Firefox
-        can't style a hovered thumb: its thin scrollbar keeps its own width and
-        turns <Code>control-border</Code> while the pointer is over the
-        container. Nothing animates, and forced-colors mode keeps the system
-        scrollbar.
+        the kit's thumb 4px from the edge in a 12px gutter, where the kit
+        overlays it. Firefox can't style a hovered thumb: its thin scrollbar
+        keeps its own width and turns <Code>control-border</Code> while the
+        pointer is over the container. Nothing animates, and forced-colors mode
+        keeps the system scrollbar.
       </>
     }
   >

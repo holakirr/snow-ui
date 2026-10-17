@@ -1,7 +1,7 @@
 import { CopyIcon, StarIcon, TextAIcon } from '@holakirr/snow-ui-icons'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Fragment } from 'react'
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import { SIZES } from '../../constants'
 import { colorOf, settledColor } from '../../test/colors'
 import { Typography } from '../Text'
@@ -240,6 +240,25 @@ export const Pill: Story = {
 }
 
 export const IconToggle: Story = {
+  play: async ({ canvas, userEvent }) => {
+    const text = canvas.getByRole('tab', { name: /^Text$/ })
+    const notes = canvas.getByRole('tab', { name: /^Notes$/ })
+    const glyph = (tab: HTMLElement) => tab.querySelector('svg') as SVGElement
+    await waitFor(() =>
+      expect(glyph(text).getBoundingClientRect().width).toBe(16),
+    )
+    await waitFor(() =>
+      expect(glyph(notes).getBoundingClientRect().width).toBe(20),
+    )
+    await userEvent.click(notes)
+    await expect(notes).toHaveAttribute('aria-selected', 'true')
+    await waitFor(() =>
+      expect(glyph(notes).getBoundingClientRect().width).toBe(16),
+    )
+    await waitFor(() =>
+      expect(glyph(text).getBoundingClientRect().width).toBe(20),
+    )
+  },
   render: () => (
     <Tabs defaultValue="text">
       <TabsList variant="icon-toggle">

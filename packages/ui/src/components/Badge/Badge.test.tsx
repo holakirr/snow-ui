@@ -16,7 +16,12 @@ describe('Badge', () => {
     const badge = screen.getByRole('status', { name: 'Notification badge' })
 
     expect(screen.getByRole('button', { name: 'Inbox' })).toBeInTheDocument()
-    expect(badge).toHaveClass('size-1.5', 'bg-indigo')
+    expect(badge).toHaveClass(
+      'size-4',
+      'p-[5px]',
+      'bg-clip-content',
+      'bg-indigo',
+    )
     expect(badge).toBeEmptyDOMElement()
   })
 
@@ -71,7 +76,7 @@ describe('Badge', () => {
     it('keeps Secondary/Red for the red dot', () => {
       render(<BadgeComponent color="red" />)
       const dot = screen.getByRole('status', { name: 'Notification badge' })
-      expect(dot).toHaveClass('bg-red', 'size-1.5')
+      expect(dot).toHaveClass('bg-red', 'size-4', 'p-[5px]', 'bg-clip-content')
       expect(dot).not.toHaveClass('bg-indigo')
     })
 

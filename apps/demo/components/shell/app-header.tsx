@@ -16,7 +16,7 @@ export const AppHeader = ({ dict }: { dict: Dictionary }) => (
     <div className="flex items-center gap-2">
       <Group aria-label={dict.header.layout}>
         {/* Named by the SnowUI message `sidebar.toggle` (translated). */}
-        <SidebarTrigger className="rounded-12 p-1 [&_svg]:size-5" />
+        <SidebarTrigger className="rounded-12 p-1 [&_svg]:size-4" />
         <FavoriteToggle />
       </Group>
       <HeaderBreadcrumb />

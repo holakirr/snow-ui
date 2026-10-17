@@ -44,8 +44,8 @@ import {
 // Figma Sidebar: 212px wide.
 const SIDEBAR_WIDTH = '13.25rem'
 const SIDEBAR_WIDTH_MOBILE = '18rem'
-// A 36px menu button plus 8px on each side.
-const SIDEBAR_WIDTH_ICON = '3.25rem'
+// Figma folded Simple A/B: a 48px menu button plus 16px on each side.
+const SIDEBAR_WIDTH_ICON = '5rem'
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
 
 type SidebarContext = {
@@ -365,9 +365,9 @@ const Sidebar: FC<SidebarProps> = ({
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
           // Adjust the padding for floating and inset variants.
           variant === 'floating' || variant === 'inset'
-            ? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]'
+            ? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]'
             : // Figma: a 0.5px Black/10% stroke on the inner edge.
-              'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r-[0.5px] group-data-[side=right]:border-l-[0.5px] border-black-10',
+              'group-data-[collapsible=icon]:w-(--sidebar-width-icon) after:pointer-events-none after:absolute after:inset-y-0 after:w-[0.5px] after:bg-black-10 group-data-[side=left]:after:right-0 group-data-[side=right]:after:left-0',
           className,
         )}
         style={style}
@@ -498,10 +498,7 @@ type SidebarHeaderProps = ComponentProps<'div'>
 const SidebarHeader: FC<SidebarHeaderProps> = ({ className, ...props }) => (
   <div
     data-sidebar="header"
-    className={twMerge(
-      'flex flex-col gap-2 px-4 py-2 group-data-[collapsible=icon]:px-2',
-      className,
-    )}
+    className={twMerge('flex flex-col gap-2 px-4 py-2', className)}
     {...props}
   />
 )
@@ -512,10 +509,7 @@ type SidebarFooterProps = ComponentProps<'div'>
 const SidebarFooter: FC<SidebarFooterProps> = ({ className, ...props }) => (
   <div
     data-sidebar="footer"
-    className={twMerge(
-      'flex flex-col gap-2 px-4 py-2 group-data-[collapsible=icon]:px-2',
-      className,
-    )}
+    className={twMerge('flex flex-col gap-2 px-4 py-2', className)}
     {...props}
   />
 )
@@ -555,7 +549,7 @@ const SidebarGroup: FC<SidebarGroupProps> = ({ className, ...props }) => (
   <div
     data-sidebar="group"
     className={twMerge(
-      'relative flex w-full min-w-0 flex-col px-4 py-2 group-data-[collapsible=icon]:px-2',
+      'relative flex w-full min-w-0 flex-col px-4 py-2',
       className,
     )}
     {...props}
@@ -657,7 +651,7 @@ SidebarMenuItem.displayName = 'SidebarMenuItem'
  * item.
  */
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full cursor-pointer items-center gap-1 overflow-hidden rounded-12 p-2 text-start text-black text-14 font-normal transition-[width,height,padding] motion-reduce:transition-none hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pe-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-9 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
+  'peer/menu-button flex w-full cursor-pointer items-center gap-1 overflow-hidden rounded-12 p-2 text-start text-black text-14 font-normal transition-[width,height,padding] motion-reduce:transition-none hover:bg-black-4 focus-ring active:bg-black-4 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pe-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-black-4 data-[state=open]:hover:bg-black-4 group-data-[collapsible=icon]:!size-12 group-data-[collapsible=icon]:!p-3 group-data-[collapsible=icon]:text-[0px] group-data-[collapsible=icon]:[&>span:last-child]:sr-only group-data-[collapsible=icon]:[&>svg]:size-6 group-data-[collapsible=icon]:[&>svg:not(:first-child)]:hidden [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -667,8 +661,8 @@ const sidebarMenuButtonVariants = cva(
       },
       size: {
         default: 'h-9 text-14',
-        sm: 'h-7 text-12',
-        lg: 'h-12 text-14 group-data-[collapsible=icon]:!p-0',
+        sm: 'h-7 p-1.5 text-12 [&>svg]:size-4',
+        lg: 'h-12 gap-3 p-3 text-14 [&>svg]:size-6',
       },
     },
     defaultVariants: {

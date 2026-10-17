@@ -32,6 +32,13 @@ export const initialSettings = {
   defaultPayment: 0,
   payoutInfo: '',
   connected: { SnowUI: true, Figma: true, Twitter: false, Instagram: false },
+  plugins: {
+    SnowUI: true,
+    Figma: true,
+    Twitter: true,
+    Instagram: true,
+    Slack: true,
+  },
   emails: {
     payments: true,
     fees: true,
@@ -94,7 +101,7 @@ export const SettingsDataProvider = ({ children }: { children: ReactNode }) => {
           restored.fontSize = saved.fontSize
         if ([0, 1, 2].includes(saved.defaultPayment))
           restored.defaultPayment = saved.defaultPayment
-        for (const key of ['connected', 'emails'] as const) {
+        for (const key of ['connected', 'emails', 'plugins'] as const) {
           for (const item of Object.keys(initialSettings[key])) {
             if (typeof saved[key]?.[item] === 'boolean')
               Object.assign(restored[key], { [item]: saved[key][item] })

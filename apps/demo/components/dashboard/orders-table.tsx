@@ -45,7 +45,8 @@ const STATUS_DOTS: Record<OrderStatus, string> = {
 }
 
 // The Figma table checkbox is 16px (the Checkbox component is 28px).
-const checkboxClassName = 'size-4 rounded-4 inset-ring-[1.5px] translate-y-0'
+const checkboxClassName =
+  'm-px size-3.5 rounded-[3.5px] inset-ring-2 translate-y-0'
 
 /**
  * Figma "Table A" (Order List): sortable headers (`aria-sort`), selectable

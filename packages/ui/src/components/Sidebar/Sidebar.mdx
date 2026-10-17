@@ -96,7 +96,7 @@ The sidebar is fixed to the edge of the viewport, so the stories below with a co
 
 ## Anatomy
 
-1. **Provider** (`SidebarProvider`): holds the state and renders a flex `<div>` at least the viewport's height. It sets `--sidebar-width` (212px) and `--sidebar-width-icon` (52px), which its `style` can override, and a `TooltipProvider` without delay. `useSidebar()` reads the state inside it.
+1. **Provider** (`SidebarProvider`): holds the state and renders a flex `<div>` at least the viewport's height. It sets `--sidebar-width` (212px) and `--sidebar-width-icon` (80px), which its `style` can override, and a `TooltipProvider` without delay. `useSidebar()` reads the state inside it.
 2. **Sidebar** (`Sidebar`): the panel. `side`, `variant` and `collapsible` set its place, look and collapsed form.
 3. **Header and footer** (`SidebarHeader`, `SidebarFooter`): columns at the top and bottom, padding 8 / 16px, 8px gap.
 4. **Content** (`SidebarContent`): the middle, which scrolls with the kit's scrollbar (`scrollbar-snow`); groups are 8px apart.
@@ -105,7 +105,7 @@ The sidebar is fixed to the edge of the viewport, so the stories below with a co
    - `SidebarGroupAction` (optional): a 20px button at the heading's end, with a 24px hit area (36px below 768px);
    - `SidebarGroupContent`: the section's menu, 14px text.
 6. **Menu** (`SidebarMenu`, a `<ul>` with 4px gaps, and `SidebarMenuItem`, an `<li>`), with:
-   - `SidebarMenuButton`: the Figma nav item ("Frame"), a `<button>` or, with `asChild`, your link. Padding 8px, radius 12, a 4px gap (the Figma nav item), 14px text and 20px icons. `isActive`, `variant`, `size` and `tooltip` (see below);
+   - `SidebarMenuButton`: the Figma nav item ("Frame"), a `<button>` or, with `asChild`, your link. The default Complex item has padding8px, radius12, gap4, text14 and icons20. The large Simple item has padding12px, gap12 and icons24; the small item has padding6px and icons16. `isActive`, `variant`, `size` and `tooltip` (see below);
    - `SidebarMenuAction` (optional): a 20px button at the item's end, with a 24px hit area (36px below 768px); `showOnHover` hides it on desktop until the item is hovered or focused;
    - `SidebarMenuBadge` (optional): a 20px-high count at the item's end, 12px tabular figures;
    - `SidebarMenuSkeleton`: a 36px loading row, with a 20px icon placeholder when `showIcon`.
@@ -137,7 +137,7 @@ The Figma dashboard sidebar (`Type=Complex`, `Fold=False`), with `collapsible="n
 | `collapsible` | Collapsed | Small screens |
 | --- | --- | --- |
 | `offcanvas` (default) | slides off the edge of the screen, then is hidden (`visibility: hidden`): out of the tab order and the accessibility tree | a sheet |
-| `icon` | a 52px column of icons (68px for `floating` and `inset`): group labels, group and item actions, badges and submenus hide, menu buttons become 36px squares | a sheet |
+| `icon` | an 80px column of icons (96px for `floating` and `inset`): group labels, group and item actions, badges and submenus hide, menu buttons become 48px squares with 24px icons | a sheet |
 | `none` | never: a static 212px column | the same column (no sheet) |
 
 Collapsed off-canvas, Tab goes from the page to the trigger without entering the sidebar (a `SidebarRail` inside it stays at the screen edge to reopen it):
@@ -150,7 +150,7 @@ Below 768px wide (`useIsMobile`) the sidebar renders in a [Sheet](?path=/docs/co
 
 | Prop | Values | Look |
 | --- | --- | --- |
-| `size` | `default` (36px, 14px text), `sm` (28px, 12px text), `lg` (48px, 14px text) | height and text |
+| `size` | `default` (36px, 14px text), `sm` (28px, 12px text), `lg` (48px, 14px text) | height, text and matching icon/padding sizes |
 | `variant` | `default`, `outline` | `outline` adds a `background-1` fill and a 0.5px Black/10% stroke |
 | `isActive` | `boolean` | a Black/4% fill (`data-active`) |
 | `tooltip` | a string, or `TooltipContent` props | a tooltip with the label, shown only while the sidebar is collapsed on desktop |

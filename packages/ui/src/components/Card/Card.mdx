@@ -73,7 +73,7 @@ Dashboard stat tiles are blocks with a `color-1` or `color-2` fill and `text-sta
 
 ### Selection mark
 
-`marker` adds the Figma selection mark (the kit's RadioAlt, `33400:44123`) on the top end corner, 12/16px in (24/24 on a `block`), as the Hover and Selected cards show it:
+`marker` adds the Figma selection mark (the kit's RadioAlt, `33400:44123`) on the top end corner, 12px from the top and end edges (24px on a `block`); a one-row default card centers the mark vertically, as the Hover and Selected cards show it:
 
 | Card | Mark |
 | --- | --- |
@@ -81,7 +81,15 @@ Dashboard stat tiles are blocks with a `color-1` or `color-2` fill and `text-sta
 | not selected, hovered or with the keyboard focus inside | empty: Background/3 with the `control-border` ring (`control-border-strong` on hover) |
 | not selected, at rest | hidden, as on the Figma Default and Static cards |
 
-The mark is `aria-hidden`, and the card gets 40px (48px on a `block`) of padding on the end side so the content stays clear of it. The mark fades in and out; the fade stops for reduced motion.
+The mark is `aria-hidden`. The default card preserves the source's 16px content padding and overlays its 24px mark 12px from the end edge; keep short source labels or reserve space for longer content with `className="pe-10"`. A `block` reserves 48px automatically. The mark fades in and out; the fade stops for reduced motion.
+
+For longer content, reserve the mark's space with logical end padding (also in RTL):
+
+```tsx
+<Card marker selected className="pe-10">
+  A longer project name that can wrap safely beside the selection mark
+</Card>
+```
 
 ## Accessibility
 

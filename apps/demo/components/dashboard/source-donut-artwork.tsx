@@ -1,8 +1,5 @@
-import { useId } from 'react'
-
 /** Original Overview ring paths; its label values are the kit's illustrative percentages. */
 export const SourceDonutArtwork = () => {
-  const id = useId()
   return (
     <svg
       width="160"
@@ -12,29 +9,9 @@ export const SourceDonutArtwork = () => {
       fill="none"
       style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
     >
-      <defs>
-        <linearGradient
-          id={`${id}-shade`}
-          x1="826.84"
-          y1="732"
-          x2="826.84"
-          y2="851.967"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="var(--color-primary)" />
-          <stop
-            offset="1"
-            stopColor="var(--color-primary)"
-            style={{
-              stopColor:
-                'light-dark(color-mix(in srgb, var(--color-primary) 60%, transparent), var(--color-primary))',
-            }}
-          />
-        </linearGradient>
-      </defs>
       <path
         d="M790.483 847.29C790.048 848.916 791.033 850.589 792.686 850.904C796.347 851.602 800.126 851.967 803.99 851.967C837.127 851.967 863.99 825.104 863.99 791.967C863.99 760.546 839.837 734.766 809.085 732.181C807.395 732.039 805.99 733.405 805.99 735.1L805.99 759.224C805.99 760.804 807.22 762.097 808.781 762.348C823.072 764.641 833.99 777.029 833.99 791.967C833.99 808.536 820.558 821.967 803.99 821.967C802.737 821.967 801.502 821.89 800.289 821.741C798.695 821.545 797.132 822.478 796.716 824.029L790.483 847.29Z"
-        fill={`url(#${id}-shade)`}
+        fill="var(--color-primary)"
       />
       <path
         d="M744.157 792.408C744.157 788.475 744.535 784.631 745.258 780.909C745.679 778.736 747.89 777.465 750.028 778.038L771.294 783.736C773.421 784.306 774.659 786.487 774.387 788.672C774.235 789.896 774.157 791.143 774.157 792.408C774.157 804.659 781.5 815.194 792.024 819.854C794.01 820.733 795.241 822.872 794.679 824.97L788.969 846.277C788.393 848.429 786.163 849.707 784.064 848.961C760.809 840.699 744.157 818.498 744.157 792.408Z"

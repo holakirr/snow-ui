@@ -21,6 +21,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Textarea,
   Typography,
   toast,
 } from '@holakirr/snow-ui'
@@ -606,12 +607,12 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
               {heading(t.payout)}
               <p className="px-3 text-12 text-secondary">{t.payoutHint}</p>
             </div>
-            <Input
+            <Textarea
               aria-label={t.payout}
               placeholder={t.payoutPlaceholder}
               value={data.payoutInfo}
               onChange={(event) => update({ payoutInfo: event.target.value })}
-              className="mx-3 h-20 w-auto bg-transparent py-2"
+              className="mx-3 h-20 w-auto resize-none content-center bg-transparent py-2"
             />
           </TabsContent>
           <TabsContent value="plugins" className="mt-0 flex flex-col gap-4">

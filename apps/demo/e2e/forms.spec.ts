@@ -69,6 +69,18 @@ test.describe('settings', () => {
     await expect(
       page.getByRole('textbox', { name: 'First Name', exact: true }),
     ).toHaveValue('Grace')
+    // Older saved payout details may already contain newlines.
+    await page.goto('/preferences?tab=payment')
+    const payout = page.getByRole('textbox', { name: 'Payout invoice info' })
+    const details = 'Example company\nExample address\nVAT 12345'
+    await payout.fill(details)
+    await page.reload()
+    await expect(payout).toHaveValue(details)
+    await payout.press('ControlOrMeta+End')
+    await payout.press('Enter')
+    await payout.press('x')
+    await page.reload()
+    await expect(payout).toHaveValue(`${details}\nx`)
   })
 
   test('plugins start enabled and persist separately from connected accounts', async ({

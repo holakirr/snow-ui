@@ -111,14 +111,7 @@ describe('Image', () => {
     let mark = markOf(frame) as HTMLElement
     expect(mark).toHaveAttribute('aria-hidden', 'true')
     expect(mark).toHaveAttribute('data-state', 'unchecked')
-    expect(mark).toHaveClass(
-      'size-5',
-      'top-2',
-      'end-2',
-      'inset-ring-control-border',
-      // The frame is a named group: an outer `group` doesn't reach the mark.
-      'group-hover/image:inset-ring-control-border-strong',
-    )
+    expect(mark).toHaveClass('size-6', 'top-2', 'end-2')
     expect(frame).toHaveClass('group/image')
     expect(frame).not.toHaveClass('group')
 
@@ -130,7 +123,10 @@ describe('Image', () => {
     frame = document.querySelector('[data-size]') as HTMLElement
     mark = markOf(frame) as HTMLElement
     expect(mark).toHaveAttribute('data-state', 'checked')
-    expect(mark).toHaveClass('inset-ring-[6px]', 'inset-ring-primary')
+    expect(mark.firstElementChild).toHaveClass(
+      'inset-ring-[6px]',
+      'inset-ring-primary',
+    )
     expect(frame).not.toHaveClass('before:inset-ring-2')
   })
 
@@ -141,7 +137,7 @@ describe('Image', () => {
       </Image>,
     )
     const frame = document.querySelector('[data-size]') as HTMLElement
-    expect(markOf(frame)).toHaveClass('size-2', 'top-0', 'end-0')
+    expect(markOf(frame)).toHaveClass('size-3', 'top-0', 'end-0')
   })
 
   it('passes the ref and props to the frame', () => {

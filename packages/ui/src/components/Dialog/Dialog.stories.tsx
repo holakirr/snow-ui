@@ -1,5 +1,9 @@
 import { AddIcon } from '@holakirr/snow-ui-icons'
-import { CalendarBlankIcon, UserIcon } from '@phosphor-icons/react'
+import {
+  CalendarBlankIcon,
+  CaretUpDownIcon,
+  UserIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type ChangeEvent, useState } from 'react'
 import { expect, waitFor, within } from 'storybook/test'
@@ -139,7 +143,8 @@ const addDataIcon = (
  * the Date value has a CalendarBlank icon before it, under the title.
  */
 const nameField = 'h-14 px-5'
-const titledField = 'h-22 px-5'
+const titledField =
+  'h-22 px-5 [&>div]:gap-0 [&_label]:flex [&_label]:h-7 [&_label]:items-center [&_input]:h-7'
 
 const emptyAddData = { firstName: '', lastName: '', email: '', date: '' }
 
@@ -161,7 +166,7 @@ const AddDataScreen = () => {
   return (
     <div className="h-svh w-full bg-background-1">
       <Dialog defaultOpen>
-        <div className="flex items-center gap-4 p-6">
+        <div className="flex items-center gap-4 p-6 [body:has([role=dialog][data-state=open])_&]:invisible">
           <DialogTrigger asChild>
             <Button variant="filled">Add data</Button>
           </DialogTrigger>
@@ -208,7 +213,7 @@ const AddDataScreen = () => {
               />
               <Input
                 title="Date"
-                placeholder="February 24th, 2026 at 8:00 AM"
+                placeholder="February 24th, 2026 at 8:53 PM."
                 // The icon sits on the value row (22px from the bottom),
                 // under the title, not before both rows.
                 startContent={
@@ -217,7 +222,12 @@ const AddDataScreen = () => {
                   </IconBox>
                 }
                 className={`${titledField} *:first:absolute *:first:start-5 *:first:bottom-[22px]`}
-                inputClassName="ps-7"
+                endContent={
+                  <IconBox size={20} className="absolute end-5 bottom-[22px]">
+                    <CaretUpDownIcon />
+                  </IconBox>
+                }
+                inputClassName="ps-7 pe-7"
                 {...field('date')}
               />
             </div>
@@ -308,6 +318,9 @@ export const AddData: Story = {
       await closed(dialog)
       await reopen()
       await expect(await firstName()).toHaveValue('')
+      const reopened = await open()
+      await settleLayout(reopened)
+      await userEvent.click(within(reopened).getByRole('heading', { name: 'New' }))
     })
   },
 }

@@ -186,7 +186,7 @@ const ToastTitle: FC<ToastTitleProps> = ({ className, size, ...props }) => (
 )
 ToastTitle.displayName = ToastPrimitives.Title.displayName
 
-const toastDescriptionStyles = cva('text-static-white/80', {
+const toastDescriptionStyles = cva('text-static-white', {
   variants: {
     size: {
       lg: 'text-14',

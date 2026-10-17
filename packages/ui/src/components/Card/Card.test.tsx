@@ -17,17 +17,11 @@ describe('Card', () => {
     expect(card).not.toHaveAttribute('data-state')
   })
 
-  it('adds no layout, so existing content keeps its flow', () => {
-    // A display or gap here would stretch a Button child to the card's
-    // width and break inline text into rows: the layout is the user's
-    // (`flex flex-col gap-1` for the Figma Card's stack).
-    for (const variant of ['default', 'block'] as const) {
-      const { unmount } = render(<Card data-testid="card" variant={variant} />)
-      const card = screen.getByTestId('card')
-      for (const name of ['flex', 'grid', 'flex-col', 'gap-1']) {
-        expect(card).not.toHaveClass(name)
-      }
-      unmount()
+  it('sets the source text metrics without imposing a content layout', () => {
+    const card = renderCard()
+    expect(card).toHaveClass('text-14')
+    for (const name of ['flex', 'grid', 'flex-col', 'gap-1']) {
+      expect(card).not.toHaveClass(name)
     }
   })
 
@@ -71,22 +65,21 @@ describe('Card', () => {
     let card = renderCard({ marker: true })
     let mark = card.querySelector('[data-slot="radio-mark"]') as HTMLElement
 
-    // Clear of the mark: the padding plus the 20px mark and a 4px gap.
+    // Keep the source content padding and its 24px icon frame.
     // A named group: an outer `group` (the Sidebar's) doesn't reach the mark.
-    expect(card).toHaveClass('group/card', 'relative', 'pe-10')
+    expect(card).toHaveClass('group/card', 'relative')
     expect(card).not.toHaveClass('group')
     expect(mark).toHaveAttribute('aria-hidden', 'true')
     expect(mark).toHaveAttribute('data-state', 'unchecked')
     expect(mark).toHaveClass(
       'absolute',
-      'top-3',
-      'end-4',
-      'size-5',
+      'top-[min(12px,calc((100%_-_24px)/2))]',
+      'end-3',
+      'size-6',
       // Figma: an empty mark only on hover (and keyboard focus here).
       'opacity-0',
       'group-hover/card:opacity-100',
       'group-has-focus-visible/card:opacity-100',
-      'group-hover/card:inset-ring-control-border-strong',
     )
     cleanup()
 
@@ -94,7 +87,8 @@ describe('Card', () => {
     mark = card.querySelector('[data-slot="radio-mark"]') as HTMLElement
     expect(card).toHaveClass('pe-12')
     expect(mark).toHaveAttribute('data-state', 'checked')
-    expect(mark).toHaveClass('top-6', 'end-6', 'inset-ring-[6px]')
+    expect(mark).toHaveClass('top-6', 'end-6')
+    expect(mark.firstElementChild).toHaveClass('inset-ring-[6px]')
     expect(mark).not.toHaveClass('opacity-0')
   })
 

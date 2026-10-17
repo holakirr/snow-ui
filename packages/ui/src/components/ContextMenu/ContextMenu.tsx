@@ -78,7 +78,7 @@ ContextMenuSubTrigger.displayName = CtxMenuPrimitive.SubTrigger.displayName
  * submenus) it scrolls with the kit's scrollbar.
  */
 const contentClasses = twMerge(
-  'z-50 min-w-60',
+  'z-50 min-w-30',
   popoverSurfaceClasses,
   popoverScrollClasses,
   'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:data-[side=bottom]:animate-slide-in-from-top data-[state=open]:data-[side=left]:animate-slide-in-from-right data-[state=open]:data-[side=right]:animate-slide-in-from-left data-[state=open]:data-[side=top]:animate-slide-in-from-bottom',

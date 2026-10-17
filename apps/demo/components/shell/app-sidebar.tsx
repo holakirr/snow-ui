@@ -65,7 +65,7 @@ const StaticItem = ({
         ) : undefined
       }
     >
-      <span className={icon ? 'text-14' : 'ps-10 text-14'}>{label}</span>
+      <span className={icon ? 'text-14' : 'ps-12 text-14'}>{label}</span>
     </IconText>
   </li>
 )

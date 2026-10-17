@@ -35,7 +35,8 @@ import {
 import { expect, waitFor, within } from 'storybook/test'
 import { toast } from '../../hooks'
 import { animationsEnded, expectClosed } from '../../test/animations'
-import { Avatar, AvatarFallback, AvatarGroup } from '../Avatar'
+import { sourcePortraits } from '../../test/photos'
+import { Avatar, AvatarFallback, AvatarGroup, AvatarImage } from '../Avatar'
 import { Button } from '../Button'
 import { Card } from '../Card'
 import {
@@ -199,7 +200,7 @@ type OrdersTable = ReactTable<typeof features, Order>
 const checkboxClassName =
   // The Figma table checkbox is 16px (the Checkbox component is 28px), with
   // a 24px pointer target (`hit-area`, WCAG 2.5.8).
-  'relative size-4 rounded-4 inset-ring-[1.5px] translate-y-0 hit-area'
+  'relative m-px size-3.5 rounded-[3.5px] inset-ring-2 translate-y-0 hit-area'
 
 const columns: ColumnDef<typeof features, Order>[] = [
   {
@@ -232,6 +233,7 @@ const columns: ColumnDef<typeof features, Order>[] = [
     cell: ({ row }) => (
       <span className="flex items-center gap-2">
         <Avatar size="sm">
+          <AvatarImage src={sourcePortraits[row.original.user]} alt="" />
           <AvatarFallback>{initials(row.original.user)}</AvatarFallback>
         </Avatar>
         {row.original.user}
@@ -792,6 +794,9 @@ export const TableA: Story = {
 
     await step('the kit state: two rows selected, "2 Selected"', async () => {
       await expect(dataRows()).toHaveLength(20)
+      for (const row of dataRows()) {
+        await expect(row.getBoundingClientRect().height).toBe(40)
+      }
       await expect(root.getByText('105 results')).toBeInTheDocument()
       const selection = bar() as HTMLElement
       await expect(selection).toHaveAccessibleName('2 Selected')
@@ -1479,6 +1484,11 @@ export const ColumnSelection: Story = {
  * the rows, the first column's text on the caption's edge, and no total row.
  */
 export const TableB: Story = {
+  play: async ({ canvas }) => {
+    for (const row of canvas.getAllByRole('row')) {
+      await expect(row.getBoundingClientRect().height).toBe(40)
+    }
+  },
   render: () => (
     <Card variant="block" className="w-[560px]">
       <Table className="[&_td]:border-b-0 [&_td:first-child]:ps-0 [&_th:first-child]:ps-0">
@@ -1494,7 +1504,7 @@ export const TableB: Story = {
         <TableBody>
           <TableRow>
             <TableCell>Coffee detail page</TableCell>
-            <TableCell>
+            <TableCell className="py-1.5">
               <AvatarGroup>
                 <Avatar size="sm">
                   <AvatarFallback>JD</AvatarFallback>
@@ -1506,7 +1516,7 @@ export const TableB: Story = {
           </TableRow>
           <TableRow>
             <TableCell>Drinking bottle graphics</TableCell>
-            <TableCell>
+            <TableCell className="py-1.5">
               <AvatarGroup>
                 <Avatar size="sm">
                   <AvatarFallback>GD</AvatarFallback>

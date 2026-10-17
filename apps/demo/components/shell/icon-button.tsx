@@ -11,7 +11,7 @@ import {
 import type { ReactNode } from 'react'
 
 /**
- * The header's 28px icon buttons (Figma: a 20px icon, 4px padding, radius
+ * The header's 24px icon buttons (Figma: a 16px icon, 4px padding, radius
  * 12), named by `label` and with the same text as a tooltip. Extra props
  * (`aria-pressed`, `aria-expanded`, a trigger's props through `asChild`
  * parents) go to the button.
@@ -33,7 +33,7 @@ export const IconButton = ({
       <Button
         aria-label={label}
         startContent={
-          <IconBox size={20} badge={badge || undefined}>
+          <IconBox size={16} badge={badge || undefined}>
             {icon}
           </IconBox>
         }

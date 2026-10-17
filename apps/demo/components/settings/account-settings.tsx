@@ -20,9 +20,19 @@ import Link from 'next/link'
 import { type ReactNode, useEffect, useId, useState } from 'react'
 import { usePreferences } from '@/app/providers'
 import { BrandLogo } from '@/components/brand-logo'
-import { ShieldCheckIcon } from '@/components/icons'
+import {
+  DotsThreeIcon,
+  ShieldCheckIcon,
+  WarningCircleIcon,
+} from '@/components/icons'
 import { getSettingsCopy } from './settings-copy'
 import { useSettingsData } from './settings-data'
+
+// The source's 88px fields use two 28px rows, with 16px above and below.
+const titledInputClassName =
+  'h-22 px-5 [&>div]:gap-0 [&_label]:flex [&_label]:h-7 [&_label]:items-center [&_input]:h-7'
+const titledSelectClassName =
+  'h-22 items-center px-5 [&>svg]:translate-y-[15px]'
 
 const Panel = ({
   title,
@@ -62,6 +72,16 @@ export const AccountSettings = () => {
   const [skills, setSkills] = useState(['UX/UI', 'Product design'])
   const [confirm, setConfirm] = useState(false)
   const base = useId()
+  const hintWithLink = (text: string) =>
+    text.split(/(Learn [Mm]ore|Подробнее)/).map((part) =>
+      /^(Learn [Mm]ore|Подробнее)$/.test(part) ? (
+        <span key={part} className="text-indigo-text">
+          {part}
+        </span>
+      ) : (
+        part
+      ),
+    )
   const saved = () => toast({ status: 'success', title: dict.settings.saved })
   const actions = (save: () => void, cancel: () => void) => (
     <div className="flex items-center gap-2">
@@ -91,7 +111,7 @@ export const AccountSettings = () => {
       placeholder={key === 'name' ? t.firstName : t.lastName}
       value={data[key]}
       onChange={(event) => update({ [key]: event.target.value })}
-      className={title ? 'h-22 px-5' : 'h-14 px-5'}
+      className={title ? titledInputClassName : 'h-14 px-5'}
     />
   )
   const emailRows = [
@@ -180,6 +200,14 @@ export const AccountSettings = () => {
           >
             {t.hire}
           </Button>
+          <Button
+            size="sm"
+            variant="gray"
+            className="p-1"
+            aria-label={t.settings}
+            startContent={<DotsThreeIcon size={16} />}
+            onClick={() => toast({ title: t.settings })}
+          />
         </div>
       </div>
       <Panel title={t.profile}>
@@ -187,11 +215,11 @@ export const AccountSettings = () => {
           {field('name')}
           {field('lastName')}
           {field('phone', t.phone)}
-          <div className="flex h-19 flex-col justify-center gap-2 rounded-16 bg-surface-1 px-5 inset-ring-[0.5px] inset-ring-control-border">
+          <div className="flex h-19 flex-col justify-center rounded-16 bg-surface-1 px-5 inset-ring-[0.5px] inset-ring-control-border">
             <Typography size={12} className="text-secondary">
               {t.skill}
             </Typography>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex h-7 flex-wrap items-center gap-2">
               {skills.map((skill) => (
                 <Tag
                   key={skill}
@@ -216,7 +244,7 @@ export const AccountSettings = () => {
             <SelectTrigger
               title={t.country}
               aria-label={t.country}
-              className="h-22 px-5"
+              className={titledSelectClassName}
             >
               <SelectValue />
             </SelectTrigger>
@@ -237,7 +265,7 @@ export const AccountSettings = () => {
             <SelectTrigger
               title={t.language}
               aria-label={t.language}
-              className="h-22 px-5"
+              className={titledSelectClassName}
             >
               <SelectValue />
             </SelectTrigger>
@@ -249,12 +277,16 @@ export const AccountSettings = () => {
               ))}
             </SelectContent>
           </Select>
-          <div className="flex h-22 flex-col justify-center gap-2 rounded-16 bg-surface-1 px-5 inset-ring-[0.5px] inset-ring-control-border sm:col-span-2">
-            <Typography size={12} className="text-secondary">
+          <div className="flex h-22 flex-col justify-center rounded-16 bg-surface-1 px-5 inset-ring-[0.5px] inset-ring-control-border sm:col-span-2">
+            <Typography
+              size={12}
+              className="flex h-7 items-center text-secondary"
+            >
               {t.status}
             </Typography>
-            <Label className="flex items-center gap-2 text-12 text-secondary">
+            <Label className="flex h-7 items-center gap-2 text-12 text-secondary">
               <Switch
+                size={28}
                 checked={data.active}
                 onCheckedChange={(active) => update({ active })}
               />
@@ -271,14 +303,14 @@ export const AccountSettings = () => {
               value={data.email}
               type="email"
               onChange={(event) => update({ email: event.target.value })}
-              className="h-22 px-5"
+              className={titledInputClassName}
             />
             <Input
               title={t.password}
               defaultValue="snowui-password"
               type="password"
               readOnly
-              className="h-22 px-5"
+              className={titledInputClassName}
             />
           </div>
           <div className="flex items-start gap-2 rounded-16 bg-surface-1 p-4 md:min-h-21">
@@ -303,7 +335,7 @@ export const AccountSettings = () => {
       <Panel title={t.connected}>
         <div className="flex gap-2 rounded-16 bg-surface-1 p-4 text-12 text-secondary md:min-h-16">
           <ShieldCheckIcon size={20} aria-hidden />
-          <p>{t.connectedHint}</p>
+          <p>{hintWithLink(t.connectedHint)}</p>
         </div>
         <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
           {connections.map(([key, description], index) => (
@@ -311,10 +343,10 @@ export const AccountSettings = () => {
               key={key}
               className={`relative flex items-start gap-4 ${index < 2 ? 'pb-4 after:absolute after:inset-x-0 after:bottom-0 after:h-[0.5px] after:bg-black-10' : ''}`}
             >
-              <span className="flex h-9 w-11 shrink-0 items-center justify-center">
+              <span className="flex h-9 w-11 shrink-0 items-center justify-end">
                 <BrandLogo name={key} size={32} />
               </span>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 pe-3">
                 <Typography size={14} semibold className="block">
                   {key}
                 </Typography>
@@ -322,7 +354,7 @@ export const AccountSettings = () => {
               </div>
               <Switch
                 aria-label={key}
-                className="mx-3 mt-2.5"
+                className="mx-[14px] my-2.5"
                 checked={data.connected[key]}
                 onCheckedChange={(checked) =>
                   update({ connected: { ...data.connected, [key]: checked } })
@@ -341,15 +373,15 @@ export const AccountSettings = () => {
           )}
         >
           <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
-            {emailRows.map(([key, title, description]) => (
+            {emailRows.map(([key, title, description], index) => (
               <label
                 htmlFor={`${base}-email-${key}`}
                 key={key}
-                className="relative flex items-start gap-4 px-3 pb-4 text-14 after:absolute after:inset-x-0 after:bottom-0 after:h-[0.5px] after:bg-black-10"
+                className={`relative flex items-start gap-4 px-3 text-14 ${index < 4 ? 'pb-4 after:absolute after:inset-x-0 after:bottom-0 after:h-[0.5px] after:bg-black-10' : ''}`}
               >
                 <Checkbox
                   id={`${base}-email-${key}`}
-                  className="relative size-5 rounded-6 hit-area"
+                  className="relative m-[1.25px] size-[17.5px] rounded-[5px] inset-ring-[1.25px] hit-area"
                   checked={emails[key]}
                   onCheckedChange={(checked) =>
                     setEmails((current) => ({
@@ -362,7 +394,9 @@ export const AccountSettings = () => {
                   <Typography size={14} semibold className="block">
                     {title}
                   </Typography>
-                  <p className="truncate text-12 text-secondary">
+                  <p
+                    className={`${index < 4 ? 'truncate ' : ''}text-12 text-secondary`}
+                  >
                     {description}
                   </p>
                 </div>
@@ -394,7 +428,7 @@ export const AccountSettings = () => {
                   >
                     <Checkbox
                       id={`${base}-${key}-${index}`}
-                      className="relative size-5 rounded-6 hit-area"
+                      className="relative m-[1.25px] size-[17.5px] rounded-[5px] inset-ring-[1.25px] hit-area"
                       aria-label={`${title}: ${channel}`}
                       checked={notifications[key][index]}
                       onCheckedChange={(checked) =>
@@ -421,23 +455,28 @@ export const AccountSettings = () => {
             size="sm"
             variant="filled"
             className="bg-red-text text-white"
-            disabled={!confirm}
             onClick={() => {
+              if (!confirm) {
+                toast({ status: 'error', title: t.confirm })
+                return
+              }
               update({ active: false })
               saved()
             }}
           >
-            {t.deactivate}
+            {t.deactivateAction}
           </Button>
         }
       >
         <div className="flex gap-2 rounded-16 bg-surface-1 p-4">
-          <ShieldCheckIcon size={20} aria-hidden />
+          <WarningCircleIcon size={20} aria-hidden />
           <div>
             <Typography size={14} className="block">
               {t.deactivateHint}
             </Typography>
-            <p className="text-12 text-secondary">{t.deactivateDescription}</p>
+            <p className="text-12 text-secondary">
+              {hintWithLink(t.deactivateDescription)}
+            </p>
           </div>
         </div>
         <label
@@ -446,7 +485,7 @@ export const AccountSettings = () => {
         >
           <Checkbox
             id={`${base}-confirm`}
-            className="relative size-5 rounded-6 hit-area"
+            className="relative m-[1.25px] size-[17.5px] rounded-[5px] inset-ring-[1.25px] hit-area"
             checked={confirm}
             onCheckedChange={(checked) => setConfirm(checked === true)}
           />

@@ -26,7 +26,8 @@ type SeparatorProps = ComponentProps<typeof SeparatorPrimitive.Root> & {
    * The Figma Line `Count`: 2 to 8 parallel lines (stacked for a horizontal
    * separator, side by side for a vertical one), spread evenly over the
    * kit's span between the outer lines: 8px for 2, 16 for 3, 32 for 4 and 5,
-   * 40 for 6 to 8. Like the single line, they are drawn in the text colour:
+   * 40 for 6 to 8 horizontally; vertical spans are 20px for 2–3 lines
+   * and 40px for 4–8. Like the single line, they are drawn in the text colour:
    * Black/10% unless a `text-*` class sets another (the Figma Line is
    * Black/100%, `text-black`).
    * @default 1
@@ -41,19 +42,15 @@ type SeparatorProps = ComponentProps<typeof SeparatorPrimitive.Root> & {
   arrow?: SeparatorArrow
 }
 
-/**
- * The Figma Line frames of `count` lines: SPACE_BETWEEN, with the outer lines'
- * centres 8 (2 lines), 16 (3), 32 (4, 5) or 40px (6–8) apart. The box is 1px
- * more, for the lines' own thickness. [horizontal height, vertical width]
- */
+/** Frame spans; centred strokes may extend half a pixel beyond the frame. */
 const countSpans: { [K in Exclude<SeparatorCount, 1>]: [string, string] } = {
-  2: ['h-[calc(--spacing(2)+1px)]', 'w-[calc(--spacing(2)+1px)]'],
-  3: ['h-[calc(--spacing(4)+1px)]', 'w-[calc(--spacing(4)+1px)]'],
-  4: ['h-[calc(--spacing(8)+1px)]', 'w-[calc(--spacing(8)+1px)]'],
-  5: ['h-[calc(--spacing(8)+1px)]', 'w-[calc(--spacing(8)+1px)]'],
-  6: ['h-[calc(--spacing(10)+1px)]', 'w-[calc(--spacing(10)+1px)]'],
-  7: ['h-[calc(--spacing(10)+1px)]', 'w-[calc(--spacing(10)+1px)]'],
-  8: ['h-[calc(--spacing(10)+1px)]', 'w-[calc(--spacing(10)+1px)]'],
+  2: ['h-2', 'w-5'],
+  3: ['h-4', 'w-5'],
+  4: ['h-8', 'w-10'],
+  5: ['h-8', 'w-10'],
+  6: ['h-10', 'w-10'],
+  7: ['h-10', 'w-10'],
+  8: ['h-10', 'w-10'],
 }
 
 /**
@@ -97,7 +94,9 @@ const Separator: FC<SeparatorProps> = ({
           // a `text-*` class sets it, as for `count` and `arrow` (a `bg-*`
           // class still wins).
           'shrink-0 rounded-full bg-current text-black-10',
-          horizontal ? 'h-px w-full' : 'h-full w-px',
+          horizontal
+            ? 'relative h-0 w-full before:absolute before:inset-x-0 before:top-0 before:h-px before:-translate-y-1/2 before:rounded-full before:bg-inherit'
+            : 'h-full w-px',
           hairline && (horizontal ? 'scale-y-50' : 'scale-x-50'),
           className,
         )}
@@ -119,9 +118,9 @@ const Separator: FC<SeparatorProps> = ({
       data-count={lines}
       className={twMerge(
         // The lines take the text colour: Black/10% like a single divider.
-        'flex shrink-0 text-black-10',
+        'relative flex shrink-0 text-black-10',
         withArrow
-          ? 'w-full items-center'
+          ? 'h-0 w-full items-center'
           : [
               'justify-between',
               horizontal ? 'w-full flex-col' : 'h-full flex-row',
@@ -145,15 +144,15 @@ const Separator: FC<SeparatorProps> = ({
           <svg
             aria-hidden
             data-slot="separator-arrow"
-            viewBox="0 0 6 8"
+            viewBox="0 -4 4 8"
             fill="none"
             className={twMerge(
-              'h-2 w-1.5 shrink-0',
+              'h-2 w-1 shrink-0 overflow-visible',
               arrow && arrowClasses[arrow],
             )}
           >
             <path
-              d="M0 4h5M1 1l4 3-4 3"
+              d="M0 0h4M0.8180195 -3.1819805 4 0 0.8180195 3.1819805"
               stroke="currentColor"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -166,7 +165,16 @@ const Separator: FC<SeparatorProps> = ({
             // biome-ignore lint/suspicious/noArrayIndexKey: identical, positional lines
             key={index}
             data-slot="separator-line"
-            className={line}
+            className={twMerge(
+              line,
+              'absolute',
+              horizontal ? '-translate-y-1/2' : '-translate-x-1/2',
+            )}
+            style={
+              horizontal
+                ? { top: `${(index / (lines - 1)) * 100}%` }
+                : { left: `${(index / (lines - 1)) * 100}%` }
+            }
           />
         ))
       )}

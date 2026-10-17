@@ -1,7 +1,6 @@
 'use client'
 
 import { ArrowSquareOut } from '@phosphor-icons/react/dist/csr/ArrowSquareOut'
-import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
@@ -107,13 +106,13 @@ const Link: FC<LinkProps> = ({
     <>
       {content}
       {variant === 'arrow' && (
-        // The 12px Phosphor icon, as the external one: a "↗" text glyph
-        // would change with the font. Figma: 40% (2.85:1 on white); full
-        // opacity with more contrast.
-        <ArrowUpRight
+        // The source uses Inter's arrow glyph, with the same 14/20 text metrics.
+        <span
           aria-hidden
-          className="size-3 shrink-0 opacity-40 transition-opacity group-hover:opacity-100 contrast-more:opacity-100 rtl:-scale-x-100"
-        />
+          className="shrink-0 opacity-40 transition-opacity group-hover:opacity-100 contrast-more:opacity-100 rtl:-scale-x-100"
+        >
+          ↗
+        </span>
       )}
       {isExternal && (
         <>

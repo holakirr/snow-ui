@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import { hasInsetRing } from '../../test/colors'
 
 import { Switch } from './Switch'
@@ -65,5 +65,40 @@ export const Invalid: Story = {
     await expect(
       await hasInsetRing(control, 'text-control-border-invalid', '1px'),
     ).toBe(true)
+  },
+}
+
+/** The 28px icon frame in the source Account Settings status row. */
+export const AccountStatus: Story = {
+  args: { size: 28 },
+  play: async ({ canvas, userEvent }) => {
+    const control = canvas.getByRole('switch')
+    const thumb = control.querySelector('[data-slot="switch-thumb"]')
+    if (!thumb) throw new Error('Switch thumb is missing')
+    const track = control.getBoundingClientRect()
+    const styles = getComputedStyle(control)
+    await expect(track.width).toBe(24.5)
+    await expect(track.height).toBe(14)
+    await expect(Number.parseFloat(styles.marginLeft) * 2 + track.width).toBe(
+      28,
+    )
+    await expect(Number.parseFloat(styles.marginTop) * 2 + track.height).toBe(
+      28,
+    )
+    await expect(thumb.getBoundingClientRect().width).toBe(10.5)
+    const start = thumb.getBoundingClientRect().x
+    await userEvent.click(control)
+    await expect(control).toBeChecked()
+    await waitFor(() =>
+      expect(Math.abs(thumb.getBoundingClientRect().x - start)).toBeCloseTo(
+        10.5,
+        2,
+      ),
+    )
+    await userEvent.keyboard(' ')
+    await expect(control).not.toBeChecked()
+    await waitFor(() =>
+      expect(thumb.getBoundingClientRect().x).toBeCloseTo(start, 2),
+    )
   },
 }

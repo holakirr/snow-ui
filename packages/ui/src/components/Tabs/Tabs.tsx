@@ -139,9 +139,9 @@ const itemVariant = {
 
 /** Icon-toggle: inactive items collapse to a square icon button. */
 const iconToggleInactiveClasses: { [K in Size]: string } = {
-  sm: 'data-[state=inactive]:size-6 data-[state=inactive]:p-0',
-  md: 'data-[state=inactive]:size-9 data-[state=inactive]:p-0',
-  lg: 'data-[state=inactive]:size-12 data-[state=inactive]:p-0',
+  sm: 'data-[state=inactive]:size-6 data-[state=inactive]:p-0 data-[state=inactive]:[&_svg:not([class*=size-])]:size-4',
+  md: 'data-[state=inactive]:size-9 data-[state=inactive]:p-0 data-[state=inactive]:[&_svg:not([class*=size-])]:size-5',
+  lg: 'data-[state=inactive]:size-12 data-[state=inactive]:p-0 data-[state=inactive]:[&_svg:not([class*=size-])]:size-6',
 }
 
 type TabsTriggerProps = ComponentProps<typeof TabsPrimitive.Trigger> & {

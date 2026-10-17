@@ -29,7 +29,7 @@ export const BrandLogo = ({
     unoptimized
     className={
       name === 'Visa'
-        ? 'shrink-0 brightness-0 dark:invert'
+        ? 'shrink-0 dark:brightness-0 dark:invert'
         : name === 'Apple'
           ? 'shrink-0 dark:invert'
           : 'shrink-0'

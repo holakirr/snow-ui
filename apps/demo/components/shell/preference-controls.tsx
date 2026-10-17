@@ -11,20 +11,9 @@ import {
   IconBox,
 } from '@holakirr/snow-ui'
 import { usePreferences } from '@/app/providers'
-import {
-  ArrowsLeftRightIcon,
-  MoonIcon,
-  SunIcon,
-  TranslateIcon,
-} from '@/components/icons'
+import { ArrowsLeftRightIcon, SunIcon, TranslateIcon } from '@/components/icons'
 import { isLang, isTheme, LANGS, THEMES, type Theme } from '@/lib/preferences'
 import { IconButton } from './icon-button'
-
-const THEME_ICONS: Record<Theme, typeof SunIcon> = {
-  light: SunIcon,
-  dark: MoonIcon,
-  system: SunIcon,
-}
 
 /** Light / dark / system, stored in localStorage (see `themeScript`). */
 export const ThemeMenu = () => {
@@ -34,14 +23,13 @@ export const ThemeMenu = () => {
     dark: dict.header.themeDark,
     system: dict.header.themeSystem,
   }
-  const Icon = THEME_ICONS[theme]
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <IconButton
           label={`${dict.header.theme}: ${names[theme]}`}
-          icon={<Icon />}
+          icon={<SunIcon />}
           data-testid="theme-menu"
         />
       </DropdownMenuTrigger>

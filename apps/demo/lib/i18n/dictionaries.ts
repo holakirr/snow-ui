@@ -200,6 +200,7 @@ const en = {
     apple: 'Sign in with Apple',
     noAccount: 'Not a Member yet?',
     signUp: 'Sign Up',
+    signUpHeader: 'Sign up',
     backToDashboard: 'Back to the dashboard',
     errors: {
       emailRequired: 'Enter your email.',
@@ -508,6 +509,7 @@ const ru: Dictionary = {
     apple: 'Войти через Apple',
     noAccount: 'Нет аккаунта?',
     signUp: 'Зарегистрироваться',
+    signUpHeader: 'Зарегистрироваться',
     backToDashboard: 'Вернуться на дашборд',
     errors: {
       emailRequired: 'Введите электронную почту.',

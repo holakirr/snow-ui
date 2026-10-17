@@ -49,7 +49,7 @@ import { KBD, type KBDProps } from '../Text'
  * its content, as it did before it scrolled.
  */
 const dropdownMenuContentStyles = twMerge(
-  'z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] overflow-x-hidden overflow-y-auto',
+  'z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-30 overflow-x-hidden overflow-y-auto',
   popoverSurfaceClasses,
   popoverScrollClasses,
   popoverAnimationClasses,

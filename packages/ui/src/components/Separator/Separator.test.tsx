@@ -12,7 +12,7 @@ describe('Separator', () => {
 
     expect(separator).not.toHaveAttribute('role', 'separator')
     expect(separator).toHaveClass(
-      'h-px',
+      'h-0',
       'w-full',
       'bg-current',
       'text-black-10',
@@ -50,11 +50,13 @@ describe('Separator', () => {
     expect(separator).toHaveClass(
       'flex-col',
       'justify-between',
-      'h-[calc(--spacing(8)+1px)]',
+      'h-8',
       'text-black-10',
     )
     expect(separator).not.toHaveClass('gap-2')
     expect(lines).toHaveLength(4)
+    expect(lines[0]).toHaveStyle({ top: '0%' })
+    expect(lines[3]).toHaveStyle({ top: '100%' })
     for (const line of lines) {
       expect(line).toHaveClass('h-px', 'w-full', 'bg-current', 'scale-y-50')
     }
@@ -74,7 +76,7 @@ describe('Separator', () => {
       'flex-row',
       'h-full',
       'justify-between',
-      'w-[calc(--spacing(10)+1px)]',
+      'w-10',
     )
     expect(linesOf(separator)).toHaveLength(8)
     expect(linesOf(separator)[0]).toHaveClass('w-px', 'h-full')
@@ -92,7 +94,7 @@ describe('Separator', () => {
     // One line is the plain divider: no `data-count`, no line children.
     if (drawn === 1) {
       expect(separator).not.toHaveAttribute('data-count')
-      expect(separator).toHaveClass('h-px', 'w-full')
+      expect(separator).toHaveClass('h-0', 'w-full')
     } else {
       expect(separator).toHaveAttribute('data-count', String(drawn))
       expect(linesOf(separator)).toHaveLength(drawn)

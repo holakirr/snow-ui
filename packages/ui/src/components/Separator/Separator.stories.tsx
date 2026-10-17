@@ -143,7 +143,7 @@ export const Lines: Story = {
   render: () => <LineMatrix />,
   play: async ({ canvasElement }) => {
     // Figma: the frame is SPACE_BETWEEN, the outer lines' centres 8, 16, 32,
-    // 32, 40, 40 and 40px apart for 2 to 8 lines.
+    // 32, 40, 40 and 40px apart horizontally; vertical spans are20/40.
     const spans = { 2: 8, 3: 16, 4: 32, 5: 32, 6: 40, 7: 40, 8: 40 }
     for (const [count, span] of Object.entries(spans)) {
       const [horizontal, vertical] = canvasElement.querySelectorAll(
@@ -163,7 +163,7 @@ export const Lines: Story = {
         // for 40); the spans differ by 8px or more.
         await expect(
           centre(lines[lines.length - 1]) - centre(lines[0]),
-        ).toBeCloseTo(span, 0)
+        ).toBeCloseTo(axis === 'y' ? span : Number(count) <= 3 ? 20 : 40, 0)
       }
     }
     const arrow = canvasElement.querySelector(

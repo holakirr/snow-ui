@@ -36,7 +36,7 @@ const PopoverContent: FC<PopoverContentProps> = ({
         align={align}
         sideOffset={sideOffset}
         className={twMerge(
-          'z-50 w-60 outline-none',
+          'z-50 w-30 outline-none',
           popoverSurfaceClasses,
           'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:data-[side=bottom]:animate-slide-in-from-top data-[state=open]:data-[side=left]:animate-slide-in-from-right data-[state=open]:data-[side=right]:animate-slide-in-from-left data-[state=open]:data-[side=top]:animate-slide-in-from-bottom',
           className,

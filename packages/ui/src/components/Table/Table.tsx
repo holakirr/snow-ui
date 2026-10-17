@@ -211,7 +211,7 @@ const TableCell: FC<TableCellProps> = ({ className, reveal, ...props }) => (
   <td
     role={ROLES.cell}
     className={twMerge(
-      'h-10 px-3 py-2 align-middle font-normal text-black border-b border-black-4 [&:has([role=checkbox])]:pe-0 [&>[role=checkbox]]:translate-y-[2px]',
+      'h-10 px-3 pt-2 pb-[7px] align-middle font-normal text-black border-b border-black-4 [&:has([role=checkbox])]:pe-0 [&>[role=checkbox]]:translate-y-[2px]',
       // A selected column: `data-state="selected"` on the cells of a column
       // gives them the row highlight, rounded at the bottom of the last row.
       'data-[state=selected]:bg-black-4 [tr:last-child>&]:data-[state=selected]:rounded-b-12',

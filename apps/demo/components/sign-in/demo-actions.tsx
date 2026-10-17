@@ -18,6 +18,7 @@ export const SocialButtons = () => {
           key={label}
           variant="outline"
           size="lg"
+          textSize={14}
           label={label}
           startContent={
             <IconBox size={20} aria-hidden>
@@ -32,14 +33,18 @@ export const SocialButtons = () => {
   )
 }
 
-export const SignUpButton = () => {
+export const SignUpButton = ({ header = false }: { header?: boolean }) => {
   const t = useDictionary().signIn
   return (
     <Button
       variant="bare"
-      label={t.signUp}
-      textSize={14}
-      className="[--button-fg:var(--color-black)]"
+      label={header ? t.signUpHeader : t.signUp}
+      textSize={header ? 12 : 14}
+      className={
+        header
+          ? '[--button-fg:var(--color-black)]'
+          : '[--button-fg:var(--color-indigo-text)]'
+      }
       onClick={() => toast({ title: t.signUp, description: t.signUpToast })}
     />
   )

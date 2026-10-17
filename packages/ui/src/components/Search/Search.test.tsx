@@ -17,7 +17,7 @@ describe('Search', () => {
     expect(input).toHaveAttribute('type', 'search')
     expect(input).toHaveAttribute('placeholder', 'Search')
     expect(field).toHaveClass('bg-black-4', 'h-7', 'rounded-16', 'w-40')
-    expect(within(field).getByText('/')).toHaveAttribute('aria-hidden', 'true')
+    expect(within(field).getByText('⌘K')).toHaveAttribute('aria-hidden', 'true')
     expect(
       screen.queryByRole('button', { name: 'Clear search' }),
     ).not.toBeInTheDocument()
@@ -38,7 +38,7 @@ describe('Search', () => {
     fireEvent.change(input, { target: { value: 'snow' } })
 
     expect(screen.getByRole('button', { name: 'Clear search' })).toBeVisible()
-    expect(screen.queryByText('/')).not.toBeInTheDocument()
+    expect(screen.queryByText('⌘K')).not.toBeInTheDocument()
   })
 
   it('clears an uncontrolled field and refocuses it', async () => {
@@ -117,6 +117,12 @@ describe('Search', () => {
     )
 
     expect(within(container).queryByRole('button')).not.toBeInTheDocument()
+    const disabled = screen.getByRole('searchbox', { name: 'Disabled' })
+    expect(disabled).toBeDisabled()
+    expect(disabled.parentElement).toHaveAttribute('aria-disabled', 'true')
+    expect(
+      screen.getByRole('searchbox', { name: 'Read-only' }).parentElement,
+    ).not.toHaveAttribute('aria-disabled')
   })
 
   it('forwards the ref to the input', () => {

@@ -75,7 +75,7 @@ export const AccountSettings = () => {
   const hintWithLink = (text: string) =>
     text.split(/(Learn [Mm]ore|Подробнее)/).map((part) =>
       /^(Learn [Mm]ore|Подробнее)$/.test(part) ? (
-        <span key={part} className="text-indigo-text">
+        <span key={part} className="text-indigo-text dark:text-blue">
           {part}
         </span>
       ) : (

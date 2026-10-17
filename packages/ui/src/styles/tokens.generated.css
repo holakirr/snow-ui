@@ -38,7 +38,11 @@
    * Figma "Colors" collection, SnowUI-Light mode, plus the library's additions
    * (no "figma" name in $extensions).
    */
-  /* Figma alias: Black/100% in SnowUI-Light, Secondary/Indigo in SnowUI-Dark. */
+  /*
+   * Figma alias: Black/100% in SnowUI-Light. Dark mode retains the agreed
+   * accessible Indigo primary: the updated source's White/40% fails text and
+   * selected-control contrast checks.
+   */
   --color-primary: #000;
   /* Primary under a White/20% overlay: Figma's Filled Button hover. */
   --color-primary-hover: color-mix(
@@ -80,7 +84,7 @@
   --color-static-black: #000;
   --color-purple: #b899eb;
   --color-indigo: #adadfb;
-  --color-blue: #7dbbff;
+  --color-blue: #33d1ff;
   --color-cyan: #a0bce8;
   --color-mint: #6be6d3;
   --color-green: #71dd8c;

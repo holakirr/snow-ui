@@ -6,7 +6,6 @@
  * import per icon keeps the bundles small.
  */
 
-export { AddressBookIcon } from '@phosphor-icons/react/dist/ssr/AddressBook'
 export { AppleLogoIcon } from '@phosphor-icons/react/dist/ssr/AppleLogo'
 export { ArrowsLeftRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight'
 export { BellIcon } from '@phosphor-icons/react/dist/ssr/Bell'
@@ -23,6 +22,7 @@ export { DotsThreeIcon } from '@phosphor-icons/react/dist/ssr/DotsThree'
 export { EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye'
 export { EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash'
 export { FigmaLogoIcon } from '@phosphor-icons/react/dist/ssr/FigmaLogo'
+export { FolderIcon } from '@phosphor-icons/react/dist/ssr/Folder'
 export { FolderOpenIcon } from '@phosphor-icons/react/dist/ssr/FolderOpen'
 export { FunnelIcon } from '@phosphor-icons/react/dist/ssr/Funnel'
 export { GearIcon } from '@phosphor-icons/react/dist/ssr/Gear'
@@ -30,6 +30,7 @@ export { GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix'
 export { GoogleLogoIcon } from '@phosphor-icons/react/dist/ssr/GoogleLogo'
 export { HandPalmIcon } from '@phosphor-icons/react/dist/ssr/HandPalm'
 export { IdentificationBadgeIcon } from '@phosphor-icons/react/dist/ssr/IdentificationBadge'
+export { IdentificationCardIcon } from '@phosphor-icons/react/dist/ssr/IdentificationCard'
 export { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo'
 export { ListBulletsIcon } from '@phosphor-icons/react/dist/ssr/ListBullets'
 export { MoonIcon } from '@phosphor-icons/react/dist/ssr/Moon'

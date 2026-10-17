@@ -31,7 +31,7 @@ const meta = {
   args: {
     'aria-label': 'Search',
     placeholder: 'Search',
-    shortcut: ['/'],
+    shortcut: ['⌘K'],
     className: 'w-40',
   },
 } satisfies Meta<typeof Search>
@@ -145,7 +145,7 @@ const Variants = () => (
             key={variant}
             variant={variant}
             aria-label={`${label} ${variant} search`}
-            shortcut={['/']}
+            shortcut={['⌘K']}
             {...props}
           />
         ))}

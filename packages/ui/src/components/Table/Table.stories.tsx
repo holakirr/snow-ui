@@ -573,17 +573,20 @@ const TableAExample = ({ pageSize = 20 }: { pageSize?: number }) => {
     .getFilteredSelectedRowModel()
     .rows.map((row) => row.original)
 
-  // The "/" hint of the Search is only a hint: the shortcut is bound here,
-  // to the table's own region, not the document: a single-character
-  // shortcut must only work while its component has focus (WCAG 2.1.4).
+  // The updated kit advertises ⌘K. Bind it (and Ctrl+K) to this table;
+  // keep the existing scoped slash shortcut without intercepting typing.
   const focusSearch = (event: KeyboardEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement
+    const modified =
+      (event.metaKey || event.ctrlKey) &&
+      !event.altKey &&
+      event.key.toLowerCase() === 'k'
     if (
-      event.key !== '/' ||
+      (!modified && event.key !== '/') ||
       // React also bubbles the keys of the portalled menus here.
       !event.currentTarget.contains(target) ||
-      target.isContentEditable ||
-      target.closest('input, textarea, select')
+      (!modified &&
+        (target.isContentEditable || target.closest('input, textarea, select')))
     )
       return
     event.preventDefault()
@@ -674,7 +677,7 @@ const TableAExample = ({ pageSize = 20 }: { pageSize?: number }) => {
         <Search
           ref={search}
           variant="outline"
-          shortcut={['/']}
+          shortcut={['⌘K']}
           placeholder="Search"
           aria-label="Search users"
           className="ms-auto w-40"
@@ -856,6 +859,12 @@ export const TableASearch: Story = {
         // Outside the table "/" does nothing (WCAG 2.1.4).
         await userEvent.keyboard('/')
         await expect(search).not.toHaveFocus()
+        button('Add order').focus()
+        await userEvent.keyboard('{Control>}k{/Control}')
+        await expect(search).toHaveFocus()
+        button('Add order').focus()
+        await userEvent.keyboard('{Meta>}k{/Meta}')
+        await expect(search).toHaveFocus()
         button('Add order').focus()
         await userEvent.keyboard('/')
         await expect(search).toHaveFocus()

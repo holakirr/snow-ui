@@ -321,7 +321,9 @@ export const AddData: Story = {
       await expect(await firstName()).toHaveValue('')
       const reopened = await open()
       await settleLayout(reopened)
-      await userEvent.click(within(reopened).getByRole('heading', { name: 'New' }))
+      await userEvent.click(
+        within(reopened).getByRole('heading', { name: 'New' }),
+      )
     })
   },
 }

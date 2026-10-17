@@ -43,7 +43,7 @@ export const SignUpButton = ({ header = false }: { header?: boolean }) => {
       className={
         header
           ? '[--button-fg:var(--color-black)]'
-          : '[--button-fg:var(--color-indigo-text)]'
+          : '[--button-fg:var(--color-indigo-text)] dark:[--button-fg:var(--color-blue)]'
       }
       onClick={() => toast({ title: t.signUp, description: t.signUpToast })}
     />

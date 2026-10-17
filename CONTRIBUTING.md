@@ -305,7 +305,8 @@ From the next version on, the release workflow publishes it with provenance like
 branch promotion. The check waits up to 15 minutes for the public Storybook
 registry and the demo's build-time `/api/release` endpoint to report the exact
 release commit. A timeout fails the release run instead of testing an older
-deployment. A manual run of `Production Check` on `main` checks the current
+deployment. A manual run of `Production Check` (`production.yml`) calls the same reusable
+`production-check.yml` job as Release and checks the current
 `release` site and the active successful production demo deployment. Vercel
 may skip builds for workflow-only commits, so the manual check resolves the
 active demo SHA from GitHub deployment statuses rather than assuming main was
@@ -322,6 +323,11 @@ branch**, with no tag policies, and store these environment secrets:
 
 - `SNOWUI_SITE_AUTOMATION_SECRET`: SnowUI project's `production-e2e` bypass.
 - `SNOWUI_DEMO_AUTOMATION_SECRET`: demo project's separate bypass.
+
+Both callers explicitly pass only these two secret names; `workflow_call`
+declares them required. GitHub resolves their values from the callee's
+`production-e2e` environment. Do not use broad `secrets: inherit` or copy values
+to repository secrets. This contract is also exercised by the manual check.
 
 Keep Vercel Standard Protection enabled. Secrets are available only in the test
 step, after installing dependencies with scripts disabled. Each secret is bound

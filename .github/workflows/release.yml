@@ -658,17 +658,21 @@ jobs:
           esac
 
   # Verify the public domains after npm verification and release promotion.
-  # No secrets in this caller: the main-only environment belongs to the callee.
+  # Pass only the two declared names; their values remain in the callee's
+  # main-only production-e2e environment, never in repository secrets.
   production:
     needs: [released, promote]
     if: needs.released.outputs.released == 'true' && needs.promote.outputs.current == 'true' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
       deployments: read
-    uses: ./.github/workflows/production.yml
+    uses: ./.github/workflows/production-check.yml
     with:
       site-sha: ${{ github.sha }}
       demo-sha: ${{ github.sha }}
+    secrets:
+      SNOWUI_SITE_AUTOMATION_SECRET: ${{ secrets.SNOWUI_SITE_AUTOMATION_SECRET }}
+      SNOWUI_DEMO_AUTOMATION_SECRET: ${{ secrets.SNOWUI_DEMO_AUTOMATION_SECRET }}
 
   # A CycloneDX SBOM of each published package (scripts/sbom.ts): what it
   # pulls in, at the versions installed from bun.lock. Attached to the

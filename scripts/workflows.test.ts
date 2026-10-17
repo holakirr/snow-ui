@@ -75,7 +75,7 @@ describe('Playwright image', () => {
 
   it('production uses the same locked browser image as Build Check', () => {
     const source = workflows.find(
-      ({ file }) => file === 'production.yml',
+      ({ file }) => file === 'production-check.yml',
     )?.source
     expect(source?.match(/^ +image: (.+)$/m)?.[1]).toBe(pinned)
   })
@@ -122,4 +122,47 @@ describe('Bun in the Playwright image', () => {
       })
     },
   )
+})
+
+// A manual dispatch must exercise the same secret handoff as Release. Otherwise
+// it can pass while release-triggered checks receive empty environment secrets.
+describe('production caller secret contract', () => {
+  const secrets = [
+    'SNOWUI_SITE_AUTOMATION_SECRET',
+    'SNOWUI_DEMO_AUTOMATION_SECRET',
+  ]
+  const source = (name: string) =>
+    workflows.find(({ file }) => file === name)?.source ?? ''
+  const callee = source('production-check.yml')
+
+  it.each(['release.yml', 'production.yml'])(
+    '%s passes only the declared secret names',
+    (file) => {
+      const text = source(file)
+      const job =
+        text.split('\n  production:\n')[1]?.split(/\n {2}[a-z][\w-]*:/)[0] ?? ''
+      expect(job).toContain('uses: ./.github/workflows/production-check.yml')
+      expect(job).toContain("github.ref == 'refs/heads/main'")
+      const passed = [
+        ...job.matchAll(/^ {6}(\w+): \$\{\{ secrets\.(\w+) \}\}$/gm),
+      ]
+      expect(passed.map(([, name, value]) => [name, value])).toEqual(
+        secrets.map((name) => [name, name]),
+      )
+      expect(job).not.toContain('secrets: inherit')
+    },
+  )
+
+  it('requires both names and keeps credentials in the guarded test step', () => {
+    expect(callee).not.toContain('workflow_dispatch:')
+    for (const name of secrets) {
+      expect(callee).toContain(`      ${name}:\n        required: true`)
+    }
+    expect(callee).toContain('environment: production-e2e')
+    expect(callee).toContain("if: github.ref == 'refs/heads/main'")
+    const beforeTest = callee.split(
+      '      - name: Verify deployed commits and run all production scenarios',
+    )[0]
+    expect(beforeTest).not.toMatch(/secrets\.SNOWUI_/)
+  })
 })

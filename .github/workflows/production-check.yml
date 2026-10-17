@@ -1,0 +1,69 @@
+name: Production verification (reusable)
+on:
+  workflow_call:
+    secrets:
+      SNOWUI_SITE_AUTOMATION_SECRET:
+        required: true
+      SNOWUI_DEMO_AUTOMATION_SECRET:
+        required: true
+    inputs:
+      site-sha:
+        type: string
+        required: true
+      demo-sha:
+        type: string
+        required: true
+permissions: {}
+defaults:
+  run:
+    shell: bash
+concurrency:
+  group: production-check
+  cancel-in-progress: false
+jobs:
+  production:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production-e2e
+    permissions:
+      contents: read
+      deployments: read
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble@sha256:7852dc5a7d72f5fe458a597d690f6c42fbc8e9e26ddfa95f8e6ef552558d9bbf
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24
+      - name: Resolve expected production commits
+        id: commits
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SITE_SHA: ${{ inputs.site-sha }}
+          DEMO_SHA: ${{ inputs.demo-sha }}
+        run: node scripts/production-commits.ts
+      - name: Setup locked Bun
+        run: |
+          npm ci --prefix .github/bun --no-audit --no-fund
+          echo "$PWD/.github/bun/node_modules/.bin" >> "$GITHUB_PATH"
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Verify deployed commits and run all production scenarios
+        env:
+          PRODUCTION_SITE_SHA: ${{ steps.commits.outputs.site }}
+          PRODUCTION_DEMO_SHA: ${{ steps.commits.outputs.demo }}
+          SNOWUI_SITE_AUTOMATION_SECRET: ${{ secrets.SNOWUI_SITE_AUTOMATION_SECRET }}
+          SNOWUI_DEMO_AUTOMATION_SECRET: ${{ secrets.SNOWUI_DEMO_AUTOMATION_SECRET }}
+        run: bun production/run.ts
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: production-results
+          path: |
+            test-results/production/docs.json
+            test-results/production/demo.json
+            test-results/production/docs.log
+            test-results/production/demo.log
+          retention-days: 7

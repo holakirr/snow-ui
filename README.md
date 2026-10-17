@@ -103,6 +103,12 @@ Every PR and every push to `main` runs [Build Check](.github/workflows/build-che
 
 ## Releasing
 
+To recheck the active production deployments through the same protected call
+used after a release, run **Release → Run workflow → mode: production** on
+`main`. It requires a green Build Check for that commit, runs all production
+scenarios, and does not publish packages or move the `release` branch. The normal
+post-release check still verifies the exact released commit automatically.
+
 Versions and changelogs are managed with [Changesets](https://github.com/changesets/changesets); see [CONTRIBUTING.md](CONTRIBUTING.md#changesets) for the contributor side and the [Versioning and support policy](VERSIONING.md) for what gets released when. `.github/workflows/release.yml` publishes only commits whose full Build Check passed.
 
 1. Every PR that changes a published package adds a changeset (`bun changeset`): which packages, which semver bump, and a user-facing summary.

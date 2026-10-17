@@ -175,6 +175,7 @@ const AddDataScreen = () => {
           </Typography>
         </div>
         <DialogContent
+          className="outline-none"
           aria-describedby={undefined}
           onInteractOutside={(event) => event.preventDefault()}
         >

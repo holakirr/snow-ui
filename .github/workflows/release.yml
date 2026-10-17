@@ -80,9 +80,10 @@ on:
           0.0.0-canary-<sha> snapshots of the pending changesets under the
           `canary` dist-tag (any branch). sbom: attach the SBOMs to the
           GitHub releases of the versions at this ref (a release tag or the
-          release branch).
+          release branch). production: recheck the active production
+          deployments without publishing or moving the release branch.
         type: choice
-        options: [release, canary, sbom]
+        options: [release, canary, sbom, production]
         default: release
 
 # One run at a time per branch (a workflow_run run's github.ref is the
@@ -658,17 +659,26 @@ jobs:
           esac
 
   # Verify the public domains after npm verification and release promotion.
-  # No secrets in this caller: the main-only environment belongs to the callee.
+  # Forward only the two named secrets. The callee's main-only environment
+  # supplies their values; an unforwarded environment secret resolves empty.
+  # The read-only production mode exercises this same call on active deploys.
   production:
-    needs: [released, promote]
-    if: needs.released.outputs.released == 'true' && needs.promote.outputs.current == 'true' && github.ref == 'refs/heads/main'
+    needs: [gate, released, promote]
+    if: >-
+      !cancelled() && github.ref == 'refs/heads/main' &&
+      needs.gate.outputs.passed == 'true' &&
+      ((inputs.mode == 'release' && needs.released.outputs.released == 'true' && needs.promote.outputs.current == 'true') ||
+      inputs.mode == 'production')
     permissions:
       contents: read
       deployments: read
     uses: ./.github/workflows/production.yml
     with:
-      site-sha: ${{ github.sha }}
-      demo-sha: ${{ github.sha }}
+      site-sha: ${{ inputs.mode == 'release' && github.sha || '' }}
+      demo-sha: ${{ inputs.mode == 'release' && github.sha || '' }}
+    secrets:
+      SNOWUI_SITE_AUTOMATION_SECRET: ${{ secrets.SNOWUI_SITE_AUTOMATION_SECRET }}
+      SNOWUI_DEMO_AUTOMATION_SECRET: ${{ secrets.SNOWUI_DEMO_AUTOMATION_SECRET }}
 
   # A CycloneDX SBOM of each published package (scripts/sbom.ts): what it
   # pulls in, at the versions installed from bun.lock. Attached to the

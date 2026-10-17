@@ -8,6 +8,11 @@ on:
       demo-sha:
         type: string
         required: true
+    secrets:
+      SNOWUI_SITE_AUTOMATION_SECRET:
+        required: true
+      SNOWUI_DEMO_AUTOMATION_SECRET:
+        required: true
   workflow_dispatch:
 permissions: {}
 defaults:

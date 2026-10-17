@@ -612,7 +612,9 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
               placeholder={t.payoutPlaceholder}
               value={data.payoutInfo}
               onChange={(event) => update({ payoutInfo: event.target.value })}
-              className="mx-3 h-20 w-auto resize-none content-center bg-transparent py-2"
+              className={`mx-3 h-20 w-auto resize-none bg-transparent ${
+                data.payoutInfo.includes('\n') ? 'py-2' : 'py-[30px]'
+              }`}
             />
           </TabsContent>
           <TabsContent value="plugins" className="mt-0 flex flex-col gap-4">

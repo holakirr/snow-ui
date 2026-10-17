@@ -69,6 +69,11 @@ test.describe('settings', () => {
     await expect(
       page.getByRole('textbox', { name: 'First Name', exact: true }),
     ).toHaveValue('Grace')
+  })
+
+  test('payout details preserve newlines when saved and edited', async ({
+    page,
+  }) => {
     // Older saved payout details may already contain newlines.
     await page.goto('/preferences?tab=payment')
     const payout = page.getByRole('textbox', { name: 'Payout invoice info' })

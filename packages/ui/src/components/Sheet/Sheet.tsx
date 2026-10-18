@@ -36,7 +36,7 @@ SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 const sheetVariants = cva(
   // A glass panel like the Figma popups (Background/3, "Background blur 40")
   // with the 0.5px Black/10% edge of the dashboard side panels.
-  'fixed z-50 gap-4 border-black-10 bg-background-3 p-4 backdrop-blur-bg-40 transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out',
+  'fixed z-50 gap-4 border-black-10 bg-background-3 p-4 backdrop-blur-bg-40 [--snow-slide-distance:100%] data-[state=open]:animate-in data-[state=closed]:animate-out',
   {
     variants: {
       side: {

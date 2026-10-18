@@ -253,7 +253,7 @@
  * contrast the resting thumb is `control-border` too (3:1 or more). The kit
  * shows the thumb while the pointer is over the container. Keyboard focus
  * also exposes it. Where the browser has the WebKit
- * scrollbar pseudo-elements (Chrome, Edge, Safari) the thumb sits in an 8px
+ * scrollbar pseudo-elements (Chrome, Edge, Safari) the thumb sits 4px from the edge in a 12px
  * gutter (the kit overlays it). Firefox can't style a hovered thumb: its thin
  * scrollbar keeps its own width and turns `control-border` while the pointer
  * is over the container. Nothing animates. In forced-colors mode the system
@@ -266,12 +266,13 @@
     --scrollbar-snow-thumb: var(--scrollbar-snow-more, var(--color-black-10));
     @supports selector(::-webkit-scrollbar) {
       &::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 12px;
+        height: 12px;
         background: transparent;
       }
       &::-webkit-scrollbar-thumb {
-        border: 2px solid transparent;
+        border: 0 solid transparent;
+        border-inline-width: 4px;
         border-radius: 9999px;
         background: transparent padding-box;
       }
@@ -281,8 +282,15 @@
       }
       &::-webkit-scrollbar-thumb:hover,
       &::-webkit-scrollbar-thumb:active {
-        border-width: 0;
+        border-inline-start-width: 0;
         background-color: var(--color-control-border);
+      }
+      &::-webkit-scrollbar-thumb:horizontal {
+        border-width: 4px 0;
+      }
+      &::-webkit-scrollbar-thumb:horizontal:hover,
+      &::-webkit-scrollbar-thumb:horizontal:active {
+        border-top-width: 0;
       }
       &::-webkit-scrollbar-track,
       &::-webkit-scrollbar-corner {
@@ -333,84 +341,107 @@
       opacity: 0;
     }
   }
+  /* Popups move a short distance independent of their content size. Sheets
+   * opt into 100%. Individual translate/scale preserve positioned transforms
+   * (notably the stacked toasts) throughout the animation. */
   @keyframes slide-in-from-top {
     from {
-      transform: translateY(-100%);
+      opacity: 0;
+      translate: 0 calc(-1 * var(--snow-slide-distance, 6px));
     }
     to {
-      transform: translateY(0);
+      opacity: 1;
+      translate: 0 0;
     }
   }
   @keyframes slide-in-from-right {
     from {
-      transform: translateX(100%);
+      opacity: 0;
+      translate: var(--snow-slide-distance, 6px) 0;
     }
     to {
-      transform: translateX(0);
+      opacity: 1;
+      translate: 0 0;
     }
   }
   @keyframes slide-in-from-left {
     from {
-      transform: translateX(-100%);
+      opacity: 0;
+      translate: calc(-1 * var(--snow-slide-distance, 6px)) 0;
     }
     to {
-      transform: translateX(0);
+      opacity: 1;
+      translate: 0 0;
     }
   }
   @keyframes slide-in-from-bottom {
     from {
-      transform: translateY(100%);
+      opacity: 0;
+      translate: 0 var(--snow-slide-distance, 6px);
     }
     to {
-      transform: translateY(0);
+      opacity: 1;
+      translate: 0 0;
     }
   }
   @keyframes slide-out-to-top {
     from {
-      transform: translateY(0);
+      opacity: 1;
+      translate: 0 0;
     }
     to {
-      transform: translateY(-100%);
+      opacity: 0;
+      translate: 0 calc(-1 * var(--snow-slide-distance, 6px));
     }
   }
   @keyframes slide-out-to-right {
     from {
-      transform: translateX(0);
+      opacity: 1;
+      translate: 0 0;
     }
     to {
-      transform: translateX(100%);
+      opacity: 0;
+      translate: var(--snow-slide-distance, 6px) 0;
     }
   }
   @keyframes slide-out-to-left {
     from {
-      transform: translateX(0);
+      opacity: 1;
+      translate: 0 0;
     }
     to {
-      transform: translateX(-100%);
+      opacity: 0;
+      translate: calc(-1 * var(--snow-slide-distance, 6px)) 0;
     }
   }
   @keyframes slide-out-to-bottom {
     from {
-      transform: translateY(0);
+      opacity: 1;
+      translate: 0 0;
     }
     to {
-      transform: translateY(100%);
+      opacity: 0;
+      translate: 0 var(--snow-slide-distance, 6px);
     }
   }
   @keyframes zoom-in-95 {
     from {
-      transform: scale(0.95);
+      opacity: 0;
+      scale: 0.95;
     }
     to {
-      transform: scale(1);
+      opacity: 1;
+      scale: 1;
     }
   }
   @keyframes zoom-out-95 {
     from {
-      transform: scale(1);
+      opacity: 1;
+      scale: 1;
     }
     to {
-      transform: scale(0.95);
+      opacity: 0;
+      scale: 0.95;
     }
   }
   /*

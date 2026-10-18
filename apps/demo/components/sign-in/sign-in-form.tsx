@@ -112,7 +112,7 @@ export const SignInForm = () => {
             variant="bare"
             label={t.forgot}
             textSize={14}
-            className="text-indigo-text"
+            className="text-indigo-text dark:text-blue"
             onClick={() =>
               toast({ title: t.forgot, description: t.forgotToast })
             }

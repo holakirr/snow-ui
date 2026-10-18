@@ -52,8 +52,8 @@
     "@changesets/cli": "^3.0.3",
     "@changesets/pre": "^3.0.0",
     "@changesets/read": "^1.0.1",
-    "@figma/code-connect": "^2.0.1",
-    "@playwright/test": "1.64.0",
+    "@figma/code-connect": "^2.0.2",
+    "@playwright/test": "1.64.1",
     "@size-limit/esbuild": "^14.2.0",
     "@size-limit/file": "^14.2.0",
     "@storybook/addon-a11y": "^10.6.2",
@@ -66,10 +66,10 @@
     "@types/node": "^26.6.5",
     "@typescript/typescript6": "^6.0.2",
     "@vitejs/plugin-react": "^6.1.2",
-    "@vitest/browser-playwright": "^5.0.4",
-    "playwright": "1.64.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
+    "@vitest/browser-playwright": "^5.0.5",
+    "playwright": "1.64.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "remark-gfm": "^4.0.1",
     "size-limit": "^14.2.0",
     "storybook": "^10.6.2",
@@ -77,7 +77,7 @@
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
-    "vitest": "^5.0.4"
+    "vitest": "^5.0.5"
   },
   "engines": {
     "node": "^22.22.2 || ^24.15.0 || >=26.0.0"

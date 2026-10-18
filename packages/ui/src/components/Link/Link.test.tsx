@@ -63,11 +63,12 @@ describe('Link', () => {
     const link = screen.getByRole('link', { name: 'More' })
 
     expect(link).toHaveClass('inline-flex')
-    // A 12px icon, as the external one, hidden from the accessible name.
-    expect(link).toHaveTextContent(/^More$/)
-    const arrow = link.querySelector('svg')
+    // The source arrow glyph is hidden from the accessible name.
+    expect(link).toHaveTextContent(/^More↗$/)
+    const arrow = link.querySelector('[aria-hidden]')
     expect(arrow).toHaveAttribute('aria-hidden', 'true')
-    expect(arrow).toHaveClass('size-3', 'opacity-40')
+    expect(arrow).toHaveTextContent('↗')
+    expect(arrow).toHaveClass('opacity-40')
   })
 
   it('leaves a link with an href its native role and tab order', () => {

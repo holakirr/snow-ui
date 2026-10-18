@@ -1,8 +1,8 @@
 import type { FC } from 'react'
 import { twMerge } from './tw-merge'
 
-/** The diameters of the mark (px). */
-export type RadioMarkSize = 8 | 10 | 12 | 16 | 20
+/** The source icon frame, including its transparent inset (px). */
+export type RadioMarkSize = 12 | 16 | 20 | 24 | 32
 
 /** The component a mark is on: its root is the `group/card` or `group/image`. */
 export type RadioMarkHost = 'card' | 'image'
@@ -12,13 +12,23 @@ const hostHoverClasses: { [K in RadioMarkHost]: string } = {
   image: 'group-hover/image:inset-ring-control-border-strong',
 }
 
-/* The ring of the selected mark, about 30% of the diameter (Figma 6 of 20). */
-const sizeClasses: { [K in RadioMarkSize]: { box: string; ring: string } } = {
-  8: { box: 'size-2', ring: 'inset-ring-[2.5px]' },
-  10: { box: 'size-2.5', ring: 'inset-ring-[3px]' },
-  12: { box: 'size-3', ring: 'inset-ring-[3.5px]' },
-  16: { box: 'size-4', ring: 'inset-ring-[5px]' },
-  20: { box: 'size-5', ring: 'inset-ring-[6px]' },
+/* A 32px source frame contains a 28px disc, with a 2px or 8px inset ring. */
+const sizeClasses: {
+  [K in RadioMarkSize]: { box: string; ring: string; border: string }
+} = {
+  12: {
+    box: 'size-3',
+    ring: 'inset-ring-[3px]',
+    border: 'inset-ring-[0.75px]',
+  },
+  16: { box: 'size-4', ring: 'inset-ring-[4px]', border: 'inset-ring' },
+  20: {
+    box: 'size-5',
+    ring: 'inset-ring-[5px]',
+    border: 'inset-ring-[1.25px]',
+  },
+  24: { box: 'size-6', ring: 'inset-ring-[6px]', border: 'inset-ring-[1.5px]' },
+  32: { box: 'size-8', ring: 'inset-ring-[8px]', border: 'inset-ring-2' },
 }
 
 /**
@@ -36,18 +46,29 @@ export const RadioMark: FC<{
   checked?: boolean
   size?: RadioMarkSize
   className?: string
-}> = ({ host, checked = false, size = 20, className }) => (
+}> = ({ host, checked = false, size = 24, className }) => (
   <span
     aria-hidden
     data-slot="radio-mark"
     data-state={checked ? 'checked' : 'unchecked'}
     className={twMerge(
-      'pointer-events-none block shrink-0 rounded-full bg-background-3 transition-shadow',
+      'pointer-events-none relative block shrink-0',
       sizeClasses[size].box,
-      checked
-        ? [sizeClasses[size].ring, 'inset-ring-primary']
-        : ['inset-ring inset-ring-control-border', hostHoverClasses[host]],
       className,
     )}
-  />
+  >
+    <span
+      data-slot="radio-mark-disc"
+      className={twMerge(
+        'absolute inset-[6.25%] rounded-full bg-background-3 transition-shadow',
+        checked
+          ? [sizeClasses[size].ring, 'inset-ring-primary']
+          : [
+              sizeClasses[size].border,
+              'inset-ring-control-border',
+              hostHoverClasses[host],
+            ],
+      )}
+    />
+  </span>
 )

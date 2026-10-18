@@ -4,7 +4,7 @@
     "$description": "Figma \"Colors\" collection, SnowUI-Light mode, plus the library's additions (no \"figma\" name in $extensions).",
     "primary": {
       "$value": "{color.black}",
-      "$description": "Figma alias: Black/100% in SnowUI-Light, Secondary/Indigo in SnowUI-Dark.",
+      "$description": "Figma alias: Black/100% in SnowUI-Light. Dark mode retains the agreed accessible Indigo primary: the updated source's White/40% fails text and selected-control contrast checks.",
       "$extensions": {
         "com.holakirr.snow-ui": { "figma": "Primary" }
       }
@@ -295,8 +295,8 @@
     "blue": {
       "$value": {
         "colorSpace": "srgb",
-        "components": [0.4902, 0.7333, 1],
-        "hex": "#7dbbff"
+        "components": [0.2, 0.8196078431372549, 1],
+        "hex": "#33d1ff"
       },
       "$extensions": {
         "com.holakirr.snow-ui": { "figma": "Secondary/Blue" }

@@ -8,6 +8,7 @@ import { Button, type ButtonProps } from '../Button'
 import {
   dialogMotionClasses,
   dialogOverlayClasses,
+  dialogOverlayMotionClasses,
   dialogPopupClasses,
   dialogPositionClasses,
 } from '../Dialog/styles'
@@ -28,7 +29,11 @@ const AlertDialogOverlay: FC<
   ComponentProps<typeof AlertDialogPrimitive.Overlay>
 > = ({ className, onMouseDown, ...props }) => (
   <AlertDialogPrimitive.Overlay
-    className={twMerge(dialogOverlayClasses, dialogMotionClasses, className)}
+    className={twMerge(
+      dialogOverlayClasses,
+      dialogOverlayMotionClasses,
+      className,
+    )}
     onMouseDown={(event) => {
       onMouseDown?.(event)
       // Focus would move to <body>, outside the dialog's focus trap.

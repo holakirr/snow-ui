@@ -141,7 +141,7 @@ describe('index.css (precompiled)', () => {
     // container hover or focus. The WebKit thumb grows from 4px to 8px when
     // hovered or dragged; the fallback stays thin.
     expect(read('index.css')).toMatch(
-      /@media not all and \(forced-colors:\s*active\)\{\.scrollbar-snow\{--scrollbar-snow-more:var\(--contrast-more\) var\(--color-control-border\);--scrollbar-snow-thumb:var\(--scrollbar-snow-more,var\(--color-black-10\)\)\}@supports selector\(::-webkit-scrollbar\)\{\.scrollbar-snow::-webkit-scrollbar\{background:0 0;width:8px;height:8px\}\.scrollbar-snow::-webkit-scrollbar-thumb\{background:padding-box padding-box;border:2px solid #0000;/,
+      /@media not all and \(forced-colors:\s*active\)\{\.scrollbar-snow\{--scrollbar-snow-more:var\(--contrast-more\) var\(--color-control-border\);--scrollbar-snow-thumb:var\(--scrollbar-snow-more,var\(--color-black-10\)\)\}@supports selector\(::-webkit-scrollbar\)\{\.scrollbar-snow::-webkit-scrollbar\{background:0 0;width:12px;height:12px\}\.scrollbar-snow::-webkit-scrollbar-thumb\{border:0 solid #0000;background:padding-box padding-box;border-inline-width:4px;/,
     )
     for (const state of ['hover', 'focus-within']) {
       expect(read('index.css')).toContain(
@@ -150,7 +150,7 @@ describe('index.css (precompiled)', () => {
     }
     for (const state of ['hover', 'active']) {
       expect(read('index.css')).toContain(
-        `.scrollbar-snow::-webkit-scrollbar-thumb:${state}{background-color:var(--color-control-border);border-width:0}`,
+        `.scrollbar-snow::-webkit-scrollbar-thumb:${state}{background-color:var(--color-control-border);border-inline-start-width:0}`,
       )
     }
     expect(read('index.css')).toMatch(

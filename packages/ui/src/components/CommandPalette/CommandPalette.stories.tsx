@@ -5,7 +5,8 @@ import { type ComponentProps, useEffect, useState } from 'react'
 import { expect, fn, waitFor, within } from 'storybook/test'
 import { expectClosed } from '../../test/animations'
 import { colorOf } from '../../test/colors'
-import { Avatar, AvatarFallback } from '../Avatar'
+import { sourcePortraits } from '../../test/photos'
+import { Avatar, AvatarFallback, AvatarImage } from '../Avatar'
 import { Button } from '../Button'
 import { IconBox } from '../IconBox'
 import { searchStyles } from '../Search'
@@ -210,6 +211,55 @@ export const Default: Story = {
 
 export const Open: Story = {
   args: { defaultOpen: true },
+}
+
+/** The source composition, separate from the interactive examples' extra data. */
+export const FigmaReference: Story = {
+  args: {
+    defaultOpen: true,
+    groups: groups.map((group) => ({
+      ...group,
+      items: group.items
+        .filter((item) => item.id !== 'archive')
+        .map((item) => ({
+          ...item,
+          label: ['tokens', 'projects', 'profile'].includes(item.id)
+            ? 'Text'
+            : item.label,
+          icon: ['byewind', 'byewind-contact', 'emma', 'melody'].includes(
+            item.id,
+          ) ? (
+            <IconBox size={24}>
+              <Avatar>
+                <AvatarImage
+                  src={
+                    item.id === 'emma'
+                      ? sourcePortraits['Emma Smith']
+                      : item.id === 'melody'
+                        ? sourcePortraits['Melody Macy']
+                        : sourcePortraits.ByeWind
+                  }
+                  alt=""
+                />
+              </Avatar>
+            </IconBox>
+          ) : (
+            item.icon
+          ),
+        })),
+    })),
+  },
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/design/ZiRnYjr5N29yTkcIXihZUx/?node-id=33257-43316',
+    },
+  },
+  play: async ({ canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await page.findByRole('combobox', { name: 'Search' })
+    await userEvent.keyboard('{ArrowDown}')
+  },
 }
 
 export const OpenDark: Story = {

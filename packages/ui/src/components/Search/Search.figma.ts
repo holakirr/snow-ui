@@ -23,7 +23,7 @@ const typing = type === 'typing'
 
 const attrs = {
   variant: variant === 'gray' ? undefined : variant,
-  shortcut: code("['/']"),
+  shortcut: code("['⌘K']"),
   value: typing ? code('query') : undefined,
   onValueChange: typing ? code('setQuery') : undefined,
   readOnly: instance.getEnum('State', { Static: true }) ?? false,

@@ -71,6 +71,44 @@ test.describe('settings', () => {
     ).toHaveValue('Grace')
   })
 
+  test('payout details preserve newlines when saved and edited', async ({
+    page,
+  }) => {
+    // Older saved payout details may already contain newlines.
+    await page.goto('/preferences?tab=payment')
+    const payout = page.getByRole('textbox', { name: 'Payout invoice info' })
+    const details = 'Example company\nExample address\nVAT 12345'
+    await payout.fill(details)
+    await page.reload()
+    await expect(payout).toHaveValue(details)
+    await payout.press('ControlOrMeta+End')
+    await payout.press('Enter')
+    await payout.press('x')
+    await page.reload()
+    await expect(payout).toHaveValue(`${details}\nx`)
+  })
+
+  test('plugins start enabled and persist separately from connected accounts', async ({
+    page,
+  }) => {
+    await page.goto('/preferences?tab=plugins')
+    for (const name of ['SnowUI', 'Figma', 'Twitter', 'Instagram', 'Slack']) {
+      await expect(
+        page.getByRole('switch', { name, exact: true }),
+      ).toBeChecked()
+    }
+    await page.getByRole('switch', { name: 'Figma', exact: true }).uncheck()
+    await page.goto('/settings')
+    await expect(
+      page.getByRole('switch', { name: 'Figma', exact: true }),
+    ).toBeChecked()
+    await page.goto('/preferences?tab=plugins')
+    await page.reload()
+    await expect(
+      page.getByRole('switch', { name: 'Figma', exact: true }),
+    ).not.toBeChecked()
+  })
+
   test('every preferences tab renders without axe violations', async ({
     page,
   }) => {
@@ -143,6 +181,33 @@ test.describe('settings', () => {
       page.getByRole('switch', { name: 'Email notifications', exact: true }),
     ).toBeChecked()
   })
+})
+
+test('account deactivation requires confirmation and persists the confirmed change', async ({
+  page,
+}) => {
+  await page.goto('/settings')
+  const active = page.getByRole('switch', { name: 'Active', exact: true })
+  const deactivate = page.getByRole('button', {
+    name: 'Deactivate Account',
+    exact: true,
+  })
+  await expect(active).toBeChecked()
+  await expect(deactivate).toBeEnabled()
+  await deactivate.click()
+  await expect(active).toBeChecked()
+  await page.reload()
+  await expect(active).toBeChecked()
+  await page
+    .getByRole('checkbox', {
+      name: 'I confirm my account deactivation',
+      exact: true,
+    })
+    .click()
+  await deactivate.click()
+  await expect(active).not.toBeChecked()
+  await page.reload()
+  await expect(active).not.toBeChecked()
 })
 
 test('the order table sorts, selects and pages', async ({ page }) => {

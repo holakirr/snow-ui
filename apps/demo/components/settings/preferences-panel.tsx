@@ -35,10 +35,10 @@ import {
   CheckIcon,
   CurrencyCircleDollarIcon,
   DotsThreeIcon,
-  GearSixIcon,
+  GearIcon,
   HandPalmIcon,
   PaletteIcon,
-  PlugsConnectedIcon,
+  PlugsIcon,
   PlusIcon,
   SunHorizonIcon,
   TextAaIcon,
@@ -57,7 +57,7 @@ const SettingRow = ({
   destructive = false,
 }: {
   title: string
-  description?: string
+  description?: ReactNode
   value?: string
   children?: ReactNode
   onClick?: () => void
@@ -73,30 +73,34 @@ const SettingRow = ({
           {title}
         </Typography>
         {description && (
-          <p className="mt-1 text-12 text-secondary">{description}</p>
+          <p className="mt-1 whitespace-pre-line text-12 text-secondary">
+            {description}
+          </p>
         )}
       </div>
-      {value && <span className="text-14 text-secondary">{value}</span>}
-      {children ??
-        (onClick ? (
-          <ArrowLineRightIcon
-            size={16}
-            aria-hidden
-            className="text-secondary"
-          />
-        ) : null)}
+      <div className="flex shrink-0 items-start gap-1">
+        {value && <span className="text-14 text-secondary">{value}</span>}
+        {children ??
+          (onClick ? (
+            <ArrowLineRightIcon
+              size={20}
+              aria-hidden
+              className="text-secondary"
+            />
+          ) : null)}
+      </div>
     </>
   )
   return onClick ? (
     <button
       type="button"
       onClick={onClick}
-      className="flex min-h-9 w-full items-center gap-4 rounded-16 px-3 py-2 hover:bg-black-4 focus-ring"
+      className="flex min-h-9 w-full items-start gap-4 rounded-16 px-3 py-2 hover:bg-black-4 focus-ring"
     >
       {content}
     </button>
   ) : (
-    <div className="flex min-h-9 items-center gap-4 px-3 py-2">{content}</div>
+    <div className="flex min-h-9 items-start gap-4 px-3 py-2">{content}</div>
   )
 }
 
@@ -119,23 +123,28 @@ const ChoiceRow = ({
     <DropdownMenuTrigger asChild>
       <button
         type="button"
-        aria-label={title}
-        className="flex min-h-14 w-full items-center gap-4 rounded-16 px-3 py-2 text-start hover:bg-black-4 focus-ring"
+        className="flex min-h-14 w-full items-start gap-4 rounded-16 px-3 py-2 text-start hover:bg-black-4 focus-ring"
       >
         <span className="min-w-0 flex-1">
           <Typography size={14} className="block">
             {title}
           </Typography>
           {description && (
-            <span className="mt-1 block text-12 text-secondary">
+            <span className="mt-1 block whitespace-pre-line text-12 text-secondary">
               {description}
             </span>
           )}
         </span>
-        {!hideValue && (
-          <span className="text-14 text-secondary">{choices[value]}</span>
-        )}
-        <ArrowLineRightIcon size={16} aria-hidden className="text-secondary" />
+        <span className="flex shrink-0 items-start gap-1">
+          {!hideValue && (
+            <span className="text-14 text-secondary">{choices[value]}</span>
+          )}
+          <ArrowLineRightIcon
+            size={20}
+            aria-hidden
+            className="text-secondary"
+          />
+        </span>
       </button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
@@ -167,13 +176,13 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
     ['notifications', t.notifications, BellIcon],
     ['privacy', t.privacy, HandPalmIcon],
     ['payment', t.paymentTab, CurrencyCircleDollarIcon],
-    ['plugins', t.plugins, PlugsConnectedIcon],
+    ['plugins', t.plugins, PlugsIcon],
   ] as const
   const edit = (key: 'name' | 'email' | 'password') => {
     setDraft(key === 'password' ? '' : data[key])
     setEditing(key)
   }
-  const heading = (text: string) => (
+  const heading = (text: ReactNode) => (
     <Typography asChild size={18} semibold>
       <h2 className="px-3">{text}</h2>
     </Typography>
@@ -182,7 +191,7 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
   return (
     <main className="flex min-h-svh flex-col items-center justify-center gap-7 rounded-24 bg-background-2 bg-[linear-gradient(180deg,rgba(215.21,208.25,255,0.2),rgba(202.94,220.64,255,0.5))] px-4 py-12 md:px-12 xl:px-33">
       <div className="flex w-full max-w-294 items-center justify-between gap-4 px-2">
-        <GearSixIcon size={48} aria-hidden />
+        <GearIcon size={48} aria-hidden />
         <Typography asChild size={48} semibold>
           <h1>{dict.settings.title}</h1>
         </Typography>
@@ -198,7 +207,7 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
         value={selected}
         onValueChange={setSelected}
         orientation="vertical"
-        className="grid w-full max-w-294 overflow-hidden rounded-32 bg-background-1 md:grid-cols-[17.5rem_minmax(0,1fr)]"
+        className="grid w-full max-w-294 overflow-hidden rounded-32 bg-background-1 backdrop-blur-[40px] md:grid-cols-[17.5rem_minmax(0,1fr)]"
       >
         <TabsList
           variant="solid"
@@ -212,7 +221,7 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
               className="min-h-14 justify-start gap-2 rounded-16 px-4 text-14 font-normal text-black data-[state=active]:bg-black-10"
               icon={
                 Icon ? (
-                  <Icon size={24} className="size-6" />
+                  <Icon size={24} weight="duotone" className="size-6" />
                 ) : (
                   <InitialsAvatar name={data.name} />
                 )
@@ -344,7 +353,7 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
                 {[12, 14, 16, 18, 20].map((size, index) => (
                   <Fragment key={size}>
                     {index > 0 && (
-                      <span aria-hidden className="h-px flex-1 bg-black-20" />
+                      <span aria-hidden className="h-px flex-1 bg-black-4" />
                     )}
                     <span
                       className={`flex shrink-0 items-center justify-center ${data.fontSize === size ? 'size-8' : 'size-5'}`}
@@ -352,7 +361,7 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
                       <RadioGroupItem
                         value={String(size)}
                         aria-label={`${size}px`}
-                        className="size-3 bg-transparent inset-ring-[0.5px] data-[state=checked]:size-7 data-[state=checked]:bg-black-20 data-[state=checked]:inset-ring-0"
+                        className="relative m-0 size-[11.25px] bg-black/8 inset-ring-[0.625px] inset-ring-black hit-area data-[state=checked]:m-0.5 data-[state=checked]:size-7 data-[state=checked]:bg-background-3 data-[state=checked]:inset-ring-2 data-[state=checked]:inset-ring-control-border"
                       />
                     </span>
                   </Fragment>
@@ -491,7 +500,13 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
             {heading(t.privacy)}
             <SettingRow
               title={t.cookies}
-              description={t.cookiesHint}
+              description={
+                <>
+                  {t.cookiesHintBefore}
+                  <span className="text-indigo-text">{t.cookiesNotice}</span>
+                  {t.cookiesHintAfter}
+                </>
+              }
               value={data.cookies ? t.customize : t.off}
               onClick={() => update({ cookies: !data.cookies })}
             />
@@ -518,7 +533,7 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
                 <Label
                   key={method}
                   htmlFor={`${id}-payment-${index}`}
-                  className="flex h-35 flex-col items-start justify-between rounded-16 bg-background-2 px-6 py-4 text-start text-14 font-normal text-black relative has-focus-visible:ring-4 has-focus-visible:ring-black-80"
+                  className="flex h-35 flex-col items-start gap-2 rounded-16 bg-background-2 px-6 py-4 text-start text-14 font-normal text-black relative has-focus-visible:ring-4 has-focus-visible:ring-black-80"
                 >
                   <input
                     id={`${id}-payment-${index}`}
@@ -529,7 +544,7 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
                     checked={data.defaultPayment === index}
                     onChange={() => update({ defaultPayment: index })}
                   />
-                  <span className="flex flex-wrap items-center gap-2 font-semibold">
+                  <span className="flex h-7 shrink-0 flex-wrap items-center gap-2 font-semibold">
                     {index === 2 ? method : data.name}
                     {data.defaultPayment === index && (
                       <span className="rounded-8 bg-green/15 px-2 py-0.5 text-12 font-normal text-black">
@@ -537,9 +552,11 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
                       </span>
                     )}
                   </span>
-                  <span className="font-semibold">
+                  <span
+                    className={`flex shrink-0 items-end font-semibold ${index === 2 ? 'h-5' : 'h-6'}`}
+                  >
                     {index === 2 ? (
-                      data.email
+                      <span className="translate-y-0.5">{data.email}</span>
                     ) : (
                       <span className="flex gap-2">
                         {(index === 0
@@ -551,7 +568,7 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
                       </span>
                     )}
                   </span>
-                  <span className="flex w-full items-center justify-between gap-2">
+                  <span className="flex h-10 w-full shrink-0 items-center justify-between gap-2">
                     <span className="text-secondary">
                       {index < 2 ? 'Exp 06/25' : ''}
                     </span>
@@ -571,8 +588,8 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
               <Button
                 variant="outline"
                 size="md"
-                className="h-13 justify-center rounded-16 border-[0.5px] border-dashed border-black-20 inset-ring-0 [&_svg]:size-4"
-                startContent={<PlusIcon size={16} />}
+                className="h-13 justify-center gap-2 rounded-16 border border-dashed border-black-20 p-4 inset-ring-0 [&_svg]:size-5"
+                startContent={<PlusIcon size={20} />}
                 onClick={() =>
                   toast({
                     title: t.paymentMethod,
@@ -595,18 +612,24 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
               placeholder={t.payoutPlaceholder}
               value={data.payoutInfo}
               onChange={(event) => update({ payoutInfo: event.target.value })}
-              className="mx-3 min-h-20 w-auto bg-transparent"
+              className={`mx-3 h-20 w-auto resize-none bg-transparent ${
+                data.payoutInfo.includes('\n') ? 'py-2' : 'py-[30px]'
+              }`}
             />
           </TabsContent>
           <TabsContent value="plugins" className="mt-0 flex flex-col gap-4">
-            {heading(`${t.plugins} 5`)}
+            {heading(
+              <>
+                {t.plugins} <span className="text-secondary">5</span>
+              </>,
+            )}
             {(
               [
                 [
                   'SnowUI',
                   'An advanced Dashboard / SaaS UI kit and design system for Figma.',
                 ],
-                ['Figma', 'The collaborative interface design tool.'],
+                ['Figma', 'the collaborative interface design tool.'],
                 [
                   'Twitter',
                   'From breaking news and entertainment to sports and politics, get the full story with all the live commentary.',
@@ -617,7 +640,7 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
                 ],
                 [
                   'Slack',
-                  'Slack is a new way to communicate with your team. It’s faster, better organized, and more secure than email.',
+                  "Slack is a new way to communicate with your team. It's faster, better organized, and more secure than email.",
                 ],
               ] as const
             ).map(([key, description]) => (
@@ -625,35 +648,46 @@ export const PreferencesPanel = ({ tab = 'profile' }: { tab?: string }) => {
                 key={key}
                 className="flex min-h-14 items-center gap-4 rounded-16 px-3 py-2 hover:bg-black-4"
               >
-                <BrandLogo name={key} size={40} />
-                <div className="min-w-0 flex-1">
-                  <Typography size={14} semibold className="block">
-                    {key}
-                  </Typography>
-                  <p className="mt-1 text-12 text-secondary">{description}</p>
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                  <BrandLogo name={key} size={32} />
+                  <div className="min-w-0 flex-1">
+                    <Typography size={14} semibold className="block">
+                      {key}
+                    </Typography>
+                    <p className="whitespace-pre-line text-12 text-secondary">
+                      {description}
+                    </p>
+                  </div>
                 </div>
-                <Button
-                  startContent={<DotsThreeIcon />}
-                  aria-label={`${key}: ${t.settings}`}
-                  variant="bare"
-                  onClick={() =>
-                    toast({
-                      title: key,
-                      description: dict.settings.savedDescription,
-                    })
-                  }
-                />
-                <Switch
-                  aria-label={key}
-                  checked={key === 'Slack' ? data.slack : data.connected[key]}
-                  onCheckedChange={(checked) =>
-                    key === 'Slack'
-                      ? update({ slack: checked })
-                      : update({
-                          connected: { ...data.connected, [key]: checked },
+                <div className="flex shrink-0 items-center gap-2">
+                  <Button
+                    size="sm"
+                    startContent={<DotsThreeIcon size={16} />}
+                    aria-label={`${key}: ${t.settings}`}
+                    variant="borderless"
+                    onClick={() =>
+                      toast({
+                        title: key,
+                        description: dict.settings.savedDescription,
+                      })
+                    }
+                  />
+                  <label
+                    htmlFor={`${id}-plugin-${key}`}
+                    className="flex size-10 cursor-pointer items-center justify-center"
+                  >
+                    <Switch
+                      id={`${id}-plugin-${key}`}
+                      aria-label={key}
+                      checked={data.plugins[key]}
+                      onCheckedChange={(checked) =>
+                        update({
+                          plugins: { ...data.plugins, [key]: checked },
                         })
-                  }
-                />
+                      }
+                    />
+                  </label>
+                </div>
               </div>
             ))}
           </TabsContent>

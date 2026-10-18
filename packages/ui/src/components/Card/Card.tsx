@@ -11,7 +11,7 @@ const cardStyles = cva('text-black transition-shadow', {
   variants: {
     variant: {
       // Figma "Card": radius 16, padding 12/16, Surface/1.
-      default: 'rounded-16 bg-surface-1 px-4 py-3',
+      default: 'rounded-16 bg-surface-1 px-4 py-3 text-14',
       // Figma dashboard "Block": radius 20, padding 24, Background/2.
       block: 'rounded-20 bg-background-2 p-6',
     },
@@ -93,11 +93,11 @@ const Card: FC<CardProps> = ({
       data-state={selected ? 'selected' : undefined}
       className={twMerge(
         cardStyles({ variant, interactive, bordered, selected }),
-        // The mark sits in the padding's corner: keep the content clear of
-        // it (the padding plus the 20px mark and a 4px gap).
+        // The source default card keeps its 16px content padding; its mark
+        // overlays the corner. Blocks reserve room for their mark.
         // A named group, so an outer `group` (the Sidebar's) doesn't show
         // the mark.
-        marker && ['group/card relative', block ? 'pe-12' : 'pe-10'],
+        marker && ['group/card relative', block && 'pe-12'],
         className,
       )}
       {...props}
@@ -106,10 +106,13 @@ const Card: FC<CardProps> = ({
       {marker && (
         <RadioMark
           host="card"
+          size={24}
           checked={Boolean(selected)}
           className={twMerge(
             'absolute transition-opacity motion-reduce:transition-none',
-            block ? 'top-6 end-6' : 'top-3 end-4',
+            block
+              ? 'top-6 end-6'
+              : 'top-[min(12px,calc((100%_-_24px)/2))] end-3',
             // Figma: no mark on the Default and Static cards, an empty one
             // on Hover.
             !selected &&

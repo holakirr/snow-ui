@@ -22,6 +22,44 @@ describe('workflows', () => {
   )
 })
 
+describe('production workflow secret boundary', () => {
+  const release = readFileSync(join(dir, 'release.yml'), 'utf8')
+  const production = readFileSync(join(dir, 'production.yml'), 'utf8')
+  const caller = release.split('\n  production:\n')[1].split('\n  #')[0]
+  const contract = production
+    .split('  workflow_call:\n')[1]
+    .split('  workflow_dispatch:')[0]
+  const names = [
+    'SNOWUI_SITE_AUTOMATION_SECRET',
+    'SNOWUI_DEMO_AUTOMATION_SECRET',
+  ]
+
+  it('forwards exactly the required named environment secrets to the release check', () => {
+    // Environment secrets are empty across workflow_call unless explicitly
+    // forwarded. Validate both sides, without inheriting unrelated secrets.
+    const forwarded = Array.from(
+      caller.matchAll(/^ {6}(\w+): \$\{\{ secrets\.(\w+) \}\}$/gm),
+      ([, name, value]) => [name, value],
+    )
+    expect(forwarded).toEqual(names.map((name) => [name, name]))
+    expect(caller).not.toMatch(/secrets: inherit/)
+    const required = Array.from(
+      contract.matchAll(/^ {6}(\w+):\n {8}required: true$/gm),
+      ([, name]) => name,
+    )
+    expect(required).toEqual(names)
+  })
+
+  it('keeps secret consumption inside the protected main-only environment', () => {
+    expect(production).toContain("if: github.ref == 'refs/heads/main'")
+    expect(production).toContain('environment: production-e2e')
+    expect(caller).toContain("github.ref == 'refs/heads/main'")
+    expect(caller).toContain("needs.gate.outputs.passed == 'true'")
+    expect(caller).toContain('contents: read\n      deployments: read')
+    expect(caller).not.toMatch(/(?:contents|deployments|actions): write/)
+  })
+})
+
 // The Build Check jobs that run browsers run in the official Playwright
 // image, which has the browsers and their system packages, instead of
 // installing them (apt) on the runner: the image visual/Dockerfile pins by

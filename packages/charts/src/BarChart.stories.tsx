@@ -60,6 +60,9 @@ export const TrafficByDevice: Story = {
           colorBy="category"
           categoryLabel="Device"
           grid={false}
+          plotMargin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+          xAxisHeight={28}
+          yAxisWidth={39}
           height={196}
         />
       )}

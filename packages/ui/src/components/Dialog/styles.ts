@@ -4,11 +4,14 @@
  */
 
 /**
- * Open and close: the mask and the content scale from their centre and fade;
- * with reduced motion they only fade.
+ * The panel gently scales and fades; the full-screen mask only fades.
+ * CSS exit animations keep Radix Presence mounted until they finish.
  */
 export const dialogMotionClasses =
-  'data-[state=open]:scale-100 starting:data-[state=open]:scale-0 data-[state=closed]:scale-0 starting:data-[state=closed]:scale-100 data-[state=closed]:opacity-0 starting:data-[state=closed]:opacity-100 data-[state=open]:opacity-100 starting:data-[state=open]:opacity-0 motion-reduce:transition-opacity'
+  'data-[state=open]:animate-zoom-in-95 data-[state=closed]:animate-zoom-out-95'
+
+export const dialogOverlayMotionClasses =
+  'data-[state=open]:animate-in data-[state=closed]:animate-out'
 
 /**
  * Figma "Mask": a linear gradient (#CBDDFF 50% → #D7D0FF 20%) and
@@ -16,7 +19,7 @@ export const dialogMotionClasses =
  * ("Add data", SnowUI-Dark), so the mask doesn't flip.
  */
 export const dialogOverlayClasses =
-  'fixed inset-0 z-50 bg-linear-to-t from-[#cbddff]/50 to-[#d7d0ff]/20 data-[state=open]:backdrop-blur-bg-40 starting:data-[state=open]:backdrop-blur-none data-[state=closed]:backdrop-blur-none starting:data-[state=closed]:backdrop-blur-bg-40'
+  'fixed inset-0 z-50 bg-linear-to-t from-[#cbddff]/50 to-[#d7d0ff]/20 backdrop-blur-bg-40'
 
 /** Centred in the viewport, 16px from each side on narrow screens. */
 export const dialogPositionClasses =

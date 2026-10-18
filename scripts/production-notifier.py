@@ -52,7 +52,7 @@ def api(path):
 
 def safe_text(text):
     text = str(text).split('\n')[0]
-    for name in ('GH_TOKEN', 'GITHUB_TOKEN', 'SNOWUI_SITE_AUTOMATION_SECRET', 'SNOWUI_DEMO_AUTOMATION_SECRET'):
+    for name in ('GH_TOKEN', 'GITHUB_TOKEN', 'TELEGRAM_BOT_TOKEN', 'TELEGRAM_CHAT_ID', 'SNOWUI_SITE_AUTOMATION_SECRET', 'SNOWUI_DEMO_AUTOMATION_SECRET'):
         if os.environ.get(name):
             text = text.replace(os.environ[name], '[redacted]')
     if re.search(r'(?i)(bearer|cookie|x-vercel-protection-bypass|authorization)\s*[:= ]', text):
@@ -104,8 +104,8 @@ def reports_from_zip(payload):
     return reports
 
 
-def events_from_github(state):
-    runs = [run for page in api('/actions/workflows/release.yml/runs?branch=main&per_page=100') for run in page['workflow_runs']]
+def events_from_github(state, runs=None):
+    runs = runs if runs is not None else [run for page in api('/actions/workflows/release.yml/runs?branch=main&per_page=100') for run in page['workflow_runs']]
     events = []
     for run in runs:
         if max(run.get('updated_at', ''), run.get('run_started_at', '')) < state['startedAt']:

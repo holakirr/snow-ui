@@ -72,3 +72,74 @@ Manual fixture mode requires `--fixture PATH --state ISOLATED_PATH`, and every
 event must have `test: true`. Using the actual default state is forbidden even
 from another working directory; live mode disallows a state override. Never use
 fixture mode during a scheduled check.
+
+## Event-driven Telegram delivery
+
+`production-notifications.yml` observes `Release` completion on `main`; there is
+no cron. Only the default-branch notifier code is checked out using
+`github.workflow_sha`. Release code and artifact contents never execute in the
+notifier. The job installs no dependencies and has no Vercel/npm credentials.
+It receives only the dedicated Telegram token and private recipient ID.
+
+The REST run must belong to `holakirr/snow-ui`, use `release.yml`, be a completed
+`workflow_dispatch` named `Release (release) on main`, and have successful
+`released` and `promote` jobs. Only then does the existing observer inspect its
+production job and sanitized reports. Canary/next/manual production checks,
+trigger-only runs and failures before production remain silent. Every completion
+event reconciles new/unfinished attempts since cutover, so GitHub replacing an
+older queued notifier does not lose that release. Already completed run/attempt
+pairs are skipped before job/report reads. A rerun is a new attempt; the original
+release-SHA/cause fingerprint still suppresses the same failure.
+
+Durable state is `production-notifications-state.json` on the dedicated branch
+`codex/production-notification-state`. It contains the original observer state,
+unchanged `processedAttempts` and `notifiedFailures`, plus transport receipts and
+completed event identities. It does not contain Telegram credentials or chat IDs.
+This is a normal Git branch, without expiring artifact/cache retention. The only
+writer is this serialized job, using contents API SHA compare-and-swap. The job's
+`contents: write` exists for this state file; protected branches and their rules
+are not changed. No workflow is dispatched by the runtime handler.
+
+Before sending a failure, persist its delivery reservation and original
+fingerprint; after Telegram confirms acceptance and the exact configured chat,
+persist its message ID. Replays cannot send the same failure again. Telegram and
+GitHub do not provide a shared transaction: a crash/timeout between acceptance
+and receipt persistence is ambiguous. Such a reservation blocks automatic
+resends and fails CI visibly. Check the private chat against the run/attempt,
+then reconcile the reservation in the state branch through reviewed operational
+work. Do not clear old fingerprints to force delivery. A known undelivered
+message can be resent only after an explicit operator decision; an ambiguous
+message must never be blindly resent. Observation errors use a separate durable
+key and explicitly say that an application failure was not established; their
+recovery is quiet. Storage/delivery failures fail the notifier with fixed safe
+diagnostics; raw exception URLs and credential values never enter logs.
+
+Cutover, in order:
+
+1. Verify the private `/start` belongs to the account owner. Put only this bot's
+   token and recipient into repository secrets `SNOWUI_TELEGRAM_BOT_TOKEN` and
+   `SNOWUI_TELEGRAM_CHAT_ID`; never commit them.
+2. Import the existing local observer state byte-for-byte in its legacy fields,
+   with `telegramStartedAt` set to the cutover preparation time and
+   `telegramPendingRuns` containing any unfinished Release IDs. Never initialize
+   an empty history when prior state exists.
+3. Merge the independently reviewed final HEAD after applicable green CI. Leave
+   `SNOWUI_PRODUCTION_TELEGRAM_ENABLED` absent until verification.
+4. Dispatch `Production Notifications` on main with `operation=delivery-test`.
+   Confirm API acceptance and the actual clearly labeled message in the private
+   chat; tests never impersonate production failures or alter fingerprints.
+5. Refresh/import the last hourly observer's processed and notified entries,
+   retaining all durable receipts. After successful delivery verification, remove
+   only `snowui-production` through the supported automation tool. Preserve its
+   local state/history. Enable repository variable
+   `SNOWUI_PRODUCTION_TELEGRAM_ENABLED=true`, then dispatch `operation=reconcile`
+   once to cover the cutover interval and unfinished releases. Verify it succeeds
+   and a duplicate reconciliation is quiet. Confirm an automatic Release
+   completion triggers the workflow; if no release occurs during cutover, record
+   that limit and retain a temporary one-shot verification until the next event.
+
+Rollback: set the enable variable to `false`, preserve branch state/receipts,
+merge any new fingerprints into the legacy state, and restore the hourly
+read-only monitor if needed. This changes notification routing only, never
+production protection, application deployments, npm publishing or workflows'
+release gates. A green production run does not retire the permanent event monitor.

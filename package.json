@@ -18,7 +18,7 @@
     "test": "bun run --filter './packages/*' test && bun run test:scripts",
     "test:scripts": "vitest run -c scripts/vitest.config.ts && bun run test:braces-security && bun run test:production-notifier",
     "test:braces-security": "python3 -B scripts/tests/test_braces_security.py",
-    "test:production-notifier": "python3 -B scripts/tests/test_production_notifier.py",
+    "test:production-notifier": "python3 -B scripts/tests/test_production_notifier.py && python3 -B scripts/tests/test_production_telegram.py",
     "test:dist": "bun run --filter @holakirr/snow-ui --filter @holakirr/snow-ui-charts test:dist",
     "test:storybook": "vitest run --project storybook --project storybook-dark --project storybook-prefs",
     "test:storybook:browsers": "vitest run -c vitest.browsers.config.ts",

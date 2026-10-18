@@ -2,6 +2,10 @@ name: Production Notifications
 
 on:
   workflow_call:
+    outputs:
+      acceptance-required:
+        description: Whether the one-shot Release acceptance is still pending
+        value: ${{ jobs.notify.outputs.acceptance-required }}
     inputs:
       release-run-id:
         required: true
@@ -40,6 +44,8 @@ jobs:
       (vars.SNOWUI_PRODUCTION_TELEGRAM_ENABLED == 'true' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
       github.event.workflow_run.event == 'workflow_dispatch'))
+    outputs:
+      acceptance-required: ${{ steps.observe.outputs.acceptance-required }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -53,6 +59,7 @@ jobs:
           ref: ${{ github.workflow_sha }}
           persist-credentials: false
       - name: Observe Release and deliver only new failures
+        id: observe
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}

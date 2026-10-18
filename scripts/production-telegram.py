@@ -1,5 +1,6 @@
 """Event-only production observer. Only trusted main code consumes credentials."""
 import base64
+import copy
 import hashlib
 import importlib.util
 import json
@@ -101,8 +102,15 @@ def stable_run(run, jobs):
                     for name in ("released", "promote")))
 
 
-def collect(run_id, state, production_finished=False):
-    run = gh("/actions/runs/" + str(run_id))
+def collect(run_id, state, production_finished=False, pinned_attempt=None):
+    path = "/actions/runs/" + str(run_id)
+    if pinned_attempt is not None:
+        if type(pinned_attempt) is not int or pinned_attempt <= 0:
+            raise Fault("Invalid pinned Release attempt")
+        path += "/attempts/" + str(pinned_attempt)
+    run = gh(path)
+    if pinned_attempt is not None and run.get("run_attempt") != pinned_attempt:
+        raise Fault("Pinned Release attempt differs from GitHub response")
     if run.get("status") != "completed" and not production_finished:
         return []
     attempt = run["run_attempt"]
@@ -147,6 +155,28 @@ def process(store, events, send=telegram):
     return len(notices)
 
 
+
+def arm_acceptance(store, state, release_id, events):
+    """Pin the first real direct Release call, before notification state changes."""
+    marker = state.get("telegramReleaseAcceptance")
+    if not release_id or (marker and (marker.get("status") == "completed"
+            or str(marker["runId"]) != release_id)):
+        return
+    selected = [e for e in events if str(e["runId"]) == release_id]
+    if not selected:
+        return
+    event = selected[0]
+    if marker and marker["attempt"] >= event["attempt"]:
+        return
+    state["telegramReleaseAcceptance"] = {
+        "status": "pending", "runId": event["runId"], "attempt": event["attempt"],
+        "sha": event["sha"],
+        "baseline": {name: copy.deepcopy(state.get(name, {})) for name in
+                     ("processedAttempts", "notifiedFailures", "telegramDeliveries")},
+    }
+    store.save(state)
+
+
 def main():
     event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
     kind = os.environ["GITHUB_EVENT_NAME"]
@@ -167,6 +197,10 @@ def main():
         raise Fault("Invalid reusable Release identity")
     store = Store()
     state = store.load()
+    if os.environ.get("GITHUB_OUTPUT"):
+        done = state.get("telegramReleaseAcceptance", {}).get("status") == "completed"
+        with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+            output.write("acceptance-required=" + ("false" if done else "true") + "\n")
     try:
         if kind == "workflow_run":
             run_id = event["workflow_run"]["id"]
@@ -197,6 +231,7 @@ def main():
         store.save(state)
         telegram("SnowUI: ошибка наблюдения GitHub. Production-сбой не установлен. Проверьте доступ и отчёт workflow Production Notifications.")
         raise Fault("GitHub observation failed; observer notice sent") from None
+    arm_acceptance(store, state, release_id, events)
     count = process(store, events)
     state = store.load()
     state.pop("telegramObserverError", None)

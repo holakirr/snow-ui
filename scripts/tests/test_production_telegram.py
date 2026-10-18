@@ -123,11 +123,154 @@ class ScopeTests(unittest.TestCase):
             run["display_title"] = "Release (production) on main"
             self.assertEqual(t.collect(123, baseline(), production_finished=True), [])
 
+    def test_pinned_attempt_does_not_follow_latest_run(self):
+        run = {"id": 123, "run_attempt": 1, "path": ".github/workflows/release.yml",
+               "head_repository": {"full_name": t.observer.REPO}, "head_branch": "main",
+               "event": "workflow_dispatch", "display_title": "Release (release) on main",
+               "status": "completed", "head_sha": "a" * 40, "html_url": "https://example.invalid",
+               "updated_at": "2026-10-18T10:00:00Z"}
+        jobs = [{"name": name, "conclusion": "success"} for name in ("released", "promote")]
+        jobs += [{"name": "production / production", "status": "completed", "conclusion": "success"}]
+        def gh(path):
+            self.assertEqual(path, "/actions/runs/123/attempts/1")
+            return run
+        with patch.object(t, "gh", side_effect=gh), patch.object(t.observer, "api", return_value=[{"jobs": jobs}]):
+            result = t.collect(123, baseline(), pinned_attempt=1)
+            self.assertEqual(result[0]["attempt"], 1)
+
     def test_processed_attempt_does_not_read_jobs(self):
         state = baseline()
         state["processedAttempts"]["123:2"] = {}
         with patch.object(t, "gh", return_value={"run_attempt": 2, "status": "completed"}), patch.object(t.observer, "api", side_effect=AssertionError("jobs must not be read")):
             self.assertEqual(t.collect(123, state), [])
+
+
+accept_spec = importlib.util.spec_from_file_location("acceptance", Path(__file__).parents[1] / "production-release-acceptance.py")
+a = importlib.util.module_from_spec(accept_spec)
+accept_spec.loader.exec_module(a)
+a.delivery = t
+
+
+class AcceptanceTests(unittest.TestCase):
+    def prepared(self, conclusion="success"):
+        store = MemoryStore(baseline())
+        e = event(conclusion)
+        t.arm_acceptance(store, store.load(), "123", [e])
+        t.process(store, [e], lambda text: 42)
+        self.run = {"id": 123, "run_attempt": 1, "head_sha": e["sha"],
+                    "path": ".github/workflows/release.yml", "head_repository": {"full_name": t.observer.REPO},
+                    "head_branch": "main", "event": "workflow_dispatch",
+                    "display_title": "Release (release) on main", "status": "in_progress"}
+        self.jobs = [{"name": name, "conclusion": "success"} for name in ("released", "promote", "notify-production / notify")]
+        self.jobs += [{"name": "production / production", "status": "completed", "conclusion": conclusion}]
+        return store, e
+
+    def verify(self, store, e):
+        with patch.object(t, "gh", return_value=self.run), patch.object(t.observer, "api", return_value=[{"jobs": self.jobs}]), patch.object(t, "collect", return_value=[e]), patch.object(t, "telegram", side_effect=AssertionError("acceptance must never send")):
+            a.verify(store)
+
+    def test_green_marks_completed_silently_and_preserves_all_history(self):
+        store, e = self.prepared()
+        before = store.load()
+        self.verify(store, e)
+        marker = store.state["telegramReleaseAcceptance"]
+        self.assertEqual(marker["status"], "completed")
+        self.assertEqual(marker["noticesVerified"], 0)
+        for name in ("processedAttempts", "notifiedFailures", "telegramDeliveries"):
+            self.assertEqual(store.state[name], before[name])
+        with patch.object(t, "gh", side_effect=AssertionError("retired check must not read jobs")):
+            a.verify(store)
+        self.assertEqual(len(store.writes), 3)
+
+    def test_failure_verifies_receipt_and_same_cause_retry_without_sending(self):
+        store, e = self.prepared("failure")
+        self.verify(store, e)
+        self.assertEqual(store.state["telegramReleaseAcceptance"]["noticesVerified"], 1)
+        self.assertEqual(store.state["telegramReleaseAcceptance"]["sameCauseRetryNotices"], 0)
+
+    def test_acceptance_only_rerun_reads_pinned_attempt(self):
+        store, e = self.prepared()
+        def gh(path):
+            self.assertEqual(path, "/actions/runs/123/attempts/1")
+            return self.run
+        with patch.object(t, "gh", side_effect=gh), patch.object(t.observer, "api", return_value=[{"jobs": self.jobs}]), patch.object(t, "collect", return_value=[e]) as collect:
+            a.verify(store)
+            self.assertEqual(collect.call_args.kwargs["pinned_attempt"], 1)
+        self.assertEqual(store.state["telegramReleaseAcceptance"]["status"], "completed")
+
+    def test_missing_or_pending_notifier_cannot_pass(self):
+        for conclusion in ("failure", "cancelled", "skipped", None):
+            with self.subTest(conclusion=conclusion):
+                store, e = self.prepared()
+                self.jobs[2]["conclusion"] = conclusion
+                with self.assertRaises(t.Fault):
+                    self.verify(store, e)
+                self.assertEqual(store.state["telegramReleaseAcceptance"]["status"], "pending")
+
+    def test_green_with_unexpected_receipt_fails(self):
+        store, e = self.prepared()
+        store.state["telegramDeliveries"]["unexpected"] = {"runId": 123, "attempt": 1, "status": "sent", "messageId": 9}
+        with self.assertRaises(t.Fault):
+            self.verify(store, e)
+
+    def test_missing_ambiguous_or_invalid_failure_receipt_fails(self):
+        for change in ("missing", "reserved", "no-message"):
+            with self.subTest(change=change):
+                store, e = self.prepared("failure")
+                key = next(iter(store.state["telegramDeliveries"]))
+                if change == "missing":
+                    store.state["telegramDeliveries"].pop(key)
+                elif change == "reserved":
+                    store.state["telegramDeliveries"][key]["status"] = "reserved"
+                else:
+                    store.state["telegramDeliveries"][key].pop("messageId")
+                with self.assertRaises(t.Fault):
+                    self.verify(store, e)
+
+    def test_legacy_loss_and_wrong_processed_result_cannot_pass(self):
+        for name, key in (("notifiedFailures", "old-fingerprint"), ("processedAttempts", "123:1")):
+            with self.subTest(name=name):
+                store, e = self.prepared()
+                store.state[name].pop(key)
+                with self.assertRaises(t.Fault):
+                    self.verify(store, e)
+
+    def test_wrong_sha_or_nonstable_or_incomplete_production_cannot_pass(self):
+        for kind in ("sha", "canary", "production", "attempt", "observer-error"):
+            with self.subTest(kind=kind):
+                store, e = self.prepared()
+                if kind == "sha": self.run["head_sha"] = "b" * 40
+                if kind == "canary": self.run["display_title"] = "Release (canary) on main"
+                if kind == "production": self.jobs[-1]["status"] = "in_progress"
+                if kind == "attempt": self.run["run_attempt"] = 2
+                if kind == "observer-error": store.state["telegramObserverError"] = "unavailable"
+                with self.assertRaises(t.Fault):
+                    self.verify(store, e)
+
+    def test_no_arm_without_direct_real_event_and_never_replace_first_release(self):
+        store = MemoryStore(baseline())
+        t.arm_acceptance(store, store.load(), "", [event()])
+        t.arm_acceptance(store, store.load(), "123", [])
+        self.assertEqual(store.writes, [])
+        t.arm_acceptance(store, store.load(), "123", [event()])
+        other = {**event(), "runId": 456}
+        t.arm_acceptance(store, store.load(), "456", [other])
+        self.assertEqual(store.state["telegramReleaseAcceptance"]["runId"], 123)
+        t.arm_acceptance(store, store.load(), "123", [event(attempt=2)])
+        self.assertEqual(store.state["telegramReleaseAcceptance"]["attempt"], 2)
+
+    def test_no_success_when_state_write_conflicts(self):
+        store, e = self.prepared()
+        with patch.object(store, "save", side_effect=t.Fault("conflict")):
+            with self.assertRaises(t.Fault): self.verify(store, e)
+        self.assertEqual(store.state["telegramReleaseAcceptance"]["status"], "pending")
+
+    def test_completed_marker_never_rearms_on_future_release(self):
+        store, e = self.prepared()
+        self.verify(store, e)
+        marker = copy.deepcopy(store.state["telegramReleaseAcceptance"])
+        t.arm_acceptance(store, store.load(), "456", [{**event(), "runId": 456}])
+        self.assertEqual(store.state["telegramReleaseAcceptance"], marker)
 
 
 if __name__ == "__main__":

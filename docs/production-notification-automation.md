@@ -160,3 +160,37 @@ reusable notification job/steps survive normal parent cancellation. Both modes
 send clearly labeled transport tests only, never fake production failures, and
 do not change production fingerprints. Caller, callee and notification steps
 use `always()`; existing main/stable-release guards remain mandatory.
+
+## One-shot acceptance on the next stable release
+
+`accept-production-notifications` depends on the direct `notify-production`
+call in Release, with the same stable-main/promotion guards and no schedule.
+It receives no Telegram, npm or Vercel credentials. Before evaluating the first
+eligible production result, the observer pins that Release ID/attempt/SHA and
+copies the existing processed attempts, failure fingerprints and delivery
+receipts into `telegramReleaseAcceptance.baseline`. A failed check retains its
+pending marker; a later release cannot silently replace the selected release.
+A rerun of the selected Release may advance its attempt while preserving history.
+If only acceptance is retried, it reads the pinned attempt endpoint and that
+attempt’s job/report time window, rather than following the latest run attempt.
+
+The dependent acceptance job verifies the actual successful
+`notify-production / notify` job, final production result, durable processing,
+unchanged baseline entries, expected sent receipts and quiet green behavior.
+It reconstructs the sanitized result and evaluates duplicate delivery and a
+same-cause next-attempt result only in memory: no workflow/scenario is rerun,
+no test failure is manufactured and no Telegram message is sent. On a green
+release this validates quiet behavior and the evaluator's replay invariants;
+it does not claim a real failing-release delivery occurred.
+
+Only complete verification saves `telegramReleaseAcceptance.status=completed`,
+together with safe evidence and the retained baseline. The observer then returns
+`acceptance-required=false`; future Release events skip the acceptance job.
+The permanent production notifier continues. Success emits no user notification.
+A failed verification fails its CI job visibly, keeps the pending marker and
+never resets fingerprints. Ordinary cancellation runs cleanup with `always()`;
+forced termination can prevent verification and must not be called success.
+
+The state-only branch must retain its root and `apps/demo/vercel.json` files
+with `git.deploymentEnabled=false`, so state commits do not build applications.
+Do not remove these files or mute failed-build notifications as a substitute.

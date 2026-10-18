@@ -183,3 +183,38 @@ describe('production notification release hook', () => {
     expect(hook).not.toContain('SNOWUI_DEMO_AUTOMATION_SECRET')
   })
 })
+
+describe('one-shot event acceptance', () => {
+  const release = readFileSync(join(dir, 'release.yml'), 'utf8')
+  const acceptance = release
+    .split('\n  accept-production-notifications:\n')[1]
+    .split('\n  #')[0]
+  const notifier = readFileSync(
+    join(dir, 'production-notifications.yml'),
+    'utf8',
+  )
+  it('runs only after the stable production notification hook with a durable retirement output', () => {
+    expect(acceptance).toContain(
+      'needs: [gate, released, promote, production, notify-production]',
+    )
+    expect(acceptance).toContain('always()')
+    expect(acceptance).toContain("inputs.mode == 'release'")
+    expect(acceptance).toContain(
+      "needs.notify-production.outputs.acceptance-required != 'false'",
+    )
+    expect(notifier).toMatch(
+      /value: \$\{\{ jobs\.notify\.outputs\.acceptance-required \}\}/,
+    )
+    expect(notifier).toMatch(
+      /acceptance-required: \$\{\{ steps\.observe\.outputs\.acceptance-required \}\}/,
+    )
+    expect(acceptance).toContain('group: production-telegram-state')
+    expect(acceptance).toMatch(/ref: \$\{\{ github\.workflow_sha \}\}/)
+    expect(acceptance).toContain(
+      'python3 -B scripts/production-release-acceptance.py',
+    )
+    expect(acceptance).not.toContain('secrets.')
+    expect(acceptance).not.toContain('TELEGRAM_BOT_TOKEN')
+    expect(acceptance).not.toContain('vercel')
+  })
+})

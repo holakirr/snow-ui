@@ -1,5 +1,7 @@
 """No network or real state: event filtering and crash/dedup delivery contracts."""
+import base64
 import copy
+import json
 import importlib.util
 from pathlib import Path
 import unittest
@@ -32,6 +34,148 @@ def event(conclusion="failure", attempt=1, sha="a" * 40):
     return dict(runId=123, attempt=attempt, sha=sha, url="https://github.com/holakirr/snow-ui/actions/runs/123",
                 status="completed", conclusion=conclusion, startedAt="2026-10-18T10:00:00Z", reports={},
                 steps=[{"name": "Check production", "conclusion": conclusion, "started_at": "2026-10-18T10:00:00Z"}])
+
+
+class GitState:
+    """Git objects are immutable; only the ref exposes a committed update."""
+    def __init__(self):
+        self.blobs, self.trees, self.commits, self.calls = {}, {}, {}, []
+        self.head = "initial"
+        self.counter = 0
+        self.race_on_write = False
+        entries = {}
+        for path, value in [(t.FILE, baseline()), *[(p, {"git": {"deploymentEnabled": False}}) for p in t.GUARD_FILES]]:
+            sha = self.blob(json.dumps(value))
+            entries[path] = {"path": path, "mode": "100644", "type": "blob", "sha": sha}
+        self.trees["initial-tree"] = entries
+        self.commits[self.head] = {"tree": "initial-tree", "parents": []}
+
+    def blob(self, text):
+        self.counter += 1
+        sha = "blob-" + str(self.counter)
+        self.blobs[sha] = {"encoding": "base64", "content": base64.b64encode(text.encode()).decode()}
+        return sha
+
+    def entries(self):
+        return self.trees[self.commits[self.head]["tree"]]
+
+    def external_remove(self, path):
+        entries = copy.deepcopy(self.entries())
+        entries.pop(path)
+        self.trees["external-tree"] = entries
+        self.commits["external"] = {"tree": "external-tree", "parents": [self.head]}
+        self.head = "external"
+
+    def gh(self, path, method="GET", body=None):
+        self.calls.append((path, method, copy.deepcopy(body)))
+        if path == "/git/ref/heads/" + t.BRANCH:
+            return {"object": {"sha": self.head}}
+        if path.startswith("/git/trees/"):
+            commit = path.split("/")[-1].split("?")[0]
+            tree = self.commits[commit]["tree"]
+            return {"sha": tree, "truncated": False, "tree": copy.deepcopy(list(self.trees[tree].values()))}
+        if path.startswith("/git/blobs/"):
+            return copy.deepcopy(self.blobs[path.split("/")[-1]])
+        if path == "/git/trees" and method == "POST":
+            entries = copy.deepcopy(self.trees[body["base_tree"]])
+            for item in body["tree"]:
+                self.counter += 1
+                entries[item["path"]] = {"path": item["path"], "mode": item["mode"],
+                    "type": item["type"], "sha": self.blob(item["content"])}
+            tree = "tree-" + str(self.counter)
+            self.trees[tree] = entries
+            if self.race_on_write:
+                self.race_on_write = False
+                self.external_remove(t.GUARD_FILES[1])
+            return {"sha": tree}
+        if path == "/git/commits" and method == "POST":
+            commit = "commit-" + str(len(self.commits))
+            self.commits[commit] = copy.deepcopy(body)
+            return {"sha": commit}
+        if path == "/git/refs/heads/" + t.BRANCH and method == "PATCH":
+            if body.get("force") is not False or self.commits[body["sha"]]["parents"] != [self.head]:
+                raise t.Fault("non-fast-forward rejected")
+            self.head = body["sha"]
+            return {"object": {"sha": self.head}}
+        raise AssertionError((path, method))
+
+
+class StateGuardTests(unittest.TestCase):
+    def test_two_writes_preserve_both_guard_blobs_and_existing_history(self):
+        git, store = GitState(), t.Store()
+        guards = {p: copy.deepcopy(git.entries()[p]) for p in t.GUARD_FILES}
+        with patch.object(t, "gh", side_effect=git.gh):
+            state = store.load()
+            state["processedAttempts"]["123:1"] = {"sha": "a" * 40, "conclusion": "success"}
+            store.save(state)
+            store.save(state)
+            self.assertEqual(store.load(), state)
+        for path, entry in guards.items(): self.assertEqual(git.entries()[path], entry)
+        writes = [b for p, m, b in git.calls if p == "/git/trees" and m == "POST"]
+        self.assertTrue(all([i["path"] for i in b["tree"]] == [t.FILE] for b in writes))
+        self.assertEqual(state["notifiedFailures"]["old-fingerprint"], {"sha": "old"})
+
+    def test_missing_either_guard_refuses_all_mutations(self):
+        for path in t.GUARD_FILES:
+            with self.subTest(path=path):
+                git = GitState()
+                git.entries().pop(path)
+                with patch.object(t, "gh", side_effect=git.gh), self.assertRaises(t.Fault):
+                    t.Store().load()
+                self.assertTrue(all(method == "GET" for _, method, _ in git.calls))
+
+    def test_guard_requires_exact_boolean_false_in_regular_json_for_each_project(self):
+        invalid = ["broken-json", "[]", "null", '{}', '{"git":null}',
+                   *[json.dumps({"git": {"deploymentEnabled": v}}) for v in (True, 0, "false", None, {"main": False})]]
+        for path in t.GUARD_FILES:
+            for value in invalid:
+                with self.subTest(path=path, value=value):
+                    git = GitState()
+                    git.entries()[path]["sha"] = git.blob(value)
+                    with patch.object(t, "gh", side_effect=git.gh), self.assertRaises(t.Fault):
+                        t.Store().load()
+                    self.assertTrue(all(method == "GET" for _, method, _ in git.calls))
+            git = GitState()
+            git.entries()[path]["mode"] = "120000"
+            with patch.object(t, "gh", side_effect=git.gh), self.assertRaises(t.Fault):
+                t.Store().load()
+
+    def test_save_rechecks_guards_before_creating_git_objects(self):
+        git, store = GitState(), t.Store()
+        with patch.object(t, "gh", side_effect=git.gh):
+            state = store.load()
+            store.entries.pop(t.GUARD_FILES[0])
+            with self.assertRaises(t.Fault): store.save(state)
+        self.assertTrue(all(method == "GET" for _, method, _ in git.calls))
+
+    def test_guard_only_concurrent_change_cannot_be_overwritten(self):
+        git, store = GitState(), t.Store()
+        original_state_blob = git.entries()[t.FILE]["sha"]
+        with patch.object(t, "gh", side_effect=git.gh):
+            state = store.load()
+            git.external_remove(t.GUARD_FILES[1])
+            with self.assertRaises(t.Fault): store.save(state)
+        self.assertEqual(git.head, "external")
+        self.assertEqual(git.entries()[t.FILE]["sha"], original_state_blob)
+        self.assertNotIn(t.GUARD_FILES[1], git.entries())
+        self.assertTrue(all(body["force"] is False for _, method, body in git.calls if method == "PATCH"))
+
+    def test_race_during_reservation_write_prevents_telegram_send(self):
+        git, store = GitState(), t.Store()
+        git.race_on_write = True
+        with patch.object(t, "gh", side_effect=git.gh), self.assertRaises(t.Fault):
+            t.process(store, [event()], lambda text: self.fail("must not send before committed reservation"))
+        self.assertEqual(git.head, "external")
+
+    def test_truncated_tree_is_not_a_valid_snapshot(self):
+        git = GitState()
+        def gh(path, method="GET", body=None):
+            value = git.gh(path, method, body)
+            if path.startswith("/git/trees/"): value["truncated"] = True
+            return value
+        with patch.object(t, "gh", side_effect=gh), self.assertRaises(t.Fault):
+            t.Store().load()
+        self.assertTrue(all(method == "GET" for _, method, _ in git.calls))
 
 
 class DeliveryTests(unittest.TestCase):

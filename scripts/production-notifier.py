@@ -124,7 +124,8 @@ def events_from_github(state, runs=None):
                 current_artifact = max(
                     (artifact for artifact in artifacts if artifact['name'] == 'production-results'
                      and not artifact.get('expired') and job.get('started_at')
-                     and artifact.get('created_at', '') >= job['started_at']),
+                     and artifact.get('created_at', '') >= job['started_at']
+                     and artifact.get('created_at', '') <= (job.get('completed_at') or '9999')),
                     key=lambda artifact: artifact['created_at'], default=None,
                 )
                 if current_artifact:

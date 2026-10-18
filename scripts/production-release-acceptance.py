@@ -24,7 +24,7 @@ def verify(store):
     if not marker or marker.get("status") != "pending":
         raise delivery.Fault("Release acceptance was not armed by the direct observer")
     run_id, attempt, sha = marker["runId"], marker["attempt"], marker["sha"]
-    run = delivery.gh("/actions/runs/" + str(run_id))
+    run = delivery.gh("/actions/runs/" + str(run_id) + "/attempts/" + str(attempt))
     jobs = [j for page in delivery.observer.api("/actions/runs/" + str(run_id)
             + "/attempts/" + str(attempt) + "/jobs?per_page=100") for j in page["jobs"]]
     production = [j for j in jobs if j["name"] == "production" or j["name"].startswith("production /")]
@@ -42,7 +42,7 @@ def verify(store):
         if any(state.get(name, {}).get(k) != v for k, v in baseline[name].items()):
             raise delivery.Fault("Previous production notification history changed")
     before = {"repository": state["repository"], "startedAt": state["startedAt"], **copy.deepcopy(baseline)}
-    events = delivery.collect(run_id, before, production_finished=True)
+    events = delivery.collect(run_id, before, production_finished=True, pinned_attempt=attempt)
     if not events or any(e["sha"] != sha or e["attempt"] != attempt for e in events):
         raise delivery.Fault("Selected production attempt could not be reconstructed")
     expected, notices = delivery.observer.evaluate(before, events)

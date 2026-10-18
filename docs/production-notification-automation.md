@@ -171,6 +171,8 @@ copies the existing processed attempts, failure fingerprints and delivery
 receipts into `telegramReleaseAcceptance.baseline`. A failed check retains its
 pending marker; a later release cannot silently replace the selected release.
 A rerun of the selected Release may advance its attempt while preserving history.
+If only acceptance is retried, it reads the pinned attempt endpoint and that
+attempt’s job/report time window, rather than following the latest run attempt.
 
 The dependent acceptance job verifies the actual successful
 `notify-production / notify` job, final production result, durable processing,

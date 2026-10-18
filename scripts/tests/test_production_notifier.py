@@ -212,8 +212,8 @@ class Decisions(unittest.TestCase):
         run={'id':42,'head_sha':'1'*40,'html_url':'https://example.invalid/run','status':'completed','updated_at':'2026-10-15T00:00:00Z','run_started_at':'2026-10-15T00:00:00Z','run_attempt':2}
         def api(path):
             if '/workflows/' in path:return [{'workflow_runs':[run]}]
-            if '/artifacts' in path:return [{'artifacts':[{'id':1,'name':'production-results','expired':False,'created_at':'2026-10-14T00:00:00Z'}, {'id':2,'name':'production-results','expired':False,'created_at':'2026-10-15T00:01:00Z'}]}]
-            return [{'jobs':[{'name':'production','status':'completed','conclusion':'failure','steps':[],'started_at':'2026-10-15T00:00:00Z'}]}]
+            if '/artifacts' in path:return [{'artifacts':[{'id':1,'name':'production-results','expired':False,'created_at':'2026-10-14T00:00:00Z'}, {'id':2,'name':'production-results','expired':False,'created_at':'2026-10-15T00:01:00Z'}, {'id':3,'name':'production-results','expired':False,'created_at':'2026-10-16T00:01:00Z'}]}]
+            return [{'jobs':[{'name':'production','status':'completed','conclusion':'failure','steps':[],'started_at':'2026-10-15T00:00:00Z','completed_at':'2026-10-15T00:02:00Z'}]}]
         def download(args,**kwargs):
             self.assertEqual(args,['gh','api','repos/holakirr/snow-ui/actions/artifacts/2/zip'])
             return subprocess.CompletedProcess(args,0,archive_bytes({'stats':{'unexpected':1},'specs':[]}),b'')

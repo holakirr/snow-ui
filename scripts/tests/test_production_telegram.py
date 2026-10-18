@@ -123,6 +123,21 @@ class ScopeTests(unittest.TestCase):
             run["display_title"] = "Release (production) on main"
             self.assertEqual(t.collect(123, baseline(), production_finished=True), [])
 
+    def test_pinned_attempt_does_not_follow_latest_run(self):
+        run = {"id": 123, "run_attempt": 1, "path": ".github/workflows/release.yml",
+               "head_repository": {"full_name": t.observer.REPO}, "head_branch": "main",
+               "event": "workflow_dispatch", "display_title": "Release (release) on main",
+               "status": "completed", "head_sha": "a" * 40, "html_url": "https://example.invalid",
+               "updated_at": "2026-10-18T10:00:00Z"}
+        jobs = [{"name": name, "conclusion": "success"} for name in ("released", "promote")]
+        jobs += [{"name": "production / production", "status": "completed", "conclusion": "success"}]
+        def gh(path):
+            self.assertEqual(path, "/actions/runs/123/attempts/1")
+            return run
+        with patch.object(t, "gh", side_effect=gh), patch.object(t.observer, "api", return_value=[{"jobs": jobs}]):
+            result = t.collect(123, baseline(), pinned_attempt=1)
+            self.assertEqual(result[0]["attempt"], 1)
+
     def test_processed_attempt_does_not_read_jobs(self):
         state = baseline()
         state["processedAttempts"]["123:2"] = {}
@@ -172,6 +187,16 @@ class AcceptanceTests(unittest.TestCase):
         self.verify(store, e)
         self.assertEqual(store.state["telegramReleaseAcceptance"]["noticesVerified"], 1)
         self.assertEqual(store.state["telegramReleaseAcceptance"]["sameCauseRetryNotices"], 0)
+
+    def test_acceptance_only_rerun_reads_pinned_attempt(self):
+        store, e = self.prepared()
+        def gh(path):
+            self.assertEqual(path, "/actions/runs/123/attempts/1")
+            return self.run
+        with patch.object(t, "gh", side_effect=gh), patch.object(t.observer, "api", return_value=[{"jobs": self.jobs}]), patch.object(t, "collect", return_value=[e]) as collect:
+            a.verify(store)
+            self.assertEqual(collect.call_args.kwargs["pinned_attempt"], 1)
+        self.assertEqual(store.state["telegramReleaseAcceptance"]["status"], "completed")
 
     def test_missing_or_pending_notifier_cannot_pass(self):
         for conclusion in ("failure", "cancelled", "skipped", None):

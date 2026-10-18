@@ -102,8 +102,15 @@ def stable_run(run, jobs):
                     for name in ("released", "promote")))
 
 
-def collect(run_id, state, production_finished=False):
-    run = gh("/actions/runs/" + str(run_id))
+def collect(run_id, state, production_finished=False, pinned_attempt=None):
+    path = "/actions/runs/" + str(run_id)
+    if pinned_attempt is not None:
+        if type(pinned_attempt) is not int or pinned_attempt <= 0:
+            raise Fault("Invalid pinned Release attempt")
+        path += "/attempts/" + str(pinned_attempt)
+    run = gh(path)
+    if pinned_attempt is not None and run.get("run_attempt") != pinned_attempt:
+        raise Fault("Pinned Release attempt differs from GitHub response")
     if run.get("status") != "completed" and not production_finished:
         return []
     attempt = run["run_attempt"]

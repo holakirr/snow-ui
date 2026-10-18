@@ -21,7 +21,7 @@ jobs:
         run: sleep 90
   verify-call:
     needs: cancellation-window
-    if: always() && github.repository == 'holakirr/snow-ui' && github.ref == 'refs/heads/main'
+    if: always() && (inputs.operation != 'cancellation-test' || needs.cancellation-window.result == 'cancelled') && github.repository == 'holakirr/snow-ui' && github.ref == 'refs/heads/main'
     permissions:
       actions: read
       contents: write

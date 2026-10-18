@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "repository": "holakirr/snow-ui",
+  "startedAt": "2026-10-14T11:11:46Z",
+  "processedAttempts": {
+    "38720521223:1": {
+      "sha": "cecd2d43e04323c2e655660566b49dcf5d6a11b3",
+      "conclusion": "skipped"
+    },
+    "38720509200:1": {
+      "sha": "cecd2d43e04323c2e655660566b49dcf5d6a11b3",
+      "conclusion": "skipped"
+    },
+    "38727502992:1": {
+      "sha": "3c82d9cc005922d17aab1f2126a59bdbadbb9d07",
+      "conclusion": "skipped"
+    },
+    "38727515287:1": {
+      "sha": "3c82d9cc005922d17aab1f2126a59bdbadbb9d07",
+      "conclusion": "skipped"
+    },
+    "38737659845:1": {
+      "sha": "3152e08d23330bb47ce5ca4e421752188a1a8ab1",
+      "conclusion": "skipped"
+    },
+    "38737674310:1": {
+      "sha": "3152e08d23330bb47ce5ca4e421752188a1a8ab1",
+      "conclusion": "skipped"
+    },
+    "38755772492:1": {
+      "sha": "e1d8050b1f25f140df30c861df2f6d8323f8ca23",
+      "conclusion": "skipped"
+    },
+    "38755786962:1": {
+      "sha": "e1d8050b1f25f140df30c861df2f6d8323f8ca23",
+      "conclusion": "skipped"
+    },
+    "38784686937:1": {
+      "sha": "d8732168bccf0060bc63bf2240f4162584ec7404",
+      "conclusion": "skipped"
+    },
+    "38784702415:1": {
+      "sha": "d8732168bccf0060bc63bf2240f4162584ec7404",
+      "conclusion": "skipped"
+    },
+    "38877654223:1": {
+      "sha": "0ebf9985a5b720c1b4739306e12d605c63a4471d",
+      "conclusion": "skipped"
+    },
+    "38877665485:1": {
+      "sha": "0ebf9985a5b720c1b4739306e12d605c63a4471d",
+      "conclusion": "skipped"
+    },
+    "38887398089:1": {
+      "sha": "0fdf88c49e99d3476464e30847e1b5a5a8a1218b",
+      "conclusion": "skipped"
+    },
+    "38887389256:1": {
+      "sha": "0fdf88c49e99d3476464e30847e1b5a5a8a1218b",
+      "conclusion": "skipped"
+    },
+    "38979240134:1": {
+      "sha": "b1a5eb7e1e1988557c21494f1b4f091f243af4ac",
+      "conclusion": "failure"
+    },
+    "38979230243:1": {
+      "sha": "b1a5eb7e1e1988557c21494f1b4f091f243af4ac",
+      "conclusion": "skipped"
+    },
+    "38976079243:1": {
+      "sha": "4407631a3084fa298f14e9ae63cb89ece17ea683",
+      "conclusion": "skipped"
+    },
+    "38976070385:1": {
+      "sha": "4407631a3084fa298f14e9ae63cb89ece17ea683",
+      "conclusion": "skipped"
+    },
+    "38974343405:1": {
+      "sha": "dec124065b686179eead3b8b3c6d59ca532614c7",
+      "conclusion": "skipped"
+    },
+    "38974330122:1": {
+      "sha": "dec124065b686179eead3b8b3c6d59ca532614c7",
+      "conclusion": "skipped"
+    },
+    "38970332721:1": {
+      "sha": "bc5d0fc8c71da836a2a2e61e854aae3379b97240",
+      "conclusion": "skipped"
+    },
+    "38970319367:1": {
+      "sha": "bc5d0fc8c71da836a2a2e61e854aae3379b97240",
+      "conclusion": "skipped"
+    },
+    "38980909036:1": {
+      "sha": "8e0772910c7af41927b56681eafc06b13fde2bf9",
+      "conclusion": "skipped"
+    },
+    "38980900450:1": {
+      "sha": "8e0772910c7af41927b56681eafc06b13fde2bf9",
+      "conclusion": "skipped"
+    },
+    "39010456332:1": {
+      "sha": "ec03d210271df86dcfac5cfa83407aa73784a680",
+      "conclusion": "success"
+    },
+    "39010387988:1": {
+      "sha": "ec03d210271df86dcfac5cfa83407aa73784a680",
+      "conclusion": "skipped"
+    },
+    "39010382054:1": {
+      "sha": "ec03d210271df86dcfac5cfa83407aa73784a680",
+      "conclusion": "skipped"
+    },
+    "39051562845:1": {
+      "sha": "2e72910dad3b8b2f214c5024b6b8217cc674db85",
+      "conclusion": "success"
+    },
+    "39051556319:1": {
+      "sha": "2e72910dad3b8b2f214c5024b6b8217cc674db85",
+      "conclusion": "skipped"
+    },
+    "39049059468:1": {
+      "sha": "afa618fa5f02ea1686518d1e5d027d3d21fc63a9",
+      "conclusion": "skipped"
+    },
+    "39049052847:1": {
+      "sha": "afa618fa5f02ea1686518d1e5d027d3d21fc63a9",
+      "conclusion": "skipped"
+    }
+  },
+  "notifiedFailures": {
+    "8b22d74cd6c990f406103e51283e40cdd16c0a109d8b41e79b75b0e6c75c13fb": {
+      "runId": 38979240134,
+      "attempt": 1,
+      "sha": "b1a5eb7e1e1988557c21494f1b4f091f243af4ac",
+      "category": "readiness-or-scenarios:Verify deployed commits and run all production scenarios"
+    }
+  },
+  "observerError": null,
+  "baseline": {
+    "productionRunId": 38543941081,
+    "conclusion": "success"
+  },
+  "lastCheckedAt": "2026-10-18T11:56:27.730417+00:00",
+  "lastAudit": {
+    "releaseRunsRead": 163,
+    "newOrUpdatedRuns": 0,
+    "newProductionFailures": 0
+  },
+  "telegramStartedAt": "2026-10-18T12:36:34Z",
+  "telegramPendingRuns": [],
+  "telegramDeliveries": {},
+  "telegramCompletedRuns": {}
+}

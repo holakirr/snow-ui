@@ -103,6 +103,26 @@ class ScopeTests(unittest.TestCase):
                 self.assertFalse(t.stable_run({**run, field: value}, jobs))
         self.assertFalse(t.stable_run(run, [{"name": "promote", "conclusion": "skipped"}]))
 
+    def test_reusable_call_reads_final_production_before_parent_completes(self):
+        run = {"id": 123, "run_attempt": 1, "path": ".github/workflows/release.yml",
+               "head_repository": {"full_name": t.observer.REPO}, "head_branch": "main",
+               "event": "workflow_dispatch", "display_title": "Release (release) on main",
+               "status": "in_progress", "head_sha": "a" * 40, "html_url": "https://example.invalid",
+               "updated_at": "2026-10-18T10:00:00Z"}
+        prod = {"name": "production / production", "status": "completed", "conclusion": "failure",
+                "started_at": "2026-10-18T10:00:00Z", "steps": []}
+        jobs = [{"name": name, "conclusion": "success"} for name in ("released", "promote")] + [prod]
+        def api(path):
+            return [{"artifacts": []}] if "/artifacts?" in path else [{"jobs": jobs}]
+        with patch.object(t, "gh", return_value=run), patch.object(t.observer, "api", side_effect=api):
+            self.assertEqual(t.collect(123, baseline()), [])
+            self.assertEqual(len(t.collect(123, baseline(), production_finished=True)), 1)
+            prod["status"] = "in_progress"
+            self.assertEqual(t.collect(123, baseline(), production_finished=True), [])
+            prod["status"] = "completed"
+            run["display_title"] = "Release (production) on main"
+            self.assertEqual(t.collect(123, baseline(), production_finished=True), [])
+
     def test_processed_attempt_does_not_read_jobs(self):
         state = baseline()
         state["processedAttempts"]["123:2"] = {}

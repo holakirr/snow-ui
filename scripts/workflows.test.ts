@@ -161,3 +161,23 @@ describe('Bun in the Playwright image', () => {
     },
   )
 })
+
+// A GITHUB_TOKEN-dispatched Release does not reliably emit workflow_run.
+// The primary observer must be an explicit dependent reusable call.
+describe('production notification release hook', () => {
+  const release = readFileSync(join(dir, 'release.yml'), 'utf8')
+  const hook = release.split('\n  notify-production:\n')[1].split('\n  #')[0]
+  it('observes completed production including failure without changing release gates', () => {
+    expect(hook).toContain('needs: [gate, released, promote, production]')
+    expect(hook).toContain('always()')
+    expect(hook).toContain("inputs.mode == 'release'")
+    expect(hook).toContain("needs.released.outputs.released == 'true'")
+    expect(hook).toContain("needs.promote.outputs.current == 'true'")
+    expect(hook).toContain("needs.production.result != 'skipped'")
+    expect(hook).toContain('uses: ./.github/workflows/production-notifications.yml')
+    expect(hook).toContain('release-run-id: ${{ github.run_id }}')
+    expect(hook).not.toContain('secrets: inherit')
+    expect(hook).not.toContain('SNOWUI_SITE_AUTOMATION_SECRET')
+    expect(hook).not.toContain('SNOWUI_DEMO_AUTOMATION_SECRET')
+  })
+})

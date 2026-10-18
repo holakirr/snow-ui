@@ -1,6 +1,16 @@
 name: Production Notifications
 
 on:
+  workflow_call:
+    inputs:
+      release-run-id:
+        required: true
+        type: string
+    secrets:
+      SNOWUI_TELEGRAM_BOT_TOKEN:
+        required: true
+      SNOWUI_TELEGRAM_CHAT_ID:
+        required: true
   workflow_run:
     workflows: [Release]
     types: [completed]
@@ -26,7 +36,7 @@ jobs:
   notify:
     if: >-
       github.repository == 'holakirr/snow-ui' && github.ref == 'refs/heads/main' &&
-      (github.event_name == 'workflow_dispatch' ||
+      (inputs.release-run-id != '' || github.event_name == 'workflow_dispatch' ||
       (vars.SNOWUI_PRODUCTION_TELEGRAM_ENABLED == 'true' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
       github.event.workflow_run.event == 'workflow_dispatch'))
@@ -46,5 +56,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.SNOWUI_TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.SNOWUI_TELEGRAM_CHAT_ID }}
+          RELEASE_RUN_ID: ${{ inputs.release-run-id }}
           NOTIFICATIONS_ENABLED: ${{ vars.SNOWUI_PRODUCTION_TELEGRAM_ENABLED }}
         run: python3 -B scripts/production-telegram.py

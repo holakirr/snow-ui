@@ -1,0 +1,22 @@
+name: Verify Production Notification Delivery
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Explicit test of the reusable workflow and private delivery
+        type: choice
+        options: [delivery-test]
+        default: delivery-test
+permissions: {}
+jobs:
+  verify-call:
+    if: github.repository == 'holakirr/snow-ui' && github.ref == 'refs/heads/main'
+    permissions:
+      actions: read
+      contents: write
+    uses: ./.github/workflows/production-notifications.yml
+    with:
+      release-run-id: ${{ github.run_id }}
+    secrets:
+      SNOWUI_TELEGRAM_BOT_TOKEN: ${{ secrets.SNOWUI_TELEGRAM_BOT_TOKEN }}
+      SNOWUI_TELEGRAM_CHAT_ID: ${{ secrets.SNOWUI_TELEGRAM_CHAT_ID }}

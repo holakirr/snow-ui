@@ -101,15 +101,22 @@ def stable_run(run, jobs):
                     for name in ("released", "promote")))
 
 
-def collect(run_id, state):
+def collect(run_id, state, production_finished=False):
     run = gh("/actions/runs/" + str(run_id))
-    if run.get("status") != "completed":
+    if run.get("status") != "completed" and not production_finished:
         return []
     attempt = run["run_attempt"]
     if str(run_id) + ":" + str(attempt) in state["processedAttempts"]:
         return []
     jobs = [job for page in observer.api("/actions/runs/" + str(run_id)
             + "/attempts/" + str(attempt) + "/jobs?per_page=100") for job in page["jobs"]]
+    if run.get("status") != "completed":
+        production = [j for j in jobs if j["name"] == "production" or j["name"].startswith("production /")]
+        if not production or any(j.get("status") != "completed" for j in production):
+            return []
+        # A reusable call is still part of its parent Release, which cannot be
+        # completed until this observer returns. Production itself is final.
+        run = {**run, "status": "completed"}
     if not stable_run(run, jobs):
         return []
     return observer.events_from_github(state, [run])[0]
@@ -154,6 +161,10 @@ def main():
     if os.environ.get("NOTIFICATIONS_ENABLED") != "true":
         print("Notifications inactive; no event processed")
         return
+    release_id = os.environ.get("RELEASE_RUN_ID", "")
+    if release_id and (not release_id.isdecimal() or release_id != os.environ.get("GITHUB_RUN_ID")
+                       or event.get("inputs", {}).get("mode") != "release"):
+        raise Fault("Invalid reusable Release identity")
     store = Store()
     state = store.load()
     try:
@@ -161,7 +172,7 @@ def main():
             run_id = event["workflow_run"]["id"]
             if type(run_id) is not int or run_id <= 0:
                 raise Fault("Invalid Release identity")
-        elif operation != "reconcile":
+        elif operation != "reconcile" and not release_id:
             raise Fault("Unsupported notifier event")
         # GitHub concurrency can replace an older queued run. On each event,
         # reconcile every unfinished/new attempt since cutover; this is event
@@ -174,7 +185,7 @@ def main():
             key = str(run["id"]) + ":" + str(run["run_attempt"])
             if (run.get("updated_at", "") < cutoff and run["id"] not in state.get("telegramPendingRuns", [])) or key in completed:
                 continue
-            events.extend(collect(run["id"], state))
+            events.extend(collect(run["id"], state, production_finished=str(run["id"]) == release_id))
             if run["status"] == "completed":
                 completed[key] = True
     except (RuntimeError, OSError, ValueError, KeyError, TypeError):

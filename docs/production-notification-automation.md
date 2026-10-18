@@ -98,7 +98,8 @@ Durable state is `production-notifications-state.json` on the dedicated branch
 unchanged `processedAttempts` and `notifiedFailures`, plus transport receipts and
 completed event identities. It does not contain Telegram credentials or chat IDs.
 This is a normal Git branch, without expiring artifact/cache retention. The only
-writer is this serialized job, using contents API SHA compare-and-swap. The job's
+writer is this serialized job, using a verified parent Git tree and a
+non-forced fast-forward ref update. The job's
 `contents: write` exists for this state file; protected branches and their rules
 are not changed. No workflow is dispatched by the runtime handler.
 
@@ -194,3 +195,28 @@ forced termination can prevent verification and must not be called success.
 The state-only branch must retain its root and `apps/demo/vercel.json` files
 with `git.deploymentEnabled=false`, so state commits do not build applications.
 Do not remove these files or mute failed-build notifications as a substitute.
+
+
+### Deployment guards on every state write
+
+Before reading or writing state, `Store` requires both `vercel.json` and
+`apps/demo/vercel.json` in the state branch to be regular JSON files with
+`git.deploymentEnabled` equal to the boolean `false`. A missing file, invalid
+JSON, symlink or enabled/branch-filtered value fails closed; the observer does
+not silently recreate configuration or reset notification history.
+
+The store pins the entire branch commit and reads its immutable tree/blobs.
+Each update changes only `production-notifications-state.json` against that
+verified base tree, retaining both guard blobs and every other file. The new
+commit has the pinned head as its sole parent and updates the branch with
+`force=false`. A concurrent guard-only change is rejected even when the state
+JSON itself has not changed. Failed writes cannot publish a receipt or trigger
+a Telegram send that depends on a new reservation. Unreferenced Git objects
+from a rejected update do not change the branch or trigger deployments.
+
+Tests use an isolated in-memory Git API: both project guards, invalid/missing
+files, immutable-tree preservation, repeated writes and a concurrent removal
+with unchanged state. No tests alter the live branch or send Telegram messages.
+This guard prevents the observer from losing the configurations during writes;
+it cannot prevent an independently authorized actor from editing the branch.
+Such a change makes the next observer read/write fail visibly until repaired.

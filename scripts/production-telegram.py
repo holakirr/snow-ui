@@ -37,12 +37,44 @@ def gh(path, method="GET", body=None):
         raise Fault("GitHub request unavailable; production failure is not established") from None
 
 
+GUARD_FILES = ("vercel.json", "apps/demo/vercel.json")
+
+
 class Store:
+    def read_json(self, path):
+        entry = self.entries.get(path, {})
+        if entry.get("type") != "blob" or entry.get("mode") not in ("100644", "100755"):
+            raise Fault("State branch requires regular state and deployment guard files")
+        try:
+            data = gh("/git/blobs/" + entry["sha"])
+            if data.get("encoding") != "base64":
+                raise ValueError("Unsupported blob encoding")
+            return json.loads(base64.b64decode("".join(data["content"].split()), validate=True))
+        except (KeyError, TypeError, ValueError):
+            raise Fault("State branch JSON invalid; history and deployment guards must be preserved") from None
+
+    def verify_guards(self):
+        for path in GUARD_FILES:
+            config = self.read_json(path)
+            if (not isinstance(config, dict) or not isinstance(config.get("git"), dict)
+                    or config["git"].get("deploymentEnabled") is not False):
+                raise Fault("State branch Vercel deployment guard missing or enabled; refusing update")
+
     def load(self):
-        data = gh("/contents/" + FILE + "?ref=" + BRANCH)
-        self.sha = data["sha"]
-        state = json.loads(base64.b64decode(data["content"]))
-        if (state.get("repository") != observer.REPO or state.get("startedAt") != observer.STARTED_AT
+        # Pin the complete parent tree: checking only the state blob cannot
+        # detect a concurrent commit that removes a deployment guard.
+        self.head = gh("/git/ref/heads/" + BRANCH)["object"]["sha"]
+        self.tree = gh("/git/commits/" + self.head)["tree"]["sha"]
+        tree = gh("/git/trees/" + self.tree + "?recursive=1")
+        if tree.get("truncated"):
+            raise Fault("State branch tree incomplete; refusing update")
+        if tree["sha"] != self.tree:
+            raise Fault("State branch tree identity changed; refusing update")
+        self.entries = {entry["path"]: entry for entry in tree["tree"]}
+        self.verify_guards()
+        state = self.read_json(FILE)
+        if (not isinstance(state, dict) or state.get("repository") != observer.REPO
+                or state.get("startedAt") != observer.STARTED_AT
                 or not isinstance(state.get("processedAttempts"), dict)
                 or not isinstance(state.get("notifiedFailures"), dict)
                 or not isinstance(state.get("telegramDeliveries", {}), dict)):
@@ -50,14 +82,21 @@ class Store:
         return state
 
     def save(self, state):
-        # GitHub's SHA check is a compare-and-swap: a conflicting writer cannot
-        # overwrite delivered fingerprints. Workflow concurrency serializes events.
-        data = gh("/contents/" + FILE, "PUT", {
-            "branch": BRANCH, "sha": self.sha,
+        self.verify_guards()
+        # Change exactly the state file in the verified tree. Both immutable
+        # guard blobs and every other entry are retained, never reconstructed.
+        tree = gh("/git/trees", "POST", {"base_tree": self.tree, "tree": [{
+            "path": FILE, "mode": "100644", "type": "blob",
+            "content": json.dumps(state, indent=2) + "\n",
+        }]})
+        commit = gh("/git/commits", "POST", {
             "message": "chore(ops): save production notification state",
-            "content": base64.b64encode((json.dumps(state, indent=2) + "\n").encode()).decode(),
+            "tree": tree["sha"], "parents": [self.head],
         })
-        self.sha = data["content"]["sha"]
+        # Non-fast-forward updates reject any competing branch commit, including
+        # a guard-only change with an unchanged JSON blob. Never force the ref.
+        gh("/git/refs/heads/" + BRANCH, "PATCH", {"sha": commit["sha"], "force": False})
+        self.head, self.tree = commit["sha"], tree["sha"]
 
 
 def telegram(text):

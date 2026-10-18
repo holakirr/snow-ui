@@ -75,18 +75,20 @@ fixture mode during a scheduled check.
 
 ## Event-driven Telegram delivery
 
-`production-notifications.yml` observes `Release` completion on `main`; there is
-no cron. Only the default-branch notifier code is checked out using
-`github.workflow_sha`. Release code and artifact contents never execute in the
-notifier. The job installs no dependencies and has no Vercel/npm credentials.
+`Release` directly calls `production-notifications.yml` after its production
+job finishes, including failure/interruption, on stable main releases. There is
+no cron. A `workflow_run` fallback covers human-dispatched Release completions.
+GitHub does not reliably emit a subsequent workflow_run for Release dispatched
+with GITHUB_TOKEN, so that fallback is not the primary trigger. Only the default-branch notifier code is checked out using
+`github.workflow_sha` (the trusted main caller for reusable calls). The observer
+executes only repository code; artifact contents never execute in the notifier. The job installs no dependencies and has no Vercel/npm credentials.
 It receives only the dedicated Telegram token and private recipient ID.
 
-The REST run must belong to `holakirr/snow-ui`, use `release.yml`, be a completed
+The REST run must belong to `holakirr/snow-ui`, use `release.yml`, be a
 `workflow_dispatch` named `Release (release) on main`, and have successful
-`released` and `promote` jobs. Only then does the existing observer inspect its
+`released` and `promote` jobs. A reusable call also requires a completed production job; its parent Release is still in progress until the observer returns. The supplied parent ID must equal GITHUB_RUN_ID. Only then does the existing observer inspect its
 production job and sanitized reports. Canary/next/manual production checks,
-trigger-only runs and failures before production remain silent. Every completion
-event reconciles new/unfinished attempts since cutover, so GitHub replacing an
+trigger-only runs and failures before production remain silent. Every event/call reconciles new/unfinished attempts since cutover, so GitHub replacing an
 older queued notifier does not lose that release. Already completed run/attempt
 pairs are skipped before job/report reads. A rerun is a new attempt; the original
 release-SHA/cause fingerprint still suppresses the same failure.
@@ -125,7 +127,7 @@ Cutover, in order:
    an empty history when prior state exists.
 3. Merge the independently reviewed final HEAD after applicable green CI. Leave
    `SNOWUI_PRODUCTION_TELEGRAM_ENABLED` absent until verification.
-4. Dispatch `Production Notifications` on main with `operation=delivery-test`.
+4. Dispatch `Verify Production Notification Delivery` on main with `operation=delivery-test` to exercise the actual reusable-workflow secret boundary.
    Confirm API acceptance and the actual clearly labeled message in the private
    chat; tests never impersonate production failures or alter fingerprints.
 5. Refresh/import the last hourly observer's processed and notified entries,
@@ -134,8 +136,7 @@ Cutover, in order:
    local state/history. Enable repository variable
    `SNOWUI_PRODUCTION_TELEGRAM_ENABLED=true`, then dispatch `operation=reconcile`
    once to cover the cutover interval and unfinished releases. Verify it succeeds
-   and a duplicate reconciliation is quiet. Confirm an automatic Release
-   completion triggers the workflow; if no release occurs during cutover, record
+   and a duplicate reconciliation is quiet. Confirm an automatic stable Release invokes the reusable observer after production; if no release occurs during cutover, record
    that limit and retain a temporary one-shot verification until the next event.
 
 Rollback: set the enable variable to `false`, preserve branch state/receipts,
@@ -143,3 +144,19 @@ merge any new fingerprints into the legacy state, and restore the hourly
 read-only monitor if needed. This changes notification routing only, never
 production protection, application deployments, npm publishing or workflows'
 release gates. A green production run does not retire the permanent event monitor.
+
+The Release hook preserves the existing gate, published-tag verification, promote
+and production conditions. It passes only the two Telegram secrets to a separate
+job. Its `always()` condition permits observing a failed/cancelled production
+job; failures before production and manual mode=production remain excluded. If
+an entire workflow is forcibly terminated before cleanup can run, notification
+cannot be guaranteed by an in-workflow hook; the completion fallback covers
+human-triggered runs. Do not represent an unobserved forced termination as an
+application failure. No new long-lived GitHub token or protection bypass is used.
+
+`Verify Production Notification Delivery` also supports `cancellation-test`. It
+opens a 90-second idle window; explicitly cancelling that test run verifies the
+reusable notification job/steps survive normal parent cancellation. Both modes
+send clearly labeled transport tests only, never fake production failures, and
+do not change production fingerprints. Caller, callee and notification steps
+use `always()`; existing main/stable-release guards remain mandatory.

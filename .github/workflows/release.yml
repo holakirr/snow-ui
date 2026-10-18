@@ -680,6 +680,28 @@ jobs:
       SNOWUI_SITE_AUTOMATION_SECRET: ${{ secrets.SNOWUI_SITE_AUTOMATION_SECRET }}
       SNOWUI_DEMO_AUTOMATION_SECRET: ${{ secrets.SNOWUI_DEMO_AUTOMATION_SECRET }}
 
+  # GitHub suppresses workflow_run after a workflow dispatched with its own
+  # GITHUB_TOKEN. Call the observer directly after the production job instead.
+  # always() also observes an interrupted production check; release gates and
+  # the production job's permissions/secrets remain unchanged.
+  notify-production:
+    needs: [gate, released, promote, production]
+    if: >-
+      always() && github.ref == 'refs/heads/main' && inputs.mode == 'release' &&
+      vars.SNOWUI_PRODUCTION_TELEGRAM_ENABLED == 'true' &&
+      needs.gate.outputs.passed == 'true' &&
+      needs.released.outputs.released == 'true' && needs.promote.outputs.current == 'true' &&
+      needs.production.result != 'skipped'
+    permissions:
+      actions: read
+      contents: write # only the dedicated observer state is written
+    uses: ./.github/workflows/production-notifications.yml
+    with:
+      release-run-id: ${{ github.run_id }}
+    secrets:
+      SNOWUI_TELEGRAM_BOT_TOKEN: ${{ secrets.SNOWUI_TELEGRAM_BOT_TOKEN }}
+      SNOWUI_TELEGRAM_CHAT_ID: ${{ secrets.SNOWUI_TELEGRAM_CHAT_ID }}
+
   # A CycloneDX SBOM of each published package (scripts/sbom.ts): what it
   # pulls in, at the versions installed from bun.lock. Attached to the
   # package's GitHub release (tag `<name>@<version>`) and kept as an

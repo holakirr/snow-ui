@@ -70,9 +70,11 @@ class GitState:
         self.calls.append((path, method, copy.deepcopy(body)))
         if path == "/git/ref/heads/" + t.BRANCH:
             return {"object": {"sha": self.head}}
+        if path.startswith("/git/commits/"):
+            commit = path.split("/")[-1]
+            return {"tree": {"sha": self.commits[commit]["tree"]}}
         if path.startswith("/git/trees/"):
-            commit = path.split("/")[-1].split("?")[0]
-            tree = self.commits[commit]["tree"]
+            tree = path.split("/")[-1].split("?")[0]
             return {"sha": tree, "truncated": False, "tree": copy.deepcopy(list(self.trees[tree].values()))}
         if path.startswith("/git/blobs/"):
             return copy.deepcopy(self.blobs[path.split("/")[-1]])

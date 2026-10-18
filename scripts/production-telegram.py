@@ -64,10 +64,12 @@ class Store:
         # Pin the complete parent tree: checking only the state blob cannot
         # detect a concurrent commit that removes a deployment guard.
         self.head = gh("/git/ref/heads/" + BRANCH)["object"]["sha"]
-        tree = gh("/git/trees/" + self.head + "?recursive=1")
+        self.tree = gh("/git/commits/" + self.head)["tree"]["sha"]
+        tree = gh("/git/trees/" + self.tree + "?recursive=1")
         if tree.get("truncated"):
             raise Fault("State branch tree incomplete; refusing update")
-        self.tree = tree["sha"]
+        if tree["sha"] != self.tree:
+            raise Fault("State branch tree identity changed; refusing update")
         self.entries = {entry["path"]: entry for entry in tree["tree"]}
         self.verify_guards()
         state = self.read_json(FILE)

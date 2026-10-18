@@ -1,0 +1,50 @@
+name: Production Notifications
+
+on:
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Explicit delivery test or one-time cutover reconciliation
+        type: choice
+        options: [delivery-test, reconcile]
+        default: delivery-test
+
+permissions: {}
+concurrency:
+  group: production-telegram-state
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  notify:
+    if: >-
+      github.repository == 'holakirr/snow-ui' && github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+      (vars.SNOWUI_PRODUCTION_TELEGRAM_ENABLED == 'true' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.event == 'workflow_dispatch'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write # dedicated observer-state branch; no protected branch updates
+    steps:
+      - name: Checkout trusted notifier code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Observe Release and deliver only new failures
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.SNOWUI_TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.SNOWUI_TELEGRAM_CHAT_ID }}
+          NOTIFICATIONS_ENABLED: ${{ vars.SNOWUI_PRODUCTION_TELEGRAM_ENABLED }}
+        run: python3 -B scripts/production-telegram.py

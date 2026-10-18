@@ -174,8 +174,10 @@ describe('production notification release hook', () => {
     expect(hook).toContain("needs.released.outputs.released == 'true'")
     expect(hook).toContain("needs.promote.outputs.current == 'true'")
     expect(hook).toContain("needs.production.result != 'skipped'")
-    expect(hook).toContain('uses: ./.github/workflows/production-notifications.yml')
-    expect(hook).toContain('release-run-id: ${{ github.run_id }}')
+    expect(hook).toContain(
+      'uses: ./.github/workflows/production-notifications.yml',
+    )
+    expect(hook).toMatch(/release-run-id: \$\{\{ github\.run_id \}\}/)
     expect(hook).not.toContain('secrets: inherit')
     expect(hook).not.toContain('SNOWUI_SITE_AUTOMATION_SECRET')
     expect(hook).not.toContain('SNOWUI_DEMO_AUTOMATION_SECRET')

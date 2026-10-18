@@ -5,12 +5,23 @@ on:
       operation:
         description: Explicit test of the reusable workflow and private delivery
         type: choice
-        options: [delivery-test]
+        options: [delivery-test, cancellation-test]
         default: delivery-test
 permissions: {}
+defaults:
+  run:
+    shell: bash
 jobs:
+  cancellation-window:
+    if: inputs.operation == 'cancellation-test'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Wait for the explicit test cancellation
+        run: sleep 90
   verify-call:
-    if: github.repository == 'holakirr/snow-ui' && github.ref == 'refs/heads/main'
+    needs: cancellation-window
+    if: always() && github.repository == 'holakirr/snow-ui' && github.ref == 'refs/heads/main'
     permissions:
       actions: read
       contents: write

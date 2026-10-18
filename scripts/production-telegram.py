@@ -153,7 +153,7 @@ def main():
     if os.environ.get("GITHUB_REPOSITORY") != observer.REPO or os.environ.get("GITHUB_REF") != "refs/heads/main":
         raise Fault("Notifier requires the trusted main repository")
     operation = event.get("inputs", {}).get("operation") if kind == "workflow_dispatch" else None
-    if operation == "delivery-test":
+    if operation in ("delivery-test", "cancellation-test"):
         # Explicit operator test, separate from production fingerprints and errors.
         telegram("SnowUI: тест доставки из GitHub Actions. Это проверка связи, не сообщение о сбое production.")
         print("Delivery test accepted by Telegram")

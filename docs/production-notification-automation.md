@@ -153,3 +153,10 @@ an entire workflow is forcibly terminated before cleanup can run, notification
 cannot be guaranteed by an in-workflow hook; the completion fallback covers
 human-triggered runs. Do not represent an unobserved forced termination as an
 application failure. No new long-lived GitHub token or protection bypass is used.
+
+`Verify Production Notification Delivery` also supports `cancellation-test`. It
+opens a 90-second idle window; explicitly cancelling that test run verifies the
+reusable notification job/steps survive normal parent cancellation. Both modes
+send clearly labeled transport tests only, never fake production failures, and
+do not change production fingerprints. Caller, callee and notification steps
+use `always()`; existing main/stable-release guards remain mandatory.

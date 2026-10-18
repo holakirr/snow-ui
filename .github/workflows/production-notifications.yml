@@ -35,7 +35,7 @@ defaults:
 jobs:
   notify:
     if: >-
-      github.repository == 'holakirr/snow-ui' && github.ref == 'refs/heads/main' &&
+      always() && github.repository == 'holakirr/snow-ui' && github.ref == 'refs/heads/main' &&
       (inputs.release-run-id != '' || github.event_name == 'workflow_dispatch' ||
       (vars.SNOWUI_PRODUCTION_TELEGRAM_ENABLED == 'true' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
@@ -47,11 +47,13 @@ jobs:
       contents: write # dedicated observer-state branch; no protected branch updates
     steps:
       - name: Checkout trusted notifier code
+        if: always()
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           persist-credentials: false
       - name: Observe Release and deliver only new failures
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.SNOWUI_TELEGRAM_BOT_TOKEN }}

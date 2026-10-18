@@ -150,5 +150,8 @@
   "telegramStartedAt": "2026-10-18T12:36:34Z",
   "telegramPendingRuns": [],
   "telegramDeliveries": {},
-  "telegramCompletedRuns": {}
+  "telegramCompletedRuns": {
+    "39129467880:1": true,
+    "39129460947:1": true
+  }
 }

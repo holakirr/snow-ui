@@ -702,6 +702,37 @@ jobs:
       SNOWUI_TELEGRAM_BOT_TOKEN: ${{ secrets.SNOWUI_TELEGRAM_BOT_TOKEN }}
       SNOWUI_TELEGRAM_CHAT_ID: ${{ secrets.SNOWUI_TELEGRAM_CHAT_ID }}
 
+  # One-shot acceptance has no timer or Telegram credentials. A durable
+  # completed marker retires it silently, without stopping the permanent hook.
+  accept-production-notifications:
+    needs: [gate, released, promote, production, notify-production]
+    if: >-
+      always() && github.ref == 'refs/heads/main' && inputs.mode == 'release' &&
+      vars.SNOWUI_PRODUCTION_TELEGRAM_ENABLED == 'true' &&
+      needs.gate.outputs.passed == 'true' && needs.released.outputs.released == 'true' &&
+      needs.promote.outputs.current == 'true' && needs.production.result != 'skipped' &&
+      needs.notify-production.outputs.acceptance-required != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: production-telegram-state
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      contents: write # acceptance marker on the existing dedicated state branch
+    steps:
+      - name: Checkout trusted acceptance code
+        if: always()
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Accept the first event and retire silently
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -B scripts/production-release-acceptance.py
+
   # A CycloneDX SBOM of each published package (scripts/sbom.ts): what it
   # pulls in, at the versions installed from bun.lock. Attached to the
   # package's GitHub release (tag `<name>@<version>`) and kept as an

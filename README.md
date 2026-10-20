@@ -147,6 +147,7 @@ Which releases get fixes, and how deprecations and breaking changes are handled,
 
 ## Community
 
+- [XERJ Corpus Hub](https://hub.xerj.org/contributors/holakirr): SnowUI was selected as a reference repository for AI coding agents. The corpus is currently in licence review and is not yet available to install.
 - [Roadmap](ROADMAP.md): what the next releases bring, including the 6.0 major.
 - [Getting help](SUPPORT.md): Discussions for questions and ideas, issue forms for bugs, accessibility problems and feature requests.
 - [Contributing](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).

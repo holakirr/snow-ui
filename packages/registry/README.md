@@ -1,6 +1,6 @@
 # @holakirr/snow-ui-registry (private)
 
-Generates the **`@snow-ui` shadcn registry** — every component of `@holakirr/snow-ui` as copy-paste source for the [shadcn CLI](https://ui.shadcn.com/docs/registry) — from `packages/ui/src`. npm stays the only semver channel; the registry is another output of the same sources, served next to Storybook at `https://snow-ui.holakirr.com/r/`.
+Generates the **`@snow-ui` shadcn registry** — every component of `@holakirr/snow-ui` as copy-paste source for the [shadcn CLI](https://ui.shadcn.com/docs/registry) — from `packages/ui/src`. npm stays the only semver channel; the registry is another output of the same sources, served independently of Storybook at `https://registry.snow-ui.holakirr.com/r/`.
 
 ```bash
 bun run registry          # regenerate packages/registry/manifest.json (commit it; CI fails when it is stale)

@@ -4,7 +4,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 # Registry (shadcn CLI)
 
-Besides the npm package, every component is available as source code you copy into your project with the [shadcn CLI](https://ui.shadcn.com/docs/cli): the `@snow-ui` registry at `https://snow-ui.holakirr.com/r/`. Each component page shows both ways under "npm package" and "shadcn CLI".
+Besides the npm package, every component is available as source code you copy into your project with the [shadcn CLI](https://ui.shadcn.com/docs/cli): the `@snow-ui` registry at `https://registry.snow-ui.holakirr.com/r/`. Each component page shows both ways under "npm package" and "shadcn CLI".
 
 | | npm package | Registry |
 | --- | --- | --- |
@@ -13,14 +13,14 @@ Besides the npm package, every component is available as source code you copy in
 | Theme and fonts | `theme.css` / `index.css`, `fonts.css` | `theme-core.css` (the same theme without the npm components' classes) and `fonts.css`, from the package (CSS only) |
 | Icons, charts | npm packages | npm packages (not copied) |
 
-The registry is generated from the package's sources on every deployment of this site, so it follows the `main` branch; each item's JSON records the package version and commit it was built from (`meta`).
+The public registry is built from the approved release revision and published independently of this site, never from unreleased `main`; each item's JSON records the package version and commit it was built from (`meta`).
 
 ## New project
 
 In a project with Tailwind CSS v4 and React 19 (Next.js, Vite…), initialize with the SnowUI base, then add components:
 
 ```bash
-npx shadcn@latest init https://snow-ui.holakirr.com/r/snow-ui.json
+npx shadcn@latest init https://registry.snow-ui.holakirr.com/r/snow-ui.json
 npx shadcn@latest add @snow-ui/button @snow-ui/dialog
 ```
 
@@ -32,16 +32,16 @@ import { Button } from '@/components/snow-ui/components/Button/Button'
 <Button variant="filled" size="md" label="Save" />
 ```
 
-`@snow-ui/all` adds every component, `@snow-ui/snow-ui-charts` the charts package and its stylesheet. `npx shadcn@latest search @snow-ui` lists the items; the catalog is [`/r/registry.json`](https://snow-ui.holakirr.com/r/registry.json).
+`@snow-ui/all` adds every component, `@snow-ui/snow-ui-charts` the charts package and its stylesheet. `npx shadcn@latest search @snow-ui` lists the items; the catalog is [`/r/registry.json`](https://registry.snow-ui.holakirr.com/r/registry.json).
 
 ## Existing project
 
-Add the registry to `components.json` (or run `npx shadcn@latest registry add @snow-ui=https://snow-ui.holakirr.com/r/{name}.json`):
+Add the registry to `components.json` (or run `npx shadcn@latest registry add @snow-ui=https://registry.snow-ui.holakirr.com/r/{name}.json`):
 
 ```json
 {
   "registries": {
-    "@snow-ui": "https://snow-ui.holakirr.com/r/{name}.json"
+    "@snow-ui": "https://registry.snow-ui.holakirr.com/r/{name}.json"
   }
 }
 ```

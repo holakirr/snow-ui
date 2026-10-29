@@ -18,7 +18,7 @@ const { config, configDir } = await loadConfig(
 const plan = createPlan(config, configDir)
 const { manifest } = plan
 const rendered = renderRegistry(plan, config, {
-  baseUrl: 'https://snow-ui.holakirr.com/r',
+  baseUrl: 'https://registry.snow-ui.holakirr.com/r',
 })
 const items = new Map(manifest.items.map((item) => [item.name, item]))
 const staged = (file: string) => {

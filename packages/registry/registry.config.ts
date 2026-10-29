@@ -1,19 +1,20 @@
 import { defineConfig } from './src/config'
 
 const SITE = 'https://snow-ui.holakirr.com'
+const REGISTRY = 'https://registry.snow-ui.holakirr.com'
 const REPO = 'https://github.com/holakirr/snow-ui'
 
 /**
  * The public `@snow-ui` registry: every component of @holakirr/snow-ui as
  * copy-paste source for the shadcn CLI, generated from packages/ui/src and
- * served from the Storybook deployment at https://snow-ui.holakirr.com/r/.
+ * served independently at https://registry.snow-ui.holakirr.com/r/.
  * Paths are relative to this file.
  */
 export default defineConfig({
   name: 'snow-ui',
   namespace: '@snow-ui',
   homepage: SITE,
-  baseUrl: `${SITE}/r`,
+  baseUrl: `${REGISTRY}/r`,
   author: 'Kirill Petunin (https://holakirr.com)',
   dependencyStyle: 'url',
 
@@ -107,7 +108,7 @@ export default defineConfig({
   // depends on snow-core).
   itemDocs: (item) => {
     if (item.name === 'snow-core') {
-      return `SnowUI components need the SnowUI theme (npx shadcn@latest init ${SITE}/r/snow-ui.json in a new project; npm i @holakirr/snow-ui and @import "@holakirr/snow-ui/theme-core.css" and "@holakirr/snow-ui/fonts.css" after Tailwind in an existing one), a radix-* style in components.json (a base-* style rewrites asChild and breaks them) and React 19. Guide: ${SITE}/?path=/docs/guides-registry--docs`
+      return `SnowUI components need the SnowUI theme (npx shadcn@latest init ${REGISTRY}/r/snow-ui.json in a new project; npm i @holakirr/snow-ui and @import "@holakirr/snow-ui/theme-core.css" and "@holakirr/snow-ui/fonts.css" after Tailwind in an existing one), a radix-* style in components.json (a base-* style rewrites asChild and breaks them) and React 19. Guide: ${SITE}/?path=/docs/guides-registry--docs`
     }
     if (item.type !== 'registry:ui' || !item.import || !item.exports?.length) {
       return undefined

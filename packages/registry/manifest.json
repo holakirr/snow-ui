@@ -3,7 +3,7 @@
   "name": "snow-ui",
   "namespace": "@snow-ui",
   "homepage": "https://snow-ui.holakirr.com",
-  "baseUrl": "https://snow-ui.holakirr.com/r",
+  "baseUrl": "https://registry.snow-ui.holakirr.com/r",
   "package": {
     "name": "@holakirr/snow-ui",
     "source": "packages/ui/src"
@@ -1503,7 +1503,7 @@
         "config": {
           "style": "radix-nova",
           "registries": {
-            "@snow-ui": "https://snow-ui.holakirr.com/r/{name}.json"
+            "@snow-ui": "https://registry.snow-ui.holakirr.com/r/{name}.json"
           }
         },
         "css": {

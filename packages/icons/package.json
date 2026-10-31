@@ -58,7 +58,7 @@
   "devDependencies": {
     "@arethetypeswrong/core": "^0.18.5",
     "@phosphor-icons/react": "^2.1.10",
-    "@storybook/react-vite": "^10.6.2",
+    "@storybook/react-vite": "^10.6.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@types/node": "^26.6.5",
@@ -69,10 +69,10 @@
     "publint": "^0.3.25",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "storybook": "^10.6.2",
-    "tsdown": "^0.23.1",
+    "storybook": "^10.6.3",
+    "tsdown": "^0.23.2",
     "typescript": "^7.0.2",
-    "vite": "^8.3.4",
+    "vite": "^8.3.5",
     "vitest": "^5.0.5"
   },
   "license": "MIT",

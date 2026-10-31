@@ -57,7 +57,7 @@
     "@size-limit/esbuild": "^14.3.0",
     "@size-limit/file": "^14.3.0",
     "@storybook/addon-a11y": "^10.6.3",
-    "@storybook/addon-designs": "^11.1.4",
+    "@storybook/addon-designs": "^12.0.0",
     "@storybook/addon-docs": "^10.6.3",
     "@storybook/addon-themes": "^10.6.3",
     "@storybook/addon-vitest": "^10.6.3",

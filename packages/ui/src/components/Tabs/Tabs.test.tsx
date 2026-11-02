@@ -279,6 +279,7 @@ describe('Tabs', () => {
     })
 
     it('follows a controlled value', () => {
+      // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
       const Controlled = () => {
         const [value, setValue] = useState('two')
         return (
@@ -382,6 +383,7 @@ describe('Tabs', () => {
     })
 
     it('moves with the selection, uncontrolled and controlled', () => {
+      // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
       const Controlled = () => {
         const [value, setValue] = useState('one')
         return (

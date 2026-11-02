@@ -284,6 +284,7 @@ describe('Toggle without an accessible name', () => {
 
   it('takes a text component for text, not an icon', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Trans = ({ i18nKey }: { i18nKey: string }) => <>{i18nKey}</>
 
     render(

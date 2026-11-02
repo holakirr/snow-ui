@@ -13,21 +13,21 @@ Every package follows [Semantic Versioning 2.0.0](https://semver.org). The publi
 
 The DOM structure, the internal class names and anything not exported from an entry point are not public API. Changes to the look of a component that bring it closer to the Figma kit or to WCAG are minor or patch releases, described in the changelog.
 
-| Bump | When |
-| --- | --- |
+| Bump      | When                                                                                                                                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **major** | Something that worked stops working: a removed or renamed export, prop, value or token; a narrower type; a changed default; a new required peer dependency or a higher minimum version of one; dropping a supported browser, React or Node.js version. |
-| **minor** | New components, props, exports, tokens or options; deprecations. |
-| **patch** | Bug fixes, and internal or build changes that users don't need to act on. |
+| **minor** | New components, props, exports, tokens or options; deprecations.                                                                                                                                                                                       |
+| **patch** | Bug fixes, and internal or build changes that users don't need to act on.                                                                                                                                                                              |
 
 **0.x packages** (the charts): while a package is below 1.0.0, a breaking change bumps the minor (0.1 → 0.2) and anything else the patch, as SemVer allows for 0.x. The charts reach 1.0.0 when their API has settled.
 
 ## Release channels
 
-| npm dist-tag | Versions | Published from | For |
-| --- | --- | --- | --- |
-| `latest` | `5.1.0` | `main`, when the version PR is merged | everyone |
-| `next` | `6.0.0-next.3` | the `next` branch, when its version PR is merged | trying the next major before it is released |
-| `canary` | `0.0.0-canary-1a2b3c4` | any branch, by hand | trying one unreleased change in an app; never in production |
+| npm dist-tag | Versions               | Published from                                   | For                                                         |
+| ------------ | ---------------------- | ------------------------------------------------ | ----------------------------------------------------------- |
+| `latest`     | `5.1.0`                | `main`, when the version PR is merged            | everyone                                                    |
+| `next`       | `6.0.0-next.3`         | the `next` branch, when its version PR is merged | trying the next major before it is released                 |
+| `canary`     | `0.0.0-canary-1a2b3c4` | any branch, by hand                              | trying one unreleased change in an app; never in production |
 
 Every channel publishes from CI with npm provenance, and only commits whose [Build Check](.github/workflows/build-check.yml) passed (see [Releasing](README.md#releasing)). `next` and `canary` versions carry no support: report problems with them as issues, and they are fixed in the next pre-release or release.
 
@@ -47,12 +47,12 @@ Security fixes are the exception: if a vulnerability can only be fixed by a brea
 
 ## Supported versions
 
-| Package | Version | Status | Gets |
-| --- | --- | --- | --- |
-| `@holakirr/snow-ui` | 5.x | current | new features, bug fixes, security fixes |
-| `@holakirr/snow-ui` | 4.x and older | end of life | nothing: upgrade to 5.x |
-| `@holakirr/snow-ui-icons` | 2.x | current | new icons, bug fixes, security fixes |
-| `@holakirr/snow-ui-charts` | 0.x (the latest minor) | current | new features, bug fixes, security fixes |
+| Package                    | Version                | Status      | Gets                                    |
+| -------------------------- | ---------------------- | ----------- | --------------------------------------- |
+| `@holakirr/snow-ui`        | 5.x                    | current     | new features, bug fixes, security fixes |
+| `@holakirr/snow-ui`        | 4.x and older          | end of life | nothing: upgrade to 5.x                 |
+| `@holakirr/snow-ui-icons`  | 2.x                    | current     | new icons, bug fixes, security fixes    |
+| `@holakirr/snow-ui-charts` | 0.x (the latest minor) | current     | new features, bug fixes, security fixes |
 
 Only the latest minor of the current major is fixed: a fix for 5.2 ships as 5.2.x or in 5.3, not as a patch of 5.1.
 
@@ -60,13 +60,13 @@ Only the latest minor of the current major is fixed: a fix for 5.2 ships as 5.2.
 
 ## Supported environments
 
-| | Supported | Tested in CI |
-| --- | --- | --- |
-| **React** | 19.x (`react` and `react-dom` peer range `^19.0.0`). React 18 is not supported. | React 19, on every story |
-| **Browsers** | The baseline of Tailwind CSS v4, which the styles need (`@layer`, `color-mix()`, `@property`): Chrome and Edge 111+, Safari 16.4+ (macOS and iOS), Firefox 128+. | Chromium (every story in both themes, axe, visual regression), Firefox and WebKit (every story, play functions) |
-| **Tailwind CSS** | v4 for `theme.css` (or `theme-core.css`), or no Tailwind at all with the precompiled `index.css`. | Both, in `test:dist` |
-| **Server rendering** | React 19 server rendering and hydration (Next.js App Router, React Router, any `react-dom/server` setup). | Every ui story rendered in Node.js and hydrated in Chromium (`test:ssr`) |
-| **Node.js** (server rendering, builds, tests) | The Node.js versions in Active or Maintenance LTS: today 20.19+, 22 and 24. The packages' `engines` field still says `>=18`; 6.0 raises it to `>=20.19`. | The GitHub runner's default Node.js for the tests and 24 for the release builds; there is no matrix of Node.js versions yet. |
+|                                               | Supported                                                                                                                                                        | Tested in CI                                                                                                                 |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **React**                                     | 19.x (`react` and `react-dom` peer range `^19.0.0`). React 18 is not supported.                                                                                  | React 19, on every story                                                                                                     |
+| **Browsers**                                  | The baseline of Tailwind CSS v4, which the styles need (`@layer`, `color-mix()`, `@property`): Chrome and Edge 111+, Safari 16.4+ (macOS and iOS), Firefox 128+. | Chromium (every story in both themes, axe, visual regression), Firefox and WebKit (every story, play functions)              |
+| **Tailwind CSS**                              | v4 for `theme.css` (or `theme-core.css`), or no Tailwind at all with the precompiled `index.css`.                                                                | Both, in `test:dist`                                                                                                         |
+| **Server rendering**                          | React 19 server rendering and hydration (Next.js App Router, React Router, any `react-dom/server` setup).                                                        | Every ui story rendered in Node.js and hydrated in Chromium (`test:ssr`)                                                     |
+| **Node.js** (server rendering, builds, tests) | The Node.js versions in Active or Maintenance LTS: today 20.19+, 22 and 24. The packages' `engines` field still says `>=18`; 6.0 raises it to `>=20.19`.         | The GitHub runner's default Node.js for the tests and 24 for the release builds; there is no matrix of Node.js versions yet. |
 
 Supporting a new version of React, Node.js or a browser is a minor release. Dropping one is a major release, except for a Node.js version that has reached its end of life upstream, which may be dropped in a minor release.
 

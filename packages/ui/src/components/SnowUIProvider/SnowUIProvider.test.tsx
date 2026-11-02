@@ -99,6 +99,7 @@ beforeAll(() => {
 
 describe('SnowUIProvider', () => {
   it('provides the English defaults without a provider', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Probe = () => {
       const { messages, locale, dir, weekStartsOn } = useSnowUI()
       return (
@@ -117,6 +118,7 @@ describe('SnowUIProvider', () => {
   })
 
   it('merges partial messages over the defaults, namespace by namespace', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Probe = () => {
       const messages = useMessages()
       return (
@@ -138,6 +140,7 @@ describe('SnowUIProvider', () => {
   })
 
   it('nests: an inner provider overrides the outer one for its subtree', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Probe = () => {
       const { messages, locale, dir, weekStartsOn } = useSnowUI()
       return (
@@ -166,6 +169,7 @@ describe('SnowUIProvider', () => {
   })
 
   it('sets the Radix direction, and keeps an outer one without `dir`', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Probe = () => <output>{useDirection()}</output>
     const { rerender } = render(
       <SnowUIProvider dir="rtl">
@@ -569,6 +573,7 @@ describe('SnowUIProvider', () => {
     } = defaultMessages
     const translation: Messages = { ...v50, dialog: { close: 'Schließen' } }
     let seen: Required<Messages> | undefined
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Probe = () => {
       seen = useMessages()
       return null
@@ -601,6 +606,7 @@ describe('SnowUIProvider', () => {
     } = defaultMessages
     const translation: Messages = { ...v51, commandPalette }
     let seen: Required<Messages> | undefined
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Probe = () => {
       seen = useMessages()
       return null
@@ -631,6 +637,7 @@ describe('SnowUIProvider', () => {
   it('keeps the context value for an equal inline messages object', () => {
     const remove = (label: string) => `x ${label}`
     const seen: Messages[] = []
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Probe = () => {
       seen.push(useMessages())
       return null

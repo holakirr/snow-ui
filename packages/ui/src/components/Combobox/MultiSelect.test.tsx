@@ -133,6 +133,7 @@ describe('MultiSelect', () => {
   })
 
   it('works controlled', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState<string[]>(['figma'])
       return (
@@ -366,6 +367,7 @@ describe('MultiSelect in a form', () => {
   })
 
   it('announces a removal once, not again after loading', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Async = () => {
       const [loading, setLoading] = useState(false)
       return (

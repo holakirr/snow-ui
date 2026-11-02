@@ -45,16 +45,16 @@ const revenue = [
 />
 ```
 
-| Component | For |
-| --- | --- |
-| `LineChart` | Trends: smooth 1px lines, `dashed` series, a dashed projection after `projectionFrom`, `fade`, `dots`. |
-| `AreaChart` | A line chart filled with a gradient of each series' colour (`opacity`, 10% by default); `stacked`, as lines can be too. |
-| `BarChart` | Amounts per category: grouped or `stacked`, `horizontal`, per-category colours (`colorBy="category"`), 28px bars with an 8px radius. |
-| `DonutChart` | Shares of a whole: a 120px ring with a legend of percentages, `centerLabel` / `centerValue`. |
-| `Sparkline` | A tiny trend line for KPI cards: plain SVG (about 2.3 kB with its data table), rendered on the server too. |
-| `ChartContainer` | The frame of any Recharts chart: config → CSS variables, sizing, tooltip and legend context, accessibility. |
-| `ChartTooltip`, `ChartTooltipContent` | The SnowUI tooltip (`dark`, the Figma chart tooltip, or `light` glass). |
-| `ChartLegend`, `ChartLegendContent` | The SnowUI legend (a dot and a label, optional values). |
+| Component                             | For                                                                                                                                  |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `LineChart`                           | Trends: smooth 1px lines, `dashed` series, a dashed projection after `projectionFrom`, `fade`, `dots`.                               |
+| `AreaChart`                           | A line chart filled with a gradient of each series' colour (`opacity`, 10% by default); `stacked`, as lines can be too.              |
+| `BarChart`                            | Amounts per category: grouped or `stacked`, `horizontal`, per-category colours (`colorBy="category"`), 28px bars with an 8px radius. |
+| `DonutChart`                          | Shares of a whole: a 120px ring with a legend of percentages, `centerLabel` / `centerValue`.                                         |
+| `Sparkline`                           | A tiny trend line for KPI cards: plain SVG (about 2.3 kB with its data table), rendered on the server too.                           |
+| `ChartContainer`                      | The frame of any Recharts chart: config → CSS variables, sizing, tooltip and legend context, accessibility.                          |
+| `ChartTooltip`, `ChartTooltipContent` | The SnowUI tooltip (`dark`, the Figma chart tooltip, or `light` glass).                                                              |
+| `ChartLegend`, `ChartLegendContent`   | The SnowUI legend (a dot and a label, optional values).                                                                              |
 
 The cartesian charts share `grid`, `xAxis`, `yAxis`, `xTickFormatter`, `yTickFormatter`, `tickCount`, `domain`, `tooltip`, `legend`, `legendValues`, `animate` and the `ChartContainer` props (`title`, `description`, `height`, `loading`, `emptyMessage`, `valueFormatter`, `categoryFormatter`, `locale`, `dir`…).
 
@@ -75,9 +75,14 @@ const config = {
 
 ```tsx
 import { Bar, BarChart, XAxis } from '@holakirr/snow-ui-charts/recharts'
-import { ChartContainer, ChartLegendContent, ChartTooltip, seriesColor } from '@holakirr/snow-ui-charts'
+import {
+  ChartContainer,
+  ChartLegendContent,
+  ChartTooltip,
+  seriesColor,
+} from '@holakirr/snow-ui-charts'
 
-<ChartContainer
+;<ChartContainer
   config={config}
   title="Visitors"
   data={data}

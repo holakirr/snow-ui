@@ -27,23 +27,23 @@ bun add @holakirr/snow-ui-icons
 
 ```jsx
 import {
-	SnowUIIcon,
-	LoadingAIcon,
-	FourLeafCloverIcon,
-	StarIcon,
-	StatusIcon,
+  SnowUIIcon,
+  LoadingAIcon,
+  FourLeafCloverIcon,
+  StarIcon,
+  StatusIcon,
 } from '@holakirr/snow-ui-icons'
 
 const App = () => {
-	return (
-		<main>
-			<SnowUIIcon alt="SnowUI" />
-			<LoadingAIcon color="#AE2983" size={32} />
-			<FourLeafCloverIcon color="teal" weight="duotone" />
-			<StarIcon weight="fill" size="2rem" />
-			<StatusIcon status="success" />
-		</main>
-	)
+  return (
+    <main>
+      <SnowUIIcon alt="SnowUI" />
+      <LoadingAIcon color="#AE2983" size={32} />
+      <FourLeafCloverIcon color="teal" weight="duotone" />
+      <StarIcon weight="fill" size="2rem" />
+      <StatusIcon status="success" />
+    </main>
+  )
 }
 ```
 
@@ -61,11 +61,11 @@ Icon components accept all props that you can pass to a normal SVG element, incl
 
 Icons fall back to `regular` when the requested weight is not defined, so any weight is safe to pass, but only these icons actually change:
 
-| Weights | Icons |
-| --- | --- |
-| all six (`thin`, `light`, `regular`, `bold`, `fill`, `duotone`) | `ArrowLineDownIcon`, `ArrowLineLeftIcon`, `ArrowLineRightIcon`, `ArrowLineUpIcon`, `ClipboardIcon`, `CopyIcon`, `DefaultIcon`, `FourLeafCloverIcon`, `XCircleIcon` |
-| `regular`, `fill` | `DotIcon`, `RectangleIcon`, `StarIcon` |
-| `regular` only | `AIIcon`, `AddIcon`, `ArrowFallIcon`, `ArrowLineUpDownIcon`, `ArrowRightIcon`, `ArrowRiseIcon`, `ArrowsDownIcon`, `ArrowsDownUpIcon`, `ArrowsUpIcon`, `CloseIcon`, `DocXIcon`, `DotsThreeOutlineHorizontalIcon`, `ExplainIcon`, `FormIcon`, `FourPointedStarIcon`, `GotoIcon`, `HelpIcon`, `HorizontalScreenIcon`, `LineIcon`, `LoadingAIcon`, `LoadingBIcon`, `MaximizeIcon`, `MinimizeIcon`, `NotepadIcon`, `OneNoteIcon`, `PPTIcon`, `RightBarIcon`, `RoundedCornerIcon`, `SearchIcon`, `SnowUIIcon`, `StopIcon`, `TXTIcon`, `TextAIcon`, `VariablesIcon`, `VerticalScreenIcon`, `WindowedIcon`, `XLSXIcon` |
+| Weights                                                         | Icons                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| all six (`thin`, `light`, `regular`, `bold`, `fill`, `duotone`) | `ArrowLineDownIcon`, `ArrowLineLeftIcon`, `ArrowLineRightIcon`, `ArrowLineUpIcon`, `ClipboardIcon`, `CopyIcon`, `DefaultIcon`, `FourLeafCloverIcon`, `XCircleIcon`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `regular`, `fill`                                               | `DotIcon`, `RectangleIcon`, `StarIcon`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `regular` only                                                  | `AIIcon`, `AddIcon`, `ArrowFallIcon`, `ArrowLineUpDownIcon`, `ArrowRightIcon`, `ArrowRiseIcon`, `ArrowsDownIcon`, `ArrowsDownUpIcon`, `ArrowsUpIcon`, `CloseIcon`, `DocXIcon`, `DotsThreeOutlineHorizontalIcon`, `ExplainIcon`, `FormIcon`, `FourPointedStarIcon`, `GotoIcon`, `HelpIcon`, `HorizontalScreenIcon`, `LineIcon`, `LoadingAIcon`, `LoadingBIcon`, `MaximizeIcon`, `MinimizeIcon`, `NotepadIcon`, `OneNoteIcon`, `PPTIcon`, `RightBarIcon`, `RoundedCornerIcon`, `SearchIcon`, `SnowUIIcon`, `StopIcon`, `TXTIcon`, `TextAIcon`, `VariablesIcon`, `VerticalScreenIcon`, `WindowedIcon`, `XLSXIcon` |
 
 ### StatusIcon
 
@@ -94,27 +94,27 @@ It is possible to extend SnowUI Icons with your custom icons, taking advantage o
 Next, create a new React component, importing the `IconBase` component, as well as the `Icon` and `IconWeight` types from this library. Define a `Map<IconWeight, ReactElement>` that maps each icon weight to the contents of each SVG asset, effectively removing the wrapping `<svg>` element from each. Name your component, and render an `<IconBase />`, passing all props (in React 19 `ref` is a regular prop, so no `forwardRef` is needed), as well as the `weights` you defined earlier, as JSX props:
 
 ```tsx
-import type { ReactElement } from "react";
-import { IconBase, type Icon, type IconWeight } from "@holakirr/snow-ui-icons";
+import type { ReactElement } from 'react'
+import { IconBase, type Icon, type IconWeight } from '@holakirr/snow-ui-icons'
 
 const weights = new Map<IconWeight, ReactElement>([
-  ["thin", <path d="..." />],
-  ["light", <path d="..." />],
-  ["regular", <path d="..." />],
-  ["bold", <path d="..." />],
-  ["fill", <path d="..." />],
+  ['thin', <path d="..." />],
+  ['light', <path d="..." />],
+  ['regular', <path d="..." />],
+  ['bold', <path d="..." />],
+  ['fill', <path d="..." />],
   [
-    "duotone",
+    'duotone',
     <>
       <path d="..." opacity="0.2" />
       <path d="..." />
     </>,
   ],
-]);
+])
 
-const CustomIcon: Icon = (props) => <IconBase {...props} weights={weights} />;
+const CustomIcon: Icon = (props) => <IconBase {...props} weights={weights} />
 
-export default CustomIcon;
+export default CustomIcon
 ```
 
 ## Related project

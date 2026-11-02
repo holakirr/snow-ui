@@ -4,14 +4,14 @@ A Next.js (App Router) app built with the SnowUI packages the way an app install
 
 Live: [demo.snow-ui.holakirr.com](https://demo.snow-ui.holakirr.com) (deployment is configured separately).
 
-| Route | What it shows |
-| --- | --- |
-| `/` | Redirects to `/dashboard`. |
-| `/dashboard` | The kit's Dashboard: collapsible sidebar, breadcrumb/search, theme and history tools, notifications panel, 108px KPI cards, metric tabs and period selection, charts and segmented website traffic. Language and direction controls are in the history panel. |
-| `/orders` | Sortable, selectable, filterable and paginated order table. |
-| `/sign-in` | The kit's Sign In composition: a 680px card, 384px form, Apple and Google buttons, validation and a submit toast. There is no authentication. |
-| `/settings` | Account → Settings: profile details, sign-in method, connected accounts, email preferences, notifications and deactivation. |
-| `/preferences` | Settings → Profile standalone panel with seven sections: Profile, Theme, Time and language, Notifications, Privacy, Payment and Plugins. `?tab=` selects a section. |
+| Route          | What it shows                                                                                                                                                                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`            | Redirects to `/dashboard`.                                                                                                                                                                                                                                    |
+| `/dashboard`   | The kit's Dashboard: collapsible sidebar, breadcrumb/search, theme and history tools, notifications panel, 108px KPI cards, metric tabs and period selection, charts and segmented website traffic. Language and direction controls are in the history panel. |
+| `/orders`      | Sortable, selectable, filterable and paginated order table.                                                                                                                                                                                                   |
+| `/sign-in`     | The kit's Sign In composition: a 680px card, 384px form, Apple and Google buttons, validation and a submit toast. There is no authentication.                                                                                                                 |
+| `/settings`    | Account → Settings: profile details, sign-in method, connected accounts, email preferences, notifications and deactivation.                                                                                                                                   |
+| `/preferences` | Settings → Profile standalone panel with seven sections: Profile, Theme, Time and language, Notifications, Privacy, Payment and Plugins. `?tab=` selects a section.                                                                                           |
 
 The data is mock data (`lib/data.ts`); avatars are initials, with no images from the Figma kit. The two settings views share demo profile and notification data persisted in localStorage. Account security, payment, integrations and session actions are demonstrations; they do not call a backend. Font size and accent choices are stored preferences, while theme, language and direction apply to the interface.
 

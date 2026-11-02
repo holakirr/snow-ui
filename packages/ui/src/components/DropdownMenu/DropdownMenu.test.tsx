@@ -318,6 +318,7 @@ describe('DropdownMenu search', () => {
 
   it('takes a controlled query and a custom filter', async () => {
     const user = setupUser()
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [query, setQuery] = useState('')
       return (
@@ -527,6 +528,7 @@ describe('DropdownMenu destructive item', () => {
 })
 
 describe('DropdownMenuSwitchItem', () => {
+  // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
   const Menu = (props: Partial<DropdownMenuSwitchItemProps>) => (
     <DropdownMenu defaultOpen>
       <DropdownMenuTrigger>Menu</DropdownMenuTrigger>

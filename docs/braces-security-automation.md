@@ -13,14 +13,14 @@ handler used this same state path, so switching paths preserves in-flight work.
 
 ## Decisions
 
-| Action | Heartbeat behavior |
-|---|---|
-| `WAIT_NO_PATCH`, `WAIT_PUBLICATION` | Stay quiet. Do not install anything. |
-| `START_UPDATE` | Start the authorized update in the returned branch. |
-| `RESUME_BRANCH` | Continue the reserved branch; do not start another. |
-| `RESUME_PR` | Continue the returned PR; do not create a duplicate. |
-| `VERIFY_MERGED` | Verify actual fixed versions, review and green CI before declaring completion. |
-| `BLOCKED`, `OBSERVER_ERROR` | Notify only when `decision` is `NOTIFY`. |
+| Action                              | Heartbeat behavior                                                             |
+| ----------------------------------- | ------------------------------------------------------------------------------ |
+| `WAIT_NO_PATCH`, `WAIT_PUBLICATION` | Stay quiet. Do not install anything.                                           |
+| `START_UPDATE`                      | Start the authorized update in the returned branch.                            |
+| `RESUME_BRANCH`                     | Continue the reserved branch; do not start another.                            |
+| `RESUME_PR`                         | Continue the returned PR; do not create a duplicate.                           |
+| `VERIFY_MERGED`                     | Verify actual fixed versions, review and green CI before declaring completion. |
+| `BLOCKED`, `OBSERVER_ERROR`         | Notify only when `decision` is `NOTIFY`.                                       |
 
 `decision` controls user notification, not whether work should proceed:
 `START_UPDATE` and resume actions deliberately use `DONT_NOTIFY`.

@@ -146,6 +146,7 @@ describe('Link', () => {
   it("leaves Enter to a router link's own <a href>", () => {
     const onClick = vi.fn()
     // A router link renders the href from its own prop (`to`).
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const RouterLink = ({
       to,
       ...props

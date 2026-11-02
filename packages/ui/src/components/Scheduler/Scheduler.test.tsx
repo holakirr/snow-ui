@@ -546,8 +546,9 @@ describe('Scheduler', () => {
           />
         </SnowUIProvider>,
       )
+      // ICU versions use either an en dash or an em dash for this date range.
       expect(screen.getByRole('grid')).toHaveAccessibleName(
-        /^28 сентября – 4 октября 2026/,
+        /^28 сентября [–—] 4 октября 2026/,
       )
     })
 

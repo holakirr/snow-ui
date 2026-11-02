@@ -353,3 +353,23 @@ See [the automation runbook](docs/braces-security-automation.md) for live usage.
 Build Check scripts step. Tests mock GitHub and artifacts; no CI runs, real
 notifications or production requests are made. See
 [the runbook](docs/production-notification-automation.md) for live usage and state.
+
+## Security tooling overrides
+
+The root overrides pin official patched releases of glob 14.0.3, minimatch 11.0.4
+and Zod 4.6.7 while their tooling parents still request vulnerable versions.
+Zod also requires zod-validation-error 5.0.0: Code Connect's older formatter
+throws when processing a Zod 4 validation failure. `scripts/security-tooling.test.ts`
+checks the installed Code Connect parser with populated records, invalid props
+and error formatting, plus the glob/minimatch APIs used by Code Connect and docgen.
+Run these tests, `bun run code-connect` and `bun run build:storybook` when changing
+or removing the overrides. Keep them until compatible parent releases resolve
+to patched versions without overrides.
+
+The November 2026 update also selects body-parser 2.4.0, fast-uri 3.1.9 and
+systeminformation 5.33.19 in the lockfile. Node development engines require the
+October 21 security fixes; the pinned Playwright image runs Node 26.13.0 and
+CI installs Bun 1.4.4. Published component engine ranges are unchanged.
+`bun audit --json` still reports the low-severity deepmerge advisory
+[GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4),
+which has no official patched version as of November 2. Do not suppress it.

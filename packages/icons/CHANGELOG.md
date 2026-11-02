@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.3
+
+### Patch Changes
+
+- [#270](https://github.com/holakirr/snow-ui/pull/270) [`b20f055`](https://github.com/holakirr/snow-ui/commit/b20f0559cd5afbd9e132835c00b19f51d08f0f84) Thanks [@holakirr](https://github.com/holakirr)! - Update the package build tooling and token generator.
+
 ## 2.2.2
 
 ### Patch Changes
@@ -17,6 +23,7 @@
 ### Minor Changes
 
 - [#157](https://github.com/holakirr/snow-ui/pull/157) [`b98db21`](https://github.com/holakirr/snow-ui/commit/b98db21adf0c16375e71d06f328d29223abc60e8) Thanks [@holakirr](https://github.com/holakirr)! - `StatusIcon` uses the SnowUI Figma Toast icons and colours:
+
   - `success` is a filled `CheckCircle` (was `Check`) in Secondary/Green.
   - `error` is a filled `Warning` in Secondary/Yellow (was meant to be red).
   - The colours are `var(--color-green, #71dd8c)` and `var(--color-yellow, #fc0)`, so they follow the `@holakirr/snow-ui` tokens and fall back to the Figma values without them. Before, the icons used the classes `fill-secondary-green` / `fill-secondary-red`, which no stylesheet defined, so they rendered in the text colour.

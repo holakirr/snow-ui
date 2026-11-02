@@ -294,6 +294,7 @@ describe('Combobox', () => {
   })
 
   it('works controlled', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState<string | null>('apple')
       return (
@@ -612,6 +613,7 @@ describe('Combobox', () => {
 
   it('forwards the ref to the input for react-hook-form', async () => {
     let setFocus: (name: 'fruit') => void = () => {}
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const TestForm = () => {
       const form = useForm<{ fruit: string | null }>({
         defaultValues: { fruit: null },

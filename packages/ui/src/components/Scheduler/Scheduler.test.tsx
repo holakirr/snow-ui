@@ -1190,6 +1190,7 @@ describe('Scheduler', () => {
     it('brings focus back to the slot when an event is deleted from its menu', async () => {
       vi.useFakeTimers({ toFake: ['Date'] })
       vi.setSystemTime(TODAY)
+      // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
       const Harness = () => {
         const [deleted, setDeleted] = useState(false)
         const standup: CalendarEvent = {

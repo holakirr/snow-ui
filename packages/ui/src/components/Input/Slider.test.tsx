@@ -203,6 +203,7 @@ describe('Slider', () => {
 
   it('follows a controlled value and reports changes', () => {
     const changes: number[][] = []
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState([30])
       return (

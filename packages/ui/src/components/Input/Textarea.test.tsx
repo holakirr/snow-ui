@@ -42,6 +42,7 @@ describe('Textarea', () => {
   })
 
   it('counts a controlled value', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState('abc')
       return (

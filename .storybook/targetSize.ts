@@ -156,7 +156,7 @@ const offsets = (room: number) => {
   return steps.at(-1) === room ? steps : [...steps, room]
 }
 
-const describe = (element: HTMLElement) => {
+const describeTarget = (element: HTMLElement) => {
   const role = element.getAttribute('role')
   const name =
     element.getAttribute('aria-label') ??
@@ -226,7 +226,7 @@ export const findSmallTargets = (
         }
       }
     }
-    if (!centres.some(fits)) failures.push(describe(element))
+    if (!centres.some(fits)) failures.push(describeTarget(element))
   }
 
   for (const [element, [left, top]] of scrolled) {

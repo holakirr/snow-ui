@@ -266,6 +266,7 @@ describe('DatePicker popup', () => {
   it('follows a value changed while it is open; closing keeps it', async () => {
     const onValueChange = vi.fn()
     let setOuter: (date: Date | null) => void = () => {}
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState<Date | null>(new Date(2025, 0, 20))
       setOuter = setValue
@@ -291,6 +292,7 @@ describe('DatePicker popup', () => {
   })
 
   it('shows the picked day while a controlled open stays true', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState<Date | null>(new Date(2025, 0, 20))
       return (
@@ -484,6 +486,7 @@ describe('DateRangePicker popup', () => {
   it('follows a range changed while it is open; closing keeps it', async () => {
     const onValueChange = vi.fn()
     let setOuter: (range: DateRange | null) => void = () => {}
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState<DateRange | null>({
         from: new Date(2025, 0, 13),

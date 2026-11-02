@@ -166,6 +166,26 @@ export const Disabled: Story = {
   ),
 }
 
+function SaveChanges({
+  onClick,
+}: Pick<React.ComponentProps<typeof Button>, 'onClick'>) {
+  const [saving, setSaving] = useState(false)
+  return (
+    <div className="flex items-center gap-2 rounded-16 p-4 inset-ring-[0.5px] inset-ring-black-10">
+      <Button variant="gray" label="Cancel" onClick={() => setSaving(false)} />
+      <Button
+        variant="filled"
+        label="Save Changes"
+        loading={saving}
+        onClick={(event) => {
+          onClick?.(event)
+          setSaving(true)
+        }}
+      />
+    </div>
+  )
+}
+
 /**
  * The kit's form button (Guidance → Form): "Save Changes" becomes a Gray
  * button of the same width with a spinner while it saves. `loading` (added
@@ -175,30 +195,7 @@ export const Disabled: Story = {
  */
 export const Loading: Story = {
   args: { onClick: fn() },
-  render: ({ onClick }) => {
-    const SaveChanges = () => {
-      const [saving, setSaving] = useState(false)
-      return (
-        <div className="flex items-center gap-2 rounded-16 p-4 inset-ring-[0.5px] inset-ring-black-10">
-          <Button
-            variant="gray"
-            label="Cancel"
-            onClick={() => setSaving(false)}
-          />
-          <Button
-            variant="filled"
-            label="Save Changes"
-            loading={saving}
-            onClick={(event) => {
-              onClick?.(event)
-              setSaving(true)
-            }}
-          />
-        </div>
-      )
-    }
-    return <SaveChanges />
-  },
+  render: ({ onClick }) => <SaveChanges onClick={onClick} />,
   play: async ({ args, canvas, canvasElement, userEvent, step }) => {
     await canvasElement.ownerDocument.fonts.ready
     const save = canvas.getByRole('button', { name: 'Save Changes' })
@@ -316,6 +313,25 @@ export const LoadingRTL: Story = {
   },
 }
 
+function LoadingChildrenDemo() {
+  const [loading, setLoading] = useState(false)
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="gray"
+        label="Toggle loading"
+        onClick={() => setLoading(!loading)}
+      />
+      <Button variant="outline" size="md" loading={loading}>
+        <StarIcon /> Save {2} items
+      </Button>
+      <Button asChild variant="outline" size="md" loading={loading}>
+        <a href="#docs">Docs</a>
+      </Button>
+    </div>
+  )
+}
+
 /**
  * Text right in a loading button (its children, an asChild link's text) is
  * put in an element, as opacity hides it in every mode: Firefox's
@@ -323,27 +339,7 @@ export const LoadingRTL: Story = {
  */
 export const LoadingChildren: Story = {
   tags: ['skip-visual'],
-  render: () => {
-    const Demo = () => {
-      const [loading, setLoading] = useState(false)
-      return (
-        <div className="flex items-center gap-2">
-          <Button
-            variant="gray"
-            label="Toggle loading"
-            onClick={() => setLoading(!loading)}
-          />
-          <Button variant="outline" size="md" loading={loading}>
-            <StarIcon /> Save {2} items
-          </Button>
-          <Button asChild variant="outline" size="md" loading={loading}>
-            <a href="#docs">Docs</a>
-          </Button>
-        </div>
-      )
-    }
-    return <Demo />
-  },
+  render: () => <LoadingChildrenDemo />,
   play: async ({ canvas, canvasElement, userEvent }) => {
     await canvasElement.ownerDocument.fonts.ready
     const toggle = canvas.getByRole('button', { name: 'Toggle loading' })

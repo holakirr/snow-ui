@@ -34,6 +34,7 @@ describe('Input', () => {
   })
 
   it('works as a controlled input', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState('foo')
       return (
@@ -319,6 +320,7 @@ describe('Input clearable', () => {
   })
 
   it('clears a controlled field through onChange', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState('Ada')
       return (
@@ -411,6 +413,7 @@ describe('Input clearable', () => {
 
   it('gives react-hook-form the empty value (register and FormField)', async () => {
     let read: (() => { first: string; last: string }) | undefined
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Names = () => {
       const form = useForm({
         defaultValues: { first: 'Ada', last: 'Lovelace' },

@@ -85,7 +85,7 @@ function instrument() {
   }
   const record: FrameRecord = { docsRendered: false, errors: [] }
   ;(window as CheckWindow).__DOCS_CHECK__ = record
-  const describe = (error: unknown) =>
+  const describeError = (error: unknown) =>
     error && typeof error === 'object' && 'message' in error
       ? String(error.message)
       : String(error)
@@ -99,10 +99,10 @@ function instrument() {
         record.docsRendered = true
       })
       value.on('playFunctionThrewException', (error: unknown) => {
-        record.errors.push(`play function failed: ${describe(error)}`)
+        record.errors.push(`play function failed: ${describeError(error)}`)
       })
       value.on('storyThrewException', (error: unknown) => {
-        record.errors.push(`render failed: ${describe(error)}`)
+        record.errors.push(`render failed: ${describeError(error)}`)
       })
       value.on(
         'storyErrored',
@@ -116,7 +116,7 @@ function instrument() {
       value.on('unhandledErrorsWhilePlaying', (errors: unknown[]) => {
         for (const error of errors) {
           record.errors.push(
-            `unhandled error while playing: ${describe(error)}`,
+            `unhandled error while playing: ${describeError(error)}`,
           )
         }
       })
@@ -205,7 +205,7 @@ function pendingWork() {
  * are reported once, for the iframe.
  */
 function collectErrors() {
-  const describe = (win: Window) => {
+  const describeFrame = (win: Window) => {
     const url = new URL(win.location.href)
     const errors = [...((win as CheckWindow).__DOCS_CHECK__?.errors ?? [])]
     if (win.document.body.classList.contains('sb-show-errordisplay')) {
@@ -217,7 +217,7 @@ function collectErrors() {
       errors,
     }
   }
-  const page = describe(window)
+  const page = describeFrame(window)
   // An inline story that throws shows the error in place of the story.
   for (const block of document.querySelectorAll('[data-story-block] > pre')) {
     const id = block.parentElement?.id.replace(/^story--|--primary$/g, '')
@@ -226,7 +226,7 @@ function collectErrors() {
   }
   const stories = Array.from(document.querySelectorAll('iframe'), (iframe) => {
     if (!iframe.contentWindow) throw new Error(`${iframe.id} is detached`)
-    return describe(iframe.contentWindow)
+    return describeFrame(iframe.contentWindow)
   })
   const inStories = new Set(stories.flatMap((story) => story.errors))
   page.errors = page.errors.filter((error) => !inStories.has(error))

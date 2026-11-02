@@ -127,14 +127,14 @@ The `registry` job checks the [shadcn registry](#registry-shadcn-cli): `bun run 
 
 The design tokens live in `packages/ui/tokens/` as [W3C Design Tokens (DTCG 2025.10)](https://www.designtokens.org/) files, the single source of truth for everything the library derives from them:
 
-| File | Contents |
-| --- | --- |
-| `snow-ui.resolver.json` | The [resolver](https://www.designtokens.org/tr/2025.10/resolver/): the token files, and the `theme` modifier with the `light` and `dark` contexts |
+| File                                                 | Contents                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `snow-ui.resolver.json`                              | The [resolver](https://www.designtokens.org/tr/2025.10/resolver/): the token files, and the `theme` modifier with the `light` and `dark` contexts                                                                                                                                                    |
 | `color.light.tokens.json` / `color.dark.tokens.json` | The Figma "Colors" collection in the SnowUI-Light / SnowUI-Dark mode, plus the library's additions (`primary-hover*`, `indigo-text`, `text-secondary`, `red-text`, and `control-border`, `control-border-strong`, `placeholder` with their high-contrast values). Both files declare the same tokens |
-| `color.contrast-standard.tokens.json` | The `contrast` modifier's default context, "standard": the Figma values of the contrast tokens, as aliases that are the same in both themes. The "more" context adds nothing, so the theme files' values apply |
-| `typography.tokens.json` | `font.sans` (with its `font-feature-settings`) and the Figma text styles, `text.<size>.regular` / `.semibold` |
-| `radius.tokens.json`, `effects.tokens.json` | Corner radius; shadows, the inner shadow, the focus ring colour and the background blurs |
-| `deprecated.tokens.json` | Old names: colour aliases (`$deprecated`) and the channels of the old token system |
+| `color.contrast-standard.tokens.json`                | The `contrast` modifier's default context, "standard": the Figma values of the contrast tokens, as aliases that are the same in both themes. The "more" context adds nothing, so the theme files' values apply                                                                                       |
+| `typography.tokens.json`                             | `font.sans` (with its `font-feature-settings`) and the Figma text styles, `text.<size>.regular` / `.semibold`                                                                                                                                                                                        |
+| `radius.tokens.json`, `effects.tokens.json`          | Corner radius; shadows, the inner shadow, the focus ring colour and the background blurs                                                                                                                                                                                                             |
+| `deprecated.tokens.json`                             | Old names: colour aliases (`$deprecated`) and the channels of the old token system                                                                                                                                                                                                                   |
 
 `bun run tokens` runs the [Terrazzo](https://terrazzo.app) CLI (`packages/ui/terrazzo.config.ts`): Terrazzo parses and validates the DTCG files, applies the resolver and resolves aliases, and the repository's plugin (`packages/ui/scripts/terrazzo-plugin-snow-ui.ts`) writes
 

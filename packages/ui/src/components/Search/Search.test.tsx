@@ -126,6 +126,7 @@ describe('Search', () => {
   })
 
   it('forwards the ref to the input', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Harness = () => {
       const [node, setNode] = useState<HTMLInputElement | null>(null)
       return (

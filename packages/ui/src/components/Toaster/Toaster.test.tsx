@@ -495,6 +495,7 @@ describe('Toaster limit and stacking', () => {
   })
 
   it('keeps toasts shown by the page as it mounts, before the toaster', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Page = () => {
       useEffect(() => {
         toast({ title: 'Saved' })

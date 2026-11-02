@@ -133,6 +133,7 @@ describe('Form (library-agnostic)', () => {
 
   it('follows a description that its own component shows and hides', async () => {
     let toggle = () => {}
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Hint = () => {
       const [shown, setShown] = useState(false)
       toggle = () => setShown((value) => !value)
@@ -163,6 +164,7 @@ describe('Form (library-agnostic)', () => {
   })
 
   it('counts your own parts that use the ids of useFormField', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Hint = () => {
       const { formDescriptionId } = Core.useFormField()
       return <span id={formDescriptionId}>Work email.</span>
@@ -237,6 +239,7 @@ describe('Form (react-hook-form adapter)', () => {
 describe('Form describedby and messages', () => {
   afterEach(() => vi.restoreAllMocks())
 
+  // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
   const Field = ({ error }: { error?: string }) => (
     <Core.FormItem error={error}>
       <Core.FormLabel>Email</Core.FormLabel>
@@ -285,6 +288,7 @@ describe('Form describedby and messages', () => {
   it("doesn't warn about act() when a part comes and goes on its own", () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     let toggle = () => {}
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Hint = () => {
       const [shown, setShown] = useState(false)
       toggle = () => setShown((value) => !value)
@@ -317,6 +321,7 @@ describe('Form describedby and messages', () => {
   })
 
   it('counts a description rendered in a portal', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const InPortal = () =>
       createPortal(
         <Core.FormDescription>In a popover.</Core.FormDescription>,
@@ -338,6 +343,7 @@ describe('Form describedby and messages', () => {
 
   it('notices your own part when it gets the id later', async () => {
     let setShown = (_: boolean) => {}
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Hint = () => {
       const { formDescriptionId } = Core.useFormField()
       const [shown, set] = useState(false)
@@ -363,6 +369,7 @@ describe('Form describedby and messages', () => {
 
   it('keeps the parts in StrictMode', async () => {
     let toggle = () => {}
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Hint = () => {
       const [shown, setShown] = useState(true)
       toggle = () => setShown((value) => !value)
@@ -493,6 +500,7 @@ describe('Form describedby and messages', () => {
     let hide = () => {}
     // The part's own parent unmounts it: FormItem doesn't re-render, and the
     // part's cleanup runs before React removes its <p>.
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Message = () => {
       const [shown, setShown] = useState(true)
       hide = () => setShown(false)

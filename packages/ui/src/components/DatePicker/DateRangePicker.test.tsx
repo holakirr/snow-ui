@@ -270,6 +270,7 @@ describe('DateRangePicker', () => {
   })
 
   it('works controlled and clears', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Controlled = () => {
       const [value, setValue] = useState<DateRange | null>(january(13, 16))
       return (

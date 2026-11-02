@@ -167,6 +167,7 @@ describe('ChartTooltipContent', () => {
   })
 
   it('finds the config key in a payload field (nameKey) and colours by another (colorKey)', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Icon = () => <svg data-testid="icon" />
     render(
       <ChartContainer
@@ -326,6 +327,7 @@ describe('ChartLegendContent', () => {
   })
 
   it('works outside a chart with its own config, and renders nothing without series', () => {
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Icon = () => <svg data-testid="legend-icon" />
     const { container } = render(
       <>

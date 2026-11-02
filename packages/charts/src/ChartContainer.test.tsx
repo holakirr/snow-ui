@@ -294,6 +294,7 @@ describe('ChartContainer', () => {
 })
 
 describe('direction and locale', () => {
+  // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
   const Probe = () => {
     const context = useChart()
     return (
@@ -396,6 +397,7 @@ describe('direction and locale', () => {
 
   it('announces text only while the chart has focus', () => {
     let announce: ((text: string) => void) | undefined
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const Grab = () => {
       announce = useChart()?.announce
       return null

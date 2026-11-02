@@ -153,6 +153,7 @@ describe('Pagination', () => {
     const onPageChange = vi.fn()
     // A router link: navigates in its own onClick, unless it was prevented
     // before (it can't see a preventDefault that comes later).
+    // biome-ignore lint/correctness/noComponentHookFactories: This fixture is created once per test; rerenders reuse its component identity.
     const RouterLink = ({
       to,
       ...props

@@ -2,12 +2,12 @@
 
 ## Supported versions
 
-| Package | Version | Security fixes |
-| --- | --- | --- |
-| `@holakirr/snow-ui` | 5.x | ✅ |
-| `@holakirr/snow-ui` | 4.x and older | ❌ |
-| `@holakirr/snow-ui-icons` | 2.x | ✅ |
-| `@holakirr/snow-ui-charts` | 0.x, the latest minor | ✅ |
+| Package                    | Version               | Security fixes |
+| -------------------------- | --------------------- | -------------- |
+| `@holakirr/snow-ui`        | 5.x                   | ✅             |
+| `@holakirr/snow-ui`        | 4.x and older         | ❌             |
+| `@holakirr/snow-ui-icons`  | 2.x                   | ✅             |
+| `@holakirr/snow-ui-charts` | 0.x, the latest minor | ✅             |
 
 When a new major is released, the previous one gets security fixes for six more months ([Versioning and support policy](VERSIONING.md#supported-versions)). Pre-releases (`next`) and canaries (`canary`) get no fixes of their own: the fix goes into the next release.
 

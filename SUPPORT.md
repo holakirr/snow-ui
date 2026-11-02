@@ -11,14 +11,14 @@ SnowUI is maintained by one person in their spare time. Answers are best effort,
 
 ## Where to ask
 
-| You have | Go to |
-| --- | --- |
-| A question: how do I…, why does…, is this the right component for… | [Discussions → Q&A](https://github.com/holakirr/snow-ui/discussions/categories/q-a) |
-| An idea, or a component you'd like to see | [Discussions → Ideas](https://github.com/holakirr/snow-ui/discussions/categories/ideas), or a [feature request](https://github.com/holakirr/snow-ui/issues/new?template=feature_request.yml) when it is concrete |
-| Something that doesn't work as documented | a [bug report](https://github.com/holakirr/snow-ui/issues/new?template=bug_report.yml) |
-| A component that is hard or impossible to use with a keyboard, a screen reader or other assistive technology | an [accessibility issue](https://github.com/holakirr/snow-ui/issues/new?template=accessibility.yml) |
-| A security vulnerability | **never in public:** see the [Security policy](SECURITY.md) |
-| Something you built with SnowUI | [Discussions → Show and tell](https://github.com/holakirr/snow-ui/discussions/categories/show-and-tell) |
+| You have                                                                                                     | Go to                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A question: how do I…, why does…, is this the right component for…                                           | [Discussions → Q&A](https://github.com/holakirr/snow-ui/discussions/categories/q-a)                                                                                                                              |
+| An idea, or a component you'd like to see                                                                    | [Discussions → Ideas](https://github.com/holakirr/snow-ui/discussions/categories/ideas), or a [feature request](https://github.com/holakirr/snow-ui/issues/new?template=feature_request.yml) when it is concrete |
+| Something that doesn't work as documented                                                                    | a [bug report](https://github.com/holakirr/snow-ui/issues/new?template=bug_report.yml)                                                                                                                           |
+| A component that is hard or impossible to use with a keyboard, a screen reader or other assistive technology | an [accessibility issue](https://github.com/holakirr/snow-ui/issues/new?template=accessibility.yml)                                                                                                              |
+| A security vulnerability                                                                                     | **never in public:** see the [Security policy](SECURITY.md)                                                                                                                                                      |
+| Something you built with SnowUI                                                                              | [Discussions → Show and tell](https://github.com/holakirr/snow-ui/discussions/categories/show-and-tell)                                                                                                          |
 
 Release announcements are posted in [Discussions → Announcements](https://github.com/holakirr/snow-ui/discussions/categories/announcements).
 

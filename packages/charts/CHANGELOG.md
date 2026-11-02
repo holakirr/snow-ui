@@ -1,5 +1,11 @@
 # @holakirr/snow-ui-charts
 
+## 0.2.4
+
+### Patch Changes
+
+- [#270](https://github.com/holakirr/snow-ui/pull/270) [`b20f055`](https://github.com/holakirr/snow-ui/commit/b20f0559cd5afbd9e132835c00b19f51d08f0f84) Thanks [@holakirr](https://github.com/holakirr)! - Update the package build tooling and token generator.
+
 ## 0.2.3
 
 ### Patch Changes
@@ -35,6 +41,7 @@
 ### Minor Changes
 
 - [#167](https://github.com/holakirr/snow-ui/pull/167) [`deea1d4`](https://github.com/holakirr/snow-ui/commit/deea1d4a7266dc80fbdcc9c087ab98b6a8329fd3) Thanks [@holakirr](https://github.com/holakirr)! - New package: charts in the SnowUI design, built on [Recharts](https://recharts.github.io) 3.
+
   - **Ready-made charts:** `LineChart` (smooth lines, dashed series, a dashed projection after `projectionFrom`, stacking), `AreaChart` (gradient fills, stacking), `BarChart` (grouped or stacked, horizontal, per-category colours, 28px bars with an 8px radius), `DonutChart` (the "Traffic by Location" ring with a legend of shares and a centre label) and `Sparkline` (for KPI cards: plain SVG, about 2 kB, rendered on the server too).
   - **Composable parts:** `ChartContainer`, `ChartTooltip` / `ChartTooltipContent` and `ChartLegend` / `ChartLegendContent` around your own Recharts charts, whose primitives you import from `@holakirr/snow-ui-charts/recharts` (the package's own Recharts, so everything shares one copy). A `ChartConfig` names each series and gives it a SnowUI colour token (`primary`, `indigo`, `cyan`…) as a CSS custom property, so charts follow dark mode and scoped themes.
   - **Accessible:** every chart is a named `<figure>` with a visually hidden data table and a development warning when it has no name; the line, area and bar charts also move between data points with ← / →, announced through a live region (the donut and the sparkline, whose values are text beside them, are not tab stops).

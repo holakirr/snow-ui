@@ -67,7 +67,7 @@
     },
     "packages/charts": {
       "name": "@holakirr/snow-ui-charts",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dependencies": {
         "react-is": "^19.3.1",
         "recharts": "^3.10.1",
@@ -99,7 +99,7 @@
     },
     "packages/icons": {
       "name": "@holakirr/snow-ui-icons",
-      "version": "2.2.2",
+      "version": "2.2.3",
       "devDependencies": {
         "@arethetypeswrong/core": "^0.18.5",
         "@phosphor-icons/react": "^2.1.10",
@@ -138,9 +138,9 @@
     },
     "packages/ui": {
       "name": "@holakirr/snow-ui",
-      "version": "5.3.4",
+      "version": "5.3.5",
       "dependencies": {
-        "@holakirr/snow-ui-icons": "^2.2.2",
+        "@holakirr/snow-ui-icons": "^2.2.3",
         "@radix-ui/react-accordion": "^1.3.1",
         "@radix-ui/react-alert-dialog": "^1.2.1",
         "@radix-ui/react-avatar": "^1.3.1",

@@ -61,8 +61,8 @@ import {
 } from './fixtures'
 
 /** Scaffolder versions: bump them in a batch, like the shadcn CLI. */
-const CREATE_NEXT_APP = 'create-next-app@16.4.2'
-const CREATE_VITE = 'create-vite@9.2.1'
+const CREATE_NEXT_APP = 'create-next-app@16.4.3'
+const CREATE_VITE = 'create-vite@9.3.3'
 
 const APPS = ['next', 'vite', 'next-shadcn'] as const
 type App = (typeof APPS)[number]

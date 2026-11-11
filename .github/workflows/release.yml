@@ -605,6 +605,36 @@ jobs:
       - name: Registry against npm (${{ matrix.app }})
         run: bun packages/registry/smoke/smoke.ts --published --app ${{ matrix.app }} --work "$RUNNER_TEMP/registry-smoke"
 
+  registry-artifact:
+    needs: [released, verify]
+    if: needs.released.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version-file: package.json
+          no-cache: true
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Build public registry for this release
+        run: |
+          bun packages/registry/src/cli.ts build --out "$RUNNER_TEMP/registry" --llms none
+          cd "$RUNNER_TEMP/registry"
+          tar -cf "$RUNNER_TEMP/public-registry-$GITHUB_SHA.tar" -- *.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: public-registry
+          path: ${{ runner.temp }}/public-registry-${{ github.sha }}.tar
+          if-no-files-found: error
+
   # snow-ui.holakirr.com (Storybook, the /r registry, llms.txt) is Vercel's
   # production deployment of the `release` branch: it moves only here, to
   # the commit whose packages were just published and verified, so the site
@@ -612,7 +642,7 @@ jobs:
   # an older release run finds the branch ahead and leaves it; a branch
   # that doesn't lead to this commit is an error to resolve by hand.
   promote:
-    needs: [released, verify]
+    needs: [released, verify, registry-artifact]
     if: needs.released.outputs.released == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -621,6 +651,23 @@ jobs:
     outputs:
       current: ${{ steps.promotion.outputs.current }}
     steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: public-registry
+          path: ${{ runner.temp }}/public-registry
+      - name: Attach registry to the published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh api --paginate "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/@holakirr/snow-ui" |
+            jq -rs --arg sha "$GITHUB_SHA" 'flatten | map(select(.object.sha == $sha and (.ref | test("^refs/tags/@holakirr/snow-ui(-icons|-charts)?@[0-9]+[.][0-9]+[.][0-9]+$")))) | map(.ref | ltrimstr("refs/tags/")) | sort | .[0] // empty')
+          test -n "$tag"
+          asset="public-registry-$GITHUB_SHA.tar"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' | grep -Fx "$asset"; then
+            exit 0
+          fi
+          gh release upload "$tag" "$RUNNER_TEMP/public-registry/$asset" --repo "$GITHUB_REPOSITORY"
+
       - name: Fast-forward the release branch to ${{ github.sha }}
         id: promotion
         env:

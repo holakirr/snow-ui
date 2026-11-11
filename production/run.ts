@@ -3,15 +3,13 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { request } from '@playwright/test'
 import { productionGet, targets } from './access'
 import { completeSuite, requireDocsCoverage } from './coverage'
+import { verifyPublicRegistry } from './registry'
 
 const out = 'test-results/production'
 mkdirSync(out, { recursive: true })
-const siteSha = process.env.PRODUCTION_SITE_SHA
-const demoSha = process.env.PRODUCTION_DEMO_SHA
-if (
-  !/^[a-f0-9]{40}$/.test(siteSha ?? '') ||
-  !/^[a-f0-9]{40}$/.test(demoSha ?? '')
-) {
+const siteSha = process.env.PRODUCTION_SITE_SHA ?? ''
+const demoSha = process.env.PRODUCTION_DEMO_SHA ?? ''
+if (!/^[a-f0-9]{40}$/.test(siteSha) || !/^[a-f0-9]{40}$/.test(demoSha)) {
   throw new Error('Expected production commit SHAs are required')
 }
 const secrets = Object.keys(targets).map((name) => {
@@ -27,6 +25,7 @@ const demoClient = await request.newContext({ ignoreHTTPSErrors: false })
 try {
   const deadline = Date.now() + 15 * 60_000
   let ready = false
+  let siteAndDemoReady = false
   while (Date.now() < deadline) {
     try {
       const site = await productionGet(
@@ -44,7 +43,10 @@ try {
       if (site.ok() && demo.ok()) {
         const siteData = await site.json()
         const demoData = await demo.json()
-        if (siteData.meta?.commit === siteSha && demoData.sha === demoSha) {
+        siteAndDemoReady =
+          siteData.meta?.commit === siteSha && demoData.sha === demoSha
+        if (siteAndDemoReady && typeof siteData.meta.version === 'string') {
+          await verifyPublicRegistry(siteSha, siteData.meta.version)
           ready = true
           break
         }
@@ -56,9 +58,13 @@ try {
   }
   if (!ready)
     throw new Error(
-      'Production domains did not serve the expected commits within 15 minutes',
+      siteAndDemoReady
+        ? 'Public JSON registry did not match the site release within 15 minutes'
+        : 'Production site or demo did not serve the expected commit within 15 minutes',
     )
-  console.log(`Production commits verified: site ${siteSha}, demo ${demoSha}`)
+  console.log(
+    `Production commits verified: site and public registry ${siteSha}, demo ${demoSha}`,
+  )
   const response = await productionGet(
     client,
     targets.SNOWUI_SITE_AUTOMATION_SECRET,
@@ -76,7 +82,9 @@ try {
   docsCount = docs.length
   writeFileSync(`${out}/index.json`, redact(JSON.stringify(index)))
   console.log(`Published docs pages: ${docs.length}`)
-} catch {
+} catch (error) {
+  if (error instanceof Error && error.message.endsWith('within 15 minutes'))
+    throw error
   throw new Error(
     'Production readiness/index check failed; sensitive request details suppressed',
   )

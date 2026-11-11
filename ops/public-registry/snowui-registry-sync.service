@@ -1,0 +1,15 @@
+[Unit]
+Description=Synchronize public SnowUI registry with the GitHub release ref
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -B /usr/local/libexec/snowui-registry-sync.py
+TimeoutStartSec=90
+UMask=0022
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/snow-ui-registry

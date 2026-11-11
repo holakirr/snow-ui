@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.3
+
+### Patch Changes
+
+- [#276](https://github.com/holakirr/snow-ui/pull/276) [`22bcb47`](https://github.com/holakirr/snow-ui/commit/22bcb473b5418e8e74d23da75c4e26cbb617417c) Thanks [@holakirr](https://github.com/holakirr)! - Update the tooling used to build the published packages.
+
+- [#270](https://github.com/holakirr/snow-ui/pull/270) [`b20f055`](https://github.com/holakirr/snow-ui/commit/b20f0559cd5afbd9e132835c00b19f51d08f0f84) Thanks [@holakirr](https://github.com/holakirr)! - Update the package build tooling and token generator.
+
 ## 2.2.2
 
 ### Patch Changes

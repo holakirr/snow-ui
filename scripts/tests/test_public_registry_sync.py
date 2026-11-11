@@ -56,6 +56,14 @@ class RegistrySyncTests(unittest.TestCase):
         self.assertEqual(json.loads((self.current / "r/button.json").read_text())["meta"]["commit"], SHA)
         self.assertTrue(self.previous.exists())
 
+    def test_missing_current_item_does_not_block_install(self):
+        (self.previous / "r/button.json").unlink()
+        with patch.object(sync, "refs", return_value=self.refs), patch.object(
+            sync, "urlopen", return_value=io.BytesIO(archive())
+        ):
+            sync.sync(self.root)
+        self.assertNotEqual(self.current.readlink(), self.previous)
+
     def test_invalid_archive_cannot_replace_current(self):
         for data in (archive(OLD), archive(bad_name="../outside.json")):
             with self.subTest(data=data[:20]), patch.object(sync, "refs", return_value=self.refs), patch.object(

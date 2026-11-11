@@ -7,12 +7,9 @@ import { verifyPublicRegistry } from './registry'
 
 const out = 'test-results/production'
 mkdirSync(out, { recursive: true })
-const siteSha = process.env.PRODUCTION_SITE_SHA
-const demoSha = process.env.PRODUCTION_DEMO_SHA
-if (
-  !/^[a-f0-9]{40}$/.test(siteSha ?? '') ||
-  !/^[a-f0-9]{40}$/.test(demoSha ?? '')
-) {
+const siteSha = process.env.PRODUCTION_SITE_SHA ?? ''
+const demoSha = process.env.PRODUCTION_DEMO_SHA ?? ''
+if (!/^[a-f0-9]{40}$/.test(siteSha) || !/^[a-f0-9]{40}$/.test(demoSha)) {
   throw new Error('Expected production commit SHAs are required')
 }
 const secrets = Object.keys(targets).map((name) => {

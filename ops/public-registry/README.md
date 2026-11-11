@@ -19,6 +19,10 @@ systemctl start snowui-registry-sync.service
 The worker requires Git and Python 3.9 or later. It retains the old artifacts and
 switches the existing current symlink only after validating the entire archive
 and rechecking the release ref. Caddy continues to serve the existing directory.
+For a release already installed before this automation, retain its immutable
+artifact for recovery. Only subsequent package releases have downloadable JSON
+assets.
+
 Production Check waits for both the site's registry metadata and the public
 catalog and Button item to report the same release commit and version.
 

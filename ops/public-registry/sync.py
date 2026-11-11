@@ -61,9 +61,12 @@ def sync(root=ROOT):
             raise ValueError("Invalid release ref")
         current = root / "current"
         if current.is_symlink():
-            installed = json.loads((current / "r/button.json").read_text())
-            if installed["meta"]["commit"] == sha:
-                return
+            try:
+                installed = json.loads((current / "r/button.json").read_text())
+                if installed["meta"]["commit"] == sha:
+                    return
+            except (FileNotFoundError, ValueError, KeyError, TypeError):
+                pass
         tags = sorted(
             ref.removeprefix("refs/tags/") for ref, target in remote.items()
             if ref.startswith("refs/tags/") and TAG.fullmatch(ref.removeprefix("refs/tags/"))

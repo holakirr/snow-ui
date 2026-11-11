@@ -43,7 +43,7 @@
     "code-connect": "figma connect parse --skip-update-check --exit-on-unreadable-files --outFile /dev/null",
     "clean": "rm -rf packages/*/dist packages/*/storybook-static packages/*/coverage coverage apps/*/.next apps/*/test-results apps/*/playwright-report",
     "changeset": "changeset",
-    "version-packages": "changeset version && bun install --lockfile-only",
+    "version-packages": "changeset version && biome format --write packages/ui/CHANGELOG.md packages/icons/CHANGELOG.md packages/charts/CHANGELOG.md && bun install --lockfile-only",
     "release": "bun run build && bun scripts/publish.ts"
   },
   "devDependencies": {

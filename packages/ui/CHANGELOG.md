@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.3.6
+
+### Patch Changes
+
+- [#284](https://github.com/holakirr/snow-ui/pull/284) [`54473c5`](https://github.com/holakirr/snow-ui/commit/54473c506420ae4503993549834cea73c43fd161) Thanks [@holakirr](https://github.com/holakirr)! - Update the package build tooling.
+- Updated dependencies [[`54473c5`](https://github.com/holakirr/snow-ui/commit/54473c506420ae4503993549834cea73c43fd161)]:
+  - @holakirr/snow-ui-icons@2.2.4
+
 ## 5.3.5
 
 ### Patch Changes

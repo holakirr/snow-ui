@@ -215,7 +215,8 @@ describe('props', () => {
 
   it('merges style with the default transition', () => {
     const svg = getSvg(render(<AddIcon style={{ opacity: 0.5 }} />).container)
-    expect(svg.style.transition).toBe('all .15s')
+    expect(svg.style.transitionDuration).toBe('0.15s')
+    expect(svg.style.transitionProperty || 'all').toBe('all')
     expect(svg.style.opacity).toBe('0.5')
   })
 

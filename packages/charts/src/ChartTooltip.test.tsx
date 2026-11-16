@@ -79,9 +79,11 @@ describe('ChartTooltipContent', () => {
       'Mobile8,000',
     ])
     const swatches = content.querySelectorAll('.snow-chart-swatch')
-    expect(swatches[0]).toHaveStyle({
-      '--snow-chart-swatch': 'var(--chart-desktop)',
-    })
+    expect(
+      (swatches[0] as HTMLElement | null)?.style.getPropertyValue(
+        '--snow-chart-swatch',
+      ),
+    ).toBe('var(--chart-desktop)')
     // A dashed series gets a hollow marker.
     expect(swatches[1]).toHaveAttribute('data-dashed', 'true')
   })
@@ -208,9 +210,11 @@ describe('ChartTooltipContent', () => {
     const [byColor, byName] = document.querySelectorAll(
       '[data-slot="chart-tooltip"]',
     )
-    expect(byColor?.querySelector('.snow-chart-swatch')).toHaveStyle({
-      '--snow-chart-swatch': 'var(--chart-Linux)',
-    })
+    expect(
+      (
+        byColor?.querySelector('.snow-chart-swatch') as HTMLElement | null
+      )?.style.getPropertyValue('--snow-chart-swatch'),
+    ).toBe('var(--chart-Linux)')
     expect(byColor).toHaveTextContent('LinuxUsers15,000')
     // The series icon replaces the dot.
     expect(
@@ -237,9 +241,11 @@ describe('ChartTooltipContent', () => {
       'var(--color-primary)',
     )
     expect(content).toHaveTextContent('Q1Range10 – 20')
-    expect(content.querySelectorAll('.snow-chart-swatch')[1]).toHaveStyle({
-      '--snow-chart-swatch': '#123456',
-    })
+    expect(
+      (
+        content.querySelectorAll('.snow-chart-swatch')[1] as HTMLElement | null
+      )?.style.getPropertyValue('--snow-chart-swatch'),
+    ).toBe('#123456')
     expect(content).toHaveTextContent('othern/a')
   })
 
@@ -286,9 +292,11 @@ describe('ChartLegendContent', () => {
     expect(legend).toHaveAttribute('data-layout', 'horizontal')
     const items = within(legend).getAllByRole('listitem')
     expect(items.map((item) => item.textContent)).toEqual(['Desktop', 'Mobile'])
-    expect(items[0]?.querySelector('.snow-chart-swatch')).toHaveStyle({
-      '--snow-chart-swatch': 'var(--chart-desktop)',
-    })
+    expect(
+      (
+        items[0]?.querySelector('.snow-chart-swatch') as HTMLElement | null
+      )?.style.getPropertyValue('--snow-chart-swatch'),
+    ).toBe('var(--chart-desktop)')
     expect(items[1]?.querySelector('.snow-chart-swatch')).toHaveAttribute(
       'data-dashed',
       'true',

@@ -135,9 +135,11 @@ describe('Sparkline', () => {
     // Two runs: Mon–Tue and Thu.
     expect(lines(container)).toEqual(['M0,100L33.33,0', 'M100,50h0'])
     expect(container.querySelectorAll('path[fill^="url("]')).toHaveLength(2)
-    expect(container.querySelector('linearGradient stop')).toHaveStyle({
-      stopColor: 'var(--color-primary)',
-    })
+    expect(
+      container
+        .querySelector<SVGStopElement>('linearGradient stop')
+        ?.style.getPropertyValue('stop-color'),
+    ).toBe('var(--color-primary)')
     const table = within(figure).getByRole('table')
     expect(
       within(table)

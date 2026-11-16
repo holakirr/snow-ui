@@ -196,7 +196,6 @@ The state-only branch must retain its root and `apps/demo/vercel.json` files
 with `git.deploymentEnabled=false`, so state commits do not build applications.
 Do not remove these files or mute failed-build notifications as a substitute.
 
-
 ### Deployment guards on every state write
 
 Before reading or writing state, `Store` requires both `vercel.json` and

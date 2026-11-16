@@ -202,10 +202,13 @@
     "39157496945:1": true
   },
   "telegramReleaseAcceptance": {
-    "status": "pending",
+    "status": "completed",
     "runId": 43871241859,
     "attempt": 1,
     "sha": "ec267bf5b8f344f3d21da465971266f18026032f",
+    "noticesVerified": 0,
+    "duplicateReplayNotices": 0,
+    "sameCauseRetryNotices": 0,
     "baseline": {
       "processedAttempts": {
         "38720521223:1": {

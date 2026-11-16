@@ -156,8 +156,6 @@
 - Responsive: при viewport 390×844 отдельная панель не расширяет страницу, список разделов прокручивается горизонтально.
 - Current webpack first-load JS: Dashboard 460.3 KiB (budget 420), Settings 339.8 KiB (290), Sign In 336.3 KiB (275) — budget tests failed. Эти данные не подтверждают штатный Turbopack build; пороги не менялись.
 
-
-
 ## Проверка ветки 6.0
 
 Проверены локальные branches/worktrees, актуальный `git ls-remote --heads origin` и версии package manifest во всех существующих branch refs. Ветки `next` и версии 6.x сейчас не обнаружены. `main` и `release` содержат UI 5.3.0; `develop` — старую 0.1.9. ROADMAP предусматривает 6.0 на `next`, но текущие refs этого не подтверждают. Тег 0.6.0 относится к прежнему пакету. Текущие правки выполнены поверх `main`; commit/push не выполнялись.

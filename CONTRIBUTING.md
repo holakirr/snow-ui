@@ -368,8 +368,8 @@ to patched versions without overrides.
 
 The November 2026 update also selects body-parser 2.4.0, fast-uri 3.1.9 and
 systeminformation 5.33.19 in the lockfile. Node development engines require the
-October 21 security fixes; the pinned Playwright image runs Node 26.13.0 and
-CI installs Bun 1.4.4. Published component engine ranges are unchanged.
+November 11 security fixes; CI installs Bun 1.4.5. The pinned Playwright image
+is verified separately for its actual Node runtime. Published component engine ranges are unchanged.
 `bun audit --json` still reports the low-severity deepmerge advisory
 [GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4),
 which has no official patched version as of November 2. Do not suppress it.
